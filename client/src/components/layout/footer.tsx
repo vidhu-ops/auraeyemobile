@@ -1,0 +1,80 @@
+import { Link } from "wouter";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+
+export default function Footer() {
+  return (
+    <footer className="bg-dark text-white pt-12 pb-6">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                <span className="text-white font-heading font-bold text-xl">A</span>
+              </div>
+              <span className="font-heading font-bold text-2xl text-white">Aurfy</span>
+            </div>
+            <p className="text-white/70 mb-4">Empowering spiritual growth through modern metaphysical tools and AI-enhanced aura analysis.</p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-white/70 hover:text-white transition-colors">
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white/70 hover:text-white transition-colors">
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white/70 hover:text-white transition-colors">
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white/70 hover:text-white transition-colors">
+                <Youtube className="h-5 w-5" />
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li><Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link></li>
+              <li><Link href="/#services" className="text-white/70 hover:text-white transition-colors">Services</Link></li>
+              <li><Link href="/about" className="text-white/70 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/contact" className="text-white/70 hover:text-white transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Services</h4>
+            <ul className="space-y-2">
+              <li><Link href="/aura-analysis" className="text-white/70 hover:text-white transition-colors">Aura Analysis</Link></li>
+              <li><Link href="/daily-horoscope" className="text-white/70 hover:text-white transition-colors">Daily Horoscope</Link></li>
+              <li><Link href="/numerology" className="text-white/70 hover:text-white transition-colors">Numerology Reading</Link></li>
+              <li><Link href="/journal" className="text-white/70 hover:text-white transition-colors">Spiritual Journal</Link></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Subscribe</h4>
+            <p className="text-white/70 mb-3">Stay updated with our latest spiritual insights and offerings.</p>
+            <form className="flex flex-col space-y-3">
+              <Input type="email" placeholder="Your email address" className="px-3 py-2 rounded-lg bg-dark-light border border-dark-light focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" />
+              <Button className="bg-primary hover:bg-primary-dark text-white font-medium">
+                Subscribe
+              </Button>
+            </form>
+          </div>
+        </div>
+        
+        <hr className="border-dark-light mb-6" />
+        
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <p className="text-white/70 text-sm mb-4 md:mb-0">© 2023 Aurfy. All rights reserved.</p>
+          <div className="flex space-x-4 text-sm">
+            <Link href="/privacy" className="text-white/70 hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-white/70 hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/cookies" className="text-white/70 hover:text-white transition-colors">Cookie Policy</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
