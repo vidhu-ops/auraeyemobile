@@ -23,9 +23,9 @@ export function configureFileUpload() {
     }
   };
   
-  // Configure size limits
+  // Configure size limits - reduced to prevent "request entity too large" errors
   const limits = {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 2 * 1024 * 1024, // 2MB max file size
   };
   
   // Create and return the multer instance
