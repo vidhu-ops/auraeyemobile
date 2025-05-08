@@ -397,6 +397,40 @@ export default function AuraAnalysis() {
             </div>
           </div>
         </section>
+        
+        {/* Premium Features Section */}
+        <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-10">
+                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Aura Analysis Options</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Choose the level of insight that best suits your spiritual journey.
+                </p>
+              </div>
+              
+              <PremiumFeature
+                title="Aura Analysis"
+                description="Discover the colors and energy patterns of your aura"
+                basicFeatures={[
+                  "Basic aura color identification",
+                  "Primary personality traits",
+                  "Energy level assessment",
+                  "Basic chakra activity visualization"
+                ]}
+                premiumFeatures={[
+                  "Advanced multi-layer aura color analysis",
+                  "Detailed chakra balancing recommendations",
+                  "Personalized spiritual practice suggestions",
+                  "Temporal aura pattern tracking",
+                  "30-day aura energy forecast"
+                ]}
+                ctaText="Unlock Premium Aura Analysis"
+                onUpgrade={handlePremiumUpgrade}
+              />
+            </div>
+          </div>
+        </section>
       </main>
       
       <Footer />
