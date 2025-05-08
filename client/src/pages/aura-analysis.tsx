@@ -11,6 +11,7 @@ import { PremiumFeature } from "@/components/premium/premium-feature";
 import { analyzeAuraImage, AuraAnalysisResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, Crown, Sparkles } from "lucide-react";
 
@@ -97,6 +98,103 @@ export default function AuraAnalysis() {
     return colorMap[lowerColor] || "text-gray-400";
   };
 
+  // Helper functions for the detailed analysis tab
+  const getAuraLayerAnalysis = (layer: string, color: string): string => {
+    const layerAnalysis: Record<string, Record<string, string>> = {
+      etheric: {
+        "Purple": "Your etheric layer shows strong spiritual development and healing energy fields. Physical vitality is enhanced through psychic connections rather than purely physical sources.",
+        "Blue": "Your etheric layer is strongly aligned with truth and clear expression. Physical health responds well to sound therapy and throat chakra work.",
+        "Green": "Your etheric layer shows exceptional healing potential and natural vitality. Physical energy is balanced and flows freely through all systems.",
+        "Yellow": "Your etheric layer vibrates with intellectual energy and mental stimulation. Physical vitality is strongly tied to mental engagement and learning.",
+        "Orange": "Your etheric layer pulses with creative life force and sensual energy. Physical vitality is enhanced through creative expression and joy.",
+        "Red": "Your etheric layer contains powerful primal energy and strong physical vitality. Your physical presence is grounded and commanding.",
+        "White": "Your etheric layer is exceptionally pure and connected to higher consciousness. Physical energy is refined and spiritually aligned.",
+        "Gold": "Your etheric layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
+        "Indigo": "Your etheric layer is connected to higher intuition and visionary abilities. Physical body benefits from third eye meditation.",
+        "Pink": "Your etheric layer resonates with unconditional love and compassion. Physical health is enhanced through heart-centered practices."
+      },
+      emotional: {
+        "Purple": "Your emotional layer reveals spiritual sensitivity and intuitive emotional processing. You may experience emotions as spiritual messages.",
+        "Blue": "Your emotional layer shows a peaceful approach to feelings with truthful emotional expression. You process emotions through communication.",
+        "Green": "Your emotional layer indicates balance and healing in emotional patterns. You naturally create harmony in emotional environments.",
+        "Yellow": "Your emotional layer shows optimism and intellectual processing of emotions. You tend to analyze feelings before expressing them.",
+        "Orange": "Your emotional layer is vibrant with enthusiasm and creative emotional expression. You experience emotions intensely and expressively.",
+        "Red": "Your emotional layer indicates passionate feelings and strong emotional presence. Your emotions are powerful motivators in your life.",
+        "White": "Your emotional layer contains pure, unconditional emotional responses. You experience emotions with spiritual detachment.",
+        "Gold": "Your emotional layer carries wisdom in emotional processing. You have access to ancient emotional patterns and healing.",
+        "Indigo": "Your emotional layer connects emotions to intuitive knowing. You understand the deeper purpose behind emotional experiences.",
+        "Pink": "Your emotional layer is suffused with love and compassion. Your emotional responses are heart-centered and nurturing."
+      },
+      mental: {
+        "Purple": "Your mental layer shows psychic abilities integrated into thought processes. Your thinking is informed by spiritual insights.",
+        "Blue": "Your mental layer reveals clear, truthful thinking and excellent communication skills. Your thoughts align with higher truth.",
+        "Green": "Your mental layer indicates balanced thinking and healing thought patterns. Your mind naturally seeks harmony and growth.",
+        "Yellow": "Your mental layer shows exceptional intellectual abilities and analytical thinking. Your mind is your greatest tool.",
+        "Orange": "Your mental layer is highly creative with innovative thought patterns. Your thinking breaks conventional boundaries.",
+        "Red": "Your mental layer indicates decisive thinking and action-oriented mental processes. Your thoughts quickly translate to action.",
+        "White": "Your mental layer connects to universal consciousness. Your thinking transcends ordinary limitations.",
+        "Gold": "Your mental layer accesses wisdom and higher knowledge. Your thoughts carry authority and spiritual insight.",
+        "Indigo": "Your mental layer shows visionary thinking and future-oriented perspectives. Your ideas come from higher dimensions.",
+        "Pink": "Your mental layer processes thoughts through the lens of compassion. Your thinking is heart-centered and loving."
+      },
+      spiritual: {
+        "Purple": "Your spiritual layer reveals advanced spiritual development and direct connection to higher dimensions. Your spiritual path involves psychic development.",
+        "Blue": "Your spiritual layer shows alignment with truth and clear spiritual communication. You may be a channel for spiritual teachings.",
+        "Green": "Your spiritual layer indicates healing abilities and balanced spiritual growth. Your spiritual path involves healing self and others.",
+        "Yellow": "Your spiritual layer connects intellectual understanding with spiritual wisdom. Your spiritual path involves teaching and sharing knowledge.",
+        "Orange": "Your spiritual layer shows creative spiritual expression and sensual spirituality. Your spiritual path involves creation and joy.",
+        "Red": "Your spiritual layer reveals power and strength in spiritual practice. Your spiritual path involves courage and leadership.",
+        "White": "Your spiritual layer connects directly to source consciousness. Your spiritual presence carries purity and higher frequency.",
+        "Gold": "Your spiritual layer carries divine wisdom and protection. Your spiritual path involves becoming a wisdom keeper.",
+        "Indigo": "Your spiritual layer reveals visionary abilities and psychic seeing. Your spiritual path involves bringing new visions to humanity.",
+        "Pink": "Your spiritual layer emanates unconditional love. Your spiritual path involves becoming a heart-centered healer."
+      }
+    };
+    
+    return layerAnalysis[layer]?.[color] || 
+      "This layer of your aura carries unique energetic signatures that reflect your personal spiritual evolution.";
+  };
+  
+  const getEnergyLevelText = (level: number): string => {
+    if (level <= 1) return "very low";
+    if (level <= 2) return "low";
+    if (level <= 3) return "moderate";
+    if (level <= 4) return "high";
+    return "very high";
+  };
+  
+  const getEnergyAdvice = (level: number, color: string): string => {
+    if (level <= 2) {
+      return " You may benefit from energy-enhancing practices such as pranayama breathing, solar gazing meditation, or crystal healing with citrine or carnelian.";
+    } else if (level <= 3) {
+      return " Your energy is balanced but could be optimized through regular energy maintenance practices like tai chi, qigong, or rhythm-based meditation.";
+    } else {
+      return " Your abundant energy should be channeled purposefully through grounding practices, creative expression, or service to others to prevent energetic burnout.";
+    }
+  };
+  
+  const getTraitExplanation = (trait: string, color: string): string => {
+    const traitExplanations: Record<string, string> = {
+      "Intuitive": "You perceive information beyond the five senses, receiving guidance directly from higher consciousness.",
+      "Empathetic": "You naturally sense and absorb the emotional states of others, making you a compassionate healing presence.",
+      "Creative": "Your energy naturally manifests new forms and ideas, bringing previously unseen concepts into reality.",
+      "Analytical": "You process energy through logical frameworks, bringing clarity and order to spiritual information.",
+      "Spiritual": "Your energy vibrates at frequencies that connect easily with higher dimensions and spiritual realms.",
+      "Healing": "You naturally channel universal life force energy in ways that restore balance and wholeness.",
+      "Visionary": "You perceive potential futures and possibilities beyond current reality constraints.",
+      "Grounded": "Your energy maintains strong earth connection while working with higher frequencies.",
+      "Passionate": "Your energy field pulses with intense life force that energizes projects and relationships.",
+      "Compassionate": "Your heart chakra emanates unconditional love energy that nurtures and supports others.",
+      "Wise": "Your energy field contains accumulated wisdom from multiple lifetimes and dimensions.",
+      "Psychic": "Your subtle energy sensors are highly developed, allowing perception beyond physical reality.",
+      "Balanced": "Your energy system maintains harmonious flow between all chakras and subtle bodies.",
+      "Focused": "Your energy can be precisely directed toward specific intentions with minimal scatter.",
+      "Expansive": "Your energy field extends widely, connecting with collective consciousness and universal mind."
+    };
+    
+    return traitExplanations[trait] || "This trait represents a unique expression of your spiritual signature.";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -168,10 +266,19 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-3 mb-6">
+                          <TabsList className="grid w-full grid-cols-4 mb-6">
                             <TabsTrigger value="analysis">Analysis</TabsTrigger>
                             <TabsTrigger value="chakras">Chakras</TabsTrigger>
                             <TabsTrigger value="guidance">Guidance</TabsTrigger>
+                            <TabsTrigger value="detailed" className="relative">
+                              Detailed
+                              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
+                                  <Crown className="h-2 w-2 text-white" />
+                                </span>
+                              </span>
+                            </TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="analysis">
@@ -304,10 +411,78 @@ export default function AuraAnalysis() {
                             <div>
                               <h3 className="font-medium mb-3">Spiritual Guidance</h3>
                               <p className="text-gray-700 whitespace-pre-line">{result.spiritualGuidance}</p>
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="detailed">
+                            <div>
+                              <div className="mb-6 relative">
+                                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-300">
+                                  Premium Feature
+                                </div>
+                                <h3 className="font-medium text-lg mb-4 text-primary">Comprehensive Aura Analysis</h3>
+                                <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
+                                  <p className="text-gray-700 whitespace-pre-line mb-4">{result.detailedAnalysis}</p>
+                                  
+                                  <h4 className="font-medium text-sm text-secondary mb-2">Aura Layers Interpretation</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-1">Etheric Layer</h5>
+                                      <p className="text-xs text-gray-600">
+                                        {getAuraLayerAnalysis("etheric", result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-1">Emotional Layer</h5>
+                                      <p className="text-xs text-gray-600">
+                                        {getAuraLayerAnalysis("emotional", result.secondaryColor || result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-1">Mental Layer</h5>
+                                      <p className="text-xs text-gray-600">
+                                        {getAuraLayerAnalysis("mental", result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-1">Spiritual Layer</h5>
+                                      <p className="text-xs text-gray-600">
+                                        {getAuraLayerAnalysis("spiritual", result.secondaryColor || result.dominantColor)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <h4 className="font-medium text-sm text-secondary mb-2">Energy Flow Analysis</h4>
+                                  <div className="p-3 bg-white rounded-lg shadow-sm mb-4">
+                                    <p className="text-sm text-gray-700">
+                                      Your energy level is <span className="font-medium">{getEnergyLevelText(result.energyLevel)}</span>. 
+                                      {getEnergyAdvice(result.energyLevel, result.dominantColor)}
+                                    </p>
+                                  </div>
+                                  
+                                  <h4 className="font-medium text-sm text-secondary mb-2">Personality Integration</h4>
+                                  <div className="p-3 bg-white rounded-lg shadow-sm">
+                                    <p className="text-sm text-gray-700 mb-2">
+                                      Your dominant traits combine to form a unique spiritual signature:
+                                    </p>
+                                    <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                      {result.personalityTraits.map((trait, index) => (
+                                        <li key={index}><span className="font-medium">{trait}</span>: {getTraitExplanation(trait, result.dominantColor)}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
                               
-                              <div className="mt-6 pt-4 border-t border-gray-200">
-                                <h3 className="font-medium mb-3">Detailed Analysis</h3>
-                                <p className="text-gray-700 whitespace-pre-line text-sm">{result.detailedAnalysis}</p>
+                              <div className="flex justify-center">
+                                <Button 
+                                  variant="default" 
+                                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                                  onClick={handlePremiumUpgrade}
+                                >
+                                  <Crown className="w-4 h-4 mr-2" />
+                                  Unlock Premium Aura Analysis
+                                </Button>
                               </div>
                             </div>
                           </TabsContent>
