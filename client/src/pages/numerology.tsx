@@ -4,16 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
+import { PremiumFeature } from "@/components/premium/premium-feature";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
-import { Loader2 } from "lucide-react";
+import { Loader2, Crown, Sparkles } from "lucide-react";
 
 const numerologySchema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
@@ -25,9 +27,14 @@ type NumerologyFormValues = z.infer<typeof numerologySchema>;
 export default function Numerology() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { showPremiumModal } = usePremium();
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<NumerologyResult | null>(null);
   const [activeTab, setActiveTab] = useState("lifePath");
+  
+  const handlePremiumUpgrade = () => {
+    showPremiumModal("numerology");
+  };
 
   const form = useForm<NumerologyFormValues>({
     resolver: zodResolver(numerologySchema),
@@ -396,6 +403,41 @@ export default function Numerology() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Premium Features Section */}
+        <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-10">
+                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Numerology Reading Options</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Choose the level of numerological insight that best supports your spiritual journey.
+                </p>
+              </div>
+              
+              <PremiumFeature
+                title="Numerology Reading"
+                description="Discover the hidden meanings in your numbers"
+                basicFeatures={[
+                  "Life Path Number calculation",
+                  "Destiny Number calculation",
+                  "Soul Urge Number calculation",
+                  "Personality Number calculation",
+                  "Basic interpretation of your core numbers"
+                ]}
+                premiumFeatures={[
+                  "Comprehensive analysis of all 11 numerology chart elements",
+                  "Personal Year, Month and Day forecasts",
+                  "Compatibility analysis for relationships and partnerships",
+                  "Career and financial opportunity predictions",
+                  "Custom numerology-based meditation practices"
+                ]}
+                ctaText="Unlock Premium Numerology Reading"
+                onUpgrade={handlePremiumUpgrade}
+              />
             </div>
           </div>
         </section>
