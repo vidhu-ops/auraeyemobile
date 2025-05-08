@@ -25,14 +25,14 @@ export default function HomePage() {
           ]} 
         />
         
-        <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <div className="container mx-auto px-4 py-16 md:py-23 relative z-10">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0">
-              <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight text-shadow">
-                Discover Your <span className="text-accent">Aura</span> <br />
-                Embrace Your <span className="text-secondary-light">Energy</span>
+              <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight text-black">
+                Discover Your <span className="text-black">Aura</span> <br />
+                Embrace Your <span className="text-secondary-dark">Energy</span>
               </h1>
-              <p className="text-lg md:text-xl opacity-90 mb-8 max-w-lg">
+              <p className="text-black md:text-xl opacity-90 mb-8 max-w-lg">
                 Unlock the power of your personal energy field with AI-powered aura readings, personalized spiritual guidance, and healing practices.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -41,7 +41,7 @@ export default function HomePage() {
                     <Camera className="mr-2 h-5 w-5" /> Scan Your Aura
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-primary-dark">
+                <Button asChild size="lg" variant="outline" className="border-2 border-white text-black hover:bg-white hover:text-primary-dark">
                   <Link href="#services">
                     <BookOpen className="mr-2 h-5 w-5" /> Explore Services
                   </Link>
