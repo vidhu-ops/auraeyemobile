@@ -15,6 +15,7 @@ import Journal from "@/pages/journal";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import { AuthProvider } from "@/hooks/use-auth";
+import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
 
 function Router() {
@@ -39,10 +40,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <PremiumProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </PremiumProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
