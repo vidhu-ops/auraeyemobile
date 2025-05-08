@@ -1,23 +1,30 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import { Card, CardContent } from "@/components/ui/card";
+import { PremiumFeature } from "@/components/premium/premium-feature";
 import { analyzeAuraImage, AuraAnalysisResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Loader2 } from "lucide-react";
+import { Loader2, Crown, Sparkles } from "lucide-react";
 
 export default function AuraAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { showPremiumModal } = usePremium();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AuraAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("analysis");
+  
+  const handlePremiumUpgrade = () => {
+    showPremiumModal("aura");
+  };
 
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
