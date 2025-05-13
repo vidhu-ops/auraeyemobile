@@ -17,10 +17,84 @@ import {
   Book
 } from "lucide-react";
 
+// Type for journal entry
+interface JournalEntry {
+  id: number;
+  date: string;
+  energyLevel: number;
+  reflections: string;
+  gratitude1: string;
+  gratitude2: string;
+  gratitude3: string;
+}
+
+// Type for journal stats
+interface JournalStats {
+  totalEntries: number;
+  currentStreak: number;
+  longestStreak: number;
+  averageEnergy: number;
+}
+
+// Type for day with entry info
+interface DayWithEntry {
+  date: Date;
+  label: string;
+  hasEntry: boolean;
+  energyLevel?: number;
+}
+
 export default function Journal() {
   const { user } = useAuth();
   const [date, setDate] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState("new");
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMoodChart, setShowMoodChart] = useState(false);
+  
+  // Mock journal stats - in a real app this would come from the backend
+  const journalStats: JournalStats = {
+    totalEntries: 28,
+    currentStreak: 5,
+    longestStreak: 14,
+    averageEnergy: 3.8
+  };
+  
+  // Calculate the current week days
+  const getCurrentWeekDays = (): DayWithEntry[] => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Start with Monday
+    
+    // Mock entry dates - in real app this would come from the backend
+    const entryDates = [0, 1, 2, 4]; // Days with entries (0=Mon, 1=Tue, etc)
+    
+    return Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      
+      return {
+        date,
+        label: "MTWTFSS"[i],
+        hasEntry: entryDates.includes(i),
+        energyLevel: entryDates.includes(i) ? Math.floor(Math.random() * 5) + 1 : undefined
+      };
+    });
+  };
+  
+  const weekDays = getCurrentWeekDays();
+  const currentDayIndex = new Date().getDay() - 1;
+  
+  // Get motivational message based on streak
+  const getStreakMessage = (streak: number): string => {
+    if (streak >= 30) return "Amazing dedication! 🏆 30+ day streak!";
+    if (streak >= 21) return "You're building a powerful habit! ✨";
+    if (streak >= 14) return "Two weeks strong! Keep the momentum!";
+    if (streak >= 7) return "Full week streak! You're on fire! 🔥";
+    if (streak >= 3) return "Three days in a row! Keep going!";
+    return "";
+  };
   
   // Format date for display
   const formatDate = (date: Date) => {
@@ -30,6 +104,46 @@ export default function Journal() {
       month: 'long',
       day: 'numeric'
     });
+  };
+  
+  // Helper function to generate energy data for the chart
+  const getEnergyData = () => {
+    return [
+      { day: "Mon", level: 3 },
+      { day: "Tue", level: 4 },
+      { day: "Wed", level: 2 },
+      { day: "Thu", level: 5 },
+      { day: "Fri", level: 4 },
+      { day: "Sat", level: 3 },
+      { day: "Sun", level: 4 }
+    ];
+  };
+  
+  // Helper function to get energy bar color based on level
+  const getEnergyBarColor = (level: number) => {
+    switch (level) {
+      case 1: return "bg-red-200";
+      case 2: return "bg-orange-200";
+      case 3: return "bg-yellow-200";
+      case 4: return "bg-green-200";
+      case 5: return "bg-green-400";
+      default: return "bg-gray-200";
+    }
+  };
+  
+  // Helper function to get mood grid cell color
+  const getMoodGridCellColor = (dayIndex: number, type: string) => {
+    // Generate a deterministic but seemingly random pattern
+    const hasEntry = (dayIndex + (type === "energy" ? 2 : type === "gratitude" ? 3 : 1)) % 4 !== 0;
+    
+    if (!hasEntry) return "bg-gray-100";
+    
+    const value = ((dayIndex * 3 + (type === "energy" ? 1 : type === "gratitude" ? 2 : 3)) % 5) + 1;
+    
+    if (value <= 1) return "bg-red-100";
+    if (value <= 2) return "bg-amber-200";
+    if (value <= 4) return "bg-green-200";
+    return "bg-green-400";
   };
 
   return (
@@ -89,34 +203,56 @@ export default function Journal() {
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Total Entries</span>
-                          <span className="font-medium">28</span>
+                          <span className="font-medium">{journalStats.totalEntries}</span>
                         </div>
-                        <div className="flex justify-between items-center">
+                        
+                        <div className="flex justify-between items-center group">
                           <span className="text-sm">Current Streak</span>
-                          <span className="font-medium">5 days</span>
+                          <div className="flex items-center">
+                            <div className="relative">
+                              <div className="flex items-center space-x-1">
+                                <span className="font-medium">{journalStats.currentStreak} days</span>
+                                {journalStats.currentStreak > 0 && (
+                                  <Sparkles className="h-4 w-4 text-amber-500" />
+                                )}
+                              </div>
+                              
+                              {journalStats.currentStreak >= 3 && (
+                                <div className="absolute -top-8 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-amber-50 text-amber-800 text-xs rounded px-2 py-1 border border-amber-200 whitespace-nowrap">
+                                  {getStreakMessage(journalStats.currentStreak)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
+                        
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Longest Streak</span>
-                          <span className="font-medium">14 days</span>
+                          <span className="font-medium">{journalStats.longestStreak} days</span>
                         </div>
+                        
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Avg. Energy Level</span>
-                          <span className="font-medium">3.8/5</span>
+                          <span className="font-medium">{journalStats.averageEnergy.toFixed(1)}/5</span>
                         </div>
                       </div>
                       
                       <div className="mt-6">
-                        <h4 className="text-sm font-medium mb-2">Weekly Activity</h4>
+                        <h4 className="text-sm font-medium mb-2">Weekly Journal Streak</h4>
                         <div className="flex justify-between gap-1">
-                          {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
+                          {weekDays.map((day, i) => (
                             <div key={i} className="flex flex-col items-center">
-                              <span className="text-xs text-gray-500 mb-1">{day}</span>
+                              <span className="text-xs text-gray-500 mb-1">{day.label}</span>
                               <div 
-                                className={`w-6 h-6 rounded-sm flex items-center justify-center text-xs ${
-                                  i < 5 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
+                                  day.hasEntry 
+                                    ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-sm' 
+                                    : i === currentDayIndex 
+                                      ? 'bg-amber-100 border border-amber-200 text-amber-600 animate-pulse' 
+                                      : 'bg-gray-100 text-gray-400'
                                 }`}
                               >
-                                {i < 5 ? <Star className="w-3 h-3" /> : ""}
+                                {day.hasEntry ? <Star className="w-4 h-4" /> : day.date.getDate()}
                               </div>
                             </div>
                           ))}
@@ -127,30 +263,120 @@ export default function Journal() {
                   
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <BarChart className="h-5 w-5 mr-2 text-primary" />
-                        <span>Energy Trends</span>
-                      </CardTitle>
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="flex items-center">
+                          <BarChart className="h-5 w-5 mr-2 text-primary" />
+                          <span>Energy & Mood Trends</span>
+                        </CardTitle>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setShowMoodChart(!showMoodChart)}
+                        >
+                          {showMoodChart ? "Show Energy" : "Show Mood Chart"}
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="h-32 flex items-end gap-2">
-                        {[65, 70, 50, 80, 75, 90, 85].map((value, i) => (
-                          <div 
-                            key={i} 
-                            className="flex-1 bg-gradient-to-t from-primary to-primary-light rounded-t" 
-                            style={{ height: `${value}%` }}
-                          ></div>
-                        ))}
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>Mon</span>
-                        <span>Tue</span>
-                        <span>Wed</span>
-                        <span>Thu</span>
-                        <span>Fri</span>
-                        <span>Sat</span>
-                        <span>Sun</span>
-                      </div>
+                      {!showMoodChart ? (
+                        <>
+                          <div className="h-32 flex items-end gap-2">
+                            {getEnergyData().map((entry, i) => (
+                              <div key={i} className="relative flex-1 flex items-end">
+                                <div 
+                                  className={`w-full ${getEnergyBarColor(entry.level)} rounded-t transition-all duration-300 ease-out`} 
+                                  style={{ height: `${entry.level * 20}%` }}
+                                >
+                                  <div className="absolute -top-6 w-full text-center">
+                                    <span className="text-[10px] text-gray-500">{entry.level}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            {getEnergyData().map((entry, i) => (
+                              <span key={i}>{entry.day}</span>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="pt-2">
+                            <div className="text-xs text-center mb-1 text-gray-500">Last 14 Days Mood Tracking</div>
+                            <div className="border border-gray-100 rounded-md p-3 bg-gray-50">
+                              <div className="flex items-center mb-3">
+                                <div className="w-1/4 text-xs text-gray-500">Energy</div>
+                                <div className="flex-1">
+                                  <div className="grid grid-cols-14 gap-1">
+                                    {Array.from({ length: 14 }).map((_, i) => (
+                                      <div 
+                                        key={i} 
+                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "energy")}`}
+                                      ></div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center mb-3">
+                                <div className="w-1/4 text-xs text-gray-500">Gratitude</div>
+                                <div className="flex-1">
+                                  <div className="grid grid-cols-14 gap-1">
+                                    {Array.from({ length: 14 }).map((_, i) => (
+                                      <div 
+                                        key={i} 
+                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "gratitude")}`}
+                                      ></div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center">
+                                <div className="w-1/4 text-xs text-gray-500">Reflection</div>
+                                <div className="flex-1">
+                                  <div className="grid grid-cols-14 gap-1">
+                                    {Array.from({ length: 14 }).map((_, i) => (
+                                      <div 
+                                        key={i} 
+                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "reflection")}`}
+                                      ></div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between text-xs text-gray-500 px-3">
+                            <div>14 days ago</div>
+                            <div>Today</div>
+                          </div>
+                          
+                          <div className="pt-2">
+                            <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
+                              <div className="flex items-center">
+                                <div className="w-3 h-3 bg-red-100 mr-1"></div>
+                                <span>None</span>
+                              </div>
+                              <div className="flex items-center">
+                                <div className="w-3 h-3 bg-amber-200 mr-1"></div>
+                                <span>Low</span>
+                              </div>
+                              <div className="flex items-center">
+                                <div className="w-3 h-3 bg-green-200 mr-1"></div>
+                                <span>Medium</span>
+                              </div>
+                              <div className="flex items-center">
+                                <div className="w-3 h-3 bg-green-400 mr-1"></div>
+                                <span>High</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
@@ -181,14 +407,50 @@ export default function Journal() {
                         
                         <TabsContent value="previous">
                           <div className="space-y-6">
+                            {/* Controls for viewing entries */}
+                            <div className="flex justify-between items-center pb-2 border-b">
+                              <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                                Previous
+                              </Button>
+                              <div className="text-sm">
+                                Showing <span className="font-medium">1</span> of <span className="font-medium">{journalStats.totalEntries}</span> entries
+                              </div>
+                              <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
+                                Next
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                              </Button>
+                            </div>
+                            
                             <div className="border rounded-lg p-4">
                               <div className="flex justify-between items-center mb-2">
                                 <h3 className="font-medium">Yesterday's Entry</h3>
-                                <span className="text-xs text-gray-500">May 14, 2023</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-gray-500">May 14, 2023</span>
+                                  <div className="flex items-center space-x-1">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                      <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+                                      </svg>
+                                      <span className="sr-only">Share on Facebook</span>
+                                    </Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                      <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153.509.5.902 1.105 1.153 1.772.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 01-1.153 1.772c-.5.508-1.105.902-1.772 1.153-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 01-1.772-1.153 4.904 4.904 0 01-1.153-1.772c-.247-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428.247-.67.636-1.276 1.153-1.772a4.91 4.91 0 011.772-1.153c.637-.247 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2z"/>
+                                      </svg>
+                                      <span className="sr-only">Share on Instagram</span>
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                               
                               <div className="mb-4">
-                                <p className="text-sm text-gray-500 mb-1">Energy Level: 4/5</p>
+                                <div className="flex justify-between">
+                                  <p className="text-sm text-gray-500 mb-1">Energy Level: 4/5</p>
+                                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                                    Share as Today's Vibe
+                                  </Button>
+                                </div>
                                 <div className="flex space-x-1">
                                   <div className="w-8 h-3 bg-primary rounded-full"></div>
                                   <div className="w-8 h-3 bg-primary rounded-full"></div>
