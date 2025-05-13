@@ -25,10 +25,65 @@ export default function AuraAnalysis() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
   
+  // Numerology states
+  const [numerologyName, setNumerologyName] = useState("");
+  const [numerologyBirthDate, setNumerologyBirthDate] = useState("");
+  const [numerologyResult, setNumerologyResult] = useState<any>(null);
+  const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
+  
   const handlePremiumUpgrade = () => {
     showPremiumModal("aura");
   };
 
+  // Function to calculate numerology based on name and birth date
+  const calculateNumerology = async (name: string, birthDate: string) => {
+    if (!name || !birthDate) {
+      toast({
+        title: "Missing information",
+        description: "Please provide both your full name and birth date",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsCalculatingNumerology(true);
+    
+    try {
+      const response = await fetch('/api/calculate-numerology', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, birthDate })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to calculate numerology profile');
+      }
+      
+      const data = await response.json();
+      setNumerologyResult(data);
+      
+      if (activeTab !== "numerology") {
+        setActiveTab("numerology");
+      }
+      
+      toast({
+        title: "Numerology Calculated",
+        description: `Your Life Path Number is ${data.lifePathNumber}`,
+      });
+      
+    } catch (error) {
+      toast({
+        title: "Calculation Failed",
+        description: error instanceof Error ? error.message : "Failed to calculate numerology",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCalculatingNumerology(false);
+    }
+  };
+  
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
     setResult(null);
@@ -357,10 +412,19 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-4 mb-6">
+                          <TabsList className="grid w-full grid-cols-5 mb-6">
                             <TabsTrigger value="analysis">Analysis</TabsTrigger>
                             <TabsTrigger value="chakras">Chakras</TabsTrigger>
                             <TabsTrigger value="guidance">Guidance</TabsTrigger>
+                            <TabsTrigger value="numerology" className="relative">
+                              Numerology
+                              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
+                                  <span className="text-[10px] text-white font-bold">9</span>
+                                </span>
+                              </span>
+                            </TabsTrigger>
                             <TabsTrigger value="detailed" className="relative">
                               Detailed
                               <span className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -371,6 +435,141 @@ export default function AuraAnalysis() {
                               </span>
                             </TabsTrigger>
                           </TabsList>
+                          
+                          <TabsContent value="numerology">
+                            <div className="space-y-6">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="font-medium text-lg">Numerology Profile</h3>
+                                  <p className="text-sm text-gray-500 mt-1">
+                                    Discover how your birth date and name influence your spiritual journey
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {!numerologyResult ? (
+                                <div className="space-y-6 bg-gray-50 rounded-lg p-6">
+                                  <div className="text-center">
+                                    <h4 className="font-medium">Enter Your Details</h4>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                      We'll calculate your numerology profile based on your name and birth date
+                                    </p>
+                                  </div>
+                                  
+                                  <div className="space-y-4">
+                                    <div className="space-y-2">
+                                      <label htmlFor="fullName" className="text-sm font-medium">
+                                        Full Name
+                                      </label>
+                                      <input
+                                        id="fullName"
+                                        type="text"
+                                        placeholder="Enter your full name"
+                                        className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                                        value={numerologyName}
+                                        onChange={(e) => setNumerologyName(e.target.value)}
+                                      />
+                                      <p className="text-xs text-gray-500">Use your full birth name for the most accurate results</p>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <label htmlFor="birthDate" className="text-sm font-medium">
+                                        Birth Date
+                                      </label>
+                                      <input
+                                        id="birthDate"
+                                        type="date"
+                                        className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                                        value={numerologyBirthDate}
+                                        onChange={(e) => setNumerologyBirthDate(e.target.value)}
+                                      />
+                                    </div>
+                                    
+                                    <Button 
+                                      className="w-full"
+                                      onClick={() => calculateNumerology(numerologyName, numerologyBirthDate)}
+                                      disabled={isCalculatingNumerology}
+                                    >
+                                      {isCalculatingNumerology ? (
+                                        <>
+                                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                          Calculating...
+                                        </>
+                                      ) : "Calculate Numerology Profile"}
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-6">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                                      <div className="text-3xl font-bold text-purple-800">{numerologyResult.lifePathNumber}</div>
+                                      <div className="text-sm text-gray-600 mt-1">Life Path Number</div>
+                                    </div>
+                                    
+                                    <div className="bg-indigo-50 rounded-lg p-4 text-center border border-indigo-100">
+                                      <div className="text-3xl font-bold text-indigo-800">{numerologyResult.destinyNumber}</div>
+                                      <div className="text-sm text-gray-600 mt-1">Destiny Number</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                                      <div className="text-3xl font-bold text-blue-800">{numerologyResult.soulUrgeNumber}</div>
+                                      <div className="text-sm text-gray-600 mt-1">Soul Urge Number</div>
+                                    </div>
+                                    
+                                    <div className="bg-sky-50 rounded-lg p-4 text-center border border-sky-100">
+                                      <div className="text-3xl font-bold text-sky-800">{numerologyResult.personalityNumber}</div>
+                                      <div className="text-sm text-gray-600 mt-1">Personality Number</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
+                                    <h4 className="font-medium mb-2">Your Numerology Interpretation</h4>
+                                    <p className="text-sm text-gray-600">
+                                      {numerologyResult.interpretation}
+                                    </p>
+                                  </div>
+                                  
+                                  <div className="mt-4 flex items-center justify-between">
+                                    <p className="text-sm text-gray-500">
+                                      Based on: {numerologyName}, {new Date(numerologyBirthDate).toLocaleDateString()}
+                                    </p>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => {
+                                        setNumerologyResult(null);
+                                        setNumerologyName("");
+                                        setNumerologyBirthDate("");
+                                      }}
+                                    >
+                                      Calculate New Profile
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              <div className="flex items-center justify-between pt-4 border-t">
+                                <div className="flex items-center">
+                                  <div className="text-xs text-gray-500">
+                                    <span className="font-medium">Tip:</span> Combine your aura colors with your numerology for deeper spiritual insights
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={() => {
+                                    if (result) setActiveTab("analysis");
+                                  }}
+                                >
+                                  View Aura Analysis
+                                </Button>
+                              </div>
+                            </div>
+                          </TabsContent>
                           
                           <TabsContent value="analysis">
                             <div className="space-y-6">
@@ -697,6 +896,123 @@ export default function AuraAnalysis() {
             </div>
           </div>
         </section>
+
+        {/* Healers Connection Section */}
+        {result && (
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-5xl mx-auto">
+                <div className="relative mb-10">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-white px-4 text-sm text-gray-500">CONNECT WITH HEALERS</span>
+                  </div>
+                </div>
+                
+                <div className="mb-8">
+                  <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4 text-center">Recommended Healers</h2>
+                  <p className="text-muted-foreground max-w-2xl mx-auto text-center">
+                    Based on your aura reading, these certified healers specialize in working with your energy signature and can help guide your spiritual journey.
+                  </p>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Healer 1 */}
+                  <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
+                    <div className="h-40 bg-gradient-to-br from-purple-200 to-indigo-100 relative">
+                      <div className="absolute inset-0 bg-center bg-cover opacity-90" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=776&q=80')" }}></div>
+                      <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
+                        <span className="font-medium">Specializes in:</span> Energy Balancing
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-medium text-lg">Sarah Johnson</h3>
+                      <p className="text-sm text-gray-600 mb-2">Reiki Master & Spiritual Coach</p>
+                      <div className="flex items-center text-amber-500 mb-4">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <span className="ml-1 text-xs">(48 reviews)</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">$85 / session</span>
+                        <Button size="sm" variant="outline">View Profile</Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Healer 2 */}
+                  <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
+                    <div className="h-40 bg-gradient-to-br from-blue-200 to-indigo-100 relative">
+                      <div className="absolute inset-0 bg-center bg-cover opacity-90" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541576980233-97577392db9a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80')" }}></div>
+                      <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
+                        <span className="font-medium">Specializes in:</span> Chakra Alignment
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-medium text-lg">Michael Chen</h3>
+                      <p className="text-sm text-gray-600 mb-2">Energy Healer & Meditation Guide</p>
+                      <div className="flex items-center text-amber-500 mb-4">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <span className="ml-1 text-xs">(36 reviews)</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">$75 / session</span>
+                        <Button size="sm" variant="outline">View Profile</Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Healer 3 */}
+                  <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
+                    <div className="h-40 bg-gradient-to-br from-amber-200 to-orange-100 relative">
+                      <div className="absolute inset-0 bg-center bg-cover opacity-90" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=922&q=80')" }}></div>
+                      <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
+                        <span className="font-medium">Specializes in:</span> Aura Cleansing
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-medium text-lg">Jessica Rivera</h3>
+                      <p className="text-sm text-gray-600 mb-2">Spiritual Mentor & Intuitive Guide</p>
+                      <div className="flex items-center text-amber-500 mb-4">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <span className="ml-1 text-xs">(52 reviews)</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">$95 / session</span>
+                        <Button size="sm" variant="outline">View Profile</Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-8 text-center">
+                  <Button>
+                    View All Healers
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    All healers on our platform are certified and have undergone background checks
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
       
       <Footer />
