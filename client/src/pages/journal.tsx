@@ -14,8 +14,13 @@ import {
   BarChart, 
   Star,
   Sparkles,
-  Book
+  Book,
+  Heart,
+  Activity
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { usePremium } from "@/hooks/use-premium";
 
 // Type for journal entry
 interface JournalEntry {
@@ -46,6 +51,7 @@ interface DayWithEntry {
 
 export default function Journal() {
   const { user } = useAuth();
+  const { showPremiumModal } = usePremium();
   const [date, setDate] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState("new");
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -537,14 +543,100 @@ export default function Journal() {
                         
                         <TabsContent value="insights">
                           <div className="space-y-6">
-                            <div className="p-4 border rounded-lg bg-primary/5">
-                              <div className="flex items-start">
-                                <Sparkles className="h-5 w-5 text-primary mt-1 mr-3 flex-shrink-0" />
-                                <div>
-                                  <h3 className="font-medium mb-1">Energy Pattern Observed</h3>
-                                  <p className="text-sm text-gray-600">
-                                    Your energy levels have been consistently higher in the mornings, especially after meditation. Consider scheduling important spiritual practices earlier in the day.
+                            <Alert className="bg-accent/10 border-accent">
+                              <Book className="h-4 w-4 text-accent" />
+                              <AlertTitle>Journal Insights</AlertTitle>
+                              <AlertDescription>
+                                Your insights have been generated based on {journalStats.totalEntries} journal entries.
+                                Continue journaling daily to get more personalized insights.
+                              </AlertDescription>
+                            </Alert>
+                            
+                            <div className="space-y-4">
+                              {/* Energy Patterns */}
+                              <div className="border rounded-md p-4">
+                                <h3 className="text-sm font-medium flex items-center mb-3">
+                                  <Activity className="h-4 w-4 mr-2 text-primary" />
+                                  Energy Flow Patterns
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-3">
+                                  Your energy levels tend to be highest on <span className="font-medium">Thursdays</span> and lowest on <span className="font-medium">Wednesdays</span>. 
+                                  Plan your most important spiritual practices for high-energy days.
+                                </p>
+                                
+                                <div className="bg-gray-50 p-3 rounded-md">
+                                  <h4 className="text-xs font-medium mb-2">Recommended Actions:</h4>
+                                  <ul className="text-xs text-gray-600 space-y-1">
+                                    <li className="flex items-start">
+                                      <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
+                                      Try meditation in the morning on your low-energy days to boost vitality
+                                    </li>
+                                    <li className="flex items-start">
+                                      <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
+                                      Schedule deep spiritual work on Thursdays when your energy is at its peak
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                              
+                              {/* Gratitude Themes */}
+                              <div className="border rounded-md p-4">
+                                <h3 className="text-sm font-medium flex items-center mb-3">
+                                  <Heart className="h-4 w-4 mr-2 text-rose-500" />
+                                  Gratitude Themes
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-3">
+                                  Your gratitude entries frequently mention <span className="font-medium">nature</span> and <span className="font-medium">relationships</span>. 
+                                  These are key sources of spiritual strength for you.
+                                </p>
+                                
+                                <div className="flex mb-3 gap-2">
+                                  <div className="bg-rose-100 text-rose-800 text-xs rounded px-2 py-1">nature</div>
+                                  <div className="bg-amber-100 text-amber-800 text-xs rounded px-2 py-1">relationships</div>
+                                  <div className="bg-emerald-100 text-emerald-800 text-xs rounded px-2 py-1">meditation</div>
+                                  <div className="bg-sky-100 text-sky-800 text-xs rounded px-2 py-1">food</div>
+                                </div>
+                                
+                                <div className="bg-gray-50 p-3 rounded-md">
+                                  <h4 className="text-xs font-medium mb-2">Suggested Focus:</h4>
+                                  <p className="text-xs text-gray-600">
+                                    Consider spending more time in natural settings and deepening your meaningful connections.
+                                    These appear to have the most positive impact on your spiritual wellbeing.
                                   </p>
+                                </div>
+                              </div>
+                              
+                              {/* Aura Integration - Premium Feature */}
+                              <div className="border rounded-md p-4 bg-gradient-to-r from-violet-50 to-indigo-50">
+                                <div className="flex justify-between items-start mb-3">
+                                  <h3 className="text-sm font-medium flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-violet-500"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 4-10 4 10"/><path d="M12 22v-4"/></svg>
+                                    Aura-Journal Connection
+                                    <Badge variant="secondary" className="ml-2 bg-primary/10 hover:bg-primary/20">
+                                      Premium
+                                    </Badge>
+                                  </h3>
+                                  <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => showPremiumModal("general")}>
+                                    Unlock
+                                  </Button>
+                                </div>
+                                
+                                <div className="filter blur-[2px] pointer-events-none">
+                                  <p className="text-sm text-gray-600 mb-3">
+                                    Your journal entries reveal strong correlations with your aura readings. 
+                                    On days with high energy, your aura shows more vibrant blues and purples.
+                                  </p>
+                                  
+                                  <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="bg-indigo-100 text-indigo-800 text-xs rounded p-2 flex items-center justify-center">
+                                      <div className="w-3 h-3 rounded-full bg-indigo-400 mr-1.5"></div>
+                                      Indigo strength: 78%
+                                    </div>
+                                    <div className="bg-violet-100 text-violet-800 text-xs rounded p-2 flex items-center justify-center">
+                                      <div className="w-3 h-3 rounded-full bg-violet-400 mr-1.5"></div>
+                                      Purple stability: 65%
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -553,7 +645,34 @@ export default function Journal() {
                               <div className="flex items-start">
                                 <Sparkles className="h-5 w-5 text-secondary mt-1 mr-3 flex-shrink-0" />
                                 <div>
-                                  <h3 className="font-medium mb-1">Recurring Theme</h3>
+                                  <h3 className="font-medium mb-1">Monthly Progress Summary</h3>
+                                  <p className="text-sm text-gray-600 mb-4">
+                                    You've made significant progress in your spiritual journey this month. Your energy levels have been more consistent, and your gratitude practice is strengthening your resilience.
+                                  </p>
+                                  
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs text-gray-500">Consistency</span>
+                                    <span className="text-xs font-medium">75%</span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "75%" }}></div>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs text-gray-500">Energy Growth</span>
+                                    <span className="text-xs font-medium">62%</span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "62%" }}></div>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs text-gray-500">Mindfulness</span>
+                                    <span className="text-xs font-medium">89%</span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "89%" }}></div>
+                                  </div>
                                   <p className="text-sm text-gray-600">
                                     In the past month, you've mentioned "intuitive guidance" in 78% of your entries. Your intuitive abilities appear to be strengthening - consider developing this gift further.
                                   </p>
