@@ -184,8 +184,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Numerology calculation endpoint
-  app.post("/api/numerology", async (req, res) => {
+  // Numerology calculation endpoints
+  app.post("/api/calculate-numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;
       
