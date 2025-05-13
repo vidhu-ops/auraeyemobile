@@ -57,6 +57,7 @@ export default function Journal() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMoodChart, setShowMoodChart] = useState(false);
+  const [showAllEntries, setShowAllEntries] = useState(false);
   
   // Mock journal stats - in a real app this would come from the backend
   const journalStats: JournalStats = {
@@ -156,278 +157,380 @@ export default function Journal() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow">
-        {/* Header section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
-          <AuraGlow 
-            colors={[
-              { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
-              { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
-            ]} 
-          />
+      <div className="flex-1 container py-8">
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">Spiritual Journal</h1>
+          <p className="text-lg text-gray-700 mb-8">
+            Track your spiritual journey, energy levels, and insights with your daily journal.
+          </p>
           
-          <div className="container mx-auto px-4 relative z-10">
-            <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4 text-center">Spiritual Growth Journal</h1>
-            <p className="text-white/80 max-w-2xl mx-auto text-center">
-              Track your spiritual journey, record insights, and monitor your energy shifts with our guided journaling tools.
-            </p>
-          </div>
-        </section>
-        
-        {/* Journal section */}
-        <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Sidebar */}
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <CalendarIcon className="h-5 w-5 mr-2 text-primary" />
-                        <span>Select Date</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(newDate) => newDate && setDate(newDate)}
-                        className="rounded-md border"
-                      />
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <BookOpen className="h-5 w-5 mr-2 text-primary" />
-                        <span>Journal Stats</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Total Entries</span>
-                          <span className="font-medium">{journalStats.totalEntries}</span>
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Sidebar */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <CalendarIcon className="h-5 w-5 mr-2 text-primary" />
+                    <span>Select Date</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(newDate) => {
+                        if (newDate) {
+                          setDate(newDate);
+                          
+                          // Find existing entries for this date (in a real app, this would query the DB)
+                          const hasEntryForDate = weekDays.some(day => 
+                            day.hasEntry && 
+                            day.date.toDateString() === newDate.toDateString()
+                          );
+                          
+                          // If an entry exists for this date, show it
+                          if (hasEntryForDate) {
+                            setActiveTab("previous");
+                          } else if (newDate.toDateString() === new Date().toDateString()) {
+                            // If it's today and no entry, go to new entry form
+                            setActiveTab("new");
+                          }
+                        }
+                      }}
+                      modifiers={{
+                        // Highlight days with entries (would be dynamic in a real app)
+                        hasEntry: weekDays.filter(day => day.hasEntry).map(day => day.date)
+                      }}
+                      modifiersClassNames={{
+                        hasEntry: "bg-primary/20 font-medium text-primary"
+                      }}
+                      className="rounded-md border"
+                    />
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 rounded-full bg-primary/20 mr-1.5"></div>
+                        <span>Has Journal Entry</span>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          setDate(new Date());
+                          setActiveTab("new");
+                        }}
+                      >
+                        Add Today's Entry
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BookOpen className="h-5 w-5 mr-2 text-primary" />
+                    <span>Journal Stats</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-5">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-primary/5 rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-primary">{journalStats.totalEntries}</div>
+                        <div className="text-xs text-gray-500 mt-1">Total Entries</div>
+                      </div>
+                      
+                      <div className="relative group bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3 text-center border border-amber-100">
+                        <div className="text-2xl font-bold text-amber-500 flex items-center justify-center">
+                          {journalStats.currentStreak}
+                          {journalStats.currentStreak > 0 && (
+                            <Sparkles className="h-4 w-4 ml-1" />
+                          )}
                         </div>
+                        <div className="text-xs text-gray-500 mt-1">Day Streak</div>
                         
-                        <div className="flex justify-between items-center group">
-                          <span className="text-sm">Current Streak</span>
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="flex items-center space-x-1">
-                                <span className="font-medium">{journalStats.currentStreak} days</span>
-                                {journalStats.currentStreak > 0 && (
-                                  <Sparkles className="h-4 w-4 text-amber-500" />
-                                )}
-                              </div>
-                              
-                              {journalStats.currentStreak >= 3 && (
-                                <div className="absolute -top-8 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-amber-50 text-amber-800 text-xs rounded px-2 py-1 border border-amber-200 whitespace-nowrap">
-                                  {getStreakMessage(journalStats.currentStreak)}
-                                </div>
-                              )}
-                            </div>
+                        {journalStats.currentStreak >= 3 && (
+                          <div className="absolute -bottom-10 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-amber-50 text-amber-800 text-xs rounded-md px-2 py-1 border border-amber-200 whitespace-nowrap z-10">
+                            {getStreakMessage(journalStats.currentStreak)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-secondary/5 rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-secondary">{journalStats.longestStreak}</div>
+                        <div className="text-xs text-gray-500 mt-1">Longest Streak</div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 text-center border border-emerald-100">
+                        <div className="text-2xl font-bold text-emerald-500">{journalStats.averageEnergy.toFixed(1)}</div>
+                        <div className="text-xs text-gray-500 mt-1">Avg. Energy (of 5)</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <h4 className="text-sm font-medium mb-2">Weekly Journal Streak</h4>
+                    <div className="flex justify-between gap-1">
+                      {weekDays.map((day, i) => (
+                        <div key={i} className="flex flex-col items-center">
+                          <span className="text-xs text-gray-500 mb-1">{day.label}</span>
+                          <div 
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
+                              day.hasEntry 
+                                ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-sm' 
+                                : i === currentDayIndex 
+                                  ? 'bg-amber-100 border border-amber-200 text-amber-600 animate-pulse' 
+                                  : 'bg-gray-100 text-gray-400'
+                            }`}
+                          >
+                            {day.hasEntry ? <Star className="w-4 h-4" /> : day.date.getDate()}
                           </div>
                         </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Longest Streak</span>
-                          <span className="font-medium">{journalStats.longestStreak} days</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Avg. Energy Level</span>
-                          <span className="font-medium">{journalStats.averageEnergy.toFixed(1)}/5</span>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="flex items-center">
+                      <BarChart className="h-5 w-5 mr-2 text-primary" />
+                      <span>Energy & Mood Trends</span>
+                    </CardTitle>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => setShowMoodChart(!showMoodChart)}
+                    >
+                      {showMoodChart ? "Show Energy" : "Show Mood Chart"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {!showMoodChart ? (
+                    <>
+                      <div className="h-32 flex items-end gap-2">
+                        {getEnergyData().map((entry, i) => (
+                          <div key={i} className="relative flex-1 flex items-end">
+                            <div 
+                              className={`w-full ${getEnergyBarColor(entry.level)} rounded-t transition-all duration-300 ease-out`} 
+                              style={{ height: `${entry.level * 20}%` }}
+                            >
+                              <div className="absolute -top-6 w-full text-center">
+                                <span className="text-[10px] text-gray-500">{entry.level}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        {getEnergyData().map((entry, i) => (
+                          <span key={i}>{entry.day}</span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="pt-2">
+                        <div className="text-xs text-center mb-1 text-gray-500">Last 14 Days Mood Tracking</div>
+                        <div className="border border-gray-100 rounded-md p-3 bg-gray-50">
+                          <div className="flex items-center mb-3">
+                            <div className="w-1/4 text-xs text-gray-500">Energy</div>
+                            <div className="flex-1">
+                              <div className="grid grid-cols-14 gap-1">
+                                {Array.from({ length: 14 }).map((_, i) => (
+                                  <div 
+                                    key={i} 
+                                    className={`h-4 rounded-sm ${getMoodGridCellColor(i, "energy")}`}
+                                  ></div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center mb-3">
+                            <div className="w-1/4 text-xs text-gray-500">Gratitude</div>
+                            <div className="flex-1">
+                              <div className="grid grid-cols-14 gap-1">
+                                {Array.from({ length: 14 }).map((_, i) => (
+                                  <div 
+                                    key={i} 
+                                    className={`h-4 rounded-sm ${getMoodGridCellColor(i, "gratitude")}`}
+                                  ></div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <div className="w-1/4 text-xs text-gray-500">Reflection</div>
+                            <div className="flex-1">
+                              <div className="grid grid-cols-14 gap-1">
+                                {Array.from({ length: 14 }).map((_, i) => (
+                                  <div 
+                                    key={i} 
+                                    className={`h-4 rounded-sm ${getMoodGridCellColor(i, "reflection")}`}
+                                  ></div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="mt-6">
-                        <h4 className="text-sm font-medium mb-2">Weekly Journal Streak</h4>
-                        <div className="flex justify-between gap-1">
-                          {weekDays.map((day, i) => (
-                            <div key={i} className="flex flex-col items-center">
-                              <span className="text-xs text-gray-500 mb-1">{day.label}</span>
-                              <div 
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                                  day.hasEntry 
-                                    ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-sm' 
-                                    : i === currentDayIndex 
-                                      ? 'bg-amber-100 border border-amber-200 text-amber-600 animate-pulse' 
-                                      : 'bg-gray-100 text-gray-400'
-                                }`}
-                              >
-                                {day.hasEntry ? <Star className="w-4 h-4" /> : day.date.getDate()}
-                              </div>
-                            </div>
-                          ))}
+                      <div className="flex justify-between text-xs text-gray-500 px-3">
+                        <div>14 days ago</div>
+                        <div>Today</div>
+                      </div>
+                      
+                      <div className="pt-2">
+                        <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-red-100 mr-1"></div>
+                            <span>None</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-amber-200 mr-1"></div>
+                            <span>Low</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-green-200 mr-1"></div>
+                            <span>Medium</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-green-400 mr-1"></div>
+                            <span>High</span>
+                          </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <div className="flex justify-between items-center">
-                        <CardTitle className="flex items-center">
-                          <BarChart className="h-5 w-5 mr-2 text-primary" />
-                          <span>Energy & Mood Trends</span>
-                        </CardTitle>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => setShowMoodChart(!showMoodChart)}
-                        >
-                          {showMoodChart ? "Show Energy" : "Show Mood Chart"}
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {!showMoodChart ? (
-                        <>
-                          <div className="h-32 flex items-end gap-2">
-                            {getEnergyData().map((entry, i) => (
-                              <div key={i} className="relative flex-1 flex items-end">
-                                <div 
-                                  className={`w-full ${getEnergyBarColor(entry.level)} rounded-t transition-all duration-300 ease-out`} 
-                                  style={{ height: `${entry.level * 20}%` }}
-                                >
-                                  <div className="absolute -top-6 w-full text-center">
-                                    <span className="text-[10px] text-gray-500">{entry.level}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Main content */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Spiritual Journal</CardTitle>
+                    <div className="text-sm text-gray-500">
+                      {formatDate(date)}
+                    </div>
+                  </div>
+                  <CardDescription>Record your spiritual insights and energy shifts</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                      <TabsTrigger value="new">New Entry</TabsTrigger>
+                      <TabsTrigger value="previous">Previous</TabsTrigger>
+                      <TabsTrigger value="insights">Insights</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="new">
+                      <JournalForm />
+                    </TabsContent>
+                    
+                    <TabsContent value="previous">
+                      <div className="space-y-6">
+                        {/* Controls for viewing entries */}
+                        <div className="flex justify-between items-center pb-2 border-b">
+                          <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                            Previous
+                          </Button>
+                          <div className="text-sm">
+                            Showing <span className="font-medium">1</span> of <span className="font-medium">{journalStats.totalEntries}</span> entries
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="ml-2 h-7 text-xs"
+                              onClick={() => setShowAllEntries(!showAllEntries)}
+                            >
+                              {showAllEntries ? "Hide All" : "View All"}
+                            </Button>
                           </div>
-                          <div className="flex justify-between text-xs text-gray-500 mt-1">
-                            {getEnergyData().map((entry, i) => (
-                              <span key={i}>{entry.day}</span>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="pt-2">
-                            <div className="text-xs text-center mb-1 text-gray-500">Last 14 Days Mood Tracking</div>
-                            <div className="border border-gray-100 rounded-md p-3 bg-gray-50">
-                              <div className="flex items-center mb-3">
-                                <div className="w-1/4 text-xs text-gray-500">Energy</div>
-                                <div className="flex-1">
-                                  <div className="grid grid-cols-14 gap-1">
-                                    {Array.from({ length: 14 }).map((_, i) => (
-                                      <div 
-                                        key={i} 
-                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "energy")}`}
-                                      ></div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center mb-3">
-                                <div className="w-1/4 text-xs text-gray-500">Gratitude</div>
-                                <div className="flex-1">
-                                  <div className="grid grid-cols-14 gap-1">
-                                    {Array.from({ length: 14 }).map((_, i) => (
-                                      <div 
-                                        key={i} 
-                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "gratitude")}`}
-                                      ></div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center">
-                                <div className="w-1/4 text-xs text-gray-500">Reflection</div>
-                                <div className="flex-1">
-                                  <div className="grid grid-cols-14 gap-1">
-                                    {Array.from({ length: 14 }).map((_, i) => (
-                                      <div 
-                                        key={i} 
-                                        className={`h-4 rounded-sm ${getMoodGridCellColor(i, "reflection")}`}
-                                      ></div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between text-xs text-gray-500 px-3">
-                            <div>14 days ago</div>
-                            <div>Today</div>
-                          </div>
-                          
-                          <div className="pt-2">
-                            <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-red-100 mr-1"></div>
-                                <span>None</span>
-                              </div>
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-amber-200 mr-1"></div>
-                                <span>Low</span>
-                              </div>
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-green-200 mr-1"></div>
-                                <span>Medium</span>
-                              </div>
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-green-400 mr-1"></div>
-                                <span>High</span>
-                              </div>
-                            </div>
-                          </div>
+                          <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
+                            Next
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                          </Button>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                {/* Main content */}
-                <div className="lg:col-span-2">
-                  <Card>
-                    <CardHeader>
-                      <div className="flex justify-between items-center">
-                        <CardTitle>Spiritual Journal</CardTitle>
-                        <div className="text-sm text-gray-500">
-                          {formatDate(date)}
-                        </div>
-                      </div>
-                      <CardDescription>Record your spiritual insights and energy shifts</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 mb-6">
-                          <TabsTrigger value="new">New Entry</TabsTrigger>
-                          <TabsTrigger value="previous">Previous</TabsTrigger>
-                          <TabsTrigger value="insights">Insights</TabsTrigger>
-                        </TabsList>
                         
-                        <TabsContent value="new">
-                          <JournalForm />
-                        </TabsContent>
-                        
-                        <TabsContent value="previous">
-                          <div className="space-y-6">
-                            {/* Controls for viewing entries */}
-                            <div className="flex justify-between items-center pb-2 border-b">
-                              <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
-                                Previous
-                              </Button>
-                              <div className="text-sm">
-                                Showing <span className="font-medium">1</span> of <span className="font-medium">{journalStats.totalEntries}</span> entries
-                              </div>
-                              <Button variant="ghost" size="sm" className="text-sm flex items-center gap-1">
-                                Next
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                              </Button>
-                            </div>
+                        {showAllEntries ? (
+                          <div className="space-y-4">
+                            <h3 className="text-base font-medium mb-3">All Journal Entries</h3>
                             
+                            {/* Generate mock entries for the demo - in a real app, this would come from the backend */}
+                            {Array.from({ length: 5 }).map((_, index) => {
+                              const entryDate = new Date();
+                              entryDate.setDate(entryDate.getDate() - index);
+                              
+                              return (
+                                <div key={index} className="border rounded-lg p-3 hover:border-primary/30 transition-colors cursor-pointer">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <h4 className="text-sm font-medium">
+                                      {index === 0 ? "Today's Entry" : 
+                                       index === 1 ? "Yesterday's Entry" : 
+                                       new Intl.DateTimeFormat('en-US', { 
+                                         weekday: 'long'
+                                       }).format(entryDate)
+                                      }
+                                    </h4>
+                                    <span className="text-xs text-gray-500">
+                                      {entryDate.toLocaleDateString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric', 
+                                        year: 'numeric' 
+                                      })}
+                                    </span>
+                                  </div>
+                                  
+                                  <div className="flex items-center mb-2">
+                                    <span className="text-xs text-gray-500 mr-2">Energy:</span>
+                                    <div className="flex space-x-1">
+                                      {Array.from({ length: 5 }).map((_, i) => (
+                                        <div 
+                                          key={i} 
+                                          className={`w-5 h-2 ${i < 5 - index % 3 ? 'bg-primary' : 'bg-gray-200'} rounded-full`}
+                                        ></div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <p className="text-xs text-gray-600 truncate">
+                                    {index === 0 
+                                      ? "Today's meditation was particularly deep. I felt a strong connection to my higher self and received guidance."
+                                      : index === 1 
+                                        ? "I practiced gratitude journaling this morning and felt much more positive throughout the day."
+                                        : "Reflecting on my spiritual journey and noticing the patterns that emerge when I stay consistent."
+                                    }
+                                  </p>
+                                </div>
+                              );
+                            })}
+                            
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="w-full text-xs mt-4"
+                              onClick={() => setShowAllEntries(false)}
+                            >
+                              Hide All Entries
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
                             <div className="border rounded-lg p-4">
                               <div className="flex justify-between items-center mb-2">
                                 <h3 className="font-medium">Yesterday's Entry</h3>
@@ -534,225 +637,167 @@ export default function Journal() {
                                 </ul>
                               </div>
                             </div>
-                            
-                            <Button variant="outline" className="w-full">
-                              View All Entries
-                            </Button>
-                          </div>
-                        </TabsContent>
+                          </>
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="insights">
+                      <div className="space-y-6">
+                        <Alert className="bg-accent/10 border-accent">
+                          <Book className="h-4 w-4 text-accent" />
+                          <AlertTitle>Journal Insights</AlertTitle>
+                          <AlertDescription>
+                            Your insights have been generated based on your last 3 days of journal entries.
+                            {journalStats.totalEntries < 3 ? (
+                              <span className="block mt-1 text-xs text-amber-600">
+                                You need at least 3 journal entries for more accurate insights. 
+                                You currently have {journalStats.totalEntries} entries.
+                              </span>
+                            ) : (
+                              <span className="block mt-1 text-xs text-emerald-600">
+                                Continue journaling daily to refine these insights and discover deeper patterns.
+                              </span>
+                            )}
+                          </AlertDescription>
+                        </Alert>
                         
-                        <TabsContent value="insights">
-                          <div className="space-y-6">
-                            <Alert className="bg-accent/10 border-accent">
-                              <Book className="h-4 w-4 text-accent" />
-                              <AlertTitle>Journal Insights</AlertTitle>
-                              <AlertDescription>
-                                Your insights have been generated based on {journalStats.totalEntries} journal entries.
-                                Continue journaling daily to get more personalized insights.
-                              </AlertDescription>
-                            </Alert>
+                        <div className="space-y-4">
+                          {/* Energy Patterns */}
+                          <div className="border rounded-md p-4">
+                            <h3 className="text-sm font-medium flex items-center mb-3">
+                              <Activity className="h-4 w-4 mr-2 text-primary" />
+                              Energy Flow Patterns
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-3">
+                              Your energy levels tend to be highest on <span className="font-medium">Thursdays</span> and lowest on <span className="font-medium">Wednesdays</span>. 
+                              Plan your most important spiritual practices for high-energy days.
+                            </p>
                             
-                            <div className="space-y-4">
-                              {/* Energy Patterns */}
-                              <div className="border rounded-md p-4">
-                                <h3 className="text-sm font-medium flex items-center mb-3">
-                                  <Activity className="h-4 w-4 mr-2 text-primary" />
-                                  Energy Flow Patterns
-                                </h3>
-                                <p className="text-sm text-gray-600 mb-3">
-                                  Your energy levels tend to be highest on <span className="font-medium">Thursdays</span> and lowest on <span className="font-medium">Wednesdays</span>. 
-                                  Plan your most important spiritual practices for high-energy days.
-                                </p>
-                                
-                                <div className="bg-gray-50 p-3 rounded-md">
-                                  <h4 className="text-xs font-medium mb-2">Recommended Actions:</h4>
-                                  <ul className="text-xs text-gray-600 space-y-1">
-                                    <li className="flex items-start">
-                                      <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
-                                      Try meditation in the morning on your low-energy days to boost vitality
-                                    </li>
-                                    <li className="flex items-start">
-                                      <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
-                                      Schedule deep spiritual work on Thursdays when your energy is at its peak
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
+                            <div className="bg-gray-50 p-3 rounded-md">
+                              <h4 className="text-xs font-medium mb-2">Recommended Actions:</h4>
+                              <ul className="text-xs text-gray-600 space-y-1">
+                                <li className="flex items-start">
+                                  <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
+                                  Try meditation in the morning on your low-energy days to boost vitality
+                                </li>
+                                <li className="flex items-start">
+                                  <div className="rounded-full bg-accent w-1 h-1 mt-1.5 mr-2"></div>
+                                  Schedule deep spiritual work on Thursdays when your energy is at its peak
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          
+                          {/* Gratitude Themes */}
+                          <div className="border rounded-md p-4">
+                            <h3 className="text-sm font-medium flex items-center mb-3">
+                              <Heart className="h-4 w-4 mr-2 text-rose-500" />
+                              Gratitude Themes
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-3">
+                              Your gratitude entries frequently mention <span className="font-medium">nature</span> and <span className="font-medium">relationships</span>. 
+                              These are key sources of spiritual strength for you.
+                            </p>
+                            
+                            <div className="flex mb-3 gap-2">
+                              <div className="bg-rose-100 text-rose-800 text-xs rounded px-2 py-1">nature</div>
+                              <div className="bg-amber-100 text-amber-800 text-xs rounded px-2 py-1">relationships</div>
+                              <div className="bg-emerald-100 text-emerald-800 text-xs rounded px-2 py-1">meditation</div>
+                              <div className="bg-sky-100 text-sky-800 text-xs rounded px-2 py-1">food</div>
+                            </div>
+                            
+                            <div className="bg-gray-50 p-3 rounded-md">
+                              <h4 className="text-xs font-medium mb-2">Suggested Focus:</h4>
+                              <p className="text-xs text-gray-600">
+                                Consider spending more time in natural settings and deepening your meaningful connections.
+                                These appear to have the most positive impact on your spiritual wellbeing.
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Aura Integration - Premium Feature */}
+                          <div className="border rounded-md p-4 bg-gradient-to-r from-violet-50 to-indigo-50">
+                            <div className="flex justify-between items-start mb-3">
+                              <h3 className="text-sm font-medium flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-violet-500"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 4-10 4 10"/><path d="M12 22v-4"/></svg>
+                                Aura-Journal Connection
+                                <Badge variant="secondary" className="ml-2 bg-primary/10 hover:bg-primary/20">
+                                  Premium
+                                </Badge>
+                              </h3>
+                              <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => showPremiumModal("general")}>
+                                Unlock
+                              </Button>
+                            </div>
+                            
+                            <div className="filter blur-[2px] pointer-events-none">
+                              <p className="text-sm text-gray-600 mb-3">
+                                Your journal entries reveal strong correlations with your aura readings. 
+                                On days with high energy, your aura shows more vibrant blues and purples.
+                              </p>
                               
-                              {/* Gratitude Themes */}
-                              <div className="border rounded-md p-4">
-                                <h3 className="text-sm font-medium flex items-center mb-3">
-                                  <Heart className="h-4 w-4 mr-2 text-rose-500" />
-                                  Gratitude Themes
-                                </h3>
-                                <p className="text-sm text-gray-600 mb-3">
-                                  Your gratitude entries frequently mention <span className="font-medium">nature</span> and <span className="font-medium">relationships</span>. 
-                                  These are key sources of spiritual strength for you.
-                                </p>
-                                
-                                <div className="flex mb-3 gap-2">
-                                  <div className="bg-rose-100 text-rose-800 text-xs rounded px-2 py-1">nature</div>
-                                  <div className="bg-amber-100 text-amber-800 text-xs rounded px-2 py-1">relationships</div>
-                                  <div className="bg-emerald-100 text-emerald-800 text-xs rounded px-2 py-1">meditation</div>
-                                  <div className="bg-sky-100 text-sky-800 text-xs rounded px-2 py-1">food</div>
+                              <div className="grid grid-cols-2 gap-2 mb-3">
+                                <div className="bg-indigo-100 text-indigo-800 text-xs rounded p-2 flex items-center justify-center">
+                                  <div className="w-3 h-3 rounded-full bg-indigo-400 mr-1.5"></div>
+                                  Indigo strength: 78%
                                 </div>
-                                
-                                <div className="bg-gray-50 p-3 rounded-md">
-                                  <h4 className="text-xs font-medium mb-2">Suggested Focus:</h4>
-                                  <p className="text-xs text-gray-600">
-                                    Consider spending more time in natural settings and deepening your meaningful connections.
-                                    These appear to have the most positive impact on your spiritual wellbeing.
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              {/* Aura Integration - Premium Feature */}
-                              <div className="border rounded-md p-4 bg-gradient-to-r from-violet-50 to-indigo-50">
-                                <div className="flex justify-between items-start mb-3">
-                                  <h3 className="text-sm font-medium flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-violet-500"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 4-10 4 10"/><path d="M12 22v-4"/></svg>
-                                    Aura-Journal Connection
-                                    <Badge variant="secondary" className="ml-2 bg-primary/10 hover:bg-primary/20">
-                                      Premium
-                                    </Badge>
-                                  </h3>
-                                  <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => showPremiumModal("general")}>
-                                    Unlock
-                                  </Button>
-                                </div>
-                                
-                                <div className="filter blur-[2px] pointer-events-none">
-                                  <p className="text-sm text-gray-600 mb-3">
-                                    Your journal entries reveal strong correlations with your aura readings. 
-                                    On days with high energy, your aura shows more vibrant blues and purples.
-                                  </p>
-                                  
-                                  <div className="grid grid-cols-2 gap-2 mb-3">
-                                    <div className="bg-indigo-100 text-indigo-800 text-xs rounded p-2 flex items-center justify-center">
-                                      <div className="w-3 h-3 rounded-full bg-indigo-400 mr-1.5"></div>
-                                      Indigo strength: 78%
-                                    </div>
-                                    <div className="bg-violet-100 text-violet-800 text-xs rounded p-2 flex items-center justify-center">
-                                      <div className="w-3 h-3 rounded-full bg-violet-400 mr-1.5"></div>
-                                      Purple stability: 65%
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="p-4 border rounded-lg bg-secondary/5">
-                              <div className="flex items-start">
-                                <Sparkles className="h-5 w-5 text-secondary mt-1 mr-3 flex-shrink-0" />
-                                <div>
-                                  <h3 className="font-medium mb-1">Monthly Progress Summary</h3>
-                                  <p className="text-sm text-gray-600 mb-4">
-                                    You've made significant progress in your spiritual journey this month. Your energy levels have been more consistent, and your gratitude practice is strengthening your resilience.
-                                  </p>
-                                  
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs text-gray-500">Consistency</span>
-                                    <span className="text-xs font-medium">75%</span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
-                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "75%" }}></div>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs text-gray-500">Energy Growth</span>
-                                    <span className="text-xs font-medium">62%</span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
-                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "62%" }}></div>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs text-gray-500">Mindfulness</span>
-                                    <span className="text-xs font-medium">89%</span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
-                                    <div className="bg-secondary h-1.5 rounded-full" style={{ width: "89%" }}></div>
-                                  </div>
-                                  <p className="text-sm text-gray-600">
-                                    In the past month, you've mentioned "intuitive guidance" in 78% of your entries. Your intuitive abilities appear to be strengthening - consider developing this gift further.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="p-4 border rounded-lg bg-accent/5">
-                              <div className="flex items-start">
-                                <Sparkles className="h-5 w-5 text-accent mt-1 mr-3 flex-shrink-0" />
-                                <div>
-                                  <h3 className="font-medium mb-1">Gratitude Focus</h3>
-                                  <p className="text-sm text-gray-600">
-                                    Your gratitude practice shows a strong appreciation for nature. Consider spending more time outdoors to enhance your spiritual connection and overall wellbeing.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="p-4 border rounded-lg">
-                              <div className="flex items-start">
-                                <Book className="h-5 w-5 text-primary-dark mt-1 mr-3 flex-shrink-0" />
-                                <div>
-                                  <h3 className="font-medium mb-1">Recommended Practice</h3>
-                                  <p className="text-sm text-gray-600">
-                                    Based on your journal entries, you might benefit from a chakra balancing meditation focusing on the heart and throat chakras. These energy centers appear to be active in your spiritual journey.
-                                  </p>
+                                <div className="bg-violet-100 text-violet-800 text-xs rounded p-2 flex items-center justify-center">
+                                  <div className="w-3 h-3 rounded-full bg-violet-400 mr-1.5"></div>
+                                  Purple stability: 65%
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </TabsContent>
-                      </Tabs>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
+                        </div>
+                        
+                        <div className="p-4 border rounded-lg bg-secondary/5">
+                          <div className="flex items-start">
+                            <Sparkles className="h-5 w-5 text-secondary mt-1 mr-3 flex-shrink-0" />
+                            <div>
+                              <h3 className="font-medium mb-1">Monthly Progress Summary</h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                You've made significant progress in your spiritual journey this month. Your energy levels have been more consistent, and your gratitude practice is strengthening your resilience.
+                              </p>
+                              
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs text-gray-500">Consistency</span>
+                                <span className="text-xs font-medium">75%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                <div className="bg-secondary h-1.5 rounded-full" style={{ width: "75%" }}></div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs text-gray-500">Energy Growth</span>
+                                <span className="text-xs font-medium">62%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                <div className="bg-secondary h-1.5 rounded-full" style={{ width: "62%" }}></div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs text-gray-500">Mindfulness</span>
+                                <span className="text-xs font-medium">89%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                <div className="bg-secondary h-1.5 rounded-full" style={{ width: "89%" }}></div>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                In the past month, you've mentioned "intuitive guidance" in 78% of your entries. Your intuitive abilities appear to be strengthening - consider developing this gift further.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </section>
-        
-        {/* Benefits section */}
-        <section className="py-12 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="font-heading font-bold text-2xl md:text-3xl mb-8 text-center">Benefits of Spiritual Journaling</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-heading font-semibold text-lg mb-2">Self-Awareness</h3>
-                <p className="text-gray-600">
-                  Regular journaling helps you identify patterns in your thoughts, emotions, and energy levels, leading to greater self-understanding and spiritual growth.
-                </p>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="bg-secondary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                  <Star className="h-5 w-5 text-secondary" />
-                </div>
-                <h3 className="font-heading font-semibold text-lg mb-2">Manifestation</h3>
-                <p className="text-gray-600">
-                  Writing down your spiritual goals, intentions, and insights helps crystallize them into reality by aligning your conscious and subconscious mind.
-                </p>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="bg-accent/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                  <Sparkles className="h-5 w-5 text-accent" />
-                </div>
-                <h3 className="font-heading font-semibold text-lg mb-2">Spiritual Connection</h3>
-                <p className="text-gray-600">
-                  Journaling creates a sacred space for dialogue with your higher self, spirit guides, or divine wisdom, strengthening your spiritual connection.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+        </div>
+      </div>
       
       <Footer />
     </div>
