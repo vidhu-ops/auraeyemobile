@@ -22,6 +22,8 @@ export default function AuraAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AuraAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("analysis");
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
   
   const handlePremiumUpgrade = () => {
     showPremiumModal("aura");
@@ -30,8 +32,35 @@ export default function AuraAnalysis() {
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
     setResult(null);
+    setAnalysisProgress(0);
+    setAnalysisStage("Initializing aura scanning...");
 
     try {
+      // Simulate progress for UX
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          
+          // Update stage text based on progress
+          if (prev < 20) {
+            setAnalysisStage("Preparing image for analysis...");
+          } else if (prev < 40) {
+            setAnalysisStage("Detecting energy patterns in your aura...");
+          } else if (prev < 60) {
+            setAnalysisStage("Analyzing color vibrations and frequencies...");
+          } else if (prev < 80) {
+            setAnalysisStage("Connecting with your chakra energy centers...");
+          } else {
+            setAnalysisStage("Finalizing your personalized aura reading...");
+          }
+          
+          return prev + Math.random() * 5 + 1;
+        });
+      }, 800);
+
       // Convert the image to base64
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -42,6 +71,18 @@ export default function AuraAnalysis() {
           // Call API to analyze the image
           const analysisResult = await analyzeAuraImage(base64data);
           setResult(analysisResult);
+          
+          // Ensure progress shows 100% at the end
+          setAnalysisProgress(100);
+          setAnalysisStage("Analysis complete! Preparing your results...");
+          
+          // Clear interval if it's still running
+          clearInterval(progressInterval);
+          
+          // Small delay to show the 100% state before removing loading
+          setTimeout(() => {
+            setIsAnalyzing(false);
+          }, 800);
         }
       };
     } catch (error) {
@@ -51,7 +92,6 @@ export default function AuraAnalysis() {
         variant: "destructive",
       });
       console.error("Error analyzing image:", error);
-    } finally {
       setIsAnalyzing(false);
     }
   };
@@ -221,45 +261,96 @@ export default function AuraAnalysis() {
         <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Upload side */}
-                <div>
-                  <h2 className="font-heading font-semibold text-xl mb-4">Upload Your Photo</h2>
-                  <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
+              <div className="space-y-10">
+                {/* Upload section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <h2 className="font-heading font-semibold text-xl mb-4">Upload Your Photo</h2>
+                    <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
+                  </div>
                   
-                  <div className="mt-6 p-4 bg-white/70 rounded-lg border border-gray-200">
-                    <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        Use a clear photo in good lighting
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        Your face should be clearly visible
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        A neutral background works best
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        A relaxed, natural expression reveals your true energy
-                      </li>
-                    </ul>
+                  <div>
+                    <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
+                      <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          Use a clear photo in good lighting
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          Your face should be clearly visible
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          A neutral background works best
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          A relaxed, natural expression reveals your true energy
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Results side */}
+                {/* Results section - full width */}
                 <div>
-                  <h2 className="font-heading font-semibold text-xl mb-4">Your Aura Reading</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-heading font-semibold text-xl">Your Aura Reading</h2>
+                    
+                    {result && !isAnalyzing && (
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-sm"
+                          onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(`My aura today is ${result.dominantColor}! Check out my spiritual energy reading from Aurfy.`)}`, '_blank')}
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+                          </svg>
+                          Share
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-sm"
+                          onClick={() => window.open(`https://www.instagram.com/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153.509.5.902 1.105 1.153 1.772.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 01-1.153 1.772c-.5.508-1.105.902-1.772 1.153-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 01-1.772-1.153 4.904 4.904 0 01-1.153-1.772c-.247-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428.247-.67.636-1.276 1.153-1.772a4.91 4.91 0 011.772-1.153c.637-.247 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.986.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.048 1.055-.058 1.37-.058 4.04 0 2.669.01 2.986.058 4.04.045.976.207 1.504.344 1.857.181.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.04.058 2.669 0 2.986-.01 4.04-.058.976-.045 1.504-.207 1.857-.344.466-.181.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.04 0-2.669-.01-2.986-.058-4.04-.045-.976-.207-1.504-.344-1.857a3.097 3.097 0 00-.748-1.15c-.35-.35-.683-.567-1.15-.748-.353-.137-.882-.3-1.857-.344-1.055-.048-1.37-.058-4.04-.058zm0 3.063a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 8.468a3.333 3.333 0 100-6.666 3.333 3.333 0 000 6.666zm6.538-8.469a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/>
+                          </svg>
+                          Share
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                   
                   {isAnalyzing ? (
-                    <Card className="h-96 flex items-center justify-center">
-                      <div className="text-center">
+                    <Card className="h-96 flex flex-col items-center justify-center">
+                      <div className="text-center w-full max-w-md px-6">
                         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-                        <p className="text-gray-600">Analyzing your aura energy...</p>
-                        <p className="text-gray-500 text-sm mt-2">This may take a moment</p>
+                        <p className="text-gray-600 mb-4">Analyzing your aura energy...</p>
+                        
+                        <div className="space-y-6 w-full">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Scanning energy field</span>
+                              <span className="text-primary">{Math.round(analysisProgress)}%</span>
+                            </div>
+                            <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-300 ease-out"
+                                style={{ width: `${analysisProgress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-xs text-gray-500 italic">
+                            {analysisStage}
+                          </div>
+                        </div>
                       </div>
                     </Card>
                   ) : result ? (
