@@ -342,7 +342,7 @@ export default function About() {
                     Create Free Account
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button asChild size="lg" variant="secondary" className="border-white text-white hover:bg-white/10">
                   <Link href="/contact">
                     Contact Us
                   </Link>

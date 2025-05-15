@@ -11,8 +11,10 @@ const openai = new OpenAI({
 
 /**
  * Analyzes an image to determine aura colors and energy patterns
+ * @param base64Image The base64 encoded image
+ * @param customPrompt Optional custom prompt to use for the analysis
  */
-export async function analyzeAuraImage(base64Image: string): Promise<AuraAnalysisResult> {
+export async function analyzeAuraImage(base64Image: string, customPrompt?: string): Promise<AuraAnalysisResult> {
   // Default result for fallback
   const defaultResult: AuraAnalysisResult = {
     dominantColor: "Blue",
@@ -50,23 +52,36 @@ export async function analyzeAuraImage(base64Image: string): Promise<AuraAnalysi
       messages: [
         {
           role: "system",
-          content: `You are an expert spiritual healer and aura reader with decades of experience. 
-          Analyze the person in the image and determine their aura colors, energy levels, and provide a spiritual interpretation.
-          Respond with valid JSON data containing the following fields:
-          - dominantColor: the primary aura color (e.g., "Purple", "Blue", "Green", etc.)
-          - secondaryColor: a secondary aura color if present, otherwise null
-          - energyLevel: a number from 1 to 5 indicating energy intensity
-          - personalityTraits: an array of 3-5 personality traits associated with their aura
-          - spiritualGuidance: personalized spiritual guidance based on their aura (150-200 words)
-          - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown)
-          - detailedAnalysis: a comprehensive analysis of their aura and energy patterns (200-300 words)`
+          content: customPrompt
+            ? `You are an expert spiritual healer and energy reader with decades of experience. 
+            Analyze the image as requested and provide insightful observations.
+            Respond with valid JSON data containing the following fields:
+            - dominantColor: the primary aura color (e.g., "Purple", "Blue", "Green", etc.)
+            - secondaryColor: a secondary aura color if present, otherwise null
+            - energyLevel: a number from 1 to 5 indicating energy intensity
+            - personalityTraits: an array of 3-5 traits associated with the energy
+            - spiritualGuidance: personalized spiritual insights based on the energy (150-200 words)
+            - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown)
+            - detailedAnalysis: a comprehensive analysis of the energy patterns (200-300 words)`
+            : `You are an expert spiritual healer and aura reader with decades of experience. 
+            Analyze the person in the image and determine their aura colors, energy levels, and provide a spiritual interpretation.
+            Respond with valid JSON data containing the following fields:
+            - dominantColor: the primary aura color (e.g., "Purple", "Blue", "Green", etc.)
+            - secondaryColor: a secondary aura color if present, otherwise null
+            - energyLevel: a number from 1 to 5 indicating energy intensity
+            - personalityTraits: an array of 3-5 personality traits associated with their aura
+            - spiritualGuidance: personalized spiritual guidance based on their aura (150-200 words)
+            - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown)
+            - detailedAnalysis: a comprehensive analysis of their aura and energy patterns (200-300 words)`
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: "Analyze this person's aura and provide a detailed spiritual reading based on their energy field."
+              text: customPrompt 
+                ? customPrompt 
+                : "Analyze this person's aura and provide a detailed spiritual reading based on their energy field."
             },
             {
               type: "image_url",
