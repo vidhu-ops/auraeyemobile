@@ -72,7 +72,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="font-heading font-bold text-3xl md:text-4xl text-dark mb-4">Our Spiritual Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Explore our range of metaphysical wellness services designed to help you connect with your inner self and enhance your spiritual journey.</p>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-4">Explore our range of metaphysical wellness services designed to help you connect with your inner self and enhance your spiritual journey.</p>
+            <Button asChild variant="outline" className="mt-2">
+              <Link href="/services">
+                View All Services <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

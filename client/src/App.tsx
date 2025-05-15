@@ -15,6 +15,7 @@ import Numerology from "@/pages/numerology";
 import Journal from "@/pages/journal";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Services from "@/pages/services";
 import { AuthProvider } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -24,12 +25,13 @@ function Router() {
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/services" component={Services} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
-      <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
-      <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
-      <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
-      <ProtectedRoute path="/numerology" component={Numerology} />
+      <Route path="/aura-analysis" component={AuraAnalysis} />
+      <Route path="/object-analysis" component={ObjectAnalysis} />
+      <Route path="/daily-horoscope" component={DailyHoroscope} />
+      <Route path="/numerology" component={Numerology} />
       <ProtectedRoute path="/journal" component={Journal} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
