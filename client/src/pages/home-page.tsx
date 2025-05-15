@@ -6,7 +6,7 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover } from "lucide-react";
+import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box } from "lucide-react";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -100,6 +100,15 @@ export default function HomePage() {
             />
             
             <ServiceCard
+              icon={<Box className="h-6 w-6 text-purple-500" />}
+              title="Object Analysis"
+              description="Uncover the hidden energies and spiritual properties of objects in your environment through our advanced AI analysis."
+              link="/object-analysis"
+              linkText="Analyze Objects"
+              color="secondary"
+            />
+            
+            <ServiceCard
               icon={<HandHelping className="h-6 w-6 text-accent" />}
               title="Energy Healing"
               description="Connect with certified healers who can help balance your chakras and restore harmony to your energy field through virtual sessions."
@@ -124,15 +133,6 @@ export default function HomePage() {
               link="/numerology"
               linkText="Calculate Numbers"
               color="secondary"
-            />
-            
-            <ServiceCard
-              icon={<Clover className="h-6 w-6 text-accent" />}
-              title="Meditation Guides"
-              description="Access guided meditations specifically designed to cleanse and strengthen your aura, promoting spiritual and emotional wellbeing."
-              link={user ? "/client-dashboard" : "/auth"}
-              linkText="Start Meditating"
-              color="accent"
             />
           </div>
         </div>
