@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         // Use OpenAI to analyze the object
-        const prompt = "analyze this object in the image and give information about it and intuitively understand and give the aura of the object";
+        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
         
         // Call OpenAI with the prompt
         // Note: We're using the same analyzeAuraImage function but with a different prompt
@@ -47,11 +47,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           objectAnalysis = await analyzeAuraImage(imageData, prompt);
           
+          // Extract the actual object type from the first sentence of the detailed analysis
+          let objectType = "Object";
+          const firstSentence = objectAnalysis.detailedAnalysis.split(".")[0];
+          
+          // Look for common patterns that might indicate the object type
+          if (firstSentence.toLowerCase().includes("appears to be")) {
+            const match = firstSentence.match(/appears to be (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          } else if (firstSentence.toLowerCase().includes("this is")) {
+            const match = firstSentence.match(/this is (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          } else if (firstSentence.toLowerCase().includes("object is")) {
+            const match = firstSentence.match(/object is (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          }
+          
           // Transform the result to match the ObjectAnalysisResult interface
           const result = {
-            objectName: objectAnalysis.dominantColor + " Object", // Placeholder
+            objectName: objectType.charAt(0).toUpperCase() + objectType.slice(1),
             objectDescription: objectAnalysis.detailedAnalysis.split(".")[0] + ".",
-            objectPurpose: "This object appears to serve a purpose related to " + objectAnalysis.personalityTraits.join(", "),
+            objectPurpose: "This " + objectType.toLowerCase() + " appears to serve a purpose related to " + objectAnalysis.personalityTraits.join(", "),
             auraColor: objectAnalysis.dominantColor,
             auraDescription: "The object emanates a " + objectAnalysis.dominantColor.toLowerCase() + " aura, which suggests " + objectAnalysis.spiritualGuidance,
             energyLevel: objectAnalysis.energyLevel,
