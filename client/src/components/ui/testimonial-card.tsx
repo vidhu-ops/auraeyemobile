@@ -11,7 +11,7 @@ interface TestimonialCardProps {
 
 export default function TestimonialCard({ rating, testimonial, name, title, initials, bgColor }: TestimonialCardProps) {
   const bgColorMap = {
-    primary: 'bg-primary/30',
+    primary: 'bg-primary/50',
     secondary: 'bg-secondary/30',
     accent: 'bg-accent/30'
   };
@@ -43,16 +43,16 @@ export default function TestimonialCard({ rating, testimonial, name, title, init
         <div className="flex">
           {renderStars(rating)}
         </div>
-        <span className="ml-2 text-white/80 text-sm">{rating.toFixed(1)}</span>
+        <span className="ml-2 text-black/80 text-sm">{rating.toFixed(1)}</span>
       </div>
-      <p className="text-white/90 mb-6">{testimonial}</p>
+      <p className="text-black/90 mb-6">{testimonial}</p>
       <div className="flex items-center">
         <div className={`w-10 h-10 rounded-full ${bgColorMap[bgColor]} flex items-center justify-center mr-3`}>
           <span className="font-medium text-sm">{initials}</span>
         </div>
         <div>
           <p className="font-medium">{name}</p>
-          <p className="text-white/70 text-sm">{title}</p>
+          <p className="text-black/70 text-sm">{title}</p>
         </div>
       </div>
     </div>

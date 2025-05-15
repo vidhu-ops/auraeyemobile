@@ -207,7 +207,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4">What Our Community Says</h2>
-            <p className="text-white/80 max-w-2xl mx-auto">Hear from members who have experienced transformation through our spiritual services.</p>
+            <p className="text-black/80 max-w-5xl mx-auto">Hear from members who have experienced transformation through our spiritual services.</p>
           </div>
 
           <div className="max-w-6xl mx-auto">
