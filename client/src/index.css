@@ -6,6 +6,83 @@
   .grid-cols-14 {
     grid-template-columns: repeat(14, minmax(0, 1fr));
   }
+  
+  /* Animation classes */
+  .animate-fade-in {
+    animation: fadeIn 1s ease-in-out forwards;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-in-out forwards;
+  }
+  
+  .animate-fade-in-down {
+    animation: fadeInDown 1s ease-in-out forwards;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+  
+  .animation-delay-900 {
+    animation-delay: 900ms;
+  }
+  
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 :root {

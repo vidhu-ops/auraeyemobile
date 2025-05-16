@@ -218,7 +218,7 @@ export default function AuthPage() {
         </Card>
       </div>
       
-      <div className="w-full md:w-1/2 bg-gradient-to-br from-primary-dark to-dark text-white p-6 md:p-12 flex items-center">
+      <div className="w-full md:w-1/2 bg-blue-to-br from-light-dark to-primary text-black p-6 md:p-12 flex items-center">
         <div className="max-w-lg mx-auto">
           <h1 className="font-heading font-bold text-3xl md:text-4xl mb-6">Begin Your Spiritual Journey</h1>
           <p className="text-lg opacity-90 mb-8">
