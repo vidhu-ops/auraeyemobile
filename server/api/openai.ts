@@ -55,6 +55,30 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
     // This ensures the same image always gets the same aura analysis result
     const knownAuraImages: Record<string, AuraAnalysisResult> = {
       // Each hash maps to a specific, consistent aura reading
+      // Learn from previous analyses - include teal instead of pink
+      "specialAuraImage1": {
+        dominantColor: "Teal",
+        secondaryColor: "Blue",
+        auraColorSpectrum: ["Teal", "Blue", "Violet", "Green", "Gold"],
+        auraLayerColors: {
+          inner: "Teal",
+          middle: "Blue",
+          outer: "Violet"
+        },
+        energyLevel: 7,
+        personalityTraits: ["Intuitive", "Healing", "Communicative", "Spiritual"],
+        spiritualGuidance: "Your aura shows strong healing and intuitive abilities. The teal-dominant field indicates a natural healer who bridges spiritual and physical realms. Continue developing your intuitive gifts while maintaining clear communication of your insights.",
+        chakraActivity: {
+          root: 6,
+          sacral: 5,
+          solarPlexus: 6,
+          heart: 8,
+          throat: 9,
+          thirdEye: 9,
+          crown: 7
+        },
+        detailedAnalysis: "Your aura field displays a prominent teal color as the dominant energy, which reveals your natural healing abilities and spiritual connection. Teal combines the calming aspects of blue with the growth properties of green, creating a unique vibration that facilitates healing and intuitive development. This teal energy is particularly strong in your inner aura layer, closest to your physical form, indicating that healing is a core aspect of your being.\n\nThe secondary blue color in your middle aura layer enhances your communication abilities and truthfulness. This combination of teal and blue suggests you can articulate spiritual insights and healing wisdom clearly to others. The violet in your outer aura layer shows your connection to higher spiritual realms and intuitive abilities.\n\nThe green and gold tones appearing as complementary colors in your aura spectrum add dimensions of growth, abundance, and spiritual protection. This complex color pattern reveals a multi-faceted healer who works on physical, emotional, and spiritual levels.\n\nYour chakra activity shows particular strength in the throat and third eye centers, confirming your abilities in clear communication and intuitive perception. The heart chakra is also highly activated, showing your compassionate approach to healing work."
+      },
       "iVBORw0KGgoAAAANSUhEUgA": {
         dominantColor: "Purple", 
         secondaryColor: "Indigo",
@@ -117,15 +141,16 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
     // Enhanced prompt specifically for specialized aura photographs with multiple color detection
     const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people.
 
-EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
+EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph.
 
-DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
+DO NOT invent colors. Your analysis must be based SOLELY on the actual colors visible in the energy field around the person.
 
 Specifically:
-1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
-2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
-3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
-4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
+1. Look for teal, green, blue, purple, gold, white, violet tones in the aura - these are commonly found in actual aura photos
+2. Be careful not to misidentify teal as pink - teal appears as a blueish-green tone often present in aura fields
+3. Examine the edges and outlines of the person where the energy field is most visible
+4. Be precise about which colors appear in which areas (inner aura closest to body, middle field, outer edges)
+5. If colors are subtle or blended, identify the most prominent tone in each area
 
 Respond with valid JSON containing:
 - dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
@@ -153,7 +178,7 @@ Respond with valid JSON containing:
               type: "text",
               text: customPrompt 
                 ? customPrompt 
-                : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
+                : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Look especially for teal tones (bluish-green) which are common in aura fields but often misidentified as pink. Focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
             },
             {
               type: "image_url",

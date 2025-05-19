@@ -25,15 +25,16 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<AuraA
             {
               text: `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show colored energy fields around people.
 
-EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
+EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph.
 
-DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
+DO NOT invent colors. Your analysis must be based SOLELY on the actual colors visible in the energy field around the person.
 
 Specifically:
-1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
-2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
-3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
-4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
+1. Look for teal, green, blue, purple, gold, white, violet tones in the aura - these are commonly found in actual aura photos
+2. Be careful not to misidentify teal as pink - teal appears as a blueish-green tone often present in aura fields
+3. Examine the edges and outlines of the person where the energy field is most visible
+4. Be precise about which colors appear in which areas (inner aura closest to body, middle field, outer edges)
+5. If colors are subtle or blended, identify the most prominent tone in each area
 
 Respond with valid JSON containing:
 - dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
