@@ -478,6 +478,9 @@ export default function Numerology() {
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.soulUrgeNumber).text}`}>{getNumberColor(result.soulUrgeNumber).name}</span>
                               </div>
+                              <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
+                                {getNumberColor(result.soulUrgeNumber).meaning}
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
@@ -545,6 +548,9 @@ export default function Numerology() {
                               <h3 className="font-heading font-semibold">Personality Number</h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{getNumberColor(result.personalityNumber).name}</span>
+                              </div>
+                              <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
+                                {getNumberColor(result.personalityNumber).meaning}
                               </div>
                             </div>
                             
