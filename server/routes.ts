@@ -517,32 +517,37 @@ function reduceNumber(num: number): number {
   // API endpoint for calculating numerology based on name and birth date
   app.post("/api/numerology", async (req, res) => {
     try {
+      console.log("Received numerology request:", req.body);
       const { name, birthDate } = req.body;
       
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
       
-      // Calculate the numerology profile using the algorithmic method first
-      let numerologyProfile = calculateNumerologyProfile(name, birthDate);
+      // Calculate the numerology profile algorithmically
+      const result = calculateNumerologyProfile(name, birthDate);
+      console.log("Calculated numerology profile:", result);
       
-      // If OpenAI API key is available, enhance the reading with AI-generated content
-      try {
-        if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== "YOUR_KEY_HERE") {
-          // Use the OpenAI service for enhanced results
-          const enhancedProfile = await generateNumerologyReading(name, birthDate);
-          // Merge the enhanced content with our calculated values
-          numerologyProfile = enhancedProfile;
+      // Create the return object with the basic numerology values
+      const numerologyProfile = {
+        lifePathNumber: result.lifePathNumber,
+        destinyNumber: result.destinyNumber,
+        soulUrgeNumber: result.soulUrgeNumber,
+        personalityNumber: result.personalityNumber,
+        interpretation: result.interpretation,
+        // Add default values for enhanced properties
+        colorAssociations: {
+          lifePathColor: getColorName(result.lifePathNumber),
+          destinyColor: getColorName(result.destinyNumber),
+          soulUrgeColor: getColorName(result.soulUrgeNumber),
+          personalityColor: getColorName(result.personalityNumber)
         }
-      } catch (aiError) {
-        console.error("Error with AI numerology enhancement:", aiError);
-        // Continue with algorithmic calculation if AI enhancement fails
-      }
+      };
       
       // If user is authenticated, save the reading to their profile
       if (req.isAuthenticated()) {
         try {
-          await storage.saveNumerologyReading({
+          const readingToSave = {
             userId: req.user.id,
             name,
             birthDate,
@@ -551,7 +556,9 @@ function reduceNumber(num: number): number {
             soulUrgeNumber: numerologyProfile.soulUrgeNumber,
             personalityNumber: numerologyProfile.personalityNumber,
             interpretation: numerologyProfile.interpretation
-          });
+          };
+          
+          await storage.saveNumerologyReading(readingToSave);
         } catch (saveError) {
           console.error("Error saving numerology reading:", saveError);
           // Continue even if saving fails

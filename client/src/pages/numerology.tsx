@@ -48,6 +48,8 @@ export default function Numerology() {
     setIsCalculating(true);
     
     try {
+      // Passing the fullName as name to match the server's expected parameter
+      console.log("Submitting:", data.fullName, data.birthDate);
       const numerologyResult = await calculateNumerology(data.fullName, data.birthDate);
       setResult(numerologyResult);
       
