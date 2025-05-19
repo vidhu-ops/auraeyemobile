@@ -19,6 +19,13 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
   const defaultResult: AuraAnalysisResult = {
     dominantColor: "Blue",
     secondaryColor: "Purple",
+    // Extended spectrum with multiple colors
+    auraColorSpectrum: ["Blue", "Purple", "Indigo", "Turquoise", "Gold"],
+    auraLayerColors: {
+      inner: "Blue",
+      middle: "Purple",
+      outer: "Indigo"
+    },
     energyLevel: 3,
     personalityTraits: ["Intuitive", "Spiritual", "Sensitive"],
     spiritualGuidance: "Your aura suggests you are on a spiritual journey. Continue to nurture your intuitive abilities and stay connected to your higher self.",
@@ -200,13 +207,32 @@ function generateFallbackAuraAnalysis(): AuraAnalysisResult {
     secondaryColor = auraColors[Math.floor(Math.random() * auraColors.length)];
   }
   
+  // Generate a complete spectrum of 4-5 colors for enhanced aura analysis
+  const spectrumSize = 4 + Math.floor(Math.random() * 2); // Either 4 or 5 colors
+  const auraColorSpectrum = [dominantColor, secondaryColor];
+  
+  // Add additional 2-3 colors to the spectrum
+  while (auraColorSpectrum.length < spectrumSize) {
+    const nextColor = auraColors[Math.floor(Math.random() * auraColors.length)];
+    if (!auraColorSpectrum.includes(nextColor)) {
+      auraColorSpectrum.push(nextColor);
+    }
+  }
+  
+  // Create aura layer colors
+  const auraLayerColors = {
+    inner: dominantColor,
+    middle: secondaryColor,
+    outer: auraColorSpectrum[2] // Third color in spectrum
+  };
+  
   // Generate random personality traits (3-5)
   const traitCount = Math.floor(Math.random() * 3) + 3; // 3-5
   const shuffledTraits = [...traits].sort(() => 0.5 - Math.random());
   const personalityTraits = shuffledTraits.slice(0, traitCount);
   
-  // Energy level (1-5)
-  const energyLevel = Math.floor(Math.random() * 5) + 1;
+  // Energy level (1-10, using wider range for more variation)
+  const energyLevel = Math.floor(Math.random() * 8) + 3; // 3-10
   
   // Generate chakra activity (values 1-10)
   const chakraActivity = {
@@ -233,18 +259,71 @@ function generateFallbackAuraAnalysis(): AuraAnalysisResult {
     "Gold": "Your spiritual development is advanced, reflecting wisdom accumulated over many lifetimes. Share your knowledge with others but remember to maintain energetic boundaries."
   };
   
-  // Detailed analysis templates
+  // Create a description of each spectrum color's meaning
+  const getColorMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      "Purple": "spiritual connection and intuition",
+      "Blue": "calm communication and truth",
+      "Green": "healing and heart-centered energy",
+      "Yellow": "intellectual clarity and optimism",
+      "Orange": "creativity and emotional expression",
+      "Red": "grounding energy and vitality",
+      "Indigo": "deep intuition and third-eye perception",
+      "Violet": "connection to higher consciousness",
+      "Turquoise": "healing communication and clarity",
+      "Gold": "divine wisdom and spiritual protection",
+      "Pink": "unconditional love and compassion",
+      "White": "purification and spiritual ascension"
+    };
+    
+    return meanings[color] || "unique energetic qualities";
+  };
+  
+  // Create a detailed description of the aura spectrum
+  const spectrumDescription = auraColorSpectrum.slice(2).map(color => 
+    `${color.toLowerCase()} (representing ${getColorMeaning(color)})`
+  ).join(", ");
+  
+  // Detailed analysis templates with enhanced spectrum information
   const analysisTemplates = [
-    `Your aura's ${dominantColor.toLowerCase()} and ${secondaryColor.toLowerCase()} colors reveal a spiritual seeker with natural ${personalityTraits[0].toLowerCase()} tendencies. The interplay between these colors suggests you're experiencing a period of spiritual growth and transformation. Your energy field shows sensitivity to environments and people around you, which is both a gift and a challenge. Work on establishing stronger energetic boundaries while maintaining your compassionate nature. The ${chakraActivity.crown > 7 ? "strong" : "moderate"} activity in your crown chakra indicates a connection to higher consciousness, while your ${chakraActivity.root > 7 ? "strong" : "moderate"} root chakra energy helps keep you grounded in physical reality. This balance allows you to bring spiritual insights into practical application.`,
+    `Your aura's complete spectrum analysis reveals a primary vibration of ${dominantColor.toLowerCase()} complemented by ${secondaryColor.toLowerCase()}, indicating a spiritual seeker with natural ${personalityTraits[0].toLowerCase()} tendencies. 
     
-    `The prominent ${dominantColor.toLowerCase()} in your aura indicates ${dominantColor === "Purple" || dominantColor === "Blue" || dominantColor === "Indigo" ? "spiritual depth and intuitive abilities" : dominantColor === "Green" || dominantColor === "Pink" ? "healing capacity and compassionate nature" : "creative force and vitality"}. Combined with ${secondaryColor.toLowerCase()} undertones, this creates a unique energy signature that attracts ${secondaryColor === "Gold" || secondaryColor === "Yellow" ? "abundance and intellectual stimulation" : secondaryColor === "Blue" || secondaryColor === "Turquoise" ? "truth-seekers and authentic connections" : "transformative experiences and growth opportunities"}. Your chakra system shows particular activity in the ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[0][0]} area, suggesting this is a focal point for your current spiritual development. Regular meditation focusing on this center can help you harness this energy more effectively.`,
+The depth of your energy field also shows traces of ${spectrumDescription}, adding complexity and richness to your energetic signature. Each layer of your aura reveals different aspects of your consciousness:
+
+• Inner layer (${auraLayerColors.inner}): Your core essence reflects ${getColorMeaning(auraLayerColors.inner)}.
+• Middle layer (${auraLayerColors.middle}): Your current emotional state shows ${getColorMeaning(auraLayerColors.middle)}.
+• Outer layer (${auraLayerColors.outer}): Your interaction with the world manifests as ${getColorMeaning(auraLayerColors.outer)}.
+
+Your energy field shows sensitivity to environments and people around you, which is both a gift and a challenge. The ${chakraActivity.crown > 7 ? "strong" : "moderate"} activity in your crown chakra indicates a connection to higher consciousness, while your ${chakraActivity.root > 7 ? "strong" : "moderate"} root chakra energy helps keep you grounded in physical reality. This balance allows you to bring spiritual insights into practical application.`,
     
-    `Your aura analysis reveals a complex energy pattern dominated by ${dominantColor.toLowerCase()} with ${secondaryColor.toLowerCase()} influences. This combination suggests you're naturally ${personalityTraits.slice(0, 2).join(" and ")}, with an innate ability to ${dominantColor === "Purple" || dominantColor === "Indigo" || dominantColor === "Violet" ? "access intuitive wisdom and spiritual insights" : dominantColor === "Blue" || dominantColor === "Turquoise" ? "communicate healing energy and truth" : dominantColor === "Green" ? "foster growth and harmony in yourself and others" : "energize and transform situations"}. Your chakra alignment shows particular strength in the ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[0][0]} and ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[1][0]} centers, with opportunity for development in the ${Object.entries(chakraActivity).sort((a, b) => a[1] - b[1])[0][0]} area. Working with crystals associated with this chakra could help balance your overall energy system.`
+    `The multi-layered spectrum of your aura shows a primary ${dominantColor.toLowerCase()} vibration indicating ${dominantColor === "Purple" || dominantColor === "Blue" || dominantColor === "Indigo" ? "spiritual depth and intuitive abilities" : dominantColor === "Green" || dominantColor === "Pink" ? "healing capacity and compassionate nature" : "creative force and vitality"}. 
+    
+Your energy field's complexity is enhanced by ${secondaryColor.toLowerCase()} undertones and additional colors of ${spectrumDescription}. This creates a unique energy signature that attracts ${secondaryColor === "Gold" || secondaryColor === "Yellow" ? "abundance and intellectual stimulation" : secondaryColor === "Blue" || secondaryColor === "Turquoise" ? "truth-seekers and authentic connections" : "transformative experiences and growth opportunities"}.
+
+Your aura layers reveal:
+• The inner layer (${auraLayerColors.inner}) shows your soul's essence and core spiritual gifts.
+• Your middle layer (${auraLayerColors.middle}) reflects your current life challenges and emotional processing.
+• The outer layer (${auraLayerColors.outer}) demonstrates how others perceive your energy and the qualities you project.
+
+Your chakra system shows particular activity in the ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[0][0]} area, suggesting this is a focal point for your current spiritual development.`,
+    
+    `Your complete aura field analysis reveals a complex energy pattern with ${dominantColor.toLowerCase()} dominance, ${secondaryColor.toLowerCase()} secondary influence, and complementary colors of ${spectrumDescription}. 
+
+This intricate color spectrum suggests you're naturally ${personalityTraits.slice(0, 2).join(" and ")}, with an innate ability to ${dominantColor === "Purple" || dominantColor === "Indigo" || dominantColor === "Violet" ? "access intuitive wisdom and spiritual insights" : dominantColor === "Blue" || dominantColor === "Turquoise" ? "communicate healing energy and truth" : dominantColor === "Green" ? "foster growth and harmony in yourself and others" : "energize and transform situations"}.
+
+The layered structure of your aura provides deeper insights:
+• Inner aura (${auraLayerColors.inner}): This represents your spiritual essence and shows ${getColorMeaning(auraLayerColors.inner)}.
+• Middle aura (${auraLayerColors.middle}): Your present emotional and mental state reflects ${getColorMeaning(auraLayerColors.middle)}.
+• Outer aura (${auraLayerColors.outer}): How you interact with the world is characterized by ${getColorMeaning(auraLayerColors.outer)}.
+
+Your chakra alignment shows particular strength in the ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[0][0]} and ${Object.entries(chakraActivity).sort((a, b) => b[1] - a[1])[1][0]} centers, with opportunity for development in the ${Object.entries(chakraActivity).sort((a, b) => a[1] - b[1])[0][0]} area.`
   ];
   
   return {
     dominantColor,
     secondaryColor,
+    auraColorSpectrum,
+    auraLayerColors,
     energyLevel,
     personalityTraits,
     spiritualGuidance: guidanceByColor[dominantColor] || guidanceByColor["Blue"],
