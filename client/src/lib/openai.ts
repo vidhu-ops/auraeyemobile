@@ -81,6 +81,17 @@ export interface NumerologyResult {
   soulUrgeNumber: number;
   personalityNumber: number;
   interpretation: string;
+  // Enhanced properties from AI analysis
+  colorAssociations?: {
+    lifePathColor?: string;
+    destinyColor?: string;
+    soulUrgeColor?: string;
+    personalityColor?: string;
+  };
+  energyPattern?: string;
+  strengths?: string[];
+  challenges?: string[];
+  guidance?: string;
 }
 
 /**
