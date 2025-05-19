@@ -13,7 +13,7 @@ export default function Footer() {
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                 <span className="text-black font-heading font-bold text-xl">A</span>
               </div>
-              <span className="font-heading font-bold text-2xl text-black">Aurfy</span>
+              <span className="font-heading font-bold text-2xl text-black">Aurafy</span>
             </div>
             <p className="text-black/70 mb-4">Empowering spiritual growth through modern metaphysical tools and AI-enhanced aura analysis.</p>
             <div className="flex space-x-4">
