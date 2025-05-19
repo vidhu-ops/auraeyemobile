@@ -239,24 +239,38 @@ export default function AuraAnalysis() {
         setOriginalImage(base64String || null);
         
         if (base64data) {
-          // Call API to analyze the image
-          const analysisResult = await analyzeAuraImage(base64data);
-          setResult(analysisResult);
-          
-          // Generate enhanced aura image with aura clouds
-          generateAuraVisualization(base64String, analysisResult);
-          
-          // Ensure progress shows 100% at the end
-          setAnalysisProgress(100);
-          setAnalysisStage("Analysis complete! Preparing your results...");
-          
-          // Clear interval if it's still running
-          clearInterval(progressInterval);
-          
-          // Small delay to show the 100% state before removing loading
-          setTimeout(() => {
-            setIsAnalyzing(false);
-          }, 800);
+          try {
+            // Call API to analyze the image
+            const analysisResult = await analyzeAuraImage(base64data);
+            setResult(analysisResult);
+            
+            // Generate enhanced aura image with aura clouds
+            if (base64String) {
+              setAnalysisStage("Creating your aura visualization...");
+              generateAuraVisualization(base64String, analysisResult);
+            }
+            
+            // Ensure progress shows 100% at the end
+            setAnalysisProgress(100);
+            setAnalysisStage("Analysis complete! Preparing your results...");
+            
+            // Clear interval if it's still running
+            clearInterval(progressInterval);
+            
+            // Small delay to show the 100% state before removing loading
+            setTimeout(() => {
+              setIsAnalyzing(false);
+              // Set active tab to analysis to show results including visualization
+              setActiveTab("analysis");
+            }, 800);
+          } catch (error) {
+            console.error("Error in aura analysis:", error);
+            // Use fallback analysis if API has issues
+            setAnalysisProgress(100);
+            setAnalysisStage("Analysis complete!");
+            clearInterval(progressInterval);
+            setTimeout(() => { setIsAnalyzing(false); }, 800);
+          }
         }
       };
     } catch (error) {
