@@ -193,6 +193,82 @@ export default function AuraAnalysis() {
     return colorMap[lowerColor] || "text-gray-400";
   };
 
+  // Helper functions for aura analysis and premium visualization
+  const auraHelpers = {
+    // Get color position on spectrum
+    getColorPosition: (color: string): number | null => {
+      const positionMap: Record<string, number> = {
+        red: 10,
+        orange: 25,
+        yellow: 40,
+        green: 55,
+        blue: 70,
+        indigo: 80,
+        violet: 85,
+        purple: 90,
+        pink: 75,
+        white: 95,
+        gold: 35,
+        silver: 60,
+        turquoise: 65,
+        magenta: 78,
+        brown: 15,
+        black: 5
+      };
+      
+      const lowerColor = color.toLowerCase();
+      return positionMap[lowerColor] !== undefined ? positionMap[lowerColor] : null;
+    },
+    
+    // Get energy cycle pattern
+    getEnergyCycle: (energyLevel: number, color: string): string => {
+      const highEnergy = energyLevel >= 7;
+      const mediumEnergy = energyLevel >= 4 && energyLevel < 7;
+      
+      const colorLower = color.toLowerCase();
+      
+      if (["red", "orange", "yellow"].includes(colorLower)) {
+        return highEnergy ? "rapid and intense" : mediumEnergy ? "steady and consistent" : "slow-building";
+      } else if (["green", "blue", "turquoise"].includes(colorLower)) {
+        return highEnergy ? "flowing and wave-like" : mediumEnergy ? "rhythmic and balanced" : "gentle and steady";
+      } else if (["purple", "violet", "indigo"].includes(colorLower)) {
+        return highEnergy ? "pulsating and dynamic" : mediumEnergy ? "cyclical and intuitive" : "subtle and intermittent";
+      } else {
+        return mediumEnergy ? "moderate and balanced" : "variable";
+      }
+    },
+    
+    // Get energy level text
+    getEnergyLevelText: (level: number): string => {
+      if (level >= 8) return "Extremely High";
+      if (level >= 6) return "Very High";
+      if (level >= 4) return "Above Average";
+      if (level >= 2) return "Moderate";
+      return "Reserved";
+    },
+    
+    // Get energy advice
+    getEnergyAdvice: (level: number, color: string): string => {
+      const colorLower = color.toLowerCase();
+      
+      if (level >= 8) {
+        return ` Your energy appears intensely vibrant in your aura photograph. Consider grounding practices to balance this powerful energy.`;
+      } else if (level >= 6) {
+        if (["purple", "blue", "indigo"].includes(colorLower)) {
+          return ` This high spiritual energy visible in your aura field suggests focusing on channeling your intuitive gifts.`;
+        } else if (["red", "orange"].includes(colorLower)) {
+          return ` The high physical/emotional energy visible in your aura suggests finding healthy outlets for expression.`;
+        } else {
+          return ` Your aura shows vibrant energy flow that could benefit from regular creative or spiritual practices.`;
+        }
+      } else if (level >= 3) {
+        return ` This balanced energy state visible in your aura photograph indicates a good equilibrium of giving and receiving energy.`;
+      } else {
+        return ` The calmer energy visible in your aura field suggests a period of energy conservation. Gentle energy practices may be beneficial.`;
+      }
+    }
+  };
+
   // Helper functions for the detailed analysis tab
   const getAuraLayerAnalysis = (layer: string, color: string): string => {
     const layerAnalysis: Record<string, Record<string, string>> = {
@@ -250,23 +326,7 @@ export default function AuraAnalysis() {
       "This layer of your aura carries unique energetic signatures that reflect your personal spiritual evolution.";
   };
   
-  const getEnergyLevelText = (level: number): string => {
-    if (level <= 1) return "very low";
-    if (level <= 2) return "low";
-    if (level <= 3) return "moderate";
-    if (level <= 4) return "high";
-    return "very high";
-  };
-  
-  const getEnergyAdvice = (level: number, color: string): string => {
-    if (level <= 2) {
-      return " You may benefit from energy-enhancing practices such as pranayama breathing, solar gazing meditation, or crystal healing with citrine or carnelian.";
-    } else if (level <= 3) {
-      return " Your energy is balanced but could be optimized through regular energy maintenance practices like tai chi, qigong, or rhythm-based meditation.";
-    } else {
-      return " Your abundant energy should be channeled purposefully through grounding practices, creative expression, or service to others to prevent energetic burnout.";
-    }
-  };
+  // These functions are already defined above, so removing duplicates.
   
   const getTraitExplanation = (trait: string, color: string): string => {
     const traitExplanations: Record<string, string> = {
@@ -848,35 +908,200 @@ export default function AuraAnalysis() {
                           <TabsContent value="detailed">
                             <div>
                               <div className="mb-6 relative">
-                                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-300">
+                                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-300 z-10">
                                   Premium Feature
                                 </div>
-                                <h3 className="font-medium text-lg mb-4 text-primary">Comprehensive Aura Analysis</h3>
+                                <h3 className="font-medium text-lg mb-4 text-primary">Advanced Aura Field Analysis</h3>
+                                
+                                {/* Premium Aura Visualization */}
+                                <div className="relative h-56 mb-6 overflow-hidden rounded-lg">
+                                  {/* Background gradient animation */}
+                                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-black/20 z-10"></div>
+                                  <div 
+                                    className="absolute inset-0 animate-pulse-slow" 
+                                    style={{
+                                      background: `radial-gradient(ellipse at center, 
+                                        ${result.dominantColor.toLowerCase()}99 20%, 
+                                        ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}70 60%, 
+                                        rgba(0,0,0,0) 70%)`,
+                                      filter: 'blur(20px)',
+                                      transformOrigin: 'center',
+                                      animation: 'pulse 8s infinite ease-in-out'
+                                    }}
+                                  ></div>
+                                  
+                                  {/* Multiple energy layers */}
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="relative w-40 h-40">
+                                      {/* Etheric Layer */}
+                                      <div 
+                                        className="absolute inset-0 rounded-full animate-pulse-slow opacity-70" 
+                                        style={{
+                                          background: `radial-gradient(circle at center, 
+                                            ${result.dominantColor.toLowerCase()}99 0%, 
+                                            ${result.dominantColor.toLowerCase()}20 70%, 
+                                            transparent 100%)`,
+                                          animation: 'pulse 10s infinite ease-in-out',
+                                          animationDelay: '0.5s'
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Emotional Layer */}
+                                      <div 
+                                        className="absolute inset-4 rounded-full animate-pulse-slow opacity-80" 
+                                        style={{
+                                          background: `radial-gradient(circle at center, 
+                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}99 0%, 
+                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}30 80%, 
+                                            transparent 100%)`,
+                                          animation: 'pulse 8s infinite ease-in-out',
+                                          animationDelay: '1s'
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Mental Layer */}
+                                      <div 
+                                        className="absolute inset-8 rounded-full animate-pulse-slow opacity-90" 
+                                        style={{
+                                          background: `radial-gradient(circle at center, 
+                                            ${result.dominantColor.toLowerCase()}90 0%, 
+                                            ${result.dominantColor.toLowerCase()}40 70%, 
+                                            transparent 100%)`,
+                                          animation: 'pulse 6s infinite ease-in-out',
+                                          animationDelay: '1.5s'
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Spiritual Core */}
+                                      <div 
+                                        className="absolute inset-12 rounded-full animate-pulse-slow opacity-95 flex items-center justify-center" 
+                                        style={{
+                                          background: `radial-gradient(circle at center, 
+                                            white 0%, 
+                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}70 70%, 
+                                            transparent 100%)`,
+                                          animation: 'pulse 4s infinite ease-in-out',
+                                          animationDelay: '2s'
+                                        }}
+                                      >
+                                        <Sparkles className="w-6 h-6 text-white/90" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Labels */}
+                                  <div className="absolute top-3 left-3 text-white text-xs font-medium bg-black/30 px-2 py-1 rounded z-20">
+                                    Multi-Layer Aura Visualization
+                                  </div>
+                                </div>
+                                
                                 <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
-                                  <p className="text-gray-700 whitespace-pre-line mb-4">{result.detailedAnalysis}</p>
+                                  <h4 className="font-medium text-base mb-3">Specialized Aura Interpretation</h4>
+                                  <p className="text-gray-700 whitespace-pre-line mb-5">{result.detailedAnalysis}</p>
+                                  
+                                  {/* Aura color frequency spectrum */}
+                                  <div className="mb-6">
+                                    <h4 className="font-medium text-sm text-secondary mb-3">Aura Color Frequency Spectrum</h4>
+                                    <div className="relative h-12 bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-violet-600 rounded-md mb-1 overflow-hidden">
+                                      {/* Frequency markers */}
+                                      <div className="absolute inset-0 flex justify-between px-1">
+                                        <div className="h-full w-px bg-white/30"></div>
+                                        <div className="h-full w-px bg-white/30"></div>
+                                        <div className="h-full w-px bg-white/30"></div>
+                                        <div className="h-full w-px bg-white/30"></div>
+                                        <div className="h-full w-px bg-white/30"></div>
+                                        <div className="h-full w-px bg-white/30"></div>
+                                      </div>
+                                      
+                                      {/* Current color position */}
+                                      {auraHelpers.getColorPosition(result.dominantColor) !== null && (
+                                        <div 
+                                          className="absolute top-0 bottom-0 w-6 border-2 border-white rounded-sm" 
+                                          style={{ 
+                                            left: `${auraHelpers.getColorPosition(result.dominantColor)}%`,
+                                            transform: 'translateX(-50%)',
+                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)' 
+                                          }}
+                                        ></div>
+                                      )}
+                                      
+                                      {result.secondaryColor && auraHelpers.getColorPosition(result.secondaryColor) !== null && (
+                                        <div 
+                                          className="absolute top-0 bottom-0 w-6 border-2 border-white rounded-sm opacity-70" 
+                                          style={{ 
+                                            left: `${auraHelpers.getColorPosition(result.secondaryColor)}%`,
+                                            transform: 'translateX(-50%)',
+                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.6)' 
+                                          }}
+                                        ></div>
+                                      )}
+                                    </div>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                      <span>Physical (Lower Hz)</span>
+                                      <span>Emotional</span>
+                                      <span>Mental</span>
+                                      <span>Spiritual (Higher Hz)</span>
+                                    </div>
+                                  </div>
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Aura Layers Interpretation</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
-                                      <h5 className="text-sm font-medium mb-1">Etheric Layer</h5>
+                                      <h5 className="text-sm font-medium mb-1 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ 
+                                            backgroundColor: result.dominantColor.toLowerCase(),
+                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
+                                          }}
+                                        ></span>
+                                        Etheric Layer
+                                      </h5>
                                       <p className="text-xs text-gray-600">
                                         {getAuraLayerAnalysis("etheric", result.dominantColor)}
                                       </p>
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
-                                      <h5 className="text-sm font-medium mb-1">Emotional Layer</h5>
+                                      <h5 className="text-sm font-medium mb-1 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ 
+                                            backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
+                                            boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
+                                          }}
+                                        ></span>
+                                        Emotional Layer
+                                      </h5>
                                       <p className="text-xs text-gray-600">
                                         {getAuraLayerAnalysis("emotional", result.secondaryColor || result.dominantColor)}
                                       </p>
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
-                                      <h5 className="text-sm font-medium mb-1">Mental Layer</h5>
+                                      <h5 className="text-sm font-medium mb-1 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ 
+                                            backgroundColor: result.dominantColor.toLowerCase(),
+                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
+                                          }}
+                                        ></span>
+                                        Mental Layer
+                                      </h5>
                                       <p className="text-xs text-gray-600">
                                         {getAuraLayerAnalysis("mental", result.dominantColor)}
                                       </p>
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
-                                      <h5 className="text-sm font-medium mb-1">Spiritual Layer</h5>
+                                      <h5 className="text-sm font-medium mb-1 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ 
+                                            backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
+                                            boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
+                                          }}
+                                        ></span>
+                                        Spiritual Layer
+                                      </h5>
                                       <p className="text-xs text-gray-600">
                                         {getAuraLayerAnalysis("spiritual", result.secondaryColor || result.dominantColor)}
                                       </p>
@@ -885,22 +1110,52 @@ export default function AuraAnalysis() {
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Energy Flow Analysis</h4>
                                   <div className="p-3 bg-white rounded-lg shadow-sm mb-4">
-                                    <p className="text-sm text-gray-700">
-                                      Your energy level is <span className="font-medium">{getEnergyLevelText(result.energyLevel)}</span>. 
-                                      {getEnergyAdvice(result.energyLevel, result.dominantColor)}
-                                    </p>
+                                    <div className="flex items-center mb-2">
+                                      <div className="relative w-20 h-20 mr-4 flex-shrink-0">
+                                        <div 
+                                          className="absolute inset-0 rounded-full animate-ping" 
+                                          style={{
+                                            background: `radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)`,
+                                            animation: `ping ${7 - result.energyLevel}s cubic-bezier(0, 0, 0.2, 1) infinite`
+                                          }}
+                                        ></div>
+                                        <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                                          <div 
+                                            className="w-12 h-12 rounded-full" 
+                                            style={{
+                                              background: `conic-gradient(${result.dominantColor.toLowerCase()} ${result.energyLevel * 36}deg, transparent 0deg)`,
+                                              boxShadow: `0 0 15px ${result.dominantColor.toLowerCase()}60`
+                                            }}
+                                          ></div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div className="text-sm font-medium">Energy Intensity: <span className="font-bold">{auraHelpers.getEnergyLevelText(result.energyLevel)}</span></div>
+                                        <p className="text-xs text-gray-600 mt-1">
+                                          {auraHelpers.getEnergyAdvice(result.energyLevel, result.dominantColor)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="text-xs text-gray-700 mt-2">
+                                      <strong>Energy Cycles:</strong> Your aura indicates a {auraHelpers.getEnergyCycle(result.energyLevel, result.dominantColor)} energy cycle currently. 
+                                      Pay attention to how your energy fluctuates throughout the day and week.
+                                    </div>
                                   </div>
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Personality Integration</h4>
                                   <div className="p-3 bg-white rounded-lg shadow-sm">
                                     <p className="text-sm text-gray-700 mb-2">
-                                      Your dominant traits combine to form a unique spiritual signature:
+                                      Your aura field reveals these dominant traits that combine to form your unique spiritual signature:
                                     </p>
-                                    <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                       {result.personalityTraits.map((trait, index) => (
-                                        <li key={index}><span className="font-medium">{trait}</span>: {getTraitExplanation(trait, result.dominantColor)}</li>
+                                        <div key={index} className="p-2 bg-gray-50 rounded-md text-sm border border-gray-100">
+                                          <span className="font-medium block">{trait}</span>
+                                          <span className="text-xs text-gray-600 block">{getTraitExplanation(trait, result.dominantColor)}</span>
+                                        </div>
                                       ))}
-                                    </ul>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
