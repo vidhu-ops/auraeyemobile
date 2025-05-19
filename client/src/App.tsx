@@ -51,7 +51,9 @@ function App() {
         <PremiumProvider>
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <div className="min-h-screen flex flex-col">
+              <Router />
+            </div>
           </TooltipProvider>
         </PremiumProvider>
       </AuthProvider>
