@@ -1160,15 +1160,11 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
                               
-                              <div className="flex justify-center">
-                                <Button 
-                                  variant="default" 
-                                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                                  onClick={handlePremiumUpgrade}
-                                >
-                                  <Crown className="w-4 h-4 mr-2" />
-                                  Unlock Premium Aura Analysis
-                                </Button>
+                              {/* Demo mode - showing premium features without upgrade */}
+                              <div className="flex justify-center mt-4">
+                                <div className="inline-flex items-center px-3 py-1 text-sm rounded-full bg-green-100 text-green-800 border border-green-200">
+                                  <span className="mr-1.5">✓</span> Premium Analysis Demo Mode Active
+                                </div>
                               </div>
                             </div>
                           </TabsContent>
