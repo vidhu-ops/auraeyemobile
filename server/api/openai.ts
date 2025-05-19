@@ -130,7 +130,7 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
         },
         detailedAnalysis: "Your aura displays a vibrant purple and indigo combination, indicating a highly evolved spiritual consciousness. The purple represents your intuitive abilities and connection to higher realms, while the indigo shows your strong third-eye activity and visionary perception. This combination is rare and suggests you're likely involved in spiritual or healing work. Your energy field shows exceptional strength in the upper chakras, particularly the third eye and crown, indicating advanced spiritual awareness and possible psychic abilities."
       },
-      [`B4gIJeUluXBf8yTXHbsH`]: {
+      "B4gIJeUluXBf8yTXHbsH": {
         dominantColor: "Blue", 
         secondaryColor: "Turquoise",
         energyLevel: 6,
