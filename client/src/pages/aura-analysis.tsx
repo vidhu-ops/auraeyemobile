@@ -1161,9 +1161,11 @@ export default function AuraAnalysis() {
                                               <div 
                                                 className="w-8 h-8 rounded-full flex-shrink-0 bg-opacity-70"
                                                 style={{ 
-                                                  backgroundColor: result.secondaryColor?.toLowerCase() || auraHelpers.getComplementaryColor(result.dominantColor).toLowerCase(),
+                                                  backgroundColor: result.secondaryColor?.toLowerCase() || 
+                                                    (auraHelpers.getComplementaryColor(result.dominantColor) || "white").toLowerCase(),
                                                   opacity: 0.6,
-                                                  boxShadow: `0 0 10px ${result.secondaryColor?.toLowerCase() || auraHelpers.getComplementaryColor(result.dominantColor).toLowerCase()}30`
+                                                  boxShadow: `0 0 10px ${(result.secondaryColor?.toLowerCase() || 
+                                                    (auraHelpers.getComplementaryColor(result.dominantColor) || "white").toLowerCase())}30`
                                                 }}
                                               ></div>
                                               <div>
