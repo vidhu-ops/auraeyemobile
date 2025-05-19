@@ -140,11 +140,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
+      
+      // Check if this is specifically for detecting visible aura colors in special photographs
+      const detectVisibleAura = req.body.detectVisibleAura === true;
+      
+      // Custom prompt for aura detection in photographs with visible auras
+      let customPrompt = null;
+      if (detectVisibleAura) {
+        customPrompt = `You are an expert aura reader analyzing a special aura photograph. 
+        These photographs are taken with special equipment that captures the actual aura colors around people.
+        
+        IMPORTANT: In these photographs, the colored glow/haze surrounding the person IS their actual aura.
+        Focus ONLY on the colored light surrounding the person - this is the true aura.
+        Do NOT focus on clothing colors, background, or other elements.
+        
+        Analyze the visible aura colors (the glowing/hazy colored field around the person) and provide a detailed spiritual interpretation.
+        Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
+      }
 
       // Try to analyze the aura using OpenAI, but use fallback if OpenAI fails
       let auraAnalysis;
       try {
-        auraAnalysis = await analyzeAuraImage(imageData);
+        auraAnalysis = await analyzeAuraImage(imageData, customPrompt);
       } catch (aiError) {
         console.error("Error in OpenAI analysis:", aiError);
         // Already using fallback inside analyzeAuraImage, this is just a safeguard
