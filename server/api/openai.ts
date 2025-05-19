@@ -10,6 +10,38 @@ const openai = new OpenAI({
 });
 
 /**
+ * Maps numerology numbers to their associated colors
+ * Each number vibrates with specific color energies in numerology
+ */
+function getColorForNumber(num: number): string {
+  // Handle master numbers
+  if (num === 11 || num === 22 || num === 33) {
+    // Master numbers have special color associations
+    if (num === 11) return "Silver";
+    if (num === 22) return "Gold";
+    if (num === 33) return "Platinum";
+  }
+  
+  // Reduce to single digit if not a master number
+  const reducedNum = num > 9 ? num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0) : num;
+  
+  // Standard color associations for numbers 1-9
+  const colorMap: Record<number, string> = {
+    1: "Red", // Independence, leadership, pioneering energy
+    2: "Orange", // Harmony, cooperation, sensitivity
+    3: "Yellow", // Creative expression, joy, communication
+    4: "Green", // Stability, practicality, growth
+    5: "Blue", // Freedom, change, versatility
+    6: "Indigo", // Responsibility, nurturing, healing
+    7: "Violet", // Spirituality, wisdom, introspection
+    8: "Pink", // Material success, power, abundance
+    9: "Gold", // Compassion, universal love, completion
+  };
+  
+  return colorMap[reducedNum] || "White"; // Default to white if number not found
+}
+
+/**
  * Analyzes an image to determine aura colors and energy patterns
  * @param base64Image The base64 encoded image
  * @param customPrompt Optional custom prompt to use for the analysis
@@ -567,13 +599,36 @@ export async function generateNumerologyReading(name: string, birthDate: string)
       max_tokens: 1000,
     });
 
-    return JSON.parse(response.choices[0].message.content || "{}");
+    // Parse the AI-generated response
+    const aiResponse = JSON.parse(response.choices[0].message.content || "{}");
+    
+    // Merge the AI-generated interpretation with our calculated values
+    // This ensures we have both the algorithmic calculation values and the enhanced AI interpretation
+    return {
+      ...baseProfile,
+      // Use AI-provided interpretation or fall back to algorithmically generated one
+      interpretation: aiResponse.interpretation || baseProfile.interpretation,
+      // Add color associations if provided by AI
+      colorAssociations: aiResponse.colorAssociations || {
+        lifePathColor: getColorForNumber(baseProfile.lifePathNumber),
+        destinyColor: getColorForNumber(baseProfile.destinyNumber),
+        soulUrgeColor: getColorForNumber(baseProfile.soulUrgeNumber),
+        personalityColor: getColorForNumber(baseProfile.personalityNumber)
+      },
+      // Include any additional insights from AI
+      energyPattern: aiResponse.energyPattern,
+      strengths: aiResponse.strengths,
+      challenges: aiResponse.challenges,
+      guidance: aiResponse.guidance
+    };
   } catch (error) {
     console.error("Error generating numerology reading:", error);
     // Use algorithmic calculation instead of throwing an error
     return calculateNumerologyProfile(name, birthDate);
   }
 }
+
+
 
 /**
  * Calculates numerology profile algorithmically when API is unavailable
