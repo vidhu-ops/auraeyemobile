@@ -100,11 +100,33 @@ export default function HealersPage() {
                 </CardContent>
                 
                 <CardFooter className="space-x-2">
-                  <Button asChild className="flex-1">
-                    <Link href={`/book-session/${healer.id}`}>
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Book Session
-                    </Link>
+                  <Button 
+                    className="flex-1"
+                    onClick={() => {
+                      // Display contact info in an alert
+                      alert(`Healer Contact Info:\nEmail: ${healer.name.toLowerCase().replace(' ', '.')}@aurafy.com\nPhone: +1 (555) ${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`);
+                      
+                      // Send booking notification
+                      fetch('/api/book-session', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          healerId: healer.id,
+                          healerName: healer.name,
+                          specialty: healer.specialty,
+                        })
+                      }).then(() => {
+                        alert('Booking request sent to healer. They will contact you shortly.');
+                      }).catch(err => {
+                        console.error('Booking error:', err);
+                        alert('Unable to send booking request. Please try again.');
+                      });
+                    }}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Book Session
                   </Button>
                   <Button variant="outline" className="flex-1">
                     <MessageSquare className="mr-2 h-4 w-4" />

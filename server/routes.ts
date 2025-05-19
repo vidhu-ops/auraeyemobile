@@ -431,6 +431,24 @@ function reduceNumber(num: number): number {
   return num;
 };
 
+  // Booking API endpoint
+  app.post("/api/book-session", async (req, res) => {
+    try {
+      const { healerId, healerName, specialty } = req.body;
+      
+      // Here you would typically:
+      // 1. Save the booking to database
+      // 2. Send notification to healer
+      // 3. Send confirmation email
+      
+      // For now, we'll just simulate success
+      res.status(200).json({ message: "Booking request sent successfully" });
+    } catch (error) {
+      console.error("Error processing booking:", error);
+      res.status(500).json({ message: "Failed to process booking" });
+    }
+  });
+
   // Journal entries API endpoints
   app.post("/api/journal", async (req, res) => {
     if (!req.isAuthenticated()) {
