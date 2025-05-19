@@ -321,10 +321,66 @@ Respond with valid JSON containing:
         const dominantRgba = colorMap[finalResult.dominantColor?.toLowerCase()] || colorMap.white;
         const secondaryRgba = colorMap[finalResult.secondaryColor?.toLowerCase()] || dominantRgba;
 
+      // Function to draw aura cloud effects with enhanced smoke appearance
+  const drawAuraClouds = (
+    ctx: CanvasRenderingContext2D, 
+    width: number, 
+    height: number, 
+    dominantColor: string, 
+    secondaryColor: string,
+    energyLevel: number
+  ) => {
+    // Create perlin noise function for more natural smoke effect
+    const noise = (x: number, y: number) => {
+      return Math.sin(x/20) * Math.cos(y/20) * Math.sin((x+y)/30);
+    };
+        // Mock canvas context and dimensions
+        const canvas = { width: 500, height: 500 };
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) * 0.8;
+
+        // Mock the canvas context
+        const ctx = {
+            fillStyle: dominantRgba,
+            beginPath: () => {},
+            moveTo: (x: number, y: number) => {},
+            arc: (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {},
+            closePath: () => {},
+            fill: () => {},
+            quadraticCurveTo: (cp1x: number, cp1y: number, x: number, y: number) => {}
+        } as any;
+
+      // Draw smoke-like shapes with perlin noise
+      ctx.beginPath();
+      const steps = 16;
+      for (let j = 0; j < steps; j++) {
+        const angle = (j / steps) * Math.PI * 2;
+        const baseRadius = radius * (0.8 + Math.random() * 0.4);
+
+        for (let k = 0; k < 3; k++) {
+          const offset = k * 10;
+          const noiseVal = noise(Math.cos(angle) * 100 + offset, Math.sin(angle) * 100 + offset);
+          const cloudX = centerX + Math.cos(angle) * (baseRadius + noiseVal * 30);
+          const cloudY = centerY + Math.sin(angle) * (baseRadius + noiseVal * 30);
+
+          if (j === 0 && k === 0) {
+            ctx.moveTo(cloudX, cloudY);
+          } else {
+            ctx.quadraticCurveTo(
+              centerX + Math.cos(angle - 0.2) * baseRadius * 1.2,
+              centerY + Math.sin(angle - 0.2) * baseRadius * 1.2,
+              cloudX, cloudY
+            );
+          }
+        }
+      }
+      ctx.closePath();
+
         // Mock result: Return a string indicating aura colors
         return `Processed image with dominant color ${finalResult.dominantColor} (${dominantRgba}) and secondary color ${finalResult.secondaryColor} (${secondaryRgba})`;
     };
-    
+
     // Process the image with aura colors
     const processedImage = await processImageWithAura(base64Image, { dominant: finalResult.dominantColor, secondary: finalResult.secondaryColor });
     console.log(processedImage); // Output the processed image information (or handle as needed)

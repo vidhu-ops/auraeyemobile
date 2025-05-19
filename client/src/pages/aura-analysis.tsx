@@ -544,16 +544,17 @@ export default function AuraAnalysis() {
                   </div>
                   
                   <div>
-                    {result?.processedImage && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium mb-2">Your Aura Visualization</h3>
-                  <img 
-                    src={result.processedImage} 
-                    alt="Aura visualization" 
-                    className="w-full rounded-lg shadow-lg"
-                  />
-                </div>
-              )}
+                    {enhancedAuraImage && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium mb-2">Your Aura Visualization</h3>
+                        <img 
+                          src={enhancedAuraImage} 
+                          alt="Aura visualization" 
+                          className="w-full rounded-lg shadow-lg"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">AI-enhanced aura visualization showing your energy field</p>
+                      </div>
+                    )}
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
                       <ul className="space-y-2 text-sm text-gray-600">
