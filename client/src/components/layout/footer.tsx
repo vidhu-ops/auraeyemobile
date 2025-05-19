@@ -17,16 +17,16 @@ export default function Footer() {
             </div>
             <p className="text-black/70 mb-4">Empowering spiritual growth through modern metaphysical tools and AI-enhanced aura analysis.</p>
             <div className="flex space-x-4">
-              <a href="#" className="text-black/70 hover:text-white transition-colors">
+              <a href="#" className="text-black/70 hover:text-red transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-black/70 hover:text-white transition-colors">
+              <a href="#" className="text-black/70 hover:text-red transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-black/70 hover:text-white transition-colors">
+              <a href="#" className="text-black/70 hover:text-red transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-black/70 hover:text-white transition-colors">
+              <a href="#" className="text-black/70 hover:text-red transition-colors">
                 <Youtube className="h-5 w-5" />
               </a>
             </div>
@@ -45,10 +45,10 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold mb-4">Services</h4>
             <ul className="space-y-2">
-              <li><Link href="/aura-analysis" className="text-black/70 hover:text-white transition-colors">Aura Analysis</Link></li>
+              <li><Link href="/aura-analysis" className="text-black/70 hover:text-purple transition-colors">Aura Analysis</Link></li>
               <li><Link href="/daily-horoscope" className="text-black/70 hover:text-pink transition-colors">Daily Horoscope</Link></li>
               <li><Link href="/numerology" className="text-black/70 hover:text-pink transition-colors">Numerology Reading</Link></li>
-              <li><Link href="/journal" className="text-black/70 hover:text-white transition-colors">Spiritual Journal</Link></li>
+              <li><Link href="/journal" className="text-black/70 hover:text-purple transition-colors">Spiritual Journal</Link></li>
             </ul>
           </div>
           
@@ -57,7 +57,7 @@ export default function Footer() {
             <p className="text-black/70 mb-3">Stay updated with our latest spiritual insights and offerings.</p>
             <form className="flex flex-col space-y-3">
               <Input type="email" placeholder="Your email address" className="px-3 py-2 rounded-lg bg-dark-light border border-dark-light focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" />
-              <Button className="bg-primary hover:bg-primary-dark text-black font-medium">
+              <Button className="bg-primary hover:bg-primary-dark text-white font-medium">
                 Subscribe
               </Button>
             </form>
