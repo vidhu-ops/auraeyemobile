@@ -24,6 +24,8 @@ export default function AuraAnalysis() {
   const [activeTab, setActiveTab] = useState("analysis");
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
   
   // Numerology states
   const [numerologyName, setNumerologyName] = useState("");
@@ -33,6 +35,116 @@ export default function AuraAnalysis() {
   
   const handlePremiumUpgrade = () => {
     showPremiumModal("aura");
+  };
+  
+  // Function to generate aura visualization with colored clouds
+  const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
+    if (!originalImageBase64) return;
+    
+    // Create a new image element to work with
+    const img = new Image();
+    img.src = originalImageBase64;
+    
+    img.onload = () => {
+      // Create a canvas to draw on
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Set canvas dimensions
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw original image
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      
+      // Get dominant and secondary colors
+      const dominantColor = auraData.dominantColor.toLowerCase();
+      const secondaryColor = auraData.secondaryColor?.toLowerCase() || dominantColor;
+      
+      // Draw aura clouds
+      drawAuraClouds(ctx, img.width, img.height, dominantColor, secondaryColor, auraData.energyLevel);
+      
+      // Convert back to base64
+      const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
+      setEnhancedAuraImage(enhancedImageBase64);
+    };
+  };
+  
+  // Function to draw aura cloud effects
+  const drawAuraClouds = (
+    ctx: CanvasRenderingContext2D, 
+    width: number, 
+    height: number, 
+    dominantColor: string, 
+    secondaryColor: string,
+    energyLevel: number
+  ) => {
+    // Map color names to rgba values
+    const colorMap: Record<string, string> = {
+      red: 'rgba(255, 0, 0, 0.3)',
+      orange: 'rgba(255, 165, 0, 0.3)',
+      yellow: 'rgba(255, 255, 0, 0.3)',
+      green: 'rgba(0, 128, 0, 0.3)',
+      blue: 'rgba(0, 0, 255, 0.3)',
+      indigo: 'rgba(75, 0, 130, 0.3)',
+      violet: 'rgba(148, 0, 211, 0.3)',
+      purple: 'rgba(128, 0, 128, 0.3)',
+      pink: 'rgba(255, 182, 193, 0.3)',
+      white: 'rgba(255, 255, 255, 0.3)',
+      gold: 'rgba(255, 215, 0, 0.3)',
+      silver: 'rgba(192, 192, 192, 0.3)',
+      black: 'rgba(0, 0, 0, 0.3)',
+    };
+    
+    // Get RGBA values for dominant and secondary colors
+    const dominantRgba = colorMap[dominantColor] || 'rgba(255, 255, 255, 0.3)';
+    const secondaryRgba = colorMap[secondaryColor] || 'rgba(128, 128, 255, 0.3)';
+    
+    // Create a radial gradient for the aura effect
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Intensity of the aura based on energy level (1-10)
+    const intensityFactor = energyLevel / 10;
+    const auraSize = Math.max(width, height) * (0.2 + intensityFactor * 0.3);
+    
+    // Draw multiple layers of aura clouds with different opacities and sizes
+    for (let i = 0; i < 5; i++) {
+      const radius = auraSize * (0.6 + i * 0.1);
+      const gradient = ctx.createRadialGradient(
+        centerX, centerY, radius * 0.2,
+        centerX, centerY, radius
+      );
+      
+      // Add color stops with varying opacity
+      const opacity = 0.15 - i * 0.02;
+      gradient.addColorStop(0, dominantRgba.replace('0.3', `${opacity + 0.1}`));
+      gradient.addColorStop(0.4, dominantRgba.replace('0.3', `${opacity}`));
+      gradient.addColorStop(0.6, secondaryRgba.replace('0.3', `${opacity}`));
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      
+      // Apply the gradient
+      ctx.fillStyle = gradient;
+      ctx.globalCompositeOperation = 'screen';
+      
+      // Draw cloud-like shapes
+      ctx.beginPath();
+      for (let j = 0; j < 8; j++) {
+        const angle = (j / 8) * Math.PI * 2;
+        const cloudX = centerX + Math.cos(angle) * radius * (0.8 + Math.random() * 0.4);
+        const cloudY = centerY + Math.sin(angle) * radius * (0.8 + Math.random() * 0.4);
+        const cloudRadius = radius * 0.3 * (0.7 + Math.random() * 0.6);
+        
+        ctx.moveTo(cloudX + cloudRadius, cloudY);
+        ctx.arc(cloudX, cloudY, cloudRadius, 0, Math.PI * 2);
+      }
+      
+      ctx.fill();
+    }
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to calculate numerology based on name and birth date
@@ -120,12 +232,19 @@ export default function AuraAnalysis() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = async () => {
-        const base64data = reader.result?.toString().split(",")[1];
+        const base64String = reader.result?.toString();
+        const base64data = base64String?.split(",")[1];
+        
+        // Store original image
+        setOriginalImage(base64String || null);
         
         if (base64data) {
           // Call API to analyze the image
           const analysisResult = await analyzeAuraImage(base64data);
           setResult(analysisResult);
+          
+          // Generate enhanced aura image with aura clouds
+          generateAuraVisualization(base64String, analysisResult);
           
           // Ensure progress shows 100% at the end
           setAnalysisProgress(100);
