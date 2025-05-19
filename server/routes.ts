@@ -528,6 +528,32 @@ function reduceNumber(num: number): number {
       const result = calculateNumerologyProfile(name, birthDate);
       console.log("Calculated numerology profile:", result);
       
+      // Map a number to its color name
+      const getColorName = (num: number): string => {
+        // Handle master numbers
+        if (num === 11) return "Silver";
+        if (num === 22) return "Gold";
+        if (num === 33) return "Platinum";
+        
+        // Reduce to single digit if not a master number
+        const reducedNum = num > 9 ? num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0) : num;
+        
+        // Map of colors for numbers 1-9
+        const colorMap: Record<number, string> = {
+          1: "Red",
+          2: "Orange",
+          3: "Yellow",
+          4: "Green",
+          5: "Blue",
+          6: "Indigo",
+          7: "Violet",
+          8: "Pink",
+          9: "Gold"
+        };
+        
+        return colorMap[reducedNum] || "White";
+      };
+      
       // Create the return object with the basic numerology values
       const numerologyProfile = {
         lifePathNumber: result.lifePathNumber,
@@ -535,13 +561,26 @@ function reduceNumber(num: number): number {
         soulUrgeNumber: result.soulUrgeNumber,
         personalityNumber: result.personalityNumber,
         interpretation: result.interpretation,
-        // Add default values for enhanced properties
+        // Add enhanced properties
         colorAssociations: {
           lifePathColor: getColorName(result.lifePathNumber),
           destinyColor: getColorName(result.destinyNumber),
           soulUrgeColor: getColorName(result.soulUrgeNumber),
           personalityColor: getColorName(result.personalityNumber)
-        }
+        },
+        // Add additional property examples for the enhanced UI
+        strengths: [
+          "Natural " + getColorName(result.lifePathNumber) + " energy enhances your leadership abilities",
+          "Your " + getColorName(result.destinyNumber) + " vibration amplifies your communication skills",
+          "The " + getColorName(result.soulUrgeNumber) + " influence strengthens your intuitive abilities"
+        ],
+        challenges: [
+          "Balancing " + getColorName(result.lifePathNumber) + " intensity in daily interactions", 
+          "Integrating " + getColorName(result.destinyNumber) + " energy with practical matters",
+          "Managing the sensitivity that comes with " + getColorName(result.soulUrgeNumber) + " vibrations"
+        ],
+        guidance: "Focus on harmonizing the " + getColorName(result.lifePathNumber) + " and " + 
+                 getColorName(result.destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
       };
       
       // If user is authenticated, save the reading to their profile
@@ -551,11 +590,11 @@ function reduceNumber(num: number): number {
             userId: req.user.id,
             name,
             birthDate,
-            lifePathNumber: numerologyProfile.lifePathNumber,
-            destinyNumber: numerologyProfile.destinyNumber,
-            soulUrgeNumber: numerologyProfile.soulUrgeNumber,
-            personalityNumber: numerologyProfile.personalityNumber,
-            interpretation: numerologyProfile.interpretation
+            lifePathNumber: result.lifePathNumber,
+            destinyNumber: result.destinyNumber,
+            soulUrgeNumber: result.soulUrgeNumber,
+            personalityNumber: result.personalityNumber,
+            interpretation: result.interpretation
           };
           
           await storage.saveNumerologyReading(readingToSave);
@@ -565,7 +604,8 @@ function reduceNumber(num: number): number {
         }
       }
       
-      // Return the calculated numerology profile
+      // Return the enhanced numerology profile
+      console.log("Returning numerology profile:", numerologyProfile);
       res.json(numerologyProfile);
     } catch (error) {
       console.error("Error calculating numerology:", error);
