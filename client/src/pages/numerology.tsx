@@ -407,37 +407,77 @@ export default function Numerology() {
           </div>
         </section>
         
-        {/* Premium Features Section */}
+        {/* Complete Features Section */}
         <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
-                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Numerology Reading Options</h2>
+                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Complete Numerology Features</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Choose the level of numerological insight that best supports your spiritual journey.
+                  Explore the full range of our numerology capabilities.
                 </p>
               </div>
               
-              <PremiumFeature
-                title="Numerology Reading"
-                description="Discover the hidden meanings in your numbers"
-                basicFeatures={[
-                  "Life Path Number calculation",
-                  "Destiny Number calculation",
-                  "Soul Urge Number calculation",
-                  "Personality Number calculation",
-                  "Basic interpretation of your core numbers"
-                ]}
-                premiumFeatures={[
-                  "Comprehensive analysis of all 11 numerology chart elements",
-                  "Personal Year, Month and Day forecasts",
-                  "Compatibility analysis for relationships and partnerships",
-                  "Career and financial opportunity predictions",
-                  "Custom numerology-based meditation practices"
-                ]}
-                ctaText="Unlock Premium Numerology Reading"
-                onUpgrade={handlePremiumUpgrade}
-              />
+              <div className="my-6 grid md:grid-cols-1 gap-6">
+                <Card className="relative overflow-hidden border-2 border-primary/20">
+                  <div className="absolute top-0 right-0 bg-green-100 px-3 py-1 rounded-bl-md">
+                    <span className="text-sm font-medium text-green-800">All Features Included</span>
+                  </div>
+                  <CardHeader>
+                    <CardTitle>Complete Numerology Reading</CardTitle>
+                    <CardDescription>Discover the hidden meanings in your numbers with our comprehensive analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <h3 className="font-semibold mb-2">Includes:</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Life Path Number calculation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Destiny Number calculation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Soul Urge Number calculation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Personality Number calculation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Basic interpretation of your core numbers</span>
+                        </li>
+                      </ul>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Comprehensive analysis of all 11 numerology chart elements</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Personal Year, Month and Day forecasts</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Compatibility analysis for relationships and partnerships</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Career and financial opportunity predictions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Custom numerology-based meditation practices</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
