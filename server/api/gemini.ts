@@ -78,9 +78,9 @@ Respond with valid JSON containing:
     }
     
     // Parse the JSON
-    let result = {};
+    let result: Partial<AuraAnalysisResult> = {};
     try {
-      result = JSON.parse(jsonStr);
+      result = JSON.parse(jsonStr) as Partial<AuraAnalysisResult>;
     } catch (error) {
       console.error("Error parsing Gemini response:", error);
       // Fallback to structured data from the text
@@ -91,6 +91,13 @@ Respond with valid JSON containing:
     const defaultResult: AuraAnalysisResult = {
       dominantColor: "Blue",
       secondaryColor: "Green", 
+      // Extended spectrum with multiple colors
+      auraColorSpectrum: ["Blue", "Green", "Indigo", "Turquoise", "Purple"],
+      auraLayerColors: {
+        inner: "Blue",
+        middle: "Green",
+        outer: "Indigo"
+      },
       energyLevel: 3,
       personalityTraits: ["Intuitive", "Compassionate", "Creative"],
       spiritualGuidance: "Focus on balancing your energy through meditation and mindfulness practices. Your intuitive abilities are strong but need to be grounded.",
@@ -106,15 +113,22 @@ Respond with valid JSON containing:
       detailedAnalysis: "Your aura indicates a person with strong spiritual awareness and healing capabilities. Continue to develop your intuitive gifts while maintaining balance in your physical life."
     };
 
-    // Merge with default values
+    // Return merged results with default values filling in any missing fields
     return {
       ...defaultResult,
       ...result,
+      // Ensure the aura layers are properly merged
+      auraLayerColors: {
+        ...defaultResult.auraLayerColors,
+        ...(result.auraLayerColors || {})
+      },
+      // Ensure the chakra activity is properly merged
       chakraActivity: {
         ...defaultResult.chakraActivity,
         ...(result.chakraActivity || {})
       }
     };
+    
   } catch (error) {
     console.error("Error in Gemini analysis:", error);
     
@@ -122,6 +136,13 @@ Respond with valid JSON containing:
     return {
       dominantColor: "Indigo",
       secondaryColor: "Violet",
+      // Extended spectrum with multiple colors for fallback
+      auraColorSpectrum: ["Indigo", "Violet", "Purple", "Blue", "White"],
+      auraLayerColors: {
+        inner: "Indigo",
+        middle: "Violet",
+        outer: "Blue"
+      },
       energyLevel: 4,
       personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Sensitive"],
       spiritualGuidance: "Your aura indicates a strong spiritual connection. Focus on grounding exercises to balance your intuitive abilities with everyday reality. Meditation will help you channel your energy more effectively.",
@@ -143,7 +164,25 @@ Respond with valid JSON containing:
  * Fallback parser for when JSON parsing fails
  */
 function fallbackParser(text: string): Partial<AuraAnalysisResult> {
-  const result: Partial<AuraAnalysisResult> = {};
+  const result: Partial<AuraAnalysisResult> = {
+    // Initialize the chakraActivity to fix TypeScript error
+    chakraActivity: {
+      root: 5,
+      sacral: 6,
+      solarPlexus: 5,
+      heart: 7,
+      throat: 6,
+      thirdEye: 8,
+      crown: 7
+    },
+    // Initialize aura color spectrum with default values
+    auraColorSpectrum: [],
+    auraLayerColors: {
+      inner: "",
+      middle: "",
+      outer: ""
+    }
+  };
   
   // Extract dominant color
   const dominantColorMatch = text.match(/dominant\s*color\s*[:-]\s*([a-zA-Z]+)/i);
@@ -152,6 +191,23 @@ function fallbackParser(text: string): Partial<AuraAnalysisResult> {
   // Extract secondary color
   const secondaryColorMatch = text.match(/secondary\s*color\s*[:-]\s*([a-zA-Z]+)/i);
   if (secondaryColorMatch) result.secondaryColor = secondaryColorMatch[1];
+  
+  // If we have dominant and secondary colors, use them to create a default spectrum
+  if (result.dominantColor && result.secondaryColor) {
+    result.auraColorSpectrum = [
+      result.dominantColor,
+      result.secondaryColor,
+      "Indigo", // Default third color
+      "Blue",   // Default fourth color
+      "Violet"  // Default fifth color
+    ];
+    
+    result.auraLayerColors = {
+      inner: result.dominantColor,
+      middle: result.secondaryColor,
+      outer: "Indigo" // Default outer layer
+    };
+  }
   
   // Extract energy level
   const energyLevelMatch = text.match(/energy\s*level\s*[:-]\s*(\d+)/i);
