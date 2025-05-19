@@ -302,13 +302,31 @@ Respond with valid JSON containing:
 
     // Function to process image with aura colors
     const processImageWithAura = async (base64Image: string, auraColors: {dominant: string, secondary: string}): Promise<string> => {
+        const colorMap: Record<string, string> = {
+          red: 'rgba(255, 0, 0, 0.3)',
+          orange: 'rgba(255, 165, 0, 0.3)',
+          yellow: 'rgba(255, 255, 0, 0.3)',
+          green: 'rgba(0, 128, 0, 0.3)',
+          blue: 'rgba(0, 0, 255, 0.3)',
+          purple: 'rgba(128, 0, 128, 0.3)',
+          indigo: 'rgba(75, 0, 130, 0.3)',
+          violet: 'rgba(148, 0, 211, 0.3)',
+          white: 'rgba(255, 255, 255, 0.3)',
+          gold: 'rgba(255, 215, 0, 0.3)',
+          silver: 'rgba(192, 192, 192, 0.3)',
+          black: 'rgba(0, 0, 0, 0.2)'
+        };
+
         try {
-            // Call a free image editing API (replace with actual API endpoint)
+            if (!process.env.STABILITY_API_KEY) {
+                throw new Error('Stability API key not configured');
+            }
+
             const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.STABILITY_API_KEY || ''}`
+                    'Authorization': `Bearer ${process.env.STABILITY_API_KEY}`
                 },
                 body: JSON.stringify({
                     init_image: base64Image,
@@ -327,11 +345,12 @@ Respond with valid JSON containing:
             return result.artifacts[0].base64;
         } catch (error) {
             console.error('Error processing image:', error);
-            // Fallback to basic color overlay
-            const colorMap: Record<string, string> = {
-          red: 'rgba(255, 0, 0, 0.3)',
-          orange: 'rgba(255, 165, 0, 0.3)',
-          yellow: 'rgba(255, 255, 0, 0.3)',
+            // Return basic color overlay description
+            const dominantRgba = colorMap[auraColors.dominant.toLowerCase()] || colorMap.white;
+            const secondaryRgba = colorMap[auraColors.secondary?.toLowerCase()] || dominantRgba;
+            return `Processed with ${auraColors.dominant} (${dominantRgba}) and ${auraColors.secondary} (${secondaryRgba})`;
+        }
+    };
           green: 'rgba(0, 128, 0, 0.3)',
           blue: 'rgba(0, 0, 255, 0.3)',
           purple: 'rgba(128, 0, 128, 0.3)',
