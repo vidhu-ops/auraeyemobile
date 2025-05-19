@@ -12,7 +12,7 @@ interface PremiumContextType {
 const PremiumContext = createContext<PremiumContextType | undefined>(undefined);
 
 export function PremiumProvider({ children }: { children: ReactNode }) {
-  const [isPremium] = useState<boolean>(false);
+  const [isPremium] = useState<boolean>(true); // Set to true to unlock all premium features
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [activeFeature, setActiveFeature] = useState<PremiumFeatureType>("general");
 

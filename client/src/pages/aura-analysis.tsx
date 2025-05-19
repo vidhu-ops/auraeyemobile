@@ -934,8 +934,8 @@ export default function AuraAnalysis() {
                           <TabsContent value="detailed">
                             <div>
                               <div className="mb-6 relative">
-                                <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-300 z-10">
-                                  Premium Feature
+                                <div className="absolute -top-2 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-10">
+                                  Advanced Feature
                                 </div>
                                 <h3 className="font-medium text-lg mb-4 text-primary">Advanced Aura Field Analysis</h3>
                                 
@@ -1390,36 +1390,73 @@ export default function AuraAnalysis() {
           </div>
         </section>
         
-        {/* Premium Features Section */}
+        {/* Advanced Features Section */}
         <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
-                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Aura Analysis Options</h2>
+                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Complete Aura Analysis Features</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Choose the level of insight that best suits your spiritual journey.
+                  Explore the full range of our aura analysis capabilities.
                 </p>
               </div>
               
-              <PremiumFeature
-                title="Aura Analysis"
-                description="Discover the colors and energy patterns of your aura"
-                basicFeatures={[
-                  "Basic aura color identification",
-                  "Primary personality traits",
-                  "Energy level assessment",
-                  "Basic chakra activity visualization"
-                ]}
-                premiumFeatures={[
-                  "Advanced multi-layer aura color analysis",
-                  "Detailed chakra balancing recommendations",
-                  "Personalized spiritual practice suggestions",
-                  "Temporal aura pattern tracking",
-                  "30-day aura energy forecast"
-                ]}
-                ctaText="Unlock Premium Aura Analysis"
-                onUpgrade={handlePremiumUpgrade}
-              />
+              <div className="my-6 grid md:grid-cols-1 gap-6">
+                <Card className="relative overflow-hidden border-2 border-primary/20">
+                  <div className="absolute top-0 right-0 bg-green-100 px-3 py-1 rounded-bl-md">
+                    <span className="text-sm font-medium text-green-800">All Features Included</span>
+                  </div>
+                  <CardHeader>
+                    <CardTitle>Complete Aura Analysis</CardTitle>
+                    <CardDescription>Discover the colors and energy patterns of your aura with our comprehensive analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <h3 className="font-semibold mb-2">Includes:</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Basic aura color identification</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Primary personality traits</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Energy level assessment</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Basic chakra activity visualization</span>
+                        </li>
+                      </ul>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Advanced multi-layer aura color analysis</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Detailed chakra balancing recommendations</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Personalized spiritual practice suggestions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Temporal aura pattern tracking</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>30-day aura energy forecast</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
