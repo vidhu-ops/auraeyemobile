@@ -6,7 +6,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PremiumFeature } from "@/components/premium/premium-feature";
 import { analyzeAuraImage, AuraAnalysisResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
