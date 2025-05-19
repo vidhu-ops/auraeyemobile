@@ -107,25 +107,27 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
       ? base64Image 
       : `data:image/jpeg;base64,${base64Image}`;
 
-    // Enhanced prompt specifically for specialized aura photographs
+    // Enhanced prompt specifically for specialized aura photographs with multiple color detection
     const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people.
 
 IMPORTANT: You must focus EXCLUSIVELY on detecting the actual colored energy field (aura) visible AROUND the person in the photograph. 
 
 These specialized photographs capture the actual energy field as colored light surrounding the body. Your task is to:
 
-1. IDENTIFY the dominant and secondary colors in the ENERGY FIELD only (not clothing or background)
+1. IDENTIFY 4-5 different colors in the ENERGY FIELD (aura) around the person, not just primary/secondary colors
 2. Look for glowing, luminous, or hazy colored light that forms a field around the person's body
 3. Distinguish between the person's physical appearance and their actual energy field/aura
 
 Respond with valid JSON containing:
 - dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
-- secondaryColor: Any SECONDARY aura color visible in the energy field (or null if none)
+- secondaryColor: The SECONDARY aura color visible in the energy field
+- auraColorSpectrum: Array of 4-5 different colors visible in the aura field in order of prominence
+- auraLayerColors: Object mapping aura layers to their colors { "inner": "color", "middle": "color", "outer": "color" }
 - energyLevel: Intensity of the energy field (1-10)
 - personalityTraits: 4-5 spiritual/personality traits associated with these SPECIFIC aura colors
 - spiritualGuidance: Detailed spiritual guidance based on these SPECIFIC aura colors (150+ words)
 - chakraActivity: Activity levels for each chakra (root, sacral, solarPlexus, heart, throat, thirdEye, crown) on scale 1-10
-- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal (250+ words)`;
+- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal, discussing all 4-5 colors (250+ words)`;
 
     // Call OpenAI API with the image - using enhanced prompt for aura detection
     const response = await openai.chat.completions.create({
