@@ -144,6 +144,12 @@ export default function ObjectAnalysis() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-heading font-bold">Object Analysis</h1>
+          <p className="opacity-80">Discover the energy and spiritual significance of objects</p>
+        </div>
+      </div>
       <main className="flex-grow">
         <section className="py-10 md:py-16">
           <div className="container mx-auto px-4">
