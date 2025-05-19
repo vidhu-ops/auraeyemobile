@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import ImageUpload from "@/components/forms/image-upload";
 import Footer from "@/components/layout/footer";
+import Navbar from "@/components/layout/navbar";
 
 interface ObjectAnalysisResult {
   objectName: string;
@@ -144,6 +145,7 @@ export default function ObjectAnalysis() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Navbar />
       <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-heading font-bold">Object Analysis</h1>
