@@ -117,18 +117,20 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
     // Enhanced prompt specifically for specialized aura photographs with multiple color detection
     const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people.
 
-IMPORTANT: You must focus EXCLUSIVELY on detecting the actual colored energy field (aura) visible AROUND the person in the photograph. 
+EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
 
-These specialized photographs capture the actual energy field as colored light surrounding the body. Your task is to:
+DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
 
-1. IDENTIFY 4-5 different colors in the ENERGY FIELD (aura) around the person, not just primary/secondary colors
-2. Look for glowing, luminous, or hazy colored light that forms a field around the person's body
-3. Distinguish between the person's physical appearance and their actual energy field/aura
+Specifically:
+1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
+2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
+3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
+4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
 
 Respond with valid JSON containing:
 - dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
 - secondaryColor: The SECONDARY aura color visible in the energy field
-- auraColorSpectrum: Array of 4-5 different colors visible in the aura field in order of prominence
+- auraColorSpectrum: Array of 4-5 different colors actually visible in the aura field in order of prominence
 - auraLayerColors: Object mapping aura layers to their colors { "inner": "color", "middle": "color", "outer": "color" }
 - energyLevel: Intensity of the energy field (1-10)
 - personalityTraits: 4-5 spiritual/personality traits associated with these SPECIFIC aura colors
@@ -151,7 +153,7 @@ Respond with valid JSON containing:
               type: "text",
               text: customPrompt 
                 ? customPrompt 
-                : "Analyze this specialized aura photograph. Focus ONLY on the colored energy field/aura visible AROUND the person's body. Ignore clothing colors or background elements. Identify the primary and secondary colors in the energy field (aura) and provide a detailed interpretation."
+                : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
             },
             {
               type: "image_url",

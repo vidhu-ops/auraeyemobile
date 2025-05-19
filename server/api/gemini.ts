@@ -25,22 +25,26 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<AuraA
             {
               text: `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show colored energy fields around people.
 
-IMPORTANT: Focus EXCLUSIVELY on the actual colored energy field (aura) visible AROUND the person in the photograph.
+EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
 
-These specialized photographs capture the energy field as colored light surrounding the body. Your task is to:
+DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
 
-1. IDENTIFY the dominant and secondary colors in the ENERGY FIELD only (not clothing/background)
-2. Look for glowing, luminous, or hazy colored light that forms a field around the person
-3. Distinguish between the person's physical appearance and their actual energy field/aura
+Specifically:
+1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
+2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
+3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
+4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
 
 Respond with valid JSON containing:
 - dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
-- secondaryColor: Any SECONDARY aura color visible in the energy field (or null if none)
+- secondaryColor: The SECONDARY aura color visible in the energy field
+- auraColorSpectrum: Array of 4-5 different colors actually visible in the aura field in order of prominence
+- auraLayerColors: Object mapping aura layers to their colors { "inner": "color", "middle": "color", "outer": "color" }
 - energyLevel: Intensity of the energy field (1-10)
-- personalityTraits: 4-5 spiritual traits associated with these SPECIFIC aura colors
+- personalityTraits: 4-5 spiritual/personality traits associated with these SPECIFIC aura colors
 - spiritualGuidance: Detailed spiritual guidance based on these SPECIFIC aura colors (150+ words)
 - chakraActivity: Activity levels for each chakra (root, sacral, solarPlexus, heart, throat, thirdEye, crown) on scale 1-10
-- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal (250+ words)`
+- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal, discussing all 4-5 colors (250+ words)`
             },
             {
               inline_data: {
