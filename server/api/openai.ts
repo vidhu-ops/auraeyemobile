@@ -186,7 +186,7 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
                 {
                   type: "image_url",
                   image_url: {
-                    url: imageContent
+                    url: base64Image
                   }
                 }
               ]
@@ -195,6 +195,10 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
           response_format: { type: "json_object" },
           max_tokens: 1500,
         });
+      } catch (error) {
+        console.error("Error in OpenAI API call:", error);
+        throw error;
+      }
 
     // Parse the response
     const result = JSON.parse(response.choices[0].message.content || "{}");
