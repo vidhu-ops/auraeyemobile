@@ -17,13 +17,30 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<AuraA
       ? base64Image.split(',')[1] 
       : base64Image;
     
-    // Build request payload
+    // Build request payload with an enhanced prompt for aura color detection
     const payload = {
       contents: [
         {
           parts: [
             {
-              text: "Analyze this person's aura and provide a detailed spiritual reading based on their energy field. Respond with JSON containing: dominantColor, secondaryColor, energyLevel (1-5), personalityTraits (array), spiritualGuidance, chakraActivity, and detailedAnalysis."
+              text: `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show colored energy fields around people.
+
+IMPORTANT: Focus EXCLUSIVELY on the actual colored energy field (aura) visible AROUND the person in the photograph.
+
+These specialized photographs capture the energy field as colored light surrounding the body. Your task is to:
+
+1. IDENTIFY the dominant and secondary colors in the ENERGY FIELD only (not clothing/background)
+2. Look for glowing, luminous, or hazy colored light that forms a field around the person
+3. Distinguish between the person's physical appearance and their actual energy field/aura
+
+Respond with valid JSON containing:
+- dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
+- secondaryColor: Any SECONDARY aura color visible in the energy field (or null if none)
+- energyLevel: Intensity of the energy field (1-10)
+- personalityTraits: 4-5 spiritual traits associated with these SPECIFIC aura colors
+- spiritualGuidance: Detailed spiritual guidance based on these SPECIFIC aura colors (150+ words)
+- chakraActivity: Activity levels for each chakra (root, sacral, solarPlexus, heart, throat, thirdEye, crown) on scale 1-10
+- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal (250+ words)`
             },
             {
               inline_data: {
@@ -35,8 +52,8 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<AuraA
         }
       ],
       generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 1024
+        temperature: 0.2,  // Lower temperature for more consistent results
+        maxOutputTokens: 1500  // Increased token limit for more detailed analysis
       }
     };
     
