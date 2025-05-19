@@ -596,7 +596,7 @@ function getFallbackHoroscope(sign: string): any {
     pisces: {
       sign: "pisces",
       date: today,
-      reading: "Intuitive insights guide your decisions and interactions.Artistic expression channels your deep emotional landscape. Compassion creates healing connections with others. Spiritual practices strengthen your inner guidance. Boundaries help preserve your sensitive energy.",
+      reading: "Intuitive insights guide your decisions and interactions.Artistic expression channelsyour deep emotional landscape. Compassion creates healing connections with others. Spiritual practices strengthen your inner guidance. Boundaries help preserve your sensitive energy.",
       love: 4,
       career: 3,
       health: 3,
@@ -828,3 +828,34 @@ Your Personality number ${personality} reveals that you present yourself to othe
 
 The interaction between these numbers creates a unique numerological blueprint that guides your life's journey. By honoring your Life Path, working toward your Destiny, acknowledging your Soul Urge, and expressing your Personality authentically, you can align with your highest potential and purpose.`;
 }
+/**
+ * Provides descriptions for the energy cycle with enhanced detail and color context
+ */
+const getEnergyCycle: (energyLevel: number, color: string) => string =
+    (energyLevel: number, color: string): string => {
+      const energyLevels = {
+        veryHigh: energyLevel >= 9,
+        high: energyLevel >= 7 && energyLevel < 9,
+        moderate: energyLevel >= 5 && energyLevel < 7,
+        low: energyLevel >= 3 && energyLevel < 5,
+        veryLow: energyLevel < 3
+      };
+
+      const colorLower = color.toLowerCase();
+
+      if (energyLevels.veryHigh) {
+        return ` Your aura shows exceptionally high energy (Level ${energyLevel}/10). This intense spiritual/physical energy requires grounding practices.`;
+      } else if (energyLevels.high) {
+        if (["purple", "indigo", "violet"].includes(colorLower)) {
+          return ` Your aura displays strong spiritual energy (Level ${energyLevel}/10), indicating heightened intuitive abilities.`;
+        } else if (["red", "orange"].includes(colorLower)) {
+          return ` Your aura shows powerful physical/emotional energy (Level ${energyLevel}/10), suggesting dynamic life force.`;
+        }
+      } else if (energyLevels.moderate) {
+        return ` Your aura reveals balanced energy levels (Level ${energyLevel}/10), indicating good equilibrium.`;
+      } else if (energyLevels.low) {
+        return ` Your aura shows calmer energy (Level ${energyLevel}/10), suggesting a period of rest or recharge.`;
+      } else {
+        return ` Your aura indicates very subtle energy (Level ${energyLevel}/10), suggesting deep contemplation or healing needed.`;
+      }
+    };
