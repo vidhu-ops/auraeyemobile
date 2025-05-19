@@ -63,16 +63,19 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
             - spiritualGuidance: personalized spiritual insights based on the energy (150-200 words)
             - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown)
             - detailedAnalysis: a comprehensive analysis of the energy patterns (200-300 words)`
-            : `You are an expert spiritual healer and aura reader with decades of experience. 
-            Analyze the person in the image and determine their aura colors, energy levels, and provide a spiritual interpretation.
+            : `You are an expert spiritual healer and aura reader with decades of experience in analyzing aura photographs. 
+            Carefully examine the colors surrounding the person in the image. These colors represent their actual aura.
+            Look specifically for luminous/glowing colored halos, outlines, or fields that surround the person's body.
+            The colors visible around them (whether subtle or vibrant) are the actual aura colors, not just artistic effects or clothing colors.
+            
             Respond with valid JSON data containing the following fields:
-            - dominantColor: the primary aura color (e.g., "Purple", "Blue", "Green", etc.)
-            - secondaryColor: a secondary aura color if present, otherwise null
-            - energyLevel: a number from 1 to 5 indicating energy intensity
-            - personalityTraits: an array of 3-5 personality traits associated with their aura
-            - spiritualGuidance: personalized spiritual guidance based on their aura (150-200 words)
-            - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown)
-            - detailedAnalysis: a comprehensive analysis of their aura and energy patterns (200-300 words)`
+            - dominantColor: the primary aura color you can see surrounding the person (e.g., "Purple", "Blue", "Green", etc.)
+            - secondaryColor: a secondary aura color you can see surrounding the person, or null if only one color is visible
+            - energyLevel: a number from 1 to 5 indicating the intensity of the aura's glow/radiance
+            - personalityTraits: an array of 3-5 personality traits associated with these specific aura colors
+            - spiritualGuidance: personalized spiritual guidance based on the specific aura colors you observed (150-200 words)
+            - chakraActivity: an object with numeric values (1-10) for each of the 7 chakras (root, sacral, solarPlexus, heart, throat, thirdEye, crown) based on the aura colors observed
+            - detailedAnalysis: a comprehensive analysis of the aura colors and energy patterns visible in the image (200-300 words)`
         },
         {
           role: "user",
@@ -81,7 +84,7 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
               type: "text",
               text: customPrompt 
                 ? customPrompt 
-                : "Analyze this person's aura and provide a detailed spiritual reading based on their energy field."
+                : "Please analyze the aura colors visible around this person in the photograph. Focus specifically on identifying the colored energy field surrounding them, and provide a detailed spiritual reading based on these actual aura colors."
             },
             {
               type: "image_url",
