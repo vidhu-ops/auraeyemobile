@@ -368,7 +368,7 @@ Respond with valid JSON containing:
         // Mock result: Return a string indicating aura colors
         return `Processed image with dominant color ${finalResult.dominantColor} (${dominantRgba}) and secondary color ${finalResult.secondaryColor} (${secondaryRgba})`;
     };
-    
+
     // Process the image with aura colors
     const processedImage = await processImageWithAura(base64Image, { dominant: finalResult.dominantColor, secondary: finalResult.secondaryColor });
     console.log(processedImage); // Output the processed image information (or handle as needed)
@@ -549,7 +549,7 @@ export async function generateHoroscope(sign: string): Promise<any> {
           Respond with valid JSON containing:
           - sign: the zodiac sign
           - date: today's date
-          - reading: a detailed horoscope reading (200-250 words)
+          - reading: adetailed horoscope reading (200-250 words)
           - love: a rating from 1-5
           - career: a rating from 1-5
           - health: a rating from 1-5
