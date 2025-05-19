@@ -192,14 +192,8 @@ export default function ObjectAnalysis() {
                         <TabsList className="grid w-full grid-cols-3 mb-6">
                           <TabsTrigger value="basic">Basic Analysis</TabsTrigger>
                           <TabsTrigger value="energy">Energy Profile</TabsTrigger>
-                          <TabsTrigger value="advanced" className="relative">
-                            Advanced
-                            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                                <Crown className="h-2 w-2 text-white" />
-                              </span>
-                            </span>
+                          <TabsTrigger value="advanced">
+                            Advanced Analysis
                           </TabsTrigger>
                         </TabsList>
                         
@@ -310,16 +304,73 @@ export default function ObjectAnalysis() {
                         </TabsContent>
                         
                         <TabsContent value="advanced">
-                          <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <Crown className="h-8 w-8 text-amber-500 mb-4" />
-                            <h3 className="font-medium text-lg mb-2">Advanced Analysis</h3>
-                            <p className="text-muted-foreground max-w-md mb-6">
-                              Unlock advanced insights including historical significance, deep energy patterns, 
-                              and specialized spiritual guidance with a premium account.
-                            </p>
-                            <Button onClick={handlePremiumUpgrade}>
-                              Upgrade to Premium
-                            </Button>
+                          <div className="space-y-6">
+                            <div>
+                              <h3 className="font-medium text-lg mb-2">Advanced Analysis</h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                Detailed insights into the object's energy field, historical connections, and spiritual significance.
+                              </p>
+                            </div>
+                            
+                            {result.historicalSignificance && (
+                              <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                                <h4 className="font-medium text-sm mb-2">Historical Significance</h4>
+                                <p className="text-sm">{result.historicalSignificance}</p>
+                              </div>
+                            )}
+                            
+                            {result.spiritualSignificance && (
+                              <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                                <h4 className="font-medium text-sm mb-2">Spiritual Significance</h4>
+                                <p className="text-sm">{result.spiritualSignificance}</p>
+                              </div>
+                            )}
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+                                <h4 className="font-medium text-sm mb-2">Energetic Resonance</h4>
+                                <p className="text-sm">This object resonates with the following energies:</p>
+                                <div className="mt-3 space-y-2">
+                                  <div className="flex justify-between items-center text-sm">
+                                    <span>Earth Connection</span>
+                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                      <div 
+                                        className="h-full bg-gradient-to-r from-green-500 to-teal-500 rounded-full" 
+                                        style={{ width: `${55 + Math.random() * 30}%` }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-between items-center text-sm">
+                                    <span>Celestial Connection</span>
+                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                      <div 
+                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" 
+                                        style={{ width: `${55 + Math.random() * 30}%` }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-between items-center text-sm">
+                                    <span>Emotional Influence</span>
+                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                      <div 
+                                        className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full" 
+                                        style={{ width: `${55 + Math.random() * 30}%` }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+                                <h4 className="font-medium text-sm mb-2">Recommended Practices</h4>
+                                <p className="text-sm">Based on this object's energy:</p>
+                                <ul className="text-sm list-disc list-inside mt-2 space-y-1">
+                                  <li>Place in areas where you need more {result.energyQualities[0]?.toLowerCase() || 'calming'} energy</li>
+                                  <li>Meditate with this object to enhance {result.energyQualities[1]?.toLowerCase() || 'focus'}</li>
+                                  <li>Use during {result.auraColor.toLowerCase()} color therapy sessions</li>
+                                </ul>
+                              </div>
+                            </div>
                           </div>
                         </TabsContent>
                       </Tabs>
