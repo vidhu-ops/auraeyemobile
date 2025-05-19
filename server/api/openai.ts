@@ -302,8 +302,33 @@ Respond with valid JSON containing:
 
     // Function to process image with aura colors
     const processImageWithAura = async (base64Image: string, auraColors: {dominant: string, secondary: string}): Promise<string> => {
-        // Mock the canvas and image elements since they are not available in Node.js
-        const colorMap: Record<string, string> = {
+        try {
+            // Call a free image editing API (replace with actual API endpoint)
+            const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.STABILITY_API_KEY || ''}`
+                },
+                body: JSON.stringify({
+                    init_image: base64Image,
+                    prompt: `Ethereal ${auraColors.dominant.toLowerCase()} and ${auraColors.secondary?.toLowerCase() || auraColors.dominant.toLowerCase()} smoke, mystical aura energy, spiritual essence, dreamy atmosphere, soft glowing light`,
+                    cfg_scale: 7,
+                    steps: 30,
+                    strength: 0.35
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to process image');
+            }
+
+            const result = await response.json();
+            return result.artifacts[0].base64;
+        } catch (error) {
+            console.error('Error processing image:', error);
+            // Fallback to basic color overlay
+            const colorMap: Record<string, string> = {
           red: 'rgba(255, 0, 0, 0.3)',
           orange: 'rgba(255, 165, 0, 0.3)',
           yellow: 'rgba(255, 255, 0, 0.3)',
