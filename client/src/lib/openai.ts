@@ -99,11 +99,15 @@ export interface NumerologyResult {
  */
 export async function calculateNumerology(name: string, birthDate: string): Promise<NumerologyResult> {
   try {
+    console.log("Calculating numerology for:", name, birthDate);
     const response = await apiRequest("POST", "/api/numerology", {
       name,
       birthDate
     });
-    return await response.json();
+    
+    const data = await response.json();
+    console.log("Numerology result:", data);
+    return data;
   } catch (error) {
     console.error("Error calculating numerology:", error);
     throw new Error("Failed to calculate numerology. Please try again.");
