@@ -523,22 +523,68 @@ function reduceNumber(num: number): number {
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
-      
-      // Calculate the numerology profile algorithmically
-      const result = calculateNumerologyProfile(name, birthDate);
-      console.log("Calculated numerology profile:", result);
-      
+
+      // Helper functions for numerology calculations
+      const reduceNumber = (num: number): number => {
+        if (num === 11 || num === 22 || num === 33) return num;
+        while (num > 9) {
+          num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+        }
+        return num;
+      };
+
+      const letterToNumber = (letter: string): number => {
+        const value = letter.toLowerCase().charCodeAt(0) - 96;
+        return value >= 1 && value <= 26 ? value : 0;
+      };
+
+      // Calculate Life Path Number
+      const calculateLifePath = (date: string): number => {
+        const [year, month, day] = date.split('-').map(part => 
+          part.split('').reduce((sum, digit) => sum + parseInt(digit), 0)
+        );
+        return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
+      };
+
+      // Calculate Destiny Number
+      const calculateDestiny = (fullName: string): number => {
+        let sum = 0;
+        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+          sum += letterToNumber(char);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Soul Urge Number
+      const calculateSoulUrge = (fullName: string): number => {
+        let sum = 0;
+        for (const char of fullName.toLowerCase()) {
+          if ('aeiou'.includes(char)) {
+            sum += letterToNumber(char);
+          }
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Personality Number
+      const calculatePersonality = (fullName: string): number => {
+        let sum = 0;
+        for (const char of fullName.toLowerCase().replace(/[^a-zA-Z]/g, '')) {
+          if (!'aeiou'.includes(char)) {
+            sum += letterToNumber(char);
+          }
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate all numbers
+      const lifePathNumber = calculateLifePath(birthDate);
+      const destinyNumber = calculateDestiny(name);
+      const soulUrgeNumber = calculateSoulUrge(name);
+      const personalityNumber = calculatePersonality(name);
+
       // Map a number to its color name
       const getColorName = (num: number): string => {
-        // Handle master numbers
-        if (num === 11) return "Silver";
-        if (num === 22) return "Gold";
-        if (num === 33) return "Platinum";
-        
-        // Reduce to single digit if not a master number
-        const reducedNum = num > 9 ? num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0) : num;
-        
-        // Map of colors for numbers 1-9
         const colorMap: Record<number, string> = {
           1: "Red",
           2: "Orange",
@@ -548,14 +594,21 @@ function reduceNumber(num: number): number {
           6: "Indigo",
           7: "Violet",
           8: "Pink",
-          9: "Gold"
+          9: "Gold",
+          11: "Silver",
+          22: "Gold",
+          33: "Platinum"
         };
-        
-        return colorMap[reducedNum] || "White";
+        return colorMap[num] || "White";
       };
-      
-      // Create the return object with the basic numerology values
+
+      // Create the return object with calculated values
       const numerologyProfile = {
+        lifePathNumber,
+        destinyNumber,
+        soulUrgeNumber,
+        personalityNumber,
+        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you.`,
         lifePathNumber: result.lifePathNumber,
         destinyNumber: result.destinyNumber,
         soulUrgeNumber: result.soulUrgeNumber,
