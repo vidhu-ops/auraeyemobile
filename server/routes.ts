@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { analyzeAuraImage } from "./api/openai";
+import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
 import { analyzeImageWithGemini } from "./api/gemini";
 import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
@@ -511,6 +511,58 @@ function reduceNumber(num: number): number {
     } catch (error) {
       console.error("Error retrieving numerology readings:", error);
       res.status(500).json({ message: "Failed to retrieve numerology readings" });
+    }
+  });
+
+  // API endpoint for calculating numerology based on name and birth date
+  app.post("/api/numerology", async (req, res) => {
+    try {
+      const { name, birthDate } = req.body;
+      
+      if (!name || !birthDate) {
+        return res.status(400).json({ message: "Name and birth date are required" });
+      }
+      
+      // Calculate the numerology profile using the algorithmic method first
+      let numerologyProfile = calculateNumerologyProfile(name, birthDate);
+      
+      // If OpenAI API key is available, enhance the reading with AI-generated content
+      try {
+        if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== "YOUR_KEY_HERE") {
+          // Use the OpenAI service for enhanced results
+          const enhancedProfile = await generateNumerologyReading(name, birthDate);
+          // Merge the enhanced content with our calculated values
+          numerologyProfile = enhancedProfile;
+        }
+      } catch (aiError) {
+        console.error("Error with AI numerology enhancement:", aiError);
+        // Continue with algorithmic calculation if AI enhancement fails
+      }
+      
+      // If user is authenticated, save the reading to their profile
+      if (req.isAuthenticated()) {
+        try {
+          await storage.saveNumerologyReading({
+            userId: req.user.id,
+            name,
+            birthDate,
+            lifePathNumber: numerologyProfile.lifePathNumber,
+            destinyNumber: numerologyProfile.destinyNumber,
+            soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+            personalityNumber: numerologyProfile.personalityNumber,
+            interpretation: numerologyProfile.interpretation
+          });
+        } catch (saveError) {
+          console.error("Error saving numerology reading:", saveError);
+          // Continue even if saving fails
+        }
+      }
+      
+      // Return the calculated numerology profile
+      res.json(numerologyProfile);
+    } catch (error) {
+      console.error("Error calculating numerology:", error);
+      res.status(500).json({ message: "Failed to calculate numerology" });
     }
   });
 
