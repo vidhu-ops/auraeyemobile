@@ -55,6 +55,21 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
 }> = {
   black: {
     rgba: 'rgba(0, 0, 0, 0.3)',
+    positive: ['Protection', 'Grounding', 'Power', 'Wisdom', 'Mystery', 'Boundaries'],
+    negative: ['Negativity', 'Fear', 'Blockages', 'Depression', 'Heavy energy', 'Resistance']
+  },
+  grey: {
+    rgba: 'rgba(128, 128, 128, 0.3)',
+    positive: ['Neutrality', 'Balance', 'Stability', 'Calmness', 'Diplomacy', 'Peace'],
+    negative: ['Confusion', 'Uncertainty', 'Lack of direction', 'Stagnation', 'Indecision', 'Detachment']
+  },
+  silver: {
+    rgba: 'rgba(192, 192, 192, 0.3)',
+    positive: ['Reflection', 'Intuition', 'Feminine energy', 'Grace', 'Adaptability', 'Mental clarity'],
+    negative: ['Illusion', 'Deception', 'Moodiness', 'Emotional instability', 'Overthinking', 'Rigidity']
+  },
+  black: {
+    rgba: 'rgba(0, 0, 0, 0.3)',
     positive: ['Protection', 'Grounding', 'Power', 'Wisdom'],
     negative: ['Negativity', 'Fear', 'Blockages', 'Depression']
   },
@@ -219,7 +234,7 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
       : `data:image/jpeg;base64,${base64Image}`;
 
     // Enhanced prompt specifically for specialized aura photographs with multiple color detection
-    const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people.
+    const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people. Include both positive and negative aspects of each color detected, especially noting the presence and meaning of black (protection/negativity), grey (balance/confusion), and silver (intuition/illusion) tones.
 
 EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
 
