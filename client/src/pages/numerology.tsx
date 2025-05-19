@@ -104,6 +104,49 @@ export default function Numerology() {
     // Return explanation or default message
     return explanations[type]?.[number] || "This number represents unique vibrations in your personal energy field.";
   };
+  
+  // Get color associated with numerology number
+  const getNumberColor = (number: number): { bg: string, text: string, name: string } => {
+    // Reduce master numbers for color purposes
+    const reducedNumber = number > 9 ? (number === 11 || number === 22 || number === 33 ? number : Number(number.toString().split('').reduce((a, b) => a + parseInt(b), 0))) : number;
+    
+    const colorMap: Record<number, { bg: string, text: string, name: string }> = {
+      1: { bg: "bg-red-100", text: "text-red-600", name: "Red" },
+      2: { bg: "bg-orange-100", text: "text-orange-600", name: "Orange" },
+      3: { bg: "bg-yellow-100", text: "text-yellow-600", name: "Yellow" },
+      4: { bg: "bg-green-100", text: "text-green-600", name: "Green" },
+      5: { bg: "bg-blue-100", text: "text-blue-600", name: "Blue" },
+      6: { bg: "bg-indigo-100", text: "text-indigo-600", name: "Indigo" },
+      7: { bg: "bg-violet-100", text: "text-violet-600", name: "Violet" },
+      8: { bg: "bg-purple-100", text: "text-purple-600", name: "Purple" },
+      9: { bg: "bg-pink-100", text: "text-pink-600", name: "Pink" },
+      11: { bg: "bg-white border border-gold-300", text: "text-amber-500", name: "Gold/White" },
+      22: { bg: "bg-indigo-200", text: "text-indigo-800", name: "Royal Blue" },
+      33: { bg: "bg-emerald-100", text: "text-emerald-600", name: "Emerald" }
+    };
+    
+    return colorMap[reducedNumber] || colorMap[1]; // Default to red if number not found
+  };
+  
+  // Get vibration qualities for a number
+  const getNumberVibrations = (number: number) => {
+    const vibrations: Record<number, string[]> = {
+      1: ["Leadership", "Independence", "Originality", "Self-confidence", "Pioneering"],
+      2: ["Harmony", "Cooperation", "Sensitivity", "Diplomacy", "Intuition"],
+      3: ["Creativity", "Expression", "Joy", "Optimism", "Communication"],
+      4: ["Stability", "Practicality", "Organization", "Determination", "Discipline"],
+      5: ["Freedom", "Change", "Adventure", "Versatility", "Curiosity"],
+      6: ["Nurturing", "Responsibility", "Harmony", "Balance", "Love"],
+      7: ["Analysis", "Wisdom", "Spirituality", "Introspection", "Perfection"],
+      8: ["Abundance", "Power", "Authority", "Achievement", "Material success"],
+      9: ["Compassion", "Completion", "Humanitarianism", "Wisdom", "Universal love"],
+      11: ["Inspiration", "Illumination", "Spirituality", "Idealism", "Intuition"],
+      22: ["Master building", "Practical idealism", "Large-scale manifestation", "Power", "Material mastery"],
+      33: ["Spiritual teaching", "Compassionate service", "Enlightenment", "Healing", "Selfless giving"]
+    };
+    
+    return vibrations[number] || vibrations[number % 9 || 9];
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -225,73 +268,273 @@ export default function Numerology() {
                           
                           <TabsContent value="lifePath">
                             <div className="flex flex-col items-center mb-6">
-                              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                                <span className="text-3xl font-bold text-primary">{result.lifePathNumber}</span>
+                              {/* Display number with associated color */}
+                              <div className={`w-20 h-20 rounded-full ${getNumberColor(result.lifePathNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
+                                <span className={`text-3xl font-bold ${getNumberColor(result.lifePathNumber).text}`}>{result.lifePathNumber}</span>
                               </div>
                               <h3 className="font-heading font-semibold">Life Path Number</h3>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Associated Color: <span className={`font-medium ${getNumberColor(result.lifePathNumber).text}`}>{getNumberColor(result.lifePathNumber).name}</span>
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
-                              <p className="mb-4">
-                                {getNumberExplanation(result.lifePathNumber, "lifePath")}
-                              </p>
-                              <p>
-                                Your Life Path number represents the core of who you are, including your traits, challenges, and opportunities. It's calculated from your birth date and is one of the most important numbers in your numerology chart.
-                              </p>
+                              <div className="mb-4 p-4 rounded-lg bg-gray-50">
+                                <p className="font-medium mb-2">
+                                  {getNumberExplanation(result.lifePathNumber, "lifePath")}
+                                </p>
+                                <p>
+                                  Your Life Path number represents the core of who you are, including your traits, challenges, and opportunities. It's calculated from your birth date and is one of the most important numbers in your numerology chart.
+                                </p>
+                              </div>
+                              
+                              {/* Display vibration qualities */}
+                              <div className="mb-4">
+                                <h4 className="font-medium text-primary mb-2">Vibration Qualities</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {getNumberVibrations(result.lifePathNumber).map((quality, i) => (
+                                    <span key={i} className={`px-3 py-1 rounded-full text-sm ${getNumberColor(result.lifePathNumber).bg} ${getNumberColor(result.lifePathNumber).text}`}>
+                                      {quality}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Advanced interpretation */}
+                              <div className="p-4 border border-primary/20 rounded-lg bg-primary/5">
+                                <h4 className="font-medium mb-2">Advanced Life Path Interpretation</h4>
+                                <p className="text-sm mb-2">
+                                  As a Life Path {result.lifePathNumber}, your life purpose is aligned with {result.lifePathNumber === 1 ? "leadership and pioneering" : 
+                                    result.lifePathNumber === 2 ? "harmony and cooperation" : 
+                                    result.lifePathNumber === 3 ? "creative expression and joy" : 
+                                    result.lifePathNumber === 4 ? "building solid foundations" : 
+                                    result.lifePathNumber === 5 ? "freedom and adventure" : 
+                                    result.lifePathNumber === 6 ? "responsibility and nurturing" : 
+                                    result.lifePathNumber === 7 ? "spiritual wisdom and analysis" : 
+                                    result.lifePathNumber === 8 ? "abundance and achievement" : 
+                                    result.lifePathNumber === 9 ? "humanitarian service" : 
+                                    result.lifePathNumber === 11 ? "spiritual insight and inspiration" : 
+                                    result.lifePathNumber === 22 ? "manifesting large-scale visions" : 
+                                    "spiritual teaching and healing"}.
+                                </p>
+                                <p className="text-sm">
+                                  The color vibration of {getNumberColor(result.lifePathNumber).name} supports your life path by enhancing your natural {getNumberColor(result.lifePathNumber).name.toLowerCase() === "red" ? "energy and passion" : 
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("orange") ? "creativity and enthusiasm" : 
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("yellow") ? "intellect and optimism" : 
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("green") ? "balance and growth" : 
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("blue") ? "communication and truth" :
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("indigo") ? "intuition and vision" :
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("violet") ? "spiritual connection" :
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("purple") ? "transformation and power" :
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("pink") ? "compassion and love" :
+                                    getNumberColor(result.lifePathNumber).name.toLowerCase().includes("gold") ? "wisdom and enlightenment" :
+                                    "spiritual mastery and healing"}.
+                                </p>
+                              </div>
                             </div>
                           </TabsContent>
                           
                           <TabsContent value="destiny">
                             <div className="flex flex-col items-center mb-6">
-                              <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mb-2">
-                                <span className="text-3xl font-bold text-secondary">{result.destinyNumber}</span>
+                              {/* Display number with associated color */}
+                              <div className={`w-20 h-20 rounded-full ${getNumberColor(result.destinyNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
+                                <span className={`text-3xl font-bold ${getNumberColor(result.destinyNumber).text}`}>{result.destinyNumber}</span>
                               </div>
                               <h3 className="font-heading font-semibold">Destiny Number</h3>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Associated Color: <span className={`font-medium ${getNumberColor(result.destinyNumber).text}`}>{getNumberColor(result.destinyNumber).name}</span>
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
-                              <p className="mb-4">
-                                {getNumberExplanation(result.destinyNumber, "destiny")}
-                              </p>
-                              <p>
-                                Your Destiny number reveals the goals you're meant to achieve in this lifetime. Derived from your full birth name, it indicates your potential abilities and what you're destined to accomplish.
-                              </p>
+                              <div className="mb-4 p-4 rounded-lg bg-gray-50">
+                                <p className="font-medium mb-2">
+                                  {getNumberExplanation(result.destinyNumber, "destiny")}
+                                </p>
+                                <p>
+                                  Your Destiny number reveals the goals you're meant to achieve in this lifetime. Derived from your full birth name, it indicates your potential abilities and what you're destined to accomplish.
+                                </p>
+                              </div>
+                              
+                              {/* Display vibration qualities */}
+                              <div className="mb-4">
+                                <h4 className="font-medium text-primary mb-2">Vibration Qualities</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {getNumberVibrations(result.destinyNumber).map((quality, i) => (
+                                    <span key={i} className={`px-3 py-1 rounded-full text-sm ${getNumberColor(result.destinyNumber).bg} ${getNumberColor(result.destinyNumber).text}`}>
+                                      {quality}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Advanced interpretation */}
+                              <div className="p-4 border border-primary/20 rounded-lg bg-primary/5">
+                                <h4 className="font-medium mb-2">Advanced Destiny Interpretation</h4>
+                                <p className="text-sm mb-2">
+                                  With a Destiny number of {result.destinyNumber}, you're naturally drawn to opportunities that allow you to express {result.destinyNumber === 1 ? "leadership and innovation" : 
+                                    result.destinyNumber === 2 ? "cooperation and relationship-building" : 
+                                    result.destinyNumber === 3 ? "creative self-expression and communication" : 
+                                    result.destinyNumber === 4 ? "structure and methodical approaches" : 
+                                    result.destinyNumber === 5 ? "change and progressive thinking" : 
+                                    result.destinyNumber === 6 ? "service and nurturing others" : 
+                                    result.destinyNumber === 7 ? "intellectual and spiritual pursuits" : 
+                                    result.destinyNumber === 8 ? "achievement and material success" : 
+                                    result.destinyNumber === 9 ? "humanitarian efforts and compassion" : 
+                                    result.destinyNumber === 11 ? "inspirational teaching and intuitive guidance" : 
+                                    result.destinyNumber === 22 ? "large-scale projects that benefit society" : 
+                                    "healing and compassionate teaching"}.
+                                </p>
+                                <p className="text-sm">
+                                  The vibration of {getNumberColor(result.destinyNumber).name} in your Destiny number suggests that your life's work is linked with {getNumberColor(result.destinyNumber).name.toLowerCase() === "red" ? "taking initiative and leading new ventures" : 
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("orange") ? "bringing joy and enthusiasm to collaborative projects" : 
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("yellow") ? "sharing knowledge and optimistic perspectives" : 
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("green") ? "healing, growth, and creating balance" : 
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("blue") ? "clear communication and expressing truth" :
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("indigo") ? "visionary thinking and spiritual leadership" :
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("violet") ? "transformation and spiritual awakening" :
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("purple") ? "wisdom and leadership with spiritual awareness" :
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("pink") ? "unconditional love and compassionate service" :
+                                    getNumberColor(result.destinyNumber).name.toLowerCase().includes("gold") ? "elevating others through your wisdom" :
+                                    "healing on a profound spiritual level"}.
+                                </p>
+                              </div>
                             </div>
                           </TabsContent>
                           
                           <TabsContent value="soul">
                             <div className="flex flex-col items-center mb-6">
-                              <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-2">
-                                <span className="text-3xl font-bold text-accent">{result.soulUrgeNumber}</span>
+                              {/* Display number with associated color */}
+                              <div className={`w-20 h-20 rounded-full ${getNumberColor(result.soulUrgeNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
+                                <span className={`text-3xl font-bold ${getNumberColor(result.soulUrgeNumber).text}`}>{result.soulUrgeNumber}</span>
                               </div>
                               <h3 className="font-heading font-semibold">Soul Urge Number</h3>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Associated Color: <span className={`font-medium ${getNumberColor(result.soulUrgeNumber).text}`}>{getNumberColor(result.soulUrgeNumber).name}</span>
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
-                              <p className="mb-4">
-                                Your Soul Urge number reveals your inner desires, motivations, and what your heart truly longs for. It represents your emotional self and inner cravings.
-                              </p>
-                              <p>
-                                This number is calculated from the vowels in your name, representing your inner truth and what drives you at a soul level.
-                              </p>
+                              <div className="mb-4 p-4 rounded-lg bg-gray-50">
+                                <p className="font-medium mb-2">
+                                  Your Soul Urge number {result.soulUrgeNumber} reveals your inner desires, motivations, and what your heart truly longs for. It represents your emotional self and inner cravings.
+                                </p>
+                                <p>
+                                  This number is calculated from the vowels in your name, representing your inner truth and what drives you at a soul level.
+                                </p>
+                              </div>
+                              
+                              {/* Display vibration qualities */}
+                              <div className="mb-4">
+                                <h4 className="font-medium text-primary mb-2">Soul Qualities</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {getNumberVibrations(result.soulUrgeNumber).map((quality, i) => (
+                                    <span key={i} className={`px-3 py-1 rounded-full text-sm ${getNumberColor(result.soulUrgeNumber).bg} ${getNumberColor(result.soulUrgeNumber).text}`}>
+                                      {quality}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Advanced interpretation */}
+                              <div className="p-4 border border-primary/20 rounded-lg bg-primary/5">
+                                <h4 className="font-medium mb-2">Advanced Soul Urge Interpretation</h4>
+                                <p className="text-sm mb-2">
+                                  Your Soul Urge number {result.soulUrgeNumber} indicates that at your deepest level, you desire {result.soulUrgeNumber === 1 ? "independence and achievement" : 
+                                    result.soulUrgeNumber === 2 ? "harmony and meaningful connections" : 
+                                    result.soulUrgeNumber === 3 ? "creative expression and joy" : 
+                                    result.soulUrgeNumber === 4 ? "stability and creating tangible results" : 
+                                    result.soulUrgeNumber === 5 ? "freedom and varied experiences" : 
+                                    result.soulUrgeNumber === 6 ? "love and nurturing relationships" : 
+                                    result.soulUrgeNumber === 7 ? "wisdom and spiritual understanding" : 
+                                    result.soulUrgeNumber === 8 ? "abundance and recognition" : 
+                                    result.soulUrgeNumber === 9 ? "making a meaningful difference" : 
+                                    result.soulUrgeNumber === 11 ? "spiritual awakening and enlightenment" : 
+                                    result.soulUrgeNumber === 22 ? "building something of lasting significance" : 
+                                    "uplifting and healing humanity"}.
+                                </p>
+                                <p className="text-sm">
+                                  The {getNumberColor(result.soulUrgeNumber).name} energy of your Soul Urge number resonates with your inner need for {getNumberColor(result.soulUrgeNumber).name.toLowerCase() === "red" ? "passion and self-expression" : 
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("orange") ? "joy and social connection" : 
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("yellow") ? "mental stimulation and optimism" : 
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("green") ? "growth and harmony" : 
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("blue") ? "truth and authentic expression" :
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("indigo") ? "spiritual insight and intuition" :
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("violet") ? "transformation and higher consciousness" :
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("purple") ? "spiritual power and mastery" :
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("pink") ? "unconditional love and acceptance" :
+                                    getNumberColor(result.soulUrgeNumber).name.toLowerCase().includes("gold") ? "divine wisdom and spiritual fulfillment" :
+                                    "spiritual healing and enlightenment"}.
+                                </p>
+                              </div>
                             </div>
                           </TabsContent>
                           
                           <TabsContent value="personality">
                             <div className="flex flex-col items-center mb-6">
-                              <div className="w-20 h-20 rounded-full bg-primary-dark/10 flex items-center justify-center mb-2">
-                                <span className="text-3xl font-bold text-primary-dark">{result.personalityNumber}</span>
+                              {/* Display number with associated color */}
+                              <div className={`w-20 h-20 rounded-full ${getNumberColor(result.personalityNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
+                                <span className={`text-3xl font-bold ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span>
                               </div>
                               <h3 className="font-heading font-semibold">Personality Number</h3>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Associated Color: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{getNumberColor(result.personalityNumber).name}</span>
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
-                              <p className="mb-4">
-                                Your Personality number reveals how others perceive you and the aspects of yourself that you allow the world to see. It represents your outer self and public persona.
-                              </p>
-                              <p>
-                                This number is calculated from the consonants in your name, representing the traits that are most visible to others.
-                              </p>
+                              <div className="mb-4 p-4 rounded-lg bg-gray-50">
+                                <p className="font-medium mb-2">
+                                  Your Personality number {result.personalityNumber} reveals how others perceive you and the aspects of yourself that you allow the world to see. It represents your outer self and public persona.
+                                </p>
+                                <p>
+                                  This number is calculated from the consonants in your name, representing the traits that are most visible to others.
+                                </p>
+                              </div>
+                              
+                              {/* Display vibration qualities */}
+                              <div className="mb-4">
+                                <h4 className="font-medium text-primary mb-2">Personality Traits</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {getNumberVibrations(result.personalityNumber).map((quality, i) => (
+                                    <span key={i} className={`px-3 py-1 rounded-full text-sm ${getNumberColor(result.personalityNumber).bg} ${getNumberColor(result.personalityNumber).text}`}>
+                                      {quality}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Advanced interpretation */}
+                              <div className="p-4 border border-primary/20 rounded-lg bg-primary/5">
+                                <h4 className="font-medium mb-2">Advanced Personality Interpretation</h4>
+                                <p className="text-sm mb-2">
+                                  With a Personality number of {result.personalityNumber}, you naturally present yourself to the world as {result.personalityNumber === 1 ? "confident and self-reliant" : 
+                                    result.personalityNumber === 2 ? "diplomatic and supportive" : 
+                                    result.personalityNumber === 3 ? "expressive and sociable" : 
+                                    result.personalityNumber === 4 ? "organized and reliable" : 
+                                    result.personalityNumber === 5 ? "adaptable and dynamic" : 
+                                    result.personalityNumber === 6 ? "responsible and nurturing" : 
+                                    result.personalityNumber === 7 ? "thoughtful and introspective" : 
+                                    result.personalityNumber === 8 ? "capable and accomplished" : 
+                                    result.personalityNumber === 9 ? "idealistic and compassionate" : 
+                                    result.personalityNumber === 11 ? "insightful and inspirational" : 
+                                    result.personalityNumber === 22 ? "visionary and powerful" : 
+                                    "compassionate and enlightened"}.
+                                </p>
+                                <p className="text-sm">
+                                  The color vibration of {getNumberColor(result.personalityNumber).name} in your Personality number expresses itself through your {getNumberColor(result.personalityNumber).name.toLowerCase() === "red" ? "dynamic and assertive demeanor" : 
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("orange") ? "warm and enthusiastic approach" : 
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("yellow") ? "bright and intellectual presence" : 
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("green") ? "balanced and nurturing interactions" : 
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("blue") ? "clear and authentic communication" :
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("indigo") ? "intuitive and perceptive nature" :
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("violet") ? "transformative and inspirational presence" :
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("purple") ? "dignified and wise demeanor" :
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("pink") ? "kind and loving approach" :
+                                    getNumberColor(result.personalityNumber).name.toLowerCase().includes("gold") ? "enlightened and radiant presence" :
+                                    "healing and transformative energy"}.
+                                </p>
+                              </div>
                             </div>
                           </TabsContent>
                         </Tabs>
