@@ -716,22 +716,19 @@ export default function Journal() {
                             </div>
                           </div>
                           
-                          {/* Aura Integration - Premium Feature */}
+                          {/* Aura Integration - Advanced Feature */}
                           <div className="border rounded-md p-4 bg-gradient-to-r from-violet-50 to-indigo-50">
                             <div className="flex justify-between items-start mb-3">
                               <h3 className="text-sm font-medium flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-violet-500"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 4-10 4 10"/><path d="M12 22v-4"/></svg>
                                 Aura-Journal Connection
-                                <Badge variant="secondary" className="ml-2 bg-primary/10 hover:bg-primary/20">
-                                  Premium
+                                <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">
+                                  Advanced Feature
                                 </Badge>
                               </h3>
-                              <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => showPremiumModal("general")}>
-                                Unlock
-                              </Button>
                             </div>
                             
-                            <div className="filter blur-[2px] pointer-events-none">
+                            <div className="">
                               <p className="text-sm text-gray-600 mb-3">
                                 Your journal entries reveal strong correlations with your aura readings. 
                                 On days with high energy, your aura shows more vibrant blues and purples.
