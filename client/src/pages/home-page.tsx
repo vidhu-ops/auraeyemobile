@@ -55,7 +55,7 @@ export default function HomePage() {
                   <Camera className="mr-2 h-5 w-5" /> Scan Your Aura
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/30 hover:bg-white/10 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" variant="outline" className="border-white/30 hover:bg-white/10 text-black px-8 py-6 rounded-full">
                 <Link href="/services">
                   <BookOpen className="mr-2 h-5 w-5" /> Explore Services
                 </Link>
