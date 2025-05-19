@@ -613,8 +613,90 @@ export default function Numerology() {
                       </CardContent>
                       <CardFooter className="flex-col">
                         <div className="w-full border-t pt-4 mt-2">
-                          <h3 className="font-medium mb-2">Interpretation</h3>
-                          <p className="text-gray-600 text-sm">{result.interpretation}</p>
+                          <h3 className="font-medium mb-2 flex items-center">
+                            <span className="mr-2">Comprehensive Analysis</span>
+                            <Sparkles className="h-4 w-4 text-primary" />
+                          </h3>
+                          
+                          {/* Color associations section */}
+                          {result.colorAssociations && (
+                            <div className="mb-4">
+                              <h4 className="text-sm font-semibold mb-1">Color Vibrations</h4>
+                              <div className="flex flex-wrap gap-2 mb-2">
+                                {result.colorAssociations.lifePathColor && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                    Life Path: {result.colorAssociations.lifePathColor}
+                                  </span>
+                                )}
+                                {result.colorAssociations.destinyColor && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
+                                    Destiny: {result.colorAssociations.destinyColor}
+                                  </span>
+                                )}
+                                {result.colorAssociations.soulUrgeColor && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-600">
+                                    Soul Urge: {result.colorAssociations.soulUrgeColor}
+                                  </span>
+                                )}
+                                {result.colorAssociations.personalityColor && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-violet-100 text-violet-600">
+                                    Personality: {result.colorAssociations.personalityColor}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Energy Pattern */}
+                          {result.energyPattern && (
+                            <div className="mb-4">
+                              <h4 className="text-sm font-semibold mb-1">Energy Pattern</h4>
+                              <p className="text-gray-600 text-sm">{result.energyPattern}</p>
+                            </div>
+                          )}
+                          
+                          {/* Strengths & Challenges */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            {/* Strengths */}
+                            {result.strengths && result.strengths.length > 0 && (
+                              <div>
+                                <h4 className="text-sm font-semibold mb-1">Key Strengths</h4>
+                                <ul className="text-gray-600 text-sm list-disc pl-4">
+                                  {result.strengths.map((strength, index) => (
+                                    <li key={index}>{strength}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            {/* Challenges */}
+                            {result.challenges && result.challenges.length > 0 && (
+                              <div>
+                                <h4 className="text-sm font-semibold mb-1">Potential Challenges</h4>
+                                <ul className="text-gray-600 text-sm list-disc pl-4">
+                                  {result.challenges.map((challenge, index) => (
+                                    <li key={index}>{challenge}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Guidance */}
+                          {result.guidance && (
+                            <div className="mb-4 p-3 bg-primary/5 rounded-md border border-primary/10">
+                              <h4 className="text-sm font-semibold mb-1">Spiritual Guidance</h4>
+                              <p className="text-gray-600 text-sm">{result.guidance}</p>
+                            </div>
+                          )}
+                          
+                          {/* Detailed interpretation */}
+                          <div className="mt-4">
+                            <h4 className="text-sm font-semibold mb-1">Complete Interpretation</h4>
+                            <p className="text-gray-600 text-sm whitespace-pre-line">
+                              {result.interpretation}
+                            </p>
+                          </div>
                         </div>
                       </CardFooter>
                     </Card>
