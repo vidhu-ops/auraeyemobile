@@ -60,11 +60,94 @@ export default function Numerology() {
       // Convert birth date into numerology value
       const dateValue = data.birthDate.split('-').join('').split('').reduce((sum, digit) => sum + parseInt(digit || '0'), 0);
       
-      // Calculate numerology values
-      const lifePathNumber = (dateValue % 9) || 9; // 1-9
-      const destinyNumber = (nameValue % 9) || 9; // 1-9
-      const soulUrgeNumber = Math.max(1, Math.min(9, Math.floor(Math.random() * 9) + 1)); // Random 1-9 for demo
-      const personalityNumber = Math.max(1, Math.min(9, Math.floor(Math.random() * 9) + 1)); // Random 1-9 for demo
+      // Calculate real numerology values based on birth date and name
+      // Life Path Number - based on birth date digits sum
+      const calculateLifePath = (date: string): number => {
+        const digits = date.split('-').join('').split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Reduce to single digit unless master number
+        while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum;
+      };
+      
+      // Destiny Number - based on full name letters converted to numbers
+      const calculateDestiny = (name: string): number => {
+        const letterValues: Record<string, number> = {
+          'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
+          'j': 1, 'k': 2, 'l': 3, 'm': 4, 'n': 5, 'o': 6, 'p': 7, 'q': 8, 'r': 9,
+          's': 1, 't': 2, 'u': 3, 'v': 4, 'w': 5, 'x': 6, 'y': 7, 'z': 8
+        };
+        
+        let sum = 0;
+        for (const char of name.toLowerCase()) {
+          if (letterValues[char]) {
+            sum += letterValues[char];
+          }
+        }
+        
+        // Reduce to single digit unless master number
+        while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum;
+      };
+      
+      // Calculate Soul Urge Number - based on vowels in name
+      const calculateSoulUrge = (name: string): number => {
+        const vowels = ['a', 'e', 'i', 'o', 'u'];
+        const letterValues: Record<string, number> = {
+          'a': 1, 'e': 5, 'i': 9, 'o': 6, 'u': 3
+        };
+        
+        let sum = 0;
+        for (const char of name.toLowerCase()) {
+          if (vowels.includes(char)) {
+            sum += letterValues[char];
+          }
+        }
+        
+        // Reduce to single digit unless master number
+        while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum || 7; // Default to 7 if no vowels found
+      };
+      
+      // Calculate Personality Number - based on consonants in name
+      const calculatePersonality = (name: string): number => {
+        const vowels = ['a', 'e', 'i', 'o', 'u'];
+        const letterValues: Record<string, number> = {
+          'b': 2, 'c': 3, 'd': 4, 'f': 6, 'g': 7, 'h': 8, 'j': 1, 'k': 2, 'l': 3,
+          'm': 4, 'n': 5, 'p': 7, 'q': 8, 'r': 9, 's': 1, 't': 2, 'v': 4,
+          'w': 5, 'x': 6, 'y': 7, 'z': 8
+        };
+        
+        let sum = 0;
+        for (const char of name.toLowerCase()) {
+          if (!vowels.includes(char) && letterValues[char]) {
+            sum += letterValues[char];
+          }
+        }
+        
+        // Reduce to single digit unless master number
+        while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum || 5; // Default to 5 if no consonants found
+      };
+      
+      // Calculate real numerology values
+      const lifePathNumber = calculateLifePath(data.birthDate);
+      const destinyNumber = calculateDestiny(data.fullName);
+      const soulUrgeNumber = calculateSoulUrge(data.fullName);
+      const personalityNumber = calculatePersonality(data.fullName);
       
       // Use these fallback values if the API call fails
       const fallbackResult = {
@@ -78,6 +161,13 @@ export default function Numerology() {
           destinyColor: getNumberColor(destinyNumber).name,
           soulUrgeColor: getNumberColor(soulUrgeNumber).name,
           personalityColor: getNumberColor(personalityNumber).name
+        },
+        // Log the calculated numbers for verification
+        calculatedNumbers: {
+          lifePathNumber,
+          destinyNumber,
+          soulUrgeNumber,
+          personalityNumber
         },
         strengths: [
           `Your Life Path Number ${lifePathNumber} gives you natural ${getNumberColor(lifePathNumber).name} energy`,
