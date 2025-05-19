@@ -161,10 +161,10 @@ export default function HomePage() {
             <p className="text-gray-600 max-w-2xl mx-auto">Upload your photo and our AI will analyze your energy field, revealing your aura colors and providing personalized insights.</p>
           </div>
 
-          <div className="max-w-4xl mx-center">
-            <Button asChild size="lg" className="mx-centre bg-primary hover:bg-primary-dark">
-              <Link href="/aura-analysis">
-                <Camera className="mr-3 h-5 w-5 button-center " /> Try Aura Analysis
+          <div className="max-w-4xl mx-auto flex justify-center">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-dark">
+              <Link href="/aura-analysis" className="flex items-center">
+                <Camera className="mr-3 h-5 w-5" /> Try Aura Analysis
               </Link>
             </Button>
           </div>
