@@ -522,24 +522,45 @@ export async function generateNumerologyReading(name: string, birthDate: string)
       return calculateNumerologyProfile(name, birthDate);
     }
     
+    // Calculate basic numerology values first
+    const baseProfile = calculateNumerologyProfile(name, birthDate);
+    
     const response = await openai.chat.completions.create({
       model: MODEL,
       messages: [
         {
           role: "system",
           content: `You are an expert numerologist with decades of experience analyzing numbers and their spiritual significance.
-          Generate a comprehensive numerology reading based on the provided name and birth date.
-          Use authentic numerological calculations to derive all numbers.
-          Respond with valid JSON containing:
-          - lifePathNumber: calculated from birth date (single digit, except for master numbers 11, 22, 33)
-          - destinyNumber: calculated from full name (single digit, except for master numbers)
-          - soulUrgeNumber: calculated from vowels in name (single digit, except for master numbers)
-          - personalityNumber: calculated from consonants in name (single digit, except for master numbers)
-          - interpretation: a detailed interpretation of all numbers and their interaction (300-400 words)`
+          Create a detailed and personalized numerology reading based on the provided name and birth date information.
+          Focus on providing meaningful spiritual insights, personality traits, life path guidance, and practical advice.
+          Your reading should be comprehensive yet approachable, combining both metaphysical wisdom and practical insights.
+          Include specific interpretations for each number, their color associations, and how they interact with each other.
+          
+          For each numerology number, include:
+          1. Core meaning and influence on the person's life
+          2. Associated colors and their spiritual vibrations
+          3. Personality traits and potential challenges
+          4. Spiritual lessons and growth opportunities`
         },
         {
           role: "user",
-          content: `Generate a numerology reading for Name: ${name}, Birth Date: ${birthDate}`
+          content: `Generate a detailed numerology profile for a person named ${name}, born on ${birthDate}.
+          
+          The calculated numerology numbers are:
+          - Life Path Number: ${baseProfile.lifePathNumber}
+          - Destiny Number: ${baseProfile.destinyNumber}
+          - Soul Urge Number: ${baseProfile.soulUrgeNumber}
+          - Personality Number: ${baseProfile.personalityNumber}
+          
+          Please provide a comprehensive interpretation that includes:
+          1. A detailed explanation of each number's meaning and influence
+          2. The color vibrations associated with each number and their spiritual significance
+          3. How these numbers interact to create a unique energy pattern
+          4. Key strengths, talents, and potential challenges based on this numerological blueprint
+          5. Spiritual guidance for personal growth and fulfilling one's highest potential
+          6. Any special significance of master numbers (11, 22, 33) if present
+          
+          Make the reading personal, insightful, and spiritually meaningful with practical guidance.`
         }
       ],
       response_format: { type: "json_object" },
