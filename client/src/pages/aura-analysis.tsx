@@ -193,6 +193,8 @@ export default function AuraAnalysis() {
     return colorMap[lowerColor] || "text-gray-400";
   };
 
+
+
   // Helper functions for aura analysis and premium visualization
   const auraHelpers = {
     // Get color position on spectrum
@@ -218,6 +220,30 @@ export default function AuraAnalysis() {
       
       const lowerColor = color.toLowerCase();
       return positionMap[lowerColor] !== undefined ? positionMap[lowerColor] : null;
+    },
+    
+    // Get complementary color for aura visualization
+    getComplementaryColor: (color: string): string => {
+      const colorMap: Record<string, string> = {
+        "Red": "Green",
+        "Orange": "Blue",
+        "Yellow": "Purple",
+        "Green": "Red",
+        "Blue": "Orange",
+        "Indigo": "Yellow",
+        "Violet": "Gold",
+        "Purple": "Yellow",
+        "Pink": "Turquoise",
+        "Gold": "Violet",
+        "Silver": "Magenta",
+        "White": "Black",
+        "Black": "White",
+        "Turquoise": "Pink",
+        "Magenta": "Silver",
+        "Brown": "Blue"
+      };
+      
+      return colorMap[color] || "White";
     },
     
     // Get energy cycle pattern
@@ -999,10 +1025,10 @@ export default function AuraAnalysis() {
                                   <h4 className="font-medium text-base mb-3">Specialized Aura Interpretation</h4>
                                   <p className="text-gray-700 whitespace-pre-line mb-5">{result.detailedAnalysis}</p>
                                   
-                                  {/* Aura color frequency spectrum */}
+                                  {/* Comprehensive Aura Color Spectrum */}
                                   <div className="mb-6">
-                                    <h4 className="font-medium text-sm text-secondary mb-3">Aura Color Frequency Spectrum</h4>
-                                    <div className="relative h-12 bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-violet-600 rounded-md mb-1 overflow-hidden">
+                                    <h4 className="font-medium text-sm text-secondary mb-3">Complete Aura Color Spectrum</h4>
+                                    <div className="relative h-14 bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-violet-600 rounded-md mb-2 overflow-hidden">
                                       {/* Frequency markers */}
                                       <div className="absolute inset-0 flex justify-between px-1">
                                         <div className="h-full w-px bg-white/30"></div>
@@ -1013,7 +1039,7 @@ export default function AuraAnalysis() {
                                         <div className="h-full w-px bg-white/30"></div>
                                       </div>
                                       
-                                      {/* Current color position */}
+                                      {/* Primary and secondary colors */}
                                       {auraHelpers.getColorPosition(result.dominantColor) !== null && (
                                         <div 
                                           className="absolute top-0 bottom-0 w-6 border-2 border-white rounded-sm" 
@@ -1035,12 +1061,119 @@ export default function AuraAnalysis() {
                                           }}
                                         ></div>
                                       )}
+                                      
+                                      {/* Additional aura colors from the spectrum (if available) */}
+                                      {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).map((color, index) => 
+                                        auraHelpers.getColorPosition(color) !== null && (
+                                          <div 
+                                            key={`spectrum-${index}`}
+                                            className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-40" 
+                                            style={{ 
+                                              left: `${auraHelpers.getColorPosition(color)}%`,
+                                              transform: 'translateX(-50%)',
+                                              boxShadow: '0 0 8px rgba(255, 255, 255, 0.4)' 
+                                            }}
+                                          ></div>
+                                        )
+                                      )}
                                     </div>
-                                    <div className="flex justify-between text-xs text-gray-500">
+                                    
+                                    {/* Frequency labels */}
+                                    <div className="flex justify-between text-xs text-gray-500 mb-4">
                                       <span>Physical (Lower Hz)</span>
                                       <span>Emotional</span>
                                       <span>Mental</span>
                                       <span>Spiritual (Higher Hz)</span>
+                                    </div>
+                                    
+                                    {/* Aura color spectrum display */}
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-2">Complete Aura Color Profile</h5>
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                                        {/* Always show primary color */}
+                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                          <div 
+                                            className="w-8 h-8 rounded-full flex-shrink-0" 
+                                            style={{ 
+                                              backgroundColor: result.dominantColor.toLowerCase(),
+                                              boxShadow: `0 0 10px ${result.dominantColor.toLowerCase()}60`
+                                            }}
+                                          ></div>
+                                          <div>
+                                            <div className="text-xs text-gray-500">Primary</div>
+                                            <div className="text-sm font-medium">{result.dominantColor}</div>
+                                          </div>
+                                        </div>
+                                        
+                                        {/* Show secondary color if present */}
+                                        {result.secondaryColor && (
+                                          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                            <div 
+                                              className="w-8 h-8 rounded-full flex-shrink-0" 
+                                              style={{ 
+                                                backgroundColor: result.secondaryColor.toLowerCase(),
+                                                boxShadow: `0 0 10px ${result.secondaryColor.toLowerCase()}60`
+                                              }}
+                                            ></div>
+                                            <div>
+                                              <div className="text-xs text-gray-500">Secondary</div>
+                                              <div className="text-sm font-medium">{result.secondaryColor}</div>
+                                            </div>
+                                          </div>
+                                        )}
+                                        
+                                        {/* Show additional colors from spectrum if available */}
+                                        {result.auraColorSpectrum ? (
+                                          result.auraColorSpectrum.slice(2).map((color, index) => (
+                                            <div key={`color-${index}`} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                              <div 
+                                                className="w-8 h-8 rounded-full flex-shrink-0" 
+                                                style={{ 
+                                                  backgroundColor: color.toLowerCase(),
+                                                  boxShadow: `0 0 10px ${color.toLowerCase()}60`
+                                                }}
+                                              ></div>
+                                              <div>
+                                                <div className="text-xs text-gray-500">Complementary</div>
+                                                <div className="text-sm font-medium">{color}</div>
+                                              </div>
+                                            </div>
+                                          ))
+                                        ) : (
+                                          // Fallback colors when auraColorSpectrum isn't available
+                                          <>
+                                            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                              <div 
+                                                className="w-8 h-8 rounded-full flex-shrink-0 bg-opacity-70"
+                                                style={{ 
+                                                  backgroundColor: result.dominantColor.toLowerCase(),
+                                                  opacity: 0.6,
+                                                  boxShadow: `0 0 10px ${result.dominantColor.toLowerCase()}30`
+                                                }}
+                                              ></div>
+                                              <div>
+                                                <div className="text-xs text-gray-500">Complementary</div>
+                                                <div className="text-sm font-medium">{auraHelpers.getComplementaryColor(result.dominantColor)}</div>
+                                              </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                              <div 
+                                                className="w-8 h-8 rounded-full flex-shrink-0 bg-opacity-70"
+                                                style={{ 
+                                                  backgroundColor: result.secondaryColor?.toLowerCase() || auraHelpers.getComplementaryColor(result.dominantColor).toLowerCase(),
+                                                  opacity: 0.6,
+                                                  boxShadow: `0 0 10px ${result.secondaryColor?.toLowerCase() || auraHelpers.getComplementaryColor(result.dominantColor).toLowerCase()}30`
+                                                }}
+                                              ></div>
+                                              <div>
+                                                <div className="text-xs text-gray-500">Complementary</div>
+                                                <div className="text-sm font-medium">{auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor)}</div>
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                   

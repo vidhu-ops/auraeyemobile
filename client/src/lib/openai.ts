@@ -6,6 +6,13 @@ const GPT_MODEL = "gpt-4o";
 export interface AuraAnalysisResult {
   dominantColor: string;
   secondaryColor: string;
+  // Extended color spectrum for more detailed aura analysis
+  auraColorSpectrum?: string[]; // Array of 4-5 colors in order of prominence
+  auraLayerColors?: {
+    inner?: string;
+    middle?: string;
+    outer?: string;
+  };
   energyLevel: number;
   personalityTraits: string[];
   spiritualGuidance: string;
