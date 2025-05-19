@@ -291,7 +291,7 @@ Respond with valid JSON containing:
     const result = JSON.parse(response.choices[0].message.content || "{}");
 
     // Merge with default values to ensure all fields are present
-    return {
+    const finalResult: AuraAnalysisResult = {
       ...defaultResult,
       ...result,
       chakraActivity: {
@@ -299,6 +299,37 @@ Respond with valid JSON containing:
         ...(result.chakraActivity || {})
       }
     };
+
+    // Function to process image with aura colors
+    const processImageWithAura = async (base64Image: string, auraColors: {dominant: string, secondary: string}): Promise<string> => {
+        // Mock the canvas and image elements since they are not available in Node.js
+        const colorMap: Record<string, string> = {
+          red: 'rgba(255, 0, 0, 0.3)',
+          orange: 'rgba(255, 165, 0, 0.3)',
+          yellow: 'rgba(255, 255, 0, 0.3)',
+          green: 'rgba(0, 128, 0, 0.3)',
+          blue: 'rgba(0, 0, 255, 0.3)',
+          purple: 'rgba(128, 0, 128, 0.3)',
+          indigo: 'rgba(75, 0, 130, 0.3)',
+          violet: 'rgba(148, 0, 211, 0.3)',
+          white: 'rgba(255, 255, 255, 0.3)',
+          gold: 'rgba(255, 215, 0, 0.3)',
+          silver: 'rgba(192, 192, 192, 0.3)',
+          black: 'rgba(0, 0, 0, 0.2)'
+        };
+
+        const dominantRgba = colorMap[finalResult.dominantColor?.toLowerCase()] || colorMap.white;
+        const secondaryRgba = colorMap[finalResult.secondaryColor?.toLowerCase()] || dominantRgba;
+
+        // Mock result: Return a string indicating aura colors
+        return `Processed image with dominant color ${finalResult.dominantColor} (${dominantRgba}) and secondary color ${finalResult.secondaryColor} (${secondaryRgba})`;
+    };
+    
+    // Process the image with aura colors
+    const processedImage = await processImageWithAura(base64Image, { dominant: finalResult.dominantColor, secondary: finalResult.secondaryColor });
+    console.log(processedImage); // Output the processed image information (or handle as needed)
+
+    return finalResult;
   } catch (error) {
     console.error("Error in OpenAI aura analysis:", error);
     // Return a fallback response instead of throwing an error
