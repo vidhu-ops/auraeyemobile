@@ -575,32 +575,103 @@ export default function AuraAnalysis() {
                             <div className="space-y-6">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <h3 className="font-medium text-lg">Your Aura Colors</h3>
+                                  <h3 className="font-medium text-lg">Your Aura Photo Analysis</h3>
+                                  <p className="text-sm text-gray-500">Analysis of the visible energy fields in your specialized aura photograph</p>
                                 </div>
                                 <div className="flex gap-2">
-                                  <span className={`inline-block w-6 h-6 rounded-full ${getColorClass(result.dominantColor)}`}></span>
+                                  <span 
+                                    className="inline-block w-6 h-6 rounded-full border border-gray-200" 
+                                    style={{ 
+                                      backgroundColor: result.dominantColor.toLowerCase(),
+                                      boxShadow: `0 0 8px 1px ${result.dominantColor.toLowerCase()}80`
+                                    }}
+                                  ></span>
                                   {result.secondaryColor && (
-                                    <span className={`inline-block w-6 h-6 rounded-full ${getColorClass(result.secondaryColor)}`}></span>
+                                    <span 
+                                      className="inline-block w-6 h-6 rounded-full border border-gray-200" 
+                                      style={{ 
+                                        backgroundColor: result.secondaryColor.toLowerCase(),
+                                        boxShadow: `0 0 8px 1px ${result.secondaryColor.toLowerCase()}80`
+                                      }}
+                                    ></span>
                                   )}
                                 </div>
                               </div>
                               
-                              <div>
-                                <h4 className="text-sm text-gray-500 mb-1">Dominant Color</h4>
-                                <div className="flex items-center">
-                                  <span className={`inline-block w-4 h-4 rounded-full ${getColorClass(result.dominantColor)} mr-2`}></span>
-                                  <span className="font-medium">{result.dominantColor}</span>
-                                </div>
-                                
-                                {result.secondaryColor && (
-                                  <div className="mt-2">
-                                    <h4 className="text-sm text-gray-500 mb-1">Secondary Color</h4>
-                                    <div className="flex items-center">
-                                      <span className={`inline-block w-4 h-4 rounded-full ${getColorClass(result.secondaryColor)} mr-2`}></span>
-                                      <span className="font-medium">{result.secondaryColor}</span>
+                              {/* Aura visualization */}
+                              <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                                <div className="flex flex-col md:flex-row items-center gap-6">
+                                  <div className="relative w-48 h-48">
+                                    {/* Aura visualization with actual colors detected */}
+                                    <div 
+                                      className="absolute inset-0 rounded-full animate-pulse" 
+                                      style={{
+                                        background: `radial-gradient(circle at center, 
+                                          ${result.dominantColor.toLowerCase()} 30%, 
+                                          ${result.secondaryColor?.toLowerCase() || 'transparent'} 70%)`,
+                                        boxShadow: `0 0 30px 10px ${result.dominantColor.toLowerCase()}80`,
+                                        opacity: 0.7
+                                      }}
+                                    ></div>
+                                    <div 
+                                      className="absolute inset-8 rounded-full" 
+                                      style={{
+                                        background: `radial-gradient(circle at center, 
+                                          ${result.dominantColor.toLowerCase()}99 40%, 
+                                          ${result.secondaryColor?.toLowerCase() || 'transparent'}99 80%)`,
+                                        opacity: 0.8
+                                      }}
+                                    ></div>
+                                    <div className="absolute inset-16 rounded-full flex items-center justify-center bg-white/30 backdrop-blur-sm">
+                                      <Sparkles className="h-8 w-8 text-gray-700/60" />
                                     </div>
                                   </div>
-                                )}
+                                  
+                                  <div className="flex-1 space-y-4">
+                                    <div>
+                                      <h4 className="font-medium mb-2">Detected Aura Colors</h4>
+                                      <p className="text-sm text-gray-600 mb-3">
+                                        The colored energy field visible around you in your specialized aura photograph reveals your spiritual signature:
+                                      </p>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                        <div className="flex items-center gap-3">
+                                          <div 
+                                            className="w-10 h-10 rounded-full flex-shrink-0" 
+                                            style={{ 
+                                              backgroundColor: result.dominantColor.toLowerCase(),
+                                              boxShadow: `0 0 10px 2px ${result.dominantColor.toLowerCase()}60`
+                                            }}
+                                          ></div>
+                                          <div>
+                                            <div className="text-xs text-gray-500">Primary Aura</div>
+                                            <div className="text-base font-bold">{result.dominantColor}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {result.secondaryColor && (
+                                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                          <div className="flex items-center gap-3">
+                                            <div 
+                                              className="w-10 h-10 rounded-full flex-shrink-0" 
+                                              style={{ 
+                                                backgroundColor: result.secondaryColor.toLowerCase(),
+                                                boxShadow: `0 0 10px 2px ${result.secondaryColor.toLowerCase()}60`
+                                              }}
+                                            ></div>
+                                            <div>
+                                              <div className="text-xs text-gray-500">Secondary Aura</div>
+                                              <div className="text-base font-bold">{result.secondaryColor}</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                               
                               <div>
