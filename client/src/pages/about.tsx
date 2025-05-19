@@ -45,7 +45,7 @@ export default function About() {
                   By combining traditional metaphysical knowledge with cutting-edge artificial intelligence, we've created a platform that can analyze your energy field, provide personalized spiritual insights, and connect you with certified healers—all from the comfort of your home.
                 </p>
                 <p className="text-gray-600">
-                  Our name, Aurfy, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Fortify" (to strengthen and protect), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
+                  Our name, Aurafy, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Fortify" (to strengthen and protect), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
               </div>
               
