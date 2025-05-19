@@ -476,7 +476,7 @@ export default function Numerology() {
                               <div className={`w-20 h-20 rounded-full ${getNumberColor(result.lifePathNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
                                 <span className={`text-3xl font-bold ${getNumberColor(result.lifePathNumber).text}`}>{result.lifePathNumber}</span>
                               </div>
-                              <h3 className="font-heading font-semibold">Life Path Number</h3>
+                              <h3 className="font-heading font-semibold">Life Path Number: <span className={`font-medium ${getNumberColor(result.lifePathNumber).text}`}>{result.lifePathNumber}</span></h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.lifePathNumber).text}`}>{getNumberColor(result.lifePathNumber).name}</span>
                               </div>
@@ -547,7 +547,7 @@ export default function Numerology() {
                               <div className={`w-20 h-20 rounded-full ${getNumberColor(result.destinyNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
                                 <span className={`text-3xl font-bold ${getNumberColor(result.destinyNumber).text}`}>{result.destinyNumber}</span>
                               </div>
-                              <h3 className="font-heading font-semibold">Destiny Number</h3>
+                              <h3 className="font-heading font-semibold">Destiny Number: <span className={`font-medium ${getNumberColor(result.destinyNumber).text}`}>{result.destinyNumber}</span></h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.destinyNumber).text}`}>{getNumberColor(result.destinyNumber).name}</span>
                               </div>
@@ -618,7 +618,7 @@ export default function Numerology() {
                               <div className={`w-20 h-20 rounded-full ${getNumberColor(result.soulUrgeNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
                                 <span className={`text-3xl font-bold ${getNumberColor(result.soulUrgeNumber).text}`}>{result.soulUrgeNumber}</span>
                               </div>
-                              <h3 className="font-heading font-semibold">Soul Urge Number</h3>
+                              <h3 className="font-heading font-semibold">Soul Urge Number: <span className={`font-medium ${getNumberColor(result.soulUrgeNumber).text}`}>{result.soulUrgeNumber}</span></h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.soulUrgeNumber).text}`}>{getNumberColor(result.soulUrgeNumber).name}</span>
                               </div>
@@ -689,7 +689,7 @@ export default function Numerology() {
                               <div className={`w-20 h-20 rounded-full ${getNumberColor(result.personalityNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
                                 <span className={`text-3xl font-bold ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span>
                               </div>
-                              <h3 className="font-heading font-semibold">Personality Number</h3>
+                              <h3 className="font-heading font-semibold">Personality Number: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span></h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{getNumberColor(result.personalityNumber).name}</span>
                               </div>
