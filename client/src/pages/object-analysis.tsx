@@ -192,15 +192,7 @@ export default function ObjectAnalysis() {
                         <TabsList className="grid w-full grid-cols-3 mb-6">
                           <TabsTrigger value="basic">Basic Analysis</TabsTrigger>
                           <TabsTrigger value="energy">Energy Profile</TabsTrigger>
-                          <TabsTrigger value="advanced" className="relative">
-                            Advanced
-                            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                                <Crown className="h-2 w-2 text-white" />
-                              </span>
-                            </span>
-                          </TabsTrigger>
+                          <TabsTrigger value="advanced">Advanced Analysis</TabsTrigger>
                         </TabsList>
                         
                         <TabsContent value="basic">
@@ -310,16 +302,105 @@ export default function ObjectAnalysis() {
                         </TabsContent>
                         
                         <TabsContent value="advanced">
-                          <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <Crown className="h-8 w-8 text-amber-500 mb-4" />
-                            <h3 className="font-medium text-lg mb-2">Advanced Analysis</h3>
-                            <p className="text-muted-foreground max-w-md mb-6">
-                              Unlock advanced insights including historical significance, deep energy patterns, 
-                              and specialized spiritual guidance with a premium account.
-                            </p>
-                            <Button onClick={handlePremiumUpgrade}>
-                              Upgrade to Premium
-                            </Button>
+                          <div className="space-y-6">
+                            <div className="flex items-center">
+                              <div className={`w-6 h-6 rounded-full ${getColorClass(result.auraColor)} mr-3`}></div>
+                              <h3 className="font-medium text-lg">Advanced Analysis</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
+                                <h4 className="font-medium mb-3">Historical Significance</h4>
+                                <p className="text-sm text-gray-700">
+                                  {result.historicalSignificance || 
+                                    `Objects with ${result.auraColor.toLowerCase()} auras have historically been associated with ${
+                                      result.auraColor.toLowerCase() === 'red' ? 'power and protection rituals' :
+                                      result.auraColor.toLowerCase() === 'blue' ? 'communication and truth-seeking' :
+                                      result.auraColor.toLowerCase() === 'green' ? 'healing and balance' :
+                                      result.auraColor.toLowerCase() === 'purple' ? 'spiritual wisdom and connection' :
+                                      result.auraColor.toLowerCase() === 'yellow' ? 'optimism and mental clarity' :
+                                      result.auraColor.toLowerCase() === 'orange' ? 'creativity and enthusiasm' :
+                                      result.auraColor.toLowerCase() === 'pink' ? 'love and compassion' :
+                                      result.auraColor.toLowerCase() === 'white' ? 'purity and protection' :
+                                      result.auraColor.toLowerCase() === 'black' ? 'grounding and protection' :
+                                      result.auraColor.toLowerCase() === 'gold' ? 'divine connection and wisdom' :
+                                      'various ceremonial and ritual purposes'
+                                    }. Throughout different cultures, similar objects have been used for ${
+                                      result.objectPurpose.toLowerCase().includes('healing') ? 'healing ceremonies and energy balancing' :
+                                      result.objectPurpose.toLowerCase().includes('protect') ? 'protection against negative influences' :
+                                      result.objectPurpose.toLowerCase().includes('commun') ? 'communication with higher realms' :
+                                      result.objectPurpose.toLowerCase().includes('wisdom') ? 'gaining wisdom and insight' :
+                                      'enhancing spiritual practices and daily rituals'
+                                    }.`
+                                  }
+                                </p>
+                              </div>
+                              
+                              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-5 border border-violet-100">
+                                <h4 className="font-medium mb-3">Spiritual Significance</h4>
+                                <p className="text-sm text-gray-700">
+                                  {result.spiritualSignificance || 
+                                    `This object carries energies that can potentially influence ${
+                                      result.energyQualities.some(q => q.toLowerCase().includes('heal')) ? 'healing and restoration' :
+                                      result.energyQualities.some(q => q.toLowerCase().includes('protect')) ? 'protection and safety' :
+                                      result.energyQualities.some(q => q.toLowerCase().includes('calm')) ? 'peace and tranquility' :
+                                      result.energyQualities.some(q => q.toLowerCase().includes('focus')) ? 'focus and concentration' :
+                                      result.energyQualities.some(q => q.toLowerCase().includes('creative')) ? 'creativity and expression' :
+                                      'spiritual awareness and connection'
+                                    }. Its ${result.auraColor.toLowerCase()} aura suggests alignment with ${
+                                      result.auraColor.toLowerCase() === 'red' ? 'the root chakra, grounding physical energy' :
+                                      result.auraColor.toLowerCase() === 'orange' ? 'the sacral chakra, enhancing creative flow' :
+                                      result.auraColor.toLowerCase() === 'yellow' ? 'the solar plexus chakra, boosting personal power' :
+                                      result.auraColor.toLowerCase() === 'green' ? 'the heart chakra, opening to love and compassion' :
+                                      result.auraColor.toLowerCase() === 'blue' ? 'the throat chakra, facilitating clear expression' :
+                                      result.auraColor.toLowerCase() === 'indigo' ? 'the third eye chakra, enhancing intuition' :
+                                      result.auraColor.toLowerCase() === 'purple' || result.auraColor.toLowerCase() === 'violet' ? 
+                                        'the crown chakra, connecting to higher consciousness' :
+                                      'multiple chakra centers, offering balanced energy work'
+                                    }.`
+                                  }
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-5 border border-emerald-100">
+                              <h4 className="font-medium mb-3">Energy Interactions & Recommendations</h4>
+                              <p className="text-sm text-gray-700 mb-4">
+                                This object's energy signature interacts with human energy fields in 
+                                {result.energyLevel > 7 ? ' powerful and immediate ways' : 
+                                 result.energyLevel > 4 ? ' noticeable and consistent ways' : 
+                                 ' subtle but significant ways'}.
+                                Its vibration may {result.energyLevel > 6 ? 'actively transform' : 'gently influence'} 
+                                surrounding energies.
+                              </p>
+                              
+                              <h5 className="font-medium text-sm mb-2">Recommendations for Use:</h5>
+                              <ul className="text-sm list-disc list-inside space-y-1 text-gray-700">
+                                <li>Place in a {result.energyLevel > 6 ? 'central' : 'thoughtfully chosen'} location 
+                                  where you spend {result.energyLevel > 5 ? 'focused time' : 'restful moments'}</li>
+                                <li>Consider combining with {
+                                  result.auraColor.toLowerCase() === 'red' ? 'black tourmaline for grounding excess energy' :
+                                  result.auraColor.toLowerCase() === 'blue' ? 'clear quartz to amplify communication properties' :
+                                  result.auraColor.toLowerCase() === 'green' ? 'rose quartz to enhance heart-centered healing' :
+                                  result.auraColor.toLowerCase() === 'purple' ? 'amethyst to deepen spiritual awareness' :
+                                  result.auraColor.toLowerCase() === 'yellow' ? 'citrine to boost positive mental energy' :
+                                  'complementary crystals or objects to balance its energetic properties'
+                                }</li>
+                                <li>For maximum benefit, {
+                                  result.energyLevel > 7 ? 'use mindfully and in moderation' :
+                                  result.energyLevel > 4 ? 'incorporate into daily rituals' :
+                                  'keep in your environment consistently'
+                                }</li>
+                                <li>Cleanse regularly with {
+                                  result.auraColor.toLowerCase().includes('water') || 
+                                  result.auraColor.toLowerCase() === 'blue' ? 'moonlight or sound' :
+                                  result.auraColor.toLowerCase().includes('fire') || 
+                                  result.auraColor.toLowerCase() === 'red' || 
+                                  result.auraColor.toLowerCase() === 'orange' ? 'sunlight or smoke' :
+                                  'your preferred energy clearing method'
+                                } to maintain its optimal vibration</li>
+                              </ul>
+                            </div>
                           </div>
                         </TabsContent>
                       </Tabs>

@@ -106,23 +106,83 @@ export default function Numerology() {
   };
   
   // Get color associated with numerology number
-  const getNumberColor = (number: number): { bg: string, text: string, name: string } => {
+  const getNumberColor = (number: number): { bg: string, text: string, name: string, meaning: string } => {
     // Reduce master numbers for color purposes
     const reducedNumber = number > 9 ? (number === 11 || number === 22 || number === 33 ? number : Number(number.toString().split('').reduce((a, b) => a + parseInt(b), 0))) : number;
     
-    const colorMap: Record<number, { bg: string, text: string, name: string }> = {
-      1: { bg: "bg-red-100", text: "text-red-600", name: "Red" },
-      2: { bg: "bg-orange-100", text: "text-orange-600", name: "Orange" },
-      3: { bg: "bg-yellow-100", text: "text-yellow-600", name: "Yellow" },
-      4: { bg: "bg-green-100", text: "text-green-600", name: "Green" },
-      5: { bg: "bg-blue-100", text: "text-blue-600", name: "Blue" },
-      6: { bg: "bg-indigo-100", text: "text-indigo-600", name: "Indigo" },
-      7: { bg: "bg-violet-100", text: "text-violet-600", name: "Violet" },
-      8: { bg: "bg-purple-100", text: "text-purple-600", name: "Purple" },
-      9: { bg: "bg-pink-100", text: "text-pink-600", name: "Pink" },
-      11: { bg: "bg-white border border-gold-300", text: "text-amber-500", name: "Gold/White" },
-      22: { bg: "bg-indigo-200", text: "text-indigo-800", name: "Royal Blue" },
-      33: { bg: "bg-emerald-100", text: "text-emerald-600", name: "Emerald" }
+    const colorMap: Record<number, { bg: string, text: string, name: string, meaning: string }> = {
+      1: { 
+        bg: "bg-red-100", 
+        text: "text-red-600", 
+        name: "Red", 
+        meaning: "Vibrant and energetic, red represents passion, leadership, and primal driving forces. It encourages action, vitality, and the courage to pursue your goals with determination."
+      },
+      2: { 
+        bg: "bg-orange-100", 
+        text: "text-orange-600", 
+        name: "Orange", 
+        meaning: "Warm and inviting, orange represents joy, enthusiasm, and creative expression. It encourages emotional balance, social connection, and the ability to navigate relationships with grace."
+      },
+      3: { 
+        bg: "bg-yellow-100", 
+        text: "text-yellow-600", 
+        name: "Yellow", 
+        meaning: "Bright and uplifting, yellow represents optimism, mental clarity, and self-expression. It encourages intellectual growth, communication skills, and the ability to share ideas with confidence."
+      },
+      4: { 
+        bg: "bg-green-100", 
+        text: "text-green-600", 
+        name: "Green", 
+        meaning: "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
+      },
+      5: { 
+        bg: "bg-blue-100", 
+        text: "text-blue-600", 
+        name: "Blue", 
+        meaning: "Clear and expansive, blue represents communication, truth, and freedom of expression. It encourages authenticity, adaptability, and the courage to embrace change with confidence."
+      },
+      6: { 
+        bg: "bg-indigo-100", 
+        text: "text-indigo-600", 
+        name: "Indigo", 
+        meaning: "Deep and mysterious, indigo represents intuition, responsibility, and spiritual perception. It encourages visionary thinking, nurturing abilities, and service to others."
+      },
+      7: { 
+        bg: "bg-violet-100", 
+        text: "text-violet-600", 
+        name: "Violet", 
+        meaning: "Mystical and transformative, violet represents spiritual wisdom, introspection, and higher consciousness. It encourages deep analysis, inner knowing, and connection to universal truths."
+      },
+      8: { 
+        bg: "bg-purple-100", 
+        text: "text-purple-600", 
+        name: "Purple", 
+        meaning: "Regal and powerful, purple represents abundance, achievement, and personal authority. It encourages leadership, manifestation skills, and the ability to create material and spiritual wealth."
+      },
+      9: { 
+        bg: "bg-pink-100", 
+        text: "text-pink-600", 
+        name: "Pink", 
+        meaning: "Compassionate and universal, pink represents unconditional love, completion, and humanitarian ideals. It encourages selfless service, emotional intelligence, and global consciousness."
+      },
+      11: { 
+        bg: "bg-white border border-gold-300", 
+        text: "text-amber-500", 
+        name: "Gold/White", 
+        meaning: "Divine and illuminating, gold/white represents spiritual illumination, intuitive mastery, and elevated consciousness. It encourages visionary insight, inspirational leadership, and the ability to bridge earthly and spiritual realms."
+      },
+      22: { 
+        bg: "bg-indigo-200", 
+        text: "text-indigo-800", 
+        name: "Royal Blue", 
+        meaning: "Masterful and expansive, royal blue represents practical spirituality, manifestation power, and world-changing potential. It encourages large-scale vision, material mastery, and the ability to transform dreams into reality."
+      },
+      33: { 
+        bg: "bg-emerald-100", 
+        text: "text-emerald-600", 
+        name: "Emerald", 
+        meaning: "Healing and transcendent, emerald represents compassionate service, spiritual teaching, and Christ consciousness. It encourages selfless love, nurturing wisdom, and the ability to uplift humanity through your presence."
+      }
     };
     
     return colorMap[reducedNumber] || colorMap[1]; // Default to red if number not found
@@ -131,18 +191,18 @@ export default function Numerology() {
   // Get vibration qualities for a number
   const getNumberVibrations = (number: number) => {
     const vibrations: Record<number, string[]> = {
-      1: ["Leadership", "Independence", "Originality", "Self-confidence", "Pioneering"],
-      2: ["Harmony", "Cooperation", "Sensitivity", "Diplomacy", "Intuition"],
-      3: ["Creativity", "Expression", "Joy", "Optimism", "Communication"],
-      4: ["Stability", "Practicality", "Organization", "Determination", "Discipline"],
-      5: ["Freedom", "Change", "Adventure", "Versatility", "Curiosity"],
-      6: ["Nurturing", "Responsibility", "Harmony", "Balance", "Love"],
-      7: ["Analysis", "Wisdom", "Spirituality", "Introspection", "Perfection"],
-      8: ["Abundance", "Power", "Authority", "Achievement", "Material success"],
-      9: ["Compassion", "Completion", "Humanitarianism", "Wisdom", "Universal love"],
-      11: ["Inspiration", "Illumination", "Spirituality", "Idealism", "Intuition"],
-      22: ["Master building", "Practical idealism", "Large-scale manifestation", "Power", "Material mastery"],
-      33: ["Spiritual teaching", "Compassionate service", "Enlightenment", "Healing", "Selfless giving"]
+      1: ["Leadership", "Independence", "Originality", "Self-confidence", "Pioneering", "Initiative", "Ambition", "Courage", "Innovation"],
+      2: ["Harmony", "Cooperation", "Sensitivity", "Diplomacy", "Intuition", "Adaptability", "Empathy", "Balance", "Partnership", "Receptivity"],
+      3: ["Creativity", "Expression", "Joy", "Optimism", "Communication", "Enthusiasm", "Imagination", "Inspiration", "Social Energy", "Artistic Flow"],
+      4: ["Stability", "Practicality", "Organization", "Determination", "Discipline", "Reliability", "Focus", "Loyalty", "Foundation", "Persistence"],
+      5: ["Freedom", "Change", "Adventure", "Versatility", "Curiosity", "Adaptability", "Resourcefulness", "Progress", "Exploration", "Vitality"],
+      6: ["Nurturing", "Responsibility", "Harmony", "Balance", "Love", "Service", "Beauty", "Compassion", "Protection", "Healing"],
+      7: ["Analysis", "Wisdom", "Spirituality", "Introspection", "Perfection", "Research", "Intuition", "Depth", "Knowledge", "Inner Awareness"],
+      8: ["Abundance", "Power", "Authority", "Achievement", "Material success", "Organization", "Management", "Manifestation", "Efficiency", "Vision"],
+      9: ["Compassion", "Completion", "Humanitarianism", "Wisdom", "Universal love", "Forgiveness", "Altruism", "Idealism", "Spiritual Growth", "Leadership"],
+      11: ["Inspiration", "Illumination", "Spirituality", "Idealism", "Intuition", "Vision", "Enlightenment", "Revelation", "Sensitivity", "Awareness"],
+      22: ["Master building", "Practical idealism", "Large-scale manifestation", "Power", "Material mastery", "Leadership", "Influence", "Legacy", "Structure", "Transformation"],
+      33: ["Spiritual teaching", "Compassionate service", "Enlightenment", "Healing", "Selfless giving", "Unconditional Love", "Nurturing", "Wisdom", "Higher Consciousness", "Divine Expression"]
     };
     
     return vibrations[number] || vibrations[number % 9 || 9];
@@ -276,6 +336,9 @@ export default function Numerology() {
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.lifePathNumber).text}`}>{getNumberColor(result.lifePathNumber).name}</span>
                               </div>
+                              <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
+                                {getNumberColor(result.lifePathNumber).meaning}
+                              </div>
                             </div>
                             
                             <div className="text-gray-700">
@@ -343,6 +406,9 @@ export default function Numerology() {
                               <h3 className="font-heading font-semibold">Destiny Number</h3>
                               <div className="text-sm text-gray-500 mt-1">
                                 Associated Color: <span className={`font-medium ${getNumberColor(result.destinyNumber).text}`}>{getNumberColor(result.destinyNumber).name}</span>
+                              </div>
+                              <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
+                                {getNumberColor(result.destinyNumber).meaning}
                               </div>
                             </div>
                             
