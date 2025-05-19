@@ -161,131 +161,40 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
   };
 
   try {
-    // Check if API key is missing or invalid format
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "YOUR_KEY_HERE") {
-      console.log("Using fallback aura analysis due to missing API key");
-      return generateFallbackAuraAnalysis();
-    }
-
-    // Generate a simple hash of the image for consistency in results
-    const simpleHash = Buffer.from(base64Image).slice(0, 1000).toString('base64').substring(0, 20);
-
-    // Storage for consistent aura readings (in a production app, this would be a database)
-    // This ensures the same image always gets the same aura analysis result
-    const knownAuraImages: Record<string, AuraAnalysisResult> = {
-      // Each hash maps to a specific, consistent aura reading
-      "iVBORw0KGgoAAAANSUhEUgA": {
-        dominantColor: "Purple", 
-        secondaryColor: "Indigo",
-        energyLevel: 8,
-        personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Healing"],
-        spiritualGuidance: "Your purple-dominant aura reveals your strong spiritual awareness and psychic abilities. Continue developing your intuitive gifts through meditation and energy work. This powerful vibration indicates you're highly receptive to spiritual guidance and cosmic energies. Focus on grounding practices to balance this elevated energy and protect yourself from energy depletion.",
-        chakraActivity: {
-          root: 5, sacral: 6, solarPlexus: 7, heart: 8, throat: 7, thirdEye: 9, crown: 9
-        },
-        detailedAnalysis: "Your aura displays a vibrant purple and indigo combination, indicating a highly evolved spiritual consciousness. The purple represents your intuitive abilities and connection to higher realms, while the indigo shows your strong third-eye activity and visionary perception. This combination is rare and suggests you're likely involved in spiritual or healing work. Your energy field shows exceptional strength in the upper chakras, particularly the third eye and crown, indicating advanced spiritual awareness and possible psychic abilities."
-      },
-      "B4gIJeUluXBf8yTXHbsH": {
-        dominantColor: "Blue", 
-        secondaryColor: "Turquoise",
-        energyLevel: 6,
-        personalityTraits: ["Empathetic", "Communicative", "Truthful", "Nurturing"],
-        spiritualGuidance: "Your blue-dominant aura shows your gift for communication and healing. Focus on expressing your truth while maintaining emotional boundaries. Your natural ability to connect with others makes you an excellent mediator and counselor. Practice techniques to cleanse your energy field after interactions to prevent absorbing others' emotions.",
-        chakraActivity: {
-          root: 5, sacral: 5, solarPlexus: 6, heart: 7, throat: 9, thirdEye: 7, crown: 6
-        },
-        detailedAnalysis: "Your aura reveals a brilliant blue with turquoise highlights, showing your exceptional communication abilities and emotional intelligence. The blue indicates your natural gift for expressing truth and creating harmony, while the turquoise elements suggest healing abilities and a bridge between your heart and throat energies. This combination is often seen in natural healers, counselors, and those who use their voice or communication skills to help others. Your throat chakra shows extraordinary activity, indicating your voice or communication is a primary channel for your spiritual gifts."
-      },
-      "YWJjZGVmZ2hpamtsbW5v": {
-        dominantColor: "Green", 
-        secondaryColor: "Pink",
-        energyLevel: 7,
-        personalityTraits: ["Healing", "Balanced", "Nurturing", "Compassionate"],
-        spiritualGuidance: "Your green-dominant aura with pink secondary tones reveals your powerful healing abilities and heart-centered consciousness. You naturally balance giving and receiving energy. Continue developing your healing abilities through regular connection with nature and heart-opening practices. Your gift for nurturing others is exceptional—ensure you receive the same care you give to others.",
-        chakraActivity: {
-          root: 6, sacral: 6, solarPlexus: 7, heart: 9, throat: 7, thirdEye: 6, crown: 7
-        },
-        detailedAnalysis: "Your aura field shows a vibrant emerald green core with beautiful rose-pink highlights, indicating an extraordinary healing presence and heart-centered consciousness. The green vibration reveals your natural ability to bring balance, growth, and renewal to any situation or person you encounter. The pink secondary color shows your deeply compassionate nature and unconditional love energy. This powerful combination is often seen in gifted healers, particularly those who work with heart energy, plant medicine, or emotional healing modalities. Your heart chakra is exceptionally bright, showing this as your primary channel for spiritual gifts."
-      },
-      "cG9xZXJ0eXVpb3Bhc2Rm": {
-        dominantColor: "Red", 
-        secondaryColor: "Orange",
-        energyLevel: 9,
-        personalityTraits: ["Dynamic", "Passionate", "Creative", "Resilient"],
-        spiritualGuidance: "Your red-dominant aura with orange secondary tones reveals your powerful life force energy and creative passion. Your energy naturally activates and inspires others. Focus on grounding and channeling this intense vitality through physical activities and creative expression. Regular connection with earth elements will help you maintain balance.",
-        chakraActivity: {
-          root: 9, sacral: 9, solarPlexus: 8, heart: 6, throat: 7, thirdEye: 5, crown: 5
-        },
-        detailedAnalysis: "Your aura field displays a vibrant crimson red core with fiery orange radiating outward, indicating extraordinary life force energy and creative power. The red vibration shows your passionate nature, courage, and strong physical vitality, while the orange reveals your creative genius and emotional expressiveness. This powerful combination is often seen in natural leaders, pioneers, artists, and those who catalyze change and transformation. Your root and sacral chakras are exceptionally activated, showing these as your primary channels for your spiritual gifts."
+      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "YOUR_KEY_HERE") {
+        console.log("OpenAI API key not configured, using fallback analysis");
+        return generateFallbackAuraAnalysis();
       }
-    };
 
-    // Check if we've analyzed this image before for consistent results
-    for (const hash in knownAuraImages) {
-      if (simpleHash.includes(hash.substring(0, 5))) {
-        console.log("Using consistent aura analysis for recognized image");
-        return knownAuraImages[hash];
-      }
-    }
-
-    // Prepare the image for API call
-    const imageContent = base64Image.startsWith('data:') 
-      ? base64Image 
-      : `data:image/jpeg;base64,${base64Image}`;
-
-    // Enhanced prompt specifically for specialized aura photographs with multiple color detection
-    const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people. Include both positive and negative aspects of each color detected, especially noting the presence and meaning of black (protection/negativity), grey (balance/confusion), and silver (intuition/illusion) tones.
-
-EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
-
-DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
-
-Specifically:
-1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
-2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
-3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
-4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
-
-Respond with valid JSON containing:
-- dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
-- secondaryColor: The SECONDARY aura color visible in the energy field
-- auraColorSpectrum: Array of 4-5 different colors actually visible in the aura field in order of prominence
-- auraLayerColors: Object mapping aura layers to their colors { "inner": "color", "middle": "color", "outer": "color" }
-- energyLevel: Intensity of the energy field (1-10)
-- personalityTraits: 4-5 spiritual/personality traits associated with these SPECIFIC aura colors
-- spiritualGuidance: Detailed spiritual guidance based on these SPECIFIC aura colors (150+ words)
-- chakraActivity: Activity levels for each chakra (root, sacral, solarPlexus, heart, throat, thirdEye, crown) on scale 1-10
-- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal, discussing all 4-5 colors (250+ words)`;
-
-    // Call OpenAI API with the image - using enhanced prompt for aura detection
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content: customPrompt ? customPrompt : enhancedAuraPrompt
-        },
-        {
-          role: "user",
-          content: [
+      try {
+        const response = await openai.chat.completions.create({
+          model: MODEL,
+          messages: [
             {
-              type: "text",
-              text: customPrompt 
-                ? customPrompt 
-                : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
+              role: "system",
+              content: customPrompt ? customPrompt : enhancedAuraPrompt
             },
             {
-              type: "image_url",
-              image_url: {
-                url: imageContent
-              }
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: customPrompt 
+                    ? customPrompt 
+                    : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: imageContent
+                  }
+                }
+              ]
             }
-          ]
-        }
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 1500,
-    });
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 1500,
+        });
 
     // Parse the response
     const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -324,17 +233,30 @@ Respond with valid JSON containing:
         // Mock result: Return a string indicating aura colors
         return `Processed image with dominant color ${finalResult.dominantColor} (${dominantRgba}) and secondary color ${finalResult.secondaryColor} (${secondaryRgba})`;
     };
-    
+
     // Process the image with aura colors
     const processedImage = await processImageWithAura(base64Image, { dominant: finalResult.dominantColor, secondary: finalResult.secondaryColor });
     console.log(processedImage); // Output the processed image information (or handle as needed)
 
     return finalResult;
   } catch (error) {
-    console.error("Error in OpenAI aura analysis:", error);
-    // Return a fallback response instead of throwing an error
-    return generateFallbackAuraAnalysis();
-  }
+      console.error("Error in OpenAI aura analysis:", error);
+
+      // Check if it's a rate limit error
+      if (error.status === 429 || (error.error && error.error.type === 'insufficient_quota')) {
+        console.log("Rate limit exceeded, using fallback analysis");
+        return generateFallbackAuraAnalysis();
+      }
+
+      // Handle other types of errors
+      if (error.status === 401) {
+        console.log("Authentication error with OpenAI API, using fallback");
+        return generateFallbackAuraAnalysis();
+      }
+
+      // For any other error, use fallback
+      return generateFallbackAuraAnalysis();
+    }
 }
 
 /**
