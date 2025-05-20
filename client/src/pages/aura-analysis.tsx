@@ -641,13 +641,16 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="flex w-full overflow-x-auto snap-x snap-mandatory space-x-1 p-1 mb-6">
-                            <TabsTrigger value="analysis" className="flex-shrink-0 text-sm snap-start whitespace-nowrap px-3">Analysis</TabsTrigger>
-                            <TabsTrigger value="chakras" className="flex-shrink-0 text-sm snap-start whitespace-nowrap px-3">Chakras</TabsTrigger>
-                            <TabsTrigger value="guidance" className="flex-shrink-0 text-sm snap-start whitespace-nowrap px-3">Guidance</TabsTrigger>
-                            <TabsTrigger value="numerology" className="flex-shrink-0 text-sm snap-start whitespace-nowrap px-3 relative">
-                              Numerology
-                              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                          <TabsList className="grid grid-rows-2 gap-2 w-full p-1 mb-6">
+                            <div className="grid grid-cols-3 gap-2">
+                              <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
+                              <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
+                              <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <TabsTrigger value="numerology" className="text-sm whitespace-nowrap px-3 relative">
+                                Numerology
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
                                   <span className="text-[10px] text-white font-bold">9</span>
