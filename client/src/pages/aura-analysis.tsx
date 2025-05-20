@@ -651,21 +651,22 @@ export default function AuraAnalysis() {
                               <TabsTrigger value="numerology" className="text-sm whitespace-nowrap px-3 relative">
                                 Numerology
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
-                                  <span className="text-[10px] text-white font-bold">9</span>
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
+                                    <span className="text-[10px] text-white font-bold">9</span>
+                                  </span>
                                 </span>
-                              </span>
-                            </TabsTrigger>
-                            <TabsTrigger value="detailed" className="relative">
-                              Detailed
-                              <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                                  <Crown className="h-2 w-2 text-white" />
+                              </TabsTrigger>
+                              <TabsTrigger value="detailed" className="relative">
+                                Detailed
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
+                                    <Crown className="h-2 w-2 text-white" />
+                                  </span>
                                 </span>
-                              </span>
-                            </TabsTrigger>
+                              </TabsTrigger>
+                            </div>
                           </TabsList>
                           
                           <TabsContent value="numerology">
