@@ -565,8 +565,7 @@ export default function AuraAnalysis() {
   };
 
   // Main component render
-  const AuraAnalysis: React.FC = () => {
-    return (
+  return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
 
