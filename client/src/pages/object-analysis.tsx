@@ -53,10 +53,10 @@ export default function ObjectAnalysis() {
             clearInterval(progressInterval);
             return prev;
           }
-
+          
           const increment = Math.random() * 10;
           const newProgress = prev + increment > 95 ? 95 : prev + increment;
-
+          
           // Update the analysis stage based on progress
           if (newProgress > 10 && newProgress <= 30) {
             setAnalysisStage("Identifying object characteristics...");
@@ -67,7 +67,7 @@ export default function ObjectAnalysis() {
           } else if (newProgress > 80) {
             setAnalysisStage("Finalizing analysis...");
           }
-
+          
           return newProgress;
         });
       }, 800);
@@ -143,74 +143,6 @@ export default function ObjectAnalysis() {
     return colorMap[color];
   };
 
-  const drawAuraClouds = (
-    ctx: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    dominantColor: string, 
-    secondaryColor: string,
-    energyLevel: number
-  ) => {
-    // Map color names to rgba values with enhanced opacity for smokey effect
-    const colorMap: Record<string, string> = {
-      red: 'rgba(255, 0, 0, 0.4)',
-      orange: 'rgba(255, 165, 0, 0.4)',
-      yellow: 'rgba(255, 255, 0, 0.4)',
-      green: 'rgba(0, 128, 0, 0.4)',
-      blue: 'rgba(0, 0, 255, 0.4)',
-      indigo: 'rgba(75, 0, 130, 0.4)',
-      violet: 'rgba(148, 0, 211, 0.4)',
-      purple: 'rgba(128, 0, 128, 0.4)',
-      pink: 'rgba(255, 182, 193, 0.4)',
-      white: 'rgba(255, 255, 255, 0.4)',
-      gold: 'rgba(255, 215, 0, 0.4)',
-      silver: 'rgba(192, 192, 192, 0.4)',
-
-    // Create a gradient effect for smokey appearance
-    const createSmokeEffect = (x: number, y: number, radius: number, color: string) => {
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, color);
-      gradient.addColorStop(0.4, color.replace('0.4)', '0.2)'));
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      return gradient;
-    };
-
-    // Draw multiple smoke clouds
-    const numClouds = 12 + (energyLevel * 2);
-    for (let i = 0; i < numClouds; i++) {
-      const angle = (i / numClouds) * Math.PI * 2;
-      const distance = Math.random() * (width / 4) + (width / 4);
-      const x = width / 2 + Math.cos(angle) * distance;
-      const y = height / 2 + Math.sin(angle) * distance;
-      const radius = (Math.random() * width / 4) + (energyLevel * 10);
-
-      ctx.globalCompositeOperation = 'screen';
-      ctx.fillStyle = createSmokeEffect(
-        x, 
-        y, 
-        radius, 
-        i % 2 === 0 ? colorMap[dominantColor] : colorMap[secondaryColor]
-      );
-
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Add central glow
-    const centerGlow = ctx.createRadialGradient(
-      width / 2, height / 2, 0,
-      width / 2, height / 2, width / 3
-    );
-    centerGlow.addColorStop(0, colorMap[dominantColor]);
-    centerGlow.addColorStop(0.6, colorMap[secondaryColor].replace('0.4)', '0.1)'));
-    centerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.fillStyle = centerGlow;
-    ctx.fillRect(0, 0, width, height);
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -230,7 +162,7 @@ export default function ObjectAnalysis() {
                   Upload a photo of any object to discover its aura, energy patterns, and spiritual significance.
                 </p>
               </div>
-
+              
               <div className="mb-12">
                 <Card className="overflow-hidden border-none shadow-md">
                   <div className="h-2 bg-gradient-to-r from-primary to-primary-dark"></div>
@@ -240,13 +172,13 @@ export default function ObjectAnalysis() {
                         Every object carries its own unique energy signature. Upload a photo of an object 
                         to discover its aura color, energy qualities, and spiritual significance.
                       </p>
-
+                      
                       <div className="flex flex-col items-center justify-center">
                         <ImageUpload 
                           onImageSelect={handleImageSelect}
                           isLoading={isAnalyzing}
                         />
-
+                        
                         {isAnalyzing && (
                           <div className="mt-4 text-center w-full max-w-md">
                             <p className="text-sm text-muted-foreground mb-2">{analysisStage}</p>
@@ -259,7 +191,7 @@ export default function ObjectAnalysis() {
                   </CardContent>
                 </Card>
               </div>
-
+              
               {result && (
                 <div className="space-y-8">
                   <Card>
@@ -270,7 +202,7 @@ export default function ObjectAnalysis() {
                           <TabsTrigger value="energy">Energy Profile</TabsTrigger>
                           <TabsTrigger value="advanced">Advanced Analysis</TabsTrigger>
                         </TabsList>
-
+                        
                         <TabsContent value="basic">
                           <div className="space-y-6">
                             <div className="flex items-center justify-between">
@@ -278,17 +210,17 @@ export default function ObjectAnalysis() {
                                 <h3 className="font-medium text-lg">{result.objectName}</h3>
                                 <p className="text-sm text-gray-600">{result.objectDescription}</p>
                               </div>
-
+                              
                               <div className="flex gap-2">
                                 <span className={`inline-block w-8 h-8 rounded-full ${getColorClass(result.auraColor)}`}></span>
                               </div>
                             </div>
-
+                            
                             <div>
                               <h4 className="text-sm text-gray-500 mb-1">Object Purpose</h4>
                               <p className="text-sm">{result.objectPurpose}</p>
                             </div>
-
+                            
                             <div>
                               <h4 className="text-sm text-gray-500 mb-1">Aura Color</h4>
                               <div className="flex items-center">
@@ -297,7 +229,7 @@ export default function ObjectAnalysis() {
                               </div>
                               <p className="text-sm mt-2">{result.auraDescription}</p>
                             </div>
-
+                            
                             <div>
                               <h4 className="text-sm text-gray-500 mb-1">Energy Level</h4>
                               <Progress value={result.energyLevel * 10} className="h-2" />
@@ -309,7 +241,7 @@ export default function ObjectAnalysis() {
                             </div>
                           </div>
                         </TabsContent>
-
+                        
                         <TabsContent value="energy">
                           <div className="space-y-6">
                             <div>
@@ -322,12 +254,12 @@ export default function ObjectAnalysis() {
                                 ))}
                               </div>
                             </div>
-
+                            
                             <div className="bg-gray-50 rounded-lg p-4">
                               <h4 className="font-medium mb-2">Energy Profile</h4>
                               <p className="text-sm text-gray-600">{result.detailedAnalysis}</p>
                             </div>
-
+                            
                             <div className="grid grid-cols-2 gap-4">
                               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
                                 <h4 className="font-medium text-sm mb-2">Energy Classification</h4>
@@ -341,7 +273,7 @@ export default function ObjectAnalysis() {
                                       ></div>
                                     </div>
                                   </div>
-
+                                  
                                   <div className="flex justify-between items-center text-sm">
                                     <span>Static vs. Dynamic</span>
                                     <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -351,7 +283,7 @@ export default function ObjectAnalysis() {
                                       ></div>
                                     </div>
                                   </div>
-
+                                  
                                   <div className="flex justify-between items-center text-sm">
                                     <span>Grounding vs. Elevating</span>
                                     <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -363,7 +295,7 @@ export default function ObjectAnalysis() {
                                   </div>
                                 </div>
                               </div>
-
+                              
                               <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-100">
                                 <h4 className="font-medium text-sm mb-2">Energy Influence</h4>
                                 <p className="text-sm">This object may influence its surroundings by:</p>
@@ -376,14 +308,14 @@ export default function ObjectAnalysis() {
                             </div>
                           </div>
                         </TabsContent>
-
+                        
                         <TabsContent value="advanced">
                           <div className="space-y-6">
                             <div className="flex items-center">
                               <div className={`w-6 h-6 rounded-full ${getColorClass(result.auraColor)} mr-3`}></div>
                               <h3 className="font-medium text-lg">Advanced Analysis</h3>
                             </div>
-
+                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
                                 <h4 className="font-medium mb-3">Historical Significance</h4>
@@ -411,7 +343,7 @@ export default function ObjectAnalysis() {
                                   }
                                 </p>
                               </div>
-
+                              
                               <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-5 border border-violet-100">
                                 <h4 className="font-medium mb-3">Spiritual Significance</h4>
                                 <p className="text-sm text-gray-700">
@@ -438,7 +370,7 @@ export default function ObjectAnalysis() {
                                 </p>
                               </div>
                             </div>
-
+                            
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-5 border border-emerald-100">
                               <h4 className="font-medium mb-3">Energy Interactions & Recommendations</h4>
                               <p className="text-sm text-gray-700 mb-4">
@@ -449,7 +381,7 @@ export default function ObjectAnalysis() {
                                 Its vibration may {result.energyLevel > 6 ? 'actively transform' : 'gently influence'} 
                                 surrounding energies.
                               </p>
-
+                              
                               <h5 className="font-medium text-sm mb-2">Recommendations for Use:</h5>
                               <ul className="text-sm list-disc list-inside space-y-1 text-gray-700">
                                 <li>Place in a {result.energyLevel > 6 ? 'central' : 'thoughtfully chosen'} location 
@@ -482,7 +414,7 @@ export default function ObjectAnalysis() {
                       </Tabs>
                     </CardContent>
                   </Card>
-
+                  
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 text-center">
                     <h3 className="font-medium text-lg mb-2">Discover More Object Secrets</h3>
                     <p className="text-sm text-gray-600 mb-4">
@@ -501,7 +433,7 @@ export default function ObjectAnalysis() {
           </div>
         </section>
       </main>
-
+      
       <Footer />
     </div>
   );
