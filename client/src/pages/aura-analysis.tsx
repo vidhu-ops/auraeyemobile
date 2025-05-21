@@ -565,8 +565,7 @@ export default function AuraAnalysis() {
   };
 
   // Main component render
-  return function AuraAnalysisComponent() {
-    return (
+  return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
 
@@ -1786,5 +1785,4 @@ export default function AuraAnalysis() {
         <Footer />
       </div>
     );
-  }
 }
