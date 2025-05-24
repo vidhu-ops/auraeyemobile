@@ -54,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Use OpenAI to analyze the object with reference material context
-        const prompt = `Using the following reference materials:\n${JSON.stringify(referenceData, null, 2)}\n\nAnalyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
+        const prompt = `Using the following reference materials:\n${JSON.stringify(referenceData, null, 2)}\n\nAnalyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.`;
         
         // Call OpenAI with the prompt
         // Note: We're using the same analyzeAuraImage function but with a different prompt
