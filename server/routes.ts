@@ -8,9 +8,6 @@ import { analyzeImageWithGemini } from "./api/gemini";
 import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
-import fs from 'fs';
-import path from 'path';
-import { extractTextFromPDF, processPDFContent, parseAuraReferences, parseFortuneCalculations } from './api/pdf';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
@@ -25,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
-
+      
       if (req.file) {
         // If image was uploaded as file
         imageData = req.file.buffer.toString("base64");
@@ -38,51 +35,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
-
-      // Process any PDF reference materials first
-      let referenceData = {};
+      
       try {
-        const pdfFiles = fs.readdirSync(path.join(process.cwd(), 'attached_assets'))
-          .filter(file => file.endsWith('.pdf'));
-
-        for (const pdfFile of pdfFiles) {
-          const pdfBuffer = fs.readFileSync(path.join(process.cwd(), 'attached_assets', pdfFile));
-          const pdfText = await extractTextFromPDF(pdfBuffer);
-          const processedContent = processPDFContent(pdfText);
-          referenceData = { ...referenceData, ...processedContent };
-        }
-      } catch (pdfError) {
-        console.error('Error processing PDF references:', pdfError);
-      }
-
-      try {
-        // Create a structured prompt using the reference materials
-        const prompt = `Using these detailed reference materials:
-
-${Object.entries(referenceData).map(([key, value]) => 
-  `${key.toUpperCase()}:\n${value}`
-).join('\n\n')}
-
-Please analyze this object in the image and provide:
-1. Exact object identification
-2. Material composition and properties
-3. Purpose and significance
-4. Aura colors and energy patterns
-5. Spiritual and energetic properties
-6. Chakra associations and influences
-7. Recommended uses and placements`;
-
-        // Call OpenAI with the structured prompt
+        // Use OpenAI to analyze the object
+        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
+        
+        // Call OpenAI with the prompt
         // Note: We're using the same analyzeAuraImage function but with a different prompt
         // In a production app, you'd want to create a separate function for object analysis
         let objectAnalysis;
         try {
           objectAnalysis = await analyzeAuraImage(imageData, prompt);
-
+          
           // Extract the actual object type from the first sentence of the detailed analysis
           let objectType = "Object";
           const firstSentence = objectAnalysis.detailedAnalysis.split(".")[0];
-
+          
           // Look for common patterns that might indicate the object type
           if (firstSentence.toLowerCase().includes("appears to be")) {
             const match = firstSentence.match(/appears to be (a|an) ([^,\.]+)/i);
@@ -94,7 +62,7 @@ Please analyze this object in the image and provide:
             const match = firstSentence.match(/object is (a|an) ([^,\.]+)/i);
             if (match && match[2]) objectType = match[2].trim();
           }
-
+          
           // Transform the result to match the ObjectAnalysisResult interface
           const result = {
             objectName: objectType.charAt(0).toUpperCase() + objectType.slice(1),
@@ -108,11 +76,11 @@ Please analyze this object in the image and provide:
             spiritualSignificance: objectAnalysis.spiritualGuidance,
             detailedAnalysis: objectAnalysis.detailedAnalysis
           };
-
+          
           res.json(result);
         } catch (aiError) {
           console.error("Error in OpenAI object analysis:", aiError);
-
+          
           // Fallback response if OpenAI analysis fails
           const fallbackResult = {
             objectName: "Mystical Object",
@@ -126,12 +94,12 @@ Please analyze this object in the image and provide:
             spiritualSignificance: "This object may help in deepening meditation and accessing higher states of consciousness.",
             detailedAnalysis: "The object shows signs of being energetically charged. It appears to resonate with the third eye and crown chakras, potentially enhancing intuition and connection to higher wisdom. The energy pattern suggests it could be useful for spiritual development practices."
           };
-
+          
           res.json(fallbackResult);
         }
       } catch (error) {
         console.error("Error analyzing object:", error);
-
+        
         // Even if everything fails, provide a fallback response
         const emergencyFallback = {
           objectName: "Mystical Artifact",
@@ -145,7 +113,7 @@ Please analyze this object in the image and provide:
           spiritualSignificance: "This object may enhance meditation and spiritual awareness practices.",
           detailedAnalysis: "The energy signature of this object suggests it resonates with the third eye chakra. It may be useful for enhancing intuition and inner vision during meditation or spiritual work."
         };
-
+        
         res.json(emergencyFallback);
       }
     } catch (error) {
@@ -155,50 +123,11 @@ Please analyze this object in the image and provide:
   });
 
   // Aura Analysis API endpoint
-  app.post("/api/analyze-aura", upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'references', maxCount: 5 }
-]), async (req, res) => {
-  try {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    const imageFile = files['image']?.[0];
-    const referenceFiles = files['references'] || [];
-
-    // Process reference PDFs
-    let auraReferences = {};
-    let fortuneCalculations = {};
-
-    for (const file of referenceFiles) {
-      if (file.mimetype === 'application/pdf') {
-        const pdfText = await extractTextFromPDF(file.buffer);
-
-        if (file.originalname.toLowerCase().includes('chakra')) {
-          auraReferences = parseAuraReferences(pdfText);
-        } else if (file.originalname.toLowerCase().includes('fortune')) {
-          fortuneCalculations = parseFortuneCalculations(pdfText);
-        }
-      }
-    }
-
-    // Get image data
-    const imageData = imageFile.buffer.toString('base64');
-
-    // Analyze with enhanced reference data
-    const result = await analyzeAuraImage(imageData, {
-      auraReferences,
-      fortuneCalculations
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error("Error processing analysis:", error);
-    res.status(500).json({ error: "Analysis failed" });
-  }
-});
+  app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
-
+      
       if (req.file) {
         // If image was uploaded as file
         imageData = req.file.buffer.toString("base64");
@@ -211,20 +140,20 @@ Please analyze this object in the image and provide:
 
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
-
+      
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
-
+      
       // Custom prompt for aura detection in photographs with visible auras
       let customPrompt = null;
       if (detectVisibleAura) {
         customPrompt = `You are an expert aura reader analyzing a special aura photograph. 
         These photographs are taken with special equipment that captures the actual aura colors around people.
-
+        
         IMPORTANT: In these photographs, the colored glow/haze surrounding the person IS their actual aura.
         Focus ONLY on the colored light surrounding the person - this is the true aura.
         Do NOT focus on clothing colors, background, or other elements.
-
+        
         Analyze the visible aura colors (the glowing/hazy colored field around the person) and provide a detailed spiritual interpretation.
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
@@ -270,7 +199,7 @@ Please analyze this object in the image and provide:
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
-
+      
       // Even if everything fails, provide a fallback response
       const fallbackResult = {
         dominantColor: "Indigo",
@@ -289,7 +218,7 @@ Please analyze this object in the image and provide:
         },
         detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
       };
-
+      
       res.json(fallbackResult);
     }
   });
@@ -298,7 +227,7 @@ Please analyze this object in the image and provide:
   app.post("/api/gemini-analyze", upload.single("image"), async (req, res) => {
     try {
       let imageData: string;
-
+      
       if (req.file) {
         imageData = req.file.buffer.toString("base64");
       } else if (req.body.image) {
@@ -364,11 +293,11 @@ Please analyze this object in the image and provide:
         "aries", "taurus", "gemini", "cancer", "leo", "virgo",
         "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"
       ];
-
+      
       if (!validSigns.includes(sign)) {
         return res.status(400).json({ message: "Invalid zodiac sign" });
       }
-
+      
       const horoscope = await getHoroscopeForSign(sign);
       res.json(horoscope);
     } catch (error) {
@@ -381,17 +310,17 @@ Please analyze this object in the image and provide:
   app.post("/api/calculate-numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;
-
+      
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
-
+      
       let numerologyProfile: NumerologyResult;
-
+      
       try {
         // Try using the API-based calculation
         numerologyProfile = await calculateNumerologyProfile(name, birthDate);
-
+        
         // Save the numerology reading if user is authenticated
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
@@ -408,7 +337,7 @@ Please analyze this object in the image and provide:
       } catch (apiError) {
         // Already using algorithmic calculation as fallback in the API
         console.error("Numerology error:", apiError);
-
+        
         // Create a fallback in case the API function completely fails
         numerologyProfile = {
           lifePathNumber: calculateLifePath(birthDate),
@@ -417,7 +346,7 @@ Please analyze this object in the image and provide:
           personalityNumber: calculatePersonality(name),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
-
+        
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
@@ -427,11 +356,11 @@ Please analyze this object in the image and provide:
           });
         }
       }
-
+      
       res.json(numerologyProfile);
     } catch (error) {
       console.error("Error calculating numerology:", error);
-
+      
       // Ultimate fallback - always return something
       const emergencyFallback = {
         lifePathNumber: 7,
@@ -440,21 +369,21 @@ Please analyze this object in the image and provide:
         personalityNumber: 5,
         interpretation: "Your numerology reading indicates a balanced combination of analytical thinking (7), practical stability (4), creative expression (3), and adaptability (5). This blend of energies supports both spiritual growth and material achievement."
       };
-
+      
       res.json(emergencyFallback);
     }
   });
-
+  
 // Helper functions for fallback numerology calculations
 function calculateLifePath(date: string): number {
   // Format should be YYYY-MM-DD
   const parts = date.split('-');
   if (parts.length !== 3) return 5; // Default fallback
-
+  
   const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const month = parseInt(parts[1]);
   const day = parseInt(parts[2]);
-
+  
   return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
 }
 
@@ -494,7 +423,7 @@ function letterToNumber(letter: string): number {
 function reduceNumber(num: number): number {
   // Master numbers are preserved
   if (num === 11 || num === 22 || num === 33) return num;
-
+  
   // Reduce to single digit
   while (num > 9) {
     num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
@@ -506,12 +435,12 @@ function reduceNumber(num: number): number {
   app.post("/api/book-session", async (req, res) => {
     try {
       const { healerId, healerName, specialty } = req.body;
-
+      
       // Here you would typically:
       // 1. Save the booking to database
       // 2. Send notification to healer
       // 3. Send confirmation email
-
+      
       // For now, we'll just simulate success
       res.status(200).json({ message: "Booking request sent successfully" });
     } catch (error) {
@@ -528,11 +457,11 @@ function reduceNumber(num: number): number {
 
     try {
       const { energyLevel, reflections, gratitude } = req.body;
-
+      
       if (energyLevel === undefined || !reflections) {
         return res.status(400).json({ message: "Energy level and reflections are required" });
       }
-
+      
       // Format gratitude entries into a string
       let gratitudeText = "";
       if (Array.isArray(req.body.gratitude)) {
@@ -544,14 +473,14 @@ function reduceNumber(num: number): number {
       } else {
         gratitudeText = gratitude || "";
       }
-
+      
       const journalEntry = await storage.createJournalEntry({
         userId: req.user.id,
         energyLevel,
         reflections,
         gratitude: gratitudeText
       });
-
+      
       res.status(201).json(journalEntry);
     } catch (error) {
       console.error("Error saving journal entry:", error);
@@ -608,7 +537,7 @@ function reduceNumber(num: number): number {
     try {
       console.log("Received numerology request:", req.body);
       const { name, birthDate } = req.body;
-
+      
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
@@ -724,7 +653,7 @@ function reduceNumber(num: number): number {
         guidance: "Focus on harmonizing the " + getColorName(result.lifePathNumber) + " and " + 
                  getColorName(result.destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
       };
-
+      
       // If user is authenticated, save the reading to their profile
       if (req.isAuthenticated()) {
         try {
@@ -738,14 +667,14 @@ function reduceNumber(num: number): number {
             personalityNumber: result.personalityNumber,
             interpretation: result.interpretation
           };
-
+          
           await storage.saveNumerologyReading(readingToSave);
         } catch (saveError) {
           console.error("Error saving numerology reading:", saveError);
           // Continue even if saving fails
         }
       }
-
+      
       // Return the enhanced numerology profile
       console.log("Returning numerology profile:", numerologyProfile);
       res.json(numerologyProfile);
@@ -758,4 +687,3 @@ function reduceNumber(num: number): number {
   const httpServer = createServer(app);
   return httpServer;
 }
-`
