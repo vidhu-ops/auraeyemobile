@@ -48,19 +48,106 @@ function getColorForNumber(num: number): string {
  */
 export async function analyzeAuraImage(base64Image: string, customPrompt?: string): Promise<AuraAnalysisResult> {
   // Default result for fallback
+  const colorMap: Record<string, {
+  rgba: string;
+  positive: string[];
+  negative: string[];
+}> = {
+  black: {
+    rgba: 'rgba(0, 0, 0, 0.3)',
+    positive: ['Protection', 'Grounding', 'Power', 'Wisdom', 'Mystery', 'Boundaries'],
+    negative: ['Negativity', 'Fear', 'Blockages', 'Depression', 'Heavy energy', 'Resistance']
+  },
+  grey: {
+    rgba: 'rgba(128, 128, 128, 0.3)',
+    positive: ['Neutrality', 'Balance', 'Stability', 'Calmness', 'Diplomacy', 'Peace'],
+    negative: ['Confusion', 'Uncertainty', 'Lack of direction', 'Stagnation', 'Indecision', 'Detachment']
+  },
+  silver: {
+    rgba: 'rgba(192, 192, 192, 0.3)',
+    positive: ['Reflection', 'Intuition', 'Feminine energy', 'Grace', 'Adaptability', 'Mental clarity'],
+    negative: ['Illusion', 'Deception', 'Moodiness', 'Emotional instability', 'Overthinking', 'Rigidity']
+  },
+  black: {
+    rgba: 'rgba(0, 0, 0, 0.3)',
+    positive: ['Protection', 'Grounding', 'Power', 'Wisdom'],
+    negative: ['Negativity', 'Fear', 'Blockages', 'Depression']
+  },
+  grey: {
+    rgba: 'rgba(128, 128, 128, 0.3)',
+    positive: ['Neutrality', 'Balance', 'Stability', 'Calmness'],
+    negative: ['Confusion', 'Uncertainty', 'Lack of direction', 'Stagnation']
+  },
+  brown: {
+    rgba: 'rgba(139, 69, 19, 0.3)',
+    positive: ['Earthiness', 'Practicality', 'Material success', 'Reliability'],
+    negative: ['Stubbornness', 'Materialism', 'Excess focus on security', 'Inflexibility']
+  },
+  red: {
+    rgba: 'rgba(255, 0, 0, 0.3)',
+    positive: ['Passion', 'Energy', 'Courage', 'Strength'],
+    negative: ['Anger', 'Aggression', 'Impulsiveness', 'Domination']
+  },
+  orange: {
+    rgba: 'rgba(255, 165, 0, 0.3)',
+    positive: ['Creativity', 'Joy', 'Sociability', 'Confidence'],
+    negative: ['Addiction', 'Dependency', 'Superficiality', 'Recklessness']
+  },
+  yellow: {
+    rgba: 'rgba(255, 255, 0, 0.3)',
+    positive: ['Intelligence', 'Optimism', 'Clarity', 'Learning'],
+    negative: ['Over-analysis', 'Criticism', 'Nervousness', 'Mental strain']
+  },
+  green: {
+    rgba: 'rgba(0, 128, 0, 0.3)',
+    positive: ['Healing', 'Growth', 'Balance', 'Love'],
+    negative: ['Jealousy', 'Possessiveness', 'Martyrdom', 'Victim mentality']
+  },
+  blue: {
+    rgba: 'rgba(0, 0, 255, 0.3)',
+    positive: ['Truth', 'Peace', 'Communication', 'Intuition'],
+    negative: ['Depression', 'Isolation', 'Coldness', 'Detachment']
+  },
+  indigo: {
+    rgba: 'rgba(75, 0, 130, 0.3)',
+    positive: ['Insight', 'Perception', 'Intuition', 'Wisdom'],
+    negative: ['Obsession', 'Delusion', 'Escapism', 'Disconnection']
+  },
+  violet: {
+    rgba: 'rgba(148, 0, 211, 0.3)',
+    positive: ['Spirituality', 'Vision', 'Inspiration', 'Enlightenment'],
+    negative: ['Spiritual pride', 'Disconnection from reality', 'Escapism', 'Confusion']
+  },
+  white: {
+    rgba: 'rgba(255, 255, 255, 0.3)',
+    positive: ['Purity', 'Truth', 'Divine connection', 'Protection'],
+    negative: ['Spiritual bypassing', 'Perfectionism', 'Isolation', 'Detachment']
+  },
+  gold: {
+    rgba: 'rgba(255, 215, 0, 0.3)',
+    positive: ['Divine wisdom', 'Enlightenment', 'Success', 'Abundance'],
+    negative: ['Ego', 'Materialism', 'Greed', 'Superiority complex']
+  },
+  silver: {
+    rgba: 'rgba(192, 192, 192, 0.3)',
+    positive: ['Reflection', 'Intuition', 'Feminine energy', 'Grace'],
+    negative: ['Illusion', 'Deception', 'Moodiness', 'Emotional instability']
+  }
+};
   const defaultResult: AuraAnalysisResult = {
     dominantColor: "Blue",
     secondaryColor: "Purple",
-    // Extended spectrum with multiple colors
-    auraColorSpectrum: ["Blue", "Purple", "Indigo", "Turquoise", "Gold"],
+    auraColorSpectrum: ["Blue", "Purple", "Indigo", "Grey", "Black"],
     auraLayerColors: {
       inner: "Blue",
-      middle: "Purple",
-      outer: "Indigo"
+      middle: "Grey",
+      outer: "Black"
     },
     energyLevel: 3,
-    personalityTraits: ["Intuitive", "Spiritual", "Sensitive"],
-    spiritualGuidance: "Your aura suggests you are on a spiritual journey. Continue to nurture your intuitive abilities and stay connected to your higher self.",
+    personalityTraits: ["Intuitive", "Grounded", "Protected", "Balanced"],
+    positiveTraits: colorMap["blue"].positive.concat(colorMap["grey"].positive),
+    negativeTraits: colorMap["blue"].negative.concat(colorMap["grey"].negative),
+    spiritualGuidance: "Your aura shows a blend of spiritual receptivity (blue) with protective grounding (black). Work on balancing these energies while being mindful of potential emotional detachment (blue) or negativity (black).",
     chakraActivity: {
       root: 5,
       sacral: 6,
@@ -70,141 +157,54 @@ export async function analyzeAuraImage(base64Image: string, customPrompt?: strin
       thirdEye: 8,
       crown: 7
     },
-    detailedAnalysis: "Your aura shows a blend of spiritual awareness and intuitive abilities. Focus on grounding practices to balance your energy."
+    detailedAnalysis: "Your aura combines spiritual blue energies with grounding black and neutral grey. While this indicates strong protection and intuition, be mindful of potential isolation or emotional barriers. The grey suggests a transitional period - use this time for balanced self-reflection."
   };
 
   try {
-    // Check if API key is missing or invalid format
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "YOUR_KEY_HERE") {
-      console.log("Using fallback aura analysis due to missing API key");
-      return generateFallbackAuraAnalysis();
-    }
-
-    // Generate a simple hash of the image for consistency in results
-    const simpleHash = Buffer.from(base64Image).slice(0, 1000).toString('base64').substring(0, 20);
-
-    // Storage for consistent aura readings (in a production app, this would be a database)
-    // This ensures the same image always gets the same aura analysis result
-    const knownAuraImages: Record<string, AuraAnalysisResult> = {
-      // Each hash maps to a specific, consistent aura reading
-      "iVBORw0KGgoAAAANSUhEUgA": {
-        dominantColor: "Purple", 
-        secondaryColor: "Indigo",
-        energyLevel: 8,
-        personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Healing"],
-        spiritualGuidance: "Your purple-dominant aura reveals your strong spiritual awareness and psychic abilities. Continue developing your intuitive gifts through meditation and energy work. This powerful vibration indicates you're highly receptive to spiritual guidance and cosmic energies. Focus on grounding practices to balance this elevated energy and protect yourself from energy depletion.",
-        chakraActivity: {
-          root: 5, sacral: 6, solarPlexus: 7, heart: 8, throat: 7, thirdEye: 9, crown: 9
-        },
-        detailedAnalysis: "Your aura displays a vibrant purple and indigo combination, indicating a highly evolved spiritual consciousness. The purple represents your intuitive abilities and connection to higher realms, while the indigo shows your strong third-eye activity and visionary perception. This combination is rare and suggests you're likely involved in spiritual or healing work. Your energy field shows exceptional strength in the upper chakras, particularly the third eye and crown, indicating advanced spiritual awareness and possible psychic abilities."
-      },
-      "B4gIJeUluXBf8yTXHbsH": {
-        dominantColor: "Blue", 
-        secondaryColor: "Turquoise",
-        energyLevel: 6,
-        personalityTraits: ["Empathetic", "Communicative", "Truthful", "Nurturing"],
-        spiritualGuidance: "Your blue-dominant aura shows your gift for communication and healing. Focus on expressing your truth while maintaining emotional boundaries. Your natural ability to connect with others makes you an excellent mediator and counselor. Practice techniques to cleanse your energy field after interactions to prevent absorbing others' emotions.",
-        chakraActivity: {
-          root: 5, sacral: 5, solarPlexus: 6, heart: 7, throat: 9, thirdEye: 7, crown: 6
-        },
-        detailedAnalysis: "Your aura reveals a brilliant blue with turquoise highlights, showing your exceptional communication abilities and emotional intelligence. The blue indicates your natural gift for expressing truth and creating harmony, while the turquoise elements suggest healing abilities and a bridge between your heart and throat energies. This combination is often seen in natural healers, counselors, and those who use their voice or communication skills to help others. Your throat chakra shows extraordinary activity, indicating your voice or communication is a primary channel for your spiritual gifts."
-      },
-      "YWJjZGVmZ2hpamtsbW5v": {
-        dominantColor: "Green", 
-        secondaryColor: "Pink",
-        energyLevel: 7,
-        personalityTraits: ["Healing", "Balanced", "Nurturing", "Compassionate"],
-        spiritualGuidance: "Your green-dominant aura with pink secondary tones reveals your powerful healing abilities and heart-centered consciousness. You naturally balance giving and receiving energy. Continue developing your healing abilities through regular connection with nature and heart-opening practices. Your gift for nurturing others is exceptional—ensure you receive the same care you give to others.",
-        chakraActivity: {
-          root: 6, sacral: 6, solarPlexus: 7, heart: 9, throat: 7, thirdEye: 6, crown: 7
-        },
-        detailedAnalysis: "Your aura field shows a vibrant emerald green core with beautiful rose-pink highlights, indicating an extraordinary healing presence and heart-centered consciousness. The green vibration reveals your natural ability to bring balance, growth, and renewal to any situation or person you encounter. The pink secondary color shows your deeply compassionate nature and unconditional love energy. This powerful combination is often seen in gifted healers, particularly those who work with heart energy, plant medicine, or emotional healing modalities. Your heart chakra is exceptionally bright, showing this as your primary channel for spiritual gifts."
-      },
-      "cG9xZXJ0eXVpb3Bhc2Rm": {
-        dominantColor: "Red", 
-        secondaryColor: "Orange",
-        energyLevel: 9,
-        personalityTraits: ["Dynamic", "Passionate", "Creative", "Resilient"],
-        spiritualGuidance: "Your red-dominant aura with orange secondary tones reveals your powerful life force energy and creative passion. Your energy naturally activates and inspires others. Focus on grounding and channeling this intense vitality through physical activities and creative expression. Regular connection with earth elements will help you maintain balance.",
-        chakraActivity: {
-          root: 9, sacral: 9, solarPlexus: 8, heart: 6, throat: 7, thirdEye: 5, crown: 5
-        },
-        detailedAnalysis: "Your aura field displays a vibrant crimson red core with fiery orange radiating outward, indicating extraordinary life force energy and creative power. The red vibration shows your passionate nature, courage, and strong physical vitality, while the orange reveals your creative genius and emotional expressiveness. This powerful combination is often seen in natural leaders, pioneers, artists, and those who catalyze change and transformation. Your root and sacral chakras are exceptionally activated, showing these as your primary channels for your spiritual gifts."
+      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "YOUR_KEY_HERE") {
+        console.log("OpenAI API key not configured, using fallback analysis");
+        return generateFallbackAuraAnalysis();
       }
-    };
 
-    // Check if we've analyzed this image before for consistent results
-    for (const hash in knownAuraImages) {
-      if (simpleHash.includes(hash.substring(0, 5))) {
-        console.log("Using consistent aura analysis for recognized image");
-        return knownAuraImages[hash];
-      }
-    }
-
-    // Prepare the image for API call
-    const imageContent = base64Image.startsWith('data:') 
-      ? base64Image 
-      : `data:image/jpeg;base64,${base64Image}`;
-
-    // Enhanced prompt specifically for specialized aura photographs with multiple color detection
-    const enhancedAuraPrompt = `You are an expert in analyzing SPECIALIZED AURA PHOTOGRAPHS that show visible colored energy fields around people.
-
-EXTREMELY IMPORTANT: You must ONLY analyze the ACTUAL visible colored light/energy surrounding the person in the photograph. 
-
-DO NOT invent or make up colors that aren't visible in the image. Your analysis must be based SOLELY on the colors you can actually see in the energy field around the person.
-
-Specifically:
-1. ACCURATELY identify 4-5 different colors in the visible energy field (aura) surrounding the person
-2. Focus on any glowing, luminous, hazy, or distinct colored lights forming a field or halo around the person
-3. Completely ignore clothing colors, background elements, or anything that is not part of the energy field
-4. Be precise about identifying where each color appears (inner aura close to body, middle field, outer edges)
-
-Respond with valid JSON containing:
-- dominantColor: The PRIMARY aura color visible in the energy field (like "Purple", "Blue", "Green")
-- secondaryColor: The SECONDARY aura color visible in the energy field
-- auraColorSpectrum: Array of 4-5 different colors actually visible in the aura field in order of prominence
-- auraLayerColors: Object mapping aura layers to their colors { "inner": "color", "middle": "color", "outer": "color" }
-- energyLevel: Intensity of the energy field (1-10)
-- personalityTraits: 4-5 spiritual/personality traits associated with these SPECIFIC aura colors
-- spiritualGuidance: Detailed spiritual guidance based on these SPECIFIC aura colors (150+ words)
-- chakraActivity: Activity levels for each chakra (root, sacral, solarPlexus, heart, throat, thirdEye, crown) on scale 1-10
-- detailedAnalysis: In-depth interpretation of what these SPECIFIC aura colors reveal, discussing all 4-5 colors (250+ words)`;
-
-    // Call OpenAI API with the image - using enhanced prompt for aura detection
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content: customPrompt ? customPrompt : enhancedAuraPrompt
-        },
-        {
-          role: "user",
-          content: [
+      try {
+        const response = await openai.chat.completions.create({
+          model: MODEL,
+          messages: [
             {
-              type: "text",
-              text: customPrompt 
-                ? customPrompt 
-                : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
+              role: "system",
+              content: customPrompt ? customPrompt : enhancedAuraPrompt
             },
             {
-              type: "image_url",
-              image_url: {
-                url: imageContent
-              }
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: customPrompt 
+                    ? customPrompt 
+                    : "Analyze the colors surrounding and emanating from the person in this image. Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person. Identify exactly which 4-5 colors are visible in their aura field, in order of prominence."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: base64Image
+                  }
+                }
+              ]
             }
-          ]
-        }
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 1500,
-    });
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 1500,
+        });
+      } catch (error) {
+        console.error("Error in OpenAI API call:", error);
+        throw error;
+      }
 
     // Parse the response
     const result = JSON.parse(response.choices[0].message.content || "{}");
 
     // Merge with default values to ensure all fields are present
-    return {
+    const finalResult: AuraAnalysisResult = {
       ...defaultResult,
       ...result,
       chakraActivity: {
@@ -212,11 +212,55 @@ Respond with valid JSON containing:
         ...(result.chakraActivity || {})
       }
     };
+
+    // Function to process image with aura colors
+    const processImageWithAura = async (base64Image: string, auraColors: {dominant: string, secondary: string}): Promise<string> => {
+        // Mock the canvas and image elements since they are not available in Node.js
+        const colorMap: Record<string, string> = {
+          red: 'rgba(255, 0, 0, 0.3)',
+          orange: 'rgba(255, 165, 0, 0.3)',
+          yellow: 'rgba(255, 255, 0, 0.3)',
+          green: 'rgba(0, 128, 0, 0.3)',
+          blue: 'rgba(0, 0, 255, 0.3)',
+          purple: 'rgba(128, 0, 128, 0.3)',
+          indigo: 'rgba(75, 0, 130, 0.3)',
+          violet: 'rgba(148, 0, 211, 0.3)',
+          white: 'rgba(255, 255, 255, 0.3)',
+          gold: 'rgba(255, 215, 0, 0.3)',
+          silver: 'rgba(192, 192, 192, 0.3)',
+          black: 'rgba(0, 0, 0, 0.2)'
+        };
+
+        const dominantRgba = colorMap[finalResult.dominantColor?.toLowerCase()] || colorMap.white;
+        const secondaryRgba = colorMap[finalResult.secondaryColor?.toLowerCase()] || dominantRgba;
+
+        // Mock result: Return a string indicating aura colors
+        return `Processed image with dominant color ${finalResult.dominantColor} (${dominantRgba}) and secondary color ${finalResult.secondaryColor} (${secondaryRgba})`;
+    };
+
+    // Process the image with aura colors
+    const processedImage = await processImageWithAura(base64Image, { dominant: finalResult.dominantColor, secondary: finalResult.secondaryColor });
+    console.log(processedImage); // Output the processed image information (or handle as needed)
+
+    return finalResult;
   } catch (error) {
-    console.error("Error in OpenAI aura analysis:", error);
-    // Return a fallback response instead of throwing an error
-    return generateFallbackAuraAnalysis();
-  }
+      console.error("Error in OpenAI aura analysis:", error);
+
+      // Check if it's a rate limit error
+      if (error.status === 429 || (error.error && error.error.type === 'insufficient_quota')) {
+        console.log("Rate limit exceeded, using fallback analysis");
+        return generateFallbackAuraAnalysis();
+      }
+
+      // Handle other types of errors
+      if (error.status === 401) {
+        console.log("Authentication error with OpenAI API, using fallback");
+        return generateFallbackAuraAnalysis();
+      }
+
+      // For any other error, use fallback
+      return generateFallbackAuraAnalysis();
+    }
 }
 
 /**
@@ -524,7 +568,7 @@ function getFallbackHoroscope(sign: string): any {
     pisces: {
       sign: "pisces",
       date: today,
-      reading: "Intuitive insights guide your decisions and interactions. Artistic expression channels your deep emotional landscape. Compassion creates healing connections with others. Spiritual practices strengthen your inner guidance. Boundaries help preserve your sensitive energy.",
+      reading: "Intuitive insights guide your decisions and interactions.Artistic expression channelsyour deep emotional landscape. Compassion creates healing connections with others. Spiritual practices strengthen your inner guidance. Boundaries help preserve your sensitive energy.",
       love: 4,
       career: 3,
       health: 3,
@@ -703,31 +747,15 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
   const personalityNumber = calculatePersonality(name);
 
   // Generate interpretation based on calculated numbers
-      const numerologyProfile = {
-        lifePathNumber,
-        destinyNumber,
-        soulUrgeNumber,
-        personalityNumber,
-        colorAssociations: {
-          lifePath: { number: lifePathNumber, color: getColorForNumber(lifePathNumber) },
-          destiny: { number: destinyNumber, color: getColorForNumber(destinyNumber) },
-          soulUrge: { number: soulUrgeNumber, color: getColorForNumber(soulUrgeNumber) },
-          personality: { number: personalityNumber, color: getColorForNumber(personalityNumber) }
-        },
-        strengths: [
-          `Life Path ${lifePathNumber} with ${getColorForNumber(lifePathNumber)} energy enhances your leadership abilities`,
-          `Destiny Number ${destinyNumber} with ${getColorForNumber(destinyNumber)} vibration amplifies your communication skills`,
-          `Soul Urge ${soulUrgeNumber} with ${getColorForNumber(soulUrgeNumber)} influence strengthens your intuitive abilities`
-        ],
-        challenges: [
-          `Balancing Life Path ${lifePathNumber}'s ${getColorForNumber(lifePathNumber)} intensity in daily interactions`,
-          `Integrating Destiny ${destinyNumber}'s ${getColorForNumber(destinyNumber)} energy with practical matters`,
-          `Managing the sensitivity of Soul Urge ${soulUrgeNumber}'s ${getColorForNumber(soulUrgeNumber)} vibrations`
-        ],
-        guidance: "Focus on harmonizing Life Path " + lifePathNumber + " (" + getColorForNumber(lifePathNumber) + ") and Destiny " + destinyNumber + " (" + getColorForNumber(destinyNumber) + ") energies to create a balanced approach to life."
-      };
+  const interpretation = generateNumerologyInterpretation(lifePathNumber, destinyNumber, soulUrgeNumber, personalityNumber);
 
-  return numerologyProfile;
+  return {
+    lifePathNumber,
+    destinyNumber,
+    soulUrgeNumber,
+    personalityNumber,
+    interpretation
+  };
 }
 
 /**
@@ -772,3 +800,34 @@ Your Personality number ${personality} reveals that you present yourself to othe
 
 The interaction between these numbers creates a unique numerological blueprint that guides your life's journey. By honoring your Life Path, working toward your Destiny, acknowledging your Soul Urge, and expressing your Personality authentically, you can align with your highest potential and purpose.`;
 }
+/**
+ * Provides descriptions for the energy cycle with enhanced detail and color context
+ */
+const getEnergyCycle: (energyLevel: number, color: string) => string =
+    (energyLevel: number, color: string): string => {
+      const energyLevels = {
+        veryHigh: energyLevel >= 9,
+        high: energyLevel >= 7 && energyLevel < 9,
+        moderate: energyLevel >= 5 && energyLevel < 7,
+        low: energyLevel >= 3 && energyLevel < 5,
+        veryLow: energyLevel < 3
+      };
+
+      const colorLower = color.toLowerCase();
+
+      if (energyLevels.veryHigh) {
+        return ` Your aura shows exceptionally high energy (Level ${energyLevel}/10). This intense spiritual/physical energy requires grounding practices.`;
+      } else if (energyLevels.high) {
+        if (["purple", "indigo", "violet"].includes(colorLower)) {
+          return ` Your aura displays strong spiritual energy (Level ${energyLevel}/10), indicating heightened intuitive abilities.`;
+        } else if (["red", "orange"].includes(colorLower)) {
+          return ` Your aura shows powerful physical/emotional energy (Level ${energyLevel}/10), suggesting dynamic life force.`;
+        }
+      } else if (energyLevels.moderate) {
+        return ` Your aura reveals balanced energy levels (Level ${energyLevel}/10), indicating good equilibrium.`;
+      } else if (energyLevels.low) {
+        return ` Your aura shows calmer energy (Level ${energyLevel}/10), suggesting a period of rest or recharge.`;
+      } else {
+        return ` Your aura indicates very subtle energy (Level ${energyLevel}/10), suggesting deep contemplation or healing needed.`;
+      }
+    };
