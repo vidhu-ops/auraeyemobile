@@ -12,15 +12,9 @@ export function configureFileUpload() {
   // This is sufficient for our purposes since we're processing the image immediately
   const storage = multer.memoryStorage();
 
-  // Configure the file filter to only accept images
   const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedMimeTypes = [
-      'image/jpeg', 
-      'image/png', 
-      'image/heic', 
-      'image/heif',
-      'application/pdf'
-    ];
+    // Accept image files and PDFs
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif', 'application/pdf'];
 
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);

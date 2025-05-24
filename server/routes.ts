@@ -36,9 +36,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
       
+      // Process any PDF reference materials first
+      let referenceData = {};
       try {
-        // Use OpenAI to analyze the object
-        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
+        const pdfFiles = fs.readdirSync(path.join(process.cwd(), 'attached_assets'))
+          .filter(file => file.endsWith('.pdf'));
+        
+        for (const pdfFile of pdfFiles) {
+          const pdfBuffer = fs.readFileSync(path.join(process.cwd(), 'attached_assets', pdfFile));
+          const pdfText = await extractTextFromPDF(pdfBuffer);
+          const processedContent = processPDFContent(pdfText);
+          referenceData = { ...referenceData, ...processedContent };
+        }
+      } catch (pdfError) {
+        console.error('Error processing PDF references:', pdfError);
+      }
+
+      try {
+        // Use OpenAI to analyze the object with reference material context
+        const prompt = `Using the following reference materials:\n${JSON.stringify(referenceData, null, 2)}\n\nAnalyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
         
         // Call OpenAI with the prompt
         // Note: We're using the same analyzeAuraImage function but with a different prompt
