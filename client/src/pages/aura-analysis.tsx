@@ -537,9 +537,9 @@ export default function AuraAnalysis() {
             <div className="max-w-5xl mx-auto">
               <div className="space-y-10">
                 {/* Upload section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <h2 className="font-heading font-semibold text-xl mb-4">Upload Your Photo</h2>
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
+                  <div className="w-full">
+                    <h2 className="font-heading font-semibold text-lg md:text-xl mb-3">Upload Your Photo</h2>
                     <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
                   </div>
                   
@@ -641,28 +641,32 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-5 mb-6">
-                            <TabsTrigger value="analysis">Analysis</TabsTrigger>
-                            <TabsTrigger value="chakras">Chakras</TabsTrigger>
-                            <TabsTrigger value="guidance">Guidance</TabsTrigger>
-                            <TabsTrigger value="numerology" className="relative">
-                              Numerology
-                              <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
-                                  <span className="text-[10px] text-white font-bold">9</span>
+                          <TabsList className="grid grid-rows-2 gap-2 w-full p-1 mb-6">
+                            <div className="grid grid-cols-3 gap-2">
+                              <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
+                              <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
+                              <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <TabsTrigger value="numerology" className="text-sm whitespace-nowrap px-3 relative">
+                                Numerology
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
+                                    <span className="text-[10px] text-white font-bold">9</span>
+                                  </span>
                                 </span>
-                              </span>
-                            </TabsTrigger>
-                            <TabsTrigger value="detailed" className="relative">
-                              Detailed
-                              <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                                  <Crown className="h-2 w-2 text-white" />
+                              </TabsTrigger>
+                              <TabsTrigger value="detailed" className="relative">
+                                Detailed
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
+                                    <Crown className="h-2 w-2 text-white" />
+                                  </span>
                                 </span>
-                              </span>
-                            </TabsTrigger>
+                              </TabsTrigger>
+                            </div>
                           </TabsList>
                           
                           <TabsContent value="numerology">

@@ -3,9 +3,9 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Crown, Sparkles, X } from "lucide-react";
@@ -63,7 +63,7 @@ const featureDetails = {
 export function PremiumModal({ isOpen, onClose, featureType }: PremiumModalProps) {
   const { toast } = useToast();
   const details = featureDetails[featureType];
-  
+
   const handleContinue = () => {
     toast({
       title: "Coming Soon!",
@@ -75,18 +75,18 @@ export function PremiumModal({ isOpen, onClose, featureType }: PremiumModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-b from-background to-amber-950/10 border-amber-400/30">
+      <DialogContent aria-describedby="premium-modal-description" className="sm:max-w-[500px] bg-gradient-to-b from-background to-amber-950/10 border-amber-400/30">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Crown className="h-5 w-5 text-amber-400" />
             {details.title}
             <Sparkles className="h-4 w-4 text-amber-400" />
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="premium-modal-description">
             {details.description}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="py-4">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-amber-400" />
@@ -100,14 +100,14 @@ export function PremiumModal({ isOpen, onClose, featureType }: PremiumModalProps
               </li>
             ))}
           </ul>
-          
+
           <div className="mt-6 p-3 bg-amber-500/10 rounded-md border border-amber-500/20">
             <p className="text-sm text-center">
               Premium features are coming soon! Stay tuned for the official launch.
             </p>
           </div>
         </div>
-        
+
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={onClose} className="sm:w-auto w-full">
             <X className="h-4 w-4 mr-2" />

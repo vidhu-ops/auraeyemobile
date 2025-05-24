@@ -133,6 +133,55 @@ export default function DailyHoroscope() {
                 ))}
               </div>
 
+              {/* Cosmic energy overview */}
+              <div className="mb-8">
+                <h3 className="font-heading font-semibold text-xl mb-4">Today's Cosmic Energy</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="bg-gradient-to-br from-primary/5 to-secondary/5">
+                    <CardContent className="p-4">
+                      <h4 className="font-medium mb-2">Lunar Phase</h4>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gray-800 rounded-full"></div>
+                        <div>
+                          <p className="font-medium">Waxing Gibbous</p>
+                          <p className="text-sm text-gray-600">78% Illuminated</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-secondary/5 to-accent/5">
+                    <CardContent className="p-4">
+                      <h4 className="font-medium mb-2">Planetary Ruler</h4>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white text-2xl">
+                          ♂
+                        </div>
+                        <div>
+                          <p className="font-medium">Mars in Taurus</p>
+                          <p className="text-sm text-gray-600">Grounding Energy</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-accent/5 to-primary/5">
+                    <CardContent className="p-4">
+                      <h4 className="font-medium mb-2">Element & Quality</h4>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-red-500 flex items-center justify-center text-white text-2xl">
+                          🔥
+                        </div>
+                        <div>
+                          <p className="font-medium">Fire - Cardinal</p>
+                          <p className="text-sm text-gray-600">Dynamic & Initiating</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
               {/* Horoscope display card */}
               <Card className="rounded-2xl shadow-xl overflow-hidden">
                 {isLoading ? (
@@ -176,8 +225,28 @@ export default function DailyHoroscope() {
                       </div>
                     </div>
                     <CardContent className="p-6">
-                      <div className="prose max-w-none">
-                        <p className="mb-4">{horoscope.reading}</p>
+                      <div className="prose max-w-none space-y-4">
+                        <div className="p-4 bg-primary/5 rounded-lg">
+                          <h4 className="font-medium text-lg mb-2">Daily Overview</h4>
+                          <p>{horoscope.reading}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-4 bg-secondary/5 rounded-lg">
+                            <h4 className="font-medium text-lg mb-2">Celestial Influence</h4>
+                            <p>The current planetary alignments are creating {horoscope.career > 3 ? "favorable" : "challenging"} conditions for professional growth and personal development.</p>
+                          </div>
+                          
+                          <div className="p-4 bg-accent/5 rounded-lg">
+                            <h4 className="font-medium text-lg mb-2">Energy Focus</h4>
+                            <p>Channel your energy towards {horoscope.spirituality > 3 ? "spiritual growth and inner wisdom" : "practical matters and grounding activities"}. Your {horoscope.love > 3 ? "heightened emotional sensitivity" : "pragmatic approach"} will serve you well today.</p>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg">
+                          <h4 className="font-medium text-lg mb-2">Daily Affirmation</h4>
+                          <p className="italic text-center">"I embrace the cosmic energy flowing through me, guiding me towards my highest potential."</p>
+                        </div>
                       </div>
                       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="text-center">
