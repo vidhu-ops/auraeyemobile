@@ -80,59 +80,20 @@ export default function AuraAnalysis() {
     secondaryColor: string,
     energyLevel: number
   ) => {
-    // Map color names to rgba values with increased opacity for mystical effect
+    // Map color names to rgba values
     const colorMap: Record<string, string> = {
-      red: 'rgba(255, 0, 0, 0.4)',
-      orange: 'rgba(255, 165, 0, 0.4)',
-      yellow: 'rgba(255, 255, 0, 0.4)',
-      green: 'rgba(0, 128, 0, 0.4)',
-      blue: 'rgba(0, 0, 255, 0.4)',
-      indigo: 'rgba(75, 0, 130, 0.4)',
-      violet: 'rgba(148, 0, 211, 0.4)',
-      purple: 'rgba(128, 0, 128, 0.4)',
-      pink: 'rgba(255, 182, 193, 0.4)',
-      white: 'rgba(255, 255, 255, 0.4)',
-      gold: 'rgba(255, 215, 0, 0.4)',
-      silver: 'rgba(192, 192, 192, 0.4)',
-    };
-
-    // Add mystical glow effect
-    ctx.save();
-    ctx.filter = 'blur(15px) brightness(1.2)';
-    
-    // Create radial gradient for the mystical glow
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const gradient = ctx.createRadialGradient(
-      centerX, centerY, 0,
-      centerX, centerY, width * 0.7
-    );
-    
-    const dominantRgba = colorMap[dominantColor] || colorMap.white;
-    const secondaryRgba = colorMap[secondaryColor] || dominantRgba;
-    
-    gradient.addColorStop(0, dominantRgba);
-    gradient.addColorStop(0.5, secondaryRgba);
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    
-    ctx.globalCompositeOperation = 'screen';
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Add sparkle effects based on energy level
-    const sparkleCount = Math.floor(energyLevel * 5);
-    for (let i = 0; i < sparkleCount; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      const size = Math.random() * 3 + 1;
-      
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fill();
-    }
-    
-    ctx.restore();
+      red: 'rgba(255, 0, 0, 0.3)',
+      orange: 'rgba(255, 165, 0, 0.3)',
+      yellow: 'rgba(255, 255, 0, 0.3)',
+      green: 'rgba(0, 128, 0, 0.3)',
+      blue: 'rgba(0, 0, 255, 0.3)',
+      indigo: 'rgba(75, 0, 130, 0.3)',
+      violet: 'rgba(148, 0, 211, 0.3)',
+      purple: 'rgba(128, 0, 128, 0.3)',
+      pink: 'rgba(255, 182, 193, 0.3)',
+      white: 'rgba(255, 255, 255, 0.3)',
+      gold: 'rgba(255, 215, 0, 0.3)',
+      silver: 'rgba(192, 192, 192, 0.3)',
       black: 'rgba(0, 0, 0, 0.3)',
     };
     
