@@ -14,8 +14,13 @@ export function configureFileUpload() {
 
   // Configure the file filter to only accept images
   const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    // Accept only image files
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif'];
+    const allowedMimeTypes = [
+      'image/jpeg', 
+      'image/png', 
+      'image/heic', 
+      'image/heif',
+      'application/pdf'
+    ];
 
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
