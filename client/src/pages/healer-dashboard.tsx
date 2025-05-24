@@ -28,7 +28,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function HealerDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("upcoming");
-  
+  const [isEditing, setIsEditing] = useState(false);
+  const [personalDetails, setPersonalDetails] = useState({
+    name: user?.username || "",
+    specialty: "Chakra Balancing",
+    bio: "Experienced energy healer specializing in chakra alignment and spiritual guidance.",
+    experience: "5+ years",
+    rate: "85"
+  });
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -47,14 +55,14 @@ export default function HealerDashboard() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <div className="bg-gradient-to-r from-secondary-dark to-primary-dark text-white py-8">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-heading font-bold">Healer Dashboard</h1>
           <p className="opacity-80">Welcome back, {user.username}</p>
         </div>
       </div>
-      
+
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
@@ -72,7 +80,7 @@ export default function HealerDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -86,7 +94,7 @@ export default function HealerDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -101,7 +109,7 @@ export default function HealerDashboard() {
                 </CardContent>
               </Card>
             </div>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Session Schedule</CardTitle>
@@ -113,7 +121,7 @@ export default function HealerDashboard() {
                     <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
                     <TabsTrigger value="past">Past</TabsTrigger>
                   </TabsList>
-                  
+
                   <TabsContent value="upcoming">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
@@ -133,7 +141,7 @@ export default function HealerDashboard() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className="bg-secondary/10 p-2 rounded-full">
@@ -151,7 +159,7 @@ export default function HealerDashboard() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className="bg-accent/10 p-2 rounded-full">
@@ -171,7 +179,7 @@ export default function HealerDashboard() {
                       </div>
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="past">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
@@ -191,7 +199,7 @@ export default function HealerDashboard() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className="bg-gray-200 p-2 rounded-full">
@@ -219,7 +227,7 @@ export default function HealerDashboard() {
                 </Button>
               </CardFooter>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Energy Insights</CardTitle>
@@ -257,7 +265,7 @@ export default function HealerDashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-sm font-medium mb-2">Energy Levels Across Clients</h3>
                     <div className="h-40 flex items-end space-x-1">
@@ -283,7 +291,7 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="space-y-8">
             <Card>
               <CardHeader>
@@ -318,7 +326,7 @@ export default function HealerDashboard() {
                 </Button>
               </CardFooter>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Recent Messages</CardTitle>
@@ -333,7 +341,7 @@ export default function HealerDashboard() {
                     </div>
                     <p className="text-sm text-gray-600 line-clamp-2">I've been practicing the meditation technique you recommended and already feel more balanced...</p>
                   </div>
-                  
+
                   <div className="p-3 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                     <div className="flex justify-between items-start">
                       <p className="font-medium">Michael Chen</p>
@@ -341,7 +349,7 @@ export default function HealerDashboard() {
                     </div>
                     <p className="text-sm text-gray-600 line-clamp-2">Quick question about the chakra balancing exercises. Should I focus more on the heart chakra?</p>
                   </div>
-                  
+
                   <div className="p-3 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                     <div className="flex justify-between items-start">
                       <p className="font-medium">Olivia Martinez</p>
@@ -357,7 +365,7 @@ export default function HealerDashboard() {
                 </Button>
               </CardFooter>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Performance</CardTitle>
@@ -374,7 +382,7 @@ export default function HealerDashboard() {
                       <div className="h-2 bg-green-500 rounded-full" style={{ width: "98%" }}></div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between mb-1">
                       <span className="text-sm">Rebooking Rate</span>
@@ -384,7 +392,7 @@ export default function HealerDashboard() {
                       <div className="h-2 bg-blue-500 rounded-full" style={{ width: "85%" }}></div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between mb-1">
                       <span className="text-sm">Session Effectiveness</span>
@@ -400,7 +408,7 @@ export default function HealerDashboard() {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
