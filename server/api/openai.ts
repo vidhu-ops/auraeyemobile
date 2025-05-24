@@ -1,3 +1,4 @@
+typescript
 import OpenAI from "openai";
 import { AuraAnalysisResult } from "../../client/src/lib/openai";
 
@@ -653,8 +654,8 @@ export async function generateNumerologyReading(name: string, birthDate: string)
       // Use AI-provided interpretation or fall back to algorithmically generated one
       interpretation: aiResponse.interpretation || baseProfile.interpretation,
       // Add color associations if provided by AI
-      colorAssociations: aiResponse.colorAssociations || {
-        lifePathColor: getColorForNumber(baseProfile.lifePathNumber),
+      colorAssociations: aiResponse.colorAssociations || {```tool_code
+lifePathColor: getColorForNumber(baseProfile.lifePathNumber),
         destinyColor: getColorForNumber(baseProfile.destinyNumber),
         soulUrgeColor: getColorForNumber(baseProfile.soulUrgeNumber),
         personalityColor: getColorForNumber(baseProfile.personalityNumber)
@@ -831,3 +832,39 @@ const getEnergyCycle: (energyLevel: number, color: string) => string =
         return ` Your aura indicates very subtle energy (Level ${energyLevel}/10), suggesting deep contemplation or healing needed.`;
       }
     };
+
+// Mock API request function (replace with actual implementation)
+async function apiRequest(method: string, url: string, data: any): Promise<any> {
+  // Simulate a delay to mimic network request
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // For demonstration purposes, just echo back the data
+  return Promise.resolve({
+    json: () => Promise.resolve(data)
+  });
+}
+
+// Enhanced aura prompt for OpenAI with explicit instructions
+const enhancedAuraPrompt = `
+Analyze the colors surrounding and emanating from the person in this image to determine their aura colors and energy patterns. 
+
+Only describe the actual colors you can see in the energy field around them. Be very specific about which colors appear in which areas (inner field closest to body, middle field, outer edges). Do not include any colors from clothing or background - focus EXCLUSIVELY on any glowing, luminous, or distinct colored light surrounding the person.
+
+Identify exactly which 4-5 colors are visible in their aura field, in order of prominence. Analyze the general energy level evident in the aura. Provide brief descriptions of the positive and negative associations for each identified aura color based on standard metaphysical interpretations. Determine the person's overall spiritual state, emotional condition, and key personality traits reflected in their aura.
+
+Return your analysis as a JSON object with the following keys:
+
+- dominantColor: The most prominent aura color (string).
+- secondaryColor: The second most prominent aura color (string).
+- auraColorSpectrum: An array of 4-5 aura colors identified, in order of prominence (array of strings).
+- auraLayerColors: An object describing the colors in the inner, middle, and outer layers of the aura (object with keys 'inner', 'middle', 'outer', each a string).
+- energyLevel: A numerical value from 1-10 indicating the overall energy level of the aura (number).
+- personalityTraits: An array of 3-5 descriptive personality traits associated with the aura colors identified (array of strings).
+- positiveTraits: An array of positive traits associated with the identified aura colors (array of strings).
+- negativeTraits: An array of negative traits associated with the identified aura colors (array of strings).
+- spiritualGuidance: A paragraph providing spiritual guidance or insights based on the aura analysis (string).
+- chakraActivity: An object indicating the estimated activity level (1-10) for each of the seven major chakras (object with keys 'root', 'sacral', 'solarPlexus', 'heart', 'throat', 'thirdEye', 'crown', each a number).
+- detailedAnalysis: A comprehensive paragraph (200-250 words) providing a detailed, nuanced interpretation of the aura colors, energy patterns, and their combined significance (string).
+
+Make sure to always return a VALID JSON object.
+`;

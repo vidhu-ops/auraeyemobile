@@ -123,7 +123,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Aura Analysis API endpoint
-  app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
+  app.post("/api/analyze-aura", upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'references', maxCount: 5 }
+]), async (req, res) => {
+  try {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const imageFile = files['image']?.[0];
+    const referenceFiles = files['references'] || [];
+    
+    // Process reference PDFs
+    let auraReferences = {};
+    let fortuneCalculations = {};
+    
+    for (const file of referenceFiles) {
+      if (file.mimetype === 'application/pdf') {
+        const pdfText = await extractTextFromPDF(file.buffer);
+        
+        if (file.originalname.toLowerCase().includes('chakra')) {
+          auraReferences = parseAuraReferences(pdfText);
+        } else if (file.originalname.toLowerCase().includes('fortune')) {
+          fortuneCalculations = parseFortuneCalculations(pdfText);
+        }
+      }
+    }
+    
+    // Get image data
+    const imageData = imageFile.buffer.toString('base64');
+    
+    // Analyze with enhanced reference data
+    const result = await analyzeAuraImage(imageData, {
+      auraReferences,
+      fortuneCalculations
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error("Error processing analysis:", error);
+    res.status(500).json({ error: "Analysis failed" });
+  }
+});
     try {
       // Get image data either from file or base64 string
       let imageData: string;
