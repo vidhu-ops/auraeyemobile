@@ -370,6 +370,38 @@ export default function Numerology() {
     return vibrations[number] || vibrations[number % 9 || 9];
   };
 
+  // Get Soul Chakra explanation based on number
+  const getSoulChakraExplanation = (number: number): string => {
+    const explanations: Record<number, string> = {
+      1: "The Pioneer Soul: Independent spiritual path, natural leadership in spiritual matters, initiating new spiritual journeys.",
+      2: "The Harmonious Soul: Cooperative spiritual nature, finding balance through partnerships, emotional spiritual sensitivity.",
+      3: "The Creative Soul: Expressive spiritual gifts, joyful spiritual communication, artistic spiritual manifestation.",
+      4: "The Grounded Soul: Practical spiritual approach, building solid spiritual foundations, disciplined spiritual practice.",
+      5: "The Free Soul: Adventurous spiritual seeker, embracing spiritual change and freedom, progressive spiritual thinking.",
+      6: "The Nurturing Soul: Responsible spiritual service, healing and caring for others, family-oriented spirituality.",
+      7: "The Mystical Soul: Deep spiritual seeker, analytical spiritual approach, connection to hidden wisdom and mysteries.",
+      8: "The Powerful Soul: Material and spiritual mastery, achieving spiritual authority, manifesting abundance through spirituality.",
+      9: "The Universal Soul: Humanitarian spiritual service, compassionate spiritual expression, working for collective spiritual evolution."
+    };
+    return explanations[number] || "This number carries unique spiritual vibrations that guide your soul's journey.";
+  };
+
+  // Get Soul Chakra vibrations
+  const getSoulChakraVibrations = (number: number): string[] => {
+    const vibrations: Record<number, string[]> = {
+      1: ["Spiritual Leadership", "Inner Strength", "New Beginnings", "Independence", "Courage"],
+      2: ["Emotional Balance", "Spiritual Partnership", "Sensitivity", "Cooperation", "Harmony"],
+      3: ["Creative Expression", "Spiritual Joy", "Communication", "Optimism", "Inspiration"],
+      4: ["Spiritual Stability", "Grounded Practice", "Discipline", "Foundation Building", "Reliability"],
+      5: ["Spiritual Freedom", "Adventure", "Change", "Progressive Thinking", "Versatility"],
+      6: ["Nurturing Service", "Healing Energy", "Responsibility", "Family Connection", "Compassion"],
+      7: ["Mystical Wisdom", "Deep Analysis", "Spiritual Seeking", "Inner Knowledge", "Intuition"],
+      8: ["Spiritual Authority", "Abundance Mastery", "Achievement", "Material-Spiritual Balance", "Power"],
+      9: ["Universal Love", "Humanitarian Service", "Compassion", "Global Consciousness", "Completion"]
+    };
+    return vibrations[number] || ["Spiritual Growth", "Inner Wisdom", "Divine Connection"];
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -874,6 +906,11 @@ export default function Numerology() {
                                     Personality: {result.colorAssociations.personalityColor}
                                   </span>
                                 )}
+                                {result.colorAssociations.soulChakraColor && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-600">
+                                    Soul Chakra: {result.colorAssociations.soulChakraColor}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           )}
@@ -982,6 +1019,13 @@ export default function Numerology() {
                     <h4 className="font-medium text-lg text-primary-dark mb-2">Personality Number</h4>
                     <p className="text-gray-600">
                       Your Personality number reveals how others perceive you. Calculated from the consonants in your name, it represents the face you show to the world and your outer personality.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-lg text-purple-600 mb-2">Soul Chakra Number</h4>
+                    <p className="text-gray-600">
+                      Your Soul Chakra number represents your spiritual energy center. Calculated by adding all digits in your birth date until reaching a single digit, it reveals your spiritual vibration and connection to inner wisdom.
                     </p>
                   </div>
                 </div>
