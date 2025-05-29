@@ -36,6 +36,170 @@ export default function AuraAnalysis() {
   const handlePremiumUpgrade = () => {
     showPremiumModal("aura");
   };
+
+  // Color spectrum analysis helper functions
+  const getColorCode = (colorName: string): string => {
+    const colorCodes: Record<string, string> = {
+      'Red': '#FF0000',
+      'Orange': '#FFA500',
+      'Yellow': '#FFFF00',
+      'Green': '#00FF00',
+      'Blue': '#0000FF',
+      'Indigo': '#4B0082',
+      'Violet': '#8A2BE2',
+      'Purple': '#800080',
+      'Pink': '#FFC0CB',
+      'White': '#FFFFFF',
+      'Gold': '#FFD700',
+      'Silver': '#C0C0C0',
+      'Turquoise': '#40E0D0',
+      'Magenta': '#FF00FF',
+      'Lime': '#00FF00',
+      'Cyan': '#00FFFF'
+    };
+    return colorCodes[colorName] || '#808080';
+  };
+
+  const getColorMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Represents passion, strength, courage, and physical vitality. Indicates a person with strong will and determination.',
+      'Orange': 'Signifies creativity, enthusiasm, and emotional balance. Shows a person who is optimistic and socially confident.',
+      'Yellow': 'Symbolizes intelligence, mental clarity, and spiritual awakening. Indicates analytical thinking and wisdom.',
+      'Green': 'Represents healing, growth, and harmony with nature. Shows compassion and natural healing abilities.',
+      'Blue': 'Signifies truth, communication, and spiritual guidance. Indicates a calm, peaceful, and intuitive nature.',
+      'Indigo': 'Represents intuition, psychic abilities, and deep spiritual insight. Shows connection to higher consciousness.',
+      'Violet': 'Symbolizes spiritual mastery, transformation, and connection to divine wisdom. Indicates high spiritual development.',
+      'Purple': 'Represents nobility, spiritual power, and mystical abilities. Shows natural leadership in spiritual matters.',
+      'Pink': 'Signifies unconditional love, compassion, and nurturing energy. Indicates a heart-centered approach to life.',
+      'White': 'Represents purity, spiritual protection, and connection to higher realms. Shows spiritual clarity and truth.',
+      'Gold': 'Symbolizes divine wisdom, spiritual achievement, and enlightenment. Indicates mastery and spiritual authority.',
+      'Silver': 'Represents intuition, feminine energy, and psychic abilities. Shows connection to lunar and emotional cycles.'
+    };
+    return meanings[color] || 'This color carries unique spiritual vibrations specific to your energy field.';
+  };
+
+  const getColorFrequency = (color: string): string => {
+    const frequencies: Record<string, string> = {
+      'Red': 'Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
+      'Orange': 'Medium-low frequency (480-510 THz) - Creative and emotional vibration that stimulates passion.',
+      'Yellow': 'Medium frequency (510-540 THz) - Mental and intellectual vibration that enhances clarity.',
+      'Green': 'Balanced frequency (540-580 THz) - Heart-centered vibration promoting healing and harmony.',
+      'Blue': 'Medium-high frequency (610-670 THz) - Communicative vibration that opens expression.',
+      'Indigo': 'High frequency (670-700 THz) - Intuitive vibration connecting to psychic abilities.',
+      'Violet': 'Highest frequency (700-750 THz) - Spiritual vibration linking to divine consciousness.',
+      'Purple': 'Very high frequency (680-750 THz) - Mystical vibration enhancing spiritual power.',
+      'Pink': 'Heart frequency (520-560 THz) - Love vibration that opens compassion centers.',
+      'White': 'Full spectrum frequency - Contains all colors, representing complete spiritual integration.',
+      'Gold': 'Divine frequency (550-570 THz) - Wisdom vibration connecting to cosmic consciousness.',
+      'Silver': 'Lunar frequency (480-520 THz) - Reflective vibration enhancing intuitive abilities.'
+    };
+    return frequencies[color] || 'This color vibrates at a unique frequency that resonates with your personal energy signature.';
+  };
+
+  const getChakraConnection = (color: string): string => {
+    const chakras: Record<string, string> = {
+      'Red': 'Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Enhances feeling of safety and security.',
+      'Orange': 'Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Stimulates passion and joy.',
+      'Yellow': 'Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Strengthens willpower.',
+      'Green': 'Heart Chakra (Anahata) - Love, compassion, and emotional healing. Opens capacity for unconditional love.',
+      'Blue': 'Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Enhances authentic speaking.',
+      'Indigo': 'Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Activates spiritual sight.',
+      'Violet': 'Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Links to higher realms.',
+      'Purple': 'Crown and Third Eye Chakras - Combines intuition with spiritual connection for mystical abilities.',
+      'Pink': 'Heart Chakra (Higher Octave) - Unconditional love and divine compassion. Transcends personal love.',
+      'White': 'All Chakras - Represents complete chakra alignment and spiritual integration.',
+      'Gold': 'Soul Star Chakra - Higher spiritual center connecting to divine wisdom and cosmic consciousness.',
+      'Silver': 'Lunar and Third Eye Connection - Enhances psychic abilities and emotional intuition.'
+    };
+    return chakras[color] || 'This color resonates with multiple chakra centers, creating a unique energetic pattern.';
+  };
+
+  const getColorBalance = (primary: string, secondary: string): string => {
+    const balances: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Fire and water elements create dynamic balance between action and reflection.',
+        'Green': 'Passion balanced with healing creates powerful manifestation abilities.',
+        'Yellow': 'Physical energy combined with mental clarity creates strong leadership potential.'
+      },
+      'Blue': {
+        'Orange': 'Communication balanced with creativity enhances artistic and teaching abilities.',
+        'Red': 'Calm wisdom balances intense passion, creating measured but powerful action.',
+        'Yellow': 'Truth and wisdom combine to create excellent teaching and counseling abilities.'
+      },
+      'Green': {
+        'Purple': 'Healing energy enhanced by spiritual power creates natural healer capabilities.',
+        'Red': 'Growth balanced with passion creates dynamic healing and manifestation abilities.',
+        'Blue': 'Heart wisdom combined with clear communication creates excellent counseling potential.'
+      }
+    };
+    return balances[primary]?.[secondary] || balances[secondary]?.[primary] || 
+           `The combination of ${primary} and ${secondary} creates a unique energetic balance specific to your spiritual path.`;
+  };
+
+  const getColorKeyword = (color: string): string => {
+    const keywords: Record<string, string> = {
+      'Red': 'Passion & Power',
+      'Orange': 'Creativity & Joy',
+      'Yellow': 'Wisdom & Clarity',
+      'Green': 'Healing & Growth',
+      'Blue': 'Truth & Peace',
+      'Indigo': 'Intuition & Vision',
+      'Violet': 'Spirituality & Transformation',
+      'Purple': 'Mysticism & Nobility',
+      'Pink': 'Love & Compassion',
+      'White': 'Purity & Protection',
+      'Gold': 'Divine Wisdom',
+      'Silver': 'Lunar Intuition'
+    };
+    return keywords[color] || 'Unique Energy';
+  };
+
+  const getLayerMeaning = (layer: string, color: string): string => {
+    const layerMeanings: Record<string, Record<string, string>> = {
+      'inner': {
+        'Red': 'Your core essence pulses with primal life force and determination.',
+        'Blue': 'Your inner truth radiates calm wisdom and spiritual guidance.',
+        'Green': 'Your heart center naturally emanates healing and growth energy.',
+        'Yellow': 'Your mental core shines with intelligence and spiritual illumination.',
+        'Purple': 'Your spiritual essence carries ancient wisdom and mystical power.'
+      },
+      'middle': {
+        'Red': 'Your emotional body processes through passionate and intense feeling.',
+        'Blue': 'Your emotional processing flows through peaceful and truthful expression.',
+        'Green': 'Your emotional healing naturally balances and harmonizes energy.',
+        'Yellow': 'Your emotional intelligence analyzes feelings with clarity and wisdom.',
+        'Purple': 'Your emotional body connects feelings to spiritual insights.'
+      },
+      'outer': {
+        'Red': 'You project dynamic energy and commanding presence to the world.',
+        'Blue': 'You emanate peaceful authority and trustworthy communication.',
+        'Green': 'You radiate healing presence that others find naturally comforting.',
+        'Yellow': 'You project intellectual brightness and inspiring optimism.',
+        'Purple': 'You emanate spiritual authority and mystical presence.'
+      }
+    };
+    return layerMeanings[layer]?.[color] || 
+           `This ${layer} layer carries ${color.toLowerCase()} energy that influences your energetic field.`;
+  };
+
+  const getEnergyPattern = (primary: string, secondary: string): string => {
+    return `Your aura demonstrates a ${primary.toLowerCase()}-${secondary.toLowerCase()} energy pattern, creating a dynamic flow between ${getColorKeyword(primary).toLowerCase()} and ${getColorKeyword(secondary).toLowerCase()}. This combination suggests a balanced approach to spiritual and material matters.`;
+  };
+
+  const getColorMeditation = (color: string): string => {
+    const meditations: Record<string, string> = {
+      'Red': 'Visualize deep red light at your root chakra. Breathe in strength and grounding energy.',
+      'Blue': 'Focus on peaceful blue light at your throat. Breathe in truth and clear communication.',
+      'Green': 'Imagine healing green light at your heart center. Breathe in love and harmony.',
+      'Yellow': 'Visualize golden yellow light at your solar plexus. Breathe in wisdom and confidence.',
+      'Purple': 'Focus on royal purple light at your crown. Breathe in spiritual connection and wisdom.'
+    };
+    return meditations[color] || `Meditate with ${color.toLowerCase()} light to enhance your natural spiritual abilities.`;
+  };
+
+  const getColorHealing = (primary: string, secondary: string): string => {
+    return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} gemstone therapy and ${secondary.toLowerCase()} color breathing exercises.`;
+  };
   
   // Function to generate aura visualization with colored clouds
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
@@ -428,6 +592,170 @@ export default function AuraAnalysis() {
     }
   };
 
+  // Color spectrum analysis helper functions
+  const getColorCode = (colorName: string): string => {
+    const colorCodes: Record<string, string> = {
+      'Red': '#FF0000',
+      'Orange': '#FFA500',
+      'Yellow': '#FFFF00',
+      'Green': '#00FF00',
+      'Blue': '#0000FF',
+      'Indigo': '#4B0082',
+      'Violet': '#8A2BE2',
+      'Purple': '#800080',
+      'Pink': '#FFC0CB',
+      'White': '#FFFFFF',
+      'Gold': '#FFD700',
+      'Silver': '#C0C0C0',
+      'Turquoise': '#40E0D0',
+      'Magenta': '#FF00FF',
+      'Lime': '#00FF00',
+      'Cyan': '#00FFFF'
+    };
+    return colorCodes[colorName] || '#808080';
+  };
+
+  const getColorMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Represents passion, strength, courage, and physical vitality. Indicates a person with strong will and determination.',
+      'Orange': 'Signifies creativity, enthusiasm, and emotional balance. Shows a person who is optimistic and socially confident.',
+      'Yellow': 'Symbolizes intelligence, mental clarity, and spiritual awakening. Indicates analytical thinking and wisdom.',
+      'Green': 'Represents healing, growth, and harmony with nature. Shows compassion and natural healing abilities.',
+      'Blue': 'Signifies truth, communication, and spiritual guidance. Indicates a calm, peaceful, and intuitive nature.',
+      'Indigo': 'Represents intuition, psychic abilities, and deep spiritual insight. Shows connection to higher consciousness.',
+      'Violet': 'Symbolizes spiritual mastery, transformation, and connection to divine wisdom. Indicates high spiritual development.',
+      'Purple': 'Represents nobility, spiritual power, and mystical abilities. Shows natural leadership in spiritual matters.',
+      'Pink': 'Signifies unconditional love, compassion, and nurturing energy. Indicates a heart-centered approach to life.',
+      'White': 'Represents purity, spiritual protection, and connection to higher realms. Shows spiritual clarity and truth.',
+      'Gold': 'Symbolizes divine wisdom, spiritual achievement, and enlightenment. Indicates mastery and spiritual authority.',
+      'Silver': 'Represents intuition, feminine energy, and psychic abilities. Shows connection to lunar and emotional cycles.'
+    };
+    return meanings[color] || 'This color carries unique spiritual vibrations specific to your energy field.';
+  };
+
+  const getColorFrequency = (color: string): string => {
+    const frequencies: Record<string, string> = {
+      'Red': 'Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
+      'Orange': 'Medium-low frequency (480-510 THz) - Creative and emotional vibration that stimulates passion.',
+      'Yellow': 'Medium frequency (510-540 THz) - Mental and intellectual vibration that enhances clarity.',
+      'Green': 'Balanced frequency (540-580 THz) - Heart-centered vibration promoting healing and harmony.',
+      'Blue': 'Medium-high frequency (610-670 THz) - Communicative vibration that opens expression.',
+      'Indigo': 'High frequency (670-700 THz) - Intuitive vibration connecting to psychic abilities.',
+      'Violet': 'Highest frequency (700-750 THz) - Spiritual vibration linking to divine consciousness.',
+      'Purple': 'Very high frequency (680-750 THz) - Mystical vibration enhancing spiritual power.',
+      'Pink': 'Heart frequency (520-560 THz) - Love vibration that opens compassion centers.',
+      'White': 'Full spectrum frequency - Contains all colors, representing complete spiritual integration.',
+      'Gold': 'Divine frequency (550-570 THz) - Wisdom vibration connecting to cosmic consciousness.',
+      'Silver': 'Lunar frequency (480-520 THz) - Reflective vibration enhancing intuitive abilities.'
+    };
+    return frequencies[color] || 'This color vibrates at a unique frequency that resonates with your personal energy signature.';
+  };
+
+  const getChakraConnection = (color: string): string => {
+    const chakras: Record<string, string> = {
+      'Red': 'Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Enhances feeling of safety and security.',
+      'Orange': 'Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Stimulates passion and joy.',
+      'Yellow': 'Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Strengthens willpower.',
+      'Green': 'Heart Chakra (Anahata) - Love, compassion, and emotional healing. Opens capacity for unconditional love.',
+      'Blue': 'Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Enhances authentic speaking.',
+      'Indigo': 'Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Activates spiritual sight.',
+      'Violet': 'Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Links to higher realms.',
+      'Purple': 'Crown and Third Eye Chakras - Combines intuition with spiritual connection for mystical abilities.',
+      'Pink': 'Heart Chakra (Higher Octave) - Unconditional love and divine compassion. Transcends personal love.',
+      'White': 'All Chakras - Represents complete chakra alignment and spiritual integration.',
+      'Gold': 'Soul Star Chakra - Higher spiritual center connecting to divine wisdom and cosmic consciousness.',
+      'Silver': 'Lunar and Third Eye Connection - Enhances psychic abilities and emotional intuition.'
+    };
+    return chakras[color] || 'This color resonates with multiple chakra centers, creating a unique energetic pattern.';
+  };
+
+  const getColorBalance = (primary: string, secondary: string): string => {
+    const balances: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Fire and water elements create dynamic balance between action and reflection.',
+        'Green': 'Passion balanced with healing creates powerful manifestation abilities.',
+        'Yellow': 'Physical energy combined with mental clarity creates strong leadership potential.'
+      },
+      'Blue': {
+        'Orange': 'Communication balanced with creativity enhances artistic and teaching abilities.',
+        'Red': 'Calm wisdom balances intense passion, creating measured but powerful action.',
+        'Yellow': 'Truth and wisdom combine to create excellent teaching and counseling abilities.'
+      },
+      'Green': {
+        'Purple': 'Healing energy enhanced by spiritual power creates natural healer capabilities.',
+        'Red': 'Growth balanced with passion creates dynamic healing and manifestation abilities.',
+        'Blue': 'Heart wisdom combined with clear communication creates excellent counseling potential.'
+      }
+    };
+    return balances[primary]?.[secondary] || balances[secondary]?.[primary] || 
+           `The combination of ${primary} and ${secondary} creates a unique energetic balance specific to your spiritual path.`;
+  };
+
+  const getColorKeyword = (color: string): string => {
+    const keywords: Record<string, string> = {
+      'Red': 'Passion & Power',
+      'Orange': 'Creativity & Joy',
+      'Yellow': 'Wisdom & Clarity',
+      'Green': 'Healing & Growth',
+      'Blue': 'Truth & Peace',
+      'Indigo': 'Intuition & Vision',
+      'Violet': 'Spirituality & Transformation',
+      'Purple': 'Mysticism & Nobility',
+      'Pink': 'Love & Compassion',
+      'White': 'Purity & Protection',
+      'Gold': 'Divine Wisdom',
+      'Silver': 'Lunar Intuition'
+    };
+    return keywords[color] || 'Unique Energy';
+  };
+
+  const getLayerMeaning = (layer: string, color: string): string => {
+    const layerMeanings: Record<string, Record<string, string>> = {
+      'inner': {
+        'Red': 'Your core essence pulses with primal life force and determination.',
+        'Blue': 'Your inner truth radiates calm wisdom and spiritual guidance.',
+        'Green': 'Your heart center naturally emanates healing and growth energy.',
+        'Yellow': 'Your mental core shines with intelligence and spiritual illumination.',
+        'Purple': 'Your spiritual essence carries ancient wisdom and mystical power.'
+      },
+      'middle': {
+        'Red': 'Your emotional body processes through passionate and intense feeling.',
+        'Blue': 'Your emotional processing flows through peaceful and truthful expression.',
+        'Green': 'Your emotional healing naturally balances and harmonizes energy.',
+        'Yellow': 'Your emotional intelligence analyzes feelings with clarity and wisdom.',
+        'Purple': 'Your emotional body connects feelings to spiritual insights.'
+      },
+      'outer': {
+        'Red': 'You project dynamic energy and commanding presence to the world.',
+        'Blue': 'You emanate peaceful authority and trustworthy communication.',
+        'Green': 'You radiate healing presence that others find naturally comforting.',
+        'Yellow': 'You project intellectual brightness and inspiring optimism.',
+        'Purple': 'You emanate spiritual authority and mystical presence.'
+      }
+    };
+    return layerMeanings[layer]?.[color] || 
+           `This ${layer} layer carries ${color.toLowerCase()} energy that influences your energetic field.`;
+  };
+
+  const getEnergyPattern = (primary: string, secondary: string): string => {
+    return `Your aura demonstrates a ${primary.toLowerCase()}-${secondary.toLowerCase()} energy pattern, creating a dynamic flow between ${getColorKeyword(primary).toLowerCase()} and ${getColorKeyword(secondary).toLowerCase()}. This combination suggests a balanced approach to spiritual and material matters.`;
+  };
+
+  const getColorMeditation = (color: string): string => {
+    const meditations: Record<string, string> = {
+      'Red': 'Visualize deep red light at your root chakra. Breathe in strength and grounding energy.',
+      'Blue': 'Focus on peaceful blue light at your throat. Breathe in truth and clear communication.',
+      'Green': 'Imagine healing green light at your heart center. Breathe in love and harmony.',
+      'Yellow': 'Visualize golden yellow light at your solar plexus. Breathe in wisdom and confidence.',
+      'Purple': 'Focus on royal purple light at your crown. Breathe in spiritual connection and wisdom.'
+    };
+    return meditations[color] || `Meditate with ${color.toLowerCase()} light to enhance your natural spiritual abilities.`;
+  };
+
+  const getColorHealing = (primary: string, secondary: string): string => {
+    return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} gemstone therapy and ${secondary.toLowerCase()} color breathing exercises.`;
+  };
+
   // Helper functions for the detailed analysis tab
   const getAuraLayerAnalysis = (layer: string, color: string): string => {
     const layerAnalysis: Record<string, Record<string, string>> = {
@@ -641,13 +969,22 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid grid-rows-2 gap-2 w-full p-1 mb-6">
+                          <TabsList className="grid grid-rows-3 gap-2 w-full p-1 mb-6">
                             <div className="grid grid-cols-3 gap-2">
                               <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
                               <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
+                              <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-3 relative">
+                                Color Spectrum
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 items-center justify-center">
+                                    <Sparkles className="h-2 w-2 text-white" />
+                                  </span>
+                                </span>
+                              </TabsTrigger>
                               <TabsTrigger value="numerology" className="text-sm whitespace-nowrap px-3 relative">
                                 Numerology
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -657,8 +994,10 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
                               <TabsTrigger value="detailed" className="relative">
-                                Detailed
+                                Detailed Analysis
                                 <span className="absolute -top-1 -right-1 flex h-4 w-4">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
@@ -668,6 +1007,145 @@ export default function AuraAnalysis() {
                               </TabsTrigger>
                             </div>
                           </TabsList>
+                          
+                          <TabsContent value="spectrum">
+                            <div className="space-y-6">
+                              <div className="text-center mb-6">
+                                <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
+                                <p className="text-sm text-gray-600">
+                                  Detailed breakdown of all colors detected in your aura field
+                                </p>
+                              </div>
+
+                              {/* Primary Color Analysis */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg flex items-center">
+                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getColorCode(result.dominantColor)}}></div>
+                                  Primary Aura Color: {result.dominantColor}
+                                </h4>
+                                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Spiritual Meaning</h5>
+                                      <p className="text-sm text-gray-700">{getColorMeaning(result.dominantColor)}</p>
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Energy Frequency</h5>
+                                      <p className="text-sm text-gray-700">{getColorFrequency(result.dominantColor)}</p>
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <h5 className="font-medium text-sm mb-2">Chakra Connection</h5>
+                                    <p className="text-sm text-gray-700">{getChakraConnection(result.dominantColor)}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Secondary Color Analysis */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg flex items-center">
+                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getColorCode(result.secondaryColor)}}></div>
+                                  Secondary Aura Color: {result.secondaryColor}
+                                </h4>
+                                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Complementary Energy</h5>
+                                      <p className="text-sm text-gray-700">{getColorMeaning(result.secondaryColor)}</p>
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Balancing Influence</h5>
+                                      <p className="text-sm text-gray-700">{getColorBalance(result.dominantColor, result.secondaryColor)}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Extended Color Spectrum */}
+                              {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold text-lg">Extended Color Spectrum</h4>
+                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    {result.auraColorSpectrum.slice(2).map((color, index) => (
+                                      <div key={index} className="bg-white border rounded-lg p-3 text-center">
+                                        <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getColorCode(color)}}></div>
+                                        <h6 className="font-medium text-sm">{color}</h6>
+                                        <p className="text-xs text-gray-600 mt-1">{getColorKeyword(color)}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Aura Layer Analysis */}
+                              {result.auraLayerColors && (
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
+                                  <div className="space-y-3">
+                                    {result.auraLayerColors.inner && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.inner)}}>
+                                        <h5 className="font-medium text-sm">Inner Layer - {result.auraLayerColors.inner}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
+                                      </div>
+                                    )}
+                                    {result.auraLayerColors.middle && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.middle)}}>
+                                        <h5 className="font-medium text-sm">Middle Layer - {result.auraLayerColors.middle}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
+                                      </div>
+                                    )}
+                                    {result.auraLayerColors.outer && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.outer)}}>
+                                        <h5 className="font-medium text-sm">Outer Layer - {result.auraLayerColors.outer}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Color Harmony Analysis */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Color Harmony & Energy Flow</h4>
+                                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+                                  <div className="space-y-3">
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Dominant Energy Pattern</h5>
+                                      <p className="text-sm text-gray-700">{getEnergyPattern(result.dominantColor, result.secondaryColor)}</p>
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Recommended Color Meditation</h5>
+                                      <p className="text-sm text-gray-700">{getColorMeditation(result.dominantColor)}</p>
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-sm mb-2">Color Healing Suggestions</h5>
+                                      <p className="text-sm text-gray-700">{getColorHealing(result.dominantColor, result.secondaryColor)}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Complete Spectrum Visualization */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Your Complete Aura Spectrum</h4>
+                                <div className="bg-black rounded-lg p-6 relative overflow-hidden">
+                                  <div className="flex justify-center items-center space-x-4">
+                                    <div className="relative">
+                                      <div className="w-32 h-32 rounded-full bg-gradient-to-r opacity-80" 
+                                           style={{background: `radial-gradient(circle, ${getColorCode(result.dominantColor)} 0%, ${getColorCode(result.secondaryColor)} 70%, transparent 100%)`}}>
+                                      </div>
+                                      <div className="absolute inset-0 w-32 h-32 rounded-full animate-pulse" 
+                                           style={{background: `radial-gradient(circle, transparent 40%, ${getColorCode(result.dominantColor)}40 60%, transparent 80%)`}}>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-center mt-4">
+                                    <p className="text-white text-sm">Your unique aura signature combining {result.dominantColor} and {result.secondaryColor} energies</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TabsContent>
                           
                           <TabsContent value="numerology">
                             <div className="space-y-6">
