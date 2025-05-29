@@ -143,11 +143,26 @@ export default function Numerology() {
         return sum || 5; // Default to 5 if no consonants found
       };
       
+      // Calculate Soul Chakra Number - based on birth date digits sum
+      const calculateSoulChakra = (date: string): number => {
+        // Remove hyphens and get all digits from the date
+        const digits = date.replace(/-/g, '').split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Keep reducing until we get a single digit (1-9)
+        while (sum > 9) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum;
+      };
+      
       // Calculate real numerology values
       const lifePathNumber = calculateLifePath(data.birthDate);
       const destinyNumber = calculateDestiny(data.fullName);
       const soulUrgeNumber = calculateSoulUrge(data.fullName);
       const personalityNumber = calculatePersonality(data.fullName);
+      const soulChakraNumber = calculateSoulChakra(data.birthDate);
       
       // Use these fallback values if the API call fails
       const fallbackResult = {
@@ -155,19 +170,22 @@ export default function Numerology() {
         destinyNumber,
         soulUrgeNumber,
         personalityNumber,
-        interpretation: `Your Life Path Number ${lifePathNumber} and Destiny Number ${destinyNumber} create a powerful combination that influences your spiritual journey. The Soul Urge Number ${soulUrgeNumber} reveals your inner desires and motivations, while your Personality Number ${personalityNumber} shapes how others perceive you. This numerological blueprint offers insights into your strengths, challenges, and spiritual path.`,
+        soulChakraNumber,
+        interpretation: `Your Life Path Number ${lifePathNumber} and Destiny Number ${destinyNumber} create a powerful combination that influences your spiritual journey. The Soul Urge Number ${soulUrgeNumber} reveals your inner desires and motivations, while your Personality Number ${personalityNumber} shapes how others perceive you. Your Soul Chakra Number ${soulChakraNumber} represents your spiritual energy center. This numerological blueprint offers insights into your strengths, challenges, and spiritual path.`,
         colorAssociations: {
           lifePathColor: getNumberColor(lifePathNumber).name,
           destinyColor: getNumberColor(destinyNumber).name,
           soulUrgeColor: getNumberColor(soulUrgeNumber).name,
-          personalityColor: getNumberColor(personalityNumber).name
+          personalityColor: getNumberColor(personalityNumber).name,
+          soulChakraColor: getNumberColor(soulChakraNumber).name
         },
         // Log the calculated numbers for verification
         calculatedNumbers: {
           lifePathNumber,
           destinyNumber,
           soulUrgeNumber,
-          personalityNumber
+          personalityNumber,
+          soulChakraNumber
         },
         strengths: [
           `Your Life Path Number ${lifePathNumber} gives you natural ${getNumberColor(lifePathNumber).name} energy`,
@@ -463,11 +481,12 @@ export default function Numerology() {
                       </CardHeader>
                       <CardContent>
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-4 mb-6">
+                          <TabsList className="grid w-full grid-cols-5 mb-6">
                             <TabsTrigger value="lifePath">Life Path</TabsTrigger>
                             <TabsTrigger value="destiny">Destiny</TabsTrigger>
                             <TabsTrigger value="soul">Soul Urge</TabsTrigger>
                             <TabsTrigger value="personality">Personality</TabsTrigger>
+                            <TabsTrigger value="soulChakra">Soul Chakra</TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="lifePath">
@@ -749,6 +768,74 @@ export default function Numerology() {
                                     getNumberColor(result.personalityNumber).name.toLowerCase().includes("pink") ? "kind and loving approach" :
                                     getNumberColor(result.personalityNumber).name.toLowerCase().includes("gold") ? "enlightened and radiant presence" :
                                     "healing and transformative energy"}.
+                                </p>
+                              </div>
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="soulChakra">
+                            <div className="flex flex-col items-center mb-6">
+                              {/* Display number with associated color */}
+                              <div className={`w-20 h-20 rounded-full ${getNumberColor(result.soulChakraNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
+                                <span className={`text-3xl font-bold ${getNumberColor(result.soulChakraNumber).text}`}>{result.soulChakraNumber}</span>
+                              </div>
+                              <h3 className="font-heading font-semibold">Soul Chakra Number: <span className={`font-medium ${getNumberColor(result.soulChakraNumber).text}`}>{result.soulChakraNumber}</span></h3>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Associated Color: <span className={`font-medium ${getNumberColor(result.soulChakraNumber).text}`}>{getNumberColor(result.soulChakraNumber).name}</span>
+                              </div>
+                              <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
+                                {getNumberColor(result.soulChakraNumber).meaning}
+                              </div>
+                            </div>
+                            
+                            <div className="text-gray-700">
+                              <div className="mb-4 p-4 rounded-lg bg-gray-50">
+                                <p className="font-medium mb-2">
+                                  {getSoulChakraExplanation(result.soulChakraNumber)}
+                                </p>
+                                <p>
+                                  Your Soul Chakra number is calculated by adding all the digits in your birth date until you reach a single digit. This number represents your spiritual energy center and influences your connection to your inner wisdom and spiritual growth.
+                                </p>
+                              </div>
+                              
+                              {/* Display vibration qualities */}
+                              <div className="mb-4">
+                                <h4 className="font-medium text-primary mb-2">Spiritual Vibration Qualities</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {getSoulChakraVibrations(result.soulChakraNumber).map((quality, i) => (
+                                    <span key={i} className={`px-3 py-1 rounded-full text-sm ${getNumberColor(result.soulChakraNumber).bg} ${getNumberColor(result.soulChakraNumber).text}`}>
+                                      {quality}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Advanced interpretation */}
+                              <div className="p-4 border border-primary/20 rounded-lg bg-primary/5">
+                                <h4 className="font-medium mb-2">Soul Chakra Energy Analysis</h4>
+                                <p className="text-sm mb-2">
+                                  With a Soul Chakra number of {result.soulChakraNumber}, your spiritual energy center resonates with {result.soulChakraNumber === 1 ? "pioneering spiritual leadership and new beginnings" : 
+                                    result.soulChakraNumber === 2 ? "spiritual partnership and emotional balance" : 
+                                    result.soulChakraNumber === 3 ? "creative spiritual expression and joy" : 
+                                    result.soulChakraNumber === 4 ? "grounded spiritual practice and stability" : 
+                                    result.soulChakraNumber === 5 ? "spiritual freedom and transformative experiences" : 
+                                    result.soulChakraNumber === 6 ? "nurturing spiritual service and healing" : 
+                                    result.soulChakraNumber === 7 ? "deep spiritual wisdom and mystical understanding" : 
+                                    result.soulChakraNumber === 8 ? "material and spiritual abundance mastery" : 
+                                    "universal spiritual compassion and humanitarian service"}.
+                                </p>
+                                <p className="text-sm">
+                                  The {getNumberColor(result.soulChakraNumber).name} energy of your Soul Chakra enhances your spiritual journey through {getNumberColor(result.soulChakraNumber).name.toLowerCase() === "red" ? "passionate spiritual drive and courage" : 
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("orange") ? "warm spiritual enthusiasm and creative expression" : 
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("yellow") ? "illuminated spiritual understanding and mental clarity" : 
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("green") ? "balanced spiritual growth and heart-centered healing" : 
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("blue") ? "clear spiritual communication and truth-seeking" :
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("indigo") ? "enhanced spiritual intuition and psychic abilities" :
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("violet") ? "deep spiritual transformation and mystical connection" :
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("purple") ? "royal spiritual mastery and divine connection" :
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("pink") ? "unconditional spiritual love and compassion" :
+                                    getNumberColor(result.soulChakraNumber).name.toLowerCase().includes("gold") ? "divine spiritual illumination and enlightenment" :
+                                    "transcendent spiritual wisdom and universal healing"}.
                                 </p>
                               </div>
                             </div>
