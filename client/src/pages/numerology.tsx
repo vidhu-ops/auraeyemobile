@@ -119,28 +119,25 @@ export default function Numerology() {
         return sum || 7; // Default to 7 if no vowels found
       };
       
-      // Calculate Personality Number - based on consonants in name
-      const calculatePersonality = (name: string): number => {
-        const vowels = ['a', 'e', 'i', 'o', 'u'];
-        const letterValues: Record<string, number> = {
-          'b': 2, 'c': 3, 'd': 4, 'f': 6, 'g': 7, 'h': 8, 'j': 1, 'k': 2, 'l': 3,
-          'm': 4, 'n': 5, 'p': 7, 'q': 8, 'r': 9, 's': 1, 't': 2, 'v': 4,
-          'w': 5, 'x': 6, 'y': 7, 'z': 8
-        };
+      // Calculate Personality Number - based on month and day digits from birth date
+      const calculatePersonality = (date: string): number => {
+        // Extract month and day from date (YYYY-MM-DD format)
+        const dateParts = date.split('-');
+        if (dateParts.length !== 3) return 5; // Default fallback
         
-        let sum = 0;
-        for (const char of name.toLowerCase()) {
-          if (!vowels.includes(char) && letterValues[char]) {
-            sum += letterValues[char];
-          }
-        }
+        const month = dateParts[1]; // MM
+        const day = dateParts[2]; // DD
         
-        // Reduce to single digit unless master number
-        while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+        // Get all digits from month and day
+        const digits = (month + day).split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Keep reducing until we get a single digit (1-9)
+        while (sum > 9) {
           sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
         }
         
-        return sum || 5; // Default to 5 if no consonants found
+        return sum;
       };
       
       // Calculate Soul Chakra Number - based on birth date digits sum
@@ -161,7 +158,7 @@ export default function Numerology() {
       const lifePathNumber = calculateLifePath(data.birthDate);
       const destinyNumber = calculateDestiny(data.fullName);
       const soulUrgeNumber = calculateSoulUrge(data.fullName);
-      const personalityNumber = calculatePersonality(data.fullName);
+      const personalityNumber = calculatePersonality(data.birthDate);
       const soulChakraNumber = calculateSoulChakra(data.birthDate);
       
       // Use these fallback values if the API call fails
@@ -740,9 +737,9 @@ export default function Numerology() {
                               <div className={`w-20 h-20 rounded-full ${getNumberColor(result.personalityNumber).bg} flex items-center justify-center mb-2 shadow-md`}>
                                 <span className={`text-3xl font-bold ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span>
                               </div>
-                              <h3 className="font-heading font-semibold">Personality Number: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span></h3>
-                              <div className="text-sm text-gray-500 mt-1">
-                                Associated Color: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{getNumberColor(result.personalityNumber).name}</span>
+                              <h3 className="font-heading font-semibold align-center">     Personality Number or Decision Making Chakra: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{result.personalityNumber}</span></h3>
+                              <div className="text-sm text-gray-500 mt-1 center ">
+                                 This is also your Dominant CHarkra Number / Associated Color: <span className={`font-medium ${getNumberColor(result.personalityNumber).text}`}>{getNumberColor(result.personalityNumber).name}</span>
                               </div>
                               <div className="mt-3 px-4 py-3 bg-gray-50 rounded-lg text-xs text-gray-600 italic">
                                 {getNumberColor(result.personalityNumber).meaning}
@@ -1018,7 +1015,7 @@ export default function Numerology() {
                   <div>
                     <h4 className="font-medium text-lg text-primary-dark mb-2">Personality Number</h4>
                     <p className="text-gray-600">
-                      Your Personality number reveals how others perceive you. Calculated from the consonants in your name, it represents the face you show to the world and your outer personality.
+                      Your Personality number reveals your outward expression and social presence. Calculated from the month and day digits of your birth date, it represents how you naturally present yourself to the world.
                     </p>
                   </div>
                   
