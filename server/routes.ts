@@ -584,22 +584,46 @@ function reduceNumber(num: number): number {
         return reduceNumber(sum);
       };
 
-      // Calculate Personality Number
-      const calculatePersonality = (fullName: string): number => {
-        let sum = 0;
-        for (const char of fullName.toLowerCase().replace(/[^a-zA-Z]/g, '')) {
-          if (!'aeiou'.includes(char)) {
-            sum += letterToNumber(char);
-          }
+      // Calculate Personality Number - based on month and day digits
+      const calculatePersonality = (date: string): number => {
+        const dateParts = date.split('-');
+        if (dateParts.length !== 3) return 5;
+        
+        const month = dateParts[1]; // MM
+        const day = dateParts[2]; // DD
+        
+        // Get all digits from month and day
+        const digits = (month + day).split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Keep reducing until we get a single digit (1-9)
+        while (sum > 9) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
         }
-        return reduceNumber(sum);
+        
+        return sum;
+      };
+
+      // Calculate Soul Chakra Number - based on all birth date digits
+      const calculateSoulChakra = (date: string): number => {
+        // Remove hyphens and get all digits from the date
+        const digits = date.replace(/-/g, '').split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Keep reducing until we get a single digit (1-9)
+        while (sum > 9) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum;
       };
 
       // Calculate all numbers
       const lifePathNumber = calculateLifePath(birthDate);
       const destinyNumber = calculateDestiny(name);
       const soulUrgeNumber = calculateSoulUrge(name);
-      const personalityNumber = calculatePersonality(name);
+      const personalityNumber = calculatePersonality(birthDate);
+      const soulChakraNumber = calculateSoulChakra(birthDate);
 
       // Map a number to its color name
       const getColorName = (num: number): string => {
@@ -626,32 +650,29 @@ function reduceNumber(num: number): number {
         destinyNumber,
         soulUrgeNumber,
         personalityNumber,
-        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you.`,
-        lifePathNumber: result.lifePathNumber,
-        destinyNumber: result.destinyNumber,
-        soulUrgeNumber: result.soulUrgeNumber,
-        personalityNumber: result.personalityNumber,
-        interpretation: result.interpretation,
+        soulChakraNumber,
+        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you. Your Soul Chakra Number ${soulChakraNumber} reveals your spiritual energy center.`,
         // Add enhanced properties
         colorAssociations: {
-          lifePathColor: getColorName(result.lifePathNumber),
-          destinyColor: getColorName(result.destinyNumber),
-          soulUrgeColor: getColorName(result.soulUrgeNumber),
-          personalityColor: getColorName(result.personalityNumber)
+          lifePathColor: getColorName(lifePathNumber),
+          destinyColor: getColorName(destinyNumber),
+          soulUrgeColor: getColorName(soulUrgeNumber),
+          personalityColor: getColorName(personalityNumber),
+          soulChakraColor: getColorName(soulChakraNumber)
         },
         // Add additional property examples for the enhanced UI
         strengths: [
-          "Natural " + getColorName(result.lifePathNumber) + " energy enhances your leadership abilities",
-          "Your " + getColorName(result.destinyNumber) + " vibration amplifies your communication skills",
-          "The " + getColorName(result.soulUrgeNumber) + " influence strengthens your intuitive abilities"
+          "Natural " + getColorName(lifePathNumber) + " energy enhances your leadership abilities",
+          "Your " + getColorName(destinyNumber) + " vibration amplifies your communication skills",
+          "The " + getColorName(soulUrgeNumber) + " influence strengthens your intuitive abilities"
         ],
         challenges: [
-          "Balancing " + getColorName(result.lifePathNumber) + " intensity in daily interactions", 
-          "Integrating " + getColorName(result.destinyNumber) + " energy with practical matters",
-          "Managing the sensitivity that comes with " + getColorName(result.soulUrgeNumber) + " vibrations"
+          "Balancing " + getColorName(lifePathNumber) + " intensity in daily interactions", 
+          "Integrating " + getColorName(destinyNumber) + " energy with practical matters",
+          "Managing the sensitivity that comes with " + getColorName(soulUrgeNumber) + " vibrations"
         ],
-        guidance: "Focus on harmonizing the " + getColorName(result.lifePathNumber) + " and " + 
-                 getColorName(result.destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
+        guidance: "Focus on harmonizing the " + getColorName(lifePathNumber) + " and " + 
+                 getColorName(destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
       };
       
       // If user is authenticated, save the reading to their profile
