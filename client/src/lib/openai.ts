@@ -80,6 +80,7 @@ export interface NumerologyResult {
   destinyNumber: number;
   soulUrgeNumber: number;
   personalityNumber: number;
+  soulChakraNumber: number;
   interpretation: string;
   // Enhanced properties from AI analysis
   colorAssociations?: {
@@ -87,6 +88,7 @@ export interface NumerologyResult {
     destinyColor?: string;
     soulUrgeColor?: string;
     personalityColor?: string;
+    soulChakraColor?: string;
   };
   energyPattern?: string;
   strengths?: string[];
