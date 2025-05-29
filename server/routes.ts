@@ -343,7 +343,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
-          personalityNumber: calculatePersonality(name),
+          personalityNumber: calculatePersonality(birthDate),
+          soulChakraNumber: calculateSoulChakra(birthDate),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
         
@@ -682,11 +683,11 @@ function reduceNumber(num: number): number {
             userId: req.user.id,
             name,
             birthDate,
-            lifePathNumber: result.lifePathNumber,
-            destinyNumber: result.destinyNumber,
-            soulUrgeNumber: result.soulUrgeNumber,
-            personalityNumber: result.personalityNumber,
-            interpretation: result.interpretation
+            lifePathNumber,
+            destinyNumber,
+            soulUrgeNumber,
+            personalityNumber,
+            interpretation: numerologyProfile.interpretation
           };
           
           await storage.saveNumerologyReading(readingToSave);
