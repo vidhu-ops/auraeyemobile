@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap } from "lucide-react";
 
 export default function AuraAnalysis() {
   const { user } = useAuth();
@@ -199,6 +199,150 @@ export default function AuraAnalysis() {
 
   const getColorHealing = (primary: string, secondary: string): string => {
     return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} gemstone therapy and ${secondary.toLowerCase()} color breathing exercises.`;
+  };
+  const getPositiveTraits = (color: string): string => {
+    const traits: Record<string, string> = {
+      'Red': 'Strong life force, physical vitality, courage, passion, grounding, survival strength, manifestation power, leadership',
+      'Orange': 'Creative and sexual energy flowing, emotional expression active, joy, enthusiasm, optimism, social confidence',
+      'Yellow': 'Personal power and confidence radiating, strong willpower, mental clarity, wisdom, analytical thinking',
+      'Green': 'Love and healing energy flowing, compassionate nature, growth, harmony with nature, balanced emotions',
+      'Blue': 'Throat area with extension to jaw and neck - Truth-speaking abilities, authentic communication, peaceful nature',
+      'Purple': 'Spiritual awareness awakening, divine connection opening, mystical abilities, intuitive wisdom',
+      'Gold': 'Divine wisdom and protection, spiritual achievement, enlightened consciousness, cosmic connection',
+      'White': 'Purity and spiritual protection, connection to higher realms, clarity of purpose, divine guidance',
+      'Pink': 'Unconditional love, compassion, nurturing energy, heart-centered healing, emotional balance'
+    };
+    return traits[color] || 'Unique positive energy signature';
+  };
+
+  const getPositiveDescription = (color: string): string => {
+    const descriptions: Record<string, string> = {
+      'Red': 'Your red aura energy manifests as powerful grounding force, giving you exceptional physical vitality and the courage to take decisive action. You have natural leadership abilities and can manifest your desires into physical reality.',
+      'Orange': 'This vibrant energy makes you naturally creative and socially confident. You experience life with enthusiasm and joy, expressing emotions freely and inspiring others through your optimistic presence.',
+      'Yellow': 'Your solar plexus radiates confidence and personal power. You possess strong analytical abilities and mental clarity that helps you make wise decisions and teach others through your accumulated wisdom.',
+      'Green': 'This healing energy makes you a natural peacemaker and healer. You create harmony wherever you go and have an innate connection to nature and growth cycles.',
+      'Blue': 'Your throat chakra energy enhances truthful communication and authentic self-expression. You naturally inspire trust and can communicate complex ideas with clarity and peace.',
+      'Purple': 'This spiritual energy connects you to higher dimensions and mystical understanding. You have natural psychic abilities and can access ancient wisdom.',
+      'Gold': 'Your divine connection manifests as spiritual authority and wisdom. You carry protective energy and have achieved significant spiritual development.',
+      'White': 'This pure energy provides spiritual protection and connects you directly to source consciousness. You embody clarity and divine guidance.',
+      'Pink': 'Your heart chakra radiates unconditional love and compassion. You naturally nurture others and create healing through your loving presence.'
+    };
+    return descriptions[color] || 'Your unique energy signature carries powerful positive qualities.';
+  };
+
+  const getShadowTraits = (color: string): string => {
+    const shadows: Record<string, string> = {
+      'Red': 'Anger, aggression, impatience, survival fears, material obsession, explosive emotions, physical tension, restlessness',
+      'Orange': 'Emotional overwhelm, sexual imbalance, creative blocks, attention-seeking, superficial expressions',
+      'Yellow': 'Mental overthinking, ego dominance, criticism, perfectionism, intellectual arrogance, analysis paralysis',
+      'Green': 'Emotional codependency, giving too much, boundary issues, jealousy, possessiveness, healing burnout',
+      'Blue': 'Communication blocks, truth avoidance, throat constriction, difficulty expressing authentic self',
+      'Purple': 'Spiritual bypassing, disconnection from reality, psychic overwhelm, superiority complex, mystical inflation',
+      'Gold': 'Spiritual pride, divine complex, isolation from humanity, perfectionist standards, wisdom hoarding',
+      'White': 'Spiritual detachment, avoidance of earthly matters, purity obsession, emotional numbness',
+      'Pink': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality'
+    };
+    return shadows[color] || 'Shadow aspects to integrate';
+  };
+
+  const getShadowDescription = (color: string): string => {
+    const descriptions: Record<string, string> = {
+      'Red': 'When unbalanced, this powerful energy can manifest as anger, impatience, or survival fears. You may experience explosive emotions or become overly focused on material concerns, losing connection to your spiritual nature.',
+      'Orange': 'The shadow side may show up as emotional overwhelm or attention-seeking behaviors. Creative energy can become blocked, leading to frustration or superficial expressions of your true creative potential.',
+      'Yellow': 'Mental energy can become overthinking and ego-driven criticism. You might fall into analysis paralysis or develop intellectual arrogance that blocks genuine wisdom and connection with others.',
+      'Green': 'The healing nature can become codependent giving or boundary issues. You may exhaust yourself caring for others while neglecting your own needs, or experience jealousy and possessiveness.',
+      'Blue': 'Communication blocks can manifest as difficulty expressing your authentic truth. You might avoid difficult conversations or experience throat constriction when trying to speak your truth.',
+      'Purple': 'Spiritual energy can lead to disconnection from practical reality or psychic overwhelm. You might develop superiority complex or use spirituality to avoid dealing with earthly responsibilities.',
+      'Gold': 'Divine wisdom can manifest as spiritual pride or perfectionist standards. You might isolate yourself from others, feeling they don\'t understand your elevated consciousness.',
+      'White': 'Pure energy can lead to spiritual detachment or avoidance of emotional depth. You might become overly focused on perfection while avoiding the messy aspects of human experience.',
+      'Pink': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn\'t reciprocated.'
+    };
+    return descriptions[color] || 'Balance is needed to integrate shadow aspects of your energy.';
+  };
+
+  const getPlacementDescription = (color: string): string => {
+    const placements: Record<string, string> = {
+      'Red': 'Base of spine radiating through legs and into earth connection',
+      'Orange': 'Sacral center extending to lower abdomen and reproductive organs',
+      'Yellow': 'Solar plexus center extending to stomach area',
+      'Green': 'Heart center expanding outward to arms and hands',
+      'Blue': 'Throat area with extension to jaw and neck',
+      'Purple': 'Crown of head with upward spiritual connection',
+      'Gold': 'Soul star chakra above the crown, cosmic connection',
+      'White': 'Full aura field surrounding entire energy body',
+      'Pink': 'Heart chakra higher octave, emotional and spiritual love center'
+    };
+    return placements[color] || 'Unique energy placement pattern';
+  };
+
+  const getDetailedPlacement = (color: string): string => {
+    const details: Record<string, string> = {
+      'Red': 'Powerful grounding energy with strong life force and survival instincts. This energy connects you deeply to the earth and physical realm, providing stability and manifestation power.',
+      'Orange': 'Creative life force and sensual energy that flows through your creative and reproductive centers. This placement enhances your ability to create, procreate, and experience joy.',
+      'Yellow': 'Personal power radiating from your core, giving you confidence and strong willpower. This energy helps you assert yourself and make decisions from a place of inner strength.',
+      'Green': 'Love and healing energy flowing compassionately from your heart center. This placement makes you naturally nurturing and able to heal both yourself and others.',
+      'Blue': 'Truth-speaking abilities centered in your throat that enhance authentic communication. This energy helps you express your truth clearly and inspire others through your words.',
+      'Purple': 'Spiritual connection opening divine awareness and mystical understanding. This placement connects you to higher dimensions and ancient wisdom.',
+      'Gold': 'Divine wisdom and protection flowing from higher spiritual centers. This energy indicates advanced spiritual development and cosmic consciousness.',
+      'White': 'Complete spiritual integration surrounding your entire energy field. This placement indicates purity of intention and direct connection to source energy.',
+      'Pink': 'Unconditional love emanating from an elevated heart center. This energy transcends personal love and connects you to universal compassion.'
+    };
+    return details[color] || 'This energy placement creates unique patterns in your spiritual development.';
+  };
+
+  const getSecondaryColorDescription = (color: string): string => {
+    return `${getColorMeaning(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;
+  };
+
+  const getSupportingColorLocation = (color: string, index: number): string => {
+    const locations = [
+      'Heart center expanding outward to arms and hands - Love and healing energy flowing, compassionate nature',
+      'Throat area with extension to jaw and neck - Truth-speaking abilities, authentic communication development',
+      'Crown of head with upward spiritual connection - Spiritual awareness awakening, divine connection opening'
+    ];
+    return locations[index] || 'Supporting energy field';
+  };
+
+  const getSupportingColorDescription = (color: string): string => {
+    return `This ${color.toLowerCase()} energy provides additional support to your overall aura pattern, contributing ${getColorKeyword(color).toLowerCase()} qualities to your spiritual signature.`;
+  };
+
+  const getEnergyFlowPattern = (primary: string, secondary: string): string => {
+    return `Your energy flows from a ${primary.toLowerCase()} core through ${secondary.toLowerCase()} channels, creating a dynamic pattern that balances ${getColorKeyword(primary).toLowerCase()} with ${getColorKeyword(secondary).toLowerCase()}. This flow pattern indicates a natural ability to maintain energetic equilibrium.`;
+  };
+
+  const getBalancingRecommendations = (primary: string, secondary: string): string => {
+    return `To maintain optimal energy balance, focus on ${primary.toLowerCase()} grounding practices combined with ${secondary.toLowerCase()} expression activities. Consider meditation with both colors and surrounding yourself with these energetic frequencies.`;
+  };
+
+  const getOptimalEnergyTimes = (color: string): string => {
+    const times: Record<string, string> = {
+      'Red': 'Dawn and early morning hours when life force is strongest. Physical activity and grounding work are most effective during sunrise.',
+      'Orange': 'Late morning to early afternoon when creative energy peaks. Best time for artistic work and emotional expression.',
+      'Yellow': 'Midday when solar energy is strongest. Optimal for intellectual work, decision-making, and personal power practices.',
+      'Green': 'Late afternoon and early evening when heart energy is most receptive. Perfect for healing work and compassionate activities.',
+      'Blue': 'Evening hours when communication flows most clearly. Ideal time for truth-telling and authentic expression.',
+      'Purple': 'Night hours and pre-dawn when spiritual veils are thinnest. Best for meditation, psychic work, and mystical practices.',
+      'Gold': 'Sacred hours of dawn and dusk when divine energy is most accessible. Optimal for spiritual practices and wisdom work.',
+      'White': 'All hours carry equal potential as this energy transcends time. Particularly strong during meditation and prayer.',
+      'Pink': 'Heart-opening hours of sunrise and sunset when love energy is most expansive. Perfect for compassion practices.'
+    };
+    return times[color] || 'Energy flows optimally during your natural rhythm cycles.';
+  };
+
+  const getCompatibleEnergies = (color: string): string => {
+    const compatible: Record<string, string> = {
+      'Red': 'Orange (creativity), Yellow (personal power), and Earth energies. Compatible with other grounding and manifestation forces.',
+      'Orange': 'Red (passion), Yellow (joy), and Water energies. Harmonizes with creative and emotional expression energies.',
+      'Yellow': 'Orange (creativity), Green (balance), and Fire energies. Resonates with intellectual and solar-powered energies.',
+      'Green': 'Blue (communication), Pink (love), and Earth energies. Harmonizes with heart-centered and healing energies.',
+      'Blue': 'Green (healing), Purple (spirituality), and Air energies. Compatible with truth and communication frequencies.',
+      'Purple': 'Blue (truth), White (purity), and Cosmic energies. Resonates with spiritual and mystical frequencies.',
+      'Gold': 'White (purity), Purple (spirituality), and Divine energies. Compatible with high-frequency spiritual energies.',
+      'White': 'All colors as it contains the full spectrum. Harmonizes with any authentic spiritual energy.',
+      'Pink': 'Green (healing), White (purity), and Heart energies. Compatible with all love-based frequencies.'
+    };
+    return compatible[color] || 'Your energy harmonizes with authentic spiritual frequencies.';
   };
   
   // Function to generate aura visualization with colored clouds
@@ -811,13 +955,22 @@ export default function AuraAnalysis() {
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
                               <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                               <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-3 relative">
                                 Color Spectrum
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-4 w-4 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 items-center justify-center">
                                     <Sparkles className="h-2 w-2 text-white" />
+                                  </span>
+                                </span>
+                              </TabsTrigger>
+                              <TabsTrigger value="energy-map" className="text-sm whitespace-nowrap px-3 relative">
+                                Energy Map
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 items-center justify-center">
+                                    <Zap className="h-2 w-2 text-white" />
                                   </span>
                                 </span>
                               </TabsTrigger>
@@ -978,6 +1131,192 @@ export default function AuraAnalysis() {
                                   <div className="text-center mt-4">
                                     <p className="text-white text-sm">Your unique aura signature combining {result.dominantColor} and {result.secondaryColor} energies</p>
                                   </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="energy-map">
+                            <div className="space-y-6">
+                              <div className="text-center mb-6">
+                                <h3 className="font-medium text-xl mb-2">Energy Map & Color Analysis</h3>
+                                <p className="text-sm text-gray-600">
+                                  Complete breakdown of your dominant energy and supporting color influences
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Dominant Energy Section */}
+                                <div className="space-y-4">
+                                  <div className="bg-white border rounded-lg p-6 shadow-sm">
+                                    <div className="flex items-center space-x-4 mb-4">
+                                      <div 
+                                        className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
+                                        style={{backgroundColor: getColorCode(result.dominantColor)}}
+                                      >
+                                        <span className="text-white font-bold text-lg">
+                                          {result.dominantColor.charAt(0)}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <h4 className="font-bold text-lg">{result.dominantColor}</h4>
+                                        <p className="text-sm text-gray-600">Dominant Energy</p>
+                                      </div>
+                                    </div>
+
+                                    {/* Positive Aspects */}
+                                    <div className="mb-4">
+                                      <h5 className="font-semibold text-sm text-green-700 mb-2">
+                                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                        Positive: {getPositiveTraits(result.dominantColor)}
+                                      </h5>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        {getPositiveDescription(result.dominantColor)}
+                                      </p>
+                                    </div>
+
+                                    {/* Shadow Aspects */}
+                                    <div className="mb-4">
+                                      <h5 className="font-semibold text-sm text-red-700 mb-2">
+                                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        Shadow: {getShadowTraits(result.dominantColor)}
+                                      </h5>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        {getShadowDescription(result.dominantColor)}
+                                      </p>
+                                    </div>
+
+                                    {/* Placement */}
+                                    <div>
+                                      <h5 className="font-semibold text-sm text-blue-700 mb-2">
+                                        <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                                        Placement: {getPlacementDescription(result.dominantColor)}
+                                      </h5>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        {getDetailedPlacement(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Secondary & Supporting Colors */}
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold text-lg">Secondary & Supporting Colors</h4>
+                                  
+                                  {/* Secondary Color */}
+                                  <div className="bg-gray-50 border rounded-lg p-4">
+                                    <div className="flex items-center space-x-3 mb-3">
+                                      <div 
+                                        className="w-8 h-8 rounded-full"
+                                        style={{backgroundColor: getColorCode(result.secondaryColor)}}
+                                      ></div>
+                                      <div>
+                                        <h5 className="font-medium">{result.secondaryColor}</h5>
+                                        <p className="text-xs text-gray-600">Right side of lower abdomen, 2 inches below navel</p>
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-gray-700">
+                                      {getSecondaryColorDescription(result.secondaryColor)}
+                                    </p>
+                                  </div>
+
+                                  {/* Extended Color Spectrum */}
+                                  {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
+                                    <>
+                                      {result.auraColorSpectrum.slice(2, 5).map((color, index) => (
+                                        <div key={index} className="bg-gray-50 border rounded-lg p-4">
+                                          <div className="flex items-center space-x-3 mb-3">
+                                            <div 
+                                              className="w-8 h-8 rounded-full"
+                                              style={{backgroundColor: getColorCode(color)}}
+                                            ></div>
+                                            <div>
+                                              <h5 className="font-medium">{color}</h5>
+                                              <p className="text-xs text-gray-600">{getSupportingColorLocation(color, index)}</p>
+                                            </div>
+                                          </div>
+                                          <p className="text-sm text-gray-700">
+                                            {getSupportingColorDescription(color)}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Energy Interaction Map */}
+                              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6">
+                                <h4 className="font-semibold text-lg mb-4">Energy Interaction Map</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Energy Flow Pattern</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getEnergyFlowPattern(result.dominantColor, result.secondaryColor)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Balancing Recommendations</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getBalancingRecommendations(result.dominantColor, result.secondaryColor)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Optimal Energy Times</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getOptimalEnergyTimes(result.dominantColor)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Compatible Energies</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getCompatibleEnergies(result.dominantColor)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Visual Energy Map */}
+                              <div className="bg-black rounded-lg p-6 relative overflow-hidden">
+                                <h4 className="text-white font-semibold text-lg mb-4">Your Personal Energy Signature</h4>
+                                <div className="flex justify-center items-center space-x-8">
+                                  <div className="relative">
+                                    {/* Dominant Energy Visualization */}
+                                    <div 
+                                      className="w-24 h-24 rounded-full opacity-90 animate-pulse"
+                                      style={{background: `radial-gradient(circle, ${getColorCode(result.dominantColor)} 0%, ${getColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
+                                    ></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-white font-bold text-sm">Core</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Secondary Energy */}
+                                  <div className="relative">
+                                    <div 
+                                      className="w-16 h-16 rounded-full opacity-75 animate-pulse"
+                                      style={{background: `radial-gradient(circle, ${getColorCode(result.secondaryColor)} 0%, ${getColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
+                                    ></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-white font-medium text-xs">Flow</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Supporting energies */}
+                                  {result.auraColorSpectrum && result.auraColorSpectrum.slice(2, 4).map((color, index) => (
+                                    <div key={index} className="relative">
+                                      <div 
+                                        className="w-12 h-12 rounded-full opacity-60 animate-pulse"
+                                        style={{
+                                          background: `radial-gradient(circle, ${getColorCode(color)} 0%, ${getColorCode(color)}40 50%, transparent 100%)`,
+                                          animationDelay: `${1 + index * 0.5}s`
+                                        }}
+                                      ></div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="text-center mt-4">
+                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor.toLowerCase()} core through {result.secondaryColor.toLowerCase()} pathways</p>
                                 </div>
                               </div>
                             </div>
