@@ -888,7 +888,7 @@ export default function AuraAnalysis() {
                 
                 {/* Results section - full width */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-7">
                     <h2 className="font-heading font-semibold text-xl">Your Aura Reading</h2>
                     
                     {result && !isAnalyzing && (
@@ -920,7 +920,7 @@ export default function AuraAnalysis() {
                   </div>
                   
                   {isAnalyzing ? (
-                    <Card className="h-96 flex flex-col items-center justify-center">
+                    <Card className="h-200 flex flex-col items-center justify-center">
                       <div className="text-center w-full max-w-md px-6">
                         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
                         <p className="text-gray-600 mb-4">Analyzing your aura energy...</p>
@@ -931,7 +931,7 @@ export default function AuraAnalysis() {
                               <span>Scanning energy field</span>
                               <span className="text-primary">{Math.round(analysisProgress)}%</span>
                             </div>
-                            <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-10 w-full bg-gray-200 rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-300 ease-out"
                                 style={{ width: `${analysisProgress}%` }}
@@ -947,9 +947,9 @@ export default function AuraAnalysis() {
                     </Card>
                   ) : result ? (
                     <Card>
-                      <CardContent className="p-6">
-                        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid grid-rows-3 gap-7 w-full p-5 mb-8">
+                      <CardContent className="p-7">
+                        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
+                          <TabsList className="grid grid-rows-3 gap-7 w-full h-21 p-1 mb-12">
                             <div className="grid grid-cols-3 gap-3">
                               <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
@@ -987,7 +987,7 @@ export default function AuraAnalysis() {
                             <div className="grid grid-cols-1 gap-2">
                               <TabsTrigger value="detailed" className="relative">
                                 Detailed Analysis
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 mb-5">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
                                     <Crown className="h-2 w-2 text-white" />
@@ -998,7 +998,8 @@ export default function AuraAnalysis() {
                           </TabsList>
                           
                           <TabsContent value="spectrum">
-                            <div className="space-y-10">
+                            <div className="space-y-10
+                              ">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
                                 <p className="text-sm text-gray-600">
@@ -1734,10 +1735,10 @@ export default function AuraAnalysis() {
                           <TabsContent value="detailed">
                             <div>
                               <div className="mb-6 relative">
-                                <div className="absolute -top-2 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-10">
+                                <div className="absolute -top-3 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-17 mb-5">
                                   Advanced Feature
                                 </div>
-                                <h3 className="font-medium text-lg mb-4 text-primary">Advanced Aura Field Analysis</h3>
+                                <h3 className="font-medium text-lg mb-5 text-primary">Advanced Aura Field Analysis</h3>
                                 
                                 {/* Premium Aura Visualization */}
                                 <div className="relative h-56 mb-6 overflow-hidden rounded-lg">
