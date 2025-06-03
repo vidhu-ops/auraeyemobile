@@ -949,8 +949,8 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-6">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid grid-rows-3 gap-2 w-full p-1 mb-6">
-                            <div className="grid grid-cols-3 gap-2">
+                          <TabsList className="grid grid-rows-3 gap-7 w-full p-5 mb-8">
+                            <div className="grid grid-cols-3 gap-3">
                               <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
                               <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
@@ -998,7 +998,7 @@ export default function AuraAnalysis() {
                           </TabsList>
                           
                           <TabsContent value="spectrum">
-                            <div className="space-y-6">
+                            <div className="space-y-10">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
                                 <p className="text-sm text-gray-600">
@@ -1458,10 +1458,10 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="analysis">
-                            <div className="space-y-6">
+                            <div className="space-y-10">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <h3 className="font-medium text-lg">Your Aura Photo Analysis</h3>
+                                  <h3 className="space-top-10 font-medium text-lg">Your Aura Photo Analysis</h3>
                                   <p className="text-sm text-gray-500">Analysis of the visible energy fields in your specialized aura photograph</p>
                                 </div>
                                 <div className="flex gap-2">
