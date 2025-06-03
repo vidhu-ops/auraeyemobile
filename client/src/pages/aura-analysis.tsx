@@ -1461,7 +1461,7 @@ export default function AuraAnalysis() {
                             <div className="space-y-10">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <h3 className="space-top-10 font-medium text-lg">Your Aura Photo Analysis</h3>
+                                  <h3 className="font-medium text-lg mt-2.5">Your Aura Photo Analysis</h3>
                                   <p className="text-sm text-gray-500">Analysis of the visible energy fields in your specialized aura photograph</p>
                                 </div>
                                 <div className="flex gap-2">
