@@ -1131,8 +1131,8 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-7">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
-                          <TabsList className="grid grid-rows-3 gap-7 w-full h-21 p-1 mb-12">
-                            <div className="grid grid-cols-4 gap-2">
+                          <TabsList className="grid grid-rows-4 gap-3 w-full h-24 p-1 mb-12">
+                            <div className="grid grid-cols-2 gap-2">
                               <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-2">Analysis</TabsTrigger>
                               <TabsTrigger value="energy-reading" className="text-sm whitespace-nowrap px-2 relative">
                                 Energy Reading
@@ -1143,11 +1143,13 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-2">Chakras</TabsTrigger>
                               <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-2">Guidance</TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-3 relative">
+                            <div className="grid grid-cols-2 gap-2">
+                              <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-2 relative">
                                 Color Spectrum
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
@@ -1156,7 +1158,7 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
-                              <TabsTrigger value="energy-map" className="text-sm whitespace-nowrap px-3 relative">
+                              <TabsTrigger value="energy-map" className="text-sm whitespace-nowrap px-2 relative">
                                 Energy Map
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -1176,7 +1178,7 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
-                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-3 relative">
+                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-2 relative">
                                 Combined Analysis
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
