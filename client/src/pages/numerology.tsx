@@ -712,7 +712,7 @@ export default function NumerologyPage() {
 
                   {/* Soul Chakra Tab */}
                   <TabsContent value="soulChakra" className="space-y-6 mt-6">
-                    <div className="text-center">
+                    <div className="text-center text-black">
                       <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-green-500">
                         {numerology.soulChakraNumber}
                       </div>
