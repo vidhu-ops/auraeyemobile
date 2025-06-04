@@ -465,12 +465,12 @@ export default function NumerologyPage() {
                   
                   <div className="text-center bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6">
                     <div className="text-4xl font-bold text-red-600 mb-2">
-                      {numerology.soulChakraNumber}
+                      {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
                     </div>
                     <div className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</div>
-                    <div className="text-sm text-red-600">Your greatest challenge area</div>
+                    <div className="text-sm text-red-600">Sum of all birth date digits</div>
                     <div className="text-xs text-red-500 mt-2">
-                      Maximum challenges in this chakra
+                      Your greatest challenge area
                     </div>
                   </div>
                 </div>
@@ -517,11 +517,12 @@ export default function NumerologyPage() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-800">Dominant Soul Chakra</h3>
                     {(() => {
-                      const info = getChakraPlanetInfo(numerology.soulChakraNumber);
+                      const dominantSoulNumber = calculateDominantSoulChakra(user?.birthDate || "1990-01-01");
+                      const info = getChakraPlanetInfo(dominantSoulNumber);
                       return (
                         <div className="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg">
                           <div className="mb-3">
-                            <div className="text-2xl font-bold text-red-600">{numerology.soulChakraNumber}</div>
+                            <div className="text-2xl font-bold text-red-600">{dominantSoulNumber}</div>
                             <div className="text-sm text-red-700">{info.chakra} • {info.planet}</div>
                           </div>
                           <p className="text-sm text-red-800 mb-3">{info.description}</p>
