@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { 
   ArrowRight, 
   Camera, 
@@ -21,13 +22,70 @@ import {
   Book, 
   Calendar, 
   Activity,
-  Loader2
+  Loader2,
+  Eye,
+  Palette,
+  TrendingUp,
+  Heart,
+  Brain
 } from "lucide-react";
 import { getDailyHoroscope, HoroscopeResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
+import { format } from "date-fns";
+
+interface AuraReading {
+  id: number;
+  userId: number;
+  imageUrl: string;
+  dominantColor: string;
+  secondaryColor: string;
+  energyLevel: number;
+  analysis: string;
+  createdAt: string;
+}
+
+interface JournalEntry {
+  id: number;
+  userId: number;
+  energyLevel: number;
+  reflections: string;
+  gratitude: string;
+  createdAt: string;
+}
+
+interface NumerologyReading {
+  id: number;
+  userId: number;
+  name: string;
+  birthDate: string;
+  lifePathNumber: number;
+  destinyNumber: number;
+  soulUrgeNumber: number;
+  personalityNumber: number;
+  interpretation: string;
+  createdAt: string;
+}
 
 export default function ClientDashboard() {
   const { user } = useAuth();
   const [selectedSign, setSelectedSign] = useState<string>("aries");
+  
+  // Fetch user's aura readings
+  const { data: auraReadings = [], isLoading: isLoadingAura } = useQuery({
+    queryKey: ["/api/aura-readings"],
+    enabled: !!user,
+  });
+
+  // Fetch user's journal entries
+  const { data: journalEntries = [], isLoading: isLoadingJournal } = useQuery({
+    queryKey: ["/api/journal"],
+    enabled: !!user,
+  });
+
+  // Fetch user's numerology readings
+  const { data: numerologyReadings = [], isLoading: isLoadingNumerology } = useQuery({
+    queryKey: ["/api/numerology-readings"],
+    enabled: !!user,
+  });
   
   // Get daily horoscope for the selected sign
   const {
@@ -44,7 +102,7 @@ export default function ClientDashboard() {
   // Get numerology analysis if user has birth date
   const {
     data: numerology,
-    isLoading: isLoadingNumerology,
+    isLoading: isLoadingNumerologyAnalysis,
     error: numerologyError
   } = useQuery<NumerologyResult>({
     queryKey: ["/api/numerology", user?.username, user?.birthDate],
@@ -133,6 +191,123 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
             
+            {/* User Reading History */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-purple-500" />
+                  Your Reading History
+                </CardTitle>
+                <CardDescription>View all your aura and numerology readings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="aura" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="aura">Aura Readings</TabsTrigger>
+                    <TabsTrigger value="numerology">Numerology</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="aura">
+                    {isLoadingAura ? (
+                      <div className="flex justify-center items-center py-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : Array.isArray(auraReadings) && auraReadings.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Palette className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p>No aura readings yet</p>
+                        <Link to="/aura-analysis">
+                          <Button className="mt-2" variant="outline">
+                            Get Your First Reading
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {Array.isArray(auraReadings) && auraReadings.map((reading: AuraReading) => (
+                          <div key={reading.id} className="border rounded-lg p-4 bg-gradient-to-r from-white to-gray-50">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center gap-3">
+                                <div 
+                                  className="w-8 h-8 rounded-full border-2 border-white shadow-md"
+                                  style={{ backgroundColor: reading.dominantColor }}
+                                ></div>
+                                <div>
+                                  <h3 className="font-medium">{reading.dominantColor} Aura</h3>
+                                  <p className="text-sm text-gray-500">
+                                    {format(new Date(reading.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge variant="outline">
+                                Energy: {reading.energyLevel}/10
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-700 mb-2">{reading.analysis}</p>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <span>Secondary: {reading.secondaryColor}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="numerology">
+                    {isLoadingNumerology ? (
+                      <div className="flex justify-center items-center py-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Brain className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p>No numerology readings yet</p>
+                        <Link to="/numerology">
+                          <Button className="mt-2" variant="outline">
+                            Get Your First Reading
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {Array.isArray(numerologyReadings) && numerologyReadings.map((reading: NumerologyReading) => (
+                          <div key={reading.id} className="border rounded-lg p-4 bg-white">
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h3 className="font-medium">Numerology Analysis</h3>
+                                <p className="text-sm text-gray-500">
+                                  {format(new Date(reading.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                              <div className="text-center p-2 bg-purple-50 rounded">
+                                <div className="text-lg font-bold text-purple-600">{reading.lifePathNumber}</div>
+                                <div className="text-xs text-purple-500">Life Path</div>
+                              </div>
+                              <div className="text-center p-2 bg-blue-50 rounded">
+                                <div className="text-lg font-bold text-blue-600">{reading.destinyNumber}</div>
+                                <div className="text-xs text-blue-500">Destiny</div>
+                              </div>
+                              <div className="text-center p-2 bg-green-50 rounded">
+                                <div className="text-lg font-bold text-green-600">{reading.soulUrgeNumber}</div>
+                                <div className="text-xs text-green-500">Soul Urge</div>
+                              </div>
+                              <div className="text-center p-2 bg-orange-50 rounded">
+                                <div className="text-lg font-bold text-orange-600">{reading.personalityNumber}</div>
+                                <div className="text-xs text-orange-500">Personality</div>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-700">{reading.interpretation.substring(0, 200)}...</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Your Cosmic Insights</CardTitle>
