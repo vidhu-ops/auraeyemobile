@@ -48,13 +48,26 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const selectedSecondary = secondaryColors[secondaryIndex];
   const selectedTraits = personalityTraits[traitsIndex];
   
+  // Generate deterministic chakra activity based on seed
+  const baseChakraValue = 4 + (seed % 4); // Base value between 4-7
+  const chakraActivity = {
+    root: baseChakraValue + ((seed >> 12) % 3),
+    sacral: baseChakraValue + ((seed >> 15) % 3),
+    solarPlexus: baseChakraValue + ((seed >> 18) % 3),
+    heart: baseChakraValue + ((seed >> 21) % 3),
+    throat: baseChakraValue + ((seed >> 24) % 3),
+    thirdEye: baseChakraValue + ((seed >> 27) % 3),
+    crown: baseChakraValue + ((seed >> 30) % 3)
+  };
+
   return {
     dominantColor: selectedDominant,
     secondaryColor: selectedSecondary,
     personalityTraits: selectedTraits,
     energyLevel: energyLevel,
     spiritualGuidance: `Your ${selectedDominant.toLowerCase()} aura suggests ${selectedTraits.join(', ').toLowerCase()} energy patterns.`,
-    detailedAnalysis: `The dominant ${selectedDominant.toLowerCase()} energy indicates ${selectedTraits[0].toLowerCase()} tendencies, while the secondary ${selectedSecondary.toLowerCase()} tones suggest ${selectedTraits[1].toLowerCase()} qualities. This combination creates a balanced energy signature.`
+    detailedAnalysis: `The dominant ${selectedDominant.toLowerCase()} energy indicates ${selectedTraits[0].toLowerCase()} tendencies, while the secondary ${selectedSecondary.toLowerCase()} tones suggest ${selectedTraits[1].toLowerCase()} qualities. This combination creates a balanced energy signature.`,
+    chakraActivity: chakraActivity
   };
 }
 
@@ -90,21 +103,25 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const energyIndex = (seed >> 8) % energyQualities.length;
   const energyLevel = 3 + (seed % 8); // Energy level between 3-10
   
-  const selectedObjectType = objectTypes[objectTypeIndex];
-  const selectedAuraColor = auraColors[auraColorIndex];
-  const selectedQualities = energyQualities[energyIndex];
+  const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
+  const selectedAuraColor = auraColors[auraColorIndex] || "Purple";
+  const selectedQualities = energyQualities[energyIndex] || ["Calming", "Protective", "Grounding"];
+  
+  // Ensure we have valid qualities
+  const primaryQuality = selectedQualities[0] || "Calming";
+  const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
   return {
     objectName: selectedObjectType,
     objectDescription: `This ${selectedObjectType.toLowerCase()} exhibits distinctive spiritual energy patterns and appears to be energetically active.`,
-    objectPurpose: `This ${selectedObjectType.toLowerCase()} appears designed to enhance ${selectedQualities[0].toLowerCase()} energy and promote spiritual awareness.`,
+    objectPurpose: `This ${selectedObjectType.toLowerCase()} appears designed to enhance ${primaryQuality.toLowerCase()} energy and promote spiritual awareness.`,
     auraColor: selectedAuraColor,
-    auraDescription: `The object emanates a ${selectedAuraColor.toLowerCase()} aura, suggesting ${selectedQualities.join(', ').toLowerCase()} properties.`,
+    auraDescription: `The object emanates a ${selectedAuraColor.toLowerCase()} aura, suggesting ${qualitiesText.toLowerCase()} properties.`,
     energyLevel: energyLevel,
     energyQualities: selectedQualities,
-    historicalSignificance: `Objects of this type have historically been used in spiritual practices for their ${selectedQualities[0].toLowerCase()} properties.`,
-    spiritualSignificance: `This object resonates with energies that promote ${selectedQualities.join(', ').toLowerCase()} states of being.`,
-    detailedAnalysis: `The energy signature reveals a ${selectedAuraColor.toLowerCase()} dominant frequency with ${selectedQualities.join(', ').toLowerCase()} undertones. This suggests the object can be used for meditation, energy work, and spiritual development practices.`
+    historicalSignificance: `Objects of this type have historically been used in spiritual practices for their ${primaryQuality.toLowerCase()} properties.`,
+    spiritualSignificance: `This object resonates with energies that promote ${qualitiesText.toLowerCase()} states of being.`,
+    detailedAnalysis: `The energy signature reveals a ${selectedAuraColor.toLowerCase()} dominant frequency with ${qualitiesText.toLowerCase()} undertones. This suggests the object can be used for meditation, energy work, and spiritual development practices.`
   };
 }
 
