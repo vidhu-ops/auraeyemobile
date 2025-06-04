@@ -510,6 +510,8 @@ export default function AuraAnalysis() {
   // Function to generate aura visualization with colored clouds
   // Function to process the uploaded image with aura colors
 
+
+
   const processImageWithAura = (imageBase64: string, auraData: AuraAnalysisResult): Promise<string> => {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -776,9 +778,7 @@ export default function AuraAnalysis() {
       compatibility: isColorCompatible ? 
         `Your ${aura.dominantColor} aura perfectly aligns with your Life Path ${lifePathNumber} energy, creating harmonious spiritual flow.` :
         `Your ${aura.dominantColor} aura presents a growth opportunity with your Life Path ${lifePathNumber}, encouraging expansion beyond your comfort zone.`,
-      spiritualGuidance: `Your aura's ${aura.dominantColor.toLowerCase()} energy combined with Life Path ${lifePathNumber} suggests focusing on ${
-        isColorCompatible ? 'amplifying your natural gifts' : 'integrating new spiritual dimensions'
-      }. ${numerology.guidance || ''}`,
+      spiritualGuidance: `Your aura's ${aura.dominantColor.toLowerCase()} energy combined with Life Path ${lifePathNumber} suggests focusing on ${isColorCompatible ? 'amplifying your natural gifts' : 'integrating new spiritual dimensions'}. ${numerology.guidance || ''}`,
       chakraAlignment: aura.chakraActivity,
       personalityIntegration: `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor.toLowerCase()} aura energy, showing how others perceive your spiritual presence.`,
       lifePathColor: numerology.colorAssociations?.lifePathColor || aura.dominantColor,
@@ -839,14 +839,17 @@ export default function AuraAnalysis() {
             const analysisResult = await analyzeAuraImage(base64data);
             setResult(analysisResult);
             
-            // Generate enhanced aura image with aura clouds
+            // Process the uploaded image with aura colors
             if (base64String) {
               setAnalysisStage("Creating your aura visualization...");
-              generateAuraVisualization(base64String, analysisResult);
-              
-              // Process the uploaded image with aura colors
-              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
-              setProcessedAuraImage(auraProcessedImage);
+              try {
+                const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
+                setProcessedAuraImage(auraProcessedImage);
+              } catch (error) {
+                console.error("Error processing aura image:", error);
+                // Set original image as fallback
+                setProcessedAuraImage(base64String);
+              }
             }
             
             // Ensure progress shows 100% at the end
