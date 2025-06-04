@@ -295,8 +295,17 @@ export default function ObjectAnalysis() {
                                             <div 
                                               className="absolute inset-0 pointer-events-none"
                                               style={{
-                                                background: `radial-gradient(circle, ${getAuraColorHex(result.auraColor)}40 0%, transparent 70%)`,
-                                                opacity: 0.3
+                                                background: `radial-gradient(circle at center, ${getAuraColorHex(result.auraColor)}60 0%, ${getAuraColorHex(result.auraColor)}30 40%, transparent 80%)`,
+                                                opacity: 0.6,
+                                                mixBlendMode: 'multiply'
+                                              }}
+                                            />
+                                            <div 
+                                              className="absolute inset-0 pointer-events-none border-4 rounded-lg"
+                                              style={{
+                                                borderColor: getAuraColorHex(result.auraColor),
+                                                boxShadow: `0 0 20px ${getAuraColorHex(result.auraColor)}80`,
+                                                opacity: 0.8
                                               }}
                                             />
                                           </div>
