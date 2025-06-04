@@ -2155,7 +2155,7 @@ export default function AuraAnalysis() {
                                         <img 
                                           src={originalImage} 
                                           alt="Original uploaded image" 
-                                          className="w-full h-64 object-cover rounded-lg"
+                                          className="w-full h-full object-cover rounded-lg"
                                         />
                                       </div>
                                     </div>
@@ -2168,7 +2168,7 @@ export default function AuraAnalysis() {
                                           <img 
                                             src={processedAuraImage} 
                                             alt="Image with aura colors" 
-                                            className="w-full h-64 object-cover rounded-lg"
+                                            className="w-full h-full object-cover rounded-lg"
                                           />
                                         ) : (
                                           <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg">
