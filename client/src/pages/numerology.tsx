@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Calculator, Sparkles } from "lucide-react";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -203,6 +205,57 @@ export default function NumerologyPage() {
       title: "Universal Energy",
       description: "A year of unique spiritual development",
       focus: ["Trust your inner guidance", "Stay open to possibilities", "Practice mindfulness"]
+    };
+  };
+
+  const getNumberColorAssociation = (number: number): string => {
+    const colorMap: { [key: number]: string } = {
+      1: "Red", 2: "Orange", 3: "Yellow", 4: "Green", 5: "Blue", 
+      6: "Indigo", 7: "Violet", 8: "Pink", 9: "Gold"
+    };
+    return colorMap[number] || "White";
+  };
+
+  const getVibrationQualities = (number: number): string[] => {
+    const qualitiesMap: { [key: number]: string[] } = {
+      1: ["Leadership", "Independence", "Initiative", "Confidence", "Ambition", "Pioneering"],
+      2: ["Cooperation", "Sensitivity", "Diplomacy", "Patience", "Harmony", "Partnership"],
+      3: ["Creativity", "Expression", "Communication", "Joy", "Artistic", "Inspiration"],
+      4: ["Stability", "Practicality", "Organization", "Determination", "Discipline", "Reliability", "Focus", "Loyalty", "Foundation", "Persistence"],
+      5: ["Freedom", "Adventure", "Curiosity", "Versatility", "Change", "Communication"],
+      6: ["Nurturing", "Responsibility", "Compassion", "Service", "Healing", "Family"],
+      7: ["Spirituality", "Introspection", "Analysis", "Wisdom", "Mysticism", "Research"],
+      8: ["Authority", "Material Success", "Power", "Business", "Achievement", "Organization"],
+      9: ["Humanitarian", "Compassion", "Universal Love", "Completion", "Service", "Wisdom"]
+    };
+    return qualitiesMap[number] || ["Universal Energy"];
+  };
+
+  const getNumberMeaning = (number: number, type: string): { title: string; description: string } => {
+    const meanings: { [key: string]: { [key: number]: { title: string; description: string } } } = {
+      lifePath: {
+        1: { title: "The Leader: Independent, ambitious, pioneering, confident.", description: "Your Life Path number represents the core of who you are, including your traits, challenges, and opportunities. It's calculated from your birth date and is one of the most important numbers in your numerology chart." },
+        2: { title: "The Diplomat: Cooperative, sensitive, peaceful, supportive.", description: "Your life path centers around cooperation, diplomacy, and sensitivity to others. You're naturally gifted at bringing people together and creating harmony." },
+        3: { title: "The Communicator: Creative, expressive, optimistic, inspiring.", description: "Self-expression, creativity, and joy are the hallmarks of your journey. You're meant to inspire others through your natural creative abilities." },
+        4: { title: "The Builder: Practical, trustworthy, disciplined, stable, hardworking.", description: "Your life purpose is aligned with building solid foundations. You excel at creating order, stability, and lasting structures in all areas of life." }
+      },
+      destiny: {
+        1: { title: "Pioneer and innovator destiny", description: "Your destiny involves breaking new ground and leading others toward new possibilities." },
+        2: { title: "Diplomat and peacemaker destiny", description: "Your destiny centers around bringing harmony and cooperation to all your endeavors." },
+        3: { title: "Creative self-expression destiny, communication and artistic pursuits.", description: "Your Destiny number reveals the goals you're meant to achieve in this lifetime. Derived from your full birth name, it represents your life's work and the contribution you're meant to make to the world." },
+        4: { title: "Builder and organizer destiny", description: "Building, organization, and creating order are your destined work. You're meant to create lasting foundations." }
+      },
+      soulUrge: {
+        7: { title: "Mystical and transformative soul desires", description: "Your Soul Urge number reveals your inner desires, motivations, and what your heart truly longs for. It represents your emotional self and inner cravings. This number is calculated from the vowels in your name, representing your inner truth and what drives you at a soul level." }
+      },
+      personality: {
+        8: { title: "Authoritative and capable outer presentation", description: "How others perceive you based on your outward personality and first impressions." }
+      }
+    };
+    
+    return meanings[type]?.[number] || { 
+      title: "Unique spiritual path", 
+      description: "This number carries special significance in your spiritual journey." 
     };
   };
 
@@ -481,93 +534,262 @@ export default function NumerologyPage() {
               </CardContent>
             </Card>
 
-            {/* Comprehensive Numerology Analysis */}
+            {/* Tab-Based Numerology Profile */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-indigo-600" />
-                  Complete Numerological Profile
+                  Your Numerology Profile
                 </CardTitle>
-                <CardDescription>Detailed breakdown of all your core numbers and their meanings</CardDescription>
+                <CardDescription>Based on your name and birth date</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-8">
-                  {/* Core Numbers Grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
-                      <div className="text-3xl font-bold text-purple-800">{numerology.lifePathNumber}</div>
-                      <div className="text-sm text-gray-600 mt-1">Life Path Number</div>
-                      <div className="text-xs text-purple-600 mt-2">{getLifePathMeaning(numerology.lifePathNumber)}</div>
-                    </div>
-                    
-                    <div className="bg-indigo-50 rounded-lg p-4 text-center border border-indigo-100">
-                      <div className="text-3xl font-bold text-indigo-800">{numerology.destinyNumber}</div>
-                      <div className="text-sm text-gray-600 mt-1">Destiny Number</div>
-                      <div className="text-xs text-indigo-600 mt-2">{getDestinyMeaning(numerology.destinyNumber)}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
-                      <div className="text-3xl font-bold text-blue-800">{numerology.soulUrgeNumber}</div>
-                      <div className="text-sm text-gray-600 mt-1">Soul Urge Number</div>
-                      <div className="text-xs text-blue-600 mt-2">Your inner desires and motivations</div>
-                    </div>
-                    
-                    <div className="bg-sky-50 rounded-lg p-4 text-center border border-sky-100">
-                      <div className="text-3xl font-bold text-sky-800">{numerology.personalityNumber}</div>
-                      <div className="text-sm text-gray-600 mt-1">Personality Number</div>
-                      <div className="text-xs text-sky-600 mt-2">How others perceive you</div>
-                    </div>
-                  </div>
+                <Tabs defaultValue="lifePath" className="w-full">
+                  <TabsList className="grid w-full grid-cols-5">
+                    <TabsTrigger value="lifePath">Life Path</TabsTrigger>
+                    <TabsTrigger value="destiny">Destiny</TabsTrigger>
+                    <TabsTrigger value="soulUrge">Soul Urge</TabsTrigger>
+                    <TabsTrigger value="personality">Personality</TabsTrigger>
+                    <TabsTrigger value="soulChakra">Soul Chakra</TabsTrigger>
+                  </TabsList>
 
-                  {/* Soul Chakra Number */}
-                  <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 border border-orange-100">
+                  {/* Life Path Tab */}
+                  <TabsContent value="lifePath" className="space-y-6 mt-6">
                     <div className="text-center">
-                      <div className="text-4xl font-bold text-orange-800 mb-2">{numerology.soulChakraNumber}</div>
-                      <div className="text-lg font-semibold text-orange-700 mb-2">Soul Chakra Number</div>
-                      <div className="text-sm text-orange-600">Your greatest spiritual challenge and growth area</div>
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.lifePathNumber).toLowerCase() === 'green' ? '#22c55e' : '#6366f1' }}>
+                        {numerology.lifePathNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Life Path Number: {numerology.lifePathNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.lifePathNumber) === 'Green' && 
+                          "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').description}</p>
+                    </div>
+
+                    {/* Vibration Qualities */}
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.lifePathNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Advanced Interpretation */}
+                    <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                      <h5 className="font-medium text-purple-800 mb-2">Advanced Life Path Interpretation</h5>
+                      <p className="text-sm text-purple-700 mb-2">
+                        As a Life Path {numerology.lifePathNumber}, your life purpose is aligned with building solid foundations.
+                      </p>
+                      <p className="text-sm text-purple-700">
+                        The color vibration of {getNumberColorAssociation(numerology.lifePathNumber)} supports your life path by enhancing your natural balance and growth.
+                      </p>
+                    </div>
+                  </TabsContent>
+
+                  {/* Destiny Tab */}
+                  <TabsContent value="destiny" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.destinyNumber).toLowerCase() === 'yellow' ? '#eab308' : '#3b82f6' }}>
+                        {numerology.destinyNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Destiny Number: {numerology.destinyNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.destinyNumber) === 'Yellow' && 
+                          "Bright and uplifting, yellow represents optimism, mental clarity, and self-expression. It encourages intellectual growth, communication skills, and the ability to share ideas with confidence."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.destinyNumber, 'destiny').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.destinyNumber, 'destiny').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.destinyNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Soul Urge Tab */}
+                  <TabsContent value="soulUrge" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.soulUrgeNumber).toLowerCase() === 'violet' ? '#8b5cf6' : '#6366f1' }}>
+                        {numerology.soulUrgeNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Soul Urge Number: {numerology.soulUrgeNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.soulUrgeNumber) === 'Violet' && 
+                          "Mystical and transformative, violet represents spiritual wisdom, introspection, and higher consciousness. It encourages deep analysis, inner knowing, and connection to universal truths."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Soul Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.soulUrgeNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-violet-100 text-violet-800 border-violet-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Personality Tab */}
+                  <TabsContent value="personality" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.personalityNumber).toLowerCase() === 'pink' ? '#ec4899' : '#6366f1' }}>
+                        {numerology.personalityNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Personality Number: {numerology.personalityNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.personalityNumber, 'personality').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.personalityNumber, 'personality').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.personalityNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-pink-100 text-pink-800 border-pink-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Soul Chakra Tab */}
+                  <TabsContent value="soulChakra" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-green-500">
+                        {numerology.soulChakraNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Soul Chakra Number: {numerology.soulChakraNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulChakraNumber)}</span></p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">Your spiritual energy center</h4>
+                      <p className="text-sm text-gray-700">Your Soul Chakra Number reveals your spiritual energy center and the area where you'll encounter maximum challenges for growth.</p>
+                    </div>
+
+                    {(() => {
+                      const chakraInfo = getChakraPlanetInfo(numerology.soulChakraNumber);
+                      return (
+                        <div className="space-y-4">
+                          <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                            <h5 className="font-medium text-green-800 mb-2">Chakra Connection</h5>
+                            <p className="text-sm text-green-700 mb-2">{chakraInfo.chakra} • {chakraInfo.planet}</p>
+                            <p className="text-sm text-green-700">{chakraInfo.description}</p>
+                          </div>
+
+                          <div>
+                            <h4 className="font-semibold text-purple-800 mb-3">Healing Remedies</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {chakraInfo.remedies.map((remedy, index) => (
+                                <div key={index} className="bg-green-100 rounded px-3 py-2">
+                                  <span className="text-xs text-green-700">{remedy}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* Comprehensive Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Comprehensive Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Color Vibrations */}
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-3">Color Vibrations</h4>
+                    <div className="flex flex-wrap gap-3">
+                      <Badge className="bg-green-100 text-green-800">Life Path: {getNumberColorAssociation(numerology.lifePathNumber)}</Badge>
+                      <Badge className="bg-yellow-100 text-yellow-800">Destiny: {getNumberColorAssociation(numerology.destinyNumber)}</Badge>
+                      <Badge className="bg-violet-100 text-violet-800">Soul Urge: {getNumberColorAssociation(numerology.soulUrgeNumber)}</Badge>
+                      <Badge className="bg-pink-100 text-pink-800">Personality: {getNumberColorAssociation(numerology.personalityNumber)}</Badge>
+                      <Badge className="bg-green-100 text-green-800">Soul Chakra: {getNumberColorAssociation(numerology.soulChakraNumber)}</Badge>
                     </div>
                   </div>
 
-                  {/* Enhanced Spiritual Insights */}
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-lg text-gray-800">Spiritual Insights & Guidance</h4>
-                    
-                    {numerology.strengths && numerology.strengths.length > 0 && (
-                      <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                        <h5 className="font-medium text-green-800 mb-2">Your Spiritual Strengths</h5>
-                        <ul className="space-y-1">
-                          {numerology.strengths.map((strength, index) => (
-                            <li key={index} className="text-sm text-green-700 flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              {strength}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                  {/* Key Strengths and Challenges */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Key Strengths</h4>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Natural {getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities</li>
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Your {getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills</li>
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>The {getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities</li>
+                      </ul>
+                    </div>
 
-                    {numerology.challenges && numerology.challenges.length > 0 && (
-                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
-                        <h5 className="font-medium text-amber-800 mb-2">Areas for Growth</h5>
-                        <ul className="space-y-1">
-                          {numerology.challenges.map((challenge, index) => (
-                            <li key={index} className="text-sm text-amber-700 flex items-start">
-                              <span className="text-amber-500 mr-2">•</span>
-                              {challenge}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Potential Challenges</h4>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
+                      </ul>
+                    </div>
+                  </div>
 
-                    {numerology.guidance && (
-                      <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-                        <h5 className="font-medium text-purple-800 mb-2">Spiritual Guidance</h5>
-                        <p className="text-sm text-purple-700">{numerology.guidance}</p>
-                      </div>
-                    )}
+                  {/* Spiritual Guidance */}
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance</h4>
+                    <p className="text-sm text-purple-700">
+                      Focus on harmonizing the {getNumberColorAssociation(numerology.lifePathNumber)} and {getNumberColorAssociation(numerology.destinyNumber)} energies in your numerological blueprint for optimal growth and spiritual development.
+                    </p>
+                  </div>
+
+                  {/* Complete Interpretation */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-3">Complete Interpretation</h4>
+                    <p className="text-sm text-gray-700">{numerology.interpretation}</p>
                   </div>
                 </div>
               </CardContent>
