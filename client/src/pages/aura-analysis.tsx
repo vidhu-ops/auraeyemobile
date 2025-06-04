@@ -13,7 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download } from "lucide-react";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function AuraAnalysis() {
   const { user } = useAuth();
@@ -36,6 +38,77 @@ export default function AuraAnalysis() {
   
   const handlePremiumUpgrade = () => {
     showPremiumModal("aura");
+  };
+
+  // Function to download aura reading as PDF
+  const downloadAuraPDF = async () => {
+    if (!result) return;
+
+    try {
+      // Find the aura reading section to capture
+      const auraSection = document.getElementById('aura-reading-section');
+      if (!auraSection) {
+        toast({
+          title: "Error",
+          description: "Unable to find aura reading section",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create canvas from the section
+      const canvas = await html2canvas(auraSection, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        width: auraSection.scrollWidth,
+        height: auraSection.scrollHeight,
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Calculate dimensions to fit the page
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 295; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      // Add the image to PDF
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add new pages if needed
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Download the PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      pdf.save(`aura-reading-${timestamp}.pdf`);
+
+      toast({
+        title: "Download Complete",
+        description: "Your aura reading has been downloaded as PDF",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Download Failed",
+        description: "Unable to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Helper functions for Energy Reading tab
@@ -1196,6 +1269,15 @@ export default function AuraAnalysis() {
                           </svg>
                           Share
                         </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-sm"
+                          onClick={downloadAuraPDF}
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download PDF
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -1228,7 +1310,7 @@ export default function AuraAnalysis() {
                     </Card>
                   ) : result ? (
                     <Card>
-                      <CardContent className="p-7">
+                      <CardContent className="p-7" id="aura-reading-section">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
                           <TabsList className="grid grid-rows-4 gap-3 w-full h-30 p-2 mb-11">
                             <div className="grid grid-cols-2 gap-20">
