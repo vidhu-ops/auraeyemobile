@@ -240,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Try to analyze the aura using OpenAI, but use fallback if OpenAI fails
       let auraAnalysis;
       try {
-        auraAnalysis = await analyzeAuraImage(imageData, customPrompt);
+        auraAnalysis = await analyzeAuraImage(imageData, customPrompt ?? undefined);
       } catch (aiError) {
         console.error("Error in OpenAI analysis:", aiError);
         // Already using fallback inside analyzeAuraImage, this is just a safeguard
