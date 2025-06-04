@@ -221,22 +221,22 @@ export default function AuraAnalysis() {
     return colorCodes[colorName] || '#808080';
   };
 
-  const getColorMeaning = (color: string): string => {
+  const getColorMeaningForEnergyTab = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Represents passion, strength, courage, and physical vitality. Indicates a person with strong will and determination.',
-      'Orange': 'Signifies creativity, enthusiasm, and emotional balance. Shows a person who is optimistic and socially confident.',
-      'Yellow': 'Symbolizes intelligence, mental clarity, and spiritual awakening. Indicates analytical thinking and wisdom.',
-      'Green': 'Represents healing, growth, and harmony with nature. Shows compassion and natural healing abilities.',
-      'Blue': 'Signifies truth, communication, and spiritual guidance. Indicates a calm, peaceful, and intuitive nature.',
-      'Indigo': 'Represents intuition, psychic abilities, and deep spiritual insight. Shows connection to higher consciousness.',
-      'Violet': 'Symbolizes spiritual mastery, transformation, and connection to divine wisdom. Indicates high spiritual development.',
-      'Purple': 'Represents nobility, spiritual power, and mystical abilities. Shows natural leadership in spiritual matters.',
-      'Pink': 'Signifies unconditional love, compassion, and nurturing energy. Indicates a heart-centered approach to life.',
-      'White': 'Represents purity, spiritual protection, and connection to higher realms. Shows spiritual clarity and truth.',
-      'Gold': 'Symbolizes divine wisdom, spiritual achievement, and enlightenment. Indicates mastery and spiritual authority.',
-      'Silver': 'Represents intuition, feminine energy, and psychic abilities. Shows connection to lunar and emotional cycles.'
+      'Red': 'Passion, strength, and leadership energy',
+      'Orange': 'Creativity, enthusiasm, and emotional warmth',
+      'Yellow': 'Mental clarity, optimism, and intellectual power',
+      'Green': 'Healing, balance, and natural harmony',
+      'Blue': 'Communication, truth, and spiritual peace',
+      'Indigo': 'Intuition, wisdom, and psychic abilities',
+      'Violet': 'Spiritual connection and higher consciousness',
+      'Purple': 'Mysticism, transformation, and royal energy',
+      'Pink': 'Love, compassion, and emotional healing',
+      'White': 'Purity, protection, and divine connection',
+      'Gold': 'Divine wisdom and spiritual achievement',
+      'Silver': 'Intuition, reflection, and lunar energy'
     };
-    return meanings[color] || 'This color carries unique spiritual vibrations specific to your energy field.';
+    return meanings[color] || 'Unique spiritual energy signature';
   };
 
   const getColorFrequency = (color: string): string => {
@@ -1240,7 +1240,7 @@ export default function AuraAnalysis() {
                                       <div className={`w-6 h-6 rounded-full ${getColorClass(result.dominantColor)}`}></div>
                                       <div>
                                         <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
-                                        <div className="text-xs text-gray-600">{getColorMeaning(result.dominantColor)}</div>
+                                        <div className="text-xs text-gray-600">{getColorMeaningForEnergyTab(result.dominantColor)}</div>
                                       </div>
                                     </div>
                                     
@@ -1248,7 +1248,7 @@ export default function AuraAnalysis() {
                                       <div className={`w-6 h-6 rounded-full ${getColorClass(result.secondaryColor)}`}></div>
                                       <div>
                                         <div className="font-medium text-sm">{result.secondaryColor} - Supporting</div>
-                                        <div className="text-xs text-gray-600">{getColorMeaning(result.secondaryColor)}</div>
+                                        <div className="text-xs text-gray-600">{getColorMeaningForEnergyTab(result.secondaryColor)}</div>
                                       </div>
                                     </div>
                                   </div>
