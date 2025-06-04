@@ -22,7 +22,8 @@ interface JournalEntry {
 }
 
 export default function JournalPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   const { toast } = useToast();
   const [isAddingEntry, setIsAddingEntry] = useState(false);
   const [energyLevel, setEnergyLevel] = useState([7]);
@@ -40,13 +41,20 @@ export default function JournalPage() {
   // Create journal entry mutation
   const createEntryMutation = useMutation({
     mutationFn: async (entryData: any) => {
-      return await apiRequest("/api/journal", {
+      const response = await fetch("/api/journal", {
         method: "POST",
-        body: JSON.stringify(entryData),
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(entryData),
+        credentials: "include",
       });
+      
+      if (!response.ok) {
+        throw new Error("Failed to save journal entry");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
