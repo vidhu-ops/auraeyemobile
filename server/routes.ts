@@ -848,12 +848,26 @@ function reduceNumber(num: number): number {
         return sum;
       };
 
+      // Calculate Dominant Soul Chakra Number - sum of all birth date digits
+      const calculateDominantSoulChakra = (date: string): number => {
+        // Remove hyphens and get all digits from the date (YYYY-MM-DD)
+        const digits = date.replace(/-/g, '').split('').map(Number);
+        let sum = digits.reduce((a, b) => a + b, 0);
+        
+        // Keep reducing until we get a single digit (1-9)
+        while (sum > 9) {
+          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        return sum;
+      };
+
       // Calculate all numbers
       const lifePathNumber = calculateLifePath(birthDate);
       const destinyNumber = calculateDestiny(name);
       const soulUrgeNumber = calculateSoulUrge(name);
       const personalityNumber = calculatePersonality(birthDate);
-      const soulChakraNumber = calculateSoulChakra(birthDate);
+      const soulChakraNumber = calculateDominantSoulChakra(birthDate);
 
       // Map a number to its color name
       const getColorName = (num: number): string => {

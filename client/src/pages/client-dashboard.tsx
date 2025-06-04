@@ -296,7 +296,7 @@ export default function ClientDashboard() {
                     </div>
                   ) : numerology ? (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
                           <div className="text-3xl font-bold text-purple-600 mb-1">
                             {numerology.lifePathNumber}
@@ -312,22 +312,31 @@ export default function ClientDashboard() {
                           <div className="text-sm font-medium text-blue-800">Personality Number</div>
                           <div className="text-xs text-blue-600 mt-1">How others see you</div>
                         </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
+
                         <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center">
                           <div className="text-2xl font-bold text-green-600 mb-1">
                             {numerology.destinyNumber}
                           </div>
                           <div className="text-sm font-medium text-green-800">Destiny</div>
                         </div>
-                        
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
                           <div className="text-2xl font-bold text-orange-600 mb-1">
                             {numerology.soulUrgeNumber}
                           </div>
                           <div className="text-sm font-medium text-orange-800">Soul Urge</div>
                         </div>
+                        
+                        <div className="bg-gradient-to-br from-violet-50 to-violet-100 rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-violet-600 mb-1">
+                            {numerology.soulChakraNumber}
+                          </div>
+                          <div className="text-sm font-medium text-violet-800">Dominant Soul Chakra</div>
+                          <div className="text-xs text-violet-600 mt-1">Sum of all birth date digits</div>
+                        </div>
+                      </div>
                       </div>
                       
                       {numerology.colorAssociations && (
@@ -368,7 +377,7 @@ export default function ClientDashboard() {
                             Discover Your True Self
                           </p>
                           <Button asChild size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            <Link href="/services#numerology">
+                            <Link href="/numerology">
                               For detailed analysis click here
                               <ArrowRight className="ml-1 h-3 w-3" />
                             </Link>
