@@ -40,221 +40,69 @@ export default function AuraAnalysis() {
     showPremiumModal("aura");
   };
 
-  // Function to download aura reading as PDF (all tabs)
+  // Function to download aura reading as PDF
   const downloadAuraPDF = async () => {
     if (!result) return;
 
     try {
-      toast({
-        title: "Generating PDF",
-        description: "Capturing all analysis tabs...",
+      // Find the aura reading section to capture
+      const auraSection = document.getElementById('aura-reading-section');
+      if (!auraSection) {
+        toast({
+          title: "Error",
+          description: "Unable to find aura reading section",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create canvas from the section
+      const canvas = await html2canvas(auraSection, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        width: auraSection.scrollWidth,
+        height: auraSection.scrollHeight,
       });
 
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
 
-      const tabs = ['analysis', 'energy-reading', 'chakra-insights', 'numerology'];
-      const currentTab = activeTab;
-      let pageCount = 0;
+      // Calculate dimensions to fit the page
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 295; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
 
-      // Add title page
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Complete Aura Reading Report', 105, 30, { align: 'center' });
-      
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      const reportDate = new Date().toLocaleDateString();
-      pdf.text(`Generated on: ${reportDate}`, 105, 45, { align: 'center' });
-      
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`Dominant Aura: ${result.dominantColor}`, 105, 60, { align: 'center' });
-      pdf.text(`Secondary Aura: ${result.secondaryColor}`, 105, 75, { align: 'center' });
+      let position = 0;
 
-      for (let i = 0; i < tabs.length; i++) {
-        const tab = tabs[i];
-        
-        // Switch to the tab and wait for rendering
-        setActiveTab(tab);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      // Add the image to PDF
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
 
-        // Find the specific tab content panel
-        const tabPanel = document.querySelector(`[data-value="${tab}"][data-state="active"]`);
-        if (!tabPanel) {
-          console.warn(`Tab panel not found for ${tab}`);
-          continue;
-        }
-
-        // Add new page for each tab
-        if (i > 0) pdf.addPage();
-        
-        // Add tab title
-        pdf.setFontSize(18);
-        pdf.setFont('helvetica', 'bold');
-        const tabTitles: Record<string, string> = {
-          'analysis': 'Aura Analysis & Insights',
-          'energy-reading': 'Energy Reading & Patterns', 
-          'chakra-insights': 'Chakra Alignment & Balance',
-          'numerology': 'Numerology & Life Path'
-        };
-        pdf.text(tabTitles[tab] || tab, 10, 20);
-
-        // Capture the tab content with higher quality
-        const canvas = await html2canvas(tabPanel as HTMLElement, {
-          scale: 1.5,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          width: (tabPanel as HTMLElement).scrollWidth,
-          height: (tabPanel as HTMLElement).scrollHeight,
-          allowTaint: true,
-          foreignObjectRendering: true,
-        });
-
-        // Calculate dimensions
-        const imgWidth = 190;
-        const pageHeight = 250;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Add the captured content
-        const imgData = canvas.toDataURL('image/png', 0.95);
-        let yOffset = 30;
-        let remainingHeight = imgHeight;
-
-        // Add content, splitting across pages if needed
-        while (remainingHeight > 0) {
-          const heightToAdd = Math.min(remainingHeight, pageHeight - yOffset);
-          const sourceY = imgHeight - remainingHeight;
-          
-          pdf.addImage(
-            imgData, 
-            'PNG', 
-            10, 
-            yOffset, 
-            imgWidth, 
-            heightToAdd,
-            undefined,
-            'FAST',
-            0,
-            -sourceY
-          );
-          
-          remainingHeight -= heightToAdd;
-          
-          if (remainingHeight > 0) {
-            pdf.addPage();
-            yOffset = 10;
-          }
-        }
+      // Add new pages if needed
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
       }
-
-      // Restore original tab
-      setActiveTab(currentTab);
 
       // Download the PDF
       const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`complete-aura-reading-${timestamp}.pdf`);
+      pdf.save(`aura-reading-${timestamp}.pdf`);
 
       toast({
         title: "Download Complete",
-        description: "Your complete aura reading has been downloaded as PDF",
+        description: "Your aura reading has been downloaded as PDF",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      // Restore original tab on error
-      setActiveTab(currentTab);
-      toast({
-        title: "Download Failed",
-        description: "Unable to generate PDF. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Function to download numerology reading as PDF
-  const downloadNumerologyPDF = async () => {
-    if (!numerologyResult) return;
-
-    try {
-      toast({
-        title: "Generating PDF",
-        description: "Creating numerology report...",
-      });
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      // Add title page
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Numerology Reading Report', 105, 30, { align: 'center' });
-      
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      const reportDate = new Date().toLocaleDateString();
-      pdf.text(`Generated on: ${reportDate}`, 105, 45, { align: 'center' });
-      
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`Name: ${numerologyName}`, 105, 60, { align: 'center' });
-      pdf.text(`Birth Date: ${numerologyBirthDate}`, 105, 75, { align: 'center' });
-
-      // Add numerology content
-      pdf.addPage();
-      
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Your Numerology Profile', 10, 20);
-
-      let yPosition = 35;
-      
-      // Life Path Number
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 10, yPosition);
-      yPosition += 10;
-      
-      // Destiny Number
-      pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 10, yPosition);
-      yPosition += 10;
-      
-      // Soul Urge Number
-      pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 10, yPosition);
-      yPosition += 10;
-      
-      // Personality Number
-      pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 10, yPosition);
-      yPosition += 20;
-
-      // Interpretation
-      pdf.setFontSize(16);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Detailed Interpretation', 10, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      
-      // Split interpretation into lines that fit the page
-      const splitText = pdf.splitTextToSize(numerologyResult.interpretation, 190);
-      pdf.text(splitText, 10, yPosition);
-
-      // Download the PDF
-      const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`numerology-reading-${timestamp}.pdf`);
-
-      toast({
-        title: "Download Complete",
-        description: "Your numerology reading has been downloaded as PDF",
-      });
-    } catch (error) {
-      console.error('Error generating numerology PDF:', error);
       toast({
         title: "Download Failed",
         description: "Unable to generate PDF. Please try again.",
@@ -1421,7 +1269,15 @@ export default function AuraAnalysis() {
                           </svg>
                           Share
                         </Button>
-
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-sm"
+                          onClick={downloadAuraPDF}
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download PDF
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -2191,7 +2047,6 @@ export default function AuraAnalysis() {
                                       >
                                         New Analysis
                                       </Button>
-
                                       <Button 
                                         variant="default" 
                                         size="sm"
