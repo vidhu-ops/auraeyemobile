@@ -278,6 +278,99 @@ export default function ClientDashboard() {
           </div>
           
           <div>
+            {/* Numerology Card */}
+            {user?.birthDate && (
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-purple-600">🔢</span>
+                    Your Numerology Profile
+                  </CardTitle>
+                  <CardDescription>Based on your birth date and name</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingNumerology ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <span className="ml-2">Calculating your numbers...</span>
+                    </div>
+                  ) : numerology ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
+                          <div className="text-3xl font-bold text-purple-600 mb-1">
+                            {numerology.lifePathNumber}
+                          </div>
+                          <div className="text-sm font-medium text-purple-800">Life Path Number</div>
+                          <div className="text-xs text-purple-600 mt-1">Your life's journey</div>
+                        </div>
+                        
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center">
+                          <div className="text-3xl font-bold text-blue-600 mb-1">
+                            {numerology.personalityNumber}
+                          </div>
+                          <div className="text-sm font-medium text-blue-800">Personality Number</div>
+                          <div className="text-xs text-blue-600 mt-1">How others see you</div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-green-600 mb-1">
+                            {numerology.destinyNumber}
+                          </div>
+                          <div className="text-sm font-medium text-green-800">Destiny</div>
+                        </div>
+                        
+                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-orange-600 mb-1">
+                            {numerology.soulUrgeNumber}
+                          </div>
+                          <div className="text-sm font-medium text-orange-800">Soul Urge</div>
+                        </div>
+                      </div>
+                      
+                      {numerology.colorAssociations && (
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <h4 className="font-medium mb-2">Your Energy Colors</h4>
+                          <div className="flex gap-2 flex-wrap">
+                            {numerology.colorAssociations.lifePathColor && (
+                              <div className="flex items-center gap-1 text-xs">
+                                <div 
+                                  className="w-3 h-3 rounded-full" 
+                                  style={{ backgroundColor: numerology.colorAssociations.lifePathColor.toLowerCase() }}
+                                ></div>
+                                <span>{numerology.colorAssociations.lifePathColor} (Life Path)</span>
+                              </div>
+                            )}
+                            {numerology.colorAssociations.personalityColor && (
+                              <div className="flex items-center gap-1 text-xs">
+                                <div 
+                                  className="w-3 h-3 rounded-full" 
+                                  style={{ backgroundColor: numerology.colorAssociations.personalityColor.toLowerCase() }}
+                                ></div>
+                                <span>{numerology.colorAssociations.personalityColor} (Personality)</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href="/numerology">
+                          View Full Numerology Reading <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  ) : numerologyError ? (
+                    <div className="text-center py-8 text-gray-500">
+                      Unable to calculate numerology. Please check your birth date.
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            )}
+            
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Spiritual Stats</CardTitle>
