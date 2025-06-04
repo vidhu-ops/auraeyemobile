@@ -17,76 +17,36 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
   const seed = parseInt(hash.substring(0, 8), 16);
   
-  // Expanded aura colors with more options
+  // Deterministic aura colors
   const auraColors = [
     "Red", "Blue", "Green", "Yellow", "Purple", "Orange", 
-    "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise",
-    "Magenta", "Coral", "Lavender", "Emerald", "Crimson", "Azure"
+    "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"
   ];
   
-  // Expanded secondary colors
+  // Deterministic secondary colors
   const secondaryColors = [
     "White", "Silver", "Gold", "Pink", "Lavender", "Mint",
-    "Coral", "Peach", "Sky Blue", "Rose", "Amber", "Sage",
-    "Pearl", "Ivory", "Champagne", "Lilac", "Seafoam", "Blush"
+    "Coral", "Peach", "Sky Blue", "Rose", "Amber", "Sage"
   ];
   
-  // Additional supporting colors for rich spectrum (minimum 4 colors)
-  const supportingColors = [
-    "Cyan", "Maroon", "Teal", "Plum", "Bronze", "Copper",
-    "Jade", "Ruby", "Sapphire", "Opal", "Moonstone", "Topaz"
-  ];
-  
-  // Enhanced personality traits
+  // Deterministic personality traits
   const personalityTraits = [
-    ["Creative", "Artistic", "Passionate", "Expressive"],
-    ["Calm", "Peaceful", "Balanced", "Harmonious"],
-    ["Energetic", "Dynamic", "Inspiring", "Motivational"],
-    ["Intuitive", "Mystical", "Spiritual", "Psychic"],
-    ["Healing", "Nurturing", "Compassionate", "Empathetic"],
-    ["Strong", "Confident", "Protective", "Grounded"],
-    ["Wise", "Philosophical", "Understanding", "Patient"],
-    ["Joyful", "Optimistic", "Uplifting", "Cheerful"]
+    ["Creative", "Artistic", "Passionate"],
+    ["Calm", "Peaceful", "Balanced"],
+    ["Energetic", "Dynamic", "Inspiring"],
+    ["Intuitive", "Mystical", "Spiritual"],
+    ["Healing", "Nurturing", "Compassionate"],
+    ["Strong", "Confident", "Protective"]
   ];
   
   const dominantIndex = seed % auraColors.length;
   const secondaryIndex = (seed >> 4) % secondaryColors.length;
-  const tertiaryIndex = (seed >> 8) % supportingColors.length;
-  const quaternaryIndex = (seed >> 12) % auraColors.length;
-  const traitsIndex = (seed >> 16) % personalityTraits.length;
+  const traitsIndex = (seed >> 8) % personalityTraits.length;
   const energyLevel = 3 + (seed % 8); // Energy level between 3-10
   
   const selectedDominant = auraColors[dominantIndex];
   const selectedSecondary = secondaryColors[secondaryIndex];
-  const selectedTertiary = supportingColors[tertiaryIndex];
-  const selectedQuaternary = auraColors[quaternaryIndex];
   const selectedTraits = personalityTraits[traitsIndex];
-  
-  // Create comprehensive aura color spectrum (minimum 4 colors)
-  const auraColorSpectrum = [selectedDominant, selectedSecondary, selectedTertiary, selectedQuaternary];
-  
-  // Detailed color meanings
-  const colorMeanings: Record<string, string> = {
-    'Red': 'Passion, vitality, and grounding energy that drives action and determination',
-    'Orange': 'Creativity, enthusiasm, and social connection that inspires joy and expression',
-    'Yellow': 'Intellectual clarity, optimism, and personal power that illuminates wisdom',
-    'Green': 'Healing, growth, and heart-centered love that nurtures balance and harmony',
-    'Blue': 'Communication, truth, and peaceful expression that facilitates understanding',
-    'Indigo': 'Intuition, psychic ability, and deep knowing that accesses higher wisdom',
-    'Violet': 'Spiritual transformation, mystical insight, and divine connection',
-    'Purple': 'Royal wisdom, spiritual leadership, and elevated consciousness',
-    'Pink': 'Unconditional love, compassion, and gentle healing energy',
-    'Gold': 'Divine wisdom, enlightenment, and spiritual mastery',
-    'Silver': 'Intuitive reflection, emotional balance, and lunar feminine energy',
-    'White': 'Purity, divine protection, and spiritual clarity',
-    'Turquoise': 'Emotional healing, clear communication, and spiritual protection',
-    'Magenta': 'Spiritual love, emotional balance, and creative inspiration',
-    'Coral': 'Gentle strength, emotional warmth, and nurturing support',
-    'Lavender': 'Spiritual peace, gentle wisdom, and ethereal connection',
-    'Emerald': 'Abundant healing, prosperity consciousness, and heart wisdom',
-    'Crimson': 'Deep passion, life force energy, and transformative power',
-    'Azure': 'Celestial communication, divine truth, and heavenly peace'
-  };
   
   // Generate deterministic chakra activity based on seed
   const baseChakraValue = 4 + (seed % 4); // Base value between 4-7
@@ -100,21 +60,13 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     crown: baseChakraValue + ((seed >> 30) % 3)
   };
 
-  // Create detailed color analysis
-  const detailedColorAnalysis = auraColorSpectrum.map((color, index) => {
-    const position = index === 0 ? 'Dominant' : index === 1 ? 'Secondary' : index === 2 ? 'Supporting' : 'Harmonizing';
-    const meaning = colorMeanings[color] || 'unique spiritual energy that enhances your personal journey';
-    return `${position} ${color}: ${meaning}`;
-  }).join('\n\n');
-
   return {
     dominantColor: selectedDominant,
     secondaryColor: selectedSecondary,
-    auraColorSpectrum: auraColorSpectrum,
     personalityTraits: selectedTraits,
     energyLevel: energyLevel,
-    spiritualGuidance: `Your ${selectedDominant.toLowerCase()} aura with ${selectedSecondary.toLowerCase()} highlights suggests a unique spiritual path. This combination indicates ${colorMeanings[selectedDominant]?.split(' ').slice(0, 4).join(' ') || 'powerful energy'} flowing through your being, supporting your journey of ${colorMeanings[selectedSecondary]?.split(' ').slice(0, 4).join(' ') || 'spiritual growth'}.`,
-    detailedAnalysis: `Your aura displays a magnificent ${selectedDominant.toLowerCase()} dominant energy complemented by ${selectedSecondary.toLowerCase()} undertones, with supporting energies of ${selectedTertiary.toLowerCase()} and ${selectedQuaternary.toLowerCase()}. This rich color spectrum reflects your multifaceted spiritual nature.\n\nColor Meanings in Your Aura:\n\n${detailedColorAnalysis}\n\nThis unique combination suggests you're in a dynamic phase of spiritual evolution where multiple energy centers are actively engaged in your personal transformation and growth. Your aura indicates a balanced integration of ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities.`,
+    spiritualGuidance: `Your ${selectedDominant.toLowerCase()} aura suggests ${selectedTraits.join(', ').toLowerCase()} energy patterns.`,
+    detailedAnalysis: `The dominant ${selectedDominant.toLowerCase()} energy indicates ${selectedTraits[0].toLowerCase()} tendencies, while the secondary ${selectedSecondary.toLowerCase()} tones suggest ${selectedTraits[1].toLowerCase()} qualities. This combination creates a balanced energy signature.`,
     chakraActivity: chakraActivity
   };
 }
