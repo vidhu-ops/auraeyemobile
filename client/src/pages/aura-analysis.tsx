@@ -40,69 +40,100 @@ export default function AuraAnalysis() {
     showPremiumModal("aura");
   };
 
-  // Function to download aura reading as PDF
+  // Function to download aura reading as PDF (all tabs)
   const downloadAuraPDF = async () => {
     if (!result) return;
 
     try {
-      // Find the aura reading section to capture
-      const auraSection = document.getElementById('aura-reading-section');
-      if (!auraSection) {
-        toast({
-          title: "Error",
-          description: "Unable to find aura reading section",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create canvas from the section
-      const canvas = await html2canvas(auraSection, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        width: auraSection.scrollWidth,
-        height: auraSection.scrollHeight,
+      toast({
+        title: "Generating PDF",
+        description: "Capturing all analysis tabs...",
       });
 
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
 
-      // Calculate dimensions to fit the page
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 295; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      const tabs = ['analysis', 'energy-reading', 'chakra-insights', 'numerology'];
+      const currentTab = activeTab;
+      let isFirstPage = true;
 
-      let position = 0;
+      for (const tab of tabs) {
+        // Switch to the tab
+        setActiveTab(tab);
+        
+        // Wait for tab content to render
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Add the image to PDF
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+        // Find the aura reading section to capture
+        const auraSection = document.getElementById('aura-reading-section');
+        if (!auraSection) continue;
 
-      // Add new pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        // Create canvas from the section
+        const canvas = await html2canvas(auraSection, {
+          scale: 1.5,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          width: auraSection.scrollWidth,
+          height: auraSection.scrollHeight,
+        });
+
+        // Calculate dimensions to fit the page
+        const imgWidth = 190; // A4 width in mm with margins
+        const pageHeight = 270; // A4 height in mm with margins
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+        
+        // Add tab title
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        const tabTitles = {
+          'analysis': 'Aura Analysis',
+          'energy-reading': 'Energy Reading',
+          'chakra-insights': 'Chakra Insights',
+          'numerology': 'Numerology'
+        };
+        pdf.text(tabTitles[tab] || tab, 10, 15);
+
+        // Add the image to PDF
+        const imgData = canvas.toDataURL('image/png');
+        let heightLeft = imgHeight;
+        let position = 20; // Start below title
+
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(imgHeight, pageHeight - 30));
+        heightLeft -= (pageHeight - 30);
+
+        // Add new pages if content is too long
+        while (heightLeft > 0) {
+          pdf.addPage();
+          position = -(imgHeight - heightLeft);
+          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(heightLeft, pageHeight));
+          heightLeft -= pageHeight;
+        }
+
+        isFirstPage = false;
       }
+
+      // Restore original tab
+      setActiveTab(currentTab);
 
       // Download the PDF
       const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`aura-reading-${timestamp}.pdf`);
+      pdf.save(`complete-aura-reading-${timestamp}.pdf`);
 
       toast({
         title: "Download Complete",
-        description: "Your aura reading has been downloaded as PDF",
+        description: "Your complete aura reading has been downloaded as PDF",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
+      // Restore original tab on error
+      setActiveTab(currentTab);
       toast({
         title: "Download Failed",
         description: "Unable to generate PDF. Please try again.",
