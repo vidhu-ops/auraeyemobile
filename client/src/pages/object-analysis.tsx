@@ -36,84 +36,42 @@ export default function ObjectAnalysis() {
   const [analysisStage, setAnalysisStage] = useState("Initializing object scanning...");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handlePremiumUpgrade = () => {
     showPremiumModal("general");
   };
 
-  // Function to create aura gradient overlay on the image
-  const createAuraGradientImage = (imageUrl: string, auraColor: string): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        resolve(imageUrl);
-        return;
-      }
+  // Function to get CSS filter for aura color overlay
+  const getAuraFilter = (auraColor: string): string => {
+    const colorFilters: { [key: string]: string } = {
+      'red': 'sepia(100%) saturate(200%) hue-rotate(0deg) brightness(1.1)',
+      'blue': 'sepia(100%) saturate(200%) hue-rotate(220deg) brightness(1.1)',
+      'green': 'sepia(100%) saturate(200%) hue-rotate(90deg) brightness(1.1)',
+      'yellow': 'sepia(100%) saturate(200%) hue-rotate(50deg) brightness(1.2)',
+      'purple': 'sepia(100%) saturate(200%) hue-rotate(270deg) brightness(1.1)',
+      'orange': 'sepia(100%) saturate(200%) hue-rotate(25deg) brightness(1.2)',
+      'pink': 'sepia(100%) saturate(150%) hue-rotate(320deg) brightness(1.2)',
+      'violet': 'sepia(100%) saturate(200%) hue-rotate(260deg) brightness(1.1)',
+      'indigo': 'sepia(100%) saturate(200%) hue-rotate(240deg) brightness(1.0)',
+      'gold': 'sepia(100%) saturate(200%) hue-rotate(40deg) brightness(1.3)',
+      'silver': 'grayscale(30%) brightness(1.2) contrast(110%)',
+      'turquoise': 'sepia(100%) saturate(200%) hue-rotate(180deg) brightness(1.2)',
+      'magenta': 'sepia(100%) saturate(200%) hue-rotate(300deg) brightness(1.1)'
+    };
+    
+    return colorFilters[auraColor.toLowerCase()] || 'sepia(50%) saturate(150%) hue-rotate(270deg) brightness(1.1)';
+  };
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        resolve(imageUrl);
-        return;
-      }
-
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      
-      img.onload = () => {
-        // Set canvas size to match image
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Draw original image
-        ctx.drawImage(img, 0, 0);
-        
-        // Convert color name to RGB values for better control
-        const getColorRGB = (colorName: string) => {
-          const colorMap: { [key: string]: [number, number, number] } = {
-            'red': [255, 0, 0], 'blue': [0, 0, 255], 'green': [0, 255, 0],
-            'yellow': [255, 255, 0], 'purple': [128, 0, 128], 'orange': [255, 165, 0],
-            'pink': [255, 192, 203], 'violet': [138, 43, 226], 'indigo': [75, 0, 130],
-            'gold': [255, 215, 0], 'silver': [192, 192, 192], 'white': [255, 255, 255],
-            'black': [0, 0, 0], 'turquoise': [64, 224, 208], 'magenta': [255, 0, 255]
-          };
-          return colorMap[colorName.toLowerCase()] || [128, 0, 128]; // Default purple
-        };
-        
-        const [r, g, b] = getColorRGB(auraColor);
-        
-        // Create radial gradient from center outward
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2, canvas.height / 2, 0,
-          canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 1.5
-        );
-        
-        // Use visible alpha values
-        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.1)`); // Very light center
-        gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.3)`); // Medium
-        gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, 0.5)`); // Strong
-        gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.7)`); // Very strong edges
-        
-        // Apply the gradient overlay
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Add a subtle border glow
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.8)`;
-        ctx.lineWidth = 6;
-        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
-        ctx.shadowBlur = 15;
-        ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
-        
-        // Convert canvas to data URL
-        resolve(canvas.toDataURL('image/jpeg', 0.9));
-      };
-      
-      img.onerror = () => resolve(imageUrl);
-      img.src = imageUrl;
-    });
+  // Function to get hex color for aura overlay
+  const getAuraColorHex = (auraColor: string): string => {
+    const colorMap: { [key: string]: string } = {
+      'red': '#FF0000', 'blue': '#0000FF', 'green': '#00FF00',
+      'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FFA500',
+      'pink': '#FFC0CB', 'violet': '#8A2BE2', 'indigo': '#4B0082',
+      'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
+      'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF'
+    };
+    return colorMap[auraColor.toLowerCase()] || '#800080';
   };
 
   const handleImageSelect = async (file: File) => {
@@ -176,10 +134,9 @@ export default function ObjectAnalysis() {
       setAnalysisProgress(100);
       setActiveTab("basic");
 
-      // Create processed image with aura gradient overlay
-      if (originalImage && data.auraColor) {
-        const processedImageUrl = await createAuraGradientImage(originalImage, data.auraColor);
-        setProcessedImage(processedImageUrl);
+      // Set processed image immediately (same as original, will apply CSS filter)
+      if (originalImage) {
+        setProcessedImage(originalImage);
       }
 
       toast({
@@ -325,11 +282,24 @@ export default function ObjectAnalysis() {
                                       </h5>
                                       <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-purple-200">
                                         {processedImage ? (
-                                          <img 
-                                            src={processedImage} 
-                                            alt="Object with aura gradient"
-                                            className="w-full h-64 object-cover"
-                                          />
+                                          <div className="relative">
+                                            <img 
+                                              src={processedImage} 
+                                              alt="Object with aura gradient"
+                                              className="w-full h-64 object-cover"
+                                              style={{ 
+                                                filter: getAuraFilter(result.auraColor),
+                                                transition: 'filter 0.5s ease-in-out'
+                                              }}
+                                            />
+                                            <div 
+                                              className="absolute inset-0 pointer-events-none"
+                                              style={{
+                                                background: `radial-gradient(circle, ${getAuraColorHex(result.auraColor)}40 0%, transparent 70%)`,
+                                                opacity: 0.3
+                                              }}
+                                            />
+                                          </div>
                                         ) : (
                                           <div className="w-full h-64 flex items-center justify-center">
                                             <div className="text-center">
@@ -580,9 +550,6 @@ export default function ObjectAnalysis() {
       </main>
       
       <Footer />
-      
-      {/* Hidden canvas for image processing */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 }
