@@ -68,46 +68,44 @@ export default function ObjectAnalysis() {
         // Draw original image
         ctx.drawImage(img, 0, 0);
         
-        // Create aura gradient overlay
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2, canvas.height / 2, 0,
-          canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 2
-        );
-        
-        // Convert color name to hex if needed
-        const getColorHex = (colorName: string) => {
-          const colorMap: { [key: string]: string } = {
-            'red': '#FF0000', 'blue': '#0000FF', 'green': '#00FF00',
-            'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FFA500',
-            'pink': '#FFC0CB', 'violet': '#8A2BE2', 'indigo': '#4B0082',
-            'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
-            'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF'
+        // Convert color name to RGB values for better control
+        const getColorRGB = (colorName: string) => {
+          const colorMap: { [key: string]: [number, number, number] } = {
+            'red': [255, 0, 0], 'blue': [0, 0, 255], 'green': [0, 255, 0],
+            'yellow': [255, 255, 0], 'purple': [128, 0, 128], 'orange': [255, 165, 0],
+            'pink': [255, 192, 203], 'violet': [138, 43, 226], 'indigo': [75, 0, 130],
+            'gold': [255, 215, 0], 'silver': [192, 192, 192], 'white': [255, 255, 255],
+            'black': [0, 0, 0], 'turquoise': [64, 224, 208], 'magenta': [255, 0, 255]
           };
-          return colorMap[colorName.toLowerCase()] || colorName;
+          return colorMap[colorName.toLowerCase()] || [128, 0, 128]; // Default purple
         };
         
-        const hexColor = getColorHex(auraColor);
+        const [r, g, b] = getColorRGB(auraColor);
         
-        // Create gradient with aura color
-        gradient.addColorStop(0, `${hexColor}00`); // Transparent center
-        gradient.addColorStop(0.7, `${hexColor}40`); // Semi-transparent
-        gradient.addColorStop(1, `${hexColor}80`); // More visible at edges
+        // Create radial gradient from center outward
+        const gradient = ctx.createRadialGradient(
+          canvas.width / 2, canvas.height / 2, 0,
+          canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 1.5
+        );
         
-        // Apply gradient overlay with blend mode
-        ctx.globalCompositeOperation = 'multiply';
+        // Use visible alpha values
+        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.1)`); // Very light center
+        gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.3)`); // Medium
+        gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, 0.5)`); // Strong
+        gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.7)`); // Very strong edges
+        
+        // Apply the gradient overlay
+        ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Add outer glow effect
-        ctx.globalCompositeOperation = 'screen';
-        const glowGradient = ctx.createRadialGradient(
-          canvas.width / 2, canvas.height / 2, canvas.width * 0.3,
-          canvas.width / 2, canvas.height / 2, canvas.width * 0.6
-        );
-        glowGradient.addColorStop(0, `${hexColor}00`);
-        glowGradient.addColorStop(1, `${hexColor}60`);
-        ctx.fillStyle = glowGradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Add a subtle border glow
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+        ctx.shadowBlur = 15;
+        ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
         
         // Convert canvas to data URL
         resolve(canvas.toDataURL('image/jpeg', 0.9));
