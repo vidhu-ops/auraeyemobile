@@ -892,7 +892,7 @@ export default function AuraAnalysis() {
         `Meditate with ${aura.dominantColor} light to strengthen your aura`,
         `Practice Life Path ${lifePathNumber} affirmations daily`,
         `Work with ${numerology.colorAssociations?.lifePathColor || aura.dominantColor} crystals`,
-        `Focus on ${aura.dominantColor.toLowerCase()} chakra balancing exercises`
+        `Focus on ${aura.dominantColor} chakra balancing exercises`
       ]
     };
   };
@@ -2035,7 +2035,7 @@ export default function AuraAnalysis() {
                                   ))}
                                 </div>
                                 <div className="text-center mt-4">
-                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor.toLowerCase()} core through {result.secondaryColor.toLowerCase()} pathways</p>
+                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
                                 </div>
                               </div>
                             </div>
@@ -2348,16 +2348,16 @@ export default function AuraAnalysis() {
                                   <span 
                                     className="inline-block w-6 h-6 rounded-full border border-gray-200" 
                                     style={{ 
-                                      backgroundColor: result.dominantColor.toLowerCase(),
-                                      boxShadow: `0 0 8px 1px ${result.dominantColor.toLowerCase()}80`
+                                      backgroundColor: getAccurateColorCode(result.dominantColor),
+                                      boxShadow: `0 0 8px 1px ${getAccurateColorCode(result.dominantColor)}80`
                                     }}
                                   ></span>
                                   {result.secondaryColor && (
                                     <span 
                                       className="inline-block w-6 h-6 rounded-full border border-gray-200" 
                                       style={{ 
-                                        backgroundColor: result.secondaryColor.toLowerCase(),
-                                        boxShadow: `0 0 8px 1px ${result.secondaryColor.toLowerCase()}80`
+                                        backgroundColor: getAccurateColorCode(result.secondaryColor),
+                                        boxShadow: `0 0 8px 1px ${getAccurateColorCode(result.secondaryColor)}80`
                                       }}
                                     ></span>
                                   )}
@@ -2424,8 +2424,8 @@ export default function AuraAnalysis() {
                                       className="absolute inset-8 rounded-full" 
                                       style={{
                                         background: `radial-gradient(circle at center, 
-                                          ${result.dominantColor.toLowerCase()}99 40%, 
-                                          ${result.secondaryColor?.toLowerCase() || 'transparent'}99 80%)`,
+                                          ${getAccurateColorCode(result.dominantColor)}99 40%, 
+                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}99 80%)`,
                                         opacity: 0.8
                                       }}
                                     ></div>
@@ -2448,8 +2448,8 @@ export default function AuraAnalysis() {
                                           <div 
                                             className="w-10 h-10 rounded-full flex-shrink-0" 
                                             style={{ 
-                                              backgroundColor: result.dominantColor.toLowerCase(),
-                                              boxShadow: `0 0 10px 2px ${result.dominantColor.toLowerCase()}60`
+                                              backgroundColor: getAccurateColorCode(result.dominantColor),
+                                              boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.dominantColor)}60`
                                             }}
                                           ></div>
                                           <div>
@@ -2465,8 +2465,8 @@ export default function AuraAnalysis() {
                                             <div 
                                               className="w-10 h-10 rounded-full flex-shrink-0" 
                                               style={{ 
-                                                backgroundColor: result.secondaryColor.toLowerCase(),
-                                                boxShadow: `0 0 10px 2px ${result.secondaryColor.toLowerCase()}60`
+                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
+                                                boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.secondaryColor)}60`
                                               }}
                                             ></div>
                                             <div>
