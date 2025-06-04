@@ -111,6 +111,60 @@ export default function AuraAnalysis() {
     }
   };
 
+  // Helper function to get accurate color hex values
+  const getAccurateColorCode = (colorName: string): string => {
+    const colorMap: Record<string, string> = {
+      'Red': '#FF0000',
+      'Orange': '#FF7F00', 
+      'Yellow': '#FFFF00',
+      'Green': '#00FF00',
+      'Blue': '#0080FF',
+      'Indigo': '#4B0082',
+      'Violet': '#8A2BE2',
+      'Purple': '#800080',
+      'Pink': '#FF69B4',
+      'Gold': '#FFD700',
+      'Silver': '#C0C0C0',
+      'Turquoise': '#40E0D0',
+      'White': '#FFFFFF',
+      'Lavender': '#E6E6FA',
+      'Coral': '#FF7F50',
+      'Mint': '#98FB98',
+      'Peach': '#FFCBA4',
+      'Sky Blue': '#87CEEB',
+      'Rose': '#FF66CC',
+      'Amber': '#FFBF00'
+    };
+    return colorMap[colorName] || '#FFFFFF';
+  };
+
+  // Helper function to get color meanings
+  const getColorMeaning = (colorName: string): string => {
+    const meaningMap: Record<string, string> = {
+      'Red': 'Passion, vitality, grounding energy',
+      'Orange': 'Creativity, enthusiasm, emotional balance',
+      'Yellow': 'Intelligence, optimism, personal power',
+      'Green': 'Healing, love, growth, heart-centered energy',
+      'Blue': 'Communication, truth, peace, intuition',
+      'Indigo': 'Psychic ability, deep intuition, wisdom',
+      'Violet': 'Spiritual connection, transformation, mysticism',
+      'Purple': 'Spiritual awareness, nobility, magic',
+      'Pink': 'Unconditional love, compassion, nurturing',
+      'Gold': 'Divine wisdom, enlightenment, abundance',
+      'Silver': 'Intuitive gifts, feminine energy, reflection',
+      'Turquoise': 'Healing communication, emotional clarity',
+      'White': 'Purity, protection, divine connection',
+      'Lavender': 'Gentle spirituality, peace, calm',
+      'Coral': 'Gentle passion, warmth, social energy',
+      'Mint': 'Fresh healing energy, renewal, growth',
+      'Peach': 'Gentle love, caring, emotional warmth',
+      'Sky Blue': 'Clear communication, freedom, openness',
+      'Rose': 'Deep love, emotional healing, romance',
+      'Amber': 'Ancient wisdom, protection, grounding'
+    };
+    return meaningMap[colorName] || 'Unique spiritual energy';
+  };
+
   // Helper functions for Energy Reading tab
 
   const calculateGivingEnergy = (aura: AuraAnalysisResult): number => {
@@ -272,28 +326,7 @@ export default function AuraAnalysis() {
     return eveningGuidance[dominant] || 'Your evening energy invites personal spiritual practices aligned with your unique energy signature.';
   };
 
-  // Color spectrum analysis helper functions
-  const getColorCode = (colorName: string): string => {
-    const colorCodes: Record<string, string> = {
-      'Red': '#FF0000',
-      'Orange': '#FFA500',
-      'Yellow': '#FFFF00',
-      'Green': '#00FF00',
-      'Blue': '#0000FF',
-      'Indigo': '#4B0082',
-      'Violet': '#8A2BE2',
-      'Purple': '#800080',
-      'Pink': '#FFC0CB',
-      'White': '#FFFFFF',
-      'Gold': '#FFD700',
-      'Silver': '#C0C0C0',
-      'Turquoise': '#40E0D0',
-      'Magenta': '#FF00FF',
-      'Lime': '#00FF00',
-      'Cyan': '#00FFFF'
-    };
-    return colorCodes[colorName] || '#808080';
-  };
+  // Color spectrum analysis helper functions (duplicate removed)
 
   const getColorMeaningForEnergyTab = (color: string): string => {
     const meanings: Record<string, string> = {
