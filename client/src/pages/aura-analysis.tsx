@@ -1852,17 +1852,28 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-500">
                                       Based on: {numerologyName}, {new Date(numerologyBirthDate).toLocaleDateString()}
                                     </p>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => {
-                                        setNumerologyResult(null);
-                                        setNumerologyName("");
-                                        setNumerologyBirthDate("");
-                                      }}
-                                    >
-                                      New Analysis
-                                    </Button>
+                                    <div className="flex space-x-2">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => {
+                                          setNumerologyResult(null);
+                                          setNumerologyName("");
+                                          setNumerologyBirthDate("");
+                                        }}
+                                      >
+                                        New Analysis
+                                      </Button>
+                                      <Button 
+                                        variant="default" 
+                                        size="sm"
+                                        onClick={() => {
+                                          window.location.href = '/services#numerology';
+                                        }}
+                                      >
+                                        Know More
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               )}
