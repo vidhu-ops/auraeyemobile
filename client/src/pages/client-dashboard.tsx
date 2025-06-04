@@ -337,9 +337,8 @@ export default function ClientDashboard() {
                           <div className="text-xs text-violet-600 mt-1">Sum of all birth date digits</div>
                         </div>
                       </div>
-                      </div>
                       
-                      {numerology.colorAssociations && (
+                      {numerology?.colorAssociations && (
                         <div className="bg-gray-50 rounded-lg p-4">
                           <h4 className="font-medium mb-2">Your Energy Colors</h4>
                           <div className="flex gap-2 flex-wrap">

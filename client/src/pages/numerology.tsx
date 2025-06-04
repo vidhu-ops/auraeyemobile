@@ -153,6 +153,23 @@ export default function NumerologyPage() {
     return num;
   };
 
+  const calculateDominantSoulChakra = (birthDate: string): number => {
+    // Sum all digits in birth date (e.g., 01/01/1901 = 0+1+0+1+1+9+0+1 = 13 = 1+3 = 4)
+    const dateStr = birthDate.replace(/\D/g, ''); // Remove non-digits
+    let sum = 0;
+    
+    for (const digit of dateStr) {
+      sum += parseInt(digit);
+    }
+    
+    // Reduce to single digit
+    while (sum > 9) {
+      sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+    }
+    
+    return sum;
+  };
+
   const getPersonalYearMeaning = (year: number): { title: string; description: string; focus: string[] } => {
     const meanings: { [key: number]: { title: string; description: string; focus: string[] } } = {
       1: {
@@ -545,12 +562,13 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="lifePath" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5">
+                  <TabsList className="grid w-full grid-cols-6">
                     <TabsTrigger value="lifePath">Life Path</TabsTrigger>
                     <TabsTrigger value="destiny">Destiny</TabsTrigger>
                     <TabsTrigger value="soulUrge">Soul Urge</TabsTrigger>
                     <TabsTrigger value="personality">Personality</TabsTrigger>
                     <TabsTrigger value="soulChakra">Soul Chakra</TabsTrigger>
+                    <TabsTrigger value="dominantSoul">Dominant Soul</TabsTrigger>
                   </TabsList>
 
                   {/* Life Path Tab */}
@@ -725,6 +743,75 @@ export default function NumerologyPage() {
                                   <span className="text-xs text-green-700">{remedy}</span>
                                 </div>
                               ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </TabsContent>
+
+                  {/* Dominant Soul Chakra Tab */}
+                  <TabsContent value="dominantSoul" className="space-y-6 mt-6">
+                    {(() => {
+                      const dominantSoulNumber = calculateDominantSoulChakra(user?.birthDate || "1990-01-01");
+                      const chakraInfo = getChakraPlanetInfo(dominantSoulNumber);
+                      
+                      return (
+                        <div className="space-y-6">
+                          <div className="text-center">
+                            <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-gradient-to-br from-orange-500 to-red-500">
+                              {dominantSoulNumber}
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Dominant Soul Chakra: {dominantSoulNumber}</h3>
+                            <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(dominantSoulNumber)}</span></p>
+                            <div className="text-sm text-gray-500 italic mb-4">
+                              Sum of all birth date digits: {user?.birthDate || "1990-01-01"}
+                            </div>
+                          </div>
+
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-800 mb-2">Your Dominant Spiritual Energy</h4>
+                            <p className="text-sm text-gray-700">
+                              Your Dominant Soul Chakra Number reveals the primary spiritual energy that governs your life. 
+                              This number is calculated by adding all digits from your birth date and represents your core spiritual challenge and greatest growth opportunity.
+                            </p>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div className="bg-orange-50 rounded-lg p-4 border border-orange-100">
+                              <h5 className="font-medium text-orange-800 mb-2">Chakra & Planet Connection</h5>
+                              <p className="text-sm text-orange-700 mb-2">{chakraInfo.chakra} • {chakraInfo.planet}</p>
+                              <p className="text-sm text-orange-700">{chakraInfo.description}</p>
+                            </div>
+
+                            <div>
+                              <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {getVibrationQualities(dominantSoulNumber).map((quality, index) => (
+                                  <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">
+                                    {quality}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <h4 className="font-semibold text-purple-800 mb-3">Spiritual Remedies & Healing</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {chakraInfo.remedies.map((remedy, index) => (
+                                  <div key={index} className="bg-orange-100 rounded px-3 py-2">
+                                    <span className="text-xs text-orange-700">{remedy}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                              <h5 className="font-medium text-purple-800 mb-2">Growth Guidance</h5>
+                              <p className="text-sm text-purple-700">
+                                Focus on balancing your {chakraInfo.chakra} to unlock your full spiritual potential. 
+                                The energy of {chakraInfo.planet} will support your journey toward personal mastery and spiritual evolution.
+                              </p>
                             </div>
                           </div>
                         </div>
