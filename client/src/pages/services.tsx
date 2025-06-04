@@ -94,7 +94,7 @@ export default function Services() {
               
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {services.map((service) => (
-                  <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <Card key={service.id} id={service.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <CardContent className="p-0">
                       <div className="p-6">
                         <div className="mb-4 bg-gray-50 w-12 h-12 rounded-full flex items-center justify-center">
