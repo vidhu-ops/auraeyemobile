@@ -58,65 +58,80 @@ export default function AuraAnalysis() {
 
       const tabs = ['analysis', 'energy-reading', 'chakra-insights', 'numerology'];
       const currentTab = activeTab;
-      let isFirstPage = true;
+      let pageCount = 0;
+
+      // Add title page
+      pdf.setFontSize(20);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Complete Aura Reading Report', 105, 30, { align: 'center' });
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      const reportDate = new Date().toLocaleDateString();
+      pdf.text(`Generated on: ${reportDate}`, 105, 45, { align: 'center' });
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Dominant Aura: ${result.dominantColor}`, 105, 60, { align: 'center' });
+      pdf.text(`Secondary Aura: ${result.secondaryColor}`, 105, 75, { align: 'center' });
 
       for (const tab of tabs) {
         // Switch to the tab
         setActiveTab(tab);
         
-        // Wait for tab content to render
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Wait for tab content to render properly
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Find the aura reading section to capture
-        const auraSection = document.getElementById('aura-reading-section');
-        if (!auraSection) continue;
+        // Find the tab content specifically
+        const tabContent = document.querySelector(`[data-state="active"][data-value="${tab}"]`)?.parentElement?.querySelector('[role="tabpanel"]');
+        if (!tabContent) continue;
 
-        // Create canvas from the section
-        const canvas = await html2canvas(auraSection, {
-          scale: 1.5,
+        pdf.addPage();
+        pageCount++;
+        
+        // Add tab title
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        const tabTitles: Record<string, string> = {
+          'analysis': 'Aura Analysis & Insights',
+          'energy-reading': 'Energy Reading & Patterns',
+          'chakra-insights': 'Chakra Alignment & Balance',
+          'numerology': 'Numerology & Life Path'
+        };
+        pdf.text(tabTitles[tab] || tab, 10, 20);
+
+        // Create canvas from the specific tab content
+        const canvas = await html2canvas(tabContent as HTMLElement, {
+          scale: 1.2,
           useCORS: true,
           backgroundColor: '#ffffff',
-          width: auraSection.scrollWidth,
-          height: auraSection.scrollHeight,
+          width: (tabContent as HTMLElement).scrollWidth,
+          height: (tabContent as HTMLElement).scrollHeight,
+          scrollX: 0,
+          scrollY: 0,
         });
 
         // Calculate dimensions to fit the page
         const imgWidth = 190; // A4 width in mm with margins
-        const pageHeight = 270; // A4 height in mm with margins
+        const pageHeight = 250; // A4 height in mm with margins
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        if (!isFirstPage) {
-          pdf.addPage();
-        }
-        
-        // Add tab title
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        const tabTitles = {
-          'analysis': 'Aura Analysis',
-          'energy-reading': 'Energy Reading',
-          'chakra-insights': 'Chakra Insights',
-          'numerology': 'Numerology'
-        };
-        pdf.text(tabTitles[tab] || tab, 10, 15);
+        let heightLeft = imgHeight;
+        let position = 30; // Start below title
 
         // Add the image to PDF
         const imgData = canvas.toDataURL('image/png');
-        let heightLeft = imgHeight;
-        let position = 20; // Start below title
-
+        
+        // First page of this tab
         pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(imgHeight, pageHeight - 30));
         heightLeft -= (pageHeight - 30);
 
-        // Add new pages if content is too long
+        // Add additional pages if content is too long
         while (heightLeft > 0) {
           pdf.addPage();
           position = -(imgHeight - heightLeft);
           pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(heightLeft, pageHeight));
           heightLeft -= pageHeight;
         }
-
-        isFirstPage = false;
       }
 
       // Restore original tab
@@ -134,6 +149,95 @@ export default function AuraAnalysis() {
       console.error('Error generating PDF:', error);
       // Restore original tab on error
       setActiveTab(currentTab);
+      toast({
+        title: "Download Failed",
+        description: "Unable to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Function to download numerology reading as PDF
+  const downloadNumerologyPDF = async () => {
+    if (!numerologyResult) return;
+
+    try {
+      toast({
+        title: "Generating PDF",
+        description: "Creating numerology report...",
+      });
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Add title page
+      pdf.setFontSize(20);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Numerology Reading Report', 105, 30, { align: 'center' });
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      const reportDate = new Date().toLocaleDateString();
+      pdf.text(`Generated on: ${reportDate}`, 105, 45, { align: 'center' });
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Name: ${numerologyName}`, 105, 60, { align: 'center' });
+      pdf.text(`Birth Date: ${numerologyBirthDate}`, 105, 75, { align: 'center' });
+
+      // Add numerology content
+      pdf.addPage();
+      
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Your Numerology Profile', 10, 20);
+
+      let yPosition = 35;
+      
+      // Life Path Number
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 10, yPosition);
+      yPosition += 10;
+      
+      // Destiny Number
+      pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 10, yPosition);
+      yPosition += 10;
+      
+      // Soul Urge Number
+      pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 10, yPosition);
+      yPosition += 10;
+      
+      // Personality Number
+      pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 10, yPosition);
+      yPosition += 20;
+
+      // Interpretation
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Detailed Interpretation', 10, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      
+      // Split interpretation into lines that fit the page
+      const splitText = pdf.splitTextToSize(numerologyResult.interpretation, 190);
+      pdf.text(splitText, 10, yPosition);
+
+      // Download the PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      pdf.save(`numerology-reading-${timestamp}.pdf`);
+
+      toast({
+        title: "Download Complete",
+        description: "Your numerology reading has been downloaded as PDF",
+      });
+    } catch (error) {
+      console.error('Error generating numerology PDF:', error);
       toast({
         title: "Download Failed",
         description: "Unable to generate PDF. Please try again.",
@@ -2077,6 +2181,15 @@ export default function AuraAnalysis() {
                                         }}
                                       >
                                         New Analysis
+                                      </Button>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={downloadNumerologyPDF}
+                                        className="flex items-center"
+                                      >
+                                        <Download className="w-4 h-4 mr-1" />
+                                        Download PDF
                                       </Button>
                                       <Button 
                                         variant="default" 
