@@ -10,7 +10,6 @@ import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
-import { generateConsistentAnalysis } from "./image-analysis-utils";
 
 // Helper functions for numerology calculations
 function getColorForNumber(num: number): string {
@@ -120,24 +119,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image provided" });
       }
 
-      // Use consistent deterministic analysis for reliable results
-      const consistentAnalysis = generateConsistentAnalysis(imageData);
+      // Get user ID if authenticated
+      const userId = req.isAuthenticated() ? req.user?.id : null;
       
-      // Transform the result to match the ObjectAnalysisResult interface
-      const result = {
-        objectName: "Spiritual Object",
-        objectDescription: `This object emanates ${consistentAnalysis.dominantColor.toLowerCase()} energy with subtle spiritual properties.`,
-        objectPurpose: `This object appears to enhance ${consistentAnalysis.personalityTraits.join(", ").toLowerCase()} qualities in its environment.`,
-        auraColor: consistentAnalysis.dominantColor,
-        auraDescription: `The object radiates a ${consistentAnalysis.dominantColor.toLowerCase()} aura, suggesting ${consistentAnalysis.spiritualGuidance.toLowerCase()}`,
-        energyLevel: consistentAnalysis.energyLevel,
-        energyQualities: consistentAnalysis.personalityTraits,
-        historicalSignificance: `Objects with ${consistentAnalysis.dominantColor.toLowerCase()} energy have been valued in spiritual traditions for their ${consistentAnalysis.personalityTraits[0].toLowerCase()} properties.`,
-        spiritualSignificance: consistentAnalysis.spiritualGuidance,
-        detailedAnalysis: consistentAnalysis.detailedAnalysis.replace("Your aura", "This object's energy").replace("you are", "the object emanates").replace("You", "It")
-      };
-      
-      res.json(result);
+      try {
+        // Use OpenAI to analyze the object
+        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
+        
+        // Call OpenAI with the prompt
+        // Note: We're using the same analyzeAuraImage function but with a different prompt
+        // In a production app, you'd want to create a separate function for object analysis
+        let objectAnalysis;
+        try {
+          objectAnalysis = await analyzeAuraImage(imageData, prompt);
+          
+          // Extract the actual object type from the first sentence of the detailed analysis
+          let objectType = "Object";
+          const firstSentence = objectAnalysis.detailedAnalysis.split(".")[0];
+          
+          // Look for common patterns that might indicate the object type
+          if (firstSentence.toLowerCase().includes("appears to be")) {
+            const match = firstSentence.match(/appears to be (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          } else if (firstSentence.toLowerCase().includes("this is")) {
+            const match = firstSentence.match(/this is (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          } else if (firstSentence.toLowerCase().includes("object is")) {
+            const match = firstSentence.match(/object is (a|an) ([^,\.]+)/i);
+            if (match && match[2]) objectType = match[2].trim();
+          }
+          
+          // Transform the result to match the ObjectAnalysisResult interface
+          const result = {
+            objectName: objectType.charAt(0).toUpperCase() + objectType.slice(1),
+            objectDescription: objectAnalysis.detailedAnalysis.split(".")[0] + ".",
+            objectPurpose: "This " + objectType.toLowerCase() + " appears to serve a purpose related to " + objectAnalysis.personalityTraits.join(", "),
+            auraColor: objectAnalysis.dominantColor,
+            auraDescription: "The object emanates a " + objectAnalysis.dominantColor.toLowerCase() + " aura, which suggests " + objectAnalysis.spiritualGuidance,
+            energyLevel: objectAnalysis.energyLevel,
+            energyQualities: objectAnalysis.personalityTraits,
+            historicalSignificance: "The object's energy signature suggests historical connections to traditions of harmony and balance.",
+            spiritualSignificance: objectAnalysis.spiritualGuidance,
+            detailedAnalysis: objectAnalysis.detailedAnalysis
+          };
+          
+          res.json(result);
+        } catch (aiError) {
+          console.error("Error in OpenAI object analysis:", aiError);
+          
+          // Fallback response if OpenAI analysis fails
+          const fallbackResult = {
+            objectName: "Mystical Object",
+            objectDescription: "This appears to be an object with significant spiritual energy.",
+            objectPurpose: "This object seems designed to enhance spiritual awareness and energy flow.",
+            auraColor: "Blue-Purple",
+            auraDescription: "The object emanates a calming blue-purple aura, suggesting wisdom and spiritual intuition.",
+            energyLevel: 7,
+            energyQualities: ["Calming", "Intuitive", "Protective", "Enlightening"],
+            historicalSignificance: "Objects with this energy signature have historically been used in meditation and spiritual practices.",
+            spiritualSignificance: "This object may help in deepening meditation and accessing higher states of consciousness.",
+            detailedAnalysis: "The object shows signs of being energetically charged. It appears to resonate with the third eye and crown chakras, potentially enhancing intuition and connection to higher wisdom. The energy pattern suggests it could be useful for spiritual development practices."
+          };
+          
+          res.json(fallbackResult);
+        }
+      } catch (error) {
+        console.error("Error analyzing object:", error);
+        
+        // Even if everything fails, provide a fallback response
+        const emergencyFallback = {
+          objectName: "Mystical Artifact",
+          objectDescription: "This object appears to be a spiritually significant item.",
+          objectPurpose: "This object seems to serve as a focus for meditation and energy work.",
+          auraColor: "Indigo",
+          auraDescription: "The object emanates an indigo aura, suggesting connection to intuition and the third eye chakra.",
+          energyLevel: 6,
+          energyQualities: ["Intuitive", "Calming", "Focusing", "Protective"],
+          historicalSignificance: "Similar objects have been used in spiritual practices across various cultures.",
+          spiritualSignificance: "This object may enhance meditation and spiritual awareness practices.",
+          detailedAnalysis: "The energy signature of this object suggests it resonates with the third eye chakra. It may be useful for enhancing intuition and inner vision during meditation or spiritual work."
+        };
+        
+        res.json(emergencyFallback);
+      }
     } catch (error) {
       console.error("Error processing object analysis:", error);
       res.status(500).json({ message: "An error occurred during analysis" });
@@ -180,14 +244,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
 
-      // Use deterministic analysis for consistent results across similar images
-      const auraAnalysis = generateConsistentAnalysis(imageData);
+      // Try to analyze the aura using OpenAI, but use fallback if OpenAI fails
+      let auraAnalysis;
+      try {
+        auraAnalysis = await analyzeAuraImage(imageData, customPrompt ?? undefined);
+      } catch (aiError) {
+        console.error("Error in OpenAI analysis:", aiError);
+        // Already using fallback inside analyzeAuraImage, this is just a safeguard
+        auraAnalysis = {
+          dominantColor: "Blue",
+          secondaryColor: "Purple",
+          energyLevel: 3,
+          personalityTraits: ["Intuitive", "Spiritual", "Sensitive"],
+          spiritualGuidance: "Your aura suggests you are on a spiritual journey. Continue to nurture your intuitive abilities and stay connected to your higher self.",
+          chakraActivity: {
+            root: 5,
+            sacral: 6,
+            solarPlexus: 5,
+            heart: 7,
+            throat: 6,
+            thirdEye: 8,
+            crown: 7
+          },
+          detailedAnalysis: "Your aura shows a blend of spiritual awareness and intuitive abilities. Focus on grounding practices to balance your energy."
+        };
+      }
 
       // Save the analysis to storage if user is authenticated
       if (userId) {
         await storage.saveAuraReading({
           userId,
-          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100),
+          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
           dominantColor: auraAnalysis.dominantColor,
           secondaryColor: auraAnalysis.secondaryColor || "",
           energyLevel: auraAnalysis.energyLevel,
