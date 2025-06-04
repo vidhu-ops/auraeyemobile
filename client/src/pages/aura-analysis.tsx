@@ -1421,15 +1421,7 @@ export default function AuraAnalysis() {
                           </svg>
                           Share
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="flex items-center text-sm"
-                          onClick={downloadAuraPDF}
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Download PDF
-                        </Button>
+
                       </div>
                     )}
                   </div>
@@ -2199,15 +2191,7 @@ export default function AuraAnalysis() {
                                       >
                                         New Analysis
                                       </Button>
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        onClick={downloadNumerologyPDF}
-                                        className="flex items-center"
-                                      >
-                                        <Download className="w-4 h-4 mr-1" />
-                                        Download PDF
-                                      </Button>
+
                                       <Button 
                                         variant="default" 
                                         size="sm"
