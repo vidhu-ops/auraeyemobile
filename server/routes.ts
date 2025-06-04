@@ -9,6 +9,85 @@ import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 
+// Helper functions for numerology calculations
+function getColorForNumber(num: number): string {
+  const colorMap: { [key: number]: string } = {
+    1: "Red",
+    2: "Orange", 
+    3: "Yellow",
+    4: "Green",
+    5: "Blue",
+    6: "Indigo",
+    7: "Violet",
+    8: "Gold",
+    9: "White"
+  };
+  return colorMap[num] || "Indigo";
+}
+
+function letterToNumber(letter: string): number {
+  const value = letter.toLowerCase().charCodeAt(0) - 96;
+  return value >= 1 && value <= 26 ? value : 0;
+}
+
+function reduceNumber(num: number): number {
+  // Master numbers are preserved
+  if (num === 11 || num === 22 || num === 33) return num;
+  
+  // Reduce to single digit
+  while (num > 9) {
+    num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  }
+  return num;
+}
+
+function calculateLifePath(date: string): number {
+  // Format should be YYYY-MM-DD
+  const parts = date.split('-');
+  if (parts.length !== 3) return 5; // Default fallback
+  
+  const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  const month = parseInt(parts[1]);
+  const day = parseInt(parts[2]);
+  
+  return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
+}
+
+function calculateDestiny(fullName: string): number {
+  let sum = 0;
+  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+    sum += letterToNumber(char);
+  }
+  return reduceNumber(sum);
+}
+
+function calculateSoulUrge(fullName: string): number {
+  let sum = 0;
+  const vowels = 'aeiouAEIOU';
+  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+    if (vowels.includes(char)) {
+      sum += letterToNumber(char);
+    }
+  }
+  return reduceNumber(sum);
+}
+
+function calculatePersonality(fullName: string): number {
+  let sum = 0;
+  const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
+  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+    if (consonants.includes(char)) {
+      sum += letterToNumber(char);
+    }
+  }
+  return reduceNumber(sum);
+}
+
+function calculateSoulChakra(birthDate: string): number {
+  // Use life path calculation for soul chakra as they're spiritually connected
+  return calculateLifePath(birthDate);
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);

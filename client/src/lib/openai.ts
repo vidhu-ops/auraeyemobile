@@ -100,18 +100,17 @@ export interface NumerologyResult {
  * Calculates numerology values based on name and birth date
  */
 export async function calculateNumerology(name: string, birthDate: string): Promise<NumerologyResult> {
-  try {
-    console.log("Calculating numerology for:", name, birthDate);
-    const response = await apiRequest("POST", "/api/numerology", {
-      name,
-      birthDate
-    });
-    
-    const data = await response.json();
-    console.log("Numerology result:", data);
-    return data;
-  } catch (error) {
-    console.error("Error calculating numerology:", error);
-    throw new Error("Failed to calculate numerology. Please try again.");
+  const response = await fetch('/api/numerology', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, birthDate }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to calculate numerology');
   }
+
+  return response.json();
 }
