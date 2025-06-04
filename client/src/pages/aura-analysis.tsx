@@ -40,66 +40,132 @@ export default function AuraAnalysis() {
     showPremiumModal("aura");
   };
 
-  // Function to download aura reading as PDF
+  // Function to download complete aura reading as PDF with all tabs
   const downloadAuraPDF = async () => {
     if (!result) return;
 
     try {
-      // Find the aura reading section to capture
-      const auraSection = document.getElementById('aura-reading-section');
-      if (!auraSection) {
-        toast({
-          title: "Error",
-          description: "Unable to find aura reading section",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create canvas from the section
-      const canvas = await html2canvas(auraSection, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        width: auraSection.scrollWidth,
-        height: auraSection.scrollHeight,
-      });
-
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
 
-      // Calculate dimensions to fit the page
       const imgWidth = 210; // A4 width in mm
       const pageHeight = 295; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      let isFirstPage = true;
 
-      let position = 0;
+      // Get all tab content elements
+      const tabContents = document.querySelectorAll('[role="tabpanel"]');
+      const tabTriggers = document.querySelectorAll('[role="tab"]');
+      
+      // Store original states
+      const originalStates = Array.from(tabContents).map(tab => ({
+        element: tab as HTMLElement,
+        display: (tab as HTMLElement).style.display,
+        visibility: (tab as HTMLElement).style.visibility,
+        height: (tab as HTMLElement).style.height
+      }));
 
-      // Add the image to PDF
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Capture each tab content
+      for (let i = 0; i < tabContents.length; i++) {
+        const tabContent = tabContents[i] as HTMLElement;
+        const tabTrigger = tabTriggers[i] as HTMLElement;
+        
+        // Make current tab visible and expand it
+        tabContent.style.display = 'block';
+        tabContent.style.visibility = 'visible';
+        tabContent.style.height = 'auto';
+        
+        // Wait for content to render
+        await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Add new pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        // Create canvas for this tab
+        const canvas = await html2canvas(tabContent, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          width: tabContent.scrollWidth,
+          height: tabContent.scrollHeight,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Add new page if not first
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+        
+        // Add tab title
+        pdf.setFontSize(16);
+        pdf.setTextColor(75, 85, 99); // Gray-600
+        const tabTitle = tabTrigger.textContent || `Tab ${i + 1}`;
+        pdf.text(tabTitle, 20, 20);
+        
+        // Add tab content
+        let yPosition = 30;
+        let remainingHeight = imgHeight;
+        let sourceY = 0;
+
+        while (remainingHeight > 0) {
+          const availableHeight = pageHeight - yPosition;
+          const printHeight = Math.min(remainingHeight, availableHeight);
+          
+          // Calculate source dimensions for cropping
+          const sourceHeight = (printHeight / imgWidth) * canvas.width;
+          
+          // Create cropped canvas
+          const croppedCanvas = document.createElement('canvas');
+          croppedCanvas.width = canvas.width;
+          croppedCanvas.height = sourceHeight;
+          const croppedCtx = croppedCanvas.getContext('2d');
+          
+          if (croppedCtx) {
+            croppedCtx.drawImage(
+              canvas,
+              0, sourceY, canvas.width, sourceHeight,
+              0, 0, canvas.width, sourceHeight
+            );
+            
+            const croppedImgData = croppedCanvas.toDataURL('image/png');
+            pdf.addImage(croppedImgData, 'PNG', 0, yPosition, imgWidth, printHeight);
+          }
+          
+          remainingHeight -= printHeight;
+          sourceY += sourceHeight;
+          
+          if (remainingHeight > 0) {
+            pdf.addPage();
+            yPosition = 10;
+          }
+        }
+        
+        isFirstPage = false;
       }
+
+      // Restore original states
+      originalStates.forEach(({ element, display, visibility, height }) => {
+        element.style.display = display;
+        element.style.visibility = visibility;
+        element.style.height = height;
+      });
+
+      // Add metadata
+      pdf.setProperties({
+        title: 'Complete Aura Analysis Report',
+        subject: 'Spiritual Energy Analysis with All Tabs',
+        author: 'Spiritual Wellness Dashboard',
+        creator: 'Aura Analysis System'
+      });
 
       // Download the PDF
       const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`aura-reading-${timestamp}.pdf`);
+      pdf.save(`complete-aura-analysis-${timestamp}.pdf`);
 
       toast({
-        title: "Download Complete",
-        description: "Your aura reading has been downloaded as PDF",
+        title: "Complete Analysis Downloaded",
+        description: "Your full aura reading with all tabs has been saved as PDF",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -2668,8 +2734,8 @@ export default function AuraAnalysis() {
                                     className="absolute inset-0 animate-pulse-slow" 
                                     style={{
                                       background: `radial-gradient(ellipse at center, 
-                                        ${result.dominantColor.toLowerCase()}99 20%, 
-                                        ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}70 60%, 
+                                        ${getAccurateColorCode(result.dominantColor)}99 20%, 
+                                        ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}70 60%, 
                                         rgba(0,0,0,0) 70%)`,
                                       filter: 'blur(20px)',
                                       transformOrigin: 'center',
@@ -2685,8 +2751,8 @@ export default function AuraAnalysis() {
                                         className="absolute inset-0 rounded-full animate-pulse-slow opacity-70" 
                                         style={{
                                           background: `radial-gradient(circle at center, 
-                                            ${result.dominantColor.toLowerCase()}99 0%, 
-                                            ${result.dominantColor.toLowerCase()}20 70%, 
+                                            ${getAccurateColorCode(result.dominantColor)}99 0%, 
+                                            ${getAccurateColorCode(result.dominantColor)}20 70%, 
                                             transparent 100%)`,
                                           animation: 'pulse 10s infinite ease-in-out',
                                           animationDelay: '0.5s'
@@ -2698,8 +2764,8 @@ export default function AuraAnalysis() {
                                         className="absolute inset-4 rounded-full animate-pulse-slow opacity-80" 
                                         style={{
                                           background: `radial-gradient(circle at center, 
-                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}99 0%, 
-                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}30 80%, 
+                                            ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}99 0%, 
+                                            ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}30 80%, 
                                             transparent 100%)`,
                                           animation: 'pulse 8s infinite ease-in-out',
                                           animationDelay: '1s'
@@ -2711,8 +2777,8 @@ export default function AuraAnalysis() {
                                         className="absolute inset-8 rounded-full animate-pulse-slow opacity-90" 
                                         style={{
                                           background: `radial-gradient(circle at center, 
-                                            ${result.dominantColor.toLowerCase()}90 0%, 
-                                            ${result.dominantColor.toLowerCase()}40 70%, 
+                                            ${getAccurateColorCode(result.dominantColor)}90 0%, 
+                                            ${getAccurateColorCode(result.dominantColor)}40 70%, 
                                             transparent 100%)`,
                                           animation: 'pulse 6s infinite ease-in-out',
                                           animationDelay: '1.5s'
@@ -2725,7 +2791,7 @@ export default function AuraAnalysis() {
                                         style={{
                                           background: `radial-gradient(circle at center, 
                                             white 0%, 
-                                            ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}70 70%, 
+                                            ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}70 70%, 
                                             transparent 100%)`,
                                           animation: 'pulse 4s infinite ease-in-out',
                                           animationDelay: '2s'
@@ -2816,8 +2882,8 @@ export default function AuraAnalysis() {
                                           <div 
                                             className="w-8 h-8 rounded-full flex-shrink-0" 
                                             style={{ 
-                                              backgroundColor: result.dominantColor.toLowerCase(),
-                                              boxShadow: `0 0 10px ${result.dominantColor.toLowerCase()}60`
+                                              backgroundColor: getAccurateColorCode(result.dominantColor),
+                                              boxShadow: `0 0 10px ${getAccurateColorCode(result.dominantColor)}60`
                                             }}
                                           ></div>
                                           <div>
