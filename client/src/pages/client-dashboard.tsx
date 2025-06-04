@@ -334,7 +334,7 @@ export default function ClientDashboard() {
                             {numerology.soulChakraNumber}
                           </div>
                           <div className="text-sm font-medium text-violet-800">Dominant Soul Chakra</div>
-                          <div className="text-xs text-violet-600 mt-1">Sum of all birth date digits</div>
+                          <div className="text-xs text-violet-600 mt-1"> maximum challenges</div>
                         </div>
                       </div>
                       
