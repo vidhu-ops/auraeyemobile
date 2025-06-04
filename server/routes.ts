@@ -523,8 +523,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
-          personalityNumber: calculatePersonality(birthDate),
-          soulChakraNumber: calculateSoulChakra(birthDate),
+          personalityNumber: calculateDecisionMakingChakra(birthDate),
+          soulChakraNumber: calculateDominantSoulChakra(birthDate),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
         
@@ -597,9 +597,37 @@ function calculatePersonality(fullName: string): number {
   return reduceNumber(sum);
 }
 
-function calculateSoulChakra(birthDate: string): number {
-  // Use life path calculation for soul chakra as they're spiritually connected
-  return calculateLifePath(birthDate);
+// Decision-making chakra (Personality) number - sum of the two digits of birth date
+function calculateDecisionMakingChakra(birthDate: string): number {
+  const parts = birthDate.split('-');
+  if (parts.length !== 3) return 5; // Default fallback
+  
+  const day = parseInt(parts[2]);
+  const dayString = day.toString();
+  
+  if (dayString.length === 1) {
+    return day;
+  } else {
+    const firstDigit = parseInt(dayString[0]);
+    const secondDigit = parseInt(dayString[1]);
+    return reduceNumber(firstDigit + secondDigit);
+  }
+}
+
+// Dominant Soul Chakra number - addition of all digits in birth date
+function calculateDominantSoulChakra(birthDate: string): number {
+  const parts = birthDate.split('-');
+  if (parts.length !== 3) return 7; // Default fallback
+  
+  let sum = 0;
+  // Add all digits from year, month, and day
+  for (const part of parts) {
+    for (const digit of part) {
+      sum += parseInt(digit);
+    }
+  }
+  
+  return reduceNumber(sum);
 }
 
 function getColorForNumber(num: number): string {
