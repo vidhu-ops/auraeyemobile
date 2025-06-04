@@ -75,62 +75,79 @@ export default function AuraAnalysis() {
       pdf.text(`Dominant Aura: ${result.dominantColor}`, 105, 60, { align: 'center' });
       pdf.text(`Secondary Aura: ${result.secondaryColor}`, 105, 75, { align: 'center' });
 
-      for (const tab of tabs) {
-        // Switch to the tab
-        setActiveTab(tab);
+      for (let i = 0; i < tabs.length; i++) {
+        const tab = tabs[i];
         
-        // Wait for tab content to render properly
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Switch to the tab and wait for rendering
+        setActiveTab(tab);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Find the tab content specifically
-        const tabContent = document.querySelector(`[data-state="active"][data-value="${tab}"]`)?.parentElement?.querySelector('[role="tabpanel"]');
-        if (!tabContent) continue;
+        // Find the specific tab content panel
+        const tabPanel = document.querySelector(`[data-value="${tab}"][data-state="active"]`);
+        if (!tabPanel) {
+          console.warn(`Tab panel not found for ${tab}`);
+          continue;
+        }
 
-        pdf.addPage();
-        pageCount++;
+        // Add new page for each tab
+        if (i > 0) pdf.addPage();
         
         // Add tab title
         pdf.setFontSize(18);
         pdf.setFont('helvetica', 'bold');
         const tabTitles: Record<string, string> = {
           'analysis': 'Aura Analysis & Insights',
-          'energy-reading': 'Energy Reading & Patterns',
+          'energy-reading': 'Energy Reading & Patterns', 
           'chakra-insights': 'Chakra Alignment & Balance',
           'numerology': 'Numerology & Life Path'
         };
         pdf.text(tabTitles[tab] || tab, 10, 20);
 
-        // Create canvas from the specific tab content
-        const canvas = await html2canvas(tabContent as HTMLElement, {
-          scale: 1.2,
+        // Capture the tab content with higher quality
+        const canvas = await html2canvas(tabPanel as HTMLElement, {
+          scale: 1.5,
           useCORS: true,
           backgroundColor: '#ffffff',
-          width: (tabContent as HTMLElement).scrollWidth,
-          height: (tabContent as HTMLElement).scrollHeight,
-          scrollX: 0,
-          scrollY: 0,
+          width: (tabPanel as HTMLElement).scrollWidth,
+          height: (tabPanel as HTMLElement).scrollHeight,
+          allowTaint: true,
+          foreignObjectRendering: true,
         });
 
-        // Calculate dimensions to fit the page
-        const imgWidth = 190; // A4 width in mm with margins
-        const pageHeight = 250; // A4 height in mm with margins
+        // Calculate dimensions
+        const imgWidth = 190;
+        const pageHeight = 250;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 30; // Start below title
-
-        // Add the image to PDF
-        const imgData = canvas.toDataURL('image/png');
         
-        // First page of this tab
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(imgHeight, pageHeight - 30));
-        heightLeft -= (pageHeight - 30);
+        // Add the captured content
+        const imgData = canvas.toDataURL('image/png', 0.95);
+        let yOffset = 30;
+        let remainingHeight = imgHeight;
 
-        // Add additional pages if content is too long
-        while (heightLeft > 0) {
-          pdf.addPage();
-          position = -(imgHeight - heightLeft);
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, Math.min(heightLeft, pageHeight));
-          heightLeft -= pageHeight;
+        // Add content, splitting across pages if needed
+        while (remainingHeight > 0) {
+          const heightToAdd = Math.min(remainingHeight, pageHeight - yOffset);
+          const sourceY = imgHeight - remainingHeight;
+          
+          pdf.addImage(
+            imgData, 
+            'PNG', 
+            10, 
+            yOffset, 
+            imgWidth, 
+            heightToAdd,
+            undefined,
+            'FAST',
+            0,
+            -sourceY
+          );
+          
+          remainingHeight -= heightToAdd;
+          
+          if (remainingHeight > 0) {
+            pdf.addPage();
+            yOffset = 10;
+          }
         }
       }
 
