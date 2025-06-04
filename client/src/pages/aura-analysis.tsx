@@ -452,7 +452,7 @@ export default function AuraAnalysis() {
   };
 
   const getSecondaryColorDescription = (color: string): string => {
-    return `${getColorMeaning(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;
+    return `${getColorMeaningForEnergyTab(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;
   };
 
   const getSupportingColorLocation = (color: string, index: number): string => {
@@ -1413,7 +1413,7 @@ export default function AuraAnalysis() {
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                       <h5 className="font-medium text-sm mb-2">Spiritual Meaning</h5>
-                                      <p className="text-sm text-gray-700">{getColorMeaning(result.dominantColor)}</p>
+                                      <p className="text-sm text-gray-700">{getColorMeaningForEnergyTab(result.dominantColor)}</p>
                                     </div>
                                     <div>
                                       <h5 className="font-medium text-sm mb-2">Energy Frequency</h5>
@@ -1437,7 +1437,7 @@ export default function AuraAnalysis() {
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                       <h5 className="font-medium text-sm mb-2">Complementary Energy</h5>
-                                      <p className="text-sm text-gray-700">{getColorMeaning(result.secondaryColor)}</p>
+                                      <p className="text-sm text-gray-700">{getColorMeaningForEnergyTab(result.secondaryColor)}</p>
                                     </div>
                                     <div>
                                       <h5 className="font-medium text-sm mb-2">Balancing Influence</h5>
