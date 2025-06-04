@@ -89,7 +89,9 @@ export default function NumerologyPage() {
     heart: "#38A169",
     throat: "#3182CE",
     thirdEye: "#805AD5",
-    crown: "#B794F6"
+    crown: "#B794F6",
+    earthstar: "#A0AEC0",
+    soulstar: "#718096",
   };
 
   const getLifePathMeaning = (number: number): string => {
@@ -102,10 +104,7 @@ export default function NumerologyPage() {
       6: "Nurturing and responsibility",
       7: "Spirituality and analysis",
       8: "Material success and power",
-      9: "Humanitarian service",
-      11: "Spiritual insight and intuition",
-      22: "Master builder and visionary",
-      33: "Master teacher and healer"
+      9: "Humanitarian service"
     };
     return meanings[number] || "Unique spiritual path";
   };
@@ -120,10 +119,7 @@ export default function NumerologyPage() {
       6: "Healer and caretaker",
       7: "Seeker of truth and wisdom",
       8: "Executive and achiever",
-      9: "Humanitarian and server",
-      11: "Inspirational leader",
-      22: "Master architect",
-      33: "Universal healer"
+      9: "Humanitarian and server"
     };
     return meanings[number] || "Special destiny path";
   };
@@ -457,7 +453,8 @@ export default function NumerologyPage() {
                       {numerology.personalityNumber}
                     </div>
                     <div className="font-semibold text-green-800 mb-1">Decision-Making Chakra</div>
-                    <div className="text-sm text-green-600">Sum of birth date digits</div>
+                    <div className="text-sm text-green-600">most of your decisions will
+                      be based on the qualities of this chakra.</div>
                     <div className="text-xs text-green-500 mt-2">
                       Influences your decision-making patterns
                     </div>
@@ -468,7 +465,8 @@ export default function NumerologyPage() {
                       {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
                     </div>
                     <div className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</div>
-                    <div className="text-sm text-red-600">Sum of all birth date digits</div>
+                    <div className="text-sm text-red-600">Your soul wants you to operate from the positive and
+                      balanced qualities of that chakra)</div>
                     <div className="text-xs text-red-500 mt-2">
                       Your greatest challenge area
                     </div>
