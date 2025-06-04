@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   userType: text("user_type").notNull().default("client"), // "client" or "healer"
+  birthDate: text("birth_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -14,6 +15,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   userType: true,
+  birthDate: true,
 });
 
 export const auraReadings = pgTable("aura_readings", {

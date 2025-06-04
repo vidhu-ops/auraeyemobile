@@ -24,6 +24,7 @@ const registerSchema = z.object({
   userType: z.enum(["client", "healer"], {
     required_error: "Please select a user type",
   }),
+  birthDate: z.string().min(1, "Birth date is required"),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -47,6 +48,7 @@ export default function AuthPage() {
       username: "",
       password: "",
       userType: "client",
+      birthDate: "",
     },
   });
 
@@ -168,6 +170,20 @@ export default function AuthPage() {
                           <FormLabel>Password</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Create a password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={registerForm.control}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Birth Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
