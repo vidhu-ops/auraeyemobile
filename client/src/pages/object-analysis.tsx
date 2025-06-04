@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
-import { Loader2, Upload, Crown } from "lucide-react";
+import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,16 +34,101 @@ export default function ObjectAnalysis() {
   const [activeTab, setActiveTab] = useState("basic");
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStage, setAnalysisStage] = useState("Initializing object scanning...");
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handlePremiumUpgrade = () => {
     showPremiumModal("general");
   };
 
+  // Function to create aura gradient overlay on the image
+  const createAuraGradientImage = (imageUrl: string, auraColor: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        resolve(imageUrl);
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(imageUrl);
+        return;
+      }
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        // Set canvas size to match image
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw original image
+        ctx.drawImage(img, 0, 0);
+        
+        // Create aura gradient overlay
+        const gradient = ctx.createRadialGradient(
+          canvas.width / 2, canvas.height / 2, 0,
+          canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 2
+        );
+        
+        // Convert color name to hex if needed
+        const getColorHex = (colorName: string) => {
+          const colorMap: { [key: string]: string } = {
+            'red': '#FF0000', 'blue': '#0000FF', 'green': '#00FF00',
+            'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FFA500',
+            'pink': '#FFC0CB', 'violet': '#8A2BE2', 'indigo': '#4B0082',
+            'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
+            'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF'
+          };
+          return colorMap[colorName.toLowerCase()] || colorName;
+        };
+        
+        const hexColor = getColorHex(auraColor);
+        
+        // Create gradient with aura color
+        gradient.addColorStop(0, `${hexColor}00`); // Transparent center
+        gradient.addColorStop(0.7, `${hexColor}40`); // Semi-transparent
+        gradient.addColorStop(1, `${hexColor}80`); // More visible at edges
+        
+        // Apply gradient overlay with blend mode
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add outer glow effect
+        ctx.globalCompositeOperation = 'screen';
+        const glowGradient = ctx.createRadialGradient(
+          canvas.width / 2, canvas.height / 2, canvas.width * 0.3,
+          canvas.width / 2, canvas.height / 2, canvas.width * 0.6
+        );
+        glowGradient.addColorStop(0, `${hexColor}00`);
+        glowGradient.addColorStop(1, `${hexColor}60`);
+        ctx.fillStyle = glowGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Convert canvas to data URL
+        resolve(canvas.toDataURL('image/jpeg', 0.9));
+      };
+      
+      img.onerror = () => resolve(imageUrl);
+      img.src = imageUrl;
+    });
+  };
+
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
     setResult(null);
+    setOriginalImage(null);
+    setProcessedImage(null);
     setAnalysisProgress(0);
     setAnalysisStage("Initializing object scanning...");
+
+    // Store original image
+    const imageUrl = URL.createObjectURL(file);
+    setOriginalImage(imageUrl);
 
     try {
       // Simulate progress for UX
@@ -92,6 +177,12 @@ export default function ObjectAnalysis() {
       setResult(data);
       setAnalysisProgress(100);
       setActiveTab("basic");
+
+      // Create processed image with aura gradient overlay
+      if (originalImage && data.auraColor) {
+        const processedImageUrl = await createAuraGradientImage(originalImage, data.auraColor);
+        setProcessedImage(processedImageUrl);
+      }
 
       toast({
         title: "Analysis Complete",
@@ -205,14 +296,70 @@ export default function ObjectAnalysis() {
                         
                         <TabsContent value="basic">
                           <div className="space-y-6">
+                            {/* Image Comparison Section */}
+                            {originalImage && (
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                                  <ImageIcon className="h-5 w-5 text-purple-600" />
+                                  Aura Visualization
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  {/* Original Image */}
+                                  <div className="space-y-3">
+                                    <div className="text-center">
+                                      <h5 className="text-sm font-medium text-gray-700 mb-2">Original Image</h5>
+                                      <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
+                                        <img 
+                                          src={originalImage} 
+                                          alt="Original object"
+                                          className="w-full h-64 object-cover"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Processed Image with Aura Gradient */}
+                                  <div className="space-y-3">
+                                    <div className="text-center">
+                                      <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center justify-center gap-2">
+                                        <Sparkles className="h-4 w-4 text-purple-600" />
+                                        Aura Enhanced View
+                                      </h5>
+                                      <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-purple-200">
+                                        {processedImage ? (
+                                          <img 
+                                            src={processedImage} 
+                                            alt="Object with aura gradient"
+                                            className="w-full h-64 object-cover"
+                                          />
+                                        ) : (
+                                          <div className="w-full h-64 flex items-center justify-center">
+                                            <div className="text-center">
+                                              <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-2" />
+                                              <p className="text-sm text-gray-500">Processing aura visualization...</p>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Color Legend */}
+                                <div className="flex items-center justify-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100">
+                                  <span className="text-sm text-gray-600">Aura Color:</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`inline-block w-6 h-6 rounded-full border-2 border-white shadow-sm ${getColorClass(result.auraColor)}`}></span>
+                                    <span className="font-medium text-gray-800">{result.auraColor}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="font-medium text-lg">{result.objectName}</h3>
                                 <p className="text-sm text-gray-600">{result.objectDescription}</p>
-                              </div>
-                              
-                              <div className="flex gap-2">
-                                <span className={`inline-block w-8 h-8 rounded-full ${getColorClass(result.auraColor)}`}></span>
                               </div>
                             </div>
                             
@@ -435,6 +582,9 @@ export default function ObjectAnalysis() {
       </main>
       
       <Footer />
+      
+      {/* Hidden canvas for image processing */}
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 }
