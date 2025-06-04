@@ -225,27 +225,77 @@ export default function ClientDashboard() {
                     ) : (
                       <div className="space-y-4">
                         {Array.isArray(auraReadings) && auraReadings.map((reading: AuraReading) => (
-                          <div key={reading.id} className="border rounded-lg p-4 bg-gradient-to-r from-white to-gray-50">
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center gap-3">
-                                <div 
-                                  className="w-8 h-8 rounded-full border-2 border-white shadow-md"
-                                  style={{ backgroundColor: reading.dominantColor }}
-                                ></div>
-                                <div>
-                                  <h3 className="font-medium">{reading.dominantColor} Aura</h3>
-                                  <p className="text-sm text-gray-500">
-                                    {format(new Date(reading.createdAt), "MMM d, yyyy 'at' h:mm a")}
-                                  </p>
+                          <div key={reading.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+                            {/* Header with timestamp and energy */}
+                            <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50">
+                              <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
+                                  <div 
+                                    className="w-8 h-8 rounded-full border-2 border-white shadow-md"
+                                    style={{ backgroundColor: reading.dominantColor }}
+                                  ></div>
+                                  <div>
+                                    <h3 className="font-medium text-gray-900">{reading.dominantColor} Aura Reading</h3>
+                                    <p className="text-sm text-gray-500">
+                                      {format(new Date(reading.createdAt), "EEEE, MMM d, yyyy 'at' h:mm a")}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="bg-white">
+                                  Energy: {reading.energyLevel}/10
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            {/* Content with image and analysis */}
+                            <div className="p-4">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* Uploaded Image */}
+                                <div className="md:col-span-1">
+                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+                                    {reading.imageUrl ? (
+                                      <img 
+                                        src={reading.imageUrl} 
+                                        alt="Aura analysis image"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                        <Camera className="h-8 w-8 text-gray-400" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Analysis Content */}
+                                <div className="md:col-span-2 space-y-3">
+                                  <div>
+                                    <h4 className="font-medium text-gray-900 mb-2">Aura Analysis</h4>
+                                    <p className="text-sm text-gray-700 leading-relaxed">{reading.analysis}</p>
+                                  </div>
+                                  
+                                  <div className="flex flex-wrap gap-2">
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 rounded-full">
+                                      <div 
+                                        className="w-3 h-3 rounded-full border border-white"
+                                        style={{ backgroundColor: reading.dominantColor }}
+                                      ></div>
+                                      <span className="text-xs font-medium text-purple-700">Primary: {reading.dominantColor}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 rounded-full">
+                                      <div 
+                                        className="w-3 h-3 rounded-full border border-white"
+                                        style={{ backgroundColor: reading.secondaryColor }}
+                                      ></div>
+                                      <span className="text-xs font-medium text-blue-700">Secondary: {reading.secondaryColor}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
+                                      <TrendingUp className="h-3 w-3 text-green-600" />
+                                      <span className="text-xs font-medium text-green-700">Energy Level: {reading.energyLevel}/10</span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                              <Badge variant="outline">
-                                Energy: {reading.energyLevel}/10
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-700 mb-2">{reading.analysis}</p>
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <span>Secondary: {reading.secondaryColor}</span>
                             </div>
                           </div>
                         ))}
