@@ -29,6 +29,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/services" component={Services} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
+      <ProtectedRoute path="/dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
       <Route path="/aura-analysis" component={AuraAnalysis} />
       <Route path="/object-analysis" component={ObjectAnalysis} />
