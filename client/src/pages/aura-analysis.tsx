@@ -25,6 +25,7 @@ export default function AuraAnalysis() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [processedAuraImage, setProcessedAuraImage] = useState<string | null>(null);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
   
   // Numerology states
@@ -507,6 +508,70 @@ export default function AuraAnalysis() {
   };
   
   // Function to generate aura visualization with colored clouds
+  // Function to process the uploaded image with aura colors
+
+  const processImageWithAura = (imageBase64: string, auraData: AuraAnalysisResult): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Set canvas size to match image
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw original image
+        ctx?.drawImage(img, 0, 0);
+        
+        if (ctx) {
+          // Create aura gradient overlay
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
+          
+          // Create radial gradient for aura effect
+          const gradient = ctx.createRadialGradient(
+            centerX, centerY, 0,
+            centerX, centerY, maxRadius
+          );
+          
+          // Add dominant color (inner aura)
+          gradient.addColorStop(0, 'transparent');
+          gradient.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}15`);
+          gradient.addColorStop(0.6, `${getColorCode(auraData.dominantColor)}25`);
+          gradient.addColorStop(0.8, `${getColorCode(auraData.secondaryColor)}20`);
+          gradient.addColorStop(1, `${getColorCode(auraData.secondaryColor)}30`);
+          
+          // Apply gradient overlay
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Add subtle glow effect around the person
+          ctx.globalCompositeOperation = 'screen';
+          const glowGradient = ctx.createRadialGradient(
+            centerX, centerY, maxRadius * 0.2,
+            centerX, centerY, maxRadius * 0.8
+          );
+          glowGradient.addColorStop(0, 'transparent');
+          glowGradient.addColorStop(0.5, `${getColorCode(auraData.dominantColor)}10`);
+          glowGradient.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = glowGradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Reset composite operation
+          ctx.globalCompositeOperation = 'source-over';
+        }
+        
+        resolve(canvas.toDataURL());
+      };
+      
+      img.src = imageBase64;
+    });
+  };
+
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
     if (!originalImageBase64) return;
     
@@ -748,6 +813,10 @@ export default function AuraAnalysis() {
             if (base64String) {
               setAnalysisStage("Creating your aura visualization...");
               generateAuraVisualization(base64String, analysisResult);
+              
+              // Process the uploaded image with aura colors
+              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
+              setProcessedAuraImage(auraProcessedImage);
             }
             
             // Ensure progress shows 100% at the end
@@ -1131,8 +1200,8 @@ export default function AuraAnalysis() {
                     <Card>
                       <CardContent className="p-7">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
-                          <TabsList className="grid grid-rows-4 gap-3 w-full h-24 p-1 mb-12">
-                            <div className="grid grid-cols-2 gap-2">
+                          <TabsList className="grid grid-rows-4 gap-3 w-full h-30 p-2 mb-11">
+                            <div className="grid grid-cols-2 gap-20">
                               <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-2">Analysis</TabsTrigger>
                               <TabsTrigger value="energy-reading" className="text-sm whitespace-nowrap px-2 relative">
                                 Energy Reading
@@ -1144,11 +1213,11 @@ export default function AuraAnalysis() {
                                 </span>
                               </TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-10">
                               <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-2">Chakras</TabsTrigger>
                               <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-2">Guidance</TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-15">
                               <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-2 relative">
                                 Color Spectrum
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -1168,7 +1237,7 @@ export default function AuraAnalysis() {
                                 </span>
                               </TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-10">
                               <TabsTrigger value="detailed" className="relative">
                                 Detailed Analysis
                                 <span className="absolute -top-1 -right-1 flex h-4 w-4 mb-5">
