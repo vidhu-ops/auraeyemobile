@@ -8,7 +8,7 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PremiumFeature } from "@/components/premium/premium-feature";
-import { analyzeAuraImage, AuraAnalysisResult } from "@/lib/openai";
+import { analyzeAuraImage, AuraAnalysisResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default function AuraAnalysis() {
   // Numerology states
   const [numerologyName, setNumerologyName] = useState("");
   const [numerologyBirthDate, setNumerologyBirthDate] = useState("");
-  const [numerologyResult, setNumerologyResult] = useState<any>(null);
+  const [numerologyResult, setNumerologyResult] = useState<NumerologyResult | null>(null);
   const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
   
   const handlePremiumUpgrade = () => {
@@ -456,7 +456,7 @@ export default function AuraAnalysis() {
   };
 
   // Function to calculate numerology based on name and birth date
-  const calculateNumerology = async (name: string, birthDate: string) => {
+  const calculateNumerologyData = async (name: string, birthDate: string) => {
     if (!name || !birthDate) {
       toast({
         title: "Missing information",
@@ -469,28 +469,16 @@ export default function AuraAnalysis() {
     setIsCalculatingNumerology(true);
     
     try {
-      const response = await fetch('/api/calculate-numerology', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, birthDate })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to calculate numerology profile');
-      }
-      
-      const data = await response.json();
+      const data = await calculateNumerology(name, birthDate);
       setNumerologyResult(data);
       
-      if (activeTab !== "numerology") {
-        setActiveTab("numerology");
+      if (activeTab !== "combined") {
+        setActiveTab("combined");
       }
       
       toast({
-        title: "Numerology Calculated",
-        description: `Your Life Path Number is ${data.lifePathNumber}`,
+        title: "Combined Analysis Ready",
+        description: `Your Life Path Number is ${data.lifePathNumber} - viewing combined insights`,
       });
       
     } catch (error) {
@@ -502,6 +490,49 @@ export default function AuraAnalysis() {
     } finally {
       setIsCalculatingNumerology(false);
     }
+  };
+
+  // Function to generate combined insights from aura and numerology
+  const getCombinedInsights = (aura: AuraAnalysisResult, numerology: NumerologyResult) => {
+    const auraColor = aura.dominantColor.toLowerCase();
+    const lifePathNumber = numerology.lifePathNumber;
+    
+    // Map life path numbers to compatible aura colors
+    const numerologyColorMap: Record<number, string[]> = {
+      1: ['red', 'orange', 'gold'],
+      2: ['orange', 'blue', 'pink'],
+      3: ['yellow', 'orange', 'green'],
+      4: ['green', 'brown', 'earth tones'],
+      5: ['blue', 'turquoise', 'silver'],
+      6: ['green', 'pink', 'blue'],
+      7: ['purple', 'violet', 'indigo'],
+      8: ['gold', 'red', 'black'],
+      9: ['white', 'gold', 'all colors']
+    };
+    
+    const compatibleColors = numerologyColorMap[lifePathNumber] || ['all colors'];
+    const isColorCompatible = compatibleColors.some(color => 
+      auraColor.includes(color) || color === 'all colors'
+    );
+    
+    return {
+      energyAlignment: isColorCompatible ? 'Highly Aligned' : 'Growth Opportunity',
+      compatibility: isColorCompatible ? 
+        `Your ${aura.dominantColor} aura perfectly aligns with your Life Path ${lifePathNumber} energy, creating harmonious spiritual flow.` :
+        `Your ${aura.dominantColor} aura presents a growth opportunity with your Life Path ${lifePathNumber}, encouraging expansion beyond your comfort zone.`,
+      spiritualGuidance: `Your aura's ${aura.dominantColor.toLowerCase()} energy combined with Life Path ${lifePathNumber} suggests focusing on ${
+        isColorCompatible ? 'amplifying your natural gifts' : 'integrating new spiritual dimensions'
+      }. ${numerology.guidance || ''}`,
+      chakraAlignment: aura.chakraActivity,
+      personalityIntegration: `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor.toLowerCase()} aura energy, showing how others perceive your spiritual presence.`,
+      lifePathColor: numerology.colorAssociations?.lifePathColor || aura.dominantColor,
+      recommendedPractices: [
+        `Meditate with ${aura.dominantColor.toLowerCase()} light to strengthen your aura`,
+        `Practice Life Path ${lifePathNumber} affirmations daily`,
+        `Work with ${numerology.colorAssociations?.lifePathColor || aura.dominantColor} crystals`,
+        `Focus on ${aura.dominantColor.toLowerCase()} chakra balancing exercises`
+      ]
+    };
   };
   
   const handleImageSelect = async (file: File) => {
@@ -852,16 +883,6 @@ export default function AuraAnalysis() {
                   </div>
                   
                   <div>
-                    {result?.processedImage && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium mb-2">Your Aura Visualization</h3>
-                  <img 
-                    src={result.processedImage} 
-                    alt="Aura visualization" 
-                    className="w-full rounded-lg shadow-lg"
-                  />
-                </div>
-              )}
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
                       <ul className="space-y-2 text-sm text-gray-600">
@@ -974,12 +995,12 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
-                              <TabsTrigger value="numerology" className="text-sm whitespace-nowrap px-3 relative">
-                                Numerology
+                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-3 relative">
+                                Combined Analysis
                                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
-                                    <span className="text-[10px] text-white font-bold">9</span>
+                                    <span className="text-[10px] text-white font-bold">✨</span>
                                   </span>
                                 </span>
                               </TabsTrigger>
@@ -1323,6 +1344,156 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
+                          <TabsContent value="combined">
+                            <div className="space-y-6">
+                              {!numerologyResult ? (
+                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
+                                  <div className="text-center mb-6">
+                                    <h3 className="font-medium text-lg mb-2">Enhanced Spiritual Analysis</h3>
+                                    <p className="text-sm text-gray-600">
+                                      Combine your aura reading with numerology for deeper spiritual insights
+                                    </p>
+                                  </div>
+                                  
+                                  <div className="space-y-4">
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Full Name
+                                      </label>
+                                      <input
+                                        type="text"
+                                        placeholder="Enter your full birth name"
+                                        className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                                        value={numerologyName}
+                                        onChange={(e) => setNumerologyName(e.target.value)}
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Birth Date
+                                      </label>
+                                      <input
+                                        type="date"
+                                        className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                                        value={numerologyBirthDate}
+                                        onChange={(e) => setNumerologyBirthDate(e.target.value)}
+                                      />
+                                    </div>
+                                    
+                                    <Button 
+                                      className="w-full"
+                                      onClick={() => calculateNumerologyData(numerologyName, numerologyBirthDate)}
+                                      disabled={isCalculatingNumerology}
+                                    >
+                                      {isCalculatingNumerology ? (
+                                        <>
+                                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                          Creating Combined Analysis...
+                                        </>
+                                      ) : "Create Combined Spiritual Analysis"}
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-6">
+                                  {/* Energy Alignment Status */}
+                                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <h3 className="font-medium text-lg">Spiritual Energy Alignment</h3>
+                                      <Badge variant={getCombinedInsights(result, numerologyResult).energyAlignment === 'Highly Aligned' ? 'default' : 'secondary'}>
+                                        {getCombinedInsights(result, numerologyResult).energyAlignment}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                      {getCombinedInsights(result, numerologyResult).compatibility}
+                                    </p>
+                                  </div>
+
+                                  {/* Combined Numbers and Colors */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                      <h4 className="font-medium mb-3">Aura & Life Path Connection</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Dominant Aura Color</span>
+                                          <div className="flex items-center space-x-2">
+                                            <div className={`w-4 h-4 rounded-full ${getColorClass(result.dominantColor)}`}></div>
+                                            <span className="text-sm font-medium">{result.dominantColor}</span>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Life Path Number</span>
+                                          <span className="text-2xl font-bold text-purple-600">{numerologyResult.lifePathNumber}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Life Path Color</span>
+                                          <div className="flex items-center space-x-2">
+                                            <div className={`w-4 h-4 rounded-full ${getColorClass(getCombinedInsights(result, numerologyResult).lifePathColor)}`}></div>
+                                            <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).lifePathColor}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                      <h4 className="font-medium mb-3">Personality Integration</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Energy Level</span>
+                                          <span className="text-sm font-medium">{result.energyLevel}/10</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Personality Number</span>
+                                          <span className="text-2xl font-bold text-indigo-600">{numerologyResult.personalityNumber}</span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 leading-relaxed">
+                                          {getCombinedInsights(result, numerologyResult).personalityIntegration}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Combined Spiritual Guidance */}
+                                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-100">
+                                    <h4 className="font-medium mb-3">Combined Spiritual Guidance</h4>
+                                    <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                                      {getCombinedInsights(result, numerologyResult).spiritualGuidance}
+                                    </p>
+                                    
+                                    <h5 className="font-medium text-sm mb-2">Recommended Spiritual Practices</h5>
+                                    <ul className="space-y-1">
+                                      {getCombinedInsights(result, numerologyResult).recommendedPractices.map((practice, index) => (
+                                        <li key={index} className="flex items-start text-sm text-gray-600">
+                                          <span className="text-amber-500 mr-2">•</span>
+                                          {practice}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  {/* Reset Option */}
+                                  <div className="flex items-center justify-between pt-4 border-t">
+                                    <p className="text-sm text-gray-500">
+                                      Based on: {numerologyName}, {new Date(numerologyBirthDate).toLocaleDateString()}
+                                    </p>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => {
+                                        setNumerologyResult(null);
+                                        setNumerologyName("");
+                                        setNumerologyBirthDate("");
+                                      }}
+                                    >
+                                      New Analysis
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </TabsContent>
+
                           <TabsContent value="numerology">
                             <div className="space-y-6">
                               <div className="flex items-center justify-between">
