@@ -356,11 +356,25 @@ export default function ClientDashboard() {
                         </div>
                       )}
                       
-                      <Button asChild variant="outline" className="w-full">
-                        <Link href="/numerology">
-                          View Full Numerology Reading <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <div className="space-y-3">
+                        <Button asChild variant="outline" className="w-full">
+                          <Link href="/numerology">
+                            View Full Numerology Reading <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                        
+                        <div className="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-100">
+                          <p className="text-sm text-indigo-700 font-medium mb-2 text-center">
+                            Discover Your True Self
+                          </p>
+                          <Button asChild size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                            <Link href="/numerology">
+                              To know more about yourself and detailed analysis click here
+                              <ArrowRight className="ml-1 h-3 w-3" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   ) : numerologyError ? (
                     <div className="text-center py-8 text-gray-500">
