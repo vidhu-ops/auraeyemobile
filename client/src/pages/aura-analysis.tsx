@@ -528,38 +528,68 @@ export default function AuraAnalysis() {
           // Create aura gradient overlay
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
+          const maxRadius = Math.max(canvas.width, canvas.height) * 0.8;
           
-          // Create radial gradient for aura effect
-          const gradient = ctx.createRadialGradient(
-            centerX, centerY, 0,
-            centerX, centerY, maxRadius
-          );
-          
-          // Add dominant color (inner aura)
-          gradient.addColorStop(0, 'transparent');
-          gradient.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}15`);
-          gradient.addColorStop(0.6, `${getColorCode(auraData.dominantColor)}25`);
-          gradient.addColorStop(0.8, `${getColorCode(auraData.secondaryColor)}20`);
-          gradient.addColorStop(1, `${getColorCode(auraData.secondaryColor)}30`);
-          
-          // Apply gradient overlay
-          ctx.globalCompositeOperation = 'overlay';
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // Add subtle glow effect around the person
+          // Layer 1: Strong inner aura glow
           ctx.globalCompositeOperation = 'screen';
-          const glowGradient = ctx.createRadialGradient(
-            centerX, centerY, maxRadius * 0.2,
-            centerX, centerY, maxRadius * 0.8
+          const innerGlow = ctx.createRadialGradient(
+            centerX, centerY, 0,
+            centerX, centerY, maxRadius * 0.4
           );
-          glowGradient.addColorStop(0, 'transparent');
-          glowGradient.addColorStop(0.5, `${getColorCode(auraData.dominantColor)}10`);
-          glowGradient.addColorStop(1, 'transparent');
+          innerGlow.addColorStop(0, 'transparent');
+          innerGlow.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}80`);
+          innerGlow.addColorStop(0.7, `${getColorCode(auraData.dominantColor)}60`);
+          innerGlow.addColorStop(1, 'transparent');
           
-          ctx.fillStyle = glowGradient;
+          ctx.fillStyle = innerGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Layer 2: Middle aura layer with secondary color
+          ctx.globalCompositeOperation = 'overlay';
+          const middleGlow = ctx.createRadialGradient(
+            centerX, centerY, maxRadius * 0.3,
+            centerX, centerY, maxRadius * 0.7
+          );
+          middleGlow.addColorStop(0, 'transparent');
+          middleGlow.addColorStop(0.4, `${getColorCode(auraData.secondaryColor)}70`);
+          middleGlow.addColorStop(0.8, `${getColorCode(auraData.secondaryColor)}50`);
+          middleGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = middleGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Layer 3: Outer aura field
+          ctx.globalCompositeOperation = 'color-dodge';
+          const outerGlow = ctx.createRadialGradient(
+            centerX, centerY, maxRadius * 0.6,
+            centerX, centerY, maxRadius * 1.2
+          );
+          outerGlow.addColorStop(0, 'transparent');
+          outerGlow.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}40`);
+          outerGlow.addColorStop(0.6, `${getColorCode(auraData.secondaryColor)}30`);
+          outerGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = outerGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Layer 4: Energy trails around the edges
+          ctx.globalCompositeOperation = 'lighter';
+          for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const trailX = centerX + Math.cos(angle) * maxRadius * 0.8;
+            const trailY = centerY + Math.sin(angle) * maxRadius * 0.8;
+            
+            const trail = ctx.createRadialGradient(
+              trailX, trailY, 0,
+              trailX, trailY, maxRadius * 0.2
+            );
+            trail.addColorStop(0, `${getColorCode(auraData.dominantColor)}30`);
+            trail.addColorStop(0.5, `${getColorCode(auraData.secondaryColor)}20`);
+            trail.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = trail;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
           
           // Reset composite operation
           ctx.globalCompositeOperation = 'source-over';
