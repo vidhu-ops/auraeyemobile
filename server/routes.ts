@@ -12,6 +12,53 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
+// Function to generate deterministic aura analysis based on image hash
+function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
+  const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
+  const seed = parseInt(hash.substring(0, 8), 16);
+  
+  // Deterministic aura colors
+  const dominantColors = [
+    "Red", "Blue", "Green", "Yellow", "Purple", "Orange", 
+    "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"
+  ];
+  
+  const secondaryColors = [
+    "White", "Crimson", "Emerald", "Amber", "Lavender", "Coral",
+    "Rose", "Magenta", "Sapphire", "Bronze", "Pearl", "Cyan"
+  ];
+  
+  // Deterministic personality traits
+  const personalityTraits = [
+    ["Creative", "Passionate", "Energetic"],
+    ["Calm", "Intuitive", "Peaceful"],
+    ["Healing", "Nurturing", "Compassionate"],
+    ["Joyful", "Optimistic", "Bright"],
+    ["Spiritual", "Mystical", "Wise"],
+    ["Confident", "Bold", "Inspiring"]
+  ];
+  
+  const dominantIndex = seed % dominantColors.length;
+  const secondaryIndex = (seed >> 4) % secondaryColors.length;
+  const traitIndex = (seed >> 8) % personalityTraits.length;
+  const energyLevel = 3 + (seed % 8); // Energy level between 3-10
+  const auraStrength = 40 + (seed % 41); // Strength between 40-80
+  
+  const selectedDominant = dominantColors[dominantIndex];
+  const selectedSecondary = secondaryColors[secondaryIndex];
+  const selectedTraits = personalityTraits[traitIndex];
+  
+  return {
+    dominantColor: selectedDominant,
+    secondaryColor: selectedSecondary,
+    energyLevel: energyLevel,
+    auraStrength: auraStrength,
+    personalityTraits: selectedTraits,
+    spiritualGuidance: `Your ${selectedDominant.toLowerCase()} aura suggests you are naturally ${selectedTraits[0].toLowerCase()} and ${selectedTraits[1].toLowerCase()}. This energy pattern indicates strong potential for ${selectedTraits[2].toLowerCase()} expression.`,
+    detailedAnalysis: `The energy field shows a ${selectedDominant.toLowerCase()} dominant frequency with ${selectedSecondary.toLowerCase()} undertones. This combination suggests a personality that is ${selectedTraits.join(', ').toLowerCase()}. The aura strength of ${auraStrength}% indicates ${auraStrength > 60 ? 'strong' : 'moderate'} energy presence.`
+  };
+}
+
 // Function to generate deterministic analysis based on image hash
 function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
@@ -174,6 +221,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.isAuthenticated() ? req.user?.id : null;
       
       // Use deterministic analysis based on image hash for consistent results
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
       const deterministicResult = generateDeterministicObjectAnalysis(req.file.buffer);
       res.json(deterministicResult);
     } catch (error) {
@@ -218,30 +268,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
 
-      // Try to analyze the aura using OpenAI, but use fallback if OpenAI fails
+      // Use deterministic analysis based on image hash for consistent results
       let auraAnalysis;
-      try {
-        auraAnalysis = await analyzeAuraImage(imageData, customPrompt ?? undefined);
-      } catch (aiError) {
-        console.error("Error in OpenAI analysis:", aiError);
-        // Already using fallback inside analyzeAuraImage, this is just a safeguard
-        auraAnalysis = {
-          dominantColor: "Blue",
-          secondaryColor: "Purple",
-          energyLevel: 3,
-          personalityTraits: ["Intuitive", "Spiritual", "Sensitive"],
-          spiritualGuidance: "Your aura suggests you are on a spiritual journey. Continue to nurture your intuitive abilities and stay connected to your higher self.",
-          chakraActivity: {
-            root: 5,
-            sacral: 6,
-            solarPlexus: 5,
-            heart: 7,
-            throat: 6,
-            thirdEye: 8,
-            crown: 7
-          },
-          detailedAnalysis: "Your aura shows a blend of spiritual awareness and intuitive abilities. Focus on grounding practices to balance your energy."
-        };
+      if (req.file) {
+        auraAnalysis = generateDeterministicAuraAnalysis(req.file.buffer);
+      } else {
+        // For base64 images, convert to buffer first
+        const imageBuffer = Buffer.from(imageData, 'base64');
+        auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
       }
 
       // Save the analysis to storage if user is authenticated
