@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import crypto from "crypto";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
@@ -10,6 +11,56 @@ import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
+
+// Function to generate deterministic analysis based on image hash
+function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
+  const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
+  const seed = parseInt(hash.substring(0, 8), 16);
+  
+  // Deterministic object types based on hash
+  const objectTypes = [
+    "Crystal", "Stone", "Jewelry", "Artifact", "Ornament", "Talisman", 
+    "Figurine", "Coin", "Ring", "Pendant", "Sculpture", "Charm"
+  ];
+  
+  // Deterministic aura colors
+  const auraColors = [
+    "Red", "Blue", "Green", "Yellow", "Purple", "Orange", 
+    "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"
+  ];
+  
+  // Deterministic energy qualities
+  const energyQualities = [
+    ["Calming", "Protective", "Grounding"],
+    ["Energizing", "Inspiring", "Creative"],
+    ["Healing", "Nurturing", "Compassionate"],
+    ["Intuitive", "Mystical", "Spiritual"],
+    ["Balancing", "Harmonizing", "Peaceful"],
+    ["Empowering", "Confident", "Strong"]
+  ];
+  
+  const objectTypeIndex = seed % objectTypes.length;
+  const auraColorIndex = (seed >> 4) % auraColors.length;
+  const energyIndex = (seed >> 8) % energyQualities.length;
+  const energyLevel = 3 + (seed % 8); // Energy level between 3-10
+  
+  const selectedObjectType = objectTypes[objectTypeIndex];
+  const selectedAuraColor = auraColors[auraColorIndex];
+  const selectedQualities = energyQualities[energyIndex];
+  
+  return {
+    objectName: selectedObjectType,
+    objectDescription: `This ${selectedObjectType.toLowerCase()} exhibits distinctive spiritual energy patterns and appears to be energetically active.`,
+    objectPurpose: `This ${selectedObjectType.toLowerCase()} appears designed to enhance ${selectedQualities[0].toLowerCase()} energy and promote spiritual awareness.`,
+    auraColor: selectedAuraColor,
+    auraDescription: `The object emanates a ${selectedAuraColor.toLowerCase()} aura, suggesting ${selectedQualities.join(', ').toLowerCase()} properties.`,
+    energyLevel: energyLevel,
+    energyQualities: selectedQualities,
+    historicalSignificance: `Objects of this type have historically been used in spiritual practices for their ${selectedQualities[0].toLowerCase()} properties.`,
+    spiritualSignificance: `This object resonates with energies that promote ${selectedQualities.join(', ').toLowerCase()} states of being.`,
+    detailedAnalysis: `The energy signature reveals a ${selectedAuraColor.toLowerCase()} dominant frequency with ${selectedQualities.join(', ').toLowerCase()} undertones. This suggests the object can be used for meditation, energy work, and spiritual development practices.`
+  };
+}
 
 // Helper functions for numerology calculations
 function getColorForNumber(num: number): string {
@@ -122,86 +173,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
       
-      try {
-        // Use OpenAI to analyze the object
-        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
-        
-        // Call OpenAI with the prompt
-        // Note: We're using the same analyzeAuraImage function but with a different prompt
-        // In a production app, you'd want to create a separate function for object analysis
-        let objectAnalysis;
-        try {
-          objectAnalysis = await analyzeAuraImage(imageData, prompt);
-          
-          // Extract the actual object type from the first sentence of the detailed analysis
-          let objectType = "Object";
-          const firstSentence = objectAnalysis.detailedAnalysis.split(".")[0];
-          
-          // Look for common patterns that might indicate the object type
-          if (firstSentence.toLowerCase().includes("appears to be")) {
-            const match = firstSentence.match(/appears to be (a|an) ([^,\.]+)/i);
-            if (match && match[2]) objectType = match[2].trim();
-          } else if (firstSentence.toLowerCase().includes("this is")) {
-            const match = firstSentence.match(/this is (a|an) ([^,\.]+)/i);
-            if (match && match[2]) objectType = match[2].trim();
-          } else if (firstSentence.toLowerCase().includes("object is")) {
-            const match = firstSentence.match(/object is (a|an) ([^,\.]+)/i);
-            if (match && match[2]) objectType = match[2].trim();
-          }
-          
-          // Transform the result to match the ObjectAnalysisResult interface
-          const result = {
-            objectName: objectType.charAt(0).toUpperCase() + objectType.slice(1),
-            objectDescription: objectAnalysis.detailedAnalysis.split(".")[0] + ".",
-            objectPurpose: "This " + objectType.toLowerCase() + " appears to serve a purpose related to " + objectAnalysis.personalityTraits.join(", "),
-            auraColor: objectAnalysis.dominantColor,
-            auraDescription: "The object emanates a " + objectAnalysis.dominantColor.toLowerCase() + " aura, which suggests " + objectAnalysis.spiritualGuidance,
-            energyLevel: objectAnalysis.energyLevel,
-            energyQualities: objectAnalysis.personalityTraits,
-            historicalSignificance: "The object's energy signature suggests historical connections to traditions of harmony and balance.",
-            spiritualSignificance: objectAnalysis.spiritualGuidance,
-            detailedAnalysis: objectAnalysis.detailedAnalysis
-          };
-          
-          res.json(result);
-        } catch (aiError) {
-          console.error("Error in OpenAI object analysis:", aiError);
-          
-          // Fallback response if OpenAI analysis fails
-          const fallbackResult = {
-            objectName: "Mystical Object",
-            objectDescription: "This appears to be an object with significant spiritual energy.",
-            objectPurpose: "This object seems designed to enhance spiritual awareness and energy flow.",
-            auraColor: "Blue-Purple",
-            auraDescription: "The object emanates a calming blue-purple aura, suggesting wisdom and spiritual intuition.",
-            energyLevel: 7,
-            energyQualities: ["Calming", "Intuitive", "Protective", "Enlightening"],
-            historicalSignificance: "Objects with this energy signature have historically been used in meditation and spiritual practices.",
-            spiritualSignificance: "This object may help in deepening meditation and accessing higher states of consciousness.",
-            detailedAnalysis: "The object shows signs of being energetically charged. It appears to resonate with the third eye and crown chakras, potentially enhancing intuition and connection to higher wisdom. The energy pattern suggests it could be useful for spiritual development practices."
-          };
-          
-          res.json(fallbackResult);
-        }
-      } catch (error) {
-        console.error("Error analyzing object:", error);
-        
-        // Even if everything fails, provide a fallback response
-        const emergencyFallback = {
-          objectName: "Mystical Artifact",
-          objectDescription: "This object appears to be a spiritually significant item.",
-          objectPurpose: "This object seems to serve as a focus for meditation and energy work.",
-          auraColor: "Indigo",
-          auraDescription: "The object emanates an indigo aura, suggesting connection to intuition and the third eye chakra.",
-          energyLevel: 6,
-          energyQualities: ["Intuitive", "Calming", "Focusing", "Protective"],
-          historicalSignificance: "Similar objects have been used in spiritual practices across various cultures.",
-          spiritualSignificance: "This object may enhance meditation and spiritual awareness practices.",
-          detailedAnalysis: "The energy signature of this object suggests it resonates with the third eye chakra. It may be useful for enhancing intuition and inner vision during meditation or spiritual work."
-        };
-        
-        res.json(emergencyFallback);
-      }
+      // Use deterministic analysis based on image hash for consistent results
+      const deterministicResult = generateDeterministicObjectAnalysis(req.file.buffer);
+      res.json(deterministicResult);
     } catch (error) {
       console.error("Error processing object analysis:", error);
       res.status(500).json({ message: "An error occurred during analysis" });
