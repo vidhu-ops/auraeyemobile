@@ -1175,7 +1175,7 @@ export default function AuraAnalysis() {
                   <div className="flex items-center justify-between mb-7">
                     <h2 className="font-heading font-semibold text-xl">Your Aura Reading</h2>
                     
-                    {result && !isAnalyzing && (
+                    {result && result.dominantColor && !isAnalyzing && (
                       <div className="flex space-x-2">
                         <Button 
                           variant="outline" 
@@ -2965,7 +2965,7 @@ export default function AuraAnalysis() {
         </section>
 
         {/* Healers Connection Section */}
-        {result && (
+        {result && result.dominantColor && result.secondaryColor && (
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
               <div className="max-w-5xl mx-auto">
