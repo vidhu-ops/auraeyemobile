@@ -2898,8 +2898,8 @@ export default function AuraAnalysis() {
                                             <div 
                                               className="w-8 h-8 rounded-full flex-shrink-0" 
                                               style={{ 
-                                                backgroundColor: result.secondaryColor.toLowerCase(),
-                                                boxShadow: `0 0 10px ${result.secondaryColor.toLowerCase()}60`
+                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
+                                                boxShadow: `0 0 10px ${getAccurateColorCode(result.secondaryColor)}60`
                                               }}
                                             ></div>
                                             <div>
@@ -2916,8 +2916,8 @@ export default function AuraAnalysis() {
                                               <div 
                                                 className="w-8 h-8 rounded-full flex-shrink-0" 
                                                 style={{ 
-                                                  backgroundColor: color.toLowerCase(),
-                                                  boxShadow: `0 0 10px ${color.toLowerCase()}60`
+                                                  backgroundColor: getAccurateColorCode(color),
+                                                  boxShadow: `0 0 10px ${getAccurateColorCode(color)}60`
                                                 }}
                                               ></div>
                                               <div>
@@ -3045,8 +3045,8 @@ export default function AuraAnalysis() {
                                           <div 
                                             className="w-12 h-12 rounded-full" 
                                             style={{
-                                              background: `conic-gradient(${result.dominantColor.toLowerCase()} ${result.energyLevel * 36}deg, transparent 0deg)`,
-                                              boxShadow: `0 0 15px ${result.dominantColor.toLowerCase()}60`
+                                              background: `conic-gradient(${getAccurateColorCode(result.dominantColor)} ${result.energyLevel * 36}deg, transparent 0deg)`,
+                                              boxShadow: `0 0 15px ${getAccurateColorCode(result.dominantColor)}60`
                                             }}
                                           ></div>
                                         </div>
