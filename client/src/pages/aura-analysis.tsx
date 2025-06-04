@@ -37,6 +37,167 @@ export default function AuraAnalysis() {
     showPremiumModal("aura");
   };
 
+  // Helper functions for Energy Reading tab
+
+  const calculateGivingEnergy = (aura: AuraAnalysisResult): number => {
+    const energyMap: Record<string, number> = {
+      'Red': 85, 'Orange': 75, 'Yellow': 70, 'Green': 80,
+      'Blue': 65, 'Indigo': 60, 'Violet': 55, 'Purple': 65,
+      'Pink': 90, 'White': 95, 'Gold': 85, 'Silver': 70
+    };
+    const base = energyMap[aura.dominantColor] || 60;
+    return Math.min(95, base + (aura.energyLevel - 5) * 3);
+  };
+
+  const calculateReceivingEnergy = (aura: AuraAnalysisResult): number => {
+    const receptivityMap: Record<string, number> = {
+      'Red': 40, 'Orange': 60, 'Yellow': 55, 'Green': 85,
+      'Blue': 80, 'Indigo': 90, 'Violet': 95, 'Purple': 85,
+      'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95
+    };
+    const base = receptivityMap[aura.dominantColor] || 60;
+    return Math.min(95, base + (aura.energyLevel - 5) * 2);
+  };
+
+  const getGivingEnergyDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Strong radiator';
+    if (percentage >= 60) return 'Balanced giver';
+    if (percentage >= 40) return 'Selective sharing';
+    return 'Energy conserving';
+  };
+
+  const getReceivingEnergyDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Highly receptive';
+    if (percentage >= 60) return 'Balanced receiver';
+    if (percentage >= 40) return 'Selective absorber';
+    return 'Energy filtering';
+  };
+
+  const getChakraColor = (chakra: string): string => {
+    const chakraColors: Record<string, string> = {
+      'root': 'bg-red-500',
+      'sacral': 'bg-orange-500',
+      'solarPlexus': 'bg-yellow-500',
+      'heart': 'bg-green-500',
+      'throat': 'bg-blue-500',
+      'thirdEye': 'bg-indigo-500',
+      'crown': 'bg-purple-500'
+    };
+    return chakraColors[chakra] || 'bg-gray-400';
+  };
+
+  const calculateEarthStarChakra = (aura: AuraAnalysisResult): number => {
+    const groundingColors = ['Red', 'Orange', 'Green'];
+    const isGrounding = groundingColors.includes(aura.dominantColor);
+    return isGrounding ? 70 + aura.energyLevel * 3 : 50 + aura.energyLevel * 2;
+  };
+
+  const calculateSoulStarChakra = (aura: AuraAnalysisResult): number => {
+    const spiritualColors = ['Violet', 'Purple', 'White', 'Gold', 'Indigo'];
+    const isSpiritual = spiritualColors.includes(aura.dominantColor);
+    return isSpiritual ? 75 + aura.energyLevel * 3 : 45 + aura.energyLevel * 2;
+  };
+
+  const calculateAuraStrength = (aura: AuraAnalysisResult): number => {
+    return Math.min(95, (aura.energyLevel * 8) + 15);
+  };
+
+  const calculateVulnerability = (aura: AuraAnalysisResult): number => {
+    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo'];
+    const isSensitive = sensitiveColors.includes(aura.dominantColor);
+    const base = isSensitive ? 60 : 40;
+    return Math.max(10, base - aura.energyLevel * 4);
+  };
+
+  const calculateEnergyBalance = (aura: AuraAnalysisResult): number => {
+    const giving = calculateGivingEnergy(aura);
+    const receiving = calculateReceivingEnergy(aura);
+    const balance = 100 - Math.abs(giving - receiving);
+    return Math.max(30, balance);
+  };
+
+  const getStrengthDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Powerful aura';
+    if (percentage >= 60) return 'Strong presence';
+    if (percentage >= 40) return 'Developing strength';
+    return 'Gentle energy';
+  };
+
+  const getVulnerabilityDescription = (percentage: number): string => {
+    if (percentage >= 70) return 'Highly sensitive';
+    if (percentage >= 50) return 'Moderately open';
+    if (percentage >= 30) return 'Well protected';
+    return 'Strong boundaries';
+  };
+
+  const getBalanceDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Harmonious flow';
+    if (percentage >= 60) return 'Good balance';
+    if (percentage >= 40) return 'Adjusting flow';
+    return 'Seeking balance';
+  };
+
+  const getEnergyLevelDescription = (level: number): string => {
+    if (level >= 8) return 'Vibrant energy';
+    if (level >= 6) return 'Active energy';
+    if (level >= 4) return 'Steady energy';
+    return 'Calm energy';
+  };
+
+  const getMorningEnergyInfluence = (dominant: string, secondary: string): string => {
+    const morningInfluences: Record<string, string> = {
+      'Red': 'Your red energy ignites your morning with passionate drive and determination.',
+      'Orange': 'Orange energy brings creative enthusiasm and social warmth to your mornings.',
+      'Yellow': 'Yellow energy illuminates your mind with clarity and optimistic thinking.',
+      'Green': 'Green energy grounds you with natural balance and healing intentions.',
+      'Blue': 'Blue energy flows through you with peaceful communication and truth.',
+      'Indigo': 'Indigo energy opens your intuitive channels for insightful mornings.',
+      'Violet': 'Violet energy connects you to higher consciousness and spiritual awareness.',
+      'Purple': 'Purple energy transforms your morning with mystical understanding.',
+      'Pink': 'Pink energy radiates love and emotional healing throughout your morning.',
+      'White': 'White energy purifies your morning with divine protection and clarity.',
+      'Gold': 'Gold energy empowers your morning with wisdom and spiritual authority.',
+      'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.'
+    };
+    return morningInfluences[dominant] || 'Your unique energy signature guides your morning with personal power.';
+  };
+
+  const getPeakEnergyHours = (dominant: string): string => {
+    const peakHours: Record<string, string> = {
+      'Red': 'Your energy peaks during mid-morning (9-11am) when action-oriented tasks flow naturally.',
+      'Orange': 'Peak energy flows in late morning to early afternoon (11am-2pm) for creative pursuits.',
+      'Yellow': 'Mental energy peaks during late morning (10am-12pm) for learning and communication.',
+      'Green': 'Balanced energy maintains consistency throughout the day with gentle peaks at sunrise and sunset.',
+      'Blue': 'Communication energy peaks in afternoon (2-4pm) when truth and clarity are strongest.',
+      'Indigo': 'Intuitive energy peaks during twilight hours (6-8pm) for deep insights.',
+      'Violet': 'Spiritual energy peaks in early evening (7-9pm) for meditation and connection.',
+      'Purple': 'Mystical energy peaks during late evening (8-10pm) for transformation work.',
+      'Pink': 'Heart energy maintains steady flow with peaks during mid-afternoon (1-3pm).',
+      'White': 'Divine energy flows consistently with peaks during dawn and dusk prayers.',
+      'Gold': 'Wisdom energy peaks during afternoon (3-5pm) for important decisions.',
+      'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.'
+    };
+    return peakHours[dominant] || 'Your unique energy rhythm creates personal peak hours aligned with your spiritual nature.';
+  };
+
+  const getEveningEnergyGuidance = (dominant: string, secondary: string): string => {
+    const eveningGuidance: Record<string, string> = {
+      'Red': 'Red energy in evening calls for physical release through exercise or passionate activities.',
+      'Orange': 'Orange energy encourages creative expression and social connection in evening hours.',
+      'Yellow': 'Yellow energy suggests evening journaling or learning to process the day\'s insights.',
+      'Green': 'Green energy invites evening nature connection and gentle healing practices.',
+      'Blue': 'Blue energy flows into evening meditation and truthful communication with loved ones.',
+      'Indigo': 'Indigo energy opens evening hours for psychic development and intuitive practices.',
+      'Violet': 'Violet energy elevates evening into spiritual study and consciousness expansion.',
+      'Purple': 'Purple energy transforms evening into mystical exploration and magical practices.',
+      'Pink': 'Pink energy wraps evening in love meditation and emotional healing rituals.',
+      'White': 'White energy purifies evening with prayer, blessing, and divine connection.',
+      'Gold': 'Gold energy illuminates evening with wisdom sharing and spiritual teaching.',
+      'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.'
+    };
+    return eveningGuidance[dominant] || 'Your evening energy invites personal spiritual practices aligned with your unique energy signature.';
+  };
+
   // Color spectrum analysis helper functions
   const getColorCode = (colorName: string): string => {
     const colorCodes: Record<string, string> = {
@@ -825,7 +986,7 @@ export default function AuraAnalysis() {
   };
   
   // These functions are already defined above, so removing duplicates.
-  
+
   const getTraitExplanation = (trait: string, color: string): string => {
     const traitExplanations: Record<string, string> = {
       "Intuitive": "You perceive information beyond the five senses, receiving guidance directly from higher consciousness.",
@@ -971,10 +1132,19 @@ export default function AuraAnalysis() {
                       <CardContent className="p-7">
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
                           <TabsList className="grid grid-rows-3 gap-7 w-full h-21 p-1 mb-12">
-                            <div className="grid grid-cols-3 gap-3">
-                              <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-3">Analysis</TabsTrigger>
-                              <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-3">Chakras</TabsTrigger>
-                              <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-3">Guidance</TabsTrigger>
+                            <div className="grid grid-cols-4 gap-2">
+                              <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-2">Analysis</TabsTrigger>
+                              <TabsTrigger value="energy-reading" className="text-sm whitespace-nowrap px-2 relative">
+                                Energy Reading
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 items-center justify-center">
+                                    <span className="text-[8px] text-white font-bold">●</span>
+                                  </span>
+                                </span>
+                              </TabsTrigger>
+                              <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-2">Chakras</TabsTrigger>
+                              <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-2">Guidance</TabsTrigger>
                             </div>
                             <div className="grid grid-cols-3 gap-2">
                               <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-3 relative">
@@ -1018,6 +1188,211 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsList>
                           
+                          <TabsContent value="energy-reading">
+                            <div className="space-y-6">
+                              {/* Visual Aura Representation */}
+                              <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
+                                <h3 className="font-medium text-lg mb-4 text-center">Your Energy Aura Visualization</h3>
+                                
+                                {/* Aura Visual Display */}
+                                <div className="relative mb-6">
+                                  <div className="w-80 h-80 mx-auto relative">
+                                    {/* Outer Aura Layer */}
+                                    <div 
+                                      className="absolute inset-0 rounded-full opacity-30 blur-lg"
+                                      style={{
+                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}40, ${getColorCode(result.secondaryColor)}20, transparent)`
+                                      }}
+                                    ></div>
+                                    
+                                    {/* Middle Aura Layer */}
+                                    <div 
+                                      className="absolute inset-4 rounded-full opacity-50 blur-md"
+                                      style={{
+                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}60, ${getColorCode(result.secondaryColor)}30, transparent)`
+                                      }}
+                                    ></div>
+                                    
+                                    {/* Inner Aura Layer */}
+                                    <div 
+                                      className="absolute inset-8 rounded-full opacity-70 blur-sm"
+                                      style={{
+                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}80, ${getColorCode(result.secondaryColor)}40, transparent)`
+                                      }}
+                                    ></div>
+                                    
+                                    {/* Core Energy */}
+                                    <div className="absolute inset-1/3 rounded-full bg-white/90 border-4 border-white shadow-xl flex items-center justify-center">
+                                      <div className="text-center">
+                                        <div className="text-2xl mb-1">🧘‍♀️</div>
+                                        <div className="text-xs text-gray-600 font-medium">Energy Core</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Aura Color Explanations */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-3">
+                                    <h4 className="font-medium text-sm">Your Aura Colors</h4>
+                                    
+                                    <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
+                                      <div className={`w-6 h-6 rounded-full ${getColorClass(result.dominantColor)}`}></div>
+                                      <div>
+                                        <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
+                                        <div className="text-xs text-gray-600">{getColorMeaning(result.dominantColor)}</div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
+                                      <div className={`w-6 h-6 rounded-full ${getColorClass(result.secondaryColor)}`}></div>
+                                      <div>
+                                        <div className="font-medium text-sm">{result.secondaryColor} - Supporting</div>
+                                        <div className="text-xs text-gray-600">{getColorMeaning(result.secondaryColor)}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    <h4 className="font-medium text-sm">Energy Flow</h4>
+                                    
+                                    <div className="p-3 bg-white rounded-lg border">
+                                      <div className="font-medium text-sm mb-1">Giving Energy</div>
+                                      <div className="text-xs text-gray-600 mb-2">How you radiate energy to others</div>
+                                      <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div 
+                                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                          style={{ width: `${calculateGivingEnergy(result)}%` }}
+                                        ></div>
+                                      </div>
+                                      <div className="text-xs text-gray-500 mt-1">{calculateGivingEnergy(result)}% - {getGivingEnergyDescription(calculateGivingEnergy(result))}</div>
+                                    </div>
+                                    
+                                    <div className="p-3 bg-white rounded-lg border">
+                                      <div className="font-medium text-sm mb-1">Receiving Energy</div>
+                                      <div className="text-xs text-gray-600 mb-2">How you absorb energy from environment</div>
+                                      <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div 
+                                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                          style={{ width: `${calculateReceivingEnergy(result)}%` }}
+                                        ></div>
+                                      </div>
+                                      <div className="text-xs text-gray-500 mt-1">{calculateReceivingEnergy(result)}% - {getReceivingEnergyDescription(calculateReceivingEnergy(result))}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 9 Chakra Graph */}
+                              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                                <h3 className="font-medium text-lg mb-4">Your 9-Chakra Energy System</h3>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  {/* Primary 7 Chakras */}
+                                  <div className="md:col-span-2">
+                                    <h4 className="font-medium text-sm mb-3">Primary Chakras</h4>
+                                    <div className="space-y-3">
+                                      {Object.entries(result.chakraActivity).map(([chakra, value]) => (
+                                        <div key={chakra} className="flex items-center space-x-3">
+                                          <div className="w-20 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                          <div className="flex-1">
+                                            <div className="w-full bg-gray-200 rounded-full h-3">
+                                              <div 
+                                                className={`h-3 rounded-full transition-all duration-500 ${getChakraColor(chakra)}`}
+                                                style={{ width: `${value * 10}%` }}
+                                              ></div>
+                                            </div>
+                                          </div>
+                                          <div className="w-12 text-sm text-gray-500">{value}/10</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Extended Chakras */}
+                                  <div>
+                                    <h4 className="font-medium text-sm mb-3">Extended Chakras</h4>
+                                    <div className="space-y-3">
+                                      <div className="flex items-center space-x-3">
+                                        <div className="w-16 text-xs text-gray-600">Earth Star</div>
+                                        <div className="flex-1">
+                                          <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: `${calculateEarthStarChakra(result)}%` }}></div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex items-center space-x-3">
+                                        <div className="w-16 text-xs text-gray-600">Soul Star</div>
+                                        <div className="flex-1">
+                                          <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div className="bg-white border h-2 rounded-full" style={{ width: `${calculateSoulStarChakra(result)}%` }}></div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Energy Scores */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border border-red-100">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-red-600">{calculateAuraStrength(result)}%</div>
+                                    <div className="text-sm text-gray-600 mt-1">Aura Strength</div>
+                                    <div className="text-xs text-gray-500 mt-2">{getStrengthDescription(calculateAuraStrength(result))}</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-blue-600">{calculateVulnerability(result)}%</div>
+                                    <div className="text-sm text-gray-600 mt-1">Vulnerability</div>
+                                    <div className="text-xs text-gray-500 mt-2">{getVulnerabilityDescription(calculateVulnerability(result))}</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-green-600">{calculateEnergyBalance(result)}%</div>
+                                    <div className="text-sm text-gray-600 mt-1">Energy Balance</div>
+                                    <div className="text-xs text-gray-500 mt-2">{getBalanceDescription(calculateEnergyBalance(result))}</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-purple-600">{result.energyLevel}/10</div>
+                                    <div className="text-sm text-gray-600 mt-1">Overall Energy</div>
+                                    <div className="text-xs text-gray-500 mt-2">{getEnergyLevelDescription(result.energyLevel)}</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Daily Energy Influence */}
+                              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 border border-amber-100">
+                                <h3 className="font-medium text-lg mb-4">How Your Energy Colors Influence Your Day</h3>
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="font-medium text-sm mb-2">Morning Energy Pattern</h4>
+                                    <p className="text-sm text-gray-700">{getMorningEnergyInfluence(result.dominantColor, result.secondaryColor)}</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className="font-medium text-sm mb-2">Peak Energy Hours</h4>
+                                    <p className="text-sm text-gray-700">{getPeakEnergyHours(result.dominantColor)}</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className="font-medium text-sm mb-2">Evening Energy Guidance</h4>
+                                    <p className="text-sm text-gray-700">{getEveningEnergyGuidance(result.dominantColor, result.secondaryColor)}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TabsContent>
+
                           <TabsContent value="spectrum">
                             <div className="space-y-10
                               ">
