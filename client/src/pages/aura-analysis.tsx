@@ -2113,6 +2113,47 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
                               
+                              {/* Image Comparison Section */}
+                              {originalImage && (
+                                <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
+                                  <h3 className="font-medium text-lg mb-4 text-center">Image Comparison: Original vs Aura Visualization</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Original Image */}
+                                    <div className="text-center">
+                                      <h4 className="font-medium mb-3">Original Photo</h4>
+                                      <div className="relative bg-white rounded-lg shadow-sm border p-4">
+                                        <img 
+                                          src={originalImage} 
+                                          alt="Original uploaded image" 
+                                          className="w-full h-64 object-cover rounded-lg"
+                                        />
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Processed Aura Image */}
+                                    <div className="text-center">
+                                      <h4 className="font-medium mb-3">With Aura Colors</h4>
+                                      <div className="relative bg-white rounded-lg shadow-sm border p-4">
+                                        {processedAuraImage ? (
+                                          <img 
+                                            src={processedAuraImage} 
+                                            alt="Image with aura colors" 
+                                            className="w-full h-64 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg">
+                                            <span className="text-gray-500 text-sm">Processing aura visualization...</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-gray-600 mt-2">
+                                        Aura colors: {result.dominantColor} & {result.secondaryColor}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Aura visualization */}
                               <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
                                 <div className="flex flex-col md:flex-row items-center gap-6">
