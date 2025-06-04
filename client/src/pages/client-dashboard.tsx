@@ -23,7 +23,7 @@ import {
   Activity,
   Loader2
 } from "lucide-react";
-import { getDailyHoroscope, HoroscopeResult } from "@/lib/openai";
+import { getDailyHoroscope, HoroscopeResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -39,6 +39,17 @@ export default function ClientDashboard() {
     queryKey: ["/api/horoscope", selectedSign],
     queryFn: () => getDailyHoroscope(selectedSign),
     enabled: false, // Don't fetch automatically, wait for user to select sign
+  });
+
+  // Get numerology analysis if user has birth date
+  const {
+    data: numerology,
+    isLoading: isLoadingNumerology,
+    error: numerologyError
+  } = useQuery<NumerologyResult>({
+    queryKey: ["/api/numerology", user?.username, user?.birthDate],
+    queryFn: () => calculateNumerology(user?.username || "", user?.birthDate || ""),
+    enabled: !!(user?.birthDate && user?.username),
   });
 
   useEffect(() => {
