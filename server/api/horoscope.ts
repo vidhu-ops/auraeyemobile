@@ -253,11 +253,30 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     return reduceNumber(sum);
   };
   
+  // Calculate Dominant Soul Chakra Number from birth date
+  const calculateDominantSoulChakra = (birthDate: string): number => {
+    // Sum all digits in birth date (e.g., 1998-09-09 = 1+9+9+8+0+9+0+9 = 45 = 4+5 = 9)
+    const dateStr = birthDate.replace(/\D/g, ''); // Remove non-digits
+    let sum = 0;
+    
+    for (const digit of dateStr) {
+      sum += parseInt(digit);
+    }
+    
+    // Reduce to single digit
+    while (sum > 9) {
+      sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+    }
+    
+    return sum;
+  };
+  
   // Calculate all numbers
   const lifePathNumber = calculateLifePath(birthDate);
   const destinyNumber = calculateDestiny(name);
   const soulUrgeNumber = calculateSoulUrge(name);
   const personalityNumber = calculatePersonality(name);
+  const soulChakraNumber = calculateDominantSoulChakra(birthDate);
   
   // Generate interpretation based on calculated numbers
   let interpretation = generateInterpretation(lifePathNumber, destinyNumber, soulUrgeNumber, personalityNumber);
@@ -267,6 +286,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     destinyNumber,
     soulUrgeNumber,
     personalityNumber,
+    soulChakraNumber,
     interpretation
   };
 }
