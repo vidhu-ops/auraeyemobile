@@ -8,6 +8,8 @@ import { analyzeImageWithGemini } from "./api/gemini";
 import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
+import { sendHealerBookingNotification } from "./email-service";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
 // Helper functions for numerology calculations
 function getColorForNumber(num: number): string {
@@ -678,18 +680,70 @@ function calculateDominantSoulChakra(birthDate: string): number {
   return sum;
 }
 
-  // Booking API endpoint
+  // Healers API endpoints
+  app.get("/api/healers", async (req, res) => {
+    try {
+      const healers = await storage.getAllHealers();
+      res.json(healers);
+    } catch (error) {
+      console.error("Error fetching healers:", error);
+      res.status(500).json({ message: "Failed to fetch healers" });
+    }
+  });
+
+  app.post("/api/healers", async (req, res) => {
+    try {
+      const healerData = insertHealerSchema.parse(req.body);
+      const healer = await storage.createHealer(healerData);
+      res.status(201).json(healer);
+    } catch (error) {
+      console.error("Error creating healer:", error);
+      res.status(500).json({ message: "Failed to create healer" });
+    }
+  });
+
+  // Healer booking API endpoint with email notification
   app.post("/api/book-session", async (req, res) => {
     try {
-      const { healerId, healerName, specialty } = req.body;
+      const user = req.user as any;
+      if (!user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { healerId, message } = req.body;
       
-      // Here you would typically:
-      // 1. Save the booking to database
-      // 2. Send notification to healer
-      // 3. Send confirmation email
+      // Get healer details
+      const healer = await storage.getHealer(healerId);
+      if (!healer) {
+        return res.status(404).json({ message: "Healer not found" });
+      }
+
+      // Create booking record
+      const bookingData = insertHealerBookingSchema.parse({
+        userId: user.id,
+        healerId: healerId,
+        message: message || null
+      });
       
-      // For now, we'll just simulate success
-      res.status(200).json({ message: "Booking request sent successfully" });
+      const booking = await storage.createHealerBooking(bookingData);
+
+      // Send email notification to healer
+      const emailSent = await sendHealerBookingNotification(
+        healer.email,
+        healer.name,
+        user.username,
+        message
+      );
+
+      if (!emailSent) {
+        console.log("Email notification failed, but booking was saved");
+      }
+
+      res.status(201).json({ 
+        message: "Booking request sent successfully",
+        booking: booking,
+        emailSent: emailSent
+      });
     } catch (error) {
       console.error("Error processing booking:", error);
       res.status(500).json({ message: "Failed to process booking" });
