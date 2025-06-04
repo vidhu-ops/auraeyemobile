@@ -126,6 +126,86 @@ export default function NumerologyPage() {
     return meanings[number] || "Special destiny path";
   };
 
+  const calculatePersonalYear = (birthDate: string): number => {
+    const date = new Date(birthDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const currentYear = 2025; // Current year for forecast
+    
+    // Step 1: Add day + month
+    const dayMonthSum = day + month;
+    const dayMonthReduced = reduceToSingleDigit(dayMonthSum);
+    
+    // Step 2: Add current year digits
+    const yearSum = currentYear.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    
+    // Step 3: Combine and reduce
+    const personalYear = reduceToSingleDigit(dayMonthReduced + yearSum);
+    return personalYear;
+  };
+
+  const reduceToSingleDigit = (num: number): number => {
+    while (num > 9) {
+      num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return num;
+  };
+
+  const getPersonalYearMeaning = (year: number): { title: string; description: string; focus: string[] } => {
+    const meanings: { [key: number]: { title: string; description: string; focus: string[] } } = {
+      1: {
+        title: "New Beginnings and Leadership",
+        description: "Personal Year 1 is the beginning of a new 9-year cycle. Focus on independence, self-discovery, and asserting your personal power through the Solar Plexus Chakra.",
+        focus: ["Set clear, achievable goals", "Say yes to new opportunities", "Focus on personal health and vitality"]
+      },
+      2: {
+        title: "Relationships, Sensitivity, and Patience", 
+        description: "Personal Year 2 emphasizes cooperation, collaboration, and harmony through the Heart Chakra. Focus on building meaningful connections.",
+        focus: ["Practice active listening", "Journal about emotions daily", "Communicate boundaries clearly"]
+      },
+      3: {
+        title: "Creativity, Expression, and Growth",
+        description: "Personal Year 3 brings vibrant self-expression and creativity through the Crown Chakra. Time to share your ideas with the world.",
+        focus: ["Set weekly creative goals", "Surround yourself with inspiration", "Prioritize meaningful pursuits"]
+      },
+      4: {
+        title: "Stability, Discipline, and Building Foundations", 
+        description: "Personal Year 4 emphasizes hard work and structure through the Earth Star Chakra. Focus on building solid foundations.",
+        focus: ["Create clear action plans", "Establish productive routines", "Practice gratitude for progress"]
+      },
+      5: {
+        title: "Freedom and Adaptability",
+        description: "Personal Year 5 brings change and adventure through the Throat Chakra. Embrace new experiences and authentic communication.",
+        focus: ["Perform daily acts of kindness", "Express yourself truthfully", "Embrace flexibility"]
+      },
+      6: {
+        title: "Responsibility, Nurturing, and Harmony",
+        description: "Personal Year 6 focuses on family, home, and caregiving through the Sacral Chakra. Balance giving with self-care.",
+        focus: ["Strengthen family bonds", "Engage in creative activities", "Set healthy boundaries"]
+      },
+      7: {
+        title: "Spirituality and Analysis", 
+        description: "Personal Year 7 is about introspection and spiritual development through the Soul Star Chakra. Time for inner reflection.",
+        focus: ["Take time for meditation", "Seek spiritual practices", "Trust your intuitive guidance"]
+      },
+      8: {
+        title: "Material Success and Power",
+        description: "Personal Year 8 brings focus on achievement and material success through the Third Eye Chakra. Act with clarity and vision.",
+        focus: ["Set ambitious but realistic goals", "Focus on financial planning", "Trust your business instincts"]
+      },
+      9: {
+        title: "Humanitarian Service",
+        description: "Personal Year 9 completes the cycle with service and letting go through the Root Chakra. Focus on what truly matters.",
+        focus: ["Release what no longer serves", "Focus on humanitarian causes", "Prepare for new beginnings"]
+      }
+    };
+    return meanings[year] || {
+      title: "Universal Energy",
+      description: "A year of unique spiritual development",
+      focus: ["Trust your inner guidance", "Stay open to possibilities", "Practice mindfulness"]
+    };
+  };
+
   const getChakraPlanetInfo = (number: number): { chakra: string; planet: string; description: string; remedies: string[] } => {
     const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string; remedies: string[] } } = {
       1: {
@@ -398,6 +478,98 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">{numerology.interpretation}</p>
+              </CardContent>
+            </Card>
+
+            {/* Comprehensive Numerology Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="h-5 w-5 text-indigo-600" />
+                  Complete Numerological Profile
+                </CardTitle>
+                <CardDescription>Detailed breakdown of all your core numbers and their meanings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-8">
+                  {/* Core Numbers Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                      <div className="text-3xl font-bold text-purple-800">{numerology.lifePathNumber}</div>
+                      <div className="text-sm text-gray-600 mt-1">Life Path Number</div>
+                      <div className="text-xs text-purple-600 mt-2">{getLifePathMeaning(numerology.lifePathNumber)}</div>
+                    </div>
+                    
+                    <div className="bg-indigo-50 rounded-lg p-4 text-center border border-indigo-100">
+                      <div className="text-3xl font-bold text-indigo-800">{numerology.destinyNumber}</div>
+                      <div className="text-sm text-gray-600 mt-1">Destiny Number</div>
+                      <div className="text-xs text-indigo-600 mt-2">{getDestinyMeaning(numerology.destinyNumber)}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                      <div className="text-3xl font-bold text-blue-800">{numerology.soulUrgeNumber}</div>
+                      <div className="text-sm text-gray-600 mt-1">Soul Urge Number</div>
+                      <div className="text-xs text-blue-600 mt-2">Your inner desires and motivations</div>
+                    </div>
+                    
+                    <div className="bg-sky-50 rounded-lg p-4 text-center border border-sky-100">
+                      <div className="text-3xl font-bold text-sky-800">{numerology.personalityNumber}</div>
+                      <div className="text-sm text-gray-600 mt-1">Personality Number</div>
+                      <div className="text-xs text-sky-600 mt-2">How others perceive you</div>
+                    </div>
+                  </div>
+
+                  {/* Soul Chakra Number */}
+                  <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 border border-orange-100">
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-orange-800 mb-2">{numerology.soulChakraNumber}</div>
+                      <div className="text-lg font-semibold text-orange-700 mb-2">Soul Chakra Number</div>
+                      <div className="text-sm text-orange-600">Your greatest spiritual challenge and growth area</div>
+                    </div>
+                  </div>
+
+                  {/* Enhanced Spiritual Insights */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-lg text-gray-800">Spiritual Insights & Guidance</h4>
+                    
+                    {numerology.strengths && numerology.strengths.length > 0 && (
+                      <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                        <h5 className="font-medium text-green-800 mb-2">Your Spiritual Strengths</h5>
+                        <ul className="space-y-1">
+                          {numerology.strengths.map((strength, index) => (
+                            <li key={index} className="text-sm text-green-700 flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              {strength}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {numerology.challenges && numerology.challenges.length > 0 && (
+                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                        <h5 className="font-medium text-amber-800 mb-2">Areas for Growth</h5>
+                        <ul className="space-y-1">
+                          {numerology.challenges.map((challenge, index) => (
+                            <li key={index} className="text-sm text-amber-700 flex items-start">
+                              <span className="text-amber-500 mr-2">•</span>
+                              {challenge}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {numerology.guidance && (
+                      <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                        <h5 className="font-medium text-purple-800 mb-2">Spiritual Guidance</h5>
+                        <p className="text-sm text-purple-700">{numerology.guidance}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
