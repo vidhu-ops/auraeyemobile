@@ -643,8 +643,8 @@ export default function AuraAnalysis() {
             centerX, centerY, maxRadius * 0.4
           );
           innerGlow.addColorStop(0, 'transparent');
-          innerGlow.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}80`);
-          innerGlow.addColorStop(0.7, `${getColorCode(auraData.dominantColor)}60`);
+          innerGlow.addColorStop(0.3, `${getAccurateColorCode(auraData.dominantColor)}80`);
+          innerGlow.addColorStop(0.7, `${getAccurateColorCode(auraData.dominantColor)}60`);
           innerGlow.addColorStop(1, 'transparent');
           
           ctx.fillStyle = innerGlow;
@@ -657,8 +657,8 @@ export default function AuraAnalysis() {
             centerX, centerY, maxRadius * 0.7
           );
           middleGlow.addColorStop(0, 'transparent');
-          middleGlow.addColorStop(0.4, `${getColorCode(auraData.secondaryColor)}70`);
-          middleGlow.addColorStop(0.8, `${getColorCode(auraData.secondaryColor)}50`);
+          middleGlow.addColorStop(0.4, `${getAccurateColorCode(auraData.secondaryColor)}70`);
+          middleGlow.addColorStop(0.8, `${getAccurateColorCode(auraData.secondaryColor)}50`);
           middleGlow.addColorStop(1, 'transparent');
           
           ctx.fillStyle = middleGlow;
@@ -671,8 +671,8 @@ export default function AuraAnalysis() {
             centerX, centerY, maxRadius * 1.2
           );
           outerGlow.addColorStop(0, 'transparent');
-          outerGlow.addColorStop(0.3, `${getColorCode(auraData.dominantColor)}40`);
-          outerGlow.addColorStop(0.6, `${getColorCode(auraData.secondaryColor)}30`);
+          outerGlow.addColorStop(0.3, `${getAccurateColorCode(auraData.dominantColor)}40`);
+          outerGlow.addColorStop(0.6, `${getAccurateColorCode(auraData.secondaryColor)}30`);
           outerGlow.addColorStop(1, 'transparent');
           
           ctx.fillStyle = outerGlow;
@@ -689,8 +689,8 @@ export default function AuraAnalysis() {
               trailX, trailY, 0,
               trailX, trailY, maxRadius * 0.2
             );
-            trail.addColorStop(0, `${getColorCode(auraData.dominantColor)}30`);
-            trail.addColorStop(0.5, `${getColorCode(auraData.secondaryColor)}20`);
+            trail.addColorStop(0, `${getAccurateColorCode(auraData.dominantColor)}30`);
+            trail.addColorStop(0.5, `${getAccurateColorCode(auraData.secondaryColor)}20`);
             trail.addColorStop(1, 'transparent');
             
             ctx.fillStyle = trail;
@@ -1417,7 +1417,7 @@ export default function AuraAnalysis() {
                                     <div 
                                       className="absolute inset-0 rounded-full opacity-30 blur-lg"
                                       style={{
-                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}40, ${getColorCode(result.secondaryColor)}20, transparent)`
+                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}40, ${getAccurateColorCode(result.secondaryColor)}20, transparent)`
                                       }}
                                     ></div>
                                     
@@ -1425,7 +1425,7 @@ export default function AuraAnalysis() {
                                     <div 
                                       className="absolute inset-4 rounded-full opacity-50 blur-md"
                                       style={{
-                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}60, ${getColorCode(result.secondaryColor)}30, transparent)`
+                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}60, ${getAccurateColorCode(result.secondaryColor)}30, transparent)`
                                       }}
                                     ></div>
                                     
@@ -1433,7 +1433,7 @@ export default function AuraAnalysis() {
                                     <div 
                                       className="absolute inset-8 rounded-full opacity-70 blur-sm"
                                       style={{
-                                        background: `radial-gradient(circle, ${getColorCode(result.dominantColor)}80, ${getColorCode(result.secondaryColor)}40, transparent)`
+                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}80, ${getAccurateColorCode(result.secondaryColor)}40, transparent)`
                                       }}
                                     ></div>
                                     
@@ -1610,19 +1610,125 @@ export default function AuraAnalysis() {
                           </TabsContent>
 
                           <TabsContent value="spectrum">
-                            <div className="space-y-10
-                              ">
+                            <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
                                 <p className="text-sm text-gray-600">
-                                  Detailed breakdown of all colors detected in your aura field
+                                  Detailed breakdown of all colors detected in your aura field with accurate color representations
                                 </p>
+                              </div>
+
+                              {/* Enhanced Color Spectrum Display */}
+                              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                                <h4 className="font-medium text-lg mb-4">Your Multi-Dimensional Aura Colors</h4>
+                                
+                                {/* Primary Colors Section */}
+                                <div className="mb-6">
+                                  <h5 className="font-medium text-sm mb-3 text-gray-700">Primary Energy Colors</h5>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Dominant Color */}
+                                    <div className="p-4 rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full shadow-lg border-4 border-white"
+                                          style={{ 
+                                            backgroundColor: getAccurateColorCode(result.dominantColor),
+                                            boxShadow: `0 0 20px ${getAccurateColorCode(result.dominantColor)}40`
+                                          }}
+                                        ></div>
+                                        <div>
+                                          <div className="font-semibold text-lg">{result.dominantColor}</div>
+                                          <div className="text-sm text-primary font-medium">Dominant Energy</div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.dominantColor)}</p>
+                                      <div className="text-xs text-gray-500">
+                                        Hex: {getAccurateColorCode(result.dominantColor)}
+                                      </div>
+                                    </div>
+
+                                    {/* Secondary Color */}
+                                    <div className="p-4 rounded-lg border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full shadow-lg border-4 border-white"
+                                          style={{ 
+                                            backgroundColor: getAccurateColorCode(result.secondaryColor || result.dominantColor),
+                                            boxShadow: `0 0 20px ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}40`
+                                          }}
+                                        ></div>
+                                        <div>
+                                          <div className="font-semibold text-lg">{result.secondaryColor || result.dominantColor}</div>
+                                          <div className="text-sm text-secondary font-medium">Secondary Energy</div>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.secondaryColor || result.dominantColor)}</p>
+                                      <div className="text-xs text-gray-500">
+                                        Hex: {getAccurateColorCode(result.secondaryColor || result.dominantColor)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Supporting Colors Section */}
+                                {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
+                                  <div className="mb-6">
+                                    <h5 className="font-medium text-sm mb-3 text-gray-700">Supporting Energy Colors</h5>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                      {result.auraColorSpectrum.slice(2, 6).map((color, index) => (
+                                        <div key={index} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
+                                          <div className="flex items-center space-x-3 mb-2">
+                                            <div 
+                                              className="w-8 h-8 rounded-full shadow-md border-2 border-white"
+                                              style={{ 
+                                                backgroundColor: getAccurateColorCode(color),
+                                                boxShadow: `0 0 15px ${getAccurateColorCode(color)}30`
+                                              }}
+                                            ></div>
+                                            <div>
+                                              <div className="font-medium text-sm">{color}</div>
+                                              <div className="text-xs text-gray-500">
+                                                {index === 0 ? 'Tertiary' : index === 1 ? 'Quaternary' : 'Accent'} Energy
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <p className="text-xs text-gray-600 mb-2">{getColorMeaning(color)}</p>
+                                          <div className="text-xs text-gray-400">
+                                            Hex: {getAccurateColorCode(color)}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Color Interaction Analysis */}
+                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
+                                  <h5 className="font-medium text-sm mb-3 text-purple-700">Color Harmony Analysis</h5>
+                                  <p className="text-sm text-gray-700 mb-3">
+                                    Your {result.auraColorSpectrum ? result.auraColorSpectrum.length : 2}-color aura spectrum creates a unique energetic signature. 
+                                    The combination of {result.dominantColor} and {result.secondaryColor || result.dominantColor} 
+                                    {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 ? 
+                                      ` along with ${result.auraColorSpectrum.slice(2, 4).join(', ')}` : ''
+                                    } indicates a balanced and multi-dimensional spiritual nature.
+                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {(result.auraColorSpectrum || [result.dominantColor, result.secondaryColor]).filter(Boolean).map((color, index) => (
+                                      <div 
+                                        key={index}
+                                        className="w-4 h-4 rounded-full border border-white shadow-sm"
+                                        style={{ backgroundColor: getAccurateColorCode(color) }}
+                                        title={`${color}: ${getColorMeaning(color)}`}
+                                      ></div>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
 
                               {/* Primary Color Analysis */}
                               <div className="space-y-4">
                                 <h4 className="font-semibold text-lg flex items-center">
-                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getColorCode(result.dominantColor)}}></div>
+                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}></div>
                                   Primary Aura Color: {result.dominantColor}
                                 </h4>
                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
@@ -1646,7 +1752,7 @@ export default function AuraAnalysis() {
                               {/* Secondary Color Analysis */}
                               <div className="space-y-4">
                                 <h4 className="font-semibold text-lg flex items-center">
-                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getColorCode(result.secondaryColor)}}></div>
+                                  <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}></div>
                                   Secondary Aura Color: {result.secondaryColor}
                                 </h4>
                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
@@ -1670,7 +1776,7 @@ export default function AuraAnalysis() {
                                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                     {result.auraColorSpectrum.slice(2).map((color, index) => (
                                       <div key={index} className="bg-white border rounded-lg p-3 text-center">
-                                        <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getColorCode(color)}}></div>
+                                        <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(color)}}></div>
                                         <h6 className="font-medium text-sm">{color}</h6>
                                         <p className="text-xs text-gray-600 mt-1">{getColorKeyword(color)}</p>
                                       </div>
@@ -1685,19 +1791,19 @@ export default function AuraAnalysis() {
                                   <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
                                   <div className="space-y-3">
                                     {result.auraLayerColors.inner && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.inner)}}>
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
                                         <h5 className="font-medium text-sm">Inner Layer - {result.auraLayerColors.inner}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
                                       </div>
                                     )}
                                     {result.auraLayerColors.middle && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.middle)}}>
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
                                         <h5 className="font-medium text-sm">Middle Layer - {result.auraLayerColors.middle}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
                                       </div>
                                     )}
                                     {result.auraLayerColors.outer && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getColorCode(result.auraLayerColors.outer)}}>
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
                                         <h5 className="font-medium text-sm">Outer Layer - {result.auraLayerColors.outer}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
                                       </div>
@@ -1734,10 +1840,10 @@ export default function AuraAnalysis() {
                                   <div className="flex justify-center items-center space-x-4">
                                     <div className="relative">
                                       <div className="w-32 h-32 rounded-full bg-gradient-to-r opacity-80" 
-                                           style={{background: `radial-gradient(circle, ${getColorCode(result.dominantColor)} 0%, ${getColorCode(result.secondaryColor)} 70%, transparent 100%)`}}>
+                                           style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.secondaryColor)} 70%, transparent 100%)`}}>
                                       </div>
                                       <div className="absolute inset-0 w-32 h-32 rounded-full animate-pulse" 
-                                           style={{background: `radial-gradient(circle, transparent 40%, ${getColorCode(result.dominantColor)}40 60%, transparent 80%)`}}>
+                                           style={{background: `radial-gradient(circle, transparent 40%, ${getAccurateColorCode(result.dominantColor)}40 60%, transparent 80%)`}}>
                                       </div>
                                     </div>
                                   </div>
@@ -1765,7 +1871,7 @@ export default function AuraAnalysis() {
                                     <div className="flex items-center space-x-4 mb-4">
                                       <div 
                                         className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-                                        style={{backgroundColor: getColorCode(result.dominantColor)}}
+                                        style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}
                                       >
                                         <span className="text-white font-bold text-lg">
                                           {result.dominantColor.charAt(0)}
@@ -1821,7 +1927,7 @@ export default function AuraAnalysis() {
                                     <div className="flex items-center space-x-3 mb-3">
                                       <div 
                                         className="w-8 h-8 rounded-full"
-                                        style={{backgroundColor: getColorCode(result.secondaryColor)}}
+                                        style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}
                                       ></div>
                                       <div>
                                         <h5 className="font-medium">{result.secondaryColor}</h5>
@@ -1841,7 +1947,7 @@ export default function AuraAnalysis() {
                                           <div className="flex items-center space-x-3 mb-3">
                                             <div 
                                               className="w-8 h-8 rounded-full"
-                                              style={{backgroundColor: getColorCode(color)}}
+                                              style={{backgroundColor: getAccurateColorCode(color)}}
                                             ></div>
                                             <div>
                                               <h5 className="font-medium">{color}</h5>
@@ -1897,7 +2003,7 @@ export default function AuraAnalysis() {
                                     {/* Dominant Energy Visualization */}
                                     <div 
                                       className="w-24 h-24 rounded-full opacity-90 animate-pulse"
-                                      style={{background: `radial-gradient(circle, ${getColorCode(result.dominantColor)} 0%, ${getColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
+                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
                                     ></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <span className="text-white font-bold text-sm">Core</span>
@@ -1908,7 +2014,7 @@ export default function AuraAnalysis() {
                                   <div className="relative">
                                     <div 
                                       className="w-16 h-16 rounded-full opacity-75 animate-pulse"
-                                      style={{background: `radial-gradient(circle, ${getColorCode(result.secondaryColor)} 0%, ${getColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
+                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.secondaryColor)} 0%, ${getAccurateColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
                                     ></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <span className="text-white font-medium text-xs">Flow</span>
@@ -1921,7 +2027,7 @@ export default function AuraAnalysis() {
                                       <div 
                                         className="w-12 h-12 rounded-full opacity-60 animate-pulse"
                                         style={{
-                                          background: `radial-gradient(circle, ${getColorCode(color)} 0%, ${getColorCode(color)}40 50%, transparent 100%)`,
+                                          background: `radial-gradient(circle, ${getAccurateColorCode(color)} 0%, ${getAccurateColorCode(color)}40 50%, transparent 100%)`,
                                           animationDelay: `${1 + index * 0.5}s`
                                         }}
                                       ></div>
