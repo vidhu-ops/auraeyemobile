@@ -35,11 +35,11 @@ const services = [
   },
   {
     id: "numerology",
-    title: "Numerology Analysis",
-    description: "Understand your life path and spiritual journey through the power of numbers.",
+    title: "Enhanced Numerology Analysis",
+    description: "Discover your Life Path Number, Destiny Number, Decision-making Chakra, and Dominant Soul Chakra for comprehensive spiritual insights.",
     icon: <span className="font-bold text-indigo-500 text-lg">#</span>,
     path: "/numerology",
-    tags: ["Numbers", "Life Path", "Destiny"]
+    tags: ["Life Path", "Destiny", "Chakras", "Soul Analysis"]
   },
   {
     id: "spiritual-journal",

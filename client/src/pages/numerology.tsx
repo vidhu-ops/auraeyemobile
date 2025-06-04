@@ -66,6 +66,42 @@ export default function NumerologyPage() {
     crown: "#B794F6"
   };
 
+  const getLifePathMeaning = (number: number): string => {
+    const meanings: { [key: number]: string } = {
+      1: "Leadership and independence",
+      2: "Cooperation and harmony",
+      3: "Creativity and expression",
+      4: "Stability and hard work",
+      5: "Freedom and adventure",
+      6: "Nurturing and responsibility",
+      7: "Spirituality and analysis",
+      8: "Material success and power",
+      9: "Humanitarian service",
+      11: "Spiritual insight and intuition",
+      22: "Master builder and visionary",
+      33: "Master teacher and healer"
+    };
+    return meanings[number] || "Unique spiritual path";
+  };
+
+  const getDestinyMeaning = (number: number): string => {
+    const meanings: { [key: number]: string } = {
+      1: "Pioneer and innovator",
+      2: "Diplomat and peacemaker",
+      3: "Artist and communicator",
+      4: "Builder and organizer",
+      5: "Explorer and freedom seeker",
+      6: "Healer and caretaker",
+      7: "Seeker of truth and wisdom",
+      8: "Executive and achiever",
+      9: "Humanitarian and server",
+      11: "Inspirational leader",
+      22: "Master architect",
+      33: "Universal healer"
+    };
+    return meanings[number] || "Special destiny path";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -159,32 +195,44 @@ export default function NumerologyPage() {
                     <div className="text-4xl font-bold text-purple-600 mb-2">
                       {numerology.lifePathNumber}
                     </div>
-                    <div className="font-semibold text-purple-800 mb-1">Life Path</div>
-                    <div className="text-sm text-purple-600">Your life's journey and purpose</div>
+                    <div className="font-semibold text-purple-800 mb-1">Life Path Number</div>
+                    <div className="text-sm text-purple-600">Your life's journey and core purpose</div>
+                    <div className="text-xs text-purple-500 mt-2">
+                      {getLifePathMeaning(numerology.lifePathNumber)}
+                    </div>
                   </div>
                   
                   <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6">
                     <div className="text-4xl font-bold text-blue-600 mb-2">
                       {numerology.destinyNumber}
                     </div>
-                    <div className="font-semibold text-blue-800 mb-1">Destiny</div>
-                    <div className="text-sm text-blue-600">Your goals and abilities</div>
+                    <div className="font-semibold text-blue-800 mb-1">Destiny Number</div>
+                    <div className="text-sm text-blue-600">Your life's mission and calling</div>
+                    <div className="text-xs text-blue-500 mt-2">
+                      {getDestinyMeaning(numerology.destinyNumber)}
+                    </div>
                   </div>
                   
                   <div className="text-center bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6">
                     <div className="text-4xl font-bold text-green-600 mb-2">
-                      {numerology.soulUrgeNumber}
-                    </div>
-                    <div className="font-semibold text-green-800 mb-1">Soul Urge</div>
-                    <div className="text-sm text-green-600">Your inner desires</div>
-                  </div>
-                  
-                  <div className="text-center bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6">
-                    <div className="text-4xl font-bold text-orange-600 mb-2">
                       {numerology.personalityNumber}
                     </div>
-                    <div className="font-semibold text-orange-800 mb-1">Personality</div>
-                    <div className="text-sm text-orange-600">How others see you</div>
+                    <div className="font-semibold text-green-800 mb-1">Decision-Making Chakra</div>
+                    <div className="text-sm text-green-600">Sum of birth date digits</div>
+                    <div className="text-xs text-green-500 mt-2">
+                      Influences your decision-making patterns
+                    </div>
+                  </div>
+                  
+                  <div className="text-center bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6">
+                    <div className="text-4xl font-bold text-red-600 mb-2">
+                      {numerology.soulChakraNumber}
+                    </div>
+                    <div className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</div>
+                    <div className="text-sm text-red-600">Your greatest challenge area</div>
+                    <div className="text-xs text-red-500 mt-2">
+                      Maximum challenges in this chakra
+                    </div>
                   </div>
                 </div>
               </CardContent>
