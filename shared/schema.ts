@@ -66,6 +66,39 @@ export const insertNumerologyReadingSchema = createInsertSchema(numerologyReadin
   createdAt: true,
 });
 
+export const healers = pgTable("healers", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  specialty: text("specialty").notNull(),
+  description: text("description").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  imageUrl: text("image_url"),
+  rating: integer("rating").default(5),
+  experience: text("experience"),
+  location: text("location"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const healerBookings = pgTable("healer_bookings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  healerId: integer("healer_id").notNull().references(() => healers.id),
+  message: text("message"),
+  status: text("status").default("pending"), // "pending", "confirmed", "cancelled"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertHealerSchema = createInsertSchema(healers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertHealerBookingSchema = createInsertSchema(healerBookings).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -74,3 +107,7 @@ export type Journal = typeof journals.$inferSelect;
 export type InsertJournal = z.infer<typeof insertJournalSchema>;
 export type NumerologyReading = typeof numerologyReadings.$inferSelect;
 export type InsertNumerologyReading = z.infer<typeof insertNumerologyReadingSchema>;
+export type Healer = typeof healers.$inferSelect;
+export type InsertHealer = z.infer<typeof insertHealerSchema>;
+export type HealerBooking = typeof healerBookings.$inferSelect;
+export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;

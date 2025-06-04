@@ -1,4 +1,5 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading } from "@shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking } from "@shared/schema";
+import { DatabaseStorage } from "./database-storage";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 
@@ -26,20 +27,28 @@ export interface IStorage {
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
   
+  // Healer management
+  getAllHealers(): Promise<Healer[]>;
+  getHealer(id: number): Promise<Healer | undefined>;
+  createHealer(healer: InsertHealer): Promise<Healer>;
+  
+  // Healer bookings
+  createHealerBooking(booking: InsertHealerBooking): Promise<HealerBooking>;
+  getHealerBookingsByUser(userId: number): Promise<HealerBooking[]>;
+  getHealerBookingsByHealer(healerId: number): Promise<HealerBooking[]>;
+  
   // Session store
   sessionStore: session.SessionStore;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private auraReadings: Map<number, AuraReading>;
-  private journals: Map<number, Journal>;
-  private numerologyReadings: Map<number, NumerologyReading>;
-  sessionStore: session.SessionStore;
-  currentId: number;
-  currentAuraId: number;
-  currentJournalId: number;
-  currentNumerologyId: number;
+export class DatabaseStorage implements IStorage {
+  sessionStore: any;
+
+  constructor() {
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
+  }
 
   constructor() {
     this.users = new Map();
