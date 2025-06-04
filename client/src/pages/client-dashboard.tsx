@@ -27,7 +27,8 @@ import {
   Palette,
   TrendingUp,
   Heart,
-  Brain
+  Brain,
+  Sparkles
 } from "lucide-react";
 import { getDailyHoroscope, HoroscopeResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { format } from "date-fns";
