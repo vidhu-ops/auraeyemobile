@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Loader2, Calculator, Sparkles } from "lucide-react";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
+import { useToast } from "@/hooks/use-toast";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,6 +30,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
 export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<NumerologyFormData>({
     resolver: zodResolver(numerologySchema),
@@ -51,9 +53,31 @@ export default function NumerologyPage() {
   });
 
   const onSubmit = async (data: NumerologyFormData) => {
-    // This would normally update the user's birth date in the database
-    // For now, we'll just calculate with the provided data
-    refetchNumerology();
+    if (!data.name.trim() || !data.birthDate.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both name and birth date for analysis.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const result = await calculateNumerology(data.name, data.birthDate);
+      // Trigger a refetch with the new data
+      refetchNumerology();
+      setShowForm(false);
+      toast({
+        title: "Analysis Complete",
+        description: "Your numerology analysis has been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Analysis Failed",
+        description: "Please check your information and try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const chakraColors = {
@@ -100,6 +124,71 @@ export default function NumerologyPage() {
       33: "Universal healer"
     };
     return meanings[number] || "Special destiny path";
+  };
+
+  const getChakraPlanetInfo = (number: number): { chakra: string; planet: string; description: string; remedies: string[] } => {
+    const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string; remedies: string[] } } = {
+      1: {
+        chakra: "Solar Plexus Chakra",
+        planet: "Sun",
+        description: "Leadership and Independence. Personal power, confidence, and willpower.",
+        remedies: ["Yellow color therapy", "RAM mantra 45 times/day", "Citrine crystal", "Lemon aromatherapy", "Sacred code 451"]
+      },
+      2: {
+        chakra: "Heart Chakra", 
+        planet: "Moon",
+        description: "Relationships and Sensitivity. Emotional balance and self-love.",
+        remedies: ["Green/pink color therapy", "YAM mantra 45 times/day", "Rose Quartz crystal", "Rose aromatherapy", "Sacred code 741"]
+      },
+      3: {
+        chakra: "Crown Chakra",
+        planet: "Jupiter", 
+        description: "Creativity and Communication. Spiritual connection and enlightenment.",
+        remedies: ["Violet/white color therapy", "AUM mantra 45 times/day", "Clear Quartz crystal", "Lavender aromatherapy", "Sacred code 204"]
+      },
+      4: {
+        chakra: "Earth Star Chakra",
+        planet: "Rahu",
+        description: "Stability and Discipline. Deep grounding, responsibility, and trust in life.",
+        remedies: ["Brown/black color therapy", "LAM mantra 45 times/day", "Smoky Quartz crystal", "Cedarwood aromatherapy", "Sacred code 264"]
+      },
+      5: {
+        chakra: "Throat Chakra",
+        planet: "Mercury",
+        description: "Freedom and Adaptability. Authentic communication and adaptability.",
+        remedies: ["Blue color therapy", "HAM mantra 45 times/day", "Blue Lace Agate crystal", "Peppermint aromatherapy", "Sacred code 986"]
+      },
+      6: {
+        chakra: "Sacral Chakra",
+        planet: "Venus",
+        description: "Nurturing and Responsibility. Emotional stability and creative expression.",
+        remedies: ["Orange color therapy", "VAM mantra 45 times/day", "Carnelian crystal", "Ylang-ylang aromatherapy", "Sacred code 639"]
+      },
+      7: {
+        chakra: "Soul Star Chakra",
+        planet: "Ketu",
+        description: "Spirituality and Analysis. Transcendence and karmic healing.",
+        remedies: ["Gold/white color therapy", "OM SO HUM mantra 45 times/day", "Selenite crystal", "Lotus aromatherapy", "Sacred code 56"]
+      },
+      8: {
+        chakra: "Third Eye Chakra",
+        planet: "Saturn",
+        description: "Material Success and Power. Clarity, vision, and decisive action.",
+        remedies: ["Indigo color therapy", "OM mantra 45 times/day", "Amethyst crystal", "Frankincense aromatherapy", "Sacred code 852"]
+      },
+      9: {
+        chakra: "Root Chakra",
+        planet: "Mars",
+        description: "Humanitarian Service. Action, grounding, and completion.",
+        remedies: ["Red color therapy", "LAM mantra 45 times/day", "Red Jasper crystal", "Cedarwood aromatherapy", "Sacred code 396"]
+      }
+    };
+    return chakraPlanetMap[number] || {
+      chakra: "Universal Energy",
+      planet: "Cosmic Force",
+      description: "Unique spiritual path",
+      remedies: ["Meditation", "White light visualization", "Clear Quartz crystal"]
+    };
   };
 
   return (
@@ -233,6 +322,70 @@ export default function NumerologyPage() {
                     <div className="text-xs text-red-500 mt-2">
                       Maximum challenges in this chakra
                     </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Chakra-Planet Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Chakra-Planet Analysis
+                </CardTitle>
+                <CardDescription>Detailed spiritual insights based on your numerological profile</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Decision-Making Chakra */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Decision-Making Chakra</h3>
+                    {(() => {
+                      const info = getChakraPlanetInfo(numerology.personalityNumber);
+                      return (
+                        <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                          <div className="mb-3">
+                            <div className="text-2xl font-bold text-green-600">{numerology.personalityNumber}</div>
+                            <div className="text-sm text-green-700">{info.chakra} • {info.planet}</div>
+                          </div>
+                          <p className="text-sm text-green-800 mb-3">{info.description}</p>
+                          <div>
+                            <h4 className="font-medium text-green-800 mb-2">Recommended Remedies:</h4>
+                            <ul className="text-xs text-green-700 space-y-1">
+                              {info.remedies.map((remedy, index) => (
+                                <li key={index}>• {remedy}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Dominant Soul Chakra */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Dominant Soul Chakra</h3>
+                    {(() => {
+                      const info = getChakraPlanetInfo(numerology.soulChakraNumber);
+                      return (
+                        <div className="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg">
+                          <div className="mb-3">
+                            <div className="text-2xl font-bold text-red-600">{numerology.soulChakraNumber}</div>
+                            <div className="text-sm text-red-700">{info.chakra} • {info.planet}</div>
+                          </div>
+                          <p className="text-sm text-red-800 mb-3">{info.description}</p>
+                          <div>
+                            <h4 className="font-medium text-red-800 mb-2">Healing Remedies:</h4>
+                            <ul className="text-xs text-red-700 space-y-1">
+                              {info.remedies.map((remedy, index) => (
+                                <li key={index}>• {remedy}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </CardContent>
