@@ -1396,7 +1396,7 @@ export default function AuraAnalysis() {
                                   <div className="md:col-span-2">
                                     <h4 className="font-medium text-sm mb-3">Primary Chakras</h4>
                                     <div className="space-y-3">
-                                      {Object.entries(result.chakraActivity).map(([chakra, value]) => (
+                                      {result.chakraActivity && typeof result.chakraActivity === 'object' && Object.entries(result.chakraActivity).map(([chakra, value]) => (
                                         <div key={chakra} className="flex items-center space-x-3">
                                           <div className="w-20 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
                                           <div className="flex-1">
