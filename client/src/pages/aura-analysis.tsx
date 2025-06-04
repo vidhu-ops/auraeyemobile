@@ -995,23 +995,23 @@ export default function AuraAnalysis() {
                                   </span>
                                 </span>
                               </TabsTrigger>
-                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-3 relative">
-                                Combined Analysis
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
-                                    <span className="text-[10px] text-white font-bold">✨</span>
-                                  </span>
-                                </span>
-                              </TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-1 gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                               <TabsTrigger value="detailed" className="relative">
                                 Detailed Analysis
                                 <span className="absolute -top-1 -right-1 flex h-4 w-4 mb-5">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
                                     <Crown className="h-2 w-2 text-white" />
+                                  </span>
+                                </span>
+                              </TabsTrigger>
+                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-3 relative">
+                                Combined Analysis
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
+                                    <span className="text-[10px] text-white font-bold">✨</span>
                                   </span>
                                 </span>
                               </TabsTrigger>
