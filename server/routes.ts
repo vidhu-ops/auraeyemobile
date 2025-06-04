@@ -90,9 +90,14 @@ function calculateSoulChakra(birthDate: string): number {
   return calculateLifePath(birthDate);
 }
 
+import { seedHealers } from "./seed-data";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
+  
+  // Seed initial healer data
+  await seedHealers();
 
   // Configure file upload
   const upload = configureFileUpload();
