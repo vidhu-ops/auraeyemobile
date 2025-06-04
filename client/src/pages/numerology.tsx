@@ -510,12 +510,12 @@ export default function Numerology() {
                       </CardHeader>
                       <CardContent>
                         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid grid-rows-3 w-full mb-6">
-                            <div className="grid grid-cols-2 gap-2 mb-2">
+                          <TabsList className="grid grid-rows-3 w-full h-15 mb-6">
+                            <div className="grid grid-cols-2 gap-4 mb-5">
                               <TabsTrigger value="lifePath">Life Path</TabsTrigger>
                               <TabsTrigger value="destiny">Destiny</TabsTrigger>
                             </div>
-                            <div className="grid grid-cols-2 gap-2 mb-2">
+                            <div className="grid grid-cols-2 gap-2 mb-3">
                               <TabsTrigger value="soul">Soul Urge</TabsTrigger>
                               <TabsTrigger value="personality">Personality</TabsTrigger>
                             </div>
