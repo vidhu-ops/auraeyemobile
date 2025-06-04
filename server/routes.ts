@@ -426,14 +426,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
           personalityNumber: calculatePersonality(name),
-          soulChakraNumber: calculateLifePath(birthDate), // Using same as life path for fallback
-          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(name)} represents how others see you. Your Soul Chakra Number ${calculateLifePath(birthDate)} reveals your spiritual energy center.`,
+          soulChakraNumber: calculateDominantSoulChakra(birthDate),
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(name)} represents how others see you. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
           colorAssociations: {
             lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
             destinyColor: getColorForNumber(calculateDestiny(name)),
             soulUrgeColor: getColorForNumber(calculateSoulUrge(name)),
             personalityColor: getColorForNumber(calculatePersonality(name)),
-            soulChakraColor: getColorForNumber(calculateLifePath(birthDate))
+            soulChakraColor: getColorForNumber(calculateDominantSoulChakra(birthDate))
           },
           strengths: [
             `Natural ${getColorForNumber(calculateLifePath(birthDate))} energy enhances your leadership abilities`,
@@ -659,6 +659,23 @@ function reduceNumber(num: number): number {
     num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   }
   return num;
+}
+
+function calculateDominantSoulChakra(birthDate: string): number {
+  // Sum all digits in birth date (e.g., 01/01/1901 = 0+1+0+1+1+9+0+1 = 13 = 1+3 = 4)
+  const dateStr = birthDate.replace(/\D/g, ''); // Remove non-digits
+  let sum = 0;
+  
+  for (const digit of dateStr) {
+    sum += parseInt(digit);
+  }
+  
+  // Reduce to single digit
+  while (sum > 9) {
+    sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+  }
+  
+  return sum;
 }
 
   // Booking API endpoint
