@@ -368,8 +368,8 @@ export default function ClientDashboard() {
                             Discover Your True Self
                           </p>
                           <Button asChild size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            <Link href="/numerology">
-                              To know more about yourself and detailed analysis click here
+                            <Link href="/services#numerology">
+                              For detailed analysis click here
                               <ArrowRight className="ml-1 h-3 w-3" />
                             </Link>
                           </Button>
