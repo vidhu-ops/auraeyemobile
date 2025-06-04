@@ -130,7 +130,7 @@ export default function AuraAnalysis() {
       'Lavender': '#E6E6FA',
       'Coral': '#FF7F50',
       'Mint': '#98FB98',
-      'Peach': '#FFCBA4',
+      'Peach': '#ffdab9',
       'Sky Blue': '#87CEEB',
       'Rose': '#FF66CC',
       'Amber': '#FFBF00'
@@ -729,8 +729,8 @@ export default function AuraAnalysis() {
       ctx.drawImage(img, 0, 0, img.width, img.height);
       
       // Get dominant and secondary colors
-      const dominantColor = auraData.dominantColor.toLowerCase();
-      const secondaryColor = auraData.secondaryColor?.toLowerCase() || dominantColor;
+      const dominantColor = getAccurateColorCode(auraData.dominantColor);
+      const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
       
       // Draw aura clouds
       drawAuraClouds(ctx, img.width, img.height, dominantColor, secondaryColor, auraData.energyLevel);
@@ -856,7 +856,7 @@ export default function AuraAnalysis() {
 
   // Function to generate combined insights from aura and numerology
   const getCombinedInsights = (aura: AuraAnalysisResult, numerology: NumerologyResult) => {
-    const auraColor = aura.dominantColor.toLowerCase();
+    const auraColor = getAccurateColorCode(aura.dominantColor);
     const lifePathNumber = numerology.lifePathNumber;
     
     // Map life path numbers to compatible aura colors
@@ -882,14 +882,14 @@ export default function AuraAnalysis() {
       compatibility: isColorCompatible ? 
         `Your ${aura.dominantColor} aura perfectly aligns with your Life Path ${lifePathNumber} energy, creating harmonious spiritual flow.` :
         `Your ${aura.dominantColor} aura presents a growth opportunity with your Life Path ${lifePathNumber}, encouraging expansion beyond your comfort zone.`,
-      spiritualGuidance: `Your aura's ${aura.dominantColor.toLowerCase()} energy combined with Life Path ${lifePathNumber} suggests focusing on ${
+      spiritualGuidance: `Your aura's ${aura.dominantColor} energy combined with Life Path ${lifePathNumber} suggests focusing on ${
         isColorCompatible ? 'amplifying your natural gifts' : 'integrating new spiritual dimensions'
       }. ${numerology.guidance || ''}`,
       chakraAlignment: aura.chakraActivity,
-      personalityIntegration: `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor.toLowerCase()} aura energy, showing how others perceive your spiritual presence.`,
+      personalityIntegration: `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor} aura energy, showing how others perceive your spiritual presence.`,
       lifePathColor: numerology.colorAssociations?.lifePathColor || aura.dominantColor,
       recommendedPractices: [
-        `Meditate with ${aura.dominantColor.toLowerCase()} light to strengthen your aura`,
+        `Meditate with ${aura.dominantColor} light to strengthen your aura`,
         `Practice Life Path ${lifePathNumber} affirmations daily`,
         `Work with ${numerology.colorAssociations?.lifePathColor || aura.dominantColor} crystals`,
         `Focus on ${aura.dominantColor.toLowerCase()} chakra balancing exercises`
@@ -2414,9 +2414,9 @@ export default function AuraAnalysis() {
                                       className="absolute inset-0 rounded-full animate-pulse" 
                                       style={{
                                         background: `radial-gradient(circle at center, 
-                                          ${result.dominantColor.toLowerCase()} 30%, 
-                                          ${result.secondaryColor?.toLowerCase() || 'transparent'} 70%)`,
-                                        boxShadow: `0 0 30px 10px ${result.dominantColor.toLowerCase()}80`,
+                                          ${getAccurateColorCode(result.dominantColor)} 30%, 
+                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)} 70%)`,
+                                        boxShadow: `0 0 30px 10px ${getAccurateColorCode(result.dominantColor)}80`,
                                         opacity: 0.7
                                       }}
                                     ></div>
