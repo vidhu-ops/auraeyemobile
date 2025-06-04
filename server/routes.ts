@@ -120,38 +120,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image provided" });
       }
 
-      // Get user ID if authenticated
-      const userId = req.isAuthenticated() ? req.user?.id : null;
+      // Use consistent deterministic analysis for reliable results
+      const consistentAnalysis = generateConsistentAnalysis(imageData);
       
-      try {
-        // Use OpenAI to analyze the object
-        const prompt = "Analyze this object in the image and identify exactly what type of object it is. Give detailed information about it, including its potential purpose, materials, and intuitively understand and describe the aura or energy of the object.";
-        
-        // Call OpenAI with the prompt
-        // Note: We're using the same analyzeAuraImage function but with a different prompt
-        // In a production app, you'd want to create a separate function for object analysis
-        // Use consistent deterministic analysis for reliable results
-        const consistentAnalysis = generateConsistentAnalysis(imageData);
-        
-        // Transform the result to match the ObjectAnalysisResult interface
-        const result = {
-          objectName: "Spiritual Object",
-          objectDescription: `This object emanates ${consistentAnalysis.dominantColor.toLowerCase()} energy with subtle spiritual properties.`,
-          objectPurpose: `This object appears to enhance ${consistentAnalysis.personalityTraits.join(", ").toLowerCase()} qualities in its environment.`,
-          auraColor: consistentAnalysis.dominantColor,
-          auraDescription: `The object radiates a ${consistentAnalysis.dominantColor.toLowerCase()} aura, suggesting ${consistentAnalysis.spiritualGuidance.toLowerCase()}`,
-          energyLevel: consistentAnalysis.energyLevel,
-          energyQualities: consistentAnalysis.personalityTraits,
-          historicalSignificance: `Objects with ${consistentAnalysis.dominantColor.toLowerCase()} energy have been valued in spiritual traditions for their ${consistentAnalysis.personalityTraits[0].toLowerCase()} properties.`,
-          spiritualSignificance: consistentAnalysis.spiritualGuidance,
-          detailedAnalysis: consistentAnalysis.detailedAnalysis.replace("Your aura", "This object's energy").replace("you are", "the object emanates").replace("You", "It")
-        };
-        
-        res.json(result);
-      } catch (error) {
-        console.error("Error processing object analysis:", error);
-        res.status(500).json({ message: "An error occurred during analysis" });
-      }
+      // Transform the result to match the ObjectAnalysisResult interface
+      const result = {
+        objectName: "Spiritual Object",
+        objectDescription: `This object emanates ${consistentAnalysis.dominantColor.toLowerCase()} energy with subtle spiritual properties.`,
+        objectPurpose: `This object appears to enhance ${consistentAnalysis.personalityTraits.join(", ").toLowerCase()} qualities in its environment.`,
+        auraColor: consistentAnalysis.dominantColor,
+        auraDescription: `The object radiates a ${consistentAnalysis.dominantColor.toLowerCase()} aura, suggesting ${consistentAnalysis.spiritualGuidance.toLowerCase()}`,
+        energyLevel: consistentAnalysis.energyLevel,
+        energyQualities: consistentAnalysis.personalityTraits,
+        historicalSignificance: `Objects with ${consistentAnalysis.dominantColor.toLowerCase()} energy have been valued in spiritual traditions for their ${consistentAnalysis.personalityTraits[0].toLowerCase()} properties.`,
+        spiritualSignificance: consistentAnalysis.spiritualGuidance,
+        detailedAnalysis: consistentAnalysis.detailedAnalysis.replace("Your aura", "This object's energy").replace("you are", "the object emanates").replace("You", "It")
+      };
+      
+      res.json(result);
     } catch (error) {
       console.error("Error processing object analysis:", error);
       res.status(500).json({ message: "An error occurred during analysis" });
@@ -194,37 +180,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
 
-      // Try to analyze the aura using OpenAI, but use fallback if OpenAI fails
-      let auraAnalysis;
-      try {
-        auraAnalysis = await analyzeAuraImage(imageData, customPrompt ?? undefined);
-      } catch (aiError) {
-        console.error("Error in OpenAI analysis:", aiError);
-        // Already using fallback inside analyzeAuraImage, this is just a safeguard
-        auraAnalysis = {
-          dominantColor: "Blue",
-          secondaryColor: "Purple",
-          energyLevel: 3,
-          personalityTraits: ["Intuitive", "Spiritual", "Sensitive"],
-          spiritualGuidance: "Your aura suggests you are on a spiritual journey. Continue to nurture your intuitive abilities and stay connected to your higher self.",
-          chakraActivity: {
-            root: 5,
-            sacral: 6,
-            solarPlexus: 5,
-            heart: 7,
-            throat: 6,
-            thirdEye: 8,
-            crown: 7
-          },
-          detailedAnalysis: "Your aura shows a blend of spiritual awareness and intuitive abilities. Focus on grounding practices to balance your energy."
-        };
-      }
+      // Use deterministic analysis for consistent results across similar images
+      const auraAnalysis = generateConsistentAnalysis(imageData);
 
       // Save the analysis to storage if user is authenticated
       if (userId) {
         await storage.saveAuraReading({
           userId,
-          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
+          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100),
           dominantColor: auraAnalysis.dominantColor,
           secondaryColor: auraAnalysis.secondaryColor || "",
           energyLevel: auraAnalysis.energyLevel,
