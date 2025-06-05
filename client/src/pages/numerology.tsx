@@ -561,11 +561,12 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="lifePath" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="lifePath">Life Path</TabsTrigger>
                     <TabsTrigger value="destiny">Destiny</TabsTrigger>
                     <TabsTrigger value="soulUrge">Soul Urge</TabsTrigger>
                     <TabsTrigger value="personality">Personality</TabsTrigger>
+                    <TabsTrigger value="personalYear">Personal Year</TabsTrigger>
                   </TabsList>
 
                   {/* Life Path Tab */}
@@ -770,6 +771,87 @@ export default function NumerologyPage() {
                     </div>
                   </TabsContent>
 
+                  {/* Personal Year Tab */}
+                  <TabsContent value="personalYear" className="space-y-6 mt-6">
+                    {(() => {
+                      const personalYear = calculatePersonalYear(user?.birthDate || "1990-01-01");
+                      const personalYearInfo = getPersonalYearMeaning(personalYear);
+                      return (
+                        <>
+                          <div className="text-center">
+                            <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+                              {personalYear}
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Personal Year: {personalYear}</h3>
+                            <p className="text-gray-600 mb-2">2025 Forecast</p>
+                            <div className="text-sm text-gray-500 italic mb-4">
+                              Based on your birth date and the current year
+                            </div>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border border-indigo-100">
+                            <h4 className="font-semibold text-indigo-800 mb-3">{personalYearInfo.title}</h4>
+                            <p className="text-sm text-indigo-700 mb-4">{personalYearInfo.description}</p>
+                            
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for 2025</h5>
+                              <ul className="space-y-2">
+                                {personalYearInfo.focus.map((item, index) => (
+                                  <li key={index} className="flex items-start text-sm text-indigo-700">
+                                    <span className="text-indigo-500 mr-2 mt-1">•</span>
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Personal Year Calculation */}
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-800 mb-3">How Your Personal Year is Calculated</h4>
+                            <div className="text-sm text-gray-700 space-y-2">
+                              <p>Personal Year = (Birth Day + Birth Month + Current Year) reduced to single digit</p>
+                              {(() => {
+                                const birthDate = new Date(user?.birthDate || "1990-01-01");
+                                const day = birthDate.getDate();
+                                const month = birthDate.getMonth() + 1;
+                                const currentYear = 2025;
+                                return (
+                                  <div className="bg-white p-3 rounded border">
+                                    <p>Day: {day} + Month: {month} + Year digits: {currentYear.toString().split('').join(' + ')} = {day + month + 2 + 0 + 2 + 5}</p>
+                                    <p>Reduced to single digit: <span className="font-medium text-indigo-600">{personalYear}</span></p>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </div>
+
+                          {/* Vibration Qualities for Personal Year */}
+                          <div>
+                            <h4 className="font-semibold text-purple-800 mb-3">2025 Energy Qualities</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {getVibrationQualities(personalYear).map((quality, index) => (
+                                <Badge key={index} variant="secondary" className="bg-indigo-100 text-indigo-800 border-indigo-200">
+                                  {quality}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Personal Year Guidance */}
+                          <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                            <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance for 2025</h4>
+                            <p className="text-sm text-purple-700">
+                              This Personal Year {personalYear} invites you to embrace {personalYearInfo.title.toLowerCase()} energy. 
+                              Focus on the themes of {getVibrationQualities(personalYear).slice(0, 3).join(', ').toLowerCase()} 
+                              as you navigate through 2025. This is a time for {personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion and preparation' : 'steady progress'} 
+                              in your spiritual journey.
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </TabsContent>
 
                 </Tabs>
               </CardContent>
