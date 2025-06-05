@@ -105,7 +105,7 @@ export default function NumerologyPage() {
       7: "Spirituality and analysis • Soul Star Chakra • Color: Silver",
       8: "Material success and power • Third Eye Chakra • Color: Indigo",
       9: "Humanitarian service • Root Chakra • Color: Red"
-    };
+    }
     return meanings[number] || "Unique spiritual path";
   };
 
