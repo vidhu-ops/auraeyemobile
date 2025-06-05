@@ -29,7 +29,11 @@ import {
   Heart,
   Brain,
   Sparkles,
-  Download
+  Download,
+  Target,
+  Award,
+  AlertTriangle,
+  Smile
 } from "lucide-react";
 import { getDailyHoroscope, HoroscopeResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { format } from "date-fns";
@@ -73,6 +77,159 @@ export default function ClientDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedSign, setSelectedSign] = useState<string>("aries");
+
+  // Progress tracking analysis functions
+  const analyzeProgress = () => {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    // Filter recent data
+    const recentAuraReadings = Array.isArray(auraReadings) ? 
+      auraReadings.filter((reading: AuraReading) => new Date(reading.createdAt) >= thirtyDaysAgo) : [];
+    const recentJournalEntries = Array.isArray(journalEntries) ? 
+      journalEntries.filter((entry: JournalEntry) => new Date(entry.createdAt) >= thirtyDaysAgo) : [];
+    const weeklyJournalEntries = Array.isArray(journalEntries) ? 
+      journalEntries.filter((entry: JournalEntry) => new Date(entry.createdAt) >= sevenDaysAgo) : [];
+
+    // Calculate energy trends
+    const energyTrend = calculateEnergyTrend(recentJournalEntries);
+    const averageEnergy = recentJournalEntries.length > 0 ? 
+      recentJournalEntries.reduce((sum: number, entry: JournalEntry) => sum + entry.energyLevel, 0) / recentJournalEntries.length : 0;
+
+    // Analyze aura color patterns
+    const colorFrequency = analyzeAuraColors(recentAuraReadings);
+    const dominantColors = Object.entries(colorFrequency)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
+      .slice(0, 3);
+
+    // Growth indicators
+    const growthIndicators = identifyGrowthAreas(recentJournalEntries, recentAuraReadings);
+    
+    // Challenges
+    const challenges = identifyCommonChallenges(recentJournalEntries);
+    
+    // Positive changes
+    const positiveChanges = identifyPositiveChanges(recentJournalEntries, weeklyJournalEntries);
+
+    return {
+      energyTrend,
+      averageEnergy,
+      dominantColors,
+      growthIndicators,
+      challenges,
+      positiveChanges,
+      totalReadings: recentAuraReadings.length,
+      totalJournalEntries: recentJournalEntries.length
+    };
+  };
+
+  const calculateEnergyTrend = (entries: JournalEntry[]) => {
+    if (entries.length < 2) return 'stable';
+    
+    const sortedEntries = entries.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const firstHalf = sortedEntries.slice(0, Math.floor(sortedEntries.length / 2));
+    const secondHalf = sortedEntries.slice(Math.floor(sortedEntries.length / 2));
+    
+    const firstAvg = firstHalf.reduce((sum, entry) => sum + entry.energyLevel, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((sum, entry) => sum + entry.energyLevel, 0) / secondHalf.length;
+    
+    const difference = secondAvg - firstAvg;
+    if (difference > 0.5) return 'increasing';
+    if (difference < -0.5) return 'decreasing';
+    return 'stable';
+  };
+
+  const analyzeAuraColors = (readings: AuraReading[]) => {
+    const colorCount: { [key: string]: number } = {};
+    readings.forEach(reading => {
+      colorCount[reading.dominantColor] = (colorCount[reading.dominantColor] || 0) + 1;
+      if (reading.secondaryColor) {
+        colorCount[reading.secondaryColor] = (colorCount[reading.secondaryColor] || 0) + 1;
+      }
+    });
+    return colorCount;
+  };
+
+  const identifyGrowthAreas = (journalEntries: JournalEntry[], auraReadings: AuraReading[]) => {
+    const indicators = [];
+    
+    if (journalEntries.length >= 5) {
+      indicators.push("Consistent spiritual practice through regular journaling");
+    }
+    
+    if (auraReadings.length >= 3) {
+      const avgEnergy = auraReadings.reduce((sum, reading) => sum + reading.energyLevel, 0) / auraReadings.length;
+      if (avgEnergy >= 7) {
+        indicators.push("Maintaining high energy levels in aura readings");
+      }
+    }
+    
+    const recentHighEnergyDays = journalEntries.filter(entry => entry.energyLevel >= 8).length;
+    if (recentHighEnergyDays >= 3) {
+      indicators.push("Experiencing more high-energy days");
+    }
+    
+    return indicators;
+  };
+
+  const identifyCommonChallenges = (entries: JournalEntry[]) => {
+    const challenges = [];
+    
+    const lowEnergyDays = entries.filter(entry => entry.energyLevel <= 4).length;
+    const totalDays = entries.length;
+    
+    if (lowEnergyDays / totalDays > 0.3) {
+      challenges.push("Managing energy levels during stressful periods");
+    }
+    
+    const stressfulEntries = entries.filter(entry => 
+      entry.reflections.toLowerCase().includes('stress') || 
+      entry.reflections.toLowerCase().includes('anxious') ||
+      entry.reflections.toLowerCase().includes('overwhelmed')
+    ).length;
+    
+    if (stressfulEntries / totalDays > 0.2) {
+      challenges.push("Dealing with stress and anxiety");
+    }
+    
+    if (entries.filter(entry => entry.energyLevel <= 3).length > 0) {
+      challenges.push("Recovering from particularly low energy periods");
+    }
+    
+    return challenges;
+  };
+
+  const identifyPositiveChanges = (allEntries: JournalEntry[], recentEntries: JournalEntry[]) => {
+    const changes = [];
+    
+    if (recentEntries.length >= 3) {
+      const recentAvgEnergy = recentEntries.reduce((sum, entry) => sum + entry.energyLevel, 0) / recentEntries.length;
+      const olderEntries = allEntries.filter(entry => !recentEntries.includes(entry));
+      
+      if (olderEntries.length > 0) {
+        const olderAvgEnergy = olderEntries.reduce((sum, entry) => sum + entry.energyLevel, 0) / olderEntries.length;
+        if (recentAvgEnergy > olderAvgEnergy + 0.5) {
+          changes.push("Noticeable improvement in overall energy levels");
+        }
+      }
+    }
+    
+    const positiveKeywords = ['grateful', 'happy', 'peaceful', 'calm', 'balanced', 'positive', 'growth', 'progress'];
+    const recentPositiveEntries = recentEntries.filter(entry =>
+      positiveKeywords.some(keyword => entry.reflections.toLowerCase().includes(keyword))
+    ).length;
+    
+    if (recentPositiveEntries >= 2) {
+      changes.push("Increased focus on gratitude and positive experiences");
+    }
+    
+    if (recentEntries.length >= 5) {
+      changes.push("Developing a consistent mindfulness practice");
+    }
+    
+    return changes;
+  };
 
   // Function to download numerology reading as PDF
   const downloadNumerologyPDF = async (reading: NumerologyReading) => {
@@ -601,6 +758,147 @@ export default function ClientDashboard() {
                   </Link>
                 </Button>
               </CardFooter>
+            </Card>
+
+            {/* Progress Tracking Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  Your Spiritual Progress
+                </CardTitle>
+                <CardDescription>30-day growth summary and insights</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const progressData = analyzeProgress();
+                  
+                  if (progressData.totalJournalEntries === 0 && progressData.totalReadings === 0) {
+                    return (
+                      <div className="text-center py-8 text-gray-500">
+                        <Target className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p>Start your spiritual journey to see progress insights</p>
+                        <div className="flex gap-2 justify-center mt-4">
+                          <Link to="/aura-analysis">
+                            <Button variant="outline" size="sm">Take Aura Reading</Button>
+                          </Link>
+                          <Link to="/journal">
+                            <Button variant="outline" size="sm">Start Journaling</Button>
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-6">
+                      {/* Overview Stats */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center p-3 bg-blue-50 rounded-lg">
+                          <div className="text-2xl font-bold text-blue-600">{progressData.totalReadings}</div>
+                          <div className="text-xs text-blue-500">Aura Readings</div>
+                        </div>
+                        <div className="text-center p-3 bg-green-50 rounded-lg">
+                          <div className="text-2xl font-bold text-green-600">{progressData.totalJournalEntries}</div>
+                          <div className="text-xs text-green-500">Journal Entries</div>
+                        </div>
+                        <div className="text-center p-3 bg-purple-50 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-600">{progressData.averageEnergy.toFixed(1)}</div>
+                          <div className="text-xs text-purple-500">Avg Energy</div>
+                        </div>
+                        <div className="text-center p-3 bg-orange-50 rounded-lg">
+                          <div className="text-2xl font-bold text-orange-600">
+                            {progressData.energyTrend === 'increasing' ? '↗️' : 
+                             progressData.energyTrend === 'decreasing' ? '↘️' : '→'}
+                          </div>
+                          <div className="text-xs text-orange-500">Energy Trend</div>
+                        </div>
+                      </div>
+
+                      {/* Growth Indicators */}
+                      {progressData.growthIndicators.length > 0 && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                            <Award className="h-4 w-4" />
+                            Growth Areas
+                          </h4>
+                          <ul className="space-y-2">
+                            {progressData.growthIndicators.map((indicator, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm text-green-700">
+                                <span className="text-green-500 mt-1">✓</span>
+                                {indicator}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Positive Changes */}
+                      {progressData.positiveChanges.length > 0 && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                            <Smile className="h-4 w-4" />
+                            Positive Changes
+                          </h4>
+                          <ul className="space-y-2">
+                            {progressData.positiveChanges.map((change, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm text-blue-700">
+                                <span className="text-blue-500 mt-1">🌟</span>
+                                {change}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Common Challenges */}
+                      {progressData.challenges.length > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4" />
+                            Areas for Growth
+                          </h4>
+                          <ul className="space-y-2">
+                            {progressData.challenges.map((challenge, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm text-amber-700">
+                                <span className="text-amber-500 mt-1">⚡</span>
+                                {challenge}
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="mt-3 pt-3 border-t border-amber-200">
+                            <p className="text-xs text-amber-600">
+                              Consider booking a session with one of our healers for personalized guidance.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Dominant Aura Colors */}
+                      {progressData.dominantColors.length > 0 && (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                          <h4 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                            <Palette className="h-4 w-4" />
+                            Your Dominant Aura Colors
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {progressData.dominantColors.map(([color, count], index) => (
+                              <div key={index} className="flex items-center gap-2 px-3 py-2 bg-white border border-purple-200 rounded-lg">
+                                <div 
+                                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                                  style={{ backgroundColor: color.toLowerCase() }}
+                                ></div>
+                                <span className="text-sm font-medium text-purple-800">{color}</span>
+                                <Badge variant="secondary" className="text-xs">{count}x</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </CardContent>
             </Card>
           </div>
           
