@@ -40,188 +40,164 @@ export default function AuraAnalysis() {
     showPremiumModal("aura");
   };
 
-  // Function to download complete aura and numerology analysis as PDF with all tabs
+  // Function to download complete aura and numerology analysis as PDF
   const downloadAuraPDF = async () => {
     if (!result) return;
 
     try {
+      toast({
+        title: "Generating PDF",
+        description: "Please wait while we create your spiritual analysis report...",
+      });
+
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
 
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      let isFirstPage = true;
-
-      // Add title page
-      pdf.setFontSize(24);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Complete Spiritual Analysis Report', 105, 50, { align: 'center' });
+      const imgWidth = 200; // Slightly smaller for margins
+      const pageHeight = 280; // Leave room for margins
       
-      pdf.setFontSize(16);
+      // Add title page
+      pdf.setFontSize(20);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Spiritual Analysis Report', 105, 50, { align: 'center' });
+      
+      pdf.setFontSize(14);
       pdf.text('Aura Reading & Numerology Analysis', 105, 70, { align: 'center' });
       
-      pdf.setFontSize(12);
+      pdf.setFontSize(10);
       const date = new Date().toLocaleDateString();
       pdf.text(`Generated on: ${date}`, 105, 90, { align: 'center' });
 
-      // Get all tab content elements
-      const tabContents = document.querySelectorAll('[role="tabpanel"]');
-      const tabTriggers = document.querySelectorAll('[role="tab"]');
-      
-      // Store original states
-      const originalStates = Array.from(tabContents).map(tab => ({
-        element: tab as HTMLElement,
-        display: (tab as HTMLElement).style.display,
-        visibility: (tab as HTMLElement).style.visibility,
-        height: (tab as HTMLElement).style.height,
-        overflow: (tab as HTMLElement).style.overflow
-      }));
-
-      // Capture each tab content as full images
-      for (let i = 0; i < tabContents.length; i++) {
-        const tabContent = tabContents[i] as HTMLElement;
-        const tabTrigger = tabTriggers[i] as HTMLElement;
+      // Get the main analysis container
+      const analysisContainer = document.querySelector('#aura-reading-section');
+      if (analysisContainer) {
+        // Temporarily make all tabs visible for capture
+        const allTabs = analysisContainer.querySelectorAll('[role="tabpanel"]');
+        const originalStyles: Array<{element: HTMLElement, display: string}> = [];
         
-        // Make current tab visible and ensure full content is shown
-        tabContent.style.display = 'block';
-        tabContent.style.visibility = 'visible';
-        tabContent.style.height = 'auto';
-        tabContent.style.overflow = 'visible';
-        
-        // Wait for content to fully render
-        await new Promise(resolve => setTimeout(resolve, 500));
+        allTabs.forEach(tab => {
+          const tabElement = tab as HTMLElement;
+          originalStyles.push({
+            element: tabElement,
+            display: tabElement.style.display
+          });
+          tabElement.style.display = 'block';
+        });
 
-        // Create canvas for this tab with full dimensions
-        const canvas = await html2canvas(tabContent, {
-          scale: 2,
+        // Wait for all content to render
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Capture the entire analysis container
+        const canvas = await html2canvas(analysisContainer as HTMLElement, {
+          scale: 1,
           useCORS: true,
           backgroundColor: '#ffffff',
           logging: false,
-          allowTaint: false,
-          foreignObjectRendering: true,
-          width: tabContent.scrollWidth,
-          height: tabContent.scrollHeight,
-          windowWidth: tabContent.scrollWidth,
-          windowHeight: tabContent.scrollHeight
+          removeContainer: false,
+          width: (analysisContainer as HTMLElement).scrollWidth,
+          height: (analysisContainer as HTMLElement).scrollHeight
         });
 
-        const imgData = canvas.toDataURL('image/png', 1.0);
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        // Restore original tab visibility
+        originalStyles.forEach(({element, display}) => {
+          element.style.display = display;
+        });
 
-        // Add new page for each tab (except skip title page for first tab)
-        if (!isFirstPage) {
-          pdf.addPage();
-        } else {
-          pdf.addPage(); // Add page after title
-        }
+        // Add the captured image to PDF
+        pdf.addPage();
+        pdf.setFontSize(16);
+        pdf.text('Aura Analysis Results', 20, 25);
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Add tab title
-        pdf.setFontSize(18);
-        pdf.setTextColor(75, 85, 99);
-        const tabTitle = tabTrigger.textContent?.trim() || `Analysis Section ${i + 1}`;
-        pdf.text(tabTitle, 20, 25);
-        
-        // Calculate how to fit the image on pages
-        let remainingHeight = imgHeight;
+        // Add image, splitting across pages if needed
+        let yPosition = 35;
         let sourceY = 0;
-        let pageY = 35; // Start below title
+        let remainingHeight = imgHeight;
 
         while (remainingHeight > 0) {
-          const availableHeight = pageHeight - pageY - 10; // Leave margin at bottom
-          const printHeight = Math.min(remainingHeight, availableHeight);
+          const pageSpace = pageHeight - yPosition;
+          const printHeight = Math.min(remainingHeight, pageSpace);
           
-          // Calculate source canvas section to crop
-          const sourceHeight = (printHeight / imgWidth) * canvas.width;
-          
-          // Create cropped canvas for this section
-          const croppedCanvas = document.createElement('canvas');
-          croppedCanvas.width = canvas.width;
-          croppedCanvas.height = sourceHeight;
-          const croppedCtx = croppedCanvas.getContext('2d');
-          
-          if (croppedCtx) {
-            croppedCtx.drawImage(
-              canvas,
-              0, sourceY, canvas.width, sourceHeight,
-              0, 0, canvas.width, sourceHeight
-            );
+          if (printHeight > 0) {
+            const sourceHeight = (printHeight / imgWidth) * canvas.width;
             
-            const croppedImgData = croppedCanvas.toDataURL('image/png', 1.0);
-            pdf.addImage(croppedImgData, 'PNG', 0, pageY, imgWidth, printHeight);
-          }
-          
-          remainingHeight -= printHeight;
-          sourceY += sourceHeight;
-          
-          // If more content remains, add new page
-          if (remainingHeight > 0) {
-            pdf.addPage();
-            pageY = 10; // Smaller margin for continuation pages
+            // Create a cropped version of the canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = sourceHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            if (tempCtx) {
+              tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+              const tempData = tempCanvas.toDataURL('image/png');
+              pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
+            }
+            
+            remainingHeight -= printHeight;
+            sourceY += sourceHeight;
+            
+            if (remainingHeight > 0) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+          } else {
+            break;
           }
         }
-        
-        isFirstPage = false;
       }
 
       // Add numerology summary if available
       if (numerologyResult) {
         pdf.addPage();
+        pdf.setFontSize(16);
+        pdf.text('Numerology Analysis', 20, 25);
         
-        pdf.setFontSize(18);
-        pdf.text('Numerology Analysis Summary', 20, 25);
-        
-        pdf.setFontSize(12);
-        let yPos = 45;
+        pdf.setFontSize(10);
+        let yPos = 40;
         
         pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 20, yPos);
-        yPos += 8;
+        yPos += 7;
         pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 20, yPos);
-        yPos += 8;
+        yPos += 7;
         pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 20, yPos);
-        yPos += 8;
+        yPos += 7;
         pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 20, yPos);
         yPos += 15;
         
-        // Add numerology interpretation
-        pdf.text('Interpretation:', 20, yPos);
-        yPos += 8;
-        const numerologyText = numerologyResult.interpretation || 'Your numbers reveal unique life patterns.';
-        const splitNumerologyText = pdf.splitTextToSize(numerologyText, 170);
-        pdf.text(splitNumerologyText, 20, yPos);
+        if (numerologyResult.interpretation) {
+          pdf.text('Interpretation:', 20, yPos);
+          yPos += 7;
+          const lines = pdf.splitTextToSize(numerologyResult.interpretation, 170);
+          pdf.text(lines, 20, yPos);
+        }
       }
-
-      // Restore original states
-      originalStates.forEach(({ element, display, visibility, height, overflow }) => {
-        element.style.display = display;
-        element.style.visibility = visibility;
-        element.style.height = height;
-        element.style.overflow = overflow;
-      });
 
       // Add metadata
       pdf.setProperties({
-        title: 'Complete Spiritual Analysis Report',
-        subject: 'Aura Reading and Numerology Analysis with All Tabs',
-        author: 'Spiritual Wellness Dashboard',
-        creator: 'Spiritual Analysis System'
+        title: 'Spiritual Analysis Report',
+        subject: 'Aura and Numerology Analysis',
+        author: 'Spiritual Wellness Dashboard'
       });
 
-      // Download the PDF
+      // Download
       const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`complete-spiritual-analysis-${timestamp}.pdf`);
+      pdf.save(`spiritual-analysis-${timestamp}.pdf`);
 
       toast({
-        title: "Complete Analysis Downloaded",
-        description: "Your full spiritual analysis with all tabs has been saved as PDF",
+        title: "PDF Downloaded Successfully",
+        description: "Your spiritual analysis report has been saved",
       });
+
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('PDF Generation Error:', error);
       toast({
         title: "Download Failed",
-        description: "Unable to generate PDF. Please try again.",
+        description: "Could not generate PDF. Please try again.",
         variant: "destructive",
       });
     }
