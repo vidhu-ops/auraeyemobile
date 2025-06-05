@@ -55,6 +55,18 @@ export default function NumerologyPage() {
   });
 
   const onSubmit = async (data: NumerologyFormData) => {
+    // Check if user is authenticated
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to access numerology analysis.",
+        variant: "destructive",
+      });
+      // Redirect to login page
+      window.location.href = "/api/login";
+      return;
+    }
+
     if (!data.name.trim() || !data.birthDate.trim()) {
       toast({
         title: "Missing Information",
