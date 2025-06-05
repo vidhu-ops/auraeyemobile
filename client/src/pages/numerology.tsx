@@ -94,44 +94,32 @@ export default function NumerologyPage() {
     }
   };
 
-  const chakraColors = {
-    root: "#E53E3E",
-    sacral: "#FF8C00", 
-    solarPlexus: "#FFD700",
-    heart: "#38A169",
-    throat: "#3182CE",
-    thirdEye: "#805AD5",
-    crown: "#B794F6",
-    earthstar: "#A0AEC0",
-    soulstar: "#718096",
-  };
-
   const getLifePathMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
-      1: "Leadership and independence",
-      2: "Cooperation and harmony",
-      3: "Creativity and expression",
-      4: "Stability and hard work",
-      5: "Freedom and adventure",
-      6: "Nurturing and responsibility",
-      7: "Spirituality and analysis",
-      8: "Material success and power",
-      9: "Humanitarian service"
+      1: "Colour: Yellow, Chakra: Solar plexus. Leadership and independencePlanet: Sun Chakra: Solar Plexus Chakra (between ribs and navel) PPI: Goal Setting and Achievement Positive Psychology Interventions: PPI Concept: Goal setting fosters independence and self-confidence. Research: Locke & Latham (2002) demonstrated that specific and challenging goals significantly enhance motivation and achievement. How to Use: Set 3 short-term and 1 long-term goal weekly. Use SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound). Celebrate small wins to build momentum. Example Technique: Short-Term Goal: Complete one self-help book this week. Long-Term Goal: Start a blog on personal development. Write down steps, track progress daily, and celebrate milestones. Angel/Archangel: Archangel Michael Karmic Lesson: Personal power, confidence, and willpower. Healing Method: Overcome self-doubt and claim inner strength. Remedies: Color Therapy: Yellow. Wear or visualize yellow light. Mantra Chanting: RAM 45 times/day.Crystal Therapy: Citrine, Tiger’s Eye. Aroma Therapy: Lemon, Bergamot, Ginger. Affirmations: I am confident and powerful I take charge of my life. Sacred Code: Chant 451 45 times/day. (chant numbers individually) Four Five One Bach Flower Remedies: Larch (self-doubt), Wild Oat (direction), Mustard (low energy). How to use: In a bottle of water, add 4-5 drops of each remedy. Drink throughout the day. Prayer to Archangel Michael: Archangel Michael, give me strength and confidence to shine my light. Guide me to my highest purpose. Amen. Deity Connection:Solar Plexus Chakra (Sun): Lord Surya and Lord Rama Om Suryaya Namah. Shri Ram Jai Ram Jai Jai Ram. Radiant Lord Surya, empower my inner strength and confidence. Guide me to take charge of my destiny and fill my solar plexus chakra with your golden light. Self-Healing Technique: 1. Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. 2. Focus on the heart chakra as a bridge. 3. Call Archangel Michael or Lord Surya with this prayer:Archangel Michael, fill me with strength and confidence. Lord Surya, empower me with light and power. 4. Create a yellow energy ball in your palms, visualize code 451 in its center, and state your intention. 5. Absorb the ball into your solar plexus chakra for confidence and willpower or send it into the universe for manifestation. Planet: Sun Rudraksha Remedy: Wear 12 Mukhi or 1 Mukhi Nepal Sawar Bead or 1 Mukhi Indonesian Premium Energized Rudraksha.",
+      2: "Colour:Green and pink, Chakra: Heart Chakra. Cooperation and harmony",
+      3: "Colour:violet, Chakra: Crown Chakra. Creativity and expression",
+      4: "Colour:Crimson Chakra: Earth Star Chakra. Stability and hard work",
+      5: "Colour:Blue Chakra:Throat Chakra. Freedom and adventure",
+      6: "Colour:Orange Chakra:Sacral Chakra. Nurturing and responsibility",
+      7: "Colour:Silver Chakra:Soul Star Chakra. Spirituality and analysis",
+      8: "Colour:Indigo, Chakra: Third Eye Chakra. Material success and power",
+      9: "Colour: Red, Chakra: Root Chakra. Humanitarian service"
     };
     return meanings[number] || "Unique spiritual path";
   };
 
   const getDestinyMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
-      1: "Pioneer and innovator",
-      2: "Diplomat and peacemaker",
-      3: "Artist and communicator",
-      4: "Builder and organizer",
-      5: "Explorer and freedom seeker",
-      6: "Healer and caretaker",
-      7: "Seeker of truth and wisdom",
-      8: "Executive and achiever",
-      9: "Humanitarian and server"
+      1: "Pioneer and innovator Core Lesson:Confidence,Self Worth, Self Esteem, Will Power, Abundance",
+      2: "Diplomat and peacemaker Core Lessons:Love Compassion,Forgiveness, Connection, Ability to give and recieve",
+      3: "Artist and communicator Core lessons:Wisdom, Divine connection, Guidance, Receptivity, Spirtuality, Knowledge",
+      4: "Builder and organizer Core Lessons: Manifestation, Suppourt system from earth, Abundance and growth, Money energy, Ability to make things happen",
+      5: "Explorer and freedom seeker Core lessons:Self expression, Communication, Speaking the truth, Honesty, Purity of speech",
+      6: "Healer and caretaker Core lessons: Sexuality, creativity, balance, passion, feel emotion",
+      7: "Seeker of truth and wisdom core lessons:Soul GPS, Clarity and direction, Scynronicity, Life purpose, Karmic alignment, Inner knowing",
+      8: "Executive and achiever Core lessons: Intution, Trust, Insight, Wisdowm, Seeking truth",
+      9: "Humanitarian and server Core lessons: Action Stability, security, passion, decisions"
     };
     return meanings[number] || "Special destiny path";
   };
@@ -187,14 +175,13 @@ export default function NumerologyPage() {
     const meanings: { [key: number]: { title: string; description: string; focus: string[] } } = {
       1: {
         title: "New Beginnings and Leadership",
-        description: "Personal Year 1 is the beginning of a new 9-year cycle. Focus on independence, self-discovery, and asserting your personal power through the Solar Plexus Chakra.",
+        description: "Personal Year 1 is the beginning of a new 9-year cycle. Focus on independence, self-discovery, and asserting your personal power through the Solar Plexus Chakra.New Beginnings and Leadership Planet: Sun Chakra: Solar Plexus Chakra Definition and Impact: Personal Year 1 is the beginning of a new 9-year cycle, a time of fresh starts, self-discovery, and asserting independence. It’s an energetic reset where you’re encouraged to focus on yourself, your goals, and your dreams. Ruled by the Sun, this year amplifies confidence, ambition, and a desire to lead. The Solar Plexus Chakra plays a pivotal role in this year, fueling your personal power, determination, and ability totake initiative.This year demands courage as you step into uncharted territories. Whether you’re starting a new career, moving to a new city, or redefining your personal identity, the energy supports bold action. It’s not always easy—this year asks you to break free from old patterns and embrace new opportunities. How It Affects Us:Positive: You feel a surge of energy, ready to take charge of your life. New ideas flow easily, and you find clarity in your purpose. Leadership opportunities may arise, and you’ll feel empowered to pursue them. Negative: If unbalanced, you may feel overwhelmed by the weight of responsibility. Overconfidence or impatience might cause you to act impulsively, while self-doubt may lead to stagnation. Real-Life Relatability: Imagine you’ve been stuck in the same job for years but always dreamt of starting your own business. This year nudges you to take that leap of faith. You’ll notice doors opening—an investor might show interest, or you may stumble upon the resources you need. However, fear might creep in, making you doubt your capabilities. Advice for Balance: Focus on building a strong foundation for the future. This is a year to prioritize action but also to ensure you don’t burn out. Balance is key. Practice mindfulness to stay grounded and avoid overextending yourself. Use affirmations like “I am confident, capable, and ready to lead” to align your Solar Plexus Chakra. Practical Steps: 1. Set clear, achievable goals. Break them into smaller tasks to maintain focus. 2. Say yes to opportunities but evaluate them carefully—don’t spread yourself too thin.3. Take care of your health; physical vitality will fuel your drive.Chakra Insight:The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy",
         focus: ["Set clear, achievable goals", "Say yes to new opportunities", "Focus on personal health and vitality"]
       },
       2: {
         title: "Relationships, Sensitivity, and Patience", 
-        description: "Personal Year 2 emphasizes cooperation, collaboration, and harmony through the Heart Chakra. Focus on building meaningful connections.",
-        focus: ["Practice active listening", "Journal about emotions daily", "Communicate boundaries clearly"]
-      },
+        description: "Personal Year 2 emphasizes cooperation, collaboration, and harmony through the Heart Chakra. Focus on building meaningful connections. Planet: Moon Chakra: Heart Chakra Definition and Impact: Personal Year 2 is about connection, collaboration, and harmony. After the dynamic energy of Year 1, this year softens the focus on independence and encourages you to nurture relationships. Ruled by the Moon, it’s a deeply emotional year, where the Heart Chakra becomes your guide. The Moon heightens intuition and emotional sensitivity, helping you form meaningful connections. However, this heightened awareness can sometimes make you feel vulnerable or overwhelmed. This is a year of duality. While you’ll find immense joy in working with others and building bonds, challenges may arise in the form of miscommunication or emotional conflicts. It’s also a year of patience—progress may seem slower than expected, but it’s because you’re being asked to focus on the foundations of trust and understanding. How It Affects Us: Positive: You’ll develop stronger relationships, deepen emotional bonds, and improve teamwork. Emotional intelligence is heightened, making it easier to empathize and collaborate. Negative: Over-sensitivity may lead to emotional burnout or conflict. You might feel overly dependent on others for validation or struggle with setting boundaries. Real-Life Relatability: Imagine you’ve started a new job. While Year 1 may have been about getting the job, Year 2 focuses on building rapport with your team. You’ll find yourself navigating different personalities and balancing your own needs with the group’s goals. Advice for Balance: Be patient with yourself and others. Take time to understand your emotions and what triggers them. Focus on self-care to avoid becoming emotionally depleted. Practice gratitude—it helps you find peace during challenges.] Practical Steps:1. Practice active listening in conversations. 2. Journaling daily about your emotions helps you process them constructively. 3. Don’t hesitate to communicate your boundaries with loved ones or colleagues. Chakra Insight: The Heart Chakra governs love, compassion, and forgiveness. Keep it balanced by visualizing green light and chanting the mantra YAM. Engage in acts of kindness to nurture this energy center",
+        focus: ["Practice, active listening", "Journal about emotions daily,Communicate boundaries clearly"]},
       3: {
         title: "Creativity, Expression, and Growth",
         description: "Personal Year 3 brings vibrant self-expression and creativity through the Crown Chakra. Time to share your ideas with the world.",
