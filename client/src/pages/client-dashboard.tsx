@@ -33,7 +33,9 @@ import {
   Target,
   Award,
   AlertTriangle,
-  Smile
+  Smile,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { getDailyHoroscope, HoroscopeResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { format } from "date-fns";
@@ -77,6 +79,8 @@ export default function ClientDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedSign, setSelectedSign] = useState<string>("aries");
+  const [currentAuraIndex, setCurrentAuraIndex] = useState(0);
+  const [currentNumerologyIndex, setCurrentNumerologyIndex] = useState(0);
 
   // Progress tracking analysis functions
   const analyzeProgress = () => {
@@ -458,97 +462,80 @@ export default function ClientDashboard() {
                   
                   <TabsContent value="aura">
                     {isLoadingAura ? (
-                      <div className="flex justify-center items-center py-8">
+                      <div className="flex justify-center items-center h-[150px]">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                       </div>
                     ) : Array.isArray(auraReadings) && auraReadings.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
-                        <Palette className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                        <p>No aura readings yet</p>
+                      <div className="text-center h-[150px] flex flex-col justify-center text-gray-500">
+                        <Palette className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No aura readings yet</p>
                         <Link to="/aura-analysis">
-                          <Button className="mt-2" variant="outline">
+                          <Button className="mt-2" variant="outline" size="sm">
                             Get Your First Reading
                           </Button>
                         </Link>
                       </div>
                     ) : (
-                      <div className="space-y-4">
-                        {Array.isArray(auraReadings) && auraReadings.map((reading: AuraReading) => (
-                          <div key={reading.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-                            {/* Header with timestamp and energy */}
-                            <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50">
-                              <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-3">
+                      <div className="relative h-[150px]">
+                        {/* Slideshow Navigation */}
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs text-gray-500">
+                            {currentAuraIndex + 1} of {(auraReadings as AuraReading[]).length}
+                          </span>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentAuraIndex(Math.max(0, currentAuraIndex - 1))}
+                              disabled={currentAuraIndex === 0}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronLeft className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentAuraIndex(Math.min((auraReadings as AuraReading[]).length - 1, currentAuraIndex + 1))}
+                              disabled={currentAuraIndex === (auraReadings as AuraReading[]).length - 1}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronRight className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Current Reading Display */}
+                        {Array.isArray(auraReadings) && auraReadings.length > 0 && (
+                          <div className="h-[120px] overflow-hidden border rounded-lg bg-white shadow-sm">
+                            <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
                                   <div 
-                                    className="w-8 h-8 rounded-full border-2 border-white shadow-md"
-                                    style={{ backgroundColor: reading.dominantColor }}
+                                    className="w-5 h-5 rounded-full border border-white shadow-sm"
+                                    style={{ backgroundColor: (auraReadings as AuraReading[])[currentAuraIndex]?.dominantColor }}
                                   ></div>
                                   <div>
-                                    <h3 className="font-medium text-gray-900">{reading.dominantColor} Aura Reading</h3>
-                                    <p className="text-sm text-gray-500">
-                                      {format(new Date(reading.createdAt), "EEEE, MMM d, yyyy 'at' h:mm a")}
+                                    <h3 className="text-sm font-medium">{(auraReadings as AuraReading[])[currentAuraIndex]?.dominantColor} Aura</h3>
+                                    <p className="text-xs text-gray-500">
+                                      {format(new Date((auraReadings as AuraReading[])[currentAuraIndex]?.createdAt), "MMM d, yyyy")}
                                     </p>
                                   </div>
                                 </div>
-                                <Badge variant="outline" className="bg-white">
-                                  Energy: {reading.energyLevel}/10
+                                <Badge variant="outline" className="text-xs">
+                                  Energy: {(auraReadings as AuraReading[])[currentAuraIndex]?.energyLevel}/10
                                 </Badge>
                               </div>
                             </div>
                             
-                            {/* Content with analysis only */}
-                            <div className="p-4">
-                              <div className="space-y-4">
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                    <Sparkles className="h-4 w-4 text-purple-600" />
-                                    Aura Analysis
-                                  </h4>
-                                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-3 border-l-4 border-purple-400">
-                                    <p className="text-sm text-gray-800 leading-relaxed italic">
-                                      "{reading.analysis.length > 150 
-                                        ? reading.analysis.substring(0, 150) + "..." 
-                                        : reading.analysis}"
-                                    </p>
-                                  </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <h5 className="text-xs font-medium text-gray-600 uppercase tracking-wide">Aura Characteristics</h5>
-                                  <div className="flex flex-wrap gap-2">
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-purple-200 rounded-lg shadow-sm">
-                                      <div 
-                                        className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                                        style={{ backgroundColor: reading.dominantColor }}
-                                      ></div>
-                                      <div className="text-xs">
-                                        <span className="text-gray-500">Primary:</span>
-                                        <span className="font-medium text-gray-800 ml-1">{reading.dominantColor}</span>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-blue-200 rounded-lg shadow-sm">
-                                      <div 
-                                        className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                                        style={{ backgroundColor: reading.secondaryColor }}
-                                      ></div>
-                                      <div className="text-xs">
-                                        <span className="text-gray-500">Secondary:</span>
-                                        <span className="font-medium text-gray-800 ml-1">{reading.secondaryColor}</span>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg shadow-sm">
-                                      <Activity className="h-3 w-3 text-green-600" />
-                                      <div className="text-xs">
-                                        <span className="text-gray-500">Energy:</span>
-                                        <span className="font-medium text-green-700 ml-1">{reading.energyLevel}/10</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                            <div className="p-3">
+                              <p className="text-xs text-gray-700 line-clamp-3">
+                                {((auraReadings as AuraReading[])[currentAuraIndex]?.analysis?.length > 100 
+                                  ? (auraReadings as AuraReading[])[currentAuraIndex]?.analysis.substring(0, 100) + "..." 
+                                  : (auraReadings as AuraReading[])[currentAuraIndex]?.analysis)}
+                              </p>
                             </div>
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </TabsContent>
