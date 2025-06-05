@@ -396,9 +396,8 @@ export default function ClientDashboard() {
       </div>
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card className="mb-8">
+        {/* Quick Actions - Full Width */}
+        <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>Access your most used spiritual tools</CardDescription>
@@ -439,9 +438,9 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
-            
-            {/* User Reading History */}
-            <Card>
+
+        {/* Progress Tracking - Full Width */}
+        <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Eye className="h-5 w-5 text-purple-500" />
@@ -900,9 +899,9 @@ export default function ClientDashboard() {
                 })()}
               </CardContent>
             </Card>
-          </div>
-          
-          <div>
+
+        {/* Cosmic Insights - Full Width */}
+        <Card className="mb-8">
             {/* Numerology Card */}
             {user?.birthDate && (
               <Card className="mb-8">
