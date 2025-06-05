@@ -36,7 +36,6 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
-    { name: "Healers", href: "/healers" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -84,7 +83,7 @@ export default function Navbar() {
                     {user ? (
                       <>
                         <Link 
-                          href={user.userType === "healer" ? "/healer-dashboard" : "/client-dashboard"} 
+                          href="/client-dashboard" 
                           onClick={closeSheet}
                           className="block py-2 px-2 rounded-lg text-primary font-medium"
                         >
@@ -146,7 +145,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <div className="flex items-center space-x-3">
-                <Link href={user.userType === "healer" ? "/healer-dashboard" : "/client-dashboard"}>
+                <Link href="/client-dashboard">
                   <Button variant="outline" className="border-primary text-primary hover:bg-primary-light/10">
                     Dashboard
                   </Button>
