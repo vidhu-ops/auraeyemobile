@@ -248,71 +248,51 @@ export default function ClientDashboard() {
                               </div>
                             </div>
                             
-                            {/* Content with image and analysis */}
+                            {/* Content with analysis only */}
                             <div className="p-4">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {/* Uploaded Image */}
-                                <div className="md:col-span-1">
-                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
-                                    {reading.imageUrl ? (
-                                      <img 
-                                        src={reading.imageUrl} 
-                                        alt="Aura analysis image"
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                        <Camera className="h-8 w-8 text-gray-400" />
-                                      </div>
-                                    )}
+                              <div className="space-y-4">
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-purple-600" />
+                                    Aura Analysis
+                                  </h4>
+                                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-3 border-l-4 border-purple-400">
+                                    <p className="text-sm text-gray-800 leading-relaxed italic">
+                                      "{reading.analysis.length > 150 
+                                        ? reading.analysis.substring(0, 150) + "..." 
+                                        : reading.analysis}"
+                                    </p>
                                   </div>
                                 </div>
                                 
-                                {/* Analysis Content */}
-                                <div className="md:col-span-2 space-y-4">
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                      <Sparkles className="h-4 w-4 text-purple-600" />
-                                      Aura Analysis
-                                    </h4>
-                                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-3 border-l-4 border-purple-400">
-                                      <p className="text-sm text-gray-800 leading-relaxed italic">
-                                        "{reading.analysis.length > 150 
-                                          ? reading.analysis.substring(0, 150) + "..." 
-                                          : reading.analysis}"
-                                      </p>
+                                <div className="space-y-2">
+                                  <h5 className="text-xs font-medium text-gray-600 uppercase tracking-wide">Aura Characteristics</h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-purple-200 rounded-lg shadow-sm">
+                                      <div 
+                                        className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                                        style={{ backgroundColor: reading.dominantColor }}
+                                      ></div>
+                                      <div className="text-xs">
+                                        <span className="text-gray-500">Primary:</span>
+                                        <span className="font-medium text-gray-800 ml-1">{reading.dominantColor}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  
-                                  <div className="space-y-2">
-                                    <h5 className="text-xs font-medium text-gray-600 uppercase tracking-wide">Aura Characteristics</h5>
-                                    <div className="flex flex-wrap gap-2">
-                                      <div className="flex items-center gap-2 px-3 py-2 bg-white border border-purple-200 rounded-lg shadow-sm">
-                                        <div 
-                                          className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                                          style={{ backgroundColor: reading.dominantColor }}
-                                        ></div>
-                                        <div className="text-xs">
-                                          <span className="text-gray-500">Primary:</span>
-                                          <span className="font-medium text-gray-800 ml-1">{reading.dominantColor}</span>
-                                        </div>
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-blue-200 rounded-lg shadow-sm">
+                                      <div 
+                                        className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                                        style={{ backgroundColor: reading.secondaryColor }}
+                                      ></div>
+                                      <div className="text-xs">
+                                        <span className="text-gray-500">Secondary:</span>
+                                        <span className="font-medium text-gray-800 ml-1">{reading.secondaryColor}</span>
                                       </div>
-                                      <div className="flex items-center gap-2 px-3 py-2 bg-white border border-blue-200 rounded-lg shadow-sm">
-                                        <div 
-                                          className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                                          style={{ backgroundColor: reading.secondaryColor }}
-                                        ></div>
-                                        <div className="text-xs">
-                                          <span className="text-gray-500">Secondary:</span>
-                                          <span className="font-medium text-gray-800 ml-1">{reading.secondaryColor}</span>
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg shadow-sm">
-                                        <Activity className="h-3 w-3 text-green-600" />
-                                        <div className="text-xs">
-                                          <span className="text-gray-500">Energy:</span>
-                                          <span className="font-medium text-green-700 ml-1">{reading.energyLevel}/10</span>
-                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg shadow-sm">
+                                      <Activity className="h-3 w-3 text-green-600" />
+                                      <div className="text-xs">
+                                        <span className="text-gray-500">Energy:</span>
+                                        <span className="font-medium text-green-700 ml-1">{reading.energyLevel}/10</span>
                                       </div>
                                     </div>
                                   </div>
