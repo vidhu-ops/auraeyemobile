@@ -142,6 +142,11 @@ export default function NumerologyPage() {
     return personalYear;
   };
 
+  const calculatePersonalMonth = (personalYear: number, month: number): number => {
+    const sum = personalYear + month;
+    return reduceToSingleDigit(sum);
+  };
+
   const reduceToSingleDigit = (num: number): number => {
     while (num > 9) {
       num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
@@ -218,6 +223,61 @@ export default function NumerologyPage() {
       title: "Universal Energy",
       description: "A year of unique spiritual development",
       focus: ["Trust your inner guidance", "Stay open to possibilities", "Practice mindfulness"]
+    };
+  };
+
+  const getPersonalMonthMeaning = (month: number): { title: string; description: string; theme: string } => {
+    const meanings: { [key: number]: { title: string; description: string; theme: string } } = {
+      1: {
+        title: "New Beginnings",
+        description: "A month for fresh starts, new projects, and taking initiative. Focus on independence and leadership.",
+        theme: "Initiative and Fresh Energy"
+      },
+      2: {
+        title: "Cooperation and Balance",
+        description: "A month for partnerships, collaboration, and building relationships. Focus on patience and diplomacy.",
+        theme: "Harmony and Partnerships"
+      },
+      3: {
+        title: "Creative Expression",
+        description: "A month for artistic pursuits, communication, and social activities. Express your creativity freely.",
+        theme: "Creativity and Communication"
+      },
+      4: {
+        title: "Hard Work and Organization",
+        description: "A month for building foundations, being practical, and focusing on details. Discipline brings rewards.",
+        theme: "Structure and Foundation"
+      },
+      5: {
+        title: "Freedom and Change",
+        description: "A month for adventure, travel, and embracing change. Seek new experiences and variety.",
+        theme: "Adventure and Flexibility"
+      },
+      6: {
+        title: "Responsibility and Nurturing",
+        description: "A month for family, home, and caring for others. Focus on service and creating harmony.",
+        theme: "Service and Family"
+      },
+      7: {
+        title: "Spiritual Reflection",
+        description: "A month for introspection, research, and spiritual growth. Take time for inner development.",
+        theme: "Wisdom and Introspection"
+      },
+      8: {
+        title: "Material Achievement",
+        description: "A month for business success, financial gains, and material accomplishments. Focus on practical results.",
+        theme: "Success and Recognition"
+      },
+      9: {
+        title: "Completion and Service",
+        description: "A month for finishing projects, letting go, and humanitarian service. Prepare for new cycles.",
+        theme: "Completion and Giving"
+      }
+    };
+    return meanings[month] || {
+      title: "Universal Flow",
+      description: "A month of balanced energy and spiritual alignment",
+      theme: "Harmony and Balance"
     };
   };
 
@@ -847,6 +907,82 @@ export default function NumerologyPage() {
                               as you navigate through 2025. This is a time for {personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion and preparation' : 'steady progress'} 
                               in your spiritual journey.
                             </p>
+                          </div>
+
+                          {/* Personal Month Section */}
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+                            <h4 className="font-semibold text-blue-800 mb-4">Personal Month Forecast 2025</h4>
+                            <p className="text-sm text-blue-700 mb-4">
+                              Each month carries its own energy based on your Personal Year {personalYear}. The monthly cycle progresses from 1-9 and repeats.
+                            </p>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {[
+                                { name: "January", number: 1 },
+                                { name: "February", number: 2 },
+                                { name: "March", number: 3 },
+                                { name: "April", number: 4 },
+                                { name: "May", number: 5 },
+                                { name: "June", number: 6 },
+                                { name: "July", number: 7 },
+                                { name: "August", number: 8 },
+                                { name: "September", number: 9 },
+                                { name: "October", number: 10 },
+                                { name: "November", number: 11 },
+                                { name: "December", number: 12 }
+                              ].map((month) => {
+                                const personalMonth = calculatePersonalMonth(personalYear, month.number);
+                                const monthInfo = getPersonalMonthMeaning(personalMonth);
+                                const currentMonth = new Date().getMonth() + 1;
+                                const isCurrentMonth = month.number === currentMonth;
+                                
+                                return (
+                                  <div 
+                                    key={month.name} 
+                                    className={`bg-white rounded-lg p-4 border transition-all hover:shadow-md ${
+                                      isCurrentMonth ? 'border-blue-400 ring-2 ring-blue-200' : 'border-blue-100'
+                                    }`}
+                                  >
+                                    <div className="flex items-center justify-between mb-2">
+                                      <h5 className="font-medium text-blue-800">{month.name}</h5>
+                                      {isCurrentMonth && (
+                                        <Badge className="bg-blue-100 text-blue-800 text-xs">Current</Badge>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="text-center mb-3">
+                                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-lg mx-auto mb-2">
+                                        {personalMonth}
+                                      </div>
+                                      <div className="text-xs text-blue-600 font-medium">{monthInfo.theme}</div>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <h6 className="text-sm font-medium text-blue-800">{monthInfo.title}</h6>
+                                      <p className="text-xs text-blue-700 leading-relaxed">
+                                        {monthInfo.description}
+                                      </p>
+                                    </div>
+                                    
+                                    <div className="mt-3 pt-2 border-t border-blue-100">
+                                      <div className="text-xs text-blue-600">
+                                        Personal Year {personalYear} + Month {month.number} = {personalMonth}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            <div className="mt-6 bg-white rounded-lg p-4 border border-blue-100">
+                              <h5 className="font-medium text-blue-800 mb-2">How Personal Months Work</h5>
+                              <div className="text-sm text-blue-700 space-y-1">
+                                <p>• Personal Month = Personal Year + Calendar Month (reduced to single digit)</p>
+                                <p>• The cycle flows from 1-9 and repeats throughout the year</p>
+                                <p>• Each month brings specific opportunities aligned with its numerological energy</p>
+                                <p>• Use these monthly themes to plan important activities and decisions</p>
+                              </div>
+                            </div>
                           </div>
                         </>
                       );
