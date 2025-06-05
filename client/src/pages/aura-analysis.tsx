@@ -205,12 +205,7 @@ export default function AuraAnalysis() {
 
   // Helper function to get accurate color hex values
   const getAccurateColorCode = (colorName: string): string => {
-    // First check if we have hex values from the API response
-    if (result?.colorHexValues && result.colorHexValues[colorName]) {
-      return result.colorHexValues[colorName];
-    }
-    
-    // Fallback to predefined color map if API doesn't provide hex values
+    // Use predefined accurate color map for consistent color representation
     const colorMap: Record<string, string> = {
       'Red': '#FF0000',
       'Orange': '#FF7F00', 
@@ -1949,7 +1944,7 @@ export default function AuraAnalysis() {
                                   
                                   <div>
                                     <h4 className="font-medium text-sm mb-2">Evening Energy Guidance</h4>
-                                    <p className="text-sm text-gray-700">{getEveningEnergyGuidance(result.dominantColor, result.secondaryColor)}</p>
+                                    <p className="text-sm text-gray-700">{getEveningEnergyGuidance(result.dominantColor)}</p>
                                   </div>
                                 </div>
                               </div>
