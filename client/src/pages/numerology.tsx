@@ -94,10 +94,22 @@ export default function NumerologyPage() {
     }
   };
 
+  const chakraColors = {
+    root: "#E53E3E",
+    sacral: "#FF8C00", 
+    solarPlexus: "#FFD700",
+    heart: "#38A169",
+    throat: "#3182CE",
+    thirdEye: "#805AD5",
+    crown: "#B794F6",
+    earthstar: "#A0AEC0",
+    soulstar: "#718096",
+  };
+
   const getLifePathMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
       1: "Colour: Yellow, Chakra: Solar plexus. Leadership and independencePlanet: Sun Chakra: Solar Plexus Chakra (between ribs and navel) PPI: Goal Setting and Achievement Positive Psychology Interventions: PPI Concept: Goal setting fosters independence and self-confidence. Research: Locke & Latham (2002) demonstrated that specific and challenging goals significantly enhance motivation and achievement. How to Use: Set 3 short-term and 1 long-term goal weekly. Use SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound). Celebrate small wins to build momentum. Example Technique: Short-Term Goal: Complete one self-help book this week. Long-Term Goal: Start a blog on personal development. Write down steps, track progress daily, and celebrate milestones. Angel/Archangel: Archangel Michael Karmic Lesson: Personal power, confidence, and willpower. Healing Method: Overcome self-doubt and claim inner strength. Remedies: Color Therapy: Yellow. Wear or visualize yellow light. Mantra Chanting: RAM 45 times/day.Crystal Therapy: Citrine, Tiger’s Eye. Aroma Therapy: Lemon, Bergamot, Ginger. Affirmations: I am confident and powerful I take charge of my life. Sacred Code: Chant 451 45 times/day. (chant numbers individually) Four Five One Bach Flower Remedies: Larch (self-doubt), Wild Oat (direction), Mustard (low energy). How to use: In a bottle of water, add 4-5 drops of each remedy. Drink throughout the day. Prayer to Archangel Michael: Archangel Michael, give me strength and confidence to shine my light. Guide me to my highest purpose. Amen. Deity Connection:Solar Plexus Chakra (Sun): Lord Surya and Lord Rama Om Suryaya Namah. Shri Ram Jai Ram Jai Jai Ram. Radiant Lord Surya, empower my inner strength and confidence. Guide me to take charge of my destiny and fill my solar plexus chakra with your golden light. Self-Healing Technique: 1. Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. 2. Focus on the heart chakra as a bridge. 3. Call Archangel Michael or Lord Surya with this prayer:Archangel Michael, fill me with strength and confidence. Lord Surya, empower me with light and power. 4. Create a yellow energy ball in your palms, visualize code 451 in its center, and state your intention. 5. Absorb the ball into your solar plexus chakra for confidence and willpower or send it into the universe for manifestation. Planet: Sun Rudraksha Remedy: Wear 12 Mukhi or 1 Mukhi Nepal Sawar Bead or 1 Mukhi Indonesian Premium Energized Rudraksha.",
-      2: "Colour:Green and pink, Chakra: Heart Chakra. Cooperation and harmony",
+      2: "Colour:Green and pink, Chakra: Heart Chakra. Cooperation and harmonyPlanet: Moon Chakra: Heart Chakra (center of the chest) PPI: Gratitude Practice Concept: Expressing gratitude strengthens relationships and reduces emotional sensitivity. Research: Emmons & McCullough (2003) found that gratitude journaling increases happiness and reduces depressive symptoms. How to Use: Write 3 things you are grateful for daily. Share one gratitude message or voice note with someone weekly. Example Technique: Daily gratitude journal: I am grateful for my supportive friend, my health, and today’s sunny weather.Angel/Archangel: Archangel Raphael Karmic Lesson: Emotional balance and self-love. Healing Method: Open your heart to unconditional love and heal emotional wounds. Remedies: Color Therapy: Green (more on the physical body) or pink (emotional colour of love). Mantra Chanting: YAM 45 times/day. Crystal Therapy: Rose Quartz, Green Aventurine,Rhodocrosite, Rhodonite. Aroma Therapy: Rose, Lavender, Eucalyptus. Affirmations: I give and receive love freely.I forgive myself and others.Sacred Code: Chant 741 45 times/day. (seven four one) Bach Flower Remedies: Holly (jealousy), Willow (resentment), Agrimony (hidden pain). Prayer to Archangel Raphael: Archangel Raphael, open my heart to love and forgiveness. Heal my emotional wounds and guide me in nurturing harmonious relationships. Amen.Deity Connection:  Heart Chakra (Moon): Goddess Parvati Om Dum Durgayei Namah. Divine Mother Parvati, open my heart to unconditional love and forgiveness. Self-Healing Technique:1. Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. 2. Focus on the heart chakra as a bridge. 3. Call Archangel Raphael or Goddess Parvati with this prayer: Archangel Raphael, open my heart to love and forgiveness. Goddess Parvati, nurture me with unconditional love. 4. Create a green or pink energy ball in your palms, visualize code 741 in its center, and state your intention. 5. Absorb the ball into your heart chakra for love and healing or send it into the universe to foster compassion. Planet: Moon Rudraksha Remedy: Wear 2 Mukhi Nepal Premium or any premium Gauri Shankar Energized Rudraksha",
       3: "Colour:violet, Chakra: Crown Chakra. Creativity and expression",
       4: "Colour:Crimson Chakra: Earth Star Chakra. Stability and hard work",
       5: "Colour:Blue Chakra:Throat Chakra. Freedom and adventure",
@@ -484,50 +496,48 @@ export default function NumerologyPage() {
                 <CardDescription>The fundamental aspects of your numerological profile</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6">
-                    <div className="text-4xl font-bold text-purple-600 mb-2">
-                      {numerology.lifePathNumber}
+                <div className="space-y-4">
+                  <div className="flex items-center bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
                     </div>
-                    <div className="font-semibold text-purple-800 mb-1">Life Path Number</div>
-                    <div className="text-sm text-purple-600">Your life's journey and core purpose</div>
-                    <div className="text-xs text-purple-500 mt-2">
-                      {getLifePathMeaning(numerology.lifePathNumber)}
-                    </div>
-                  </div>
-                  
-                  <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6">
-                    <div className="text-4xl font-bold text-blue-600 mb-2">
-                      {numerology.destinyNumber}
-                    </div>
-                    <div className="font-semibold text-blue-800 mb-1">Destiny Number</div>
-                    <div className="text-sm text-blue-600">Your life's mission and calling</div>
-                    <div className="text-xs text-blue-500 mt-2">
-                      {getDestinyMeaning(numerology.destinyNumber)}
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
+                      <p className="text-sm text-purple-600 mb-1">Your life's journey and core purpose</p>
+                      <p className="text-xs text-purple-500">{getLifePathMeaning(numerology.lifePathNumber)}</p>
                     </div>
                   </div>
                   
-                  <div className="text-center bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6">
-                    <div className="text-4xl font-bold text-green-600 mb-2">
-                      {numerology.personalityNumber}
+                  <div className="flex items-center bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.destinyNumber}</span>
                     </div>
-                    <div className="font-semibold text-green-800 mb-1">Decision-Making Chakra</div>
-                    <div className="text-sm text-green-600">most of your decisions will
-                      be based on the qualities of this chakra.</div>
-                    <div className="text-xs text-green-500 mt-2">
-                      Influences your decision-making patterns
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-blue-800 mb-1">Destiny Number</h3>
+                      <p className="text-sm text-blue-600 mb-1">Your life's mission and calling</p>
+                      <p className="text-xs text-blue-500">{getDestinyMeaning(numerology.destinyNumber)}</p>
                     </div>
                   </div>
                   
-                  <div className="text-center bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6">
-                    <div className="text-4xl font-bold text-red-600 mb-2">
-                      {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
+                  <div className="flex items-center bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.personalityNumber}</span>
                     </div>
-                    <div className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</div>
-                    <div className="text-sm text-red-600">Your soul wants you to operate from the positive and
-                      balanced qualities of that chakra)</div>
-                    <div className="text-xs text-red-500 mt-2">
-                      Your greatest challenge area
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-green-800 mb-1">Decision-Making Chakra</h3>
+                      <p className="text-sm text-green-600 mb-1">Most of your decisions will be based on the qualities of this chakra</p>
+                      <p className="text-xs text-green-500">Influences your decision-making patterns</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-4 border border-red-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}</span>
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</h3>
+                      <p className="text-sm text-red-600 mb-1">Your soul wants you to operate from the positive and balanced qualities of that chakra</p>
+                      <p className="text-xs text-red-500">Your greatest challenge area</p>
                     </div>
                   </div>
                 </div>
