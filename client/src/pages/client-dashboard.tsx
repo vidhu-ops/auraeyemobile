@@ -542,61 +542,93 @@ export default function ClientDashboard() {
                   
                   <TabsContent value="numerology">
                     {isLoadingNumerology ? (
-                      <div className="flex justify-center items-center py-8">
+                      <div className="flex justify-center items-center h-[150px]">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                       </div>
                     ) : Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
-                        <Brain className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                        <p>No numerology readings yet</p>
+                      <div className="text-center h-[150px] flex flex-col justify-center text-gray-500">
+                        <Brain className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No numerology readings yet</p>
                         <Link to="/numerology">
-                          <Button className="mt-2" variant="outline">
+                          <Button className="mt-2" variant="outline" size="sm">
                             Get Your First Reading
                           </Button>
                         </Link>
                       </div>
                     ) : (
-                      <div className="space-y-4">
-                        {Array.isArray(numerologyReadings) && numerologyReadings.map((reading: NumerologyReading) => (
-                          <div key={reading.id} className="border rounded-lg p-4 bg-white">
-                            <div className="flex justify-between items-start mb-3">
-                              <div>
-                                <h3 className="font-medium">Numerology Analysis</h3>
-                                <p className="text-sm text-gray-500">
-                                  {format(new Date(reading.createdAt), "MMM d, yyyy 'at' h:mm a")}
-                                </p>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => downloadNumerologyPDF(reading)}
-                                className="flex items-center gap-2"
-                              >
-                                <Download className="h-4 w-4" />
-                                Download PDF
-                              </Button>
-                            </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                              <div className="text-center p-2 bg-purple-50 rounded">
-                                <div className="text-lg font-bold text-purple-600">{reading.lifePathNumber}</div>
-                                <div className="text-xs text-purple-500">Life Path</div>
-                              </div>
-                              <div className="text-center p-2 bg-blue-50 rounded">
-                                <div className="text-lg font-bold text-blue-600">{reading.destinyNumber}</div>
-                                <div className="text-xs text-blue-500">Destiny</div>
-                              </div>
-                              <div className="text-center p-2 bg-green-50 rounded">
-                                <div className="text-lg font-bold text-green-600">{reading.soulUrgeNumber}</div>
-                                <div className="text-xs text-green-500">Soul Urge</div>
-                              </div>
-                              <div className="text-center p-2 bg-orange-50 rounded">
-                                <div className="text-lg font-bold text-orange-600">{reading.personalityNumber}</div>
-                                <div className="text-xs text-orange-500">Personality</div>
-                              </div>
-                            </div>
-                            <p className="text-sm text-gray-700">{reading.interpretation.substring(0, 200)}...</p>
+                      <div className="relative h-[150px]">
+                        {/* Slideshow Navigation */}
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs text-gray-500">
+                            {currentNumerologyIndex + 1} of {(numerologyReadings as NumerologyReading[]).length}
+                          </span>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentNumerologyIndex(Math.max(0, currentNumerologyIndex - 1))}
+                              disabled={currentNumerologyIndex === 0}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronLeft className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentNumerologyIndex(Math.min((numerologyReadings as NumerologyReading[]).length - 1, currentNumerologyIndex + 1))}
+                              disabled={currentNumerologyIndex === (numerologyReadings as NumerologyReading[]).length - 1}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronRight className="h-3 w-3" />
+                            </Button>
                           </div>
-                        ))}
+                        </div>
+                        
+                        {/* Current Reading Display */}
+                        {Array.isArray(numerologyReadings) && numerologyReadings.length > 0 && (
+                          <div className="h-[120px] overflow-hidden border rounded-lg bg-white shadow-sm">
+                            <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b">
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <h3 className="text-sm font-medium">Numerology Analysis</h3>
+                                  <p className="text-xs text-gray-500">
+                                    {format(new Date((numerologyReadings as NumerologyReading[])[currentNumerologyIndex]?.createdAt), "MMM d, yyyy")}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => downloadNumerologyPDF((numerologyReadings as NumerologyReading[])[currentNumerologyIndex])}
+                                  className="flex items-center gap-1 text-xs h-6"
+                                >
+                                  <Download className="h-3 w-3" />
+                                  PDF
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            <div className="p-3">
+                              <div className="grid grid-cols-4 gap-2 mb-2">
+                                <div className="text-center p-1 bg-purple-50 rounded text-xs">
+                                  <div className="font-bold text-purple-600">{(numerologyReadings as NumerologyReading[])[currentNumerologyIndex]?.lifePathNumber}</div>
+                                  <div className="text-purple-500 text-xs">Life</div>
+                                </div>
+                                <div className="text-center p-1 bg-blue-50 rounded text-xs">
+                                  <div className="font-bold text-blue-600">{(numerologyReadings as NumerologyReading[])[currentNumerologyIndex]?.destinyNumber}</div>
+                                  <div className="text-blue-500 text-xs">Destiny</div>
+                                </div>
+                                <div className="text-center p-1 bg-green-50 rounded text-xs">
+                                  <div className="font-bold text-green-600">{(numerologyReadings as NumerologyReading[])[currentNumerologyIndex]?.soulUrgeNumber}</div>
+                                  <div className="text-green-500 text-xs">Soul</div>
+                                </div>
+                                <div className="text-center p-1 bg-orange-50 rounded text-xs">
+                                  <div className="font-bold text-orange-600">{(numerologyReadings as NumerologyReading[])[currentNumerologyIndex]?.personalityNumber}</div>
+                                  <div className="text-orange-500 text-xs">Personality</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </TabsContent>
