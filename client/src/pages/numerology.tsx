@@ -94,130 +94,344 @@ export default function NumerologyPage() {
     }
   };
 
+  const chakraColors = {
+    root: "#E53E3E",
+    sacral: "#FF8C00", 
+    solarPlexus: "#FFD700",
+    heart: "#38A169",
+    throat: "#3182CE",
+    thirdEye: "#805AD5",
+    crown: "#B794F6",
+    earthstar: "#A0AEC0",
+    soulstar: "#718096",
+  };
+
   const getLifePathMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
-      1: "Leadership and independence • Solar Plexus Chakra • Color: Yellow • Planet: Sun",
-      2: "Cooperation and harmony • Heart Chakra • Color: Green and Pink • Planet: Moon",
-      3: "Creativity and expression • Crown Chakra • Color: Violet",
-      4: "Stability and hard work • Earth Star Chakra • Color: Crimson",
-      5: "Freedom and adventure • Throat Chakra • Color: Blue",
-      6: "Nurturing and responsibility • Sacral Chakra • Color: Orange",
-      7: "Spirituality and analysis • Soul Star Chakra • Color: Silver",
-      8: "Material success and power • Third Eye Chakra • Color: Indigo",
-      9: "Humanitarian service • Root Chakra • Color: Red"
-    }
+      1: "Colour: Yellow, Chakra: Solar plexus. Leadership and independence                  Planet: Sun Chakra: Solar Plexus Chakra (between ribs and navel) PPI: Goal Setting and Achievement Positive Psychology Interventions: PPI Concept: Goal setting fosters independence and self-confidence. Research: Locke & Latham (2002) demonstrated that specific and challenging goals significantly enhance motivation and achievement. How to Use: Set 3 short-term and 1 long-term goal weekly. Use SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound). Celebrate small wins to build momentum. Example Technique: Short-Term Goal: Complete one self-help book this week. Long-Term Goal: Start a blog on personal development. Write down steps, track progress daily, and celebrate milestones. Angel/Archangel: Archangel Michael Karmic Lesson: Personal power, confidence, and willpower. Healing Method: Overcome self-doubt and claim inner strength. Remedies: Color Therapy: Yellow. Wear or visualize yellow light. Mantra Chanting: RAM 45 times/day.Crystal Therapy: Citrine, Tiger’s Eye. Aroma Therapy: Lemon, Bergamot, Ginger. Affirmations: I am confident and powerful I take charge of my life. Sacred Code: Chant 451 45 times/day. (chant numbers individually) Four Five One Bach Flower Remedies: Larch (self-doubt), Wild Oat (direction), Mustard (low energy). How to use: In a bottle of water, add 4-5 drops of each remedy. Drink throughout the day. Prayer to Archangel Michael: Archangel Michael, give me strength and confidence to shine my light. Guide me to my highest purpose. Amen. Deity Connection:Solar Plexus Chakra (Sun): Lord Surya and Lord Rama Om Suryaya Namah. Shri Ram Jai Ram Jai Jai Ram. Radiant Lord Surya, empower my inner strength and confidence. Guide me to take charge of my destiny and fill my solar plexus chakra with your golden light. Self-Healing Technique: 1. Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. 2. Focus on the heart chakra as a bridge. 3. Call Archangel Michael or Lord Surya with this prayer:Archangel Michael, fill me with strength and confidence. Lord Surya, empower me with light and power. 4. Create a yellow energy ball in your palms, visualize code 451 in its center, and state your intention. 5. Absorb the ball into your solar plexus chakra for confidence and willpower or send it into the universe for manifestation. Planet: Sun Rudraksha Remedy: Wear 12 Mukhi or 1 Mukhi Nepal Sawar Bead or 1 Mukhi Indonesian Premium Energized Rudraksha.",
+      2: "COLOUR: Green and pink,            CHAKRA: Heart Chakra. Cooperation and harmonyPlanet: Moon Chakra: Heart Chakra (center of the chest) PPI: Gratitude Practice Concept: Expressing gratitude strengthens relationships and reduces emotional sensitivity. Research: Emmons & McCullough (2003) found that gratitude journaling increases happiness and reduces depressive symptoms. How to Use: Write 3 things you are grateful for daily. Share one gratitude message or voice note with someone weekly. Example Technique: Daily gratitude journal: I am grateful for my supportive friend, my health, and today’s sunny weather.Angel/Archangel: Archangel Raphael Karmic Lesson: Emotional balance and self-love. Healing Method: Open your heart to unconditional love and heal emotional wounds. Remedies: Color Therapy: Green (more on the physical body) or pink (emotional colour of love). Mantra Chanting: YAM 45 times/day. Crystal Therapy: Rose Quartz, Green Aventurine,Rhodocrosite, Rhodonite. Aroma Therapy: Rose, Lavender, Eucalyptus. Affirmations: I give and receive love freely.I forgive myself and others.Sacred Code: Chant 741 45 times/day. (seven four one) Bach Flower Remedies: Holly (jealousy), Willow (resentment), Agrimony (hidden pain). Prayer to Archangel Raphael: Archangel Raphael, open my heart to love and forgiveness. Heal my emotional wounds and guide me in nurturing harmonious relationships. Amen.Deity Connection:  Heart Chakra (Moon): Goddess Parvati Om Dum Durgayei Namah. Divine Mother Parvati, open my heart to unconditional love and forgiveness. Self-Healing Technique:1. Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. 2. Focus on the heart chakra as a bridge. 3. Call Archangel Raphael or Goddess Parvati with this prayer: Archangel Raphael, open my heart to love and forgiveness. Goddess Parvati, nurture me with unconditional love. 4. Create a green or pink energy ball in your palms, visualize code 741 in its center, and state your intention. 5. Absorb the ball into your heart chakra for love and healing or send it into the universe to foster compassion. Planet: Moon Rudraksha Remedy: Wear 2 Mukhi Nepal Premium or any premium Gauri Shankar Energized Rudraksha",
+      3: "Colour:violet, Chakra: Crown Chakra. Creativity and expression",
+      4: "Colour:Crimson Chakra: Earth Star Chakra. Stability and hard work",
+      5: "Colour:Blue Chakra:Throat Chakra. Freedom and adventure",
+      6: "Colour:Orange Chakra:Sacral Chakra. Nurturing and responsibility",
+      7: "Colour:Silver Chakra:Soul Star Chakra. Spirituality and analysis",
+      8: "Colour:Indigo, Chakra: Third Eye Chakra. Material success and power",
+      9: "Colour: Red, Chakra: Root Chakra. Humanitarian service"
+    };
     return meanings[number] || "Unique spiritual path";
   };
 
   const getDestinyMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
-      1: "Pioneer and innovator • Building confidence and self-worth",
-      2: "Diplomat and peacemaker • Learning love, compassion, and connection",
-      3: "Artist and communicator • Developing wisdom and divine connection",
-      4: "Builder and organizer • Manifesting abundance and support systems",
-      5: "Explorer and freedom seeker • Mastering self-expression and truth",
-      6: "Healer and caretaker • Balancing creativity and emotional expression",
-      7: "Seeker of truth and wisdom • Finding soul purpose and inner knowing",
-      8: "Executive and achiever • Developing intuition and insight",
-      9: "Humanitarian and server • Taking action with stability and passion"
+      1: "Pioneer and innovator Core Lesson:Confidence,Self Worth, Self Esteem, Will Power, Abundance",
+      2: "Diplomat and peacemaker Core Lessons:Love Compassion,Forgiveness, Connection, Ability to give and recieve",
+      3: "Artist and communicator Core lessons:Wisdom, Divine connection, Guidance, Receptivity, Spirtuality, Knowledge",
+      4: "Builder and organizer Core Lessons: Manifestation, Suppourt system from earth, Abundance and growth, Money energy, Ability to make things happen",
+      5: "Explorer and freedom seeker Core lessons:Self expression, Communication, Speaking the truth, Honesty, Purity of speech",
+      6: "Healer and caretaker Core lessons: Sexuality, creativity, balance, passion, feel emotion",
+      7: "Seeker of truth and wisdom core lessons:Soul GPS, Clarity and direction, Scynronicity, Life purpose, Karmic alignment, Inner knowing",
+      8: "Executive and achiever Core lessons: Intution, Trust, Insight, Wisdowm, Seeking truth",
+      9: "Humanitarian and server Core lessons: Action Stability, security, passion, decisions"
     };
     return meanings[number] || "Special destiny path";
   };
 
-  const getDetailedInfo = (number: number, type: 'life' | 'destiny') => {
-    const lifePathDetails: { [key: number]: { angel: string; mantra: string; affirmation: string } } = {
+  const calculatePersonalYear = (birthDate: string): number => {
+    const date = new Date(birthDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const currentYear = 2025; // Current year for forecast
+    
+    // Step 1: Add day + month
+    const dayMonthSum = day + month;
+    const dayMonthReduced = reduceToSingleDigit(dayMonthSum);
+    
+    // Step 2: Add current year digits
+    const yearSum = currentYear.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    
+    // Step 3: Combine and reduce
+    const personalYear = reduceToSingleDigit(dayMonthReduced + yearSum);
+    return personalYear;
+  };
+
+  const calculatePersonalMonth = (personalYear: number, month: number): number => {
+    const sum = personalYear + month;
+    return reduceToSingleDigit(sum);
+  };
+
+  const reduceToSingleDigit = (num: number): number => {
+    while (num > 9) {
+      num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return num;
+  };
+
+  const calculateDominantSoulChakra = (birthDate: string): number => {
+    // Sum all digits in birth date (e.g., 01/01/1901 = 0+1+0+1+1+9+0+1 = 13 = 1+3 = 4)
+    const dateStr = birthDate.replace(/\D/g, ''); // Remove non-digits
+    let sum = 0;
+    
+    for (const digit of dateStr) {
+      sum += parseInt(digit);
+    }
+    
+    // Reduce to single digit
+    while (sum > 9) {
+      sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+    }
+    
+    return sum;
+  };
+
+  const getPersonalYearMeaning = (year: number): { title: string; description: string; focus: string[] } => {
+    const meanings: { [key: number]: { title: string; description: string; focus: string[] } } = {
       1: {
-        angel: "Archangel Michael",
-        mantra: "RAM (45 times daily)",
-        affirmation: "I am confident and powerful. I take charge of my life."
+        title: "New Beginnings and Leadership",
+        description: "Personal Year 1 is the beginning of a new 9-year cycle. Focus on independence, self-discovery, and asserting your personal power through the Solar Plexus Chakra.New Beginnings and Leadership Planet: Sun Chakra: Solar Plexus Chakra Definition and Impact: Personal Year 1 is the beginning of a new 9-year cycle, a time of fresh starts, self-discovery, and asserting independence. It’s an energetic reset where you’re encouraged to focus on yourself, your goals, and your dreams. Ruled by the Sun, this year amplifies confidence, ambition, and a desire to lead. The Solar Plexus Chakra plays a pivotal role in this year, fueling your personal power, determination, and ability totake initiative.This year demands courage as you step into uncharted territories. Whether you’re starting a new career, moving to a new city, or redefining your personal identity, the energy supports bold action. It’s not always easy—this year asks you to break free from old patterns and embrace new opportunities. How It Affects Us:Positive: You feel a surge of energy, ready to take charge of your life. New ideas flow easily, and you find clarity in your purpose. Leadership opportunities may arise, and you’ll feel empowered to pursue them. Negative: If unbalanced, you may feel overwhelmed by the weight of responsibility. Overconfidence or impatience might cause you to act impulsively, while self-doubt may lead to stagnation. Real-Life Relatability: Imagine you’ve been stuck in the same job for years but always dreamt of starting your own business. This year nudges you to take that leap of faith. You’ll notice doors opening—an investor might show interest, or you may stumble upon the resources you need. However, fear might creep in, making you doubt your capabilities. Advice for Balance: Focus on building a strong foundation for the future. This is a year to prioritize action but also to ensure you don’t burn out. Balance is key. Practice mindfulness to stay grounded and avoid overextending yourself. Use affirmations like “I am confident, capable, and ready to lead” to align your Solar Plexus Chakra. Practical Steps: 1. Set clear, achievable goals. Break them into smaller tasks to maintain focus. 2. Say yes to opportunities but evaluate them carefully—don’t spread yourself too thin.3. Take care of your health; physical vitality will fuel your drive.Chakra Insight:The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy",
+        focus: ["Set clear, achievable goals", "Say yes to new opportunities", "Focus on personal health and vitality"]
       },
       2: {
-        angel: "Archangel Raphael",
-        mantra: "YAM (45 times daily)",
-        affirmation: "I give and receive love freely. I forgive myself and others."
-      },
+        title: "Relationships, Sensitivity, and Patience", 
+        description: "Personal Year 2 emphasizes cooperation, collaboration, and harmony through the Heart Chakra. Focus on building meaningful connections. Planet: Moon Chakra: Heart Chakra Definition and Impact: Personal Year 2 is about connection, collaboration, and harmony. After the dynamic energy of Year 1, this year softens the focus on independence and encourages you to nurture relationships. Ruled by the Moon, it’s a deeply emotional year, where the Heart Chakra becomes your guide. The Moon heightens intuition and emotional sensitivity, helping you form meaningful connections. However, this heightened awareness can sometimes make you feel vulnerable or overwhelmed. This is a year of duality. While you’ll find immense joy in working with others and building bonds, challenges may arise in the form of miscommunication or emotional conflicts. It’s also a year of patience—progress may seem slower than expected, but it’s because you’re being asked to focus on the foundations of trust and understanding. How It Affects Us: Positive: You’ll develop stronger relationships, deepen emotional bonds, and improve teamwork. Emotional intelligence is heightened, making it easier to empathize and collaborate. Negative: Over-sensitivity may lead to emotional burnout or conflict. You might feel overly dependent on others for validation or struggle with setting boundaries. Real-Life Relatability: Imagine you’ve started a new job. While Year 1 may have been about getting the job, Year 2 focuses on building rapport with your team. You’ll find yourself navigating different personalities and balancing your own needs with the group’s goals. Advice for Balance: Be patient with yourself and others. Take time to understand your emotions and what triggers them. Focus on self-care to avoid becoming emotionally depleted. Practice gratitude—it helps you find peace during challenges.] Practical Steps:1. Practice active listening in conversations. 2. Journaling daily about your emotions helps you process them constructively. 3. Don’t hesitate to communicate your boundaries with loved ones or colleagues. Chakra Insight: The Heart Chakra governs love, compassion, and forgiveness. Keep it balanced by visualizing green light and chanting the mantra YAM. Engage in acts of kindness to nurture this energy center",
+        focus: ["Practice, active listening", "Journal about emotions daily,Communicate boundaries clearly"]},
       3: {
-        angel: "Archangel Gabriel",
-        mantra: "OM (45 times daily)",
-        affirmation: "I express my creativity with joy and confidence."
+        title: "Creativity, Expression, and Growth",
+        description: "Personal Year 3 brings vibrant self-expression and creativity through the Crown Chakra. Time to share your ideas with the world.",
+        focus: ["Set weekly creative goals", "Surround yourself with inspiration", "Prioritize meaningful pursuits"]
       },
       4: {
-        angel: "Archangel Uriel",
-        mantra: "LAM (45 times daily)",
-        affirmation: "I create solid foundations for my dreams."
+        title: "Stability, Discipline, and Building Foundations", 
+        description: "Personal Year 4 emphasizes hard work and structure through the Earth Star Chakra. Focus on building solid foundations.",
+        focus: ["Create clear action plans", "Establish productive routines", "Practice gratitude for progress"]
       },
       5: {
-        angel: "Archangel Gabriel",
-        mantra: "HAM (45 times daily)",
-        affirmation: "I speak my truth with clarity and confidence."
+        title: "Freedom and Adaptability",
+        description: "Personal Year 5 brings change and adventure through the Throat Chakra. Embrace new experiences and authentic communication.",
+        focus: ["Perform daily acts of kindness", "Express yourself truthfully", "Embrace flexibility"]
       },
       6: {
-        angel: "Archangel Chamuel",
-        mantra: "VAM (45 times daily)",
-        affirmation: "I nurture others while caring for myself."
+        title: "Responsibility, Nurturing, and Harmony",
+        description: "Personal Year 6 focuses on family, home, and caregiving through the Sacral Chakra. Balance giving with self-care.",
+        focus: ["Strengthen family bonds", "Engage in creative activities", "Set healthy boundaries"]
       },
       7: {
-        angel: "Archangel Raziel",
-        mantra: "OM MANI PADME HUM",
-        affirmation: "I trust my inner wisdom and spiritual guidance."
+        title: "Spirituality and Analysis", 
+        description: "Personal Year 7 is about introspection and spiritual development through the Soul Star Chakra. Time for inner reflection.",
+        focus: ["Take time for meditation", "Seek spiritual practices", "Trust your intuitive guidance"]
       },
       8: {
-        angel: "Archangel Metatron",
-        mantra: "AUM (45 times daily)",
-        affirmation: "I achieve success through integrity and wisdom."
+        title: "Material Success and Power",
+        description: "Personal Year 8 brings focus on achievement and material success through the Third Eye Chakra. Act with clarity and vision.",
+        focus: ["Set ambitious but realistic goals", "Focus on financial planning", "Trust your business instincts"]
       },
       9: {
-        angel: "Archangel Michael",
-        mantra: "LAM (45 times daily)",
-        affirmation: "I serve others with compassion and wisdom."
+        title: "Humanitarian Service",
+        description: "Personal Year 9 completes the cycle with service and letting go through the Root Chakra. Focus on what truly matters.",
+        focus: ["Release what no longer serves", "Focus on humanitarian causes", "Prepare for new beginnings"]
       }
     };
-
-    return lifePathDetails[number] || {
-      angel: "Divine guidance",
-      mantra: "OM",
-      affirmation: "I am aligned with my highest purpose."
+    return meanings[year] || {
+      title: "Universal Energy",
+      description: "A year of unique spiritual development",
+      focus: ["Trust your inner guidance", "Stay open to possibilities", "Practice mindfulness"]
     };
   };
 
-  if (isLoadingNumerology) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-purple-600" />
-            <p className="text-gray-600">Loading your numerology analysis...</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const getPersonalMonthMeaning = (month: number): { title: string; description: string; theme: string } => {
+    const meanings: { [key: number]: { title: string; description: string; theme: string } } = {
+      1: {
+        title: "New Beginnings",
+        description: "A month for fresh starts, new projects, and taking initiative. Focus on independence and leadership.",
+        theme: "Initiative and Fresh Energy"
+      },
+      2: {
+        title: "Cooperation and Balance",
+        description: "A month for partnerships, collaboration, and building relationships. Focus on patience and diplomacy.",
+        theme: "Harmony and Partnerships"
+      },
+      3: {
+        title: "Creative Expression",
+        description: "A month for artistic pursuits, communication, and social activities. Express your creativity freely.",
+        theme: "Creativity and Communication"
+      },
+      4: {
+        title: "Hard Work and Organization",
+        description: "A month for building foundations, being practical, and focusing on details. Discipline brings rewards.",
+        theme: "Structure and Foundation"
+      },
+      5: {
+        title: "Freedom and Change",
+        description: "A month for adventure, travel, and embracing change. Seek new experiences and variety.",
+        theme: "Adventure and Flexibility"
+      },
+      6: {
+        title: "Responsibility and Nurturing",
+        description: "A month for family, home, and caring for others. Focus on service and creating harmony.",
+        theme: "Service and Family"
+      },
+      7: {
+        title: "Spiritual Reflection",
+        description: "A month for introspection, research, and spiritual growth. Take time for inner development.",
+        theme: "Wisdom and Introspection"
+      },
+      8: {
+        title: "Material Achievement",
+        description: "A month for business success, financial gains, and material accomplishments. Focus on practical results.",
+        theme: "Success and Recognition"
+      },
+      9: {
+        title: "Completion and Service",
+        description: "A month for finishing projects, letting go, and humanitarian service. Prepare for new cycles.",
+        theme: "Completion and Giving"
+      }
+    };
+    return meanings[month] || {
+      title: "Universal Flow",
+      description: "A month of balanced energy and spiritual alignment",
+      theme: "Harmony and Balance"
+    };
+  };
+
+  const getNumberColorAssociation = (number: number): string => {
+    const colorMap: { [key: number]: string } = {
+      1: "Red", 2: "Orange", 3: "Yellow", 4: "Green", 5: "Blue", 
+      6: "Indigo", 7: "Violet", 8: "Pink", 9: "Gold"
+    };
+    return colorMap[number] || "White";
+  };
+
+  const getVibrationQualities = (number: number): string[] => {
+    const qualitiesMap: { [key: number]: string[] } = {
+      1: ["Leadership", "Independence", "Initiative", "Confidence", "Ambition", "Pioneering"],
+      2: ["Cooperation", "Sensitivity", "Diplomacy", "Patience", "Harmony", "Partnership"],
+      3: ["Creativity", "Expression", "Communication", "Joy", "Artistic", "Inspiration"],
+      4: ["Stability", "Practicality", "Organization", "Determination", "Discipline", "Reliability", "Focus", "Loyalty", "Foundation", "Persistence"],
+      5: ["Freedom", "Adventure", "Curiosity", "Versatility", "Change", "Communication"],
+      6: ["Nurturing", "Responsibility", "Compassion", "Service", "Healing", "Family"],
+      7: ["Spirituality", "Introspection", "Analysis", "Wisdom", "Mysticism", "Research"],
+      8: ["Authority", "Material Success", "Power", "Business", "Achievement", "Organization"],
+      9: ["Humanitarian", "Compassion", "Universal Love", "Completion", "Service", "Wisdom"]
+    };
+    return qualitiesMap[number] || ["Universal Energy"];
+  };
+
+  const getNumberMeaning = (number: number, type: string): { title: string; description: string } => {
+    const meanings: { [key: string]: { [key: number]: { title: string; description: string } } } = {
+      lifePath: {
+        1: { title: "The Leader: Independent, ambitious, pioneering, confident.", description: "Your Life Path number represents the core of who you are, including your traits, challenges, and opportunities. It's calculated from your birth date and is one of the most important numbers in your numerology chart." },
+        2: { title: "The Diplomat: Cooperative, sensitive, peaceful, supportive.", description: "Your life path centers around cooperation, diplomacy, and sensitivity to others. You're naturally gifted at bringing people together and creating harmony." },
+        3: { title: "The Communicator: Creative, expressive, optimistic, inspiring.", description: "Self-expression, creativity, and joy are the hallmarks of your journey. You're meant to inspire others through your natural creative abilities." },
+        4: { title: "The Builder: Practical, trustworthy, disciplined, stable, hardworking.", description: "Your life purpose is aligned with building solid foundations. You excel at creating order, stability, and lasting structures in all areas of life." }
+      },
+      destiny: {
+        1: { title: "Pioneer and innovator destiny", description: "Your destiny involves breaking new ground and leading others toward new possibilities." },
+        2: { title: "Diplomat and peacemaker destiny", description: "Your destiny centers around bringing harmony and cooperation to all your endeavors." },
+        3: { title: "Creative self-expression destiny, communication and artistic pursuits.", description: "Your Destiny number reveals the goals you're meant to achieve in this lifetime. Derived from your full birth name, it represents your life's work and the contribution you're meant to make to the world." },
+        4: { title: "Builder and organizer destiny", description: "Building, organization, and creating order are your destined work. You're meant to create lasting foundations." }
+      },
+      soulUrge: {
+        7: { title: "Mystical and transformative soul desires", description: "Your Soul Urge number reveals your inner desires, motivations, and what your heart truly longs for. It represents your emotional self and inner cravings. This number is calculated from the vowels in your name, representing your inner truth and what drives you at a soul level." }
+      },
+      personality: {
+        8: { title: "Authoritative and capable outer presentation", description: "How others perceive you based on your outward personality and first impressions." }
+      }
+    };
+    
+    return meanings[type]?.[number] || { 
+      title: "Unique spiritual path", 
+      description: "This number carries special significance in your spiritual journey." 
+    };
+  };
+
+  const getChakraPlanetInfo = (number: number): { chakra: string; planet: string; description: string; remedies: string[] } => {
+    const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string; remedies: string[] } } = {
+      1: {
+        chakra: "Solar Plexus Chakra",
+        planet: "Sun",
+        description: "Leadership and Independence. Personal power, confidence, and willpower.",
+        remedies: ["Yellow color therapy", "RAM mantra 45 times/day", "Citrine crystal", "Lemon aromatherapy", "Sacred code 451"]
+      },
+      2: {
+        chakra: "Heart Chakra", 
+        planet: "Moon",
+        description: "Relationships and Sensitivity. Emotional balance and self-love.",
+        remedies: ["Green/pink color therapy", "YAM mantra 45 times/day", "Rose Quartz crystal", "Rose aromatherapy", "Sacred code 741"]
+      },
+      3: {
+        chakra: "Crown Chakra",
+        planet: "Jupiter", 
+        description: "Creativity and Communication. Spiritual connection and enlightenment.",
+        remedies: ["Violet/white color therapy", "AUM mantra 45 times/day", "Clear Quartz crystal", "Lavender aromatherapy", "Sacred code 204"]
+      },
+      4: {
+        chakra: "Earth Star Chakra",
+        planet: "Rahu",
+        description: "Stability and Discipline. Deep grounding, responsibility, and trust in life.",
+        remedies: ["Brown/black color therapy", "LAM mantra 45 times/day", "Smoky Quartz crystal", "Cedarwood aromatherapy", "Sacred code 264"]
+      },
+      5: {
+        chakra: "Throat Chakra",
+        planet: "Mercury",
+        description: "Freedom and Adaptability. Authentic communication and adaptability.",
+        remedies: ["Blue color therapy", "HAM mantra 45 times/day", "Blue Lace Agate crystal", "Peppermint aromatherapy", "Sacred code 986"]
+      },
+      6: {
+        chakra: "Sacral Chakra",
+        planet: "Venus",
+        description: "Nurturing and Responsibility. Emotional stability and creative expression.",
+        remedies: ["Orange color therapy", "VAM mantra 45 times/day", "Carnelian crystal", "Ylang-ylang aromatherapy", "Sacred code 639"]
+      },
+      7: {
+        chakra: "Soul Star Chakra",
+        planet: "Ketu",
+        description: "Spirituality and Analysis. Transcendence and karmic healing.",
+        remedies: ["Gold/white color therapy", "OM SO HUM mantra 45 times/day", "Selenite crystal", "Lotus aromatherapy", "Sacred code 56"]
+      },
+      8: {
+        chakra: "Third Eye Chakra",
+        planet: "Saturn",
+        description: "Material Success and Power. Clarity, vision, and decisive action.",
+        remedies: ["Indigo color therapy", "OM mantra 45 times/day", "Amethyst crystal", "Frankincense aromatherapy", "Sacred code 852"]
+      },
+      9: {
+        chakra: "Root Chakra",
+        planet: "Mars",
+        description: "Humanitarian Service. Action, grounding, and completion.",
+        remedies: ["Red color therapy", "LAM mantra 45 times/day", "Red Jasper crystal", "Cedarwood aromatherapy", "Sacred code 396"]
+      }
+    };
+    return chakraPlanetMap[number] || {
+      chakra: "Universal Energy",
+      planet: "Cosmic Force",
+      description: "Unique spiritual path",
+      remedies: ["Meditation", "White light visualization", "Clear Quartz crystal"]
+    };
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Numerology Analysis</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover the hidden meanings in your numbers and unlock insights into your life path, 
-            destiny, and spiritual journey through the ancient wisdom of numerology.
-          </p>
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl font-heading font-bold mb-4">
+              <Calculator className="inline-block mr-3 h-10 w-10" />
+              Numerology Analysis
+            </h1>
+            <p className="text-xl opacity-90">
+              Discover the hidden meanings in your numbers and unlock your spiritual blueprint
+            </p>
+          </div>
         </div>
-
-        {!numerology || showForm ? (
+      </div>
+      
+      <main className="flex-grow container mx-auto px-4 py-8">
+        {!user?.birthDate ? (
           <Card className="max-w-md mx-auto">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5" />
-                Calculate Your Numbers
-              </CardTitle>
-              <CardDescription>
-                Enter your details for a personalized numerology reading
-              </CardDescription>
+              <CardTitle>Complete Your Profile</CardTitle>
+              <CardDescription>Please provide your birth date to calculate your numerology</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -229,7 +443,7 @@ export default function NumerologyPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your full birth name" {...field} />
+                          <Input placeholder="Enter your full name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -249,186 +463,724 @@ export default function NumerologyPage() {
                       </FormItem>
                     )}
                   />
-
-                  <Button type="submit" className="w-full">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Calculate Numerology
+                  
+                  <Button type="submit" className="w-full" disabled={isLoadingNumerology}>
+                    {isLoadingNumerology ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Calculating...
+                      </>
+                    ) : (
+                      "Calculate My Numbers"
+                    )}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
-        ) : (
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Your Numerological Profile</h2>
-              <Button variant="outline" onClick={() => setShowForm(true)}>
-                Recalculate
-              </Button>
-            </div>
-
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
-                <TabsTrigger value="guidance">Spiritual Guidance</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="overview" className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Life Path Number */}
-                  <Card className="border-purple-200">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
-                          <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
-                        </div>
-                        <div>
-                          <CardTitle className="text-purple-800">Life Path Number</CardTitle>
-                          <CardDescription>Your life's journey and core purpose</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-purple-700 leading-relaxed">
-                        {getLifePathMeaning(numerology.lifePathNumber)}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  {/* Destiny Number */}
-                  <Card className="border-blue-200">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-2xl font-bold text-white">{numerology.destinyNumber}</span>
-                        </div>
-                        <div>
-                          <CardTitle className="text-blue-800">Destiny Number</CardTitle>
-                          <CardDescription>Your life's mission and calling</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-blue-700 leading-relaxed">
-                        {getDestinyMeaning(numerology.destinyNumber)}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  {/* Soul Urge Number */}
-                  <Card className="border-green-200">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
-                          <span className="text-2xl font-bold text-white">{numerology.soulUrgeNumber}</span>
-                        </div>
-                        <div>
-                          <CardTitle className="text-green-800">Soul Urge Number</CardTitle>
-                          <CardDescription>Your inner desires and motivations</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-green-700">
-                        Represents your heart's deepest desires and what truly motivates you from within.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  {/* Personality Number */}
-                  <Card className="border-orange-200">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center">
-                          <span className="text-2xl font-bold text-white">{numerology.personalityNumber}</span>
-                        </div>
-                        <div>
-                          <CardTitle className="text-orange-800">Personality Number</CardTitle>
-                          <CardDescription>How others perceive you</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-orange-700">
-                        The impression you make on others and how you present yourself to the world.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="detailed" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Detailed Interpretation</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose max-w-none">
-                    <div className="whitespace-pre-line text-gray-700 leading-relaxed">
-                      {numerology.interpretation}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="guidance" className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-purple-800">Life Path Guidance</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {(() => {
-                        const details = getDetailedInfo(numerology.lifePathNumber, 'life');
-                        return (
-                          <>
-                            <div>
-                              <h4 className="font-semibold text-sm text-gray-800 mb-1">Guiding Angel</h4>
-                              <p className="text-sm text-gray-600">{details.angel}</p>
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-sm text-gray-800 mb-1">Sacred Mantra</h4>
-                              <p className="text-sm text-gray-600">{details.mantra}</p>
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-sm text-gray-800 mb-1">Empowering Affirmation</h4>
-                              <p className="text-sm text-gray-600 italic">"{details.affirmation}"</p>
-                            </div>
-                          </>
-                        );
-                      })()}
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-blue-800">Chakra Connections</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
-                        <span className="text-sm">Life Path: Solar Plexus Chakra</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-                        <span className="text-sm">Destiny: Heart Chakra</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-orange-400 rounded-full"></div>
-                        <span className="text-sm">Soul Urge: Sacral Chakra</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-indigo-400 rounded-full"></div>
-                        <span className="text-sm">Personality: Third Eye Chakra</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
+        ) : isLoadingNumerology ? (
+          <div className="text-center py-12">
+            <Loader2 className="h-12 w-12 animate-spin mx-auto text-purple-600 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Calculating Your Numbers</h3>
+            <p className="text-gray-600">Analyzing your spiritual blueprint...</p>
           </div>
-        )}
-      </div>
+        ) : numerology ? (
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Core Numbers */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-purple-600" />
+                  Your Core Numbers
+                </CardTitle>
+                <CardDescription>The fundamental aspects of your numerological profile</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
+                      <p className="text-sm text-purple-600 mb-1">Your life's journey and core purpose</p>
+                      <p className="text-xs text-purple-500">{getLifePathMeaning(numerology.lifePathNumber)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.destinyNumber}</span>
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-blue-800 mb-1">Destiny Number</h3>
+                      <p className="text-sm text-blue-600 mb-1">Your life's mission and calling</p>
+                      <p className="text-xs text-blue-500">{getDestinyMeaning(numerology.destinyNumber)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{numerology.personalityNumber}</span>
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-green-800 mb-1">Decision-Making Chakra</h3>
+                      <p className="text-sm text-green-600 mb-1">Most of your decisions will be based on the qualities of this chakra</p>
+                      <p className="text-xs text-green-500">Influences your decision-making patterns</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-4 border border-red-200">
+                    <div className="flex-shrink-0 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-2xl font-bold text-white">{calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}</span>
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-red-800 mb-1">Dominant Soul Chakra</h3>
+                      <p className="text-sm text-red-600 mb-1">Your soul wants you to operate from the positive and balanced qualities of that chakra</p>
+                      <p className="text-xs text-red-500">Your greatest challenge area</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Chakra-Planet Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Chakra-Planet Analysis
+                </CardTitle>
+                <CardDescription>Detailed spiritual insights based on your numerological profile</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Decision-Making Chakra */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Decision-Making Chakra</h3>
+                    {(() => {
+                      const info = getChakraPlanetInfo(numerology.personalityNumber);
+                      return (
+                        <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                          <div className="mb-3">
+                            <div className="text-2xl font-bold text-green-600">{numerology.personalityNumber}</div>
+                            <div className="text-sm text-green-700">{info.chakra} • {info.planet}</div>
+                          </div>
+                          <p className="text-sm text-green-800 mb-3">{info.description}</p>
+                          <div>
+                            <h4 className="font-medium text-green-800 mb-2">Recommended Remedies:</h4>
+                            <ul className="text-xs text-green-700 space-y-1">
+                              {info.remedies.map((remedy, index) => (
+                                <li key={index}>• {remedy}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Dominant Soul Chakra */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Dominant Soul Chakra</h3>
+                    {(() => {
+                      const dominantSoulNumber = calculateDominantSoulChakra(user?.birthDate || "1990-01-01");
+                      const info = getChakraPlanetInfo(dominantSoulNumber);
+                      return (
+                        <div className="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg">
+                          <div className="mb-3">
+                            <div className="text-2xl font-bold text-red-600">{dominantSoulNumber}</div>
+                            <div className="text-sm text-red-700">{info.chakra} • {info.planet}</div>
+                          </div>
+                          <p className="text-sm text-red-800 mb-3">{info.description}</p>
+                          <div>
+                            <h4 className="font-medium text-red-800 mb-2">Healing Remedies:</h4>
+                            <ul className="text-xs text-red-700 space-y-1">
+                              {info.remedies.map((remedy, index) => (
+                                <li key={index}>• {remedy}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Detailed Interpretation */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Numerological Interpretation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed">{numerology.interpretation}</p>
+              </CardContent>
+            </Card>
+
+            {/* Tab-Based Numerology Profile */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="h-5 w-5 text-indigo-600" />
+                  Your Numerology Profile
+                </CardTitle>
+                <CardDescription>Based on your name and birth date</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="lifePath" className="w-full">
+                  <TabsList className="grid w-full grid-cols-5">
+                    <TabsTrigger value="lifePath">Life Path</TabsTrigger>
+                    <TabsTrigger value="destiny">Destiny</TabsTrigger>
+                    <TabsTrigger value="soulUrge">Soul Urge</TabsTrigger>
+                    <TabsTrigger value="personality">Personality</TabsTrigger>
+                    <TabsTrigger value="personalYear">Personal Year</TabsTrigger>
+                  </TabsList>
+
+                  {/* Life Path Tab */}
+                  <TabsContent value="lifePath" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.lifePathNumber).toLowerCase() === 'green' ? '#22c55e' : '#6366f1' }}>
+                        {numerology.lifePathNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Life Path Number: {numerology.lifePathNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.lifePathNumber) === 'Green' && 
+                          "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').description}</p>
+                    </div>
+
+                    {/* Vibration Qualities */}
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.lifePathNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Advanced Interpretation */}
+                    <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                      <h5 className="font-medium text-purple-800 mb-2">Advanced Life Path Interpretation</h5>
+                      <p className="text-sm text-purple-700 mb-2">
+                        As a Life Path {numerology.lifePathNumber}, your life purpose is aligned with building solid foundations.
+                      </p>
+                      <p className="text-sm text-purple-700">
+                        The color vibration of {getNumberColorAssociation(numerology.lifePathNumber)} supports your life path by enhancing your natural balance and growth.
+                      </p>
+                    </div>
+
+                    {/* Dominant Soul Chakra Section */}
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                      <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg">
+                          {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
+                        </div>
+                        <div>
+                          <p className="text-sm text-red-700 font-medium">Your greatest challenge area</p>
+                          <p className="text-xs text-red-600">Maximum challenges in this chakra</p>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Destiny Tab */}
+                  <TabsContent value="destiny" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.destinyNumber).toLowerCase() === 'yellow' ? '#eab308' : '#3b82f6' }}>
+                        {numerology.destinyNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Destiny Number: {numerology.destinyNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.destinyNumber) === 'Yellow' && 
+                          "Bright and uplifting, yellow represents optimism, mental clarity, and self-expression. It encourages intellectual growth, communication skills, and the ability to share ideas with confidence."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.destinyNumber, 'destiny').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.destinyNumber, 'destiny').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.destinyNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dominant Soul Chakra Section */}
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                      <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg">
+                          {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
+                        </div>
+                        <div>
+                          <p className="text-sm text-red-700 font-medium">Your greatest challenge area</p>
+                          <p className="text-xs text-red-600">Maximum challenges in this chakra</p>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Soul Urge Tab */}
+                  <TabsContent value="soulUrge" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.soulUrgeNumber).toLowerCase() === 'violet' ? '#8b5cf6' : '#6366f1' }}>
+                        {numerology.soulUrgeNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Soul Urge Number: {numerology.soulUrgeNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
+                      <div className="text-sm text-gray-500 italic mb-4">
+                        {getNumberColorAssociation(numerology.soulUrgeNumber) === 'Violet' && 
+                          "Mystical and transformative, violet represents spiritual wisdom, introspection, and higher consciousness. It encourages deep analysis, inner knowing, and connection to universal truths."
+                        }
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Soul Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.soulUrgeNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-violet-100 text-violet-800 border-violet-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dominant Soul Chakra Section */}
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                      <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
+                      <div className="text-center mb-3">
+                        <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-xl mx-auto mb-2">
+                          {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
+                        </div>
+                        <p className="text-sm text-red-700 font-medium">Universal Energy • Cosmic Force</p>
+                      </div>
+                      <p className="text-xs text-red-600 text-center">Unique spiritual path</p>
+                      
+                      <div className="mt-3">
+                        <h6 className="font-medium text-red-800 mb-2 text-sm">Healing Remedies:</h6>
+                        <ul className="text-xs text-red-700 space-y-1">
+                          <li>• Meditation</li>
+                          <li>• White light visualization</li>
+                          <li>• Clear Quartz crystal</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Personality Tab */}
+                  <TabsContent value="personality" className="space-y-6 mt-6">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                           style={{ backgroundColor: getNumberColorAssociation(numerology.personalityNumber).toLowerCase() === 'pink' ? '#ec4899' : '#6366f1' }}>
+                        {numerology.personalityNumber}
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Personality Number: {numerology.personalityNumber}</h3>
+                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.personalityNumber, 'personality').title}</h4>
+                      <p className="text-sm text-gray-700">{getNumberMeaning(numerology.personalityNumber, 'personality').description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {getVibrationQualities(numerology.personalityNumber).map((quality, index) => (
+                          <Badge key={index} variant="secondary" className="bg-pink-100 text-pink-800 border-pink-200">
+                            {quality}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dominant Soul Chakra Section */}
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                      <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg">
+                          {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
+                        </div>
+                        <div>
+                          <p className="text-sm text-red-700 font-medium">Your greatest challenge area</p>
+                          <p className="text-xs text-red-600">Maximum challenges in this chakra</p>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Personal Year Tab */}
+                  <TabsContent value="personalYear" className="space-y-6 mt-6">
+                    {(() => {
+                      const personalYear = calculatePersonalYear(user?.birthDate || "1990-01-01");
+                      const personalYearInfo = getPersonalYearMeaning(personalYear);
+                      return (
+                        <>
+                          <div className="text-center">
+                            <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+                              {personalYear}
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Personal Year: {personalYear}</h3>
+                            <p className="text-gray-600 mb-2">2025 Forecast</p>
+                            <div className="text-sm text-gray-500 italic mb-4">
+                              Based on your birth date and the current year
+                            </div>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border border-indigo-100">
+                            <h4 className="font-semibold text-indigo-800 mb-3">{personalYearInfo.title}</h4>
+                            <p className="text-sm text-indigo-700 mb-4">{personalYearInfo.description}</p>
+                            
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for 2025</h5>
+                              <ul className="space-y-2">
+                                {personalYearInfo.focus.map((item, index) => (
+                                  <li key={index} className="flex items-start text-sm text-indigo-700">
+                                    <span className="text-indigo-500 mr-2 mt-1">•</span>
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Personal Year Calculation */}
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-800 mb-3">How Your Personal Year is Calculated</h4>
+                            <div className="text-sm text-gray-700 space-y-2">
+                              <p>Personal Year = (Birth Day + Birth Month + Current Year) reduced to single digit</p>
+                              {(() => {
+                                const birthDate = new Date(user?.birthDate || "1990-01-01");
+                                const day = birthDate.getDate();
+                                const month = birthDate.getMonth() + 1;
+                                const currentYear = 2025;
+                                return (
+                                  <div className="bg-white p-3 rounded border">
+                                    <p>Day: {day} + Month: {month} + Year digits: {currentYear.toString().split('').join(' + ')} = {day + month + 2 + 0 + 2 + 5}</p>
+                                    <p>Reduced to single digit: <span className="font-medium text-indigo-600">{personalYear}</span></p>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </div>
+
+                          {/* Vibration Qualities for Personal Year */}
+                          <div>
+                            <h4 className="font-semibold text-purple-800 mb-3">2025 Energy Qualities</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {getVibrationQualities(personalYear).map((quality, index) => (
+                                <Badge key={index} variant="secondary" className="bg-indigo-100 text-indigo-800 border-indigo-200">
+                                  {quality}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Personal Year Guidance */}
+                          <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                            <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance for 2025</h4>
+                            <p className="text-sm text-purple-700">
+                              This Personal Year {personalYear} invites you to embrace {personalYearInfo.title.toLowerCase()} energy. 
+                              Focus on the themes of {getVibrationQualities(personalYear).slice(0, 3).join(', ').toLowerCase()} 
+                              as you navigate through 2025. This is a time for {personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion and preparation' : 'steady progress'} 
+                              in your spiritual journey.
+                            </p>
+                          </div>
+
+                          {/* Personal Month Section */}
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+                            <h4 className="font-semibold text-blue-800 mb-4">Personal Month Forecast 2025</h4>
+                            <p className="text-sm text-blue-700 mb-4">
+                              Each month carries its own energy based on your Personal Year {personalYear}. The monthly cycle progresses from 1-9 and repeats.
+                            </p>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {[
+                                { name: "January", number: 1 },
+                                { name: "February", number: 2 },
+                                { name: "March", number: 3 },
+                                { name: "April", number: 4 },
+                                { name: "May", number: 5 },
+                                { name: "June", number: 6 },
+                                { name: "July", number: 7 },
+                                { name: "August", number: 8 },
+                                { name: "September", number: 9 },
+                                { name: "October", number: 10 },
+                                { name: "November", number: 11 },
+                                { name: "December", number: 12 }
+                              ].map((month) => {
+                                const personalMonth = calculatePersonalMonth(personalYear, month.number);
+                                const monthInfo = getPersonalMonthMeaning(personalMonth);
+                                const currentMonth = new Date().getMonth() + 1;
+                                const isCurrentMonth = month.number === currentMonth;
+                                
+                                return (
+                                  <div 
+                                    key={month.name} 
+                                    className={`bg-white rounded-lg p-4 border transition-all hover:shadow-md ${
+                                      isCurrentMonth ? 'border-blue-400 ring-2 ring-blue-200' : 'border-blue-100'
+                                    }`}
+                                  >
+                                    <div className="flex items-center justify-between mb-2">
+                                      <h5 className="font-medium text-blue-800">{month.name}</h5>
+                                      {isCurrentMonth && (
+                                        <Badge className="bg-blue-100 text-blue-800 text-xs">Current</Badge>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="text-center mb-3">
+                                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-lg mx-auto mb-2">
+                                        {personalMonth}
+                                      </div>
+                                      <div className="text-xs text-blue-600 font-medium">{monthInfo.theme}</div>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <h6 className="text-sm font-medium text-blue-800">{monthInfo.title}</h6>
+                                      <p className="text-xs text-blue-700 leading-relaxed">
+                                        {monthInfo.description}
+                                      </p>
+                                    </div>
+                                    
+                                    <div className="mt-3 pt-2 border-t border-blue-100">
+                                      <div className="text-xs text-blue-600">
+                                        Personal Year {personalYear} + Month {month.number} = {personalMonth}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            <div className="mt-6 bg-white rounded-lg p-4 border border-blue-100">
+                              <h5 className="font-medium text-blue-800 mb-2">How Personal Months Work</h5>
+                              <div className="text-sm text-blue-700 space-y-1">
+                                <p>• Personal Month = Personal Year + Calendar Month (reduced to single digit)</p>
+                                <p>• The cycle flows from 1-9 and repeats throughout the year</p>
+                                <p>• Each month brings specific opportunities aligned with its numerological energy</p>
+                                <p>• Use these monthly themes to plan important activities and decisions</p>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </TabsContent>
+
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* Comprehensive Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Comprehensive Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Color Vibrations */}
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-3">Color Vibrations</h4>
+                    <div className="flex flex-wrap gap-3">
+                      <Badge className="bg-green-100 text-green-800">Life Path: {getNumberColorAssociation(numerology.lifePathNumber)}</Badge>
+                      <Badge className="bg-yellow-100 text-yellow-800">Destiny: {getNumberColorAssociation(numerology.destinyNumber)}</Badge>
+                      <Badge className="bg-violet-100 text-violet-800">Soul Urge: {getNumberColorAssociation(numerology.soulUrgeNumber)}</Badge>
+                      <Badge className="bg-pink-100 text-pink-800">Personality: {getNumberColorAssociation(numerology.personalityNumber)}</Badge>
+                      <Badge className="bg-green-100 text-green-800">Soul Chakra: {getNumberColorAssociation(numerology.soulChakraNumber)}</Badge>
+                    </div>
+                  </div>
+
+                  {/* Key Strengths and Challenges */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Key Strengths</h4>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Natural {getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities</li>
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Your {getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills</li>
+                        <li className="flex items-start"><span className="text-green-500 mr-2">•</span>The {getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Potential Challenges</h4>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
+                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Spiritual Guidance */}
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance</h4>
+                    <p className="text-sm text-purple-700">
+                      Focus on harmonizing the {getNumberColorAssociation(numerology.lifePathNumber)} and {getNumberColorAssociation(numerology.destinyNumber)} energies in your numerological blueprint for optimal growth and spiritual development.
+                    </p>
+                  </div>
+
+                  {/* Complete Interpretation */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-3">Complete Interpretation</h4>
+                    <p className="text-sm text-gray-700">{numerology.interpretation}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Color Associations */}
+            {numerology.colorAssociations && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Energy Colors</CardTitle>
+                  <CardDescription>Colors that resonate with your numerological vibrations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {numerology.colorAssociations.lifePathColor && (
+                      <div className="text-center">
+                        <div 
+                          className="w-16 h-16 rounded-full mx-auto mb-2 border-4 border-white shadow-lg" 
+                          style={{ backgroundColor: numerology.colorAssociations.lifePathColor.toLowerCase() }}
+                        ></div>
+                        <div className="font-medium">{numerology.colorAssociations.lifePathColor}</div>
+                        <div className="text-sm text-gray-600">Life Path</div>
+                      </div>
+                    )}
+                    {numerology.colorAssociations.destinyColor && (
+                      <div className="text-center">
+                        <div 
+                          className="w-16 h-16 rounded-full mx-auto mb-2 border-4 border-white shadow-lg" 
+                          style={{ backgroundColor: numerology.colorAssociations.destinyColor.toLowerCase() }}
+                        ></div>
+                        <div className="font-medium">{numerology.colorAssociations.destinyColor}</div>
+                        <div className="text-sm text-gray-600">Destiny</div>
+                      </div>
+                    )}
+                    {numerology.colorAssociations.soulUrgeColor && (
+                      <div className="text-center">
+                        <div 
+                          className="w-16 h-16 rounded-full mx-auto mb-2 border-4 border-white shadow-lg" 
+                          style={{ backgroundColor: numerology.colorAssociations.soulUrgeColor.toLowerCase() }}
+                        ></div>
+                        <div className="font-medium">{numerology.colorAssociations.soulUrgeColor}</div>
+                        <div className="text-sm text-gray-600">Soul Urge</div>
+                      </div>
+                    )}
+                    {numerology.colorAssociations.personalityColor && (
+                      <div className="text-center">
+                        <div 
+                          className="w-16 h-16 rounded-full mx-auto mb-2 border-4 border-white shadow-lg" 
+                          style={{ backgroundColor: numerology.colorAssociations.personalityColor.toLowerCase() }}
+                        ></div>
+                        <div className="font-medium">{numerology.colorAssociations.personalityColor}</div>
+                        <div className="text-sm text-gray-600">Personality</div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Strengths and Challenges */}
+            {(numerology.strengths || numerology.challenges) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {numerology.strengths && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-green-600">Your Strengths</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {numerology.strengths.map((strength, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700">{strength}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+                
+                {numerology.challenges && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-orange-600">Areas for Growth</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {numerology.challenges.map((challenge, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700">{challenge}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            {/* Guidance */}
+            {numerology.guidance && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Spiritual Guidance</CardTitle>
+                  <CardDescription>Personalized insights for your journey</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 leading-relaxed">{numerology.guidance}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        ) : numerologyError ? (
+          <div className="text-center py-12">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold mb-2">Unable to Calculate Numerology</h3>
+            <p className="text-gray-600 mb-4">Please check your birth date and try again.</p>
+            <Button onClick={() => setShowForm(true)}>
+              Enter Information Again
+            </Button>
+          </div>
+        ) : null}
+      </main>
       
       <Footer />
     </div>
