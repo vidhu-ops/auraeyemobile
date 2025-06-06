@@ -352,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Get previous aura readings for pattern analysis
-          previousReadings = await storage.getAuraReadingsByUser(userId);
+          previousReadings = await storage.getAuraReadingsByUser(userId) || [];
         } catch (error) {
           console.log("Could not retrieve user data for enhanced analysis");
         }
