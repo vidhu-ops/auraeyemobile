@@ -20,7 +20,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const seed1 = parseInt(hash.substring(0, 8), 16);
   const seed2 = parseInt(hash.substring(8, 16), 16);
   const seed3 = parseInt(hash.substring(16, 24), 16);
-
+  
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
     { name: "red", hex: "#FF4444", meaning: "Passion, vitality, grounding energy" },
@@ -48,31 +48,31 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "maroon", hex: "#800000", meaning: "Grounded passion, earthly wisdom" },
     { name: "lime", hex: "#32CD32", meaning: "Vibrant growth, renewal energy" }
   ];
-
+  
   // Generate 6-8 colors for versatile array
   const colorCount = 6 + (seed1 % 3); // Always 6, 7, or 8 colors
   const auraColors = [];
   const usedIndices = new Set();
-
+  
   for (let i = 0; i < colorCount; i++) {
     const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1));
     let colorIndex = Math.abs(colorSeed) % enhancedColors.length;
-
+    
     // Ensure uniqueness
     let attempts = 0;
     while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
       colorIndex = (colorIndex + 1) % enhancedColors.length;
       attempts++;
     }
-
+    
     usedIndices.add(colorIndex);
     auraColors.push(enhancedColors[colorIndex]);
   }
-
+  
   // Primary colors from the array
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1] || auraColors[0];
-
+  
   // Enhanced personality traits
   const spiritualTraits = [
     ["Intuitive", "Visionary", "Mystical", "Psychic"],
@@ -84,16 +84,16 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     ["Protective", "Strong", "Confident", "Courageous"],
     ["Transformative", "Evolving", "Adaptable", "Progressive"]
   ];
-
+  
   // Select traits deterministically
   const traitCount = 4 + (seed2 % 3); // 4-6 traits
   const selectedTraits = [];
   const traitSetIndex = (seed2 >> 8) % spiritualTraits.length;
   const baseTraits = spiritualTraits[traitSetIndex];
-
+  
   // Add base traits
   selectedTraits.push(...baseTraits.slice(0, Math.min(traitCount, baseTraits.length)));
-
+  
   // Add additional traits if needed
   while (selectedTraits.length < traitCount) {
     const additionalTraitSet = spiritualTraits[(traitSetIndex + selectedTraits.length) % spiritualTraits.length];
@@ -102,10 +102,10 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
       selectedTraits.push(newTrait);
     }
   }
-
+  
   // Energy level based on hash
   const energyLevel = 4 + (seed1 % 7); // 4-10 range
-
+  
   // Chakra activities with deterministic values
   const chakraActivity = {
     root: 4 + ((seed1 >> 4) % 5),
@@ -116,26 +116,26 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     thirdEye: 4 + ((seed2 >> 12) % 5),
     crown: 4 + ((seed3 >> 4) % 5)
   };
-
+  
   // Aura layer colors from the versatile array
   const auraLayerColors = {
     inner: auraColors[0]?.name || dominantColor.name,
     middle: auraColors[2]?.name || secondaryColor.name,
     outer: auraColors[4]?.name || dominantColor.name
   };
-
+  
   // Create color meanings and hex mappings
   const colorMeanings: Record<string, string> = {};
   const colorHexValues: Record<string, string> = {};
-
+  
   auraColors.forEach(color => {
     colorMeanings[color.name] = color.meaning;
     colorHexValues[color.name] = color.hex;
   });
-
+  
   // Extract just the color names for the spectrum
   const auraColorSpectrum = auraColors.map(color => color.name);
-
+  
   return {
     dominantColor: dominantColor.name,
     secondaryColor: secondaryColor.name,
@@ -158,19 +158,19 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
 function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
   const seed = parseInt(hash.substring(0, 8), 16);
-
+  
   // Deterministic object types based on hash
   const objectTypes = [
     "Crystal", "Stone", "Jewelry", "Artifact", "Ornament", "Talisman", 
     "Figurine", "Coin", "Ring", "Pendant", "Sculpture", "Charm"
   ];
-
+  
   // Deterministic aura colors
   const auraColors = [
     "Red", "Blue", "Green", "Yellow", "Purple", "Orange", 
     "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"
   ];
-
+  
   // Deterministic energy qualities
   const energyQualities = [
     ["Calming", "Protective", "Grounding"],
@@ -180,20 +180,20 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     ["Balancing", "Harmonizing", "Peaceful"],
     ["Empowering", "Confident", "Strong"]
   ];
-
+  
   const objectTypeIndex = seed % objectTypes.length;
   const auraColorIndex = (seed >> 4) % auraColors.length;
   const energyIndex = (seed >> 8) % energyQualities.length;
   const energyLevel = 3 + (seed % 8); // Energy level between 3-10
-
+  
   const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
   const selectedAuraColor = auraColors[auraColorIndex] || "Purple";
   const selectedQualities = energyQualities[energyIndex] || ["Calming", "Protective", "Grounding"];
-
+  
   // Ensure we have valid qualities
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
-
+  
   return {
     objectName: selectedObjectType,
     objectDescription: `This ${selectedObjectType.toLowerCase()} exhibits distinctive spiritual energy patterns and appears to be energetically active.`,
@@ -232,7 +232,7 @@ function letterToNumber(letter: string): number {
 function reduceNumber(num: number): number {
   // Master numbers are preserved
   if (num === 11 || num === 22 || num === 33) return num;
-
+  
   // Reduce to single digit
   while (num > 9) {
     num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
@@ -244,11 +244,11 @@ function calculateLifePath(date: string): number {
   // Format should be YYYY-MM-DD
   const parts = date.split('-');
   if (parts.length !== 3) return 5; // Default fallback
-
+  
   const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const month = parseInt(parts[1]);
   const day = parseInt(parts[2]);
-
+  
   return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
 }
 
@@ -292,7 +292,7 @@ import { seedHealers } from "./seed-data";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
-
+  
   // Seed initial healer data
   await seedHealers();
 
@@ -325,7 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get image data either from file or base64 string
       let imageData: string;
       let imgBuffer: Buffer;
-
+      
       if (req.file) {
         // If image was uploaded as file
         imageData = req.file.buffer.toString("base64");
@@ -340,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create hash for this specific image to ensure consistency
       const imageHash = crypto.createHash('sha256').update(imgBuffer).digest('hex');
-
+      
       // Check if we've analyzed this exact image before
       if (imageHashCache.has(imageHash)) {
         console.log("Returning cached result for identical image");
@@ -349,20 +349,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
-
+      
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
-
+      
       // Custom prompt for aura detection in photographs with visible auras
       let customPrompt = null;
       if (detectVisibleAura) {
         customPrompt = `You are an expert aura reader analyzing a special aura photograph. 
         These photographs are taken with special equipment that captures the actual aura colors around people.
-
+        
         IMPORTANT: In these photographs, the colored glow/haze surrounding the person IS their actual aura.
         Focus ONLY on the colored light surrounding the person - this is the true aura.
         Do NOT focus on clothing colors, background, or other elements.
-
+        
         Analyze the visible aura colors (the glowing/hazy colored field around the person) and provide a detailed spiritual interpretation.
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
@@ -370,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user's previous numerology data for enhanced analysis
       let userNumerology = null;
       let previousReadings = null;
-
+      
       if (userId) {
         try {
           const numerologyReadings = await storage.getNumerologyReadingsByUser(userId);
@@ -383,7 +383,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               personalityNumber: latestReading.personalityNumber
             };
           }
-
+          
           // Get previous aura readings for pattern analysis
           previousReadings = await storage.getAuraReadingsByUser(userId) || [];
         } catch (error) {
@@ -393,7 +393,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Determine if we should use AI or deterministic analysis
       let auraAnalysis;
-
+      
       // Check if API keys are available for authentic AI analysis
       if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
         try {
@@ -431,7 +431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
-
+      
       // Even if everything fails, provide a fallback response
       const fallbackResult = {
         dominantColor: "Indigo",
@@ -450,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
       };
-
+      
       res.json(fallbackResult);
     }
   });
@@ -459,7 +459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/gemini-analyze", upload.single("image"), async (req, res) => {
     try {
       let imageData: string;
-
+      
       if (req.file) {
         imageData = req.file.buffer.toString("base64");
       } else if (req.body.image) {
@@ -525,11 +525,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "aries", "taurus", "gemini", "cancer", "leo", "virgo",
         "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"
       ];
-
+      
       if (!validSigns.includes(sign)) {
         return res.status(400).json({ message: "Invalid zodiac sign" });
       }
-
+      
       const horoscope = await getHoroscopeForSign(sign);
       res.json(horoscope);
     } catch (error) {
@@ -542,21 +542,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;
-
+      
       console.log('Received numerology request:', { name, birthDate });
-
+      
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
-
+      
       let numerologyProfile: NumerologyResult;
-
+      
       try {
         // Try using the API-based calculation
         numerologyProfile = await calculateNumerologyProfile(name, birthDate);
-
+        
         console.log('Returning numerology profile:', numerologyProfile);
-
+        
         // Save the numerology reading if user is authenticated
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
@@ -572,7 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } catch (apiError) {
         console.error("Numerology API error, using fallback:", apiError);
-
+        
         // Create a fallback calculation
         numerologyProfile = {
           lifePathNumber: calculateLifePath(birthDate),
@@ -600,7 +600,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ],
           guidance: `Focus on harmonizing the ${getColorForNumber(calculateLifePath(birthDate))} and ${getColorForNumber(calculateDestiny(name))} energies in your numerological blueprint for optimal growth and spiritual development.`
         };
-
+        
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
@@ -614,11 +614,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
-
+      
       res.json(numerologyProfile);
     } catch (error) {
       console.error("Error calculating numerology:", error);
-
+      
       // Ultimate fallback - always return something
       const emergencyFallback = {
         lifePathNumber: 7,
@@ -635,25 +635,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           soulChakraColor: "Violet"
         }
       };
-
+      
       res.json(emergencyFallback);
     }
   });
-
+  
   app.post("/api/calculate-numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;
-
+      
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
-
+      
       let numerologyProfile: NumerologyResult;
-
+      
       try {
         // Try using the API-based calculation
         numerologyProfile = await calculateNumerologyProfile(name, birthDate);
-
+        
         // Save the numerology reading if user is authenticated
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
@@ -670,7 +670,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (apiError) {
         // Already using algorithmic calculation as fallback in the API
         console.error("Numerology error:", apiError);
-
+        
         // Create a fallback in case the API function completely fails
         numerologyProfile = {
           lifePathNumber: calculateLifePath(birthDate),
@@ -680,7 +680,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
-
+        
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
@@ -690,11 +690,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
-
+      
       res.json(numerologyProfile);
     } catch (error) {
       console.error("Error calculating numerology:", error);
-
+      
       // Ultimate fallback - always return something
       const emergencyFallback = {
         lifePathNumber: 7,
@@ -703,22 +703,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         personalityNumber: 5,
         interpretation: "Your numerology reading indicates a balanced combination of analytical thinking (7), practical stability (4), creative expression (3), and adaptability (5). This blend of energies supports both spiritual growth and material achievement."
       };
-
+      
       res.json(emergencyFallback);
     }
   });
-
+  
 // Helper functions for fallback numerology calculations
 function calculateLifePath(date: string): number {
   // Format should be YYYY-MM-DD
   const parts = date.split('-');
   if (parts.length !== 3) return 5; // Default fallback
-
+  
   const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const month = parseInt(parts[1]);
-  const day =Applying the changes to ensure deterministic aura analysis and correct energy level display.```text
-parseInt(parts[2]);
-
+  const day = parseInt(parts[2]);
+  
   return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
 }
 
@@ -755,10 +754,10 @@ function calculatePersonality(fullName: string): number {
 function calculateDecisionMakingChakra(birthDate: string): number {
   const parts = birthDate.split('-');
   if (parts.length !== 3) return 5; // Default fallback
-
+  
   const day = parseInt(parts[2]);
   const dayString = day.toString();
-
+  
   if (dayString.length === 1) {
     return day;
   } else {
@@ -772,7 +771,7 @@ function calculateDecisionMakingChakra(birthDate: string): number {
 function calculateDominantSoulChakra(birthDate: string): number {
   const parts = birthDate.split('-');
   if (parts.length !== 3) return 7; // Default fallback
-
+  
   let sum = 0;
   // Add all digits from year, month, and day
   for (const part of parts) {
@@ -780,7 +779,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       sum += parseInt(digit);
     }
   }
-
+  
   return reduceNumber(sum);
 }
 
@@ -807,7 +806,7 @@ function letterToNumber(letter: string): number {
 function reduceNumber(num: number): number {
   // Master numbers are preserved
   if (num === 11 || num === 22 || num === 33) return num;
-
+  
   // Reduce to single digit
   while (num > 9) {
     num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
@@ -819,16 +818,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Sum all digits in birth date (e.g., 01/01/1901 = 0+1+0+1+1+9+0+1 = 13 = 1+3 = 4)
   const dateStr = birthDate.replace(/\D/g, ''); // Remove non-digits
   let sum = 0;
-
+  
   for (const digit of dateStr) {
     sum += parseInt(digit);
   }
-
+  
   // Reduce to single digit
   while (sum > 9) {
     sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
   }
-
+  
   return sum;
 }
 
@@ -863,7 +862,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       const { healerId, message } = req.body;
-
+      
       // Get healer details
       const healer = await storage.getHealer(healerId);
       if (!healer) {
@@ -876,7 +875,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         healerId: healerId,
         message: message || null
       });
-
+      
       const booking = await storage.createHealerBooking(bookingData);
 
       // Send email notification to healer
@@ -910,11 +909,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
     try {
       const { energyLevel, reflections, gratitude } = req.body;
-
+      
       if (energyLevel === undefined || !reflections) {
         return res.status(400).json({ message: "Energy level and reflections are required" });
       }
-
+      
       // Format gratitude entries into a string
       let gratitudeText = "";
       if (Array.isArray(req.body.gratitude)) {
@@ -926,14 +925,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
       } else {
         gratitudeText = gratitude || "";
       }
-
+      
       const journalEntry = await storage.createJournalEntry({
         userId: req.user.id,
         energyLevel,
         reflections,
         gratitude: gratitudeText
       });
-
+      
       res.status(201).json(journalEntry);
     } catch (error) {
       console.error("Error saving journal entry:", error);
@@ -990,7 +989,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       console.log("Received numerology request:", req.body);
       const { name, birthDate } = req.body;
-
+      
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
@@ -1041,19 +1040,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const calculatePersonality = (date: string): number => {
         const dateParts = date.split('-');
         if (dateParts.length !== 3) return 5;
-
+        
         const month = dateParts[1]; // MM
         const day = dateParts[2]; // DD
-
+        
         // Get all digits from month and day
         const digits = (month + day).split('').map(Number);
         let sum = digits.reduce((a, b) => a + b, 0);
-
+        
         // Keep reducing until we get a single digit (1-9)
         while (sum > 9) {
           sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
         }
-
+        
         return sum;
       };
 
@@ -1062,12 +1061,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Remove hyphens and get all digits from the date
         const digits = date.replace(/-/g, '').split('').map(Number);
         let sum = digits.reduce((a, b) => a + b, 0);
-
+        
         // Keep reducing until we get a single digit (1-9)
         while (sum > 9) {
           sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
         }
-
+        
         return sum;
       };
 
@@ -1076,12 +1075,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Remove hyphens and get all digits from the date (YYYY-MM-DD)
         const digits = date.replace(/-/g, '').split('').map(Number);
         let sum = digits.reduce((a, b) => a + b, 0);
-
+        
         // Keep reducing until we get a single digit (1-9)
         while (sum > 9) {
           sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
         }
-
+        
         return sum;
       };
 
@@ -1141,7 +1140,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         guidance: "Focus on harmonizing the " + getColorName(lifePathNumber) + " and " + 
                  getColorName(destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
       };
-
+      
       // If user is authenticated, save the reading to their profile
       if (req.isAuthenticated()) {
         try {
@@ -1155,14 +1154,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
             personalityNumber,
             interpretation: numerologyProfile.interpretation
           };
-
+          
           await storage.saveNumerologyReading(readingToSave);
         } catch (saveError) {
           console.error("Error saving numerology reading:", saveError);
           // Continue even if saving fails
         }
       }
-
+      
       // Return the enhanced numerology profile
       console.log("Returning numerology profile:", numerologyProfile);
       res.json(numerologyProfile);
