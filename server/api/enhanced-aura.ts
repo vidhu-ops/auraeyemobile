@@ -153,6 +153,72 @@ const enhancedColorMeanings = {
     elementalConnection: 'Earth',
     vibrationFrequency: 'Grounding, protective',
     personalityInsight: 'You have natural protective abilities and deep transformative power.'
+  },
+  turquoise: {
+    rgba: 'rgba(64, 224, 208, 0.3)',
+    positive: ['Communication', 'Clarity', 'Emotional healing', 'Self-expression', 'Truth'],
+    negative: ['Emotional overwhelm', 'Scattered thinking', 'Communication blocks'],
+    numerologyConnection: [3, 5], // Expression and freedom
+    chakraAssociation: ['Throat Chakra', 'Heart Chakra'],
+    spiritualMeaning: 'Clear communication and emotional healing energy.',
+    elementalConnection: 'Water/Air',
+    vibrationFrequency: 'Clarifying, healing',
+    personalityInsight: 'You express truth with emotional clarity and healing presence.'
+  },
+  magenta: {
+    rgba: 'rgba(255, 0, 255, 0.3)',
+    positive: ['Spiritual love', 'Universal compassion', 'Higher consciousness', 'Divine feminine'],
+    negative: ['Spiritual bypassing', 'Unrealistic expectations', 'Emotional intensity'],
+    numerologyConnection: [6, 9], // Love and universal completion
+    chakraAssociation: ['Crown Chakra', 'Soul Star Chakra'],
+    spiritualMeaning: 'Divine love and spiritual transformation energy.',
+    elementalConnection: 'Spirit/Water',
+    vibrationFrequency: 'Divine, transformative',
+    personalityInsight: 'You channel divine love and spiritual wisdom for universal healing.'
+  },
+  coral: {
+    rgba: 'rgba(255, 127, 80, 0.3)',
+    positive: ['Warmth', 'Nurturing', 'Emotional balance', 'Gentle strength', 'Healing'],
+    negative: ['Emotional dependency', 'Oversensitivity', 'Lack of boundaries'],
+    numerologyConnection: [2, 6], // Cooperation and nurturing
+    chakraAssociation: ['Heart Chakra', 'Sacral Chakra'],
+    spiritualMeaning: 'Gentle healing and emotional nurturing energy.',
+    elementalConnection: 'Water/Fire',
+    vibrationFrequency: 'Warm, nurturing',
+    personalityInsight: 'You offer gentle healing and emotional support with natural warmth.'
+  },
+  lime: {
+    rgba: 'rgba(50, 205, 50, 0.3)',
+    positive: ['Growth', 'Vitality', 'New beginnings', 'Fresh energy', 'Innovation'],
+    negative: ['Restlessness', 'Impatience', 'Scattered energy', 'Superficiality'],
+    numerologyConnection: [1, 5], // New beginnings and freedom
+    chakraAssociation: ['Heart Chakra', 'Solar Plexus Chakra'],
+    spiritualMeaning: 'Fresh growth and innovative life force energy.',
+    elementalConnection: 'Earth/Air',
+    vibrationFrequency: 'Energizing, fresh',
+    personalityInsight: 'You bring fresh perspectives and innovative energy to everything you touch.'
+  },
+  navy: {
+    rgba: 'rgba(0, 0, 128, 0.3)',
+    positive: ['Deep wisdom', 'Authority', 'Stability', 'Trust', 'Intuitive knowledge'],
+    negative: ['Rigidity', 'Authoritarian', 'Emotional suppression', 'Dogmatism'],
+    numerologyConnection: [4, 7], // Stability and wisdom
+    chakraAssociation: ['Third Eye Chakra', 'Throat Chakra'],
+    spiritualMeaning: 'Deep wisdom and authoritative spiritual knowledge.',
+    elementalConnection: 'Water/Earth',
+    vibrationFrequency: 'Deep, authoritative',
+    personalityInsight: 'You possess deep wisdom and natural authority in spiritual matters.'
+  },
+  teal: {
+    rgba: 'rgba(0, 128, 128, 0.3)',
+    positive: ['Balance', 'Sophistication', 'Emotional clarity', 'Spiritual communication'],
+    negative: ['Aloofness', 'Emotional detachment', 'Overthinking'],
+    numerologyConnection: [7, 2], // Spirituality and cooperation
+    chakraAssociation: ['Throat Chakra', 'Heart Chakra'],
+    spiritualMeaning: 'Balanced communication and emotional spiritual clarity.',
+    elementalConnection: 'Water',
+    vibrationFrequency: 'Balanced, sophisticated',
+    personalityInsight: 'You communicate with balanced wisdom and emotional sophistication.'
   }
 };
 
@@ -206,25 +272,27 @@ export async function enhancedAuraAnalysis(
   const enhancedPrompt = `
     Analyze this image for aura colors and energy patterns. Provide a comprehensive spiritual reading including:
     
-    1. DOMINANT COLORS: Identify the 2-3 most prominent aura colors visible
-    2. ENERGY LAYERS: Describe inner, middle, and outer aura layers
+    1. VERSATILE COLOR SPECTRUM: Identify 5-8 distinct aura colors from this complete palette: red, orange, yellow, green, blue, indigo, violet, purple, pink, gold, silver, white, black, turquoise, magenta, coral, lime, navy, maroon, teal, crimson, azure, emerald, amber, rose, sapphire, ruby, pearl, onyx, jade
+    2. ENERGY LAYERS: Describe inner, middle, and outer aura layers with specific colors
     3. CHAKRA ACTIVITY: Assess the activity level of each chakra (1-10 scale)
-    4. SPIRITUAL GUIDANCE: Provide meaningful spiritual insights
-    5. PERSONALITY TRAITS: List 4-6 key personality characteristics
+    4. SPIRITUAL GUIDANCE: Provide meaningful spiritual insights based on the color combination
+    5. PERSONALITY TRAITS: List 6-8 key personality characteristics
     6. ENERGY LEVEL: Overall energy reading (1-10)
     
-    Focus on authentic spiritual insights based on actual color vibrations you detect.
+    IMPORTANT: Use diverse, visible colors that create a rich aura spectrum. Avoid limiting to just 2-3 colors.
+    Each color should be from the provided palette for proper visibility and meaning.
+    
     Respond in JSON format with these exact fields:
     {
       "dominantColor": "string",
       "secondaryColor": "string", 
-      "auraColorSpectrum": ["array of 4-5 colors"],
+      "auraColorSpectrum": ["array of 5-8 colors from the palette"],
       "auraLayerColors": {"inner": "color", "middle": "color", "outer": "color"},
       "energyLevel": number,
-      "personalityTraits": ["array"],
+      "personalityTraits": ["array of 6-8 traits"],
       "spiritualGuidance": "string",
       "chakraActivity": {"root": number, "sacral": number, "solarPlexus": number, "heart": number, "throat": number, "thirdEye": number, "crown": number},
-      "detailedAnalysis": "comprehensive reading"
+      "detailedAnalysis": "comprehensive reading focusing on the full color spectrum"
     }
   `;
 
@@ -382,31 +450,77 @@ function createDetailedAnalysis(
 }
 
 function generateFallbackAnalysis(): AuraAnalysisResult {
-  const colors = ['blue', 'purple', 'green', 'gold'];
-  const dominant = colors[Math.floor(Math.random() * colors.length)];
-  let secondary = colors[Math.floor(Math.random() * colors.length)];
-  while (secondary === dominant) {
-    secondary = colors[Math.floor(Math.random() * colors.length)];
+  // Expanded versatile color array with high visibility colors matching our enhanced mapping
+  const versatileColors = [
+    'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'purple', 
+    'pink', 'gold', 'silver', 'white', 'turquoise', 'magenta', 
+    'coral', 'lime', 'navy', 'teal'
+  ];
+  
+  // Generate 6-8 colors for comprehensive spectrum analysis (matching prompt requirements)
+  const spectrumSize = Math.floor(Math.random() * 3) + 6; // 6-8 colors
+  const auraSpectrum = [];
+  const usedColors = new Set();
+  
+  // Select diverse colors ensuring visibility and variety
+  while (auraSpectrum.length < spectrumSize) {
+    const color = versatileColors[Math.floor(Math.random() * versatileColors.length)];
+    if (!usedColors.has(color)) {
+      auraSpectrum.push(color);
+      usedColors.add(color);
+    }
   }
+  
+  const dominant = auraSpectrum[0];
+  const secondary = auraSpectrum[1];
+  const tertiary = auraSpectrum[2];
+  const quaternary = auraSpectrum[3] || auraSpectrum[0];
+  
+  // Get enhanced personality traits based on color meanings
+  const dominantColorData = enhancedColorMeanings[dominant as keyof typeof enhancedColorMeanings];
+  const secondaryColorData = enhancedColorMeanings[secondary as keyof typeof enhancedColorMeanings];
+  
+  const combinedTraits = [
+    ...dominantColorData.positive.slice(0, 3),
+    ...secondaryColorData.positive.slice(0, 3),
+    'Multi-dimensional', 'Energetically complex'
+  ];
   
   return {
     dominantColor: dominant,
     secondaryColor: secondary,
-    auraColorSpectrum: [dominant, secondary, colors[Math.floor(Math.random() * colors.length)]],
-    auraLayerColors: { inner: dominant, middle: secondary, outer: colors[2] },
-    energyLevel: Math.floor(Math.random() * 4) + 6,
-    personalityTraits: ['Intuitive', 'Spiritual', 'Balanced', 'Wise'],
-    spiritualGuidance: 'Your energy shows a balanced spiritual nature with strong intuitive gifts.',
+    auraColorSpectrum: auraSpectrum,
+    auraLayerColors: { 
+      inner: dominant, 
+      middle: secondary, 
+      outer: tertiary,
+      ethereal: quaternary
+    },
+    energyLevel: Math.floor(Math.random() * 3) + 7, // Higher energy for complex spectrums
+    personalityTraits: combinedTraits.slice(0, 8),
+    spiritualGuidance: `Your ${auraSpectrum.length}-color aura spectrum reveals ${dominantColorData.spiritualMeaning} combined with ${secondaryColorData.spiritualMeaning}. This creates a unique multi-layered energy signature that speaks to your complex spiritual nature and diverse gifts. The interplay of ${auraSpectrum.slice(0, 4).join(', ')} energies shows remarkable spiritual development.`,
     chakraActivity: {
       root: Math.floor(Math.random() * 3) + 6,
-      sacral: Math.floor(Math.random() * 3) + 5,
-      solarPlexus: Math.floor(Math.random() * 3) + 6,
-      heart: Math.floor(Math.random() * 3) + 7,
-      throat: Math.floor(Math.random() * 3) + 6,
+      sacral: Math.floor(Math.random() * 3) + 6,
+      solarPlexus: Math.floor(Math.random() * 3) + 7,
+      heart: Math.floor(Math.random() * 3) + 8,
+      throat: Math.floor(Math.random() * 3) + 7,
       thirdEye: Math.floor(Math.random() * 3) + 8,
-      crown: Math.floor(Math.random() * 3) + 7
+      crown: Math.floor(Math.random() * 3) + 8
     },
-    detailedAnalysis: 'Your aura reflects a spiritually aware individual with natural wisdom and intuitive gifts.'
+    detailedAnalysis: `COMPREHENSIVE AURA SPECTRUM ANALYSIS:
+    
+Your ${auraSpectrum.length}-color aura reflects extraordinary spiritual complexity. 
+
+PRIMARY ENERGIES:
+- ${dominant}: ${dominantColorData.personalityInsight}
+- ${secondary}: ${secondaryColorData.personalityInsight}
+
+FULL SPECTRUM: ${auraSpectrum.join(' • ')}
+
+VIBRATIONAL SIGNATURE: Your energy field operates on multiple frequencies simultaneously, creating a rich tapestry of spiritual abilities. The ${dominant}-${secondary} combination indicates ${dominantColorData.elementalConnection} and ${secondaryColorData.elementalConnection} elemental connections.
+
+SPIRITUAL DEVELOPMENT: This multi-dimensional aura suggests advanced spiritual awareness with the ability to access various levels of consciousness and energy healing modalities.`
   };
 }
 
