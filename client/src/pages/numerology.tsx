@@ -22,6 +22,64 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
+// Comprehensive numerology calculation functions
+const letterToNumber = (letter: string): number => {
+  const upperLetter = letter.toUpperCase();
+  if (upperLetter >= 'A' && upperLetter <= 'I') return upperLetter.charCodeAt(0) - 64;
+  if (upperLetter >= 'J' && upperLetter <= 'R') return upperLetter.charCodeAt(0) - 73;
+  if (upperLetter >= 'S' && upperLetter <= 'Z') return upperLetter.charCodeAt(0) - 82;
+  return 0;
+};
+
+const reduceNumber = (num: number): number => {
+  if (num === 11 || num === 22 || num === 33) return num;
+  while (num > 9) {
+    num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  }
+  return num;
+};
+
+const calculateLifePath = (date: string): number => {
+  const cleanDate = date.replace(/\D/g, '');
+  const sum = cleanDate.split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+  return reduceNumber(sum);
+};
+
+const calculateDestiny = (fullName: string): number => {
+  const sum = fullName.replace(/[^a-zA-Z]/g, '').split('').reduce((acc, letter) => acc + letterToNumber(letter), 0);
+  return reduceNumber(sum);
+};
+
+const calculateSoulUrge = (fullName: string): number => {
+  const vowels = fullName.replace(/[^aeiouAEIOU]/g, '');
+  const sum = vowels.split('').reduce((acc, vowel) => acc + letterToNumber(vowel), 0);
+  return reduceNumber(sum);
+};
+
+const calculatePersonality = (fullName: string): number => {
+  const consonants = fullName.replace(/[aeiouAEIOU\s]/g, '');
+  const sum = consonants.split('').reduce((acc, consonant) => acc + letterToNumber(consonant), 0);
+  return reduceNumber(sum);
+};
+
+const calculateDominantSoulChakra = (birthDate: string): number => {
+  const day = parseInt(birthDate.split('-')[2] || birthDate.split('/')[1] || birthDate.slice(-2));
+  return reduceNumber(day);
+};
+
+const calculatePersonalYear = (birthDate: string): number => {
+  const [year, month, day] = birthDate.split('-');
+  const currentYear = new Date().getFullYear();
+  const personalYearSum = parseInt(month) + parseInt(day) + currentYear;
+  return reduceNumber(personalYearSum);
+};
+
+const calculatePersonalMonth = (birthDate: string): number => {
+  const personalYear = calculatePersonalYear(birthDate);
+  const currentMonth = new Date().getMonth() + 1;
+  return reduceNumber(personalYear + currentMonth);
+};
+
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   birthDate: z.string().min(1, "Birth date is required"),
@@ -32,6 +90,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
 export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const [calculatedNumbers, setCalculatedNumbers] = useState<NumerologyResult | null>(null);
   const { toast } = useToast();
 
   const form = useForm<NumerologyFormData>({
@@ -54,19 +113,29 @@ export default function NumerologyPage() {
     enabled: !!(user?.birthDate && user?.username),
   });
 
-  const onSubmit = async (data: NumerologyFormData) => {
-    // Check if user is authenticated
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to access numerology analysis.",
-        variant: "destructive",
-      });
-      // Redirect to login page
-      window.location.href = "/api/login";
-      return;
-    }
+  // Calculate all numerology numbers locally
+  const calculateAllNumbers = (name: string, birthDate: string) => {
+    const lifePathNumber = calculateLifePath(birthDate);
+    const destinyNumber = calculateDestiny(name);
+    const soulUrgeNumber = calculateSoulUrge(name);
+    const personalityNumber = calculatePersonality(name);
+    const dominantSoulChakra = calculateDominantSoulChakra(birthDate);
+    const personalYear = calculatePersonalYear(birthDate);
+    const personalMonth = calculatePersonalMonth(birthDate);
 
+    const interpretation = `Your Life Path number ${lifePathNumber} represents your core purpose and journey. Your Destiny number ${destinyNumber} reveals your life's mission and calling. Your Soul Urge number ${soulUrgeNumber} shows your inner desires and motivations. Your Personality number ${personalityNumber} indicates how others perceive you. This year (Personal Year ${personalYear}) brings specific energies, and this month (Personal Month ${personalMonth}) offers focused opportunities. Your Dominant Soul Chakra is ${dominantSoulChakra}, representing your greatest area for spiritual growth.`;
+
+    return {
+      lifePathNumber,
+      destinyNumber,
+      soulUrgeNumber,
+      personalityNumber,
+      soulChakraNumber: dominantSoulChakra,
+      interpretation
+    };
+  };
+
+  const onSubmit = async (data: NumerologyFormData) => {
     if (!data.name.trim() || !data.birthDate.trim()) {
       toast({
         title: "Missing Information",
@@ -76,22 +145,30 @@ export default function NumerologyPage() {
       return;
     }
     
-    try {
-      const result = await calculateNumerology(data.name, data.birthDate);
-      // Trigger a refetch with the new data
-      refetchNumerology();
-      setShowForm(false);
-      toast({
-        title: "Analysis Complete",
-        description: "Your numerology analysis has been updated.",
-      });
-    } catch (error) {
-      toast({
-        title: "Analysis Failed",
-        description: "Please check your information and try again.",
-        variant: "destructive",
-      });
+    // Calculate numbers locally first for immediate display
+    const localCalculation = calculateAllNumbers(data.name, data.birthDate);
+    setCalculatedNumbers(localCalculation);
+    
+    // Also try API calculation if authenticated
+    if (user) {
+      try {
+        const result = await calculateNumerology(data.name, data.birthDate);
+        refetchNumerology();
+        toast({
+          title: "Analysis Complete",
+          description: "Your numerology analysis has been calculated.",
+        });
+      } catch (error) {
+        // Local calculation already complete, so this is not critical
+        console.log("API calculation failed, using local calculation");
+      }
     }
+    
+    setShowForm(false);
+    toast({
+      title: "Numbers Calculated",
+      description: "Your complete numerology analysis is ready.",
+    });
   };
 
   const chakraColors = {
@@ -478,6 +555,78 @@ export default function NumerologyPage() {
               </Form>
             </CardContent>
           </Card>
+
+          {/* Display calculated numbers when form is submitted */}
+          {calculatedNumbers && (
+            <div className="max-w-6xl mx-auto mt-8 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
+                    Your Complete Numerology Profile
+                  </CardTitle>
+                  <CardDescription>All your numerological numbers and their detailed meanings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    {/* Life Path Number */}
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl font-bold text-white">{calculatedNumbers.lifePathNumber}</span>
+                        </div>
+                        <h3 className="font-semibold text-green-800 mb-2">Life Path Number</h3>
+                        <p className="text-sm text-green-600">Your life's journey and core purpose</p>
+                        <p className="text-xs text-green-500 mt-2">Your core life purpose and journey</p>
+                      </div>
+                    </div>
+
+                    {/* Destiny Number */}
+                    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 border border-yellow-200">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl font-bold text-white">{calculatedNumbers.destinyNumber}</span>
+                        </div>
+                        <h3 className="font-semibold text-yellow-800 mb-2">Destiny Number</h3>
+                        <p className="text-sm text-yellow-600">Your life's mission and calling</p>
+                        <p className="text-xs text-yellow-500 mt-2">What you're meant to accomplish</p>
+                      </div>
+                    </div>
+
+                    {/* Soul Urge Number */}
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border border-purple-200">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl font-bold text-white">{calculatedNumbers.soulUrgeNumber}</span>
+                        </div>
+                        <h3 className="font-semibold text-purple-800 mb-2">Soul Urge Number</h3>
+                        <p className="text-sm text-purple-600">Your inner desires and motivations</p>
+                        <p className="text-xs text-purple-500 mt-2">What drives you from within</p>
+                      </div>
+                    </div>
+
+                    {/* Personality Number */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl font-bold text-white">{calculatedNumbers.personalityNumber}</span>
+                        </div>
+                        <h3 className="font-semibold text-blue-800 mb-2">Personality Number</h3>
+                        <p className="text-sm text-blue-600">How others perceive you</p>
+                        <p className="text-xs text-blue-500 mt-2">Your outer persona and impression</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Complete Interpretation */}
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">Complete Interpretation</h4>
+                    <p className="text-gray-700 leading-relaxed">{calculatedNumbers.interpretation}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         ) : isLoadingNumerology ? (
           <div className="text-center py-12">
             <Loader2 className="h-12 w-12 animate-spin mx-auto text-purple-600 mb-4" />
