@@ -205,53 +205,67 @@ export default function AuraAnalysis() {
 
   // Helper function to get accurate color hex values
   const getAccurateColorCode = (colorName: string): string => {
-    // Use predefined accurate color map for consistent color representation
+    // Enhanced color map with proper hex codes for all variations
     const colorMap: Record<string, string> = {
-      'Red': '#FF0000',
-      'Orange': '#FF7F00', 
-      'Yellow': '#FFFF00',
-      'Green': '#00FF00',
-      'Blue': '#0080FF',
-      'Indigo': '#4B0082',
-      'Violet': '#8A2BE2',
-      'Purple': '#800080',
-      'Pink': '#FF69B4',
-      'Gold': '#FFD700',
-      'Silver': '#C0C0C0',
-      'Turquoise': '#40E0D0',
-      'White': '#FFFFFF',
-      'Lavender': '#E6E6FA',
-      'Coral': '#FF7F50',
-      'Mint': '#98FB98',
-      'Peach': '#ffdab9',
-      'Sky Blue': '#87CEEB',
-      'Rose': '#FF66CC',
-      'Amber': '#FFBF00',
-      'Gray': '#808080',
-      'Black': '#000000',
-      'Crimson': '#DC143C',
-      'Magenta': '#FF00FF',
-      'ocher': '#E39FF6',
-      'Brown': '#A52A2A',
-      'Beige': '#F5F5DC',
-      'Cyan': '#00FFFF',
-      'Lime': '#00FF00',
-      'Maroon': '#800000',
-      'Navy': '#000080',
-      'Olive': '#808000',
-      'Teal': '#008080',
-      'Bronze': '#CD7F32',
-      'Cobalt': '#0047AB',
-      'Emerald': '#50C878',
-      'Jade': '#00A36C',
-      'Sapphire': '#0F52BA',
-      'Topaz': '#FFC87C',
-      'black': '#00000A',
-      'light grey': '#D3D3D3',
-      'dark grey': '#A9A9A9',
+      // Primary colors - both cases
+      'red': '#FF4444', 'Red': '#FF4444',
+      'orange': '#FF8800', 'Orange': '#FF8800', 
+      'yellow': '#FFD700', 'Yellow': '#FFD700',
+      'green': '#32CD32', 'Green': '#32CD32',
+      'blue': '#4169E1', 'Blue': '#4169E1',
+      'indigo': '#4B0082', 'Indigo': '#4B0082',
+      'violet': '#8A2BE2', 'Violet': '#8A2BE2',
+      'purple': '#9932CC', 'Purple': '#9932CC',
       
+      // Enhanced spiritual colors
+      'pink': '#FF69B4', 'Pink': '#FF69B4',
+      'gold': '#FFD700', 'Gold': '#FFD700',
+      'silver': '#C0C0C0', 'Silver': '#C0C0C0',
+      'white': '#FFFFFF', 'White': '#FFFFFF',
+      'black': '#2C2C2C', 'Black': '#2C2C2C',
+      
+      // Extended versatile colors
+      'turquoise': '#40E0D0', 'Turquoise': '#40E0D0',
+      'magenta': '#FF00FF', 'Magenta': '#FF00FF',
+      'coral': '#FF7F50', 'Coral': '#FF7F50',
+      'lime': '#32CD32', 'Lime': '#32CD32',
+      'navy': '#000080', 'Navy': '#000080',
+      'teal': '#008080', 'Teal': '#008080',
+      
+      // Additional comprehensive colors
+      'crimson': '#DC143C', 'Crimson': '#DC143C',
+      'maroon': '#800000', 'Maroon': '#800000',
+      'lavender': '#E6E6FA', 'Lavender': '#E6E6FA',
+      'mint': '#98FB98', 'Mint': '#98FB98',
+      'peach': '#FFDAB9', 'Peach': '#FFDAB9',
+      'amber': '#FFBF00', 'Amber': '#FFBF00',
+      'emerald': '#50C878', 'Emerald': '#50C878',
+      'jade': '#00A36C', 'Jade': '#00A36C',
+      'sapphire': '#0F52BA', 'Sapphire': '#0F52BA',
+      'ruby': '#E0115F', 'Ruby': '#E0115F',
+      'pearl': '#F8F6F0', 'Pearl': '#F8F6F0',
+      'onyx': '#353839', 'Onyx': '#353839',
+      'azure': '#007FFF', 'Azure': '#007FFF',
+      'rose': '#FF66CC', 'Rose': '#FF66CC',
+      
+      // Common variations
+      'sky blue': '#87CEEB', 'Sky Blue': '#87CEEB',
+      'light grey': '#D3D3D3', 'Light Grey': '#D3D3D3',
+      'dark grey': '#A9A9A9', 'Dark Grey': '#A9A9A9',
+      'gray': '#808080', 'Gray': '#808080',
+      'grey': '#808080', 'Grey': '#808080',
+      'brown': '#A52A2A', 'Brown': '#A52A2A',
+      'beige': '#F5F5DC', 'Beige': '#F5F5DC',
+      'cyan': '#00FFFF', 'Cyan': '#00FFFF',
+      'olive': '#808000', 'Olive': '#808000',
+      'bronze': '#CD7F32', 'Bronze': '#CD7F32',
+      'cobalt': '#0047AB', 'Cobalt': '#0047AB',
+      'topaz': '#FFC87C', 'Topaz': '#FFC87C',
+      'ocher': '#CC7722', 'Ocher': '#CC7722'
     };
-    return colorMap[colorName] || '#FFFFFF';
+    
+    // Return mapped color or default to purple instead of white for better visibility
+    return colorMap[colorName] || '#9333EA';
   };
 
   // Helper function to get color meanings
