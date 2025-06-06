@@ -102,7 +102,7 @@ Respond with valid JSON containing:
         middle: "Green",
         outer: "Indigo"
       },
-      energyLevel: 3,
+      energyLevel: 6,
       personalityTraits: ["Intuitive", "Compassionate", "Creative"],
       spiritualGuidance: "Focus on balancing your energy through meditation and mindfulness practices. Your intuitive abilities are strong but need to be grounded.",
       chakraActivity: {
@@ -147,7 +147,7 @@ Respond with valid JSON containing:
         middle: "Violet",
         outer: "Blue"
       },
-      energyLevel: 4,
+      energyLevel: 7,
       personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Sensitive"],
       spiritualGuidance: "Your aura indicates a strong spiritual connection. Focus on grounding exercises to balance your intuitive abilities with everyday reality. Meditation will help you channel your energy more effectively.",
       chakraActivity: {
