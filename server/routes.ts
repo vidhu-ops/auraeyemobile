@@ -15,124 +15,142 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 
 // Function to generate deterministic aura analysis based on image hash
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
-  const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
-  const seed = parseInt(hash.substring(0, 8), 16);
+  // Create SHA-256 hash for strong consistency - identical images get identical results
+  const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
+  const seed1 = parseInt(hash.substring(0, 8), 16);
+  const seed2 = parseInt(hash.substring(8, 16), 16);
+  const seed3 = parseInt(hash.substring(16, 24), 16);
   
-  // Enhanced aura colors with accurate hex values
-  const auraColors = [
-    { name: "Red", hex: "#FF0000", meaning: "Passion, vitality, grounding energy" },
-    { name: "Orange", hex: "#FF7F00", meaning: "Creativity, enthusiasm, emotional balance" }, 
-    { name: "Yellow", hex: "#FFFF00", meaning: "Intelligence, optimism, personal power" },
-    { name: "Green", hex: "#00FF00", meaning: "Healing, love, growth, heart-centered energy" },
-    { name: "Blue", hex: "#0080FF", meaning: "Communication, truth, peace, intuition" },
-    { name: "Indigo", hex: "#4B0082", meaning: "Psychic ability, deep intuition, wisdom" },
-    { name: "Violet", hex: "#8A2BE2", meaning: "Spiritual connection, transformation, mysticism" },
-    { name: "Purple", hex: "#800080", meaning: "Spiritual awareness, nobility, magic" },
-    { name: "Pink", hex: "#FF69B4", meaning: "Unconditional love, compassion, nurturing" },
-    { name: "Gold", hex: "#FFD700", meaning: "Divine wisdom, enlightenment, abundance" },
-    { name: "Silver", hex: "#C0C0C0", meaning: "Intuitive gifts, feminine energy, reflection" },
-    { name: "Turquoise", hex: "#40E0D0", meaning: "Healing communication, emotional clarity" }
+  // Enhanced color palette matching the frontend color mapping
+  const enhancedColors = [
+    { name: "red", hex: "#FF4444", meaning: "Passion, vitality, grounding energy" },
+    { name: "orange", hex: "#FF8800", meaning: "Creativity, enthusiasm, emotional balance" }, 
+    { name: "yellow", hex: "#FFD700", meaning: "Intelligence, optimism, personal power" },
+    { name: "green", hex: "#32CD32", meaning: "Healing, love, growth, heart-centered energy" },
+    { name: "blue", hex: "#4169E1", meaning: "Communication, truth, peace, intuition" },
+    { name: "indigo", hex: "#4B0082", meaning: "Psychic ability, deep intuition, wisdom" },
+    { name: "violet", hex: "#8A2BE2", meaning: "Spiritual connection, transformation, mysticism" },
+    { name: "purple", hex: "#9932CC", meaning: "Spiritual awareness, nobility, magic" },
+    { name: "pink", hex: "#FF69B4", meaning: "Unconditional love, compassion, nurturing" },
+    { name: "gold", hex: "#FFD700", meaning: "Divine wisdom, enlightenment, abundance" },
+    { name: "silver", hex: "#C0C0C0", meaning: "Intuitive gifts, feminine energy, reflection" },
+    { name: "turquoise", hex: "#40E0D0", meaning: "Healing communication, emotional clarity" },
+    { name: "magenta", hex: "#FF00FF", meaning: "Higher consciousness, transformation" },
+    { name: "coral", hex: "#FF7F50", meaning: "Gentle passion, warmth, social energy" },
+    { name: "crimson", hex: "#DC143C", meaning: "Intense passion, courage, strength" },
+    { name: "amber", hex: "#FFBF00", meaning: "Ancient wisdom, protection, grounding" },
+    { name: "emerald", hex: "#50C878", meaning: "Heart healing, abundance, growth" },
+    { name: "sapphire", hex: "#0F52BA", meaning: "Divine truth, spiritual insight" },
+    { name: "lavender", hex: "#E6E6FA", meaning: "Gentle spirituality, peace, calm" },
+    { name: "mint", hex: "#98FB98", meaning: "Fresh healing energy, renewal" },
+    { name: "navy", hex: "#000080", meaning: "Deep wisdom, authority, stability" },
+    { name: "teal", hex: "#008080", meaning: "Emotional balance, clarity" },
+    { name: "maroon", hex: "#800000", meaning: "Grounded passion, earthly wisdom" },
+    { name: "lime", hex: "#32CD32", meaning: "Vibrant growth, renewal energy" }
   ];
   
-  // Enhanced secondary/tertiary colors
-  const secondaryColors = [
-    { name: "White", hex: "#FFFFFF", meaning: "Purity, protection, divine connection" },
-    { name: "Lavender", hex: "#E6E6FA", meaning: "Gentle spirituality, peace, calm" },
-    { name: "Coral", hex: "#FF7F50", meaning: "Gentle passion, warmth, social energy" },
-    { name: "Mint", hex: "#98FB98", meaning: "Fresh healing energy, renewal, growth" },
-    { name: "Peach", hex: "#FFCBA4", meaning: "Gentle love, caring, emotional warmth" },
-    { name: "Sky Blue", hex: "#87CEEB", meaning: "Clear communication, freedom, openness" },
-    { name: "Rose", hex: "#FF66CC", meaning: "Deep love, emotional healing, romance" },
-    { name: "Amber", hex: "#FFBF00", meaning: "Ancient wisdom, protection, grounding" }
-  ];
+  // Generate 6-8 colors for versatile array
+  const colorCount = 6 + (seed1 % 3); // Always 6, 7, or 8 colors
+  const auraColors = [];
+  const usedIndices = new Set();
   
-  // Enhanced personality traits with deeper meanings
-  const personalityTraits = [
-    ["Creative", "Artistic", "Passionate", "Expressive"],
-    ["Calm", "Peaceful", "Balanced", "Harmonious"],
-    ["Energetic", "Dynamic", "Inspiring", "Motivating"],
-    ["Intuitive", "Mystical", "Spiritual", "Visionary"],
+  for (let i = 0; i < colorCount; i++) {
+    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1));
+    let colorIndex = Math.abs(colorSeed) % enhancedColors.length;
+    
+    // Ensure uniqueness
+    let attempts = 0;
+    while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
+      colorIndex = (colorIndex + 1) % enhancedColors.length;
+      attempts++;
+    }
+    
+    usedIndices.add(colorIndex);
+    auraColors.push(enhancedColors[colorIndex]);
+  }
+  
+  // Primary colors from the array
+  const dominantColor = auraColors[0];
+  const secondaryColor = auraColors[1] || auraColors[0];
+  
+  // Enhanced personality traits
+  const spiritualTraits = [
+    ["Intuitive", "Visionary", "Mystical", "Psychic"],
+    ["Creative", "Artistic", "Expressive", "Innovative"],
     ["Healing", "Nurturing", "Compassionate", "Empathetic"],
-    ["Strong", "Confident", "Protective", "Grounded"],
     ["Wise", "Analytical", "Thoughtful", "Insightful"],
-    ["Joyful", "Optimistic", "Uplifting", "Radiant"]
+    ["Balanced", "Harmonious", "Peaceful", "Grounded"],
+    ["Energetic", "Dynamic", "Inspiring", "Motivating"],
+    ["Protective", "Strong", "Confident", "Courageous"],
+    ["Transformative", "Evolving", "Adaptable", "Progressive"]
   ];
   
-  const dominantIndex = seed % auraColors.length;
-  const secondaryIndex = (seed >> 4) % secondaryColors.length;
-  const tertiaryIndex = (seed >> 8) % auraColors.length;
-  const quaternaryIndex = (seed >> 12) % secondaryColors.length;
-  const traitsIndex = (seed >> 16) % personalityTraits.length;
-  const energyLevel = 4 + (seed % 7); // Energy level between 4-10
+  // Select traits deterministically
+  const traitCount = 4 + (seed2 % 3); // 4-6 traits
+  const selectedTraits = [];
+  const traitSetIndex = (seed2 >> 8) % spiritualTraits.length;
+  const baseTraits = spiritualTraits[traitSetIndex];
   
-  const selectedDominant = auraColors[dominantIndex];
-  const selectedSecondary = secondaryColors[secondaryIndex];
-  const selectedTertiary = auraColors[tertiaryIndex];
-  const selectedQuaternary = secondaryColors[quaternaryIndex];
-  const selectedTraits = personalityTraits[traitsIndex];
+  // Add base traits
+  selectedTraits.push(...baseTraits.slice(0, Math.min(traitCount, baseTraits.length)));
   
-  // Create a spectrum of at least 4 unique colors
-  const auraColorSpectrum = [selectedDominant.name, selectedSecondary.name];
-  if (!auraColorSpectrum.includes(selectedTertiary.name)) {
-    auraColorSpectrum.push(selectedTertiary.name);
-  }
-  if (!auraColorSpectrum.includes(selectedQuaternary.name)) {
-    auraColorSpectrum.push(selectedQuaternary.name);
-  }
-  
-  // Ensure we have at least 4 colors
-  while (auraColorSpectrum.length < 4) {
-    const additionalColor = auraColors[(seed + auraColorSpectrum.length) % auraColors.length];
-    if (!auraColorSpectrum.includes(additionalColor.name)) {
-      auraColorSpectrum.push(additionalColor.name);
+  // Add additional traits if needed
+  while (selectedTraits.length < traitCount) {
+    const additionalTraitSet = spiritualTraits[(traitSetIndex + selectedTraits.length) % spiritualTraits.length];
+    const newTrait = additionalTraitSet[0];
+    if (!selectedTraits.includes(newTrait)) {
+      selectedTraits.push(newTrait);
     }
   }
   
-  // Create aura layer colors for multi-dimensional analysis
-  const auraLayerColors = {
-    inner: selectedDominant.name,
-    middle: selectedSecondary.name,
-    outer: auraColorSpectrum[2]
-  };
+  // Energy level based on hash
+  const energyLevel = 4 + (seed1 % 7); // 4-10 range
   
-  // Generate deterministic chakra activity based on seed
-  const baseChakraValue = 4 + (seed % 4); // Base value between 4-7
+  // Chakra activities with deterministic values
   const chakraActivity = {
-    root: baseChakraValue + ((seed >> 12) % 3),
-    sacral: baseChakraValue + ((seed >> 15) % 3),
-    solarPlexus: baseChakraValue + ((seed >> 18) % 3),
-    heart: baseChakraValue + ((seed >> 21) % 3),
-    throat: baseChakraValue + ((seed >> 24) % 3),
-    thirdEye: baseChakraValue + ((seed >> 27) % 3),
-    crown: baseChakraValue + ((seed >> 30) % 3)
+    root: 4 + ((seed1 >> 4) % 5),
+    sacral: 4 + ((seed1 >> 8) % 5), 
+    solarPlexus: 4 + ((seed1 >> 12) % 5),
+    heart: 4 + ((seed2 >> 4) % 5),
+    throat: 4 + ((seed2 >> 8) % 5),
+    thirdEye: 4 + ((seed2 >> 12) % 5),
+    crown: 4 + ((seed3 >> 4) % 5)
   };
-
-  // Enhanced spiritual guidance based on color combinations
-  const colorMeanings = `${selectedDominant.meaning} combined with ${selectedSecondary.meaning}`;
-  const detailedAnalysis = `Your aura displays a rich spectrum of ${auraColorSpectrum.length} colors, with ${selectedDominant.name} as your dominant energy (${selectedDominant.meaning}) and ${selectedSecondary.name} as your supporting energy (${selectedSecondary.meaning}). The presence of ${selectedTertiary.name} in your aura adds ${selectedTertiary.meaning}, while ${auraColorSpectrum[3]} brings ${auraColors.find(c => c.name === auraColorSpectrum[3])?.meaning || 'additional spiritual depth'}. This multi-layered energy signature indicates ${selectedTraits.join(', ').toLowerCase()} qualities in your spiritual nature.`;
-
+  
+  // Aura layer colors from the versatile array
+  const auraLayerColors = {
+    inner: auraColors[0]?.name || dominantColor.name,
+    middle: auraColors[2]?.name || secondaryColor.name,
+    outer: auraColors[4]?.name || dominantColor.name
+  };
+  
+  // Create color meanings and hex mappings
+  const colorMeanings: Record<string, string> = {};
+  const colorHexValues: Record<string, string> = {};
+  
+  auraColors.forEach(color => {
+    colorMeanings[color.name] = color.meaning;
+    colorHexValues[color.name] = color.hex;
+  });
+  
+  // Extract just the color names for the spectrum
+  const auraColorSpectrum = auraColors.map(color => color.name);
+  
   return {
-    dominantColor: selectedDominant.name,
-    secondaryColor: selectedSecondary.name,
-    auraColorSpectrum: auraColorSpectrum,
-    auraLayerColors: auraLayerColors,
+    dominantColor: dominantColor.name,
+    secondaryColor: secondaryColor.name,
+    auraColors: auraColorSpectrum, // 6-8 color versatile array
+    auraColorSpectrum: auraColorSpectrum, // Alias for compatibility
+    auraLayerColors,
     personalityTraits: selectedTraits,
-    energyLevel: energyLevel,
-    spiritualGuidance: `Your ${selectedDominant.name.toLowerCase()} dominant aura with ${selectedSecondary.name.toLowerCase()} secondary tones suggests ${selectedTraits.join(', ').toLowerCase()} energy patterns. ${colorMeanings}.`,
-    detailedAnalysis: detailedAnalysis,
-    chakraActivity: chakraActivity,
-    colorMeanings: {
-      [selectedDominant.name]: selectedDominant.meaning,
-      [selectedSecondary.name]: selectedSecondary.meaning,
-      [selectedTertiary.name]: selectedTertiary.meaning,
-      [auraColorSpectrum[3]]: auraColors.find(c => c.name === auraColorSpectrum[3])?.meaning || secondaryColors.find(c => c.name === auraColorSpectrum[3])?.meaning || 'Spiritual enhancement'
-    },
-    colorHexValues: {
-      [selectedDominant.name]: selectedDominant.hex,
-      [selectedSecondary.name]: selectedSecondary.hex,
-      [selectedTertiary.name]: selectedTertiary.hex,
-      [auraColorSpectrum[3]]: auraColors.find(c => c.name === auraColorSpectrum[3])?.hex || secondaryColors.find(c => c.name === auraColorSpectrum[3])?.hex || '#FFFFFF'
-    }
+    energyLevel,
+    spiritualGuidance: `Your aura reveals a ${dominantColor.name} dominant energy with ${secondaryColor.name} undertones, creating a unique ${auraColorSpectrum.length}-color energetic signature. This versatile spectrum indicates ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities with ${selectedTraits.slice(2).join(', ').toLowerCase()} wisdom.`,
+    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum (${auraColorSpectrum.join(', ')}) reveals a complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field.`,
+    chakraActivity,
+    colorMeanings,
+    colorHexValues,
+    energyCycle: "Balanced",
+    recommendations: `Focus on developing your ${selectedTraits[0]} abilities while maintaining your ${selectedTraits[1]} nature. The ${auraColorSpectrum.length}-color spectrum indicates advanced spiritual development.`
   };
 }
 
@@ -298,20 +316,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Image hash cache for consistent results
+  const imageHashCache = new Map<string, any>();
+
   // Aura Analysis API endpoint
   app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
+      let imgBuffer: Buffer;
       
       if (req.file) {
         // If image was uploaded as file
         imageData = req.file.buffer.toString("base64");
+        imgBuffer = req.file.buffer;
       } else if (req.body.image) {
         // If image was sent as base64 string
         imageData = req.body.image;
+        imgBuffer = Buffer.from(imageData, 'base64');
       } else {
         return res.status(400).json({ message: "No image provided" });
+      }
+
+      // Create hash for this specific image to ensure consistency
+      const imageHash = crypto.createHash('sha256').update(imgBuffer).digest('hex');
+      
+      // Check if we've analyzed this exact image before
+      if (imageHashCache.has(imageHash)) {
+        console.log("Returning cached result for identical image");
+        return res.json(imageHashCache.get(imageHash));
       }
 
       // Get user ID if authenticated
@@ -358,12 +391,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Use enhanced analysis with AI integration and numerological correlation
-      const auraAnalysis = await enhancedAuraAnalysis(
-        "data:image/jpeg;base64," + imageData,
-        userNumerology,
-        previousReadings
-      );
+      // Determine if we should use AI or deterministic analysis
+      let auraAnalysis;
+      
+      // Check if API keys are available for authentic AI analysis
+      if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
+        try {
+          // Use enhanced analysis with AI integration and numerological correlation
+          auraAnalysis = await enhancedAuraAnalysis(
+            "data:image/jpeg;base64," + imageData,
+            userNumerology,
+            previousReadings
+          );
+        } catch (error) {
+          console.log("AI analysis failed, using deterministic fallback");
+          // Use deterministic analysis for consistent results
+          auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
+        }
+      } else {
+        // Use deterministic analysis for consistent results when no API keys
+        auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
+      }
+
+      // Cache the result for this specific image hash
+      imageHashCache.set(imageHash, auraAnalysis);
 
       // Save the analysis to storage if user is authenticated
       if (userId) {
