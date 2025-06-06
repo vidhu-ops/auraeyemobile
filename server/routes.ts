@@ -406,11 +406,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
           console.log("AI analysis failed, using deterministic fallback");
           // Use deterministic analysis for consistent results
-          auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
+          auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
         }
       } else {
         // Use deterministic analysis for consistent results when no API keys
-        auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
+        auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
       }
 
       // Cache the result for this specific image hash
