@@ -32,23 +32,31 @@ export interface AuraAnalysisResult {
  * Analyzes an uploaded image to detect aura colors and energy patterns,
  * focusing specifically on identifying the colored energy fields visible around the person
  */
-export async function analyzeAuraImage(imageBase64: string): Promise<AuraAnalysisResult> {
+export async function analyzeAuraImage(base64Image: string): Promise<AuraAnalysisResult> {
   try {
-    // First, analyze the image for visible aura colors
-    const response = await apiRequest("POST", "/api/analyze-aura", {
-      image: imageBase64,
-      detectVisibleAura: true // Flag to indicate we want to focus on detecting actual visible aura colors
+    const response = await fetch("/api/analyze-aura", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ image: base64Image }),
     });
-    
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
     const result = await response.json();
-    
-    // Optional: Could add client-side color enhancement/visualization here
-    // based on the detected dominant and secondary colors
+
+    // Ensure energy level is within valid range
+    if (result.energyLevel) {
+      result.energyLevel = Math.max(1, Math.min(10, result.energyLevel));
+    }
 
     return result;
   } catch (error) {
     console.error("Error analyzing aura:", error);
-    throw new Error("Failed to analyze aura. Please try again.");
+    throw error;
   }
 }
 

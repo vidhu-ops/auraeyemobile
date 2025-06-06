@@ -6,6 +6,12 @@ import axios from "axios";
  */
 export async function analyzeImageWithGemini(base64Image: string): Promise<AuraAnalysisResult> {
   try {
+    // Create deterministic hash from image data for consistent results
+    const crypto = require('crypto');
+    const imageData = base64Image.startsWith('data:') ? base64Image.split(',')[1] : base64Image;
+    const hash = crypto.createHash('md5').update(imageData, 'base64').digest('hex');
+    const seed = parseInt(hash.substring(0, 8), 16);
+    
     // This is a simplified implementation since this is fallback
     // In production, you would make an actual call to the Gemini API
     
@@ -91,28 +97,45 @@ Respond with valid JSON containing:
       result = fallbackParser(responseText);
     }
     
-    // Default values in case some fields are missing
+    // Generate deterministic default values based on image hash
+    const colors = ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"];
+    const traits = ["Intuitive", "Creative", "Analytical", "Spiritual", "Healing", "Visionary", "Grounded", "Passionate", "Compassionate", "Wise", "Psychic", "Balanced"];
+    
+    const dominantColorIndex = seed % colors.length;
+    const secondaryColorIndex = (seed >> 4) % colors.length;
+    const energyLevel = 1 + (seed % 10); // Energy level between 1-10
+    
     const defaultResult: AuraAnalysisResult = {
-      dominantColor: "Blue",
-      secondaryColor: "Green", 
+      dominantColor: colors[dominantColorIndex] || "Blue",
+      secondaryColor: colors[secondaryColorIndex] || "Green", 
       // Extended spectrum with multiple colors
-      auraColorSpectrum: ["Blue", "Green", "Indigo", "Turquoise", "Purple"],
+      auraColorSpectrum: [
+        colors[dominantColorIndex] || "Blue",
+        colors[secondaryColorIndex] || "Green",
+        colors[(seed >> 8) % colors.length] || "Indigo",
+        colors[(seed >> 12) % colors.length] || "Turquoise",
+        colors[(seed >> 16) % colors.length] || "Purple"
+      ],
       auraLayerColors: {
-        inner: "Blue",
-        middle: "Green",
-        outer: "Indigo"
+        inner: colors[dominantColorIndex] || "Blue",
+        middle: colors[secondaryColorIndex] || "Green",
+        outer: colors[(seed >> 8) % colors.length] || "Indigo"
       },
-      energyLevel: 3,
-      personalityTraits: ["Intuitive", "Compassionate", "Creative"],
+      energyLevel: energyLevel,
+      personalityTraits: [
+        traits[(seed >> 20) % traits.length] || "Intuitive",
+        traits[(seed >> 24) % traits.length] || "Compassionate",
+        traits[(seed >> 28) % traits.length] || "Creative"
+      ],
       spiritualGuidance: "Focus on balancing your energy through meditation and mindfulness practices. Your intuitive abilities are strong but need to be grounded.",
       chakraActivity: {
-        root: 6,
-        sacral: 5,
-        solarPlexus: 4,
-        heart: 7,
-        throat: 6,
-        thirdEye: 8,
-        crown: 7
+        root: 1 + ((seed >> 8) % 10),
+        sacral: 1 + ((seed >> 12) % 10),
+        solarPlexus: 1 + ((seed >> 16) % 10),
+        heart: 1 + ((seed >> 20) % 10),
+        throat: 1 + ((seed >> 24) % 10),
+        thirdEye: 1 + ((seed >> 28) % 10),
+        crown: 1 + ((seed >> 4) % 10)
       },
       detailedAnalysis: "Your aura indicates a person with strong spiritual awareness and healing capabilities. Continue to develop your intuitive gifts while maintaining balance in your physical life."
     };
