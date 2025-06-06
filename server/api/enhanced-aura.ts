@@ -269,8 +269,8 @@ export async function enhancedAuraAnalysis(
     const baseResult = openaiResult || generateFallbackAnalysis();
     
     // Enhanced analysis with color meanings
-    const dominantColorData = enhancedColorMeanings[baseResult.dominantColor?.toLowerCase()] || enhancedColorMeanings.blue;
-    const secondaryColorData = enhancedColorMeanings[baseResult.secondaryColor?.toLowerCase()] || enhancedColorMeanings.purple;
+    const dominantColorData = enhancedColorMeanings[baseResult.dominantColor?.toLowerCase() as keyof typeof enhancedColorMeanings] || enhancedColorMeanings.blue;
+    const secondaryColorData = enhancedColorMeanings[baseResult.secondaryColor?.toLowerCase() as keyof typeof enhancedColorMeanings] || enhancedColorMeanings.purple;
     
     // Add numerology correlations if provided
     const numerologyCorrelations = userNumerology ? getNumerologyColorCorrelation(userNumerology) : [];
@@ -427,7 +427,7 @@ function analyzeAuraPatterns(previousReadings: any[], currentReading: any): stri
 }
 
 function getChakraQuality(chakraName: string): string {
-  const qualities = {
+  const qualities: Record<string, string> = {
     root: 'grounding and stability',
     sacral: 'creativity and emotional flow',
     solarPlexus: 'personal power and confidence',
