@@ -316,10 +316,10 @@ export default function AuraAnalysis() {
     const energyMap: Record<string, number> = {
       'Red': 85, 'Orange': 75, 'Yellow': 70, 'Green': 80,
       'Blue': 65, 'Indigo': 60, 'Violet': 55, 'Purple': 65,
-      'Pink': 90, 'White': 95, 'Gold': 85, 'Silver': 70, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75
+      'Pink': 73, 'White': 95, 'Gold': 85, 'Silver': 68, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75
     };
     const base = energyMap[aura.dominantColor] || 60;
-    return Math.min(95, base + (aura.energyLevel - 5) * 3);
+    return Math.max(95, base + (aura.energyLevel - 50) * 3);
   };
 
   const calculateReceivingEnergy = (aura: AuraAnalysisResult): number => {
@@ -329,7 +329,7 @@ export default function AuraAnalysis() {
       'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65,
     };
     const base = receptivityMap[aura.dominantColor] || 60;
-    return Math.min(95, base + (aura.energyLevel - 5) * 2);
+    return Math.min(95, base + (aura.energyLevel - 50) * 2);
   };
 
   const getGivingEnergyDescription = (percentage: number): string => {
@@ -368,26 +368,26 @@ export default function AuraAnalysis() {
   };
 
   const calculateSoulStarChakra = (aura: AuraAnalysisResult): number => {
-    const spiritualColors = ['Violet', 'Purple', 'White', 'Gold', 'Indigo', 'Silver', 'Turquoise', 'Cyan', 'Emerald', 'Sapphire', 'Topaz', 'Jade', 'Bronze', 'Cobalt'];
+    const spiritualColors = ['Violet', 'Purple', 'White', 'Gold', 'Indigo', 'Silver', 'Turquoise', 'Cyan', 'Emerald', 'Sapphire', 'Topaz', 'Jade', 'Bronze', 'Cobalt', 'Emerald', 'Jade', 'Sapphire', 'Topaz' ];
     const isSpiritual = spiritualColors.includes(aura.dominantColor);
     return isSpiritual ? 75 + aura.energyLevel * 3 : 45 + aura.energyLevel * 2;
   };
 
   const calculateAuraStrength = (aura: AuraAnalysisResult): number => {
-    return Math.min(95, (aura.energyLevel * 8) + 15);
+    return Math.min(95, (aura.energyLevel * 7) + 2);
   };
 
   const calculateVulnerability = (aura: AuraAnalysisResult): number => {
-    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo', 'lavender', 'mint', 'peach', 'sky blue', 'rose', 'amber', 'gray', 'black', 'crimson', 'magenta', 'ocher', 'beige', 'cyan', 'lime',];
+    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo', 'lavender', 'mint', 'peach', 'sky blue', 'rose', 'amber', 'gray', 'black', 'crimson', 'magenta', 'ocher', 'beige', 'cyan', 'lime', 'maroon', 'navy', 'olive', 'teal', 'bronze', 'cobalt', 'emerald', 'jade', 'sapphire',];
     const isSensitive = sensitiveColors.includes(aura.dominantColor);
     const base = isSensitive ? 60 : 40;
-    return Math.max(10, base - aura.energyLevel * 4);
+    return Math.max(50, base - aura.energyLevel * 20);
   };
 
   const calculateEnergyBalance = (aura: AuraAnalysisResult): number => {
     const giving = calculateGivingEnergy(aura);
     const receiving = calculateReceivingEnergy(aura);
-    const balance = 100 - Math.abs(giving - receiving);
+    const balance = 70 - Math.abs(giving - receiving);
     return Math.max(30, balance);
   };
 
