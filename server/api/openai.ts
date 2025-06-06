@@ -42,21 +42,41 @@ function getColorForNumber(num: number): string {
 }
 
 /**
- * Analyzes an image to determine aura colors and energy patterns
+ * Enhanced aura analysis that combines OpenAI vision, Gemini insights, and numerological correlations
  * @param base64Image The base64 encoded image
  * @param customPrompt Optional custom prompt to use for the analysis
+ * @param userNumerologyData Optional numerology data for personalized insights
  */
-export async function analyzeAuraImage(base64Image: string, customPrompt?: string): Promise<AuraAnalysisResult> {
-  // Default result for fallback
-  const colorMap: Record<string, {
-  rgba: string;
-  positive: string[];
-  negative: string[];
+export async function analyzeAuraImage(
+  base64Image: string, 
+  customPrompt?: string, 
+  userNumerologyData?: {
+    lifePathNumber?: number;
+    destinyNumber?: number;
+    soulUrgeNumber?: number;
+    personalityNumber?: number;
+  }
+): Promise<AuraAnalysisResult> {
+  // Enhanced color meanings and associations for deeper analysis
+  const enhancedColorMap: Record<string, {
+    rgba: string;
+    positive: string[];
+    negative: string[];
+    numerologyConnection: number[];
+    chakraAssociation: string[];
+    spiritualMeaning: string;
+    elementalConnection: string;
+    vibrationFrequency: string;
 }> = {
   black: {
     rgba: 'rgba(0, 0, 0, 0.3)',
     positive: ['Protection', 'Grounding', 'Power', 'Wisdom', 'Mystery', 'Boundaries'],
-    negative: ['Negativity', 'Fear', 'Blockages', 'Depression', 'Heavy energy', 'Resistance']
+    negative: ['Negativity', 'Fear', 'Blockages', 'Depression', 'Heavy energy', 'Resistance'],
+    numerologyConnection: [8, 1], // Power and independence
+    chakraAssociation: ['Root Chakra', 'Earth Star Chakra'],
+    spiritualMeaning: 'Protection and transformation through shadow work',
+    elementalConnection: 'Earth',
+    vibrationFrequency: 'Low, grounding'
   },
   grey: {
     rgba: 'rgba(128, 128, 128, 0.3)',

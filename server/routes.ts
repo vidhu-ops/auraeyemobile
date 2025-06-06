@@ -6,6 +6,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
 import { analyzeImageWithGemini } from "./api/gemini";
+import { enhancedAuraAnalysis } from "./api/enhanced-aura";
 import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
@@ -333,16 +334,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
 
-      // Use deterministic analysis based on image hash for consistent results
-      let imageBuffer: Buffer;
-      if (req.file) {
-        imageBuffer = req.file.buffer;
-      } else {
-        // Convert base64 to buffer for hash calculation
-        imageBuffer = Buffer.from(imageData, 'base64');
-      }
+      // Get user's previous numerology data for enhanced analysis
+      let userNumerology = null;
+      let previousReadings = null;
       
-      const auraAnalysis = generateDeterministicAuraAnalysis(imageBuffer);
+      if (userId) {
+        try {
+          const numerologyReadings = await storage.getNumerologyReadingsByUser(userId);
+          if (numerologyReadings.length > 0) {
+            const latestReading = numerologyReadings[numerologyReadings.length - 1];
+            userNumerology = {
+              lifePathNumber: latestReading.lifePathNumber,
+              destinyNumber: latestReading.destinyNumber,
+              soulUrgeNumber: latestReading.soulUrgeNumber,
+              personalityNumber: latestReading.personalityNumber
+            };
+          }
+          
+          // Get previous aura readings for pattern analysis
+          previousReadings = await storage.getAuraReadingsByUser(userId);
+        } catch (error) {
+          console.log("Could not retrieve user data for enhanced analysis");
+        }
+      }
+
+      // Use enhanced analysis with AI integration and numerological correlation
+      const auraAnalysis = await enhancedAuraAnalysis(
+        "data:image/jpeg;base64," + imageData,
+        userNumerology,
+        previousReadings
+      );
 
       // Save the analysis to storage if user is authenticated
       if (userId) {
