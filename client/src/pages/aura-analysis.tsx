@@ -205,38 +205,36 @@ export default function AuraAnalysis() {
 
   // Helper function to get accurate color hex values
   const getAccurateColorCode = (colorName: string): string => {
-    // Use predefined accurate color map for consistent color representation
+    // Enhanced color map with proper spiritual aura colors
     const colorMap: Record<string, string> = {
-      'Red': '#FF0000',
-      'Orange': '#FF7F00', 
-      'Yellow': '#FFFF00',
-      'Green': '#00FF00',
-      'Blue': '#0080FF',
-      'black': '#00000A',
+      'Red': '#FF4444',
+      'Orange': '#FF8533', 
+      'Yellow': '#FFD700',
+      'Green': '#32CD32',
+      'Blue': '#4169E1',
       'Indigo': '#4B0082',
       'Violet': '#8A2BE2',
-      'Purple': '#800080',
+      'Purple': '#9932CC',
       'Pink': '#FF69B4',
       'Gold': '#FFD700',
       'Silver': '#C0C0C0',
       'Turquoise': '#40E0D0',
-      'White': '#FFFFFF',
+      'White': '#F8F8FF',
       'Lavender': '#E6E6FA',
       'Coral': '#FF7F50',
       'Mint': '#98FB98',
-      'Peach': '#ffdab9',
+      'Peach': '#FFDAB9',
       'Sky Blue': '#87CEEB',
       'Rose': '#FF66CC',
       'Amber': '#FFBF00',
       'Gray': '#808080',
-      'Black': '#000000',
+      'Black': '#2C2C2C',
       'Crimson': '#DC143C',
       'Magenta': '#FF00FF',
-      'ocher': '#E39FF6',
       'Brown': '#A52A2A',
       'Beige': '#F5F5DC',
       'Cyan': '#00FFFF',
-      'Lime': '#00FF00',
+      'Lime': '#32CD32',
       'Maroon': '#800000',
       'Navy': '#000080',
       'Olive': '#808000',
@@ -246,13 +244,23 @@ export default function AuraAnalysis() {
       'Emerald': '#50C878',
       'Jade': '#00A36C',
       'Sapphire': '#0F52BA',
-      'Topaz': '#FFC87C',
-      'black': '#00000A',
-      'light grey': '#D3D3D3',
-      'dark grey': '#A9A9A9',
-      
+      'Topaz': '#FFC87C'
     };
-    return colorMap[colorName] || '#FFFFFF';
+    
+    // Normalize color name (handle case variations)
+    const normalizedName = colorName.trim();
+    const exactMatch = colorMap[normalizedName];
+    if (exactMatch) return exactMatch;
+    
+    // Try case-insensitive match
+    const lowerName = normalizedName.toLowerCase();
+    for (const [key, value] of Object.entries(colorMap)) {
+      if (key.toLowerCase() === lowerName) {
+        return value;
+      }
+    }
+    
+    return '#9932CC'; // Default purple if no match
   };
 
   // Helper function to get color meanings
@@ -1665,8 +1673,6 @@ export default function AuraAnalysis() {
       "Energetic": "Your energy field is vibrant and dynamic, radiating vitality and enthusiasm.",
       "Transformative": "Your energy field carries the power to shift and transform reality.",
       "Protective": "Your energy field is a barrier against negative influences and energies.",
-      "Intuitive": "Your energy field a thought and inner listening one.",
-      "Empathetic": "Your energy field absobs and allows you to analyze.",
     };
     
     return traitExplanations[trait] || "This trait represents a unique expression of your spiritual signature.";
