@@ -630,7 +630,7 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="lifePath" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5">
+                  <TabsList className="grid w-full grid-rows-2 grid-cols-3 h-30 align-center">
                     <TabsTrigger value="lifePath">Life Path</TabsTrigger>
                     <TabsTrigger value="destiny">Destiny</TabsTrigger>
                     <TabsTrigger value="soulUrge">Soul Urge</TabsTrigger>
@@ -777,7 +777,7 @@ export default function NumerologyPage() {
                     </div>
 
                     {/* Dominant Soul Chakra Section */}
-                    <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-100 ">
                       <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
                       <div className="text-center mb-3">
                         <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-xl mx-auto mb-2">
