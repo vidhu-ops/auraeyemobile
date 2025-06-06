@@ -3,9 +3,24 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
+import connectPg from "connect-pg-simple";
 
-// Create memory store for sessions
-const MemoryStore = createMemoryStore(session);
+// Create appropriate session store based on environment
+const createSessionStore = () => {
+  if (process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
+    const PostgreSQLStore = connectPg(session);
+    return new PostgreSQLStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      ttl: 7 * 24 * 60 * 60, // 7 days in seconds
+    });
+  } else {
+    const MemoryStore = createMemoryStore(session);
+    return new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
+  }
+};
 
 export interface IStorage {
   // User management
@@ -46,9 +61,7 @@ export class DatabaseStorage implements IStorage {
   sessionStore: any;
 
   constructor() {
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
-    });
+    this.sessionStore = createSessionStore();
   }
 
   // User management
