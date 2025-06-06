@@ -246,7 +246,9 @@ export default function AuraAnalysis() {
       'Jade': '#00A36C',
       'Sapphire': '#0F52BA',
       'Topaz': '#FFC87C',
-      
+      'black': '#00000A',
+      'light grey': '#D3D3D3',
+      'dark grey': '#A9A9A9',
       
     };
     return colorMap[colorName] || '#FFFFFF';
@@ -305,7 +307,7 @@ export default function AuraAnalysis() {
     const energyMap: Record<string, number> = {
       'Red': 85, 'Orange': 75, 'Yellow': 70, 'Green': 80,
       'Blue': 65, 'Indigo': 60, 'Violet': 55, 'Purple': 65,
-      'Pink': 90, 'White': 95, 'Gold': 85, 'Silver': 70
+      'Pink': 90, 'White': 95, 'Gold': 85, 'Silver': 70, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75
     };
     const base = energyMap[aura.dominantColor] || 60;
     return Math.min(95, base + (aura.energyLevel - 5) * 3);
