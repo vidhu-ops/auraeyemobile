@@ -85,9 +85,12 @@ export function setupAuth(app: Express) {
         password: await hashPassword(req.body.password),
       });
 
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
+
       req.login(user, (err) => {
         if (err) return next(err);
-        res.status(201).json(user);
+        res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
       next(error);
@@ -96,7 +99,9 @@ export function setupAuth(app: Express) {
 
   // Login endpoint
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+    // Remove password from response
+    const { password, ...userWithoutPassword } = req.user as any;
+    res.status(200).json(userWithoutPassword);
   });
 
   // Logout endpoint
@@ -110,6 +115,8 @@ export function setupAuth(app: Express) {
   // Get current user endpoint
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    res.json(req.user);
+    // Remove password from response
+    const { password, ...userWithoutPassword } = req.user as any;
+    res.json(userWithoutPassword);
   });
 }
