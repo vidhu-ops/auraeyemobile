@@ -103,8 +103,8 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     }
   }
   
-  // Energy level based on hash
-  const energyLevel = 4 + (seed1 % 7); // 4-10 range
+  // Energy level based on hash - ensure consistent range 1-10
+  const energyLevel = 1 + (seed1 % 10); // 1-10 range
   
   // Chakra activities with deterministic values
   const chakraActivity = {

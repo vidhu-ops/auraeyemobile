@@ -2947,11 +2947,14 @@ export default function AuraAnalysis() {
                               
                               <div>
                                 <h4 className="text-sm text-gray-500 mb-1">Energy Level</h4>
-                                <Progress value={result.energyLevel * 20} className="h-2" />
+                                <Progress value={result.energyLevel * 10} className="h-2" />
                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                                   <span>Low</span>
                                   <span>Medium</span>
                                   <span>High</span>
+                                </div>
+                                <div className="text-center text-sm font-medium mt-1">
+                                  {result.energyLevel}/10 - {getEnergyLevelDescription(result.energyLevel)}
                                 </div>
                               </div>
                               
