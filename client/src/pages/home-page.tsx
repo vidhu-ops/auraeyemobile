@@ -145,7 +145,7 @@ export default function HomePage() {
               icon={<Calculator className="h-6 w-6 text-secondary" />}
               title="Numerology Reading"
               description="Discover the hidden meanings in your birth date and name with our comprehensive numerology analysis and life path guidance."
-              link="/numerology"
+              link={user ? "/numerology" : "/auth"}
               linkText="Calculate Numbers"
               color="secondary"
             />
