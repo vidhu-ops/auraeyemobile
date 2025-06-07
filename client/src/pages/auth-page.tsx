@@ -81,9 +81,9 @@ export default function AuthPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                 <span className="text-white font-heading font-bold text-xl">A</span>
               </div>
-              <span className="font-heading font-bold text-2xl text-primary">Aurfy</span>
+              <span className="font-heading font-bold text-2xl text-primary">Aurafy</span>
             </div>
-            <CardTitle className="text-2xl">Welcome to Aurfy</CardTitle>
+            <CardTitle className="text-2xl">Welcome to Aurafy</CardTitle>
             <CardDescription>Access your spiritual wellness journey</CardDescription>
           </CardHeader>
           
@@ -238,7 +238,7 @@ export default function AuthPage() {
         <div className="max-w-lg mx-auto">
           <h1 className="font-heading font-bold text-3xl md:text-4xl mb-6">Begin Your Spiritual Journey</h1>
           <p className="text-lg opacity-90 mb-8">
-            Aurfy connects you with powerful spiritual tools to discover your aura, analyze your energy, and embark on a path of healing and self-discovery.
+            Aurafy connects you with powerful spiritual tools to discover your aura, analyze your energy, and embark on a path of healing and self-discovery.
           </p>
           
           <div className="space-y-6">

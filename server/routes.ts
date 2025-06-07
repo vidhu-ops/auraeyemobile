@@ -717,9 +717,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Add review to aura reading
   app.post("/api/aura-readings/:id/review", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
     try {
       const { id } = req.params;
       const { rating, reviewText } = req.body;
