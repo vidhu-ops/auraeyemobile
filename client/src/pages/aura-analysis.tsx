@@ -13,7 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Download } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -28,7 +30,42 @@ export default function AuraAnalysis() {
   const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedAuraImage, setProcessedAuraImage] = useState<string | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
+
+  // Submit review for aura analysis
+  const submitReview = async () => {
+    if (!currentAnalysisId || rating === 0) return;
+
+    setIsSubmittingReview(true);
+    try {
+      await apiRequest(`/api/aura-readings/${currentAnalysisId}/review`, {
+        method: 'POST',
+        body: { rating, reviewText }
+      });
+
+      toast({
+        title: "Review submitted",
+        description: "Thank you for your feedback!",
+      });
+
+      setShowReviewForm(false);
+      setRating(0);
+      setReviewText("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit review. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
   
   // Numerology states
   const [numerologyName, setNumerologyName] = useState("");
