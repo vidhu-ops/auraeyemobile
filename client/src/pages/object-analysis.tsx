@@ -134,10 +134,8 @@ export default function ObjectAnalysis() {
       setAnalysisProgress(100);
       setActiveTab("basic");
 
-      // Set processed image immediately (same as original, will apply CSS filter)
-      if (originalImage) {
-        setProcessedImage(originalImage);
-      }
+      // Set processed image immediately with aura overlay effect
+      setProcessedImage(imageUrl);
 
       toast({
         title: "Analysis Complete",
