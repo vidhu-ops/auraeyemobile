@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
@@ -35,6 +35,7 @@ export default function AuraAnalysis() {
   const [reviewText, setReviewText] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
 
   // Submit review for aura analysis
@@ -56,7 +57,7 @@ export default function AuraAnalysis() {
         description: "Thank you for your feedback!",
       });
 
-      setShowReviewForm(false);
+      setReviewSubmitted(true);
       setRating(0);
       setReviewText("");
     } catch (error) {
@@ -3535,74 +3536,86 @@ export default function AuraAnalysis() {
 
                         {/* 5-Star Review System */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 mt-8">
-                          <h4 className="font-semibold text-lg mb-4 flex items-center">
-                            <Star className="w-5 h-5 mr-2 text-amber-500" />
-                            Rate Your Aura Analysis Experience
-                          </h4>
-                          
-                          <div className="space-y-4">
-                            <div>
-                              <p className="text-sm text-gray-700 mb-3">How accurate and helpful was your aura reading?</p>
-                              <div className="flex space-x-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <button
-                                    key={star}
-                                    onClick={() => setRating(star)}
-                                    className={`w-8 h-8 rounded-full transition-all duration-200 ${
-                                      star <= rating 
-                                        ? 'text-amber-500 scale-110' 
-                                        : 'text-gray-300 hover:text-amber-400'
-                                    }`}
-                                  >
-                                    <Star className="w-full h-full fill-current" />
-                                  </button>
-                                ))}
+                          {reviewSubmitted ? (
+                            <div className="text-center py-4">
+                              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-8 h-8 text-green-600" />
                               </div>
+                              <h4 className="font-semibold text-lg text-green-800 mb-2">Review Submitted!</h4>
+                              <p className="text-green-700">Thank you for your feedback. Your review helps us improve our aura analysis experience.</p>
                             </div>
-                            
-                            <div>
-                              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Share your thoughts (optional)
-                              </label>
-                              <Textarea
-                                value={reviewText}
-                                onChange={(e) => setReviewText(e.target.value)}
-                                placeholder="Tell us about your experience with this aura analysis..."
-                                className="min-h-[80px] resize-none"
-                              />
-                            </div>
-                            
-                            <div className="flex justify-end space-x-3">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setRating(0);
-                                  setReviewText("");
-                                }}
-                              >
-                                Clear
-                              </Button>
-                              <Button
-                                onClick={submitReview}
-                                disabled={rating === 0 || isSubmittingReview}
-                                className="bg-amber-500 hover:bg-amber-600 text-white"
-                                size="sm"
-                              >
-                                {isSubmittingReview ? (
-                                  <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Submitting...
-                                  </>
-                                ) : (
-                                  <>
-                                    <MessageSquare className="w-4 h-4 mr-2" />
-                                    Submit Review
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          </div>
+                          ) : (
+                            <>
+                              <h4 className="font-semibold text-lg mb-4 flex items-center">
+                                <Star className="w-5 h-5 mr-2 text-amber-500" />
+                                Rate Your Aura Analysis Experience
+                              </h4>
+                              
+                              <div className="space-y-4">
+                                <div>
+                                  <p className="text-sm text-gray-700 mb-3">How accurate and helpful was your aura reading?</p>
+                                  <div className="flex space-x-2">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <button
+                                        key={star}
+                                        onClick={() => setRating(star)}
+                                        className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                                          star <= rating 
+                                            ? 'text-amber-500 scale-110' 
+                                            : 'text-gray-300 hover:text-amber-400'
+                                        }`}
+                                      >
+                                        <Star className="w-full h-full fill-current" />
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                    Share your thoughts (optional)
+                                  </label>
+                                  <Textarea
+                                    value={reviewText}
+                                    onChange={(e) => setReviewText(e.target.value)}
+                                    placeholder="Tell us about your experience with this aura analysis..."
+                                    className="min-h-[80px] resize-none"
+                                  />
+                                </div>
+                                
+                                <div className="flex justify-end space-x-3">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setRating(0);
+                                      setReviewText("");
+                                    }}
+                                  >
+                                    Clear
+                                  </Button>
+                                  <Button
+                                    onClick={submitReview}
+                                    disabled={rating === 0 || isSubmittingReview}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white"
+                                    size="sm"
+                                  >
+                                    {isSubmittingReview ? (
+                                      <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Submitting...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <MessageSquare className="w-4 h-4 mr-2" />
+                                        Submit Review
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
