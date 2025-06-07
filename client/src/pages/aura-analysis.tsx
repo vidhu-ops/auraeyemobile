@@ -3532,6 +3532,78 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                         </Tabs>
+
+                        {/* 5-Star Review System */}
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 mt-8">
+                          <h4 className="font-semibold text-lg mb-4 flex items-center">
+                            <Star className="w-5 h-5 mr-2 text-amber-500" />
+                            Rate Your Aura Analysis Experience
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-gray-700 mb-3">How accurate and helpful was your aura reading?</p>
+                              <div className="flex space-x-2">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    onClick={() => setRating(star)}
+                                    className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                                      star <= rating 
+                                        ? 'text-amber-500 scale-110' 
+                                        : 'text-gray-300 hover:text-amber-400'
+                                    }`}
+                                  >
+                                    <Star className="w-full h-full fill-current" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                Share your thoughts (optional)
+                              </label>
+                              <Textarea
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                placeholder="Tell us about your experience with this aura analysis..."
+                                className="min-h-[80px] resize-none"
+                              />
+                            </div>
+                            
+                            <div className="flex justify-end space-x-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setRating(0);
+                                  setReviewText("");
+                                }}
+                              >
+                                Clear
+                              </Button>
+                              <Button
+                                onClick={submitReview}
+                                disabled={rating === 0 || isSubmittingReview}
+                                className="bg-amber-500 hover:bg-amber-600 text-white"
+                                size="sm"
+                              >
+                                {isSubmittingReview ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Submitting...
+                                  </>
+                                ) : (
+                                  <>
+                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                    Submit Review
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   ) : (
