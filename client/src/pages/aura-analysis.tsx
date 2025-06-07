@@ -1353,6 +1353,11 @@ export default function AuraAnalysis() {
     setResult(null);
     setAnalysisProgress(0);
     setAnalysisStage("Initializing aura scanning...");
+    // Reset review system for new analysis
+    setReviewSubmitted(false);
+    setRating(0);
+    setReviewText("");
+    setCurrentAnalysisId(null);
 
     try {
       // Simulate progress for UX
@@ -1395,6 +1400,11 @@ export default function AuraAnalysis() {
             // Call API to analyze the image
             const analysisResult = await analyzeAuraImage(base64data);
             setResult(analysisResult);
+            
+            // Set analysis ID if returned from server for review functionality
+            if (analysisResult.id) {
+              setCurrentAnalysisId(analysisResult.id);
+            }
             
             // Generate enhanced aura image with aura clouds
             if (base64String) {
@@ -3539,7 +3549,7 @@ export default function AuraAnalysis() {
                           {reviewSubmitted ? (
                             <div className="text-center py-4">
                               <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                                <CheckCircle className="w-8 h-8 text-green-600" />
+                                <CheckCircle2 className="w-8 h-8 text-green-600" />
                               </div>
                               <h4 className="font-semibold text-lg text-green-800 mb-2">Review Submitted!</h4>
                               <p className="text-green-700">Thank you for your feedback. Your review helps us improve our aura analysis experience.</p>
