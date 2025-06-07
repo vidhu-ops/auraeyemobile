@@ -4,6 +4,7 @@ import { apiRequest } from "./queryClient";
 const GPT_MODEL = "gpt-4o";
 
 export interface AuraAnalysisResult {
+  id?: number; // Added for review system functionality
   dominantColor: string;
   secondaryColor: string;
   // Extended color spectrum for more detailed aura analysis

@@ -416,11 +416,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Cache the result for this specific image hash
       imageHashCache.set(imageHash, auraAnalysis);
 
-      // Save the analysis to storage if user is authenticated
+      // Save the analysis to storage for review functionality
       let savedReading = null;
-      if (userId) {
+      try {
         savedReading = await storage.saveAuraReading({
-          userId,
+          userId: userId || 0, // Use 0 for anonymous users
           imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
           dominantColor: auraAnalysis.dominantColor,
           secondaryColor: auraAnalysis.secondaryColor || "",
@@ -429,7 +429,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         
         // Add the reading ID to the response for review functionality
-        auraAnalysis.id = savedReading.id;
+        (auraAnalysis as any).id = savedReading.id;
+      } catch (error) {
+        console.log("Could not save reading to database:", (error as Error).message);
+        // Continue without saving if database unavailable
       }
 
       res.json(auraAnalysis);
