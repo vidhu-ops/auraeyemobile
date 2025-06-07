@@ -26,6 +26,8 @@ export const auraReadings = pgTable("aura_readings", {
   secondaryColor: text("secondary_color"),
   energyLevel: integer("energy_level").notNull(),
   analysis: text("analysis").notNull(),
+  rating: integer("rating"), // 1-5 star rating
+  reviewText: text("review_text"), // Optional review text
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
