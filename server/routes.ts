@@ -417,8 +417,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       imageHashCache.set(imageHash, auraAnalysis);
 
       // Save the analysis to storage if user is authenticated
+      let savedReading = null;
       if (userId) {
-        await storage.saveAuraReading({
+        savedReading = await storage.saveAuraReading({
           userId,
           imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
           dominantColor: auraAnalysis.dominantColor,
@@ -426,6 +427,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           energyLevel: auraAnalysis.energyLevel,
           analysis: JSON.stringify(auraAnalysis)
         });
+        
+        // Add the reading ID to the response for review functionality
+        auraAnalysis.id = savedReading.id;
       }
 
       res.json(auraAnalysis);

@@ -43,9 +43,12 @@ export default function AuraAnalysis() {
 
     setIsSubmittingReview(true);
     try {
-      await apiRequest(`/api/aura-readings/${currentAnalysisId}/review`, {
+      await fetch(`/api/aura-readings/${currentAnalysisId}/review`, {
         method: 'POST',
-        body: { rating, reviewText }
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rating, reviewText })
       });
 
       toast({
