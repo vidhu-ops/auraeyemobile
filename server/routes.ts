@@ -707,6 +707,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(emergencyFallback);
     }
   });
+
+  // Add review to aura reading
+  app.post("/api/aura-readings/:id/review", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    try {
+      const { id } = req.params;
+      const { rating, reviewText } = req.body;
+      
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: "Rating must be between 1 and 5" });
+      }
+
+      const readingId = parseInt(id);
+      const updatedReading = await storage.updateAuraReadingReview(readingId, rating, reviewText);
+      
+      if (!updatedReading) {
+        return res.status(404).json({ error: "Aura reading not found" });
+      }
+
+      res.json(updatedReading);
+    } catch (error) {
+      console.error("Error saving review:", error);
+      res.status(500).json({ error: "Failed to save review" });
+    }
+  });
   
 // Helper functions for fallback numerology calculations
 function calculateLifePath(date: string): number {
