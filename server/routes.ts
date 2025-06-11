@@ -301,6 +301,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const upload = configureFileUpload();
 
   // API routes
+  // Object Analysis API endpoint
+  app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      // Use deterministic analysis based on image hash for consistent results
+      const deterministicResult = generateDeterministicObjectAnalysis(req.file.buffer);
+      res.json(deterministicResult);
+    } catch (error) {
+      console.error("Error processing object analysis:", error);
+      res.status(500).json({ message: "An error occurred during analysis" });
+    }
+  });
 
   // Image hash cache for consistent results
   const imageHashCache = new Map<string, any>();
@@ -339,116 +354,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
       
-      // Strict validation for aura scanning - require human detection
-      const validateAuraImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
-        try {
-          const validationPrompt = `Analyze this image for human FACE detection for aura scanning. Return ONLY a JSON object:
-          {
-            "containsHumanFaces": true/false,
-            "faceCount": number,
-            "reason": "explanation"
-          }
-          
-          STRICT RULES FOR AURA SCANNING:
-          - Set "containsHumanFaces" to TRUE only if you can clearly see human FACES with facial features
-          - Count the number of distinct human faces visible
-          - ONLY visible faces count - bodies, silhouettes, or back of heads do NOT count
-          - Examples of VALID: selfies, portraits, headshots with clear facial features
-          - Examples of INVALID: back of head, silhouettes, objects, animals, body parts without visible faces`;
-
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: "gpt-4o",
-              messages: [
-                {
-                  role: "user",
-                  content: [
-                    { type: "text", text: validationPrompt },
-                    {
-                      type: "image_url",
-                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
-                    }
-                  ]
-                }
-              ],
-              max_tokens: 300,
-              response_format: { type: "json_object" }
-            })
-          });
-
-          console.log("=== HTTP RESPONSE DEBUG ===");
-          console.log("Response status:", response.status);
-          console.log("Response ok:", response.ok);
-          
-          if (response.status === 429) {
-            console.log("OpenAI rate limit hit - proceeding with permissive validation for aura analysis");
-            return { valid: true, reason: "Rate limit reached - proceeding with aura analysis (assuming human image)." };
-          }
-          
-          if (!response.ok) {
-            console.log("OpenAI API error - status:", response.status);
-            const errorText = await response.text();
-            console.log("Error response:", errorText);
-            throw new Error(`OpenAI API error: ${response.status}`);
-          }
-          console.log("=== END HTTP DEBUG ===");
-
-          if (response.ok) {
-            const data = await response.json();
-            console.log("=== AURA API RESPONSE DEBUG ===");
-            console.log("Full API response:", JSON.stringify(data, null, 2));
-            console.log("Message content:", data.choices?.[0]?.message?.content);
-            console.log("=== END API DEBUG ===");
-            
-            if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-              console.log("Invalid API response structure");
-              throw new Error("Invalid API response structure");
-            }
-            
-            const validation = JSON.parse(data.choices[0].message.content);
-            
-            console.log("=== AURA VALIDATION DEBUG ===");
-            console.log("Validation result:", validation);
-            console.log("containsHumanFaces:", validation.containsHumanFaces);
-            console.log("faceCount:", validation.faceCount);
-            console.log("=== END DEBUG ===");
-            
-            // Require visible human faces for aura scanning
-            if (!validation.containsHumanFaces || validation.faceCount === 0) {
-              return { valid: false, reason: "Aura scanning requires visible human faces. Please upload a photo showing clear facial features (selfies, portraits, headshots work best)." };
-            }
-            
-            // Allow 1-2 faces maximum
-            if (validation.faceCount > 2) {
-              return { valid: false, reason: "Too many faces detected. Aura scanning works best with 1-2 people maximum." };
-            }
-            
-            // Mark as valid if we have faces
-            return { valid: true, reason: "Valid human faces detected for aura scanning" };
-          }
-        } catch (error: any) {
-          console.log("AI validation error:", error);
-          console.log("Error details:", error?.message || "Unknown error");
-          
-          // If it's a network/timeout error, be permissive for human images
-          if (error?.message?.includes('fetch') || error?.message?.includes('timeout') || error?.code === 'ECONNRESET') {
-            console.log("Network error detected - proceeding with aura analysis (assuming human image)");
-            return { valid: true, reason: "Network error - proceeding with aura analysis (assuming human image)." };
-          }
-        }
-
-        // Restrictive fallback for aura analysis - reject when validation unavailable
-        console.log("AI face validation unavailable for aura analysis - rejecting for safety");
-        return { valid: false, reason: "Face validation required. Aura scanning requires clear human faces. Please upload a selfie, portrait, or headshot showing facial features." };
-      };
-
-
-
       // Custom prompt for aura detection in photographs with visible auras
       let customPrompt = null;
       if (detectVisibleAura) {
@@ -485,23 +390,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
           console.log("Could not retrieve user data for enhanced analysis");
         }
-      }
-
-      // Validate image for aura scanning requirements
-      const imageValidation = await validateAuraImage(imgBuffer.toString('base64'));
-      
-      if (!imageValidation.valid) {
-        return res.status(400).json({
-          error: "Invalid image for aura scanning",
-          message: imageValidation.reason || "Image does not meet aura scanning requirements",
-          requirements: [
-            "Must contain exactly one human person",
-            "Image must be well-lit with good lighting",
-            "Adequate space must be visible around the person",
-            "Person must be the main subject (portrait or full body style)",
-            "No group photos, pets, or objects as main subjects"
-          ]
-        });
       }
 
       // Determine if we should use AI or deterministic analysis
@@ -1269,178 +1157,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error calculating numerology:", error);
       res.status(500).json({ message: "Failed to calculate numerology" });
-    }
-  });
-
-  // Object Analysis API endpoint with strict human rejection
-  app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No image file provided" });
-      }
-
-      // Convert image to base64 for AI validation
-      const base64Image = req.file.buffer.toString('base64');
-
-      // STRICT HUMAN REJECTION - Use OpenAI to detect any humans
-      const objectValidation = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
-        if (!process.env.OPENAI_API_KEY) {
-          return { valid: false, reason: "Image validation unavailable. Object analysis requires verification that no humans are present." };
-        }
-
-        try {
-          const validationPrompt = `Analyze this image strictly for human FACE detection. Return ONLY a JSON object:
-{
-  "containsHumanFaces": true/false,
-  "faceCount": number,
-  "reason": "explanation"
-}
-
-STRICT RULES FOR OBJECT ANALYSIS:
-- Set "containsHumanFaces" to TRUE if you see ANY human faces with facial features
-- Count all human faces visible in the image
-- REJECT any image containing human faces - even partial faces
-- Examples that should be REJECTED: selfies, portraits, group photos, any visible human faces
-- Examples that should be ACCEPTED: pure objects, landscapes, animals, items without any human faces`;
-
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: "gpt-4o",
-              messages: [
-                {
-                  role: "user",
-                  content: [
-                    { type: "text", text: validationPrompt },
-                    {
-                      type: "image_url",
-                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
-                    }
-                  ]
-                }
-              ],
-              max_tokens: 200,
-              response_format: { type: "json_object" }
-            })
-          });
-
-          console.log("=== OBJECT HTTP RESPONSE DEBUG ===");
-          console.log("Response status:", response.status);
-          console.log("Response ok:", response.ok);
-          console.log("=== END HTTP DEBUG ===");
-
-          if (response.ok) {
-            const data = await response.json();
-            console.log("=== OBJECT API RESPONSE DEBUG ===");
-            console.log("Full API response:", JSON.stringify(data, null, 2));
-            console.log("Message content:", data.choices?.[0]?.message?.content);
-            console.log("=== END API DEBUG ===");
-            
-            if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-              console.log("Invalid API response structure for object validation");
-              throw new Error("Invalid API response structure");
-            }
-            
-            const validation = JSON.parse(data.choices[0].message.content);
-            
-            console.log("=== OBJECT VALIDATION DEBUG ===");
-            console.log("Validation result:", validation);
-            console.log("containsHumanFaces:", validation.containsHumanFaces);
-            console.log("faceCount:", validation.faceCount);
-            console.log("=== END DEBUG ===");
-            
-            // REJECT if ANY human faces detected
-            if (validation.containsHumanFaces === true || validation.faceCount > 0) {
-              return {
-                valid: false,
-                reason: `Human faces detected in image. Object analysis only accepts images with NO human faces visible. ${validation.reason}`
-              };
-            }
-            
-            return { valid: true, reason: "Valid object image - no human faces detected" };
-          } else {
-            console.log("OpenAI API error for object validation - status:", response.status);
-            const errorText = await response.text();
-            console.log("Error response:", errorText);
-            throw new Error(`OpenAI API error: ${response.status}`);
-          }
-        } catch (error) {
-          console.log("Object validation error:", error);
-        }
-
-        // Implement deterministic object validation when API unavailable
-        console.log("Implementing deterministic object validation");
-        try {
-          // Use simple deterministic analysis based on image characteristics
-          const imageBuffer = Buffer.from(base64Image, 'base64');
-          const imageSize = imageBuffer.length;
-          
-          // Create simple hash from buffer content
-          let simpleHash = 0;
-          for (let i = 0; i < Math.min(imageBuffer.length, 1000); i++) {
-            simpleHash = ((simpleHash << 5) - simpleHash + imageBuffer[i]) & 0xffffffff;
-          }
-          
-          // Generate validation score based on image characteristics
-          const sizeScore = imageSize % 100;
-          const hashScore = Math.abs(simpleHash) % 100;
-          const validationScore = (sizeScore + hashScore) % 100;
-          
-          console.log("Deterministic validation - size:", imageSize, "validation score:", validationScore);
-          
-          // Accept most images as objects (permissive for object analysis)
-          // Only reject very small percentage to maintain some safety
-          if (validationScore < 10) {
-            return {
-              valid: false,
-              reason: "Image characteristics suggest potential human content. Object analysis only accepts pure object images."
-            };
-          }
-          
-          console.log("Deterministic validation passed - accepting as object image");
-          return {
-            valid: true,
-            reason: "Deterministic validation passed - proceeding with object analysis"
-          };
-          
-        } catch (error) {
-          console.log("Deterministic validation failed:", error);
-          // Even if deterministic validation fails, be permissive for object analysis
-          console.log("Fallback: accepting image for object analysis");
-          return {
-            valid: true,
-            reason: "Fallback validation - proceeding with object analysis"
-          };
-        }
-      };
-
-      // Validate image for object analysis requirements (no humans allowed)
-      const imageValidation = await objectValidation(base64Image);
-      
-      if (!imageValidation.valid) {
-        return res.status(400).json({
-          error: "Human Detected in Image",
-          message: imageValidation.reason,
-          requirements: [
-            "Object analysis only accepts images of objects, items, or artifacts",
-            "NO human faces, bodies, or body parts should be visible",
-            "For human aura scanning, use the Aura Analysis feature instead"
-          ]
-        });
-      }
-
-      // Generate deterministic object analysis based on image hash
-      const objectAnalysis = generateDeterministicObjectAnalysis(req.file.buffer);
-      
-      res.json(objectAnalysis);
-
-    } catch (error) {
-      console.error("Error analyzing object:", error);
-      res.status(500).json({ message: "Failed to analyze object" });
     }
   });
 

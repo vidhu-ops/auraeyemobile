@@ -41,19 +41,6 @@ export async function analyzeAuraImage(imageBase64: string): Promise<AuraAnalysi
       detectVisibleAura: true // Flag to indicate we want to focus on detecting actual visible aura colors
     });
     
-    // Check if response indicates validation error
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (response.status === 400 && errorData.error === "Invalid image for aura scanning") {
-        // Throw specific validation error with requirements
-        const validationError = new Error(`Image Validation Failed: ${errorData.message}`);
-        (validationError as any).requirements = errorData.requirements;
-        (validationError as any).isValidationError = true;
-        throw validationError;
-      }
-      throw new Error(errorData.message || 'Analysis failed');
-    }
-    
     const result = await response.json();
     
     // Optional: Could add client-side color enhancement/visualization here

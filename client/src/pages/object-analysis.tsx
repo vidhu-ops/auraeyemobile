@@ -126,29 +126,6 @@ export default function ObjectAnalysis() {
       clearInterval(progressInterval);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        // Handle validation errors specifically
-        if (response.status === 400 && errorData.requirements) {
-          toast({
-            title: "Invalid Image for Object Analysis",
-            description: errorData.message || "Image does not meet object analysis requirements",
-            variant: "destructive",
-          });
-          
-          // Show detailed requirements
-          setTimeout(() => {
-            toast({
-              title: "Object Analysis Requirements",
-              description: "Please upload an image with objects only - no humans, faces, or body parts visible.",
-              variant: "default",
-            });
-          }, 2000);
-          
-          setIsAnalyzing(false);
-          return;
-        }
-        
         throw new Error(`Error: ${response.status}`);
       }
 
@@ -235,25 +212,10 @@ export default function ObjectAnalysis() {
                   <div className="h-2 bg-gradient-to-r from-primary to-primary-dark"></div>
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-4">
-                      <div className="space-y-4">
-                        <p className="text-center text-muted-foreground">
-                          Every object carries its own unique energy signature. Upload a photo of an object 
-                          to discover its aura color, energy qualities, and spiritual significance.
-                        </p>
-                        
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <h3 className="font-semibold text-blue-900 mb-2">📋 Object Analysis Requirements</h3>
-                          <ul className="text-sm text-blue-800 space-y-1">
-                            <li>• Upload images of objects only (crystals, jewelry, artwork, tools, etc.)</li>
-                            <li>• No human faces or bodies should be visible in the image</li>
-                            <li>• Ensure good lighting and clear visibility of the object</li>
-                            <li>• Object should be the main subject of the photo</li>
-                          </ul>
-                          <p className="text-xs text-blue-700 mt-2 italic">
-                            For human aura scanning, please use the Aura Analysis feature instead.
-                          </p>
-                        </div>
-                      </div>
+                      <p className="text-center text-muted-foreground">
+                        Every object carries its own unique energy signature. Upload a photo of an object 
+                        to discover its aura color, energy qualities, and spiritual significance.
+                      </p>
                       
                       <div className="flex flex-col items-center justify-center">
                         <ImageUpload 
