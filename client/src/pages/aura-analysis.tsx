@@ -1307,45 +1307,185 @@ export default function AuraAnalysis() {
 
   // Function to generate combined insights from aura and numerology
   const getCombinedInsights = (aura: AuraAnalysisResult, numerology: NumerologyResult) => {
-    const auraColor = getAccurateColorCode(aura.dominantColor);
-    const lifePathNumber = numerology.lifePathNumber;
-    
-    // Map life path numbers to compatible aura colors
-    const numerologyColorMap: Record<number, string[]> = {
-      1: ['red', 'orange', 'gold'],
-      2: ['orange', 'blue', 'pink'],
-      3: ['yellow', 'orange', 'green'],
-      4: ['green', 'brown', 'earth tones'],
-      5: ['blue', 'turquoise', 'silver'],
-      6: ['green', 'pink', 'blue'],
-      7: ['purple', 'violet', 'indigo'],
-      8: ['gold', 'red', 'black'],
-      9: ['white', 'gold', 'all colors']
+    // Enhanced color-to-chakra-number mapping based on remedies data
+    const colorToChakraMapping: Record<string, {
+      number: number, 
+      chakra: string, 
+      planet: string, 
+      color: string, 
+      mantra: string, 
+      crystal: string[], 
+      remedies: string[],
+      archangel: string,
+      practices: string[]
+    }> = {
+      'Yellow': {
+        number: 1, chakra: 'Solar Plexus Chakra', planet: 'Sun', color: 'Yellow',
+        mantra: 'RAM', crystal: ['Citrine', 'Tiger\'s Eye'], archangel: 'Archangel Michael',
+        remedies: ['Goal Setting and Achievement', 'Leadership Development', 'Self-Confidence Building'],
+        practices: ['Set 3 short-term and 1 long-term goal weekly', 'Practice power affirmations', 'Visualize yellow light in solar plexus']
+      },
+      'Green': {
+        number: 2, chakra: 'Heart Chakra', planet: 'Moon', color: 'Green or Pink',
+        mantra: 'YAM', crystal: ['Rose Quartz', 'Green Aventurine', 'Rhodocrosite'], archangel: 'Archangel Raphael',
+        remedies: ['Gratitude Practice', 'Emotional Healing', 'Relationship Harmony'],
+        practices: ['Write 3 gratitudes daily', 'Practice forgiveness meditation', 'Send love to heart chakra']
+      },
+      'Violet': {
+        number: 3, chakra: 'Crown Chakra', planet: 'Jupiter', color: 'Violet or White',
+        mantra: 'AUM', crystal: ['Clear Quartz', 'Selenite', 'Lepidolite'], archangel: 'Archangel Metatron',
+        remedies: ['Expressive Writing', 'Spiritual Connection', 'Divine Guidance'],
+        practices: ['Write for 10 minutes daily about challenges', 'Practice crown chakra meditation', 'Connect with divine wisdom']
+      },
+      'Brown': {
+        number: 4, chakra: 'Earth Star Chakra', planet: 'Rahu', color: 'Brown or Black',
+        mantra: 'LAM', crystal: ['Smoky Quartz', 'Hematite', 'Red Jasper'], archangel: 'Archangel Ariel',
+        remedies: ['Mindfulness Meditation', 'Grounding Practices', 'Stability Building'],
+        practices: ['Practice 10 minutes mindfulness daily', 'Connect with earth energy', 'Focus on stability and foundation']
+      },
+      'Blue': {
+        number: 5, chakra: 'Throat Chakra', planet: 'Mercury', color: 'Blue',
+        mantra: 'HAM', crystal: ['Blue Lace Agate', 'Lapis Lazuli', 'Aquamarine'], archangel: 'Archangel Zadkiel',
+        remedies: ['Communication Enhancement', 'Truth Expression', 'Random Acts of Kindness'],
+        practices: ['Perform one act of kindness daily', 'Practice authentic communication', 'Chant throat chakra mantras']
+      },
+      'Orange': {
+        number: 6, chakra: 'Sacral Chakra', planet: 'Venus', color: 'Orange',
+        mantra: 'VAM', crystal: ['Carnelian', 'Moonstone', 'Orange Calcite'], archangel: 'Archangel Gabriel',
+        remedies: ['Creative Expression', 'Emotional Flow', 'Strengths-Based Reflection'],
+        practices: ['Identify and use personal strengths weekly', 'Express creativity daily', 'Practice emotional flow meditation']
+      },
+      'White': {
+        number: 7, chakra: 'Soul Star Chakra', planet: 'Ketu', color: 'White or Silver',
+        mantra: 'OM', crystal: ['Clear Quartz', 'Selenite', 'Moonstone'], archangel: 'Archangel Sandalphon',
+        remedies: ['Self-Compassion Practice', 'Spiritual Wisdom', 'Inner Peace'],
+        practices: ['Practice self-compassion daily', 'Engage in spiritual study', 'Meditate on transcendence']
+      },
+      'Indigo': {
+        number: 8, chakra: 'Third Eye Chakra', planet: 'Saturn', color: 'Indigo or Deep Blue',
+        mantra: 'OM', crystal: ['Amethyst', 'Sodalite', 'Fluorite'], archangel: 'Archangel Raziel',
+        remedies: ['Strategic Planning', 'Intuition Development', 'Manifestation'],
+        practices: ['Set clear intentions weekly', 'Practice third eye meditation', 'Develop intuitive abilities']
+      },
+      'Red': {
+        number: 9, chakra: 'Root Chakra', planet: 'Mars', color: 'Red',
+        mantra: 'LAM', crystal: ['Red Jasper', 'Garnet', 'Bloodstone'], archangel: 'Archangel Uriel',
+        remedies: ['Forgiveness Practice', 'Physical Grounding', 'Service to Others'],
+        practices: ['Write forgiveness letters weekly', 'Practice grounding exercises', 'Engage in humanitarian service']
+      }
     };
+
+    // Get mapping for dominant aura color (fallback to closest match)
+    const getClosestColorMapping = (color: string) => {
+      const colorMap: Record<string, string> = {
+        'Gold': 'Yellow', 'Silver': 'White', 'Purple': 'Violet', 
+        'Pink': 'Green', 'Turquoise': 'Blue', 'Cyan': 'Blue',
+        'Crimson': 'Red', 'Magenta': 'Red', 'Maroon': 'Red',
+        'Navy': 'Blue', 'Teal': 'Blue', 'Lime': 'Green',
+        'Emerald': 'Green', 'Jade': 'Green', 'Sapphire': 'Blue',
+        'Topaz': 'Yellow', 'Amber': 'Yellow', 'Coral': 'Orange',
+        'Lavender': 'Violet', 'Mint': 'Green', 'Peach': 'Orange',
+        'Rose': 'Green', 'Sky Blue': 'Blue'
+      };
+      return colorMap[color] || color;
+    };
+
+    const dominantColorKey = getClosestColorMapping(aura.dominantColor);
+    const dominantColorMapping = colorToChakraMapping[dominantColorKey] || colorToChakraMapping['White'];
     
-    const compatibleColors = numerologyColorMap[lifePathNumber] || ['all colors'];
-    const isColorCompatible = compatibleColors.some(color => 
-      auraColor.includes(color) || color === 'all colors'
-    );
+    // Calculate dominant soul chakra based on numerology
+    const dominantSoulChakra = calculateDominantSoulChakra(numerology.lifePathNumber);
+    const dominantSoulChakraName = getDominantSoulChakraName(dominantSoulChakra);
     
+    // Enhanced compatibility analysis
+    const isNumerologyAligned = dominantColorMapping.number === numerology.lifePathNumber;
+    const chakraResonance = Math.abs(dominantColorMapping.number - numerology.lifePathNumber) <= 2;
+    
+    const energyAlignment = isNumerologyAligned ? 'Perfect Alignment' : 
+                           chakraResonance ? 'Highly Aligned' : 'Growth Opportunity';
+    
+    const compatibility = isNumerologyAligned ? 
+      `Your ${aura.dominantColor} aura is in perfect harmony with your Life Path ${numerology.lifePathNumber}, creating powerful manifestation abilities through the ${dominantColorMapping.chakra}.` :
+      chakraResonance ?
+      `Your ${aura.dominantColor} aura resonates well with your Life Path ${numerology.lifePathNumber}, offering balanced energy between ${dominantColorMapping.chakra} and your natural ${dominantSoulChakraName} tendencies.` :
+      `Your ${aura.dominantColor} aura presents a transformative opportunity with Life Path ${numerology.lifePathNumber}, encouraging integration of ${dominantColorMapping.chakra} energy into your ${dominantSoulChakraName} nature.`;
+
+    // Enhanced spiritual guidance
+    const spiritualGuidance = `Your ${aura.dominantColor} aura resonates with the ${dominantColorMapping.chakra}, governed by ${dominantColorMapping.planet} and supported by ${dominantColorMapping.archangel}. Combined with Life Path ${numerology.lifePathNumber}, this creates a powerful spiritual signature focused on ${dominantColorMapping.remedies[0]}. Your energy field is naturally attuned to ${dominantSoulChakraName} development, enhanced by ${dominantColorMapping.planet} planetary influences.`;
+
+    // Personality integration with chakra influences
+    const personalityIntegration = `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor} aura energy, channeling ${dominantColorMapping.chakra} qualities. Others perceive you as someone with natural ${getPersonalityTraits(numerology.personalityNumber)} enhanced by ${dominantColorMapping.remedies[1]} abilities.`;
+
+    // Comprehensive practices based on remedies data
+    const recommendedPractices = [
+      `Chant "${dominantColorMapping.mantra}" mantra 45 times daily for ${dominantColorMapping.chakra} activation`,
+      `Use ${dominantColorMapping.crystal.join(' or ')} crystals for energy enhancement`,
+      `Practice ${dominantColorMapping.practices[0]} aligned with your ${dominantColorMapping.chakra}`,
+      `Invoke ${dominantColorMapping.archangel} for guidance: "Guide me in ${dominantColorMapping.remedies[0]}"`,
+      `Focus on ${dominantColorMapping.remedies[2]} based on your Life Path ${numerology.lifePathNumber}`,
+      `Wear or visualize ${dominantColorMapping.color} light for chakra balancing`
+    ];
+
     return {
-      energyAlignment: isColorCompatible ? 'Highly Aligned' : 'Growth Opportunity',
-      compatibility: isColorCompatible ? 
-        `Your ${aura.dominantColor} aura perfectly aligns with your Life Path ${lifePathNumber} energy, creating harmonious spiritual flow.` :
-        `Your ${aura.dominantColor} aura presents a growth opportunity with your Life Path ${lifePathNumber}, encouraging expansion beyond your comfort zone.`,
-      spiritualGuidance: `Your aura's ${aura.dominantColor} energy combined with Life Path ${lifePathNumber} suggests focusing on ${
-        isColorCompatible ? 'amplifying your natural gifts' : 'integrating new spiritual dimensions'
-      }. ${numerology.guidance || ''}`,
-      chakraAlignment: aura.chakraActivity,
-      personalityIntegration: `Your Personality Number ${numerology.personalityNumber} manifests through your ${aura.dominantColor} aura energy, showing how others perceive your spiritual presence.`,
-      lifePathColor: numerology.colorAssociations?.lifePathColor || aura.dominantColor,
-      recommendedPractices: [
-        `Meditate with ${aura.dominantColor} light to strengthen your aura`,
-        `Practice Life Path ${lifePathNumber} affirmations daily`,
-        `Work with ${numerology.colorAssociations?.lifePathColor || aura.dominantColor} crystals`,
-        `Focus on ${aura.dominantColor} chakra balancing exercises`
-      ]
-    }
+      energyAlignment,
+      compatibility,
+      spiritualGuidance,
+      personalityIntegration,
+      lifePathColor: getColorForNumber(numerology.lifePathNumber),
+      dominantSoulChakra: dominantSoulChakraName,
+      chakraAlignment: dominantColorMapping.chakra,
+      planetaryInfluence: dominantColorMapping.planet,
+      archangelGuidance: dominantColorMapping.archangel,
+      sacredMantra: dominantColorMapping.mantra,
+      healingCrystals: dominantColorMapping.crystal,
+      recommendedPractices
+    };
+  };
+
+  const calculateDominantSoulChakra = (lifePathNumber: number): number => {
+    // Soul chakra calculation based on life path number
+    const chakraMappings: Record<number, number> = {
+      1: 3, 2: 4, 3: 5, 4: 1, 5: 2, 6: 6, 7: 7, 8: 8, 9: 9
+    };
+    return chakraMappings[lifePathNumber] || 7;
+  };
+
+  const getDominantSoulChakraName = (chakraNumber: number): string => {
+    const chakraNames: Record<number, string> = {
+      1: 'Earth Star (Grounding & Stability)',
+      2: 'Sacral (Creativity & Emotions)', 
+      3: 'Solar Plexus (Leadership & Confidence)',
+      4: 'Heart (Love & Relationships)',
+      5: 'Throat (Communication & Truth)',
+      6: 'Third Eye (Intuition & Vision)',
+      7: 'Crown (Spiritual Connection)',
+      8: 'Soul Star (Wisdom & Transcendence)',
+      9: 'Root (Physical Energy & Survival)'
+    };
+    return chakraNames[chakraNumber] || 'Balanced Multi-Chakra';
+  };
+
+  const getPersonalityTraits = (personalityNumber: number): string => {
+    const traits: Record<number, string> = {
+      1: 'leadership and pioneering abilities',
+      2: 'diplomatic and cooperative nature', 
+      3: 'creative and communicative talents',
+      4: 'organized and practical wisdom',
+      5: 'adventurous and adaptable spirit',
+      6: 'nurturing and healing capabilities',
+      7: 'intuitive and spiritual insights',
+      8: 'executive and manifestation skills',
+      9: 'compassionate and humanitarian service'
+    };
+    return traits[personalityNumber] || 'balanced multi-dimensional qualities';
+  };
+
+  const getColorForNumber = (number: number): string => {
+    const numberColors: Record<number, string> = {
+      1: 'Yellow', 2: 'Green', 3: 'Violet', 4: 'Brown', 5: 'Blue',
+      6: 'Orange', 7: 'White', 8: 'Indigo', 9: 'Red'
+    };
+    return numberColors[number] || 'White';
   };
   
   const handleImageSelect = async (file: File) => {
@@ -2575,10 +2715,59 @@ export default function AuraAnalysis() {
                               {!numerologyResult ? (
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
                                   <div className="text-center mb-6">
-                                    <h3 className="font-medium text-lg mb-2">Enhanced Spiritual Analysis</h3>
+                                    <h3 className="font-medium text-lg mb-2">Enhanced Aura & Numerology Integration</h3>
                                     <p className="text-sm text-gray-600">
-                                      Combine your aura reading with numerology for deeper spiritual insights
+                                      Unlock deeper spiritual insights by combining your aura colors with numerological chakra analysis
                                     </p>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    {/* Aura Color Display */}
+                                    <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                      <h4 className="font-medium mb-3">Your Current Aura Signature</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center space-x-3">
+                                          <div 
+                                            className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
+                                            style={{ 
+                                              backgroundColor: getAccurateColorCode(result.dominantColor),
+                                              boxShadow: `0 0 15px 2px ${getAccurateColorCode(result.dominantColor)}60`
+                                            }}
+                                          ></div>
+                                          <div>
+                                            <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
+                                            <div className="text-xs text-gray-600">{getChakraConnection(result.dominantColor).split('.')[0]}</div>
+                                          </div>
+                                        </div>
+                                        {result.secondaryColor && (
+                                          <div className="flex items-center space-x-3">
+                                            <div 
+                                              className="w-6 h-6 rounded-full border-2 border-white shadow-lg"
+                                              style={{ 
+                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
+                                                boxShadow: `0 0 10px 1px ${getAccurateColorCode(result.secondaryColor)}60`
+                                              }}
+                                            ></div>
+                                            <div>
+                                              <div className="font-medium text-sm">{result.secondaryColor} - Secondary</div>
+                                              <div className="text-xs text-gray-600">{getChakraConnection(result.secondaryColor).split('.')[0]}</div>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Chakra Preview */}
+                                    <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                      <h4 className="font-medium mb-3">Dominant Chakra Energy</h4>
+                                      <div className="text-center">
+                                        <div className={`w-16 h-16 rounded-full mx-auto mb-2 ${getColorClass(result.dominantColor)} opacity-80`}></div>
+                                        <div className="text-sm font-medium">{getChakraConnection(result.dominantColor).split('Chakra')[0]}Chakra</div>
+                                        <div className="text-xs text-gray-600 mt-1">
+                                          Energy Level: {result.energyLevel}/10
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                   
                                   <div className="space-y-4">
@@ -2680,22 +2869,88 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
 
+                                  {/* Enhanced Chakra & Planetary Analysis */}
+                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {/* Chakra Alignment Details */}
+                                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6 border border-emerald-100">
+                                      <h4 className="font-medium mb-4 flex items-center">
+                                        <div className={`w-4 h-4 rounded-full mr-2 ${getColorClass(result.dominantColor)}`}></div>
+                                        Dominant Soul Chakra Analysis
+                                      </h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Active Chakra</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).chakraAlignment}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Planetary Influence</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).planetaryInfluence}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Sacred Mantra</span>
+                                          <span className="text-sm font-mono bg-white px-2 py-1 rounded">{getCombinedInsights(result, numerologyResult).sacredMantra}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm text-gray-600">Soul Chakra Type</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).dominantSoulChakra}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Archangel & Crystal Guidance */}
+                                    <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg p-6 border border-violet-100">
+                                      <h4 className="font-medium mb-4">Spiritual Support System</h4>
+                                      <div className="space-y-3">
+                                        <div>
+                                          <span className="text-sm text-gray-600 block">Archangel Guidance</span>
+                                          <span className="text-sm font-medium text-purple-700">{getCombinedInsights(result, numerologyResult).archangelGuidance}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-sm text-gray-600 block">Healing Crystals</span>
+                                          <div className="flex flex-wrap gap-1 mt-1">
+                                            {getCombinedInsights(result, numerologyResult).healingCrystals.map((crystal, index) => (
+                                              <span key={index} className="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
+                                                {crystal}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <span className="text-sm text-gray-600 block">Energy Alignment</span>
+                                          <div className="mt-1">
+                                            <Badge variant={getCombinedInsights(result, numerologyResult).energyAlignment === 'Perfect Alignment' ? 'default' : 
+                                                           getCombinedInsights(result, numerologyResult).energyAlignment === 'Highly Aligned' ? 'secondary' : 'outline'}>
+                                              {getCombinedInsights(result, numerologyResult).energyAlignment}
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
                                   {/* Combined Spiritual Guidance */}
                                   <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-100">
-                                    <h4 className="font-medium mb-3">Combined Spiritual Guidance</h4>
+                                    <h4 className="font-medium mb-3">Integrated Spiritual Guidance</h4>
                                     <p className="text-sm text-gray-700 leading-relaxed mb-4">
                                       {getCombinedInsights(result, numerologyResult).spiritualGuidance}
                                     </p>
                                     
-                                    <h5 className="font-medium text-sm mb-2">Recommended Spiritual Practices</h5>
-                                    <ul className="space-y-1">
+                                    <div className="bg-white rounded-lg p-4 border border-amber-200 mb-4">
+                                      <h5 className="font-medium text-sm mb-2 text-amber-800">Personality Integration Insight</h5>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        {getCombinedInsights(result, numerologyResult).personalityIntegration}
+                                      </p>
+                                    </div>
+                                    
+                                    <h5 className="font-medium text-sm mb-3">Personalized Spiritual Practices</h5>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                       {getCombinedInsights(result, numerologyResult).recommendedPractices.map((practice, index) => (
-                                        <li key={index} className="flex items-start text-sm text-gray-600">
-                                          <span className="text-amber-500 mr-2">•</span>
-                                          {practice}
-                                        </li>
+                                        <div key={index} className="flex items-start text-sm text-gray-600 bg-white p-3 rounded border border-amber-100">
+                                          <span className="text-amber-500 mr-2 flex-shrink-0">•</span>
+                                          <span>{practice}</span>
+                                        </div>
                                       ))}
-                                    </ul>
+                                    </div>
                                   </div>
 
                                   {/* Reset Option */}
