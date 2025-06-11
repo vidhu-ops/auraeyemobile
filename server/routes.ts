@@ -1328,8 +1328,23 @@ STRICT RULES FOR OBJECT ANALYSIS:
             })
           });
 
+          console.log("=== OBJECT HTTP RESPONSE DEBUG ===");
+          console.log("Response status:", response.status);
+          console.log("Response ok:", response.ok);
+          console.log("=== END HTTP DEBUG ===");
+
           if (response.ok) {
             const data = await response.json();
+            console.log("=== OBJECT API RESPONSE DEBUG ===");
+            console.log("Full API response:", JSON.stringify(data, null, 2));
+            console.log("Message content:", data.choices?.[0]?.message?.content);
+            console.log("=== END API DEBUG ===");
+            
+            if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+              console.log("Invalid API response structure for object validation");
+              throw new Error("Invalid API response structure");
+            }
+            
             const validation = JSON.parse(data.choices[0].message.content);
             
             console.log("=== OBJECT VALIDATION DEBUG ===");
@@ -1346,43 +1361,23 @@ STRICT RULES FOR OBJECT ANALYSIS:
               };
             }
             
-            return { valid: true, reason: "Valid object image - no humans detected" };
+            return { valid: true, reason: "Valid object image - no human faces detected" };
+          } else {
+            console.log("OpenAI API error for object validation - status:", response.status);
+            const errorText = await response.text();
+            console.log("Error response:", errorText);
+            throw new Error(`OpenAI API error: ${response.status}`);
           }
         } catch (error) {
           console.log("Object validation error:", error);
         }
 
-        // Backup validation using basic image characteristics
-        try {
-          console.log("Attempting backup validation for object analysis");
-          
-          // Use a simpler deterministic approach when API fails
-          const imageBuffer = Buffer.from(base64Image, 'base64');
-          const imageSize = imageBuffer.length;
-          
-          // Basic heuristics - very large images are more likely to be selfies/portraits
-          // Small images are more likely to be objects/items
-          if (imageSize > 2000000) { // 2MB+ images often portraits
-            return {
-              valid: false,
-              reason: "Large image size suggests potential portrait photo. For safety, object analysis requires smaller object photos."
-            };
-          }
-          
-          // Allow smaller images through (likely objects)
-          console.log("Backup validation passed - allowing object analysis");
-          return {
-            valid: true,
-            reason: "Backup validation passed - proceeding with object analysis"
-          };
-          
-        } catch (backupError) {
-          console.log("Backup validation failed:", backupError);
-          return { 
-            valid: false, 
-            reason: "Image validation failed. Object analysis requires verification that no human faces are present." 
-          };
-        }
+        // Strict fallback - reject all images when human detection fails
+        console.log("Human detection validation failed - rejecting for safety");
+        return { 
+          valid: false, 
+          reason: "Human detection validation required. Object analysis only accepts images verified to contain NO human faces. Please try again when the validation service is available." 
+        };
       };
 
       // Validate image for object analysis requirements (no humans allowed)
