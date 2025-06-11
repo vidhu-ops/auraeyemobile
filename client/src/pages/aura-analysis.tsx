@@ -1580,13 +1580,35 @@ export default function AuraAnalysis() {
               // Set active tab to analysis to show results including visualization
               setActiveTab("analysis");
             }, 800);
-          } catch (error) {
+          } catch (error: any) {
             console.error("Error in aura analysis:", error);
-            // Use fallback analysis if API has issues
-            setAnalysisProgress(100);
-            setAnalysisStage("Analysis complete!");
             clearInterval(progressInterval);
-            setTimeout(() => { setIsAnalyzing(false); }, 800);
+            
+            // Check if this is a validation error
+            if (error.isValidationError && error.requirements) {
+              toast({
+                title: "Image Requirements Not Met",
+                description: error.message,
+                variant: "destructive",
+              });
+              
+              // Show detailed requirements in a second toast
+              setTimeout(() => {
+                toast({
+                  title: "Aura Scanning Requirements",
+                  description: "Please upload an image with exactly one person, good lighting, and adequate space around them.",
+                  variant: "default",
+                });
+              }, 2000);
+            } else {
+              toast({
+                title: "Analysis Failed",
+                description: "Unable to analyze your aura. Please try again with a different image.",
+                variant: "destructive",
+              });
+            }
+            
+            setIsAnalyzing(false);
           }
         }
       };
