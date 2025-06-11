@@ -384,6 +384,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("=== HTTP RESPONSE DEBUG ===");
           console.log("Response status:", response.status);
           console.log("Response ok:", response.ok);
+          
+          if (response.status === 429) {
+            console.log("OpenAI rate limit hit - proceeding with permissive validation for aura analysis");
+            return { valid: true, reason: "Rate limit reached - proceeding with aura analysis (assuming human image)." };
+          }
+          
+          if (!response.ok) {
+            console.log("OpenAI API error - status:", response.status);
+            const errorText = await response.text();
+            console.log("Error response:", errorText);
+            throw new Error(`OpenAI API error: ${response.status}`);
+          }
           console.log("=== END HTTP DEBUG ===");
 
           if (response.ok) {
@@ -424,9 +436,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("Error details:", error?.message || "Unknown error");
         }
 
-        // Strict fallback for aura analysis - require face validation
-        console.log("AI face validation failed for aura analysis");
-        return { valid: false, reason: "Face validation required. Aura scanning only works with clear human face photos - please upload a selfie, portrait, or headshot showing facial features." };
+        // Permissive fallback for aura analysis when API fails (rate limits, etc.)
+        console.log("AI face validation unavailable for aura analysis - proceeding with permissive validation");
+        return { valid: true, reason: "Face validation unavailable - proceeding with aura analysis (assuming human image)." };
       };
 
 
