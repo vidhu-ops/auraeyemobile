@@ -1938,11 +1938,15 @@ export default function AuraAnalysis() {
                   
                   <div>
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
-                      <h3 className="font-medium text-gray-800 mb-2">Requirements for aura scanning:</h3>
+                      <h3 className="font-medium text-gray-800 mb-2">👤 Human Aura Scanning Requirements:</h3>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
-                          Must contain exactly one human person
+                          Must contain exactly one human person only
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          No objects, animals, or multiple people
                         </li>
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
@@ -1957,8 +1961,8 @@ export default function AuraAnalysis() {
                           Person must be the main subject (portrait or full body)
                         </li>
                         <li className="flex items-start">
-                          <span className="text-primary mr-2">•</span>
-                          No group photos, pets, or objects as main subjects
+                          <span className="text-blue-600 mr-2 font-medium">ℹ</span>
+                          <span className="text-blue-700 font-medium text-xs">For object analysis, use the Object Analysis feature instead</span>
                         </li>
                       </ul>
                     </div>
