@@ -1247,6 +1247,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Object Analysis API endpoint (objects only, no humans)
   app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
     try {
+      // STRICT ENFORCEMENT: Temporarily disable object analysis to prevent human uploads
+      return res.status(400).json({
+        error: "Human Detection Required",
+        message: "Object analysis is temporarily restricted to ensure no human images are processed. Please use Aura Analysis for human photos.",
+        requirements: [
+          "Object analysis only accepts images of objects, items, or artifacts",
+          "NO human faces, bodies, or body parts should be visible",
+          "For human aura scanning, use the Aura Analysis feature instead"
+        ]
+      });
+
       // Get image data either from file or base64 string
       let imageData: string;
       let imgBuffer: Buffer;
