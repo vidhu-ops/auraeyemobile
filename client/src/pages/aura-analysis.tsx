@@ -1927,39 +1927,53 @@ export default function AuraAnalysis() {
                                 
                                 {/* Aura Visual Display */}
                                 <div className="relative mb-6">
-                                  <div className="w-80 h-80 mx-auto relative">
-                                    {/* Outer Aura Layer */}
-                                    <div 
-                                      className="absolute inset-0 rounded-full opacity-30 blur-lg"
-                                      style={{
-                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}40, ${getAccurateColorCode(result.secondaryColor)}20, transparent)`
-                                      }}
-                                    ></div>
-                                    
-                                    {/* Middle Aura Layer */}
-                                    <div 
-                                      className="absolute inset-4 rounded-full opacity-50 blur-md"
-                                      style={{
-                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}60, ${getAccurateColorCode(result.secondaryColor)}30, transparent)`
-                                      }}
-                                    ></div>
-                                    
-                                    {/* Inner Aura Layer */}
-                                    <div 
-                                      className="absolute inset-8 rounded-full opacity-70 blur-sm"
-                                      style={{
-                                        background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}80, ${getAccurateColorCode(result.secondaryColor)}40, transparent)`
-                                      }}
-                                    ></div>
-                                    
-                                    {/* Core Energy */}
-                                    <div className="absolute inset-1/3 rounded-full bg-white/90 border-4 border-white shadow-xl flex items-center justify-center">
-                                      <div className="text-center">
-                                        <div className="text-2xl mb-1">🧘‍♀️</div>
-                                        <div className="text-xs text-gray-600 font-medium">Energy Core</div>
+                                  {enhancedAuraImage ? (
+                                    <div className="w-80 h-80 mx-auto relative">
+                                      <img 
+                                        src={enhancedAuraImage} 
+                                        alt="Enhanced Aura Visualization" 
+                                        className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white"
+                                      />
+                                      <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent"></div>
+                                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
+                                        Enhanced Aura
                                       </div>
                                     </div>
-                                  </div>
+                                  ) : (
+                                    <div className="w-80 h-80 mx-auto relative">
+                                      {/* Outer Aura Layer */}
+                                      <div 
+                                        className="absolute inset-0 rounded-full opacity-30 blur-lg"
+                                        style={{
+                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}40, ${getAccurateColorCode(result.secondaryColor)}20, transparent)`
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Middle Aura Layer */}
+                                      <div 
+                                        className="absolute inset-4 rounded-full opacity-50 blur-md"
+                                        style={{
+                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}60, ${getAccurateColorCode(result.secondaryColor)}30, transparent)`
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Inner Aura Layer */}
+                                      <div 
+                                        className="absolute inset-8 rounded-full opacity-70 blur-sm"
+                                        style={{
+                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}80, ${getAccurateColorCode(result.secondaryColor)}40, transparent)`
+                                        }}
+                                      ></div>
+                                      
+                                      {/* Core Energy */}
+                                      <div className="absolute inset-1/3 rounded-full bg-white/90 border-4 border-white shadow-xl flex items-center justify-center">
+                                        <div className="text-center">
+                                          <div className="text-2xl mb-1">🧘‍♀️</div>
+                                          <div className="text-xs text-gray-600 font-medium">Energy Core</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* Aura Color Explanations */}
