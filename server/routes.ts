@@ -1352,12 +1352,37 @@ STRICT RULES FOR OBJECT ANALYSIS:
           console.log("Object validation error:", error);
         }
 
-        // Permissive fallback for object analysis when validation unavailable
-        console.log("Object validation unavailable - proceeding with permissive validation (assuming object image)");
-        return { 
-          valid: true, 
-          reason: "Validation unavailable - proceeding with object analysis (assuming no humans present)." 
-        };
+        // Backup validation using basic image characteristics
+        try {
+          console.log("Attempting backup validation for object analysis");
+          
+          // Use a simpler deterministic approach when API fails
+          const imageBuffer = Buffer.from(base64Image, 'base64');
+          const imageSize = imageBuffer.length;
+          
+          // Basic heuristics - very large images are more likely to be selfies/portraits
+          // Small images are more likely to be objects/items
+          if (imageSize > 2000000) { // 2MB+ images often portraits
+            return {
+              valid: false,
+              reason: "Large image size suggests potential portrait photo. For safety, object analysis requires smaller object photos."
+            };
+          }
+          
+          // Allow smaller images through (likely objects)
+          console.log("Backup validation passed - allowing object analysis");
+          return {
+            valid: true,
+            reason: "Backup validation passed - proceeding with object analysis"
+          };
+          
+        } catch (backupError) {
+          console.log("Backup validation failed:", backupError);
+          return { 
+            valid: false, 
+            reason: "Image validation failed. Object analysis requires verification that no human faces are present." 
+          };
+        }
       };
 
       // Validate image for object analysis requirements (no humans allowed)
