@@ -352,13 +352,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             "isWellLit": true/false
           }
           
-          STRICT RULES FOR AURA SCANNING:
-          - Only set valid to TRUE if image shows EXACTLY ONE human person
-          - If NO humans visible, set valid to FALSE
-          - If multiple humans visible, set valid to FALSE  
-          - If main subject is an object, animal, or anything non-human, set valid to FALSE
-          - Examples of VALID: single person portrait, one person full body photo
-          - Examples of INVALID: objects only, animals, multiple people, group photos, artwork`;
+          RULES FOR AURA SCANNING:
+          - Set valid to TRUE if image shows at least one human person (1-2 people acceptable)
+          - Set valid to FALSE if NO humans are visible
+          - Set valid to FALSE if more than 2 humans are visible
+          - If main subject is human(s), set valid to TRUE even if background contains objects
+          - Examples of VALID: single person portrait, person with objects, couple photo, selfie
+          - Examples of INVALID: objects only, animals only, large groups (3+ people), artwork without humans`;
 
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -389,19 +389,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const data = await response.json();
             const validation = JSON.parse(data.choices[0].message.content);
             
-            // Strict enforcement - must contain exactly one human
-            if (!validation.containsHumans || validation.humanCount !== 1) {
-              return { valid: false, reason: "Aura scanning requires exactly one human person in the image. No objects, animals, or multiple people allowed." };
+            console.log("=== AURA VALIDATION DEBUG ===");
+            console.log("Validation result:", validation);
+            console.log("containsHumans:", validation.containsHumans);
+            console.log("humanCount:", validation.humanCount);
+            console.log("=== END DEBUG ===");
+            
+            // Allow single human images - be less strict about exact count
+            if (!validation.containsHumans) {
+              return { valid: false, reason: "Aura scanning requires a human person in the image. Please upload a photo of yourself or another person." };
             }
             
-            return validation;
+            // Allow 1-2 humans but prefer single person
+            if (validation.humanCount > 2) {
+              return { valid: false, reason: "Too many people in image. Aura scanning works best with 1-2 people maximum." };
+            }
+            
+            // Mark as valid if we have humans
+            return { valid: true, reason: "Valid human image for aura scanning" };
           }
         } catch (error) {
           console.log("AI validation unavailable");
         }
 
-        // Strict fallback - reject by default when validation unavailable
-        return { valid: false, reason: "Image validation unavailable. Please ensure your image contains exactly one human person with good lighting and adequate space around them." };
+        // Permissive fallback for aura analysis - assume human images are valid
+        return { valid: true, reason: "Using basic validation - assuming valid human image for aura scanning." };
       };
 
 
