@@ -3369,71 +3369,162 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="chakras">
-                            <div className="space-y-4">
-                              <h3 className="font-medium">Chakra Activity</h3>
+                            <div className="space-y-6">
+                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
-                              <div className="space-y-3">
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Crown Chakra</span>
-                                    <span className="text-purple-600">{result.chakraActivity.crown * 10}%</span>
+                              <div className="space-y-4">
+                                {/* Soul Star Chakra - Number 7 */}
+                                <div className="bg-gradient-to-r from-white to-gray-50 rounded-lg p-4 border border-gray-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Soul Star Chakra connects you to divine consciousness and spiritual transcendence, representing your highest potential and cosmic awareness.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Soul Star Chakra (7)</span>
+                                      <span className="text-gray-600">{calculateSoulStarChakra(result)}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.crown * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(139, 92, 246, 0.2)" }} />
+                                  <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-200" />
+                                </div>
+
+                                {/* Crown Chakra - Number 3 */}
+                                <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Crown Chakra (3)</span>
+                                      <span className="text-violet-600">{result.chakraActivity.crown * 10}%</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={result.chakraActivity.crown * 10} className="h-3 bg-violet-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Third Eye Chakra</span>
-                                    <span className="text-indigo-600">{result.chakraActivity.thirdEye * 10}%</span>
+                                {/* Third Eye Chakra - Number 8 */}
+                                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Third Eye Chakra (8)</span>
+                                      <span className="text-indigo-600">{result.chakraActivity.thirdEye * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.thirdEye * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(79, 70, 229, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.thirdEye * 10} className="h-3 bg-indigo-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Throat Chakra</span>
-                                    <span className="text-blue-600">{result.chakraActivity.throat * 10}%</span>
+                                {/* Throat Chakra - Number 5 */}
+                                <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg p-4 border border-blue-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Throat Chakra (5)</span>
+                                      <span className="text-blue-600">{result.chakraActivity.throat * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.throat * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(59, 130, 246, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.throat * 10} className="h-3 bg-blue-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Heart Chakra</span>
-                                    <span className="text-green-600">{result.chakraActivity.heart * 10}%</span>
+                                {/* Heart Chakra - Number 2 */}
+                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Heart Chakra controls love, compassion, emotional healing, relationships, and your ability to give and receive love.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Heart Chakra (2)</span>
+                                      <span className="text-green-600">{result.chakraActivity.heart * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.heart * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(34, 197, 94, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.heart * 10} className="h-3 bg-green-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Solar Plexus Chakra</span>
-                                    <span className="text-yellow-600">{result.chakraActivity.solarPlexus * 10}%</span>
+                                {/* Solar Plexus Chakra - Number 1 */}
+                                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-4 border border-yellow-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Solar Plexus Chakra governs personal power, confidence, willpower, and your sense of identity and self-worth.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Solar Plexus Chakra (1)</span>
+                                      <span className="text-yellow-600">{result.chakraActivity.solarPlexus * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.solarPlexus * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(234, 179, 8, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.solarPlexus * 10} className="h-3 bg-yellow-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Sacral Chakra</span>
-                                    <span className="text-orange-600">{result.chakraActivity.sacral * 10}%</span>
+                                {/* Sacral Chakra - Number 6 */}
+                                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Sacral Chakra influences creativity, sexuality, emotional flow, pleasure, and your capacity for joy and passion.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Sacral Chakra (6)</span>
+                                      <span className="text-orange-600">{result.chakraActivity.sacral * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.sacral * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(249, 115, 22, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.sacral * 10} className="h-3 bg-orange-100" />
                                 </div>
                                 
-                                <div>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span>Root Chakra</span>
-                                    <span className="text-red-600">{result.chakraActivity.root * 10}%</span>
+                                {/* Root Chakra - Number 9 */}
+                                <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border border-red-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Root Chakra provides grounding, survival instincts, physical vitality, and your connection to earth energy and stability.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Root Chakra (9)</span>
+                                      <span className="text-red-600">{result.chakraActivity.root * 10}%</span>
+                                    </div>
                                   </div>
-                                  <Progress value={result.chakraActivity.root * 10} className="h-2 bg-gray-200" 
-                                    style={{ backgroundColor: "rgb(239, 68, 68, 0.2)" }} />
+                                  <Progress value={result.chakraActivity.root * 10} className="h-3 bg-red-100" />
+                                </div>
+
+                                {/* Earth Star Chakra - Number 4 */}
+                                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Earth Star Chakra (4)</span>
+                                      <span className="text-amber-600">{calculateEarthStarChakra(result)}%</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
+                                </div>
+                              </div>
+
+                              {/* Chakra Summary */}
+                              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+                                <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-purple-600 mb-1">
+                                      {Math.round((result.chakraActivity.crown + result.chakraActivity.thirdEye + calculateSoulStarChakra(result)/10) / 3 * 10)}%
+                                    </div>
+                                    <div className="text-sm text-gray-600">Higher Chakras</div>
+                                    <div className="text-xs text-gray-500">Spiritual Connection</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-green-600 mb-1">
+                                      {Math.round((result.chakraActivity.throat + result.chakraActivity.heart + result.chakraActivity.solarPlexus) / 3 * 10)}%
+                                    </div>
+                                    <div className="text-sm text-gray-600">Middle Chakras</div>
+                                    <div className="text-xs text-gray-500">Emotional Balance</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-red-600 mb-1">
+                                      {Math.round((result.chakraActivity.sacral + result.chakraActivity.root + calculateEarthStarChakra(result)/10) / 3 * 10)}%
+                                    </div>
+                                    <div className="text-sm text-gray-600">Lower Chakras</div>
+                                    <div className="text-xs text-gray-500">Physical Grounding</div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
