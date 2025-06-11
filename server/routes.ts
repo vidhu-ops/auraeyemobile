@@ -210,18 +210,19 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
 
 // Helper functions for numerology calculations
 function getColorForNumber(num: number): string {
+  // Standardized color mappings based on remedies data
   const colorMap: { [key: number]: string } = {
-    1: "Red",
-    2: "Orange", 
-    3: "Yellow",
-    4: "Green",
-    5: "Blue",
-    6: "Indigo",
-    7: "Violet",
-    8: "Gold",
-    9: "White"
+    1: "Yellow",   // Solar Plexus Chakra - Sun
+    2: "Green",    // Heart Chakra - Moon
+    3: "Violet",   // Crown Chakra - Jupiter
+    4: "Brown",    // Earth Star Chakra - Rahu
+    5: "Blue",     // Throat Chakra - Mercury
+    6: "Orange",   // Sacral Chakra - Venus
+    7: "White",    // Soul Star Chakra - Ketu
+    8: "Indigo",   // Third Eye Chakra - Saturn
+    9: "Red"       // Root Chakra - Mars
   };
-  return colorMap[num] || "Indigo";
+  return colorMap[num] || "White";
 }
 
 function letterToNumber(letter: string): number {
@@ -815,18 +816,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
 }
 
 function getColorForNumber(num: number): string {
+  // Standardized color mappings based on remedies data
   const colorMap: { [key: number]: string } = {
-    1: "Red",
-    2: "Orange", 
-    3: "Yellow",
-    4: "Green",
-    5: "Blue",
-    6: "Indigo",
-    7: "Violet",
-    8: "Gold",
-    9: "White"
+    1: "Yellow",   // Solar Plexus Chakra - Sun
+    2: "Green",    // Heart Chakra - Moon
+    3: "Violet",   // Crown Chakra - Jupiter
+    4: "Brown",    // Earth Star Chakra - Rahu
+    5: "Blue",     // Throat Chakra - Mercury
+    6: "Orange",   // Sacral Chakra - Venus
+    7: "White",    // Soul Star Chakra - Ketu
+    8: "Indigo",   // Third Eye Chakra - Saturn
+    9: "Red"       // Root Chakra - Mars
   };
-  return colorMap[num] || "Indigo";
+  return colorMap[num] || "White";
 }
 
 function letterToNumber(letter: string): number {
@@ -1122,21 +1124,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const personalityNumber = calculatePersonality(birthDate);
       const soulChakraNumber = calculateDominantSoulChakra(birthDate);
 
-      // Map a number to its color name
+      // Map a number to its color name - standardized with remedies data
       const getColorName = (num: number): string => {
         const colorMap: Record<number, string> = {
-          1: "Red",
-          2: "Orange",
-          3: "Yellow",
-          4: "Green",
-          5: "Blue",
-          6: "Indigo",
-          7: "Violet",
-          8: "Pink",
-          9: "Gold",
-          11: "Silver",
-          22: "Gold",
-          33: "Platinum"
+          1: "Yellow",   // Solar Plexus Chakra - Sun
+          2: "Green",    // Heart Chakra - Moon
+          3: "Violet",   // Crown Chakra - Jupiter
+          4: "Brown",    // Earth Star Chakra - Rahu
+          5: "Blue",     // Throat Chakra - Mercury
+          6: "Orange",   // Sacral Chakra - Venus
+          7: "White",    // Soul Star Chakra - Ketu
+          8: "Indigo",   // Third Eye Chakra - Saturn
+          9: "Red",      // Root Chakra - Mars
+          11: "Silver",  // Master Number - Soul Star
+          22: "Gold",    // Master Number - Solar Plexus
+          33: "Platinum" // Master Number - Crown
         };
         return colorMap[num] || "White";
       };

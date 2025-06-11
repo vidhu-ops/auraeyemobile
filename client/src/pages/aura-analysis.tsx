@@ -582,18 +582,25 @@ export default function AuraAnalysis() {
   };
 
   const getChakraConnection = (color: string): string => {
+    // Standardized chakra mappings consistent with remedies data
     const chakras: Record<string, string> = {
-      'Red': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Enhances feeling of safety and security.Practice: Forgiveness. How to Use: Write a forgiveness letter (to yourself or others). Meditate on letting go of pain and resentment',
-      'Orange': 'Number:6 Planet: Venus. Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Stimulates passion and joy.',
-      'Yellow': 'Number:1. Planet Sun. Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Strengthens willpower.',
-      'Green': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Love, compassion, and emotional healing. Opens capacity for unconditional love.',
-      'Blue': 'Number:5. Planet:Mercury. Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Enhances authentic speaking.',
-      'Indigo': 'Number:8. Planet:Saturn. Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Activates spiritual sight.',
-      'Violet': 'Number:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Links to higher realms.',
-      'Purple': 'Number:3 & Number:8. Planets: Jupiter & Saturn. Crown and Third Eye Chakras - Combines intuition with spiritual connection for mystical abilities.',
-      'White': 'All Chakras - Represents complete chakra alignment and spiritual integration.',
-      'Crimson': 'Number:4. Planet:Rahu. Earth Star Chakra - Higher spiritual center connecting to divine wisdom and cosmic consciousness.',
-      'Silver': 'Number:7 Planet:Ketu. Soul Star Chakra - Enhances psychic abilities and emotional intuition.'
+      'Red': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Practice: Forgiveness meditation and grounding exercises.',
+      'Orange': 'Number:6. Planet:Venus. Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Practice: Creative expression and emotional healing.',
+      'Yellow': 'Number:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Practice: Goal setting and leadership development.',
+      'Green': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Love, compassion, and emotional healing. Practice: Gratitude and relationship harmony.',
+      'Blue': 'Number:5. Planet:Mercury. Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Practice: Authentic communication and acts of kindness.',
+      'Indigo': 'Number:8. Planet:Saturn. Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Practice: Meditation and intuition development.',
+      'Violet': 'Number:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Expressive writing and spiritual connection.',
+      'Purple': 'Number:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Mystical exploration and spiritual study.',
+      'White': 'Number:7. Planet:Ketu. Soul Star Chakra - Complete chakra alignment and spiritual integration. Practice: Self-compassion and transcendence.',
+      'Gold': 'Number:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Divine wisdom and spiritual achievement. Practice: Leadership and confidence building.',
+      'Silver': 'Number:7. Planet:Ketu. Soul Star Chakra - Lunar energy and psychic abilities. Practice: Intuitive development and spiritual wisdom.',
+      'Brown': 'Number:4. Planet:Rahu. Earth Star Chakra - Grounding, stability, and deep earth connection. Practice: Mindfulness and grounding meditation.',
+      'Black': 'Number:4. Planet:Rahu. Earth Star Chakra - Protection, transformation, and grounding. Practice: Stability building and earth connection.',
+      'Pink': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Emotional love, compassion, and gentle healing. Practice: Self-love and emotional healing.',
+      'Turquoise': 'Number:5. Planet:Mercury. Throat Chakra (Vishuddha) - Healing communication and emotional clarity. Practice: Truth expression and clear communication.',
+      'Magenta': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Deep love, intensity, and emotional passion. Practice: Emotional flow and relationship harmony.',
+      'Crimson': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Deep passion, intensity, and physical vitality. Practice: Physical grounding and courage building.'
     };
     return chakras[color] || 'This color resonates with multiple chakra centers, creating a unique energetic pattern.';
   };
