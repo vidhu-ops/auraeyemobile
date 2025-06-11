@@ -1330,28 +1330,31 @@ function calculateDominantSoulChakra(birthDate: string): number {
           console.log("AI validation unavailable, using basic validation");
         }
 
-        // Fallback basic validation
-        return { valid: true, reason: "Basic validation passed - please ensure image contains only objects with no humans visible" };
+        // Strict fallback - reject by default when validation unavailable
+        return { valid: false, reason: "Image validation unavailable. Please ensure your image contains only objects with no humans, faces, or body parts visible." };
       };
 
       // Strict validation for object analysis - reject human images
       const objectValidation = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
+        if (!process.env.OPENAI_API_KEY) {
+          return { valid: false, reason: "Image validation unavailable. Please ensure your image contains only objects with no humans visible." };
+        }
+
         try {
-          const validationPrompt = `Analyze this image and determine if it contains humans or objects. Return ONLY a JSON object with this exact format:
-          {
-            "valid": true/false,
-            "reason": "explanation",
-            "containsHumans": true/false,
-            "containsObjects": true/false,
-            "objectType": "description of main subject"
-          }
-          
-          STRICT RULES:
-          - If ANY human face, body, or body parts are visible, set valid to FALSE
-          - If the main subject is a person/human, set valid to FALSE
-          - Only set valid to TRUE if image shows ONLY objects, items, or artifacts
-          - Examples of valid objects: crystals, jewelry, artwork, tools, furniture, plants, food
-          - Examples of INVALID: any person, human hand holding object, selfies, portraits`;
+          const validationPrompt = `Analyze this image carefully. Look for any human faces, bodies, or body parts.
+
+Return ONLY a JSON object with this exact format:
+{
+  "containsHumans": true/false,
+  "valid": true/false,
+  "reason": "explanation"
+}
+
+RULES:
+- Set "containsHumans" to true if you see ANY human face, body, hand, or body part
+- Set "valid" to false if containsHumans is true
+- Set "valid" to true only if the image shows ONLY objects/items with NO humans
+- Be very strict about human detection`;
 
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -1373,7 +1376,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
                   ]
                 }
               ],
-              max_tokens: 300,
+              max_tokens: 200,
               response_format: { type: "json_object" }
             })
           });
@@ -1382,19 +1385,29 @@ function calculateDominantSoulChakra(birthDate: string): number {
             const data = await response.json();
             const validation = JSON.parse(data.choices[0].message.content);
             
-            // Strict enforcement - if contains humans at all, reject
+            console.log("Object validation result:", validation);
+            
+            // Strict enforcement - reject if any humans detected
             if (validation.containsHumans === true) {
-              return { valid: false, reason: "Human detected in image. Object analysis only accepts images of objects with no humans visible." };
+              return { 
+                valid: false, 
+                reason: "Human faces or bodies detected in image. Object analysis only accepts images of objects with no humans visible." 
+              };
             }
             
-            return validation;
+            return { valid: true, reason: "Valid object image" };
+          } else {
+            console.log("OpenAI API error:", response.status, response.statusText);
           }
         } catch (error) {
-          console.log("AI validation unavailable");
+          console.log("Validation error:", error);
         }
 
         // Strict fallback - reject by default when validation unavailable
-        return { valid: false, reason: "Image validation unavailable. Please ensure your image contains only objects with no humans, faces, or body parts visible." };
+        return { 
+          valid: false, 
+          reason: "Image validation failed. Please ensure your image contains only objects with no human faces, bodies, or body parts visible." 
+        };
       };
 
       // Validate image for object analysis requirements (no humans allowed)
