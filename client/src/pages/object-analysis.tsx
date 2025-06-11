@@ -74,19 +74,87 @@ export default function ObjectAnalysis() {
     return colorMap[auraColor.toLowerCase()] || '#800080';
   };
 
+  // Function to detect faces in uploaded images
+  const detectFaces = (file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        
+        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+        
+        if (imageData) {
+          const data = imageData.data;
+          let skinPixels = 0;
+          let totalPixels = data.length / 4;
+          
+          // Enhanced skin tone detection algorithm
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Multiple skin tone detection criteria
+            const skinTone1 = r > 95 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15;
+            const skinTone2 = r > 220 && g > 210 && b > 170; // Light skin
+            const skinTone3 = r > 90 && r < 120 && g > 60 && g < 90 && b > 40 && b < 70; // Medium skin
+            const skinTone4 = r > 50 && r < 90 && g > 30 && g < 60 && b > 15 && b < 40; // Dark skin
+            
+            if (skinTone1 || skinTone2 || skinTone3 || skinTone4) {
+              skinPixels++;
+            }
+          }
+          
+          // If more than 6% of pixels are skin tone, likely contains a face
+          const skinRatio = skinPixels / totalPixels;
+          resolve(skinRatio > 0.06);
+        } else {
+          resolve(false);
+        }
+      };
+      
+      img.onerror = () => resolve(false);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
     setResult(null);
     setOriginalImage(null);
     setProcessedImage(null);
     setAnalysisProgress(0);
-    setAnalysisStage("Initializing object scanning...");
-
-    // Store original image
-    const imageUrl = URL.createObjectURL(file);
-    setOriginalImage(imageUrl);
+    setAnalysisStage("Checking image content...");
 
     try {
+      // Check for human faces first
+      setAnalysisProgress(10);
+      setAnalysisStage("Scanning for human faces...");
+      
+      const hasFaces = await detectFaces(file);
+      
+      if (hasFaces) {
+        setIsAnalyzing(false);
+        toast({
+          title: "Human Face Detected",
+          description: "Object analysis is designed for inanimate objects only. Please upload an image without human faces.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setAnalysisProgress(20);
+      setAnalysisStage("Initializing object scanning...");
+
+      // Store original image
+      const imageUrl = URL.createObjectURL(file);
+      setOriginalImage(imageUrl);
+
       // Simulate progress for UX
       const progressInterval = setInterval(() => {
         setAnalysisProgress(prev => {
@@ -99,9 +167,9 @@ export default function ObjectAnalysis() {
           const newProgress = prev + increment > 95 ? 95 : prev + increment;
           
           // Update the analysis stage based on progress
-          if (newProgress > 10 && newProgress <= 30) {
+          if (newProgress > 20 && newProgress <= 40) {
             setAnalysisStage("Identifying object characteristics...");
-          } else if (newProgress > 30 && newProgress <= 60) {
+          } else if (newProgress > 40 && newProgress <= 60) {
             setAnalysisStage("Detecting energy patterns...");
           } else if (newProgress > 60 && newProgress <= 80) {
             setAnalysisStage("Analyzing object aura...");
