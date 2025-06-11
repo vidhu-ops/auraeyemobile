@@ -357,7 +357,7 @@ export default function AuraAnalysis() {
     const energyMap: Record<string, number> = {
       'Red': 85, 'Orange': 75, 'Yellow': 70, 'Green': 80,
       'Blue': 65, 'Indigo': 60, 'Violet': 55, 'Purple': 65,
-      'Pink': 73, 'White': 95, 'Gold': 85, 'Silver': 68, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75
+      'Pink': 73, 'White': 95, 'Gold': 85, 'Silver': 68, 'Turquoise': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65, 'Cobalt': 60, 'Magenta': 75, 'ocher': 30, 'Brown': 65, 'Beige': 60, 'Cyan': 75,
     };
     const base = energyMap[aura.dominantColor] || 60;
     return Math.max(95, base + (aura.energyLevel - 50) * 3);
@@ -367,7 +367,7 @@ export default function AuraAnalysis() {
     const receptivityMap: Record<string, number> = {
       'Red': 40, 'Orange': 60, 'Yellow': 55, 'Green': 85,
       'Blue': 80, 'Indigo': 90, 'Violet': 95, 'Purple': 85,
-      'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65,
+      'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95, 'Turquoise': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65, 'Cobalt': 60, 'Magenta': 75, 'ocher': 30, 'Brown': 65, 'Beige': 60
     };
     const base = receptivityMap[aura.dominantColor] || 60;
     return Math.min(95, base + (aura.energyLevel - 50) * 2);
@@ -376,14 +376,14 @@ export default function AuraAnalysis() {
   const getGivingEnergyDescription = (percentage: number): string => {
     if (percentage >= 80) return 'Strong radiator';
     if (percentage >= 60) return 'Balanced giver';
-    if (percentage >= 40) return 'Selective sharing';
+    if (percentage >= 30) return 'Selective sharing';
     return 'Energy conserving';
   };
 
   const getReceivingEnergyDescription = (percentage: number): string => {
-    if (percentage >= 80) return 'Highly receptive';
+    if (percentage >= 70) return 'Highly receptive';
     if (percentage >= 60) return 'Balanced receiver';
-    if (percentage >= 40) return 'Selective absorber';
+    if (percentage >= 30) return 'Selective absorber';
     return 'Energy filtering';
   };
 
@@ -1331,55 +1331,55 @@ export default function AuraAnalysis() {
       practices: string[]
     }> = {
       'Yellow': {
-        number: 1, chakra: 'Solar Plexus Chakra', planet: 'Sun', color: 'Yellow',
-        mantra: 'RAM', crystal: ['Citrine', 'Tiger\'s Eye'], archangel: 'Archangel Michael',
+        chakra: 'Solar Plexus Chakra', planet: 'Sun', color: 'Yellow',
+        mantra: 'RAM', crystal: ['Citrine', 'Tigers Eye'], archangel: 'Archangel Michael',
         remedies: ['Goal Setting and Achievement', 'Leadership Development', 'Self-Confidence Building'],
         practices: ['Set 3 short-term and 1 long-term goal weekly', 'Practice power affirmations', 'Visualize yellow light in solar plexus']
       },
       'Green': {
-        number: 2, chakra: 'Heart Chakra', planet: 'Moon', color: 'Green or Pink',
+        chakra: 'Heart Chakra', planet: 'Moon', color: 'Green or Pink',
         mantra: 'YAM', crystal: ['Rose Quartz', 'Green Aventurine', 'Rhodocrosite'], archangel: 'Archangel Raphael',
         remedies: ['Gratitude Practice', 'Emotional Healing', 'Relationship Harmony'],
         practices: ['Write 3 gratitudes daily', 'Practice forgiveness meditation', 'Send love to heart chakra']
       },
       'Violet': {
-        number: 3, chakra: 'Crown Chakra', planet: 'Jupiter', color: 'Violet or White',
+        chakra: 'Crown Chakra', planet: 'Jupiter', color: 'Violet or White',
         mantra: 'AUM', crystal: ['Clear Quartz', 'Selenite', 'Lepidolite'], archangel: 'Archangel Metatron',
         remedies: ['Expressive Writing', 'Spiritual Connection', 'Divine Guidance'],
         practices: ['Write for 10 minutes daily about challenges', 'Practice crown chakra meditation', 'Connect with divine wisdom']
       },
       'Brown': {
-        number: 4, chakra: 'Earth Star Chakra', planet: 'Rahu', color: 'Brown or Black',
+        chakra: 'Earth Star Chakra', planet: 'Rahu', color: 'Brown or Black',
         mantra: 'LAM', crystal: ['Smoky Quartz', 'Hematite', 'Red Jasper'], archangel: 'Archangel Ariel',
         remedies: ['Mindfulness Meditation', 'Grounding Practices', 'Stability Building'],
         practices: ['Practice 10 minutes mindfulness daily', 'Connect with earth energy', 'Focus on stability and foundation']
       },
       'Blue': {
-        number: 5, chakra: 'Throat Chakra', planet: 'Mercury', color: 'Blue',
+        chakra: 'Throat Chakra', planet: 'Mercury', color: 'Blue',
         mantra: 'HAM', crystal: ['Blue Lace Agate', 'Lapis Lazuli', 'Aquamarine'], archangel: 'Archangel Zadkiel',
         remedies: ['Communication Enhancement', 'Truth Expression', 'Random Acts of Kindness'],
         practices: ['Perform one act of kindness daily', 'Practice authentic communication', 'Chant throat chakra mantras']
       },
       'Orange': {
-        number: 6, chakra: 'Sacral Chakra', planet: 'Venus', color: 'Orange',
+        chakra: 'Sacral Chakra', planet: 'Venus', color: 'Orange',
         mantra: 'VAM', crystal: ['Carnelian', 'Moonstone', 'Orange Calcite'], archangel: 'Archangel Gabriel',
         remedies: ['Creative Expression', 'Emotional Flow', 'Strengths-Based Reflection'],
         practices: ['Identify and use personal strengths weekly', 'Express creativity daily', 'Practice emotional flow meditation']
       },
       'White': {
-        number: 7, chakra: 'Soul Star Chakra', planet: 'Ketu', color: 'White or Silver',
+        chakra: 'Soul Star Chakra', planet: 'Ketu', color: 'White or Silver',
         mantra: 'OM', crystal: ['Clear Quartz', 'Selenite', 'Moonstone'], archangel: 'Archangel Sandalphon',
         remedies: ['Self-Compassion Practice', 'Spiritual Wisdom', 'Inner Peace'],
         practices: ['Practice self-compassion daily', 'Engage in spiritual study', 'Meditate on transcendence']
       },
       'Indigo': {
-        number: 8, chakra: 'Third Eye Chakra', planet: 'Saturn', color: 'Indigo or Deep Blue',
+        chakra: 'Third Eye Chakra', planet: 'Saturn', color: 'Indigo or Deep Blue',
         mantra: 'OM', crystal: ['Amethyst', 'Sodalite', 'Fluorite'], archangel: 'Archangel Raziel',
         remedies: ['Strategic Planning', 'Intuition Development', 'Manifestation'],
         practices: ['Set clear intentions weekly', 'Practice third eye meditation', 'Develop intuitive abilities']
       },
       'Red': {
-        number: 9, chakra: 'Root Chakra', planet: 'Mars', color: 'Red',
+        chakra: 'Root Chakra', planet: 'Mars', color: 'Red',
         mantra: 'LAM', crystal: ['Red Jasper', 'Garnet', 'Bloodstone'], archangel: 'Archangel Uriel',
         remedies: ['Forgiveness Practice', 'Physical Grounding', 'Service to Others'],
         practices: ['Write forgiveness letters weekly', 'Practice grounding exercises', 'Engage in humanitarian service']
@@ -1916,23 +1916,27 @@ export default function AuraAnalysis() {
                   
                   <div>
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
-                      <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
+                      <h3 className="font-medium text-gray-800 mb-2">Requirements for aura scanning:</h3>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
-                          Use a clear photo in good lighting
+                          Must contain exactly one human person
                         </li>
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
-                          Your face should be clearly visible
+                          Image must be well-lit with good lighting
                         </li>
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
-                          A neutral background works best
+                          Adequate space must be visible around the person
                         </li>
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
-                          A relaxed, natural expression reveals your true energy
+                          Person must be the main subject (portrait or full body)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          No group photos, pets, or objects as main subjects
                         </li>
                       </ul>
                     </div>
@@ -3386,7 +3390,7 @@ export default function AuraAnalysis() {
                                       The Soul Star Chakra connects you to divine consciousness and spiritual transcendence, representing your highest potential and cosmic awareness.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Soul Star Chakra (7)</span>
+                                      <span className="font-medium">Soul Star Chakra</span>
                                       <span className="text-gray-600">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
                                     </div>
                                   </div>
@@ -3400,7 +3404,7 @@ export default function AuraAnalysis() {
                                       The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Crown Chakra (3)</span>
+                                      <span className="font-medium">Crown Chakra</span>
                                       <span className="text-violet-600">{result.chakraActivity.crown}/10 ({result.chakraActivity.crown * 10}%)</span>
                                     </div>
                                   </div>
@@ -3414,7 +3418,7 @@ export default function AuraAnalysis() {
                                       The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Third Eye Chakra (8)</span>
+                                      <span className="font-medium">Third Eye Chakra</span>
                                       <span className="text-indigo-600">{result.chakraActivity.thirdEye}/10 ({result.chakraActivity.thirdEye * 10}%)</span>
                                     </div>
                                   </div>
@@ -3428,7 +3432,7 @@ export default function AuraAnalysis() {
                                       The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Throat Chakra (5)</span>
+                                      <span className="font-medium">Throat Chakra</span>
                                       <span className="text-blue-600">{result.chakraActivity.throat}/10 ({result.chakraActivity.throat * 10}%)</span>
                                     </div>
                                   </div>
@@ -3442,7 +3446,7 @@ export default function AuraAnalysis() {
                                       The Heart Chakra controls love, compassion, emotional healing, relationships, and your ability to give and receive love.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Heart Chakra (2)</span>
+                                      <span className="font-medium">Heart Chakra</span>
                                       <span className="text-green-600">{result.chakraActivity.heart}/10 ({result.chakraActivity.heart * 10}%)</span>
                                     </div>
                                   </div>
@@ -3456,7 +3460,7 @@ export default function AuraAnalysis() {
                                       The Solar Plexus Chakra governs personal power, confidence, willpower, and your sense of identity and self-worth.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Solar Plexus Chakra (1)</span>
+                                      <span className="font-medium">Solar Plexus Chakra</span>
                                       <span className="text-yellow-600">{result.chakraActivity.solarPlexus}/10 ({result.chakraActivity.solarPlexus * 10}%)</span>
                                     </div>
                                   </div>
@@ -3470,7 +3474,7 @@ export default function AuraAnalysis() {
                                       The Sacral Chakra influences creativity, sexuality, emotional flow, pleasure, and your capacity for joy and passion.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Sacral Chakra (6)</span>
+                                      <span className="font-medium">Sacral Chakra</span>
                                       <span className="text-orange-600">{result.chakraActivity.sacral}/10 ({result.chakraActivity.sacral * 10}%)</span>
                                     </div>
                                   </div>
@@ -3484,7 +3488,7 @@ export default function AuraAnalysis() {
                                       The Root Chakra provides grounding, survival instincts, physical vitality, and your connection to earth energy and stability.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Root Chakra (9)</span>
+                                      <span className="font-medium">Root Chakra</span>
                                       <span className="text-red-600">{result.chakraActivity.root}/10 ({result.chakraActivity.root * 10}%)</span>
                                     </div>
                                   </div>
@@ -3498,7 +3502,7 @@ export default function AuraAnalysis() {
                                       The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Earth Star Chakra (4)</span>
+                                      <span className="font-medium">Earth Star Chakra</span>
                                       <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
                                     </div>
                                   </div>
