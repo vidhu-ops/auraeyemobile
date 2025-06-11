@@ -91,28 +91,83 @@ export default function ObjectAnalysis() {
         if (imageData) {
           const data = imageData.data;
           let skinPixels = 0;
+          let facePatternPixels = 0;
           let totalPixels = data.length / 4;
           
-          // Enhanced skin tone detection algorithm
+          // More precise face detection focusing on typical face patterns
           for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // Multiple skin tone detection criteria
-            const skinTone1 = r > 95 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15;
-            const skinTone2 = r > 220 && g > 210 && b > 170; // Light skin
-            const skinTone3 = r > 90 && r < 120 && g > 60 && g < 90 && b > 40 && b < 70; // Medium skin
-            const skinTone4 = r > 50 && r < 90 && g > 30 && g < 60 && b > 15 && b < 40; // Dark skin
+            // Stricter skin tone detection - must meet multiple criteria
+            const skinTone1 = r > 120 && g > 80 && b > 60 && r > g && r > b && 
+                             Math.abs(r - g) > 20 && Math.abs(r - b) > 30;
+            const skinTone2 = r > 240 && g > 220 && b > 180 && r - g < 30 && r - b < 80; // Very light skin
+            const skinTone3 = r > 110 && r < 140 && g > 80 && g < 110 && b > 60 && b < 90 && 
+                             r > g && r > b; // Medium skin with strict bounds
             
-            if (skinTone1 || skinTone2 || skinTone3 || skinTone4) {
+            // Face pattern detection (areas with consistent skin tone clusters)
+            if (skinTone1 || skinTone2 || skinTone3) {
               skinPixels++;
+              
+              // Check for face-like patterns (consecutive skin pixels in rows/columns)
+              const pixelIndex = Math.floor(i / 4);
+              const x = pixelIndex % canvas.width;
+              const y = Math.floor(pixelIndex / canvas.width);
+              
+              // Check for horizontal and vertical skin tone continuity (face feature pattern)
+              let horizontalSkin = 0;
+              let verticalSkin = 0;
+              
+              // Check 5 pixels horizontally
+              for (let dx = -2; dx <= 2; dx++) {
+                const checkX = x + dx;
+                if (checkX >= 0 && checkX < canvas.width) {
+                  const checkIndex = (y * canvas.width + checkX) * 4;
+                  const checkR = data[checkIndex];
+                  const checkG = data[checkIndex + 1];
+                  const checkB = data[checkIndex + 2];
+                  
+                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
+                      (checkR > 240 && checkG > 220 && checkB > 180) ||
+                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
+                    horizontalSkin++;
+                  }
+                }
+              }
+              
+              // Check 5 pixels vertically
+              for (let dy = -2; dy <= 2; dy++) {
+                const checkY = y + dy;
+                if (checkY >= 0 && checkY < canvas.height) {
+                  const checkIndex = (checkY * canvas.width + x) * 4;
+                  const checkR = data[checkIndex];
+                  const checkG = data[checkIndex + 1];
+                  const checkB = data[checkIndex + 2];
+                  
+                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
+                      (checkR > 240 && checkG > 220 && checkB > 180) ||
+                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
+                    verticalSkin++;
+                  }
+                }
+              }
+              
+              // If we have significant skin continuity in both directions, it's likely a face region
+              if (horizontalSkin >= 3 && verticalSkin >= 3) {
+                facePatternPixels++;
+              }
             }
           }
           
-          // If more than 6% of pixels are skin tone, likely contains a face
+          // More restrictive thresholds - require both high skin percentage AND face patterns
           const skinRatio = skinPixels / totalPixels;
-          resolve(skinRatio > 0.06);
+          const facePatternRatio = facePatternPixels / totalPixels;
+          
+          // Only flag as face if we have significant skin area AND face-like patterns
+          const hasFace = skinRatio > 0.15 && facePatternRatio > 0.03;
+          resolve(hasFace);
         } else {
           resolve(false);
         }
