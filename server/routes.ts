@@ -434,11 +434,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error: any) {
           console.log("AI validation error:", error);
           console.log("Error details:", error?.message || "Unknown error");
+          
+          // If it's a network/timeout error, be permissive for human images
+          if (error?.message?.includes('fetch') || error?.message?.includes('timeout') || error?.code === 'ECONNRESET') {
+            console.log("Network error detected - proceeding with aura analysis (assuming human image)");
+            return { valid: true, reason: "Network error - proceeding with aura analysis (assuming human image)." };
+          }
         }
 
-        // Permissive fallback for aura analysis when API fails (rate limits, etc.)
-        console.log("AI face validation unavailable for aura analysis - proceeding with permissive validation");
-        return { valid: true, reason: "Face validation unavailable - proceeding with aura analysis (assuming human image)." };
+        // Restrictive fallback for aura analysis - reject when validation unavailable
+        console.log("AI face validation unavailable for aura analysis - rejecting for safety");
+        return { valid: false, reason: "Face validation required. Aura scanning requires clear human faces. Please upload a selfie, portrait, or headshot showing facial features." };
       };
 
 
