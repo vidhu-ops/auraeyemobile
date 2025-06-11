@@ -403,15 +403,17 @@ export default function AuraAnalysis() {
   };
 
   const calculateEarthStarChakra = (aura: AuraAnalysisResult): number => {
-    const groundingColors = ['Red', 'Orange', 'Green'];
-    const isGrounding = groundingColors.includes(aura.dominantColor);
-    return isGrounding ? 70 + aura.energyLevel * 3 : 50 + aura.energyLevel * 2;
+    // Earth Star Chakra (Number 4) - Brown/Earth colors, grounding energy
+    const baseValue = aura.energyLevel * 8;
+    const colorModifier = ['Brown', 'Black', 'Gray', 'Maroon'].includes(aura.dominantColor) ? 15 : 0;
+    return Math.min(100, baseValue + colorModifier);
   };
 
   const calculateSoulStarChakra = (aura: AuraAnalysisResult): number => {
-    const spiritualColors = ['Violet', 'Purple', 'White', 'Gold', 'Indigo', 'Silver', 'Turquoise', 'Cyan', 'Emerald', 'Sapphire', 'Topaz', 'Jade', 'Bronze', 'Cobalt', 'Emerald', 'Jade', 'Sapphire', 'Topaz' ];
-    const isSpiritual = spiritualColors.includes(aura.dominantColor);
-    return isSpiritual ? 75 + aura.energyLevel * 3 : 45 + aura.energyLevel * 2;
+    // Soul Star Chakra (Number 7) - White/Silver colors, divine connection
+    const baseValue = aura.energyLevel * 7;
+    const colorModifier = ['White', 'Silver', 'Gold', 'Violet'].includes(aura.dominantColor) ? 20 : 0;
+    return Math.min(100, baseValue + colorModifier);
   };
 
   const calculateAuraStrength = (aura: AuraAnalysisResult): number => {
@@ -513,6 +515,8 @@ export default function AuraAnalysis() {
     };
     return eveningGuidance[dominant] || 'Your evening energy invites personal spiritual practices aligned with your unique energy signature.';
   };
+
+  // Helper functions for 9-chakra system calculations (using existing functions below)
 
   // Color spectrum analysis helper functions (duplicate removed)
 
