@@ -412,8 +412,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("AI validation unavailable");
         }
 
-        // Permissive fallback for aura analysis - assume human images are valid
-        return { valid: true, reason: "Using basic validation - assuming valid human image for aura scanning." };
+        // Strict fallback for aura analysis - require human validation
+        return { valid: false, reason: "Human validation required. Aura scanning only works with human photos - please upload a photo containing at least one person." };
       };
 
 
@@ -1241,16 +1241,116 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Object Analysis API endpoint - COMPLETELY DISABLED
-  app.post("/api/analyze-object", (req, res) => {
-    res.status(400).json({
-      error: "Human Detection Required",
-      message: "Object analysis is temporarily disabled due to human detection validation issues. Please use Aura Analysis for human photos.",
-      requirements: [
-        "Object analysis only accepts images of objects with NO humans visible",
-        "For human aura scanning, use the Aura Analysis feature instead"
-      ]
-    });
+  // Object Analysis API endpoint with strict human rejection
+  app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      // Convert image to base64 for AI validation
+      const base64Image = req.file.buffer.toString('base64');
+
+      // STRICT HUMAN REJECTION - Use OpenAI to detect any humans
+      const objectValidation = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
+        if (!process.env.OPENAI_API_KEY) {
+          return { valid: false, reason: "Image validation unavailable. Object analysis requires verification that no humans are present." };
+        }
+
+        try {
+          const validationPrompt = `Analyze this image strictly for human detection. Return ONLY a JSON object:
+{
+  "containsHumans": true/false,
+  "humanCount": number,
+  "reason": "explanation"
+}
+
+STRICT RULES:
+- Set "containsHumans" to true if you see ANY human face, body, hand, or body part
+- Count all humans visible in the image  
+- Be extremely strict about human detection - even partial humans should be detected
+- Examples that should be REJECTED: selfies, portraits, people holding objects, hands visible, any human body parts`;
+
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: validationPrompt },
+                    {
+                      type: "image_url",
+                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
+                    }
+                  ]
+                }
+              ],
+              max_tokens: 200,
+              response_format: { type: "json_object" }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const validation = JSON.parse(data.choices[0].message.content);
+            
+            console.log("=== OBJECT VALIDATION DEBUG ===");
+            console.log("Validation result:", validation);
+            console.log("containsHumans:", validation.containsHumans);
+            console.log("humanCount:", validation.humanCount);
+            console.log("=== END DEBUG ===");
+            
+            // REJECT if ANY humans detected
+            if (validation.containsHumans === true || validation.humanCount > 0) {
+              return {
+                valid: false,
+                reason: `Human detected in image. Object analysis only accepts images of objects with NO humans visible. ${validation.reason}`
+              };
+            }
+            
+            return { valid: true, reason: "Valid object image - no humans detected" };
+          }
+        } catch (error) {
+          console.log("Object validation error:", error);
+        }
+
+        // Strict fallback - reject by default when validation unavailable
+        return { 
+          valid: false, 
+          reason: "Image validation failed. Object analysis requires verification that no humans are present in the image." 
+        };
+      };
+
+      // Validate image for object analysis requirements (no humans allowed)
+      const imageValidation = await objectValidation(base64Image);
+      
+      if (!imageValidation.valid) {
+        return res.status(400).json({
+          error: "Human Detected in Image",
+          message: imageValidation.reason,
+          requirements: [
+            "Object analysis only accepts images of objects, items, or artifacts",
+            "NO human faces, bodies, or body parts should be visible",
+            "For human aura scanning, use the Aura Analysis feature instead"
+          ]
+        });
+      }
+
+      // Generate deterministic object analysis based on image hash
+      const objectAnalysis = generateDeterministicObjectAnalysis(req.file.buffer);
+      
+      res.json(objectAnalysis);
+
+    } catch (error) {
+      console.error("Error analyzing object:", error);
+      res.status(500).json({ message: "Failed to analyze object" });
+    }
   });
 
   const httpServer = createServer(app);
