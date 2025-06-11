@@ -342,23 +342,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Strict validation for aura scanning - require human detection
       const validateAuraImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
         try {
-          const validationPrompt = `Analyze this image and determine if it's suitable for human aura scanning. Return ONLY a JSON object with this exact format:
+          const validationPrompt = `Analyze this image for human FACE detection for aura scanning. Return ONLY a JSON object:
           {
-            "valid": true/false,
-            "reason": "explanation",
-            "humanCount": number,
-            "containsHumans": true/false,
-            "mainSubject": "description of main subject",
-            "isWellLit": true/false
+            "containsHumanFaces": true/false,
+            "faceCount": number,
+            "reason": "explanation"
           }
           
-          RULES FOR AURA SCANNING:
-          - Set valid to TRUE if image shows at least one human person (1-2 people acceptable)
-          - Set valid to FALSE if NO humans are visible
-          - Set valid to FALSE if more than 2 humans are visible
-          - If main subject is human(s), set valid to TRUE even if background contains objects
-          - Examples of VALID: single person portrait, person with objects, couple photo, selfie
-          - Examples of INVALID: objects only, animals only, large groups (3+ people), artwork without humans`;
+          STRICT RULES FOR AURA SCANNING:
+          - Set "containsHumanFaces" to TRUE only if you can clearly see human FACES with facial features
+          - Count the number of distinct human faces visible
+          - ONLY visible faces count - bodies, silhouettes, or back of heads do NOT count
+          - Examples of VALID: selfies, portraits, headshots with clear facial features
+          - Examples of INVALID: back of head, silhouettes, objects, animals, body parts without visible faces`;
 
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -406,31 +402,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             console.log("=== AURA VALIDATION DEBUG ===");
             console.log("Validation result:", validation);
-            console.log("containsHumans:", validation.containsHumans);
-            console.log("humanCount:", validation.humanCount);
+            console.log("containsHumanFaces:", validation.containsHumanFaces);
+            console.log("faceCount:", validation.faceCount);
             console.log("=== END DEBUG ===");
             
-            // Allow single human images - be less strict about exact count
-            if (!validation.containsHumans) {
-              return { valid: false, reason: "Aura scanning requires a human person in the image. Please upload a photo of yourself or another person." };
+            // Require visible human faces for aura scanning
+            if (!validation.containsHumanFaces || validation.faceCount === 0) {
+              return { valid: false, reason: "Aura scanning requires visible human faces. Please upload a photo showing clear facial features (selfies, portraits, headshots work best)." };
             }
             
-            // Allow 1-2 humans but prefer single person
-            if (validation.humanCount > 2) {
-              return { valid: false, reason: "Too many people in image. Aura scanning works best with 1-2 people maximum." };
+            // Allow 1-2 faces maximum
+            if (validation.faceCount > 2) {
+              return { valid: false, reason: "Too many faces detected. Aura scanning works best with 1-2 people maximum." };
             }
             
-            // Mark as valid if we have humans
-            return { valid: true, reason: "Valid human image for aura scanning" };
+            // Mark as valid if we have faces
+            return { valid: true, reason: "Valid human faces detected for aura scanning" };
           }
         } catch (error: any) {
           console.log("AI validation error:", error);
           console.log("Error details:", error?.message || "Unknown error");
         }
 
-        // Permissive fallback for aura analysis when AI validation fails
-        console.log("Using fallback validation for aura analysis - assuming valid human image");
-        return { valid: true, reason: "Using fallback validation - proceeding with aura analysis." };
+        // Strict fallback for aura analysis - require face validation
+        console.log("AI face validation failed for aura analysis");
+        return { valid: false, reason: "Face validation required. Aura scanning only works with clear human face photos - please upload a selfie, portrait, or headshot showing facial features." };
       };
 
 
@@ -1275,18 +1271,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
         }
 
         try {
-          const validationPrompt = `Analyze this image strictly for human detection. Return ONLY a JSON object:
+          const validationPrompt = `Analyze this image strictly for human FACE detection. Return ONLY a JSON object:
 {
-  "containsHumans": true/false,
-  "humanCount": number,
+  "containsHumanFaces": true/false,
+  "faceCount": number,
   "reason": "explanation"
 }
 
-STRICT RULES:
-- Set "containsHumans" to true if you see ANY human face, body, hand, or body part
-- Count all humans visible in the image  
-- Be extremely strict about human detection - even partial humans should be detected
-- Examples that should be REJECTED: selfies, portraits, people holding objects, hands visible, any human body parts`;
+STRICT RULES FOR OBJECT ANALYSIS:
+- Set "containsHumanFaces" to TRUE if you see ANY human faces with facial features
+- Count all human faces visible in the image
+- REJECT any image containing human faces - even partial faces
+- Examples that should be REJECTED: selfies, portraits, group photos, any visible human faces
+- Examples that should be ACCEPTED: pure objects, landscapes, animals, items without any human faces`;
 
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -1319,15 +1316,15 @@ STRICT RULES:
             
             console.log("=== OBJECT VALIDATION DEBUG ===");
             console.log("Validation result:", validation);
-            console.log("containsHumans:", validation.containsHumans);
-            console.log("humanCount:", validation.humanCount);
+            console.log("containsHumanFaces:", validation.containsHumanFaces);
+            console.log("faceCount:", validation.faceCount);
             console.log("=== END DEBUG ===");
             
-            // REJECT if ANY humans detected
-            if (validation.containsHumans === true || validation.humanCount > 0) {
+            // REJECT if ANY human faces detected
+            if (validation.containsHumanFaces === true || validation.faceCount > 0) {
               return {
                 valid: false,
-                reason: `Human detected in image. Object analysis only accepts images of objects with NO humans visible. ${validation.reason}`
+                reason: `Human faces detected in image. Object analysis only accepts images with NO human faces visible. ${validation.reason}`
               };
             }
             
