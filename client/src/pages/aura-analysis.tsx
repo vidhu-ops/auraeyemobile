@@ -1499,11 +1499,112 @@ export default function AuraAnalysis() {
     return numberColors[number] || 'White';
   };
   
+  // Function to detect human faces for aura analysis
+  const detectHumanFace = (file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        
+        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+        
+        if (imageData) {
+          const data = imageData.data;
+          let skinPixels = 0;
+          let facePatternPixels = 0;
+          let totalPixels = data.length / 4;
+          
+          // Face detection for aura analysis
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Skin tone detection criteria for human faces
+            const skinTone1 = r > 120 && g > 80 && b > 60 && r > g && r > b && 
+                             Math.abs(r - g) > 20 && Math.abs(r - b) > 30;
+            const skinTone2 = r > 240 && g > 220 && b > 180 && r - g < 30 && r - b < 80; // Very light skin
+            const skinTone3 = r > 110 && r < 140 && g > 80 && g < 110 && b > 60 && b < 90 && 
+                             r > g && r > b; // Medium skin with strict bounds
+            
+            // Face pattern detection
+            if (skinTone1 || skinTone2 || skinTone3) {
+              skinPixels++;
+              
+              // Check for face-like patterns
+              const pixelIndex = Math.floor(i / 4);
+              const x = pixelIndex % canvas.width;
+              const y = Math.floor(pixelIndex / canvas.width);
+              
+              let horizontalSkin = 0;
+              let verticalSkin = 0;
+              
+              // Check horizontal continuity
+              for (let dx = -2; dx <= 2; dx++) {
+                const checkX = x + dx;
+                if (checkX >= 0 && checkX < canvas.width) {
+                  const checkIndex = (y * canvas.width + checkX) * 4;
+                  const checkR = data[checkIndex];
+                  const checkG = data[checkIndex + 1];
+                  const checkB = data[checkIndex + 2];
+                  
+                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
+                      (checkR > 240 && checkG > 220 && checkB > 180) ||
+                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
+                    horizontalSkin++;
+                  }
+                }
+              }
+              
+              // Check vertical continuity
+              for (let dy = -2; dy <= 2; dy++) {
+                const checkY = y + dy;
+                if (checkY >= 0 && checkY < canvas.height) {
+                  const checkIndex = (checkY * canvas.width + x) * 4;
+                  const checkR = data[checkIndex];
+                  const checkG = data[checkIndex + 1];
+                  const checkB = data[checkIndex + 2];
+                  
+                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
+                      (checkR > 240 && checkG > 220 && checkB > 180) ||
+                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
+                    verticalSkin++;
+                  }
+                }
+              }
+              
+              if (horizontalSkin >= 3 && verticalSkin >= 3) {
+                facePatternPixels++;
+              }
+            }
+          }
+          
+          const skinRatio = skinPixels / totalPixels;
+          const facePatternRatio = facePatternPixels / totalPixels;
+          
+          // For aura analysis, we need significant skin area AND face patterns
+          const hasFace = skinRatio > 0.15 && facePatternRatio > 0.03;
+          resolve(hasFace);
+        } else {
+          resolve(false);
+        }
+      };
+      
+      img.onerror = () => resolve(false);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleImageSelect = async (file: File) => {
     setIsAnalyzing(true);
     setResult(null);
     setAnalysisProgress(0);
-    setAnalysisStage("Initializing aura scanning...");
+    setAnalysisStage("Checking image content...");
     // Reset review system for new analysis
     setReviewSubmitted(false);
     setRating(0);
@@ -1511,6 +1612,25 @@ export default function AuraAnalysis() {
     setCurrentAnalysisId(null);
 
     try {
+      // Check for human face first
+      setAnalysisProgress(10);
+      setAnalysisStage("Scanning for human face...");
+      
+      const hasFace = await detectHumanFace(file);
+      
+      if (!hasFace) {
+        setIsAnalyzing(false);
+        toast({
+          title: "No Human Face Detected",
+          description: "Aura analysis requires an image with a human face. Please upload a photo of yourself or another person.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setAnalysisProgress(20);
+      setAnalysisStage("Initializing aura scanning...");
+
       // Simulate progress for UX
       const progressInterval = setInterval(() => {
         setAnalysisProgress(prev => {
@@ -1520,13 +1640,13 @@ export default function AuraAnalysis() {
           }
           
           // Update stage text based on progress
-          if (prev < 20) {
+          if (prev < 30) {
             setAnalysisStage("Preparing image for analysis...");
-          } else if (prev < 40) {
+          } else if (prev < 50) {
             setAnalysisStage("Detecting energy patterns in your aura...");
-          } else if (prev < 60) {
+          } else if (prev < 70) {
             setAnalysisStage("Analyzing color vibrations and frequencies...");
-          } else if (prev < 80) {
+          } else if (prev < 85) {
             setAnalysisStage("Connecting with your chakra energy centers...");
           } else {
             setAnalysisStage("Finalizing your personalized aura reading...");
