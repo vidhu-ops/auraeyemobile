@@ -799,53 +799,9 @@ function calculateDecisionMakingChakra(birthDate: string): number {
   }
 }
 
-// Dominant Soul Chakra number - addition of all digits in birth date
-function calculateDominantSoulChakra(birthDate: string): number {
-  const parts = birthDate.split('-');
-  if (parts.length !== 3) return 7; // Default fallback
-  
-  let sum = 0;
-  // Add all digits from year, month, and day
-  for (const part of parts) {
-    for (const digit of part) {
-      sum += parseInt(digit);
-    }
-  }
-  
-  return reduceNumber(sum);
-}
+// Removed duplicate - using the calculateDominantSoulChakra function defined later
 
-function getColorForNumber(num: number): string {
-  // Standardized color mappings based on remedies data
-  const colorMap: { [key: number]: string } = {
-    1: "Yellow",   // Solar Plexus Chakra - Sun
-    2: "Green",    // Heart Chakra - Moon
-    3: "Violet",   // Crown Chakra - Jupiter
-    4: "Brown",    // Earth Star Chakra - Rahu
-    5: "Blue",     // Throat Chakra - Mercury
-    6: "Orange",   // Sacral Chakra - Venus
-    7: "White",    // Soul Star Chakra - Ketu
-    8: "Indigo",   // Third Eye Chakra - Saturn
-    9: "Red"       // Root Chakra - Mars
-  };
-  return colorMap[num] || "White";
-}
-
-function letterToNumber(letter: string): number {
-  const value = letter.toLowerCase().charCodeAt(0) - 96;
-  return value >= 1 && value <= 26 ? value : 0;
-}
-
-function reduceNumber(num: number): number {
-  // Master numbers are preserved
-  if (num === 11 || num === 22 || num === 33) return num;
-  
-  // Reduce to single digit
-  while (num > 9) {
-    num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-  }
-  return num;
-}
+// Duplicate function implementations removed - using standardized versions from above
 
 function calculateDominantSoulChakra(birthDate: string): number {
   // Sum all digits in birth date (e.g., 01/01/1901 = 0+1+0+1+1+9+0+1 = 13 = 1+3 = 4)
