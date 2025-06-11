@@ -354,31 +354,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
       
-      // Image validation for aura scanning requirements (humans only)
+      // Strict validation for aura scanning - require human detection
       const validateAuraImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
         try {
-          // Use OpenAI Vision to validate image content for human detection
-          const validationPrompt = `Analyze this image for aura scanning requirements. Return ONLY a JSON object with this exact format:
+          const validationPrompt = `Analyze this image and determine if it's suitable for human aura scanning. Return ONLY a JSON object with this exact format:
           {
             "valid": true/false,
-            "reason": "explanation if invalid",
+            "reason": "explanation",
             "humanCount": number,
-            "isWellLit": true/false,
-            "hasSpaceAroundPerson": true/false,
-            "isPortraitStyle": true/false,
-            "containsObjects": true/false,
-            "containsAnimals": true/false
+            "containsHumans": true/false,
+            "mainSubject": "description of main subject",
+            "isWellLit": true/false
           }
           
-          Requirements for valid aura scanning:
-          1. EXACTLY ONE human person visible (not multiple people, not animals, not objects)
-          2. Well-lit image with good lighting (not too dark, not overexposed)
-          3. Adequate space around the person (not cropped too tight, person should have clear background space)
-          4. Person should be the main subject (portrait or full body)
-          5. No group photos, no pets, no inanimate objects as main subject
-          6. Must be a human being, not animals, objects, or artwork
-          
-          If ANY requirement fails, set valid to false and explain why.`;
+          STRICT RULES FOR AURA SCANNING:
+          - Only set valid to TRUE if image shows EXACTLY ONE human person
+          - If NO humans visible, set valid to FALSE
+          - If multiple humans visible, set valid to FALSE  
+          - If main subject is an object, animal, or anything non-human, set valid to FALSE
+          - Examples of VALID: single person portrait, one person full body photo
+          - Examples of INVALID: objects only, animals, multiple people, group photos, artwork`;
 
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -408,14 +403,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (response.ok) {
             const data = await response.json();
             const validation = JSON.parse(data.choices[0].message.content);
+            
+            // Strict enforcement - must contain exactly one human
+            if (!validation.containsHumans || validation.humanCount !== 1) {
+              return { valid: false, reason: "Aura scanning requires exactly one human person in the image. No objects, animals, or multiple people allowed." };
+            }
+            
             return validation;
           }
         } catch (error) {
-          console.log("AI validation unavailable, using basic validation");
+          console.log("AI validation unavailable");
         }
 
-        // Fallback basic validation
-        return { valid: true, reason: "Basic validation passed - please ensure image contains only one person with good lighting and space around them" };
+        // Strict fallback - reject by default when validation unavailable
+        return { valid: false, reason: "Image validation unavailable. Please ensure your image contains exactly one human person with good lighting and adequate space around them." };
       };
 
 
@@ -1333,8 +1334,71 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return { valid: true, reason: "Basic validation passed - please ensure image contains only objects with no humans visible" };
       };
 
+      // Strict validation for object analysis - reject human images
+      const objectValidation = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
+        try {
+          const validationPrompt = `Analyze this image and determine if it contains humans or objects. Return ONLY a JSON object with this exact format:
+          {
+            "valid": true/false,
+            "reason": "explanation",
+            "containsHumans": true/false,
+            "containsObjects": true/false,
+            "objectType": "description of main subject"
+          }
+          
+          STRICT RULES:
+          - If ANY human face, body, or body parts are visible, set valid to FALSE
+          - If the main subject is a person/human, set valid to FALSE
+          - Only set valid to TRUE if image shows ONLY objects, items, or artifacts
+          - Examples of valid objects: crystals, jewelry, artwork, tools, furniture, plants, food
+          - Examples of INVALID: any person, human hand holding object, selfies, portraits`;
+
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: validationPrompt },
+                    {
+                      type: "image_url",
+                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
+                    }
+                  ]
+                }
+              ],
+              max_tokens: 300,
+              response_format: { type: "json_object" }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const validation = JSON.parse(data.choices[0].message.content);
+            
+            // Strict enforcement - if contains humans at all, reject
+            if (validation.containsHumans === true) {
+              return { valid: false, reason: "Human detected in image. Object analysis only accepts images of objects with no humans visible." };
+            }
+            
+            return validation;
+          }
+        } catch (error) {
+          console.log("AI validation unavailable");
+        }
+
+        // Strict fallback - reject by default when validation unavailable
+        return { valid: false, reason: "Image validation unavailable. Please ensure your image contains only objects with no humans, faces, or body parts visible." };
+      };
+
       // Validate image for object analysis requirements (no humans allowed)
-      const imageValidation = await validateObjectImage(imgBuffer.toString('base64'));
+      const imageValidation = await objectValidation(imgBuffer.toString('base64'));
       
       if (!imageValidation.valid) {
         return res.status(400).json({
