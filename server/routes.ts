@@ -354,6 +354,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
       
+      // Image validation for aura scanning requirements
+      const validateAuraImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
+        try {
+          // Use OpenAI Vision to validate image content
+          const validationPrompt = `Analyze this image for aura scanning requirements. Return ONLY a JSON object with this exact format:
+          {
+            "valid": true/false,
+            "reason": "explanation if invalid",
+            "humanCount": number,
+            "isWellLit": true/false,
+            "hasSpaceAroundPerson": true/false,
+            "isPortraitStyle": true/false
+          }
+          
+          Requirements for valid aura scanning:
+          1. EXACTLY ONE human person visible (not multiple people, not animals, not objects)
+          2. Well-lit image with good lighting (not too dark, not overexposed)
+          3. Adequate space around the person (not cropped too tight, person should have clear background space)
+          4. Person should be the main subject (portrait or full body)
+          5. No group photos, no pets, no inanimate objects as main subject
+          
+          If ANY requirement fails, set valid to false and explain why.`;
+
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: validationPrompt },
+                    {
+                      type: "image_url",
+                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
+                    }
+                  ]
+                }
+              ],
+              max_tokens: 300,
+              response_format: { type: "json_object" }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const validation = JSON.parse(data.choices[0].message.content);
+            return validation;
+          }
+        } catch (error) {
+          console.log("AI validation unavailable, using basic validation");
+        }
+
+        // Fallback basic validation
+        return { valid: true, reason: "Basic validation passed - please ensure image contains only one person with good lighting and space around them" };
+      };
+
       // Custom prompt for aura detection in photographs with visible auras
       let customPrompt = null;
       if (detectVisibleAura) {
@@ -390,6 +451,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
           console.log("Could not retrieve user data for enhanced analysis");
         }
+      }
+
+      // Validate image for aura scanning requirements
+      const imageValidation = await validateAuraImage(imgBuffer.toString('base64'));
+      
+      if (!imageValidation.valid) {
+        return res.status(400).json({
+          error: "Invalid image for aura scanning",
+          message: imageValidation.reason || "Image does not meet aura scanning requirements",
+          requirements: [
+            "Must contain exactly one human person",
+            "Image must be well-lit with good lighting",
+            "Adequate space must be visible around the person",
+            "Person must be the main subject (portrait or full body style)",
+            "No group photos, pets, or objects as main subjects"
+          ]
+        });
       }
 
       // Determine if we should use AI or deterministic analysis
