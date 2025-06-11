@@ -354,10 +354,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is specifically for detecting visible aura colors in special photographs
       const detectVisibleAura = req.body.detectVisibleAura === true;
       
-      // Image validation for aura scanning requirements
+      // Image validation for aura scanning requirements (humans only)
       const validateAuraImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
         try {
-          // Use OpenAI Vision to validate image content
+          // Use OpenAI Vision to validate image content for human detection
           const validationPrompt = `Analyze this image for aura scanning requirements. Return ONLY a JSON object with this exact format:
           {
             "valid": true/false,
@@ -365,7 +365,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             "humanCount": number,
             "isWellLit": true/false,
             "hasSpaceAroundPerson": true/false,
-            "isPortraitStyle": true/false
+            "isPortraitStyle": true/false,
+            "containsObjects": true/false,
+            "containsAnimals": true/false
           }
           
           Requirements for valid aura scanning:
@@ -374,6 +376,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           3. Adequate space around the person (not cropped too tight, person should have clear background space)
           4. Person should be the main subject (portrait or full body)
           5. No group photos, no pets, no inanimate objects as main subject
+          6. Must be a human being, not animals, objects, or artwork
           
           If ANY requirement fails, set valid to false and explain why.`;
 
@@ -414,6 +417,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Fallback basic validation
         return { valid: true, reason: "Basic validation passed - please ensure image contains only one person with good lighting and space around them" };
       };
+
+
 
       // Custom prompt for aura detection in photographs with visible auras
       let customPrompt = null;
@@ -1235,6 +1240,126 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error calculating numerology:", error);
       res.status(500).json({ message: "Failed to calculate numerology" });
+    }
+  });
+
+  // Object Analysis API endpoint (objects only, no humans)
+  app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
+    try {
+      // Get image data either from file or base64 string
+      let imageData: string;
+      let imgBuffer: Buffer;
+      
+      if (req.file) {
+        // If image was uploaded as file
+        imageData = req.file.buffer.toString("base64");
+        imgBuffer = req.file.buffer;
+      } else if (req.body.image) {
+        // If image was sent as base64 string
+        imageData = req.body.image;
+        imgBuffer = Buffer.from(imageData, 'base64');
+      } else {
+        return res.status(400).json({ message: "No image provided" });
+      }
+
+      // Create hash for this specific image to ensure consistency
+      const imageHash = crypto.createHash('sha256').update(imgBuffer).digest('hex');
+      
+      // Check if we've analyzed this exact image before for objects
+      const objectCacheKey = `object_${imageHash}`;
+      if (imageHashCache.has(objectCacheKey)) {
+        console.log("Returning cached result for identical object image");
+        return res.json(imageHashCache.get(objectCacheKey));
+      }
+
+      // Image validation for object analysis requirements (objects only, no humans)
+      const validateObjectImage = async (base64Image: string): Promise<{ valid: boolean; reason?: string }> => {
+        try {
+          // Use OpenAI Vision to validate image content for object detection
+          const validationPrompt = `Analyze this image for object analysis requirements. Return ONLY a JSON object with this exact format:
+          {
+            "valid": true/false,
+            "reason": "explanation if invalid",
+            "containsHumans": true/false,
+            "containsObjects": true/false,
+            "isWellLit": true/false,
+            "objectType": "description of main object"
+          }
+          
+          Requirements for valid object analysis:
+          1. Must contain objects, items, or artifacts (crystals, jewelry, artwork, tools, etc.)
+          2. NO human faces or bodies visible in the image
+          3. Well-lit image with good lighting
+          4. Object should be the main subject
+          5. No people, even partial views or body parts
+          
+          If ANY requirement fails, set valid to false and explain why.`;
+
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: validationPrompt },
+                    {
+                      type: "image_url",
+                      image_url: { url: `data:image/jpeg;base64,${base64Image}` }
+                    }
+                  ]
+                }
+              ],
+              max_tokens: 300,
+              response_format: { type: "json_object" }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const validation = JSON.parse(data.choices[0].message.content);
+            return validation;
+          }
+        } catch (error) {
+          console.log("AI validation unavailable, using basic validation");
+        }
+
+        // Fallback basic validation
+        return { valid: true, reason: "Basic validation passed - please ensure image contains only objects with no humans visible" };
+      };
+
+      // Validate image for object analysis requirements (no humans allowed)
+      const imageValidation = await validateObjectImage(imgBuffer.toString('base64'));
+      
+      if (!imageValidation.valid) {
+        return res.status(400).json({
+          error: "Invalid image for object analysis",
+          message: imageValidation.reason || "Image does not meet object analysis requirements",
+          requirements: [
+            "Must contain objects, items, or artifacts (crystals, jewelry, artwork, tools, etc.)",
+            "NO human faces or bodies visible in the image",
+            "Well-lit image with good lighting",
+            "Object should be the main subject",
+            "No people, even partial views or body parts"
+          ]
+        });
+      }
+
+      // Generate deterministic object analysis based on image hash
+      const objectAnalysis = generateDeterministicObjectAnalysis(imgBuffer);
+      
+      // Cache the result for consistent responses
+      imageHashCache.set(objectCacheKey, objectAnalysis);
+      
+      res.json(objectAnalysis);
+    } catch (error) {
+      console.error("Error analyzing object:", error);
+      res.status(500).json({ message: "Failed to analyze object" });
     }
   });
 
