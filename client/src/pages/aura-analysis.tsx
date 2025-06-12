@@ -437,6 +437,49 @@ export default function AuraAnalysis() {
       'Topaz': 'Emotional volatility, creative blocks, or scattered artistic energy. Focus your creative gifts more deliberately.'
     };
     return negativeMeanings[colorName] || 'This energy may need balancing or could indicate areas for spiritual growth and healing.';
+  }
+
+  // Helper functions for the 4-zone aura visualization
+  const getGivingEnergyColor = (auraData: AuraAnalysisResult): string => {
+    // Calculate giving energy based on heart chakra activity and dominant color
+    const givingEnergyMap: Record<string, string> = {
+      'Red': 'Orange',
+      'Orange': 'Yellow', 
+      'Yellow': 'Green',
+      'Green': 'Pink',
+      'Blue': 'Turquoise',
+      'Indigo': 'Blue',
+      'Violet': 'Purple',
+      'Purple': 'Magenta',
+      'Pink': 'Rose',
+      'Gold': 'Amber',
+      'Silver': 'White',
+      'White': 'Silver',
+      'Turquoise': 'Cyan',
+      'Magenta': 'Crimson'
+    };
+    return givingEnergyMap[auraData.dominantColor] || auraData.dominantColor;
+  }
+
+  const getSoulStarColor = (auraData: AuraAnalysisResult): string => {
+    // Soul star chakra typically manifests as transcendent colors
+    const soulStarMap: Record<string, string> = {
+      'Red': 'White',
+      'Orange': 'Gold',
+      'Yellow': 'White',
+      'Green': 'Silver',
+      'Blue': 'Indigo',
+      'Indigo': 'Violet',
+      'Violet': 'White',
+      'Purple': 'Gold',
+      'Pink': 'White',
+      'Gold': 'White',
+      'Silver': 'White',
+      'White': 'Gold',
+      'Turquoise': 'Silver',
+      'Magenta': 'Violet'
+    };
+    return soulStarMap[auraData.dominantColor] || 'White';
   };
 
   // Helper functions for Energy Reading tab
@@ -1156,71 +1199,95 @@ export default function AuraAnalysis() {
         ctx?.drawImage(img, 0, 0);
         
         if (ctx) {
-          // Create aura gradient overlay
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const maxRadius = Math.max(canvas.width, canvas.height) * 0.8;
+          const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
           
-          // Layer 1: Strong inner aura glow
+          // Calculate energy colors for the 4 zones
+          const crownColor = getAccurateColorCode(auraData.dominantColor);
+          const receivingColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
+          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));
+          const soulStarColor = getAccurateColorCode(getSoulStarColor(auraData));
+          
+          // 1. Soul Star Chakra - Around entire picture (outermost layer)
           ctx.globalCompositeOperation = 'screen';
-          const innerGlow = ctx.createRadialGradient(
-            centerX, centerY, 0,
-            centerX, centerY, maxRadius * 0.4
+          const soulStarGlow = ctx.createRadialGradient(
+            centerX, centerY, maxRadius * 0.8,
+            centerX, centerY, maxRadius * 1.4
           );
-          innerGlow.addColorStop(0, 'transparent');
-          innerGlow.addColorStop(0.3, `${getAccurateColorCode(auraData.dominantColor)}80`);
-          innerGlow.addColorStop(0.7, `${getAccurateColorCode(auraData.dominantColor)}60`);
-          innerGlow.addColorStop(1, 'transparent');
+          soulStarGlow.addColorStop(0, 'transparent');
+          soulStarGlow.addColorStop(0.3, `${soulStarColor}50`);
+          soulStarGlow.addColorStop(0.7, `${soulStarColor}30`);
+          soulStarGlow.addColorStop(1, 'transparent');
           
-          ctx.fillStyle = innerGlow;
+          ctx.fillStyle = soulStarGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Layer 2: Middle aura layer with secondary color
+          // 2. Crown Energy - Top of head
           ctx.globalCompositeOperation = 'overlay';
-          const middleGlow = ctx.createRadialGradient(
-            centerX, centerY, maxRadius * 0.3,
-            centerX, centerY, maxRadius * 0.7
+          const headRadius = canvas.height * 0.15;
+          const crownGlow = ctx.createRadialGradient(
+            centerX, centerY * 0.3, 0,
+            centerX, centerY * 0.3, headRadius
           );
-          middleGlow.addColorStop(0, 'transparent');
-          middleGlow.addColorStop(0.4, `${getAccurateColorCode(auraData.secondaryColor)}70`);
-          middleGlow.addColorStop(0.8, `${getAccurateColorCode(auraData.secondaryColor)}50`);
-          middleGlow.addColorStop(1, 'transparent');
+          crownGlow.addColorStop(0, `${crownColor}80`);
+          crownGlow.addColorStop(0.5, `${crownColor}60`);
+          crownGlow.addColorStop(1, 'transparent');
           
-          ctx.fillStyle = middleGlow;
+          ctx.fillStyle = crownGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Layer 3: Outer aura field
+          // 3. Receiving Energy - Left side
           ctx.globalCompositeOperation = 'color-dodge';
-          const outerGlow = ctx.createRadialGradient(
-            centerX, centerY, maxRadius * 0.6,
-            centerX, centerY, maxRadius * 1.2
-          );
-          outerGlow.addColorStop(0, 'transparent');
-          outerGlow.addColorStop(0.3, `${getAccurateColorCode(auraData.dominantColor)}40`);
-          outerGlow.addColorStop(0.6, `${getAccurateColorCode(auraData.secondaryColor)}30`);
-          outerGlow.addColorStop(1, 'transparent');
+          const leftX = canvas.width * 0.15;
+          const leftY = centerY;
+          const sideRadius = canvas.width * 0.2;
           
-          ctx.fillStyle = outerGlow;
+          const receivingGlow = ctx.createRadialGradient(
+            leftX, leftY, 0,
+            leftX, leftY, sideRadius
+          );
+          receivingGlow.addColorStop(0, `${receivingColor}70`);
+          receivingGlow.addColorStop(0.4, `${receivingColor}50`);
+          receivingGlow.addColorStop(0.8, `${receivingColor}30`);
+          receivingGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = receivingGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Layer 4: Energy trails around the edges
+          // 4. Giving Energy - Right side
+          ctx.globalCompositeOperation = 'color-dodge';
+          const rightX = canvas.width * 0.85;
+          const rightY = centerY;
+          
+          const givingGlow = ctx.createRadialGradient(
+            rightX, rightY, 0,
+            rightX, rightY, sideRadius
+          );
+          givingGlow.addColorStop(0, `${givingColor}70`);
+          givingGlow.addColorStop(0.4, `${givingColor}50`);
+          givingGlow.addColorStop(0.8, `${givingColor}30`);
+          givingGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = givingGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Add subtle energy flow lines connecting the zones
           ctx.globalCompositeOperation = 'lighter';
-          for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const trailX = centerX + Math.cos(angle) * maxRadius * 0.8;
-            const trailY = centerY + Math.sin(angle) * maxRadius * 0.8;
-            
-            const trail = ctx.createRadialGradient(
-              trailX, trailY, 0,
-              trailX, trailY, maxRadius * 0.2
-            );
-            trail.addColorStop(0, `${getAccurateColorCode(auraData.dominantColor)}30`);
-            trail.addColorStop(0.5, `${getAccurateColorCode(auraData.secondaryColor)}20`);
-            trail.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = trail;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
+          ctx.strokeStyle = `${crownColor}40`;
+          ctx.lineWidth = 2;
+          
+          // Flow from crown to receiving
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY * 0.3);
+          ctx.quadraticCurveTo(leftX, centerY * 0.6, leftX, leftY);
+          ctx.stroke();
+          
+          // Flow from crown to giving
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY * 0.3);
+          ctx.quadraticCurveTo(rightX, centerY * 0.6, rightX, rightY);
+          ctx.stroke();
           
           // Reset composite operation
           ctx.globalCompositeOperation = 'source-over';
@@ -3544,7 +3611,7 @@ export default function AuraAnalysis() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                       </svg>
                                     </div>
-                                    <h5 className="font-medium text-sm">Vitality</h5>
+                                    <h5 className="font-medium text-sm">Recieving Energy</h5>
                                     <div className="mt-1 flex justify-center">
                                       <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((i) => (
@@ -3560,7 +3627,7 @@ export default function AuraAnalysis() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4M12 4v16" />
                                       </svg>
                                     </div>
-                                    <h5 className="font-medium text-sm">Balance</h5>
+                                    <h5 className="font-medium text-sm">Giving Energy</h5>
                                     <div className="mt-1 flex justify-center">
                                       <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((i) => (
@@ -3576,7 +3643,7 @@ export default function AuraAnalysis() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                       </svg>
                                     </div>
-                                    <h5 className="font-medium text-sm">Resilience</h5>
+                                    <h5 className="font-medium text-sm">Overall Strength</h5>
                                     <div className="mt-1 flex justify-center">
                                       <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((i) => (
@@ -3592,7 +3659,7 @@ export default function AuraAnalysis() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
                                       </svg>
                                     </div>
-                                    <h5 className="font-medium text-sm">Harmony</h5>
+                                    <h5 className="font-medium text-sm">Alignment</h5>
                                     <div className="mt-1 flex justify-center">
                                       <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((i) => (
