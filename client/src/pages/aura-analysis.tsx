@@ -525,7 +525,8 @@ export default function AuraAnalysis() {
       'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65,
     };
     const base = receptivityMap[aura.dominantColor] || 60;
-    return Math.min(95, base + (aura.energyLevel - 50) * 2);
+    const calculated = base + (aura.energyLevel - 50) * 2;
+    return Math.max(5, Math.min(95, calculated));
   };
 
   const getGivingEnergyDescription = (percentage: number): string => {
@@ -536,9 +537,9 @@ export default function AuraAnalysis() {
   };
 
   const getReceivingEnergyDescription = (percentage: number): string => {
-    if (percentage >= 80) return 'Highly receptive';
-    if (percentage >= 60) return 'Balanced receiver';
-    if (percentage >= 40) return 'Selective absorber';
+    if (percentage >= 800) return 'Highly receptive';
+    if (percentage >= 600) return 'Balanced receiver';
+    if (percentage >= 400) return 'Selective absorber';
     return 'Energy filtering';
   };
 
