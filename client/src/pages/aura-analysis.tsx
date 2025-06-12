@@ -647,6 +647,8 @@ export default function AuraAnalysis() {
     return 'Strong boundaries';
   };
 
+
+
   const getBalanceDescription = (percentage: number): string => {
     if (percentage >= 80) return 'Harmonious flow';
     if (percentage >= 60) return 'Good balance';
@@ -2471,17 +2473,29 @@ export default function AuraAnalysis() {
                                     
                                     <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
                                       <div className={`w-6 h-6 rounded-full ${getColorClass(result.dominantColor)}`}></div>
-                                      <div>
+                                      <div className="flex-1">
                                         <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
-                                        <div className="text-xs text-gray-600">{getColorMeaningForEnergyTab(result.dominantColor)}</div>
+                                        <div className="text-xs text-gray-600 mb-1">{getColorMeaningForEnergyTab(result.dominantColor)}</div>
+                                        <div className="text-xs text-green-600 mb-1">
+                                          <span className="font-medium">Positive:</span> {getColorPositiveMeaning(result.dominantColor)}
+                                        </div>
+                                        <div className="text-xs text-orange-600">
+                                          <span className="font-medium">Watch for:</span> {getColorNegativeMeaning(result.dominantColor)}
+                                        </div>
                                       </div>
                                     </div>
                                     
                                     <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
                                       <div className={`w-6 h-6 rounded-full ${getColorClass(result.secondaryColor)}`}></div>
-                                      <div>
+                                      <div className="flex-1">
                                         <div className="font-medium text-sm">{result.secondaryColor} - Supporting</div>
-                                        <div className="text-xs text-gray-600">{getColorMeaningForEnergyTab(result.secondaryColor)}</div>
+                                        <div className="text-xs text-gray-600 mb-1">{getColorMeaningForEnergyTab(result.secondaryColor)}</div>
+                                        <div className="text-xs text-green-600 mb-1">
+                                          <span className="font-medium">Positive:</span> {getColorPositiveMeaning(result.secondaryColor)}
+                                        </div>
+                                        <div className="text-xs text-orange-600">
+                                          <span className="font-medium">Watch for:</span> {getColorNegativeMeaning(result.secondaryColor)}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
