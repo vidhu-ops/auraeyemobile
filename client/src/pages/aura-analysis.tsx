@@ -308,7 +308,7 @@ export default function AuraAnalysis() {
   const getColorMeaning = (colorName: string): string => {
     const meaningMap: Record<string, string> = {
       'Red': 'Passion, vitality, grounding energy',
-      'Orange': 'Creativity, enthusiasm, emotional balance',
+      'Orange': 'Creativity, enthusiasm, enthusiasm, creativity, energy, luck, and positivity. The orange aura is visible around creative, impulsive, lucky, positive, and dynamic ',
       'Yellow': 'Intelligence, optimism, personal power',
       'Green': 'Healing, love, growth, heart-centered energy',
       'Blue': 'Communication, truth, peace, intuition',
@@ -349,6 +349,94 @@ export default function AuraAnalysis() {
       
     };
     return meaningMap[colorName] || 'Unique spiritual energy';
+  }
+
+  const getColorPositiveMeaning = (colorName: string): string => {
+    const positiveMeanings: Record<string, string> = {
+      'Red': 'Leadership, courage, passion, vitality, and determination. You have strong life force energy and the power to overcome obstacles.',
+      'Orange': 'Creativity, joy, enthusiasm, confidence, and artistic expression. You bring warmth and positive energy to those around you.',
+      'Yellow': 'Intelligence, wisdom, optimism, mental clarity, and analytical thinking. You have a bright mind and natural teaching abilities.',
+      'Green': 'Love, compassion, healing, growth, and harmony. You have a natural ability to nurture and bring balance to situations.',
+      'Blue': 'Truth, communication, peace, intuition, and spiritual awareness. You have strong psychic abilities and speak with wisdom.',
+      'Indigo': 'Deep intuition, psychic gifts, spiritual insight, and mystical awareness. You have access to higher realms of consciousness.',
+      'Violet': 'Spiritual transformation, divine connection, magic, and enlightenment. You are on a powerful spiritual path of growth.',
+      'Purple': 'Spiritual nobility, mysticism, divine wisdom, and higher consciousness. You possess deep spiritual knowledge and power.',
+      'Pink': 'Unconditional love, compassion, emotional healing, and nurturing energy. You have a natural gift for caring and healing others.',
+      'Gold': 'Divine wisdom, spiritual mastery, enlightenment, and higher purpose. You are achieving spiritual excellence and mastery.',
+      'Silver': 'Intuitive wisdom, feminine power, psychic protection, and lunar energy. You have strong connection to intuitive realms.',
+      'Turquoise': 'Healing abilities, higher communication, emotional balance, and therapeutic energy. You have natural healing gifts.',
+      'White': 'Purity, divine protection, spiritual clarity, and angelic connection. You are guided and protected by higher forces.',
+      'Lavender': 'Gentle spirituality, peaceful wisdom, and calm guidance. You bring serenity and spiritual comfort to others.',
+      'Coral': 'Emotional warmth, creative expression, social harmony, and artistic gifts. You bring beauty and creativity to the world.',
+      'Mint': 'Fresh healing energy, renewal, growth, and rejuvenation. You have the power to refresh and restore others.',
+      'Peach': 'Gentle love, caring nature, emotional warmth, and nurturing spirit. You provide comfort and emotional support.',
+      'Sky Blue': 'Clear communication, freedom, openness, and expansive thinking. You inspire others to reach higher perspectives.',
+      'Rose': 'Deep love, emotional healing, romance, and heart-centered wisdom. You heal hearts and inspire true love.',
+      'Amber': 'Ancient wisdom, protection, grounding, and earth connection. You carry timeless knowledge and natural stability.',
+      'Gray': 'Balance, neutrality, contemplation, and wisdom. You bring calm reasoning and balanced perspective to situations.',
+      'Black': 'Protection, transformation, mystery, and deep inner wisdom. You have the power to transform and protect others.',
+      'Crimson': 'Deep passion, intensity, vitality, and powerful life force. You have intense energy for important causes.',
+      'Magenta': 'Innovation, uniqueness, spiritual rebellion, and non-conformity. You follow your own authentic spiritual path.',
+      'Brown': 'Grounding, stability, reliability, and practical wisdom. You provide strong foundation and earth-centered guidance.',
+      'Beige': 'Neutral wisdom, adaptability, and peaceful energy. You bring calm stability and flexible understanding.',
+      'Cyan': 'Clear healing communication, emotional clarity, and therapeutic expression. You help others understand their emotions.',
+      'Lime': 'Fresh energy, renewal, vibrant growth, and new beginnings. You inspire others to embrace positive change.',
+      'Maroon': 'Deep passion, mature intensity, and grounded vitality. You have sustained energy for long-term commitments.',
+      'Navy': 'Deep intuition, profound wisdom, grounding, and spiritual depth. You access deep wells of spiritual knowledge.',
+      'Olive': 'Natural balance, harmony, practicality, and peaceful strength. You bring stability and natural wisdom.',
+      'Teal': 'Healing communication, emotional clarity, pure connections, and therapeutic wisdom. You facilitate deep healing conversations.',
+      'Bronze': 'Ancient wisdom, protective strength, grounding, and enduring knowledge. You carry timeless spiritual insights.',
+      'Cobalt': 'Deep intuition, profound wisdom, spiritual grounding, and mystical connection. You access higher spiritual realms.',
+      'Emerald': 'Deep healing energy, renewal, growth, and heart-centered wisdom. You facilitate profound healing and transformation.',
+      'Jade': 'Pure healing energy, compassion, balanced growth, and harmonious wisdom. You bring peaceful healing to others.',
+      'Sapphire': 'Divine truth, deep insight, spiritual wisdom, and truth-seeking nature. You uncover and share spiritual truths.',
+      'Topaz': 'Ancient wisdom, emotional depth, creative inspiration, and spiritual creativity. You channel divine creativity.'
+    };
+    return positiveMeanings[colorName] || 'Your unique energy signature carries special gifts and positive spiritual qualities.';
+  }
+
+  const getColorNegativeMeaning = (colorName: string): string => {
+    const negativeMeanings: Record<string, string> = {
+      'Red': 'Anger, aggression, impatience, frustration, or overwhelming intensity. Channel your energy more constructively and practice patience.',
+      'Orange': 'Overconfidence, attention-seeking, restlessness, or scattered energy. Focus on grounding your creative impulses and finding stability.',
+      'Yellow': 'Overthinking, anxiety, critical judgment, or mental exhaustion. Take time to quiet your mind and find inner peace.',
+      'Green': 'Jealousy, possessiveness, codependency, or emotional imbalance. Work on releasing control and trusting the flow of life.',
+      'Blue': 'Communication blocks, sadness, withdrawal, or suppressed emotions. Express your truth and allow your voice to be heard.',
+      'Indigo': 'Confusion, overwhelm from psychic input, or spiritual disconnection. Ground yourself and protect your energy boundaries.',
+      'Violet': 'Spiritual arrogance, disconnection from reality, or ego inflation. Balance your spiritual pursuits with practical matters.',
+      'Purple': 'Superiority complex, spiritual materialism, or misuse of power. Use your gifts humbly and for the highest good.',
+      'Pink': 'Codependency, emotional manipulation, or martyrdom. Set healthy boundaries and practice self-love first.',
+      'Gold': 'Spiritual ego, pride, or feeling superior to others. Remember that true wisdom comes with humility and service.',
+      'Silver': 'Emotional instability, moodiness, or psychic vulnerability. Strengthen your energy protection and emotional boundaries.',
+      'Turquoise': 'Emotional overwhelm, taking on others\' pain, or healing burnout. Practice self-care and energy protection.',
+      'White': 'Spiritual bypassing, avoidance of shadow work, or perfectionism. Embrace all aspects of your human experience.',
+      'Lavender': 'Spiritual escapism, avoidance of reality, or passive withdrawal. Balance spirituality with practical engagement.',
+      'Coral': 'Emotional dependency, people-pleasing, or fear of rejection. Develop your inner strength and authentic self-expression.',
+      'Mint': 'Superficial healing, avoiding deep work, or quick-fix mentality. Commit to deeper, more sustained healing practices.',
+      'Peach': 'Over-nurturing, loss of boundaries, or emotional exhaustion. Learn to care for yourself while helping others.',
+      'Sky Blue': 'Scattered thinking, lack of focus, or unrealistic expectations. Ground your ideas in practical reality.',
+      'Rose': 'Romantic illusions, emotional dependency, or heart-based manipulation. Develop healthy relationship boundaries.',
+      'Amber': 'Resistance to change, stubbornness, or being stuck in the past. Open yourself to growth and new experiences.',
+      'Gray': 'Indecision, lack of direction, or emotional numbness. Reconnect with your passion and life purpose.',
+      'Black': 'Depression, negativity, or absorption of others\' dark energy. Cleanse your energy field and seek light and healing.',
+      'Crimson': 'Overwhelming intensity, destructive passion, or uncontrolled anger. Learn to moderate your intense energy.',
+      'Magenta': 'Rebellion without purpose, spiritual confusion, or feeling misunderstood. Find constructive ways to express your uniqueness.',
+      'Brown': 'Stubbornness, resistance to change, or being overly materialistic. Open yourself to spiritual growth and expansion.',
+      'Beige': 'Apathy, lack of passion, or emotional flatness. Reconnect with what truly excites and motivates you.',
+      'Cyan': 'Emotional coldness, detachment, or superficial communication. Allow yourself to feel and express emotions more deeply.',
+      'Lime': 'Hyperactivity, scattered energy, or impatience with natural timing. Learn to flow with natural rhythms.',
+      'Maroon': 'Suppressed anger, hidden resentment, or emotional stagnation. Address unresolved emotional issues openly.',
+      'Navy': 'Emotional rigidity, pessimism, or overly serious nature. Allow more lightness and joy into your life.',
+      'Olive': 'Dullness, lack of inspiration, or resistance to change. Seek new experiences and embrace growth opportunities.',
+      'Teal': 'Emotional overwhelm, boundary confusion, or taking on others\' emotions. Strengthen your emotional boundaries.',
+      'Bronze': 'Outdated thinking, resistance to modern ideas, or inflexibility. Balance tradition with openness to new ways.',
+      'Cobalt': 'Emotional intensity, overwhelming depth, or spiritual obsession. Balance deep work with lightness and joy.',
+      'Emerald': 'Possessiveness, jealousy, or attachment to outcomes. Practice letting go and trusting the healing process.',
+      'Jade': 'Complacency, emotional stagnation, or resistance to necessary change. Embrace growth even when comfortable.',
+      'Sapphire': 'Harsh judgment, overly critical nature, or spiritual rigidity. Temper truth with compassion and understanding.',
+      'Topaz': 'Emotional volatility, creative blocks, or scattered artistic energy. Focus your creative gifts more deliberately.'
+    };
+    return negativeMeanings[colorName] || 'This energy may need balancing or could indicate areas for spiritual growth and healing.';
   };
 
   // Helper functions for Energy Reading tab
@@ -2444,6 +2532,18 @@ export default function AuraAnalysis() {
                                         </div>
                                       </div>
                                       <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.dominantColor)}</p>
+                                      
+                                      {/* Positive and Negative Meanings */}
+                                      <div className="mt-3 space-y-2">
+                                        <div className="p-2 bg-green-50 rounded-md border border-green-200">
+                                          <div className="text-xs font-medium text-green-800 mb-1">✓ Positive Aspects</div>
+                                          <div className="text-xs text-green-700">{getColorPositiveMeaning(result.dominantColor)}</div>
+                                        </div>
+                                        <div className="p-2 bg-amber-50 rounded-md border border-amber-200">
+                                          <div className="text-xs font-medium text-amber-800 mb-1">⚠ Areas for Growth</div>
+                                          <div className="text-xs text-amber-700">{getColorNegativeMeaning(result.dominantColor)}</div>
+                                        </div>
+                                      </div>
                                       <div className="text-xs text-gray-500">
                                         Hex: {getAccurateColorCode(result.dominantColor)}
                                       </div>
@@ -2465,6 +2565,18 @@ export default function AuraAnalysis() {
                                         </div>
                                       </div>
                                       <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.secondaryColor || result.dominantColor)}</p>
+                                      
+                                      {/* Positive and Negative Meanings */}
+                                      <div className="mt-3 space-y-2">
+                                        <div className="p-2 bg-green-50 rounded-md border border-green-200">
+                                          <div className="text-xs font-medium text-green-800 mb-1">✓ Positive Aspects</div>
+                                          <div className="text-xs text-green-700">{getColorPositiveMeaning(result.secondaryColor || result.dominantColor)}</div>
+                                        </div>
+                                        <div className="p-2 bg-amber-50 rounded-md border border-amber-200">
+                                          <div className="text-xs font-medium text-amber-800 mb-1">⚠ Areas for Growth</div>
+                                          <div className="text-xs text-amber-700">{getColorNegativeMeaning(result.secondaryColor || result.dominantColor)}</div>
+                                        </div>
+                                      </div>
                                       <div className="text-xs text-gray-500">
                                         Hex: {getAccurateColorCode(result.secondaryColor || result.dominantColor)}
                                       </div>
