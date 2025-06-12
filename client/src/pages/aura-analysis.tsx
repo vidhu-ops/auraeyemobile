@@ -37,6 +37,48 @@ export default function AuraAnalysis() {
   const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
+  
+  // Image hash storage for consistent results
+  const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
+
+  // Simple hash function for consistent image results
+  const generateImageHash = (base64Image: string): string => {
+    let hash = 0;
+    const str = base64Image.substring(0, 1000); // Use first 1000 chars for hash
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(36);
+  };
+
+  // Check if image is similar to cached images (basic similarity check)
+  const findSimilarImage = (newHash: string, base64Image: string): AuraAnalysisResult | null => {
+    // Check for exact match first
+    if (imageCache.has(newHash)) {
+      return imageCache.get(newHash) || null;
+    }
+    
+    // Check for similar hashes
+    const entries = Array.from(imageCache.entries());
+    for (let i = 0; i < entries.length; i++) {
+      const [cachedHash, cachedResult] = entries[i];
+      
+      // Check for similar hashes (edit distance of 1-2 characters)
+      if (Math.abs(cachedHash.length - newHash.length) <= 2) {
+        let differences = 0;
+        const minLength = Math.min(cachedHash.length, newHash.length);
+        for (let j = 0; j < minLength; j++) {
+          if (cachedHash[j] !== newHash[j]) differences++;
+        }
+        if (differences <= 2) {
+          return cachedResult; // Similar image
+        }
+      }
+    }
+    return null;
+  };
 
   // Submit review for aura analysis
   const submitReview = async () => {
@@ -510,23 +552,24 @@ export default function AuraAnalysis() {
 
   const calculateGivingEnergy = (aura: AuraAnalysisResult): number => {
     const energyMap: Record<string, number> = {
-      'Red': 85, 'Orange': 75, 'Yellow': 70, 'Green': 80,
-      'Blue': 65, 'Indigo': 60, 'Violet': 55, 'Purple': 65,
-      'Pink': 73, 'White': 95, 'Gold': 85, 'Silver': 68, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75
+      'Red': 70, 'Orange': 65, 'Yellow': 60, 'Green': 68,
+      'Blue': 55, 'Indigo': 50, 'Violet': 45, 'Purple': 55,
+      'Pink': 63, 'White': 75, 'Gold': 70, 'Silver': 58, 'Turquoise': 65, 'Cyan': 65, 'Emerald': 68, 'Sapphire': 72, 'Topaz': 60, 'Jade': 65
     };
-    const base = energyMap[aura.dominantColor] || 60;
-    return Math.max(95, base + (aura.energyLevel - 50) * 3);
+    const base = energyMap[aura.dominantColor] || 55;
+    const calculated = base + (aura.energyLevel - 50) * 0.6;
+    return Math.max(20, Math.min(88, calculated));
   };
 
   const calculateReceivingEnergy = (aura: AuraAnalysisResult): number => {
     const receptivityMap: Record<string, number> = {
-      'Red': 40, 'Orange': 60, 'Yellow': 55, 'Green': 85,
-      'Blue': 80, 'Indigo': 90, 'Violet': 95, 'Purple': 85,
-      'Pink': 80, 'White': 90, 'Gold': 70, 'Silver': 95, 'Turquoise': 75, 'Cyan': 75, 'Emerald': 80, 'Sapphire': 85, 'Topaz': 70, 'Jade': 75, 'Bronze': 65,
+      'Red': 35, 'Orange': 50, 'Yellow': 45, 'Green': 75,
+      'Blue': 70, 'Indigo': 78, 'Violet': 82, 'Purple': 75,
+      'Pink': 70, 'White': 80, 'Gold': 60, 'Silver': 85, 'Turquoise': 65, 'Cyan': 65, 'Emerald': 70, 'Sapphire': 75, 'Topaz': 60, 'Jade': 65, 'Bronze': 55,
     };
-    const base = receptivityMap[aura.dominantColor] || 60;
-    const calculated = base + (aura.energyLevel - 50) * 2;
-    return Math.max(5, Math.min(95, calculated));
+    const base = receptivityMap[aura.dominantColor] || 55;
+    const calculated = base + (aura.energyLevel - 50) * 0.6;
+    return Math.max(20, Math.min(88, calculated));
   };
 
   const getGivingEnergyDescription = (percentage: number): string => {
@@ -1877,8 +1920,25 @@ export default function AuraAnalysis() {
         
         if (base64data) {
           try {
-            // Call API to analyze the image
-            const analysisResult = await analyzeAuraImage(base64data);
+            // Generate hash for image consistency
+            const imageHash = generateImageHash(base64data);
+            
+            // Check if we have a cached result for this or similar image
+            const cachedResult = findSimilarImage(imageHash, base64data);
+            
+            let analysisResult: AuraAnalysisResult;
+            
+            if (cachedResult) {
+              // Use cached result for consistency
+              analysisResult = cachedResult;
+              setAnalysisStage("Loading cached analysis for consistency...");
+            } else {
+              // Call API to analyze the image
+              analysisResult = await analyzeAuraImage(base64data);
+              // Cache the result
+              setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
+            }
+            
             setResult(analysisResult);
             
             // Set analysis ID if returned from server for review functionality
