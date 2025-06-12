@@ -3083,8 +3083,8 @@ export default function AuraAnalysis() {
                                       ))}
                                     </>
                                   )}
-                                  </div>
                                 </div>
+                              </div>
 
                               {/* Energy Interaction Map */}
                               <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6">
@@ -3161,6 +3161,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
                             </div>
+                          </div>
                           </TabsContent>
                           
                           <TabsContent value="combined">
