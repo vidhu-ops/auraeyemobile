@@ -1237,7 +1237,7 @@ export default function AuraAnalysis() {
           ctx.globalCompositeOperation = 'multiply';
           const personalityGlow = ctx.createRadialGradient(
             centerX, centerY, 0,
-            centerX, centerY, maxRadius * 1.3
+            centerX, centerY, maxRadius * 2
           );
           personalityGlow.addColorStop(0, 'transparent');
           personalityGlow.addColorStop(0.4, `${personalityColor}25`);
@@ -1248,16 +1248,16 @@ export default function AuraAnalysis() {
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
           // 2. Crown/Thinking Energy - Above head (how you think)
-          ctx.globalCompositeOperation = 'screen';
+          ctx.globalCompositeOperation = 'overlay';
           const headY = canvas.height * 0.25;
           const headRadius = Math.min(canvas.width, canvas.height) * 0.12;
           const thinkingGlow = ctx.createRadialGradient(
             centerX, headY, 0,
-            centerX, headY, headRadius * 1.8
+            centerX, headY, headRadius * 1.5
           );
           thinkingGlow.addColorStop(0, `${thinkingColor}90`);
-          thinkingGlow.addColorStop(0.3, `${thinkingColor}70`);
-          thinkingGlow.addColorStop(0.6, `${thinkingColor}40`);
+          thinkingGlow.addColorStop(0.5, `${thinkingColor}70`);
+          thinkingGlow.addColorStop(0.9, `${thinkingColor}40`);
           thinkingGlow.addColorStop(1, 'transparent');
           
           ctx.fillStyle = thinkingGlow;
@@ -1265,56 +1265,56 @@ export default function AuraAnalysis() {
           
           // 3. Receiving Energy - Left side (dynamic environmental intake)
           ctx.globalCompositeOperation = 'overlay';
-          const leftX = canvas.width * 0.1;
+          const leftX = canvas.width * 0.5;
           const leftY = centerY;
-          const sideRadius = Math.min(canvas.width, canvas.height) * 0.18;
+          const sideRadius = Math.min(canvas.width, canvas.height) * 0.3;
           
           // Create flowing receiving energy pattern
           for (let i = 0; i < 3; i++) {
             const offsetY = leftY + (i - 1) * canvas.height * 0.15;
             const receivingGlow = ctx.createRadialGradient(
               leftX, offsetY, 0,
-              leftX + sideRadius * 0.7, offsetY, sideRadius
+              leftX + sideRadius * 0.9, offsetY, sideRadius
             );
             receivingGlow.addColorStop(0, `${receivingColor}${80 - i * 15}`);
-            receivingGlow.addColorStop(0.4, `${receivingColor}${60 - i * 10}`);
-            receivingGlow.addColorStop(0.8, `${receivingColor}${30 - i * 5}`);
-            receivingGlow.addColorStop(1, 'transparent');
+            receivingGlow.addColorStop(0.8, `${receivingColor}${60 - i * 10}`);
+            receivingGlow.addColorStop(1, `${receivingColor}${30 - i * 5}`);
+            receivingGlow.addColorStop(2, 'opaque');
             
             ctx.fillStyle = receivingGlow;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
           }
           
           // 4. Giving Energy - Right side (dynamic life pattern creation)
-          ctx.globalCompositeOperation = 'color-dodge';
-          const rightX = canvas.width * 0.9;
+          ctx.globalCompositeOperation = 'source-over';
+          const rightX = canvas.width * 3;
           const rightY = centerY;
           
           // Create flowing giving energy pattern
           for (let i = 0; i < 3; i++) {
-            const offsetY = rightY + (i - 1) * canvas.height * 0.15;
+            const offsetY = rightY + (i - 1) * canvas.height * 0.2;
             const givingGlow = ctx.createRadialGradient(
               rightX, offsetY, 0,
-              rightX - sideRadius * 0.7, offsetY, sideRadius
+              rightX - sideRadius * 0.9, offsetY, sideRadius
             );
             givingGlow.addColorStop(0, `${givingColor}${80 - i * 15}`);
-            givingGlow.addColorStop(0.4, `${givingColor}${60 - i * 10}`);
-            givingGlow.addColorStop(0.8, `${givingColor}${30 - i * 5}`);
-            givingGlow.addColorStop(1, 'transparent');
+            givingGlow.addColorStop(0.8, `${givingColor}${60 - i * 10}`);
+            givingGlow.addColorStop(2, `${givingColor}${30 - i * 5}`);
+            givingGlow.addColorStop(1, 'overlay');
             
             ctx.fillStyle = givingGlow;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 3, canvas.width, canvas.height);
           }
           
           // 5. Add energy flow connections between zones
-          ctx.globalCompositeOperation = 'soft-light';
-          ctx.strokeStyle = `${thinkingColor}50`;
-          ctx.lineWidth = 3;
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.strokeStyle = `${thinkingColor}80`;
+          ctx.lineWidth = 5;
           ctx.lineCap = 'round';
           
           // Thinking to receiving flow (how thoughts receive environmental input)
           ctx.beginPath();
-          ctx.moveTo(centerX - headRadius * 0.5, headY + headRadius * 0.3);
+          ctx.moveTo(centerX - headRadius * 0.8, headY + headRadius * 0.3);
           ctx.quadraticCurveTo(leftX + sideRadius * 0.8, centerY * 0.7, leftX + sideRadius * 0.3, leftY);
           ctx.stroke();
           
@@ -1325,7 +1325,7 @@ export default function AuraAnalysis() {
           ctx.stroke();
           
           // Add subtle sparkle effects around thinking area
-          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalCompositeOperation = 'screen';
           for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const sparkleX = centerX + Math.cos(angle) * headRadius * 1.2;
@@ -1442,8 +1442,8 @@ export default function AuraAnalysis() {
     const secondaryRgba = colorMap[secondaryColor] || 'rgba(128, 128, 255, 0.3)';
     
     // Create a radial gradient for the aura effect
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const centerX = width / 4;
+    const centerY = height / 4;
     
     // Intensity of the aura based on energy level (1-10)
     const intensityFactor = energyLevel / 10;
@@ -1451,14 +1451,14 @@ export default function AuraAnalysis() {
     
     // Draw multiple layers of aura clouds with different opacities and sizes
     for (let i = 0; i < 5; i++) {
-      const radius = auraSize * (0.6 + i * 0.1);
+      const radius = auraSize * (0.7 + i * 0.3);
       const gradient = ctx.createRadialGradient(
         centerX, centerY, radius * 0.2,
         centerX, centerY, radius
       );
       
       // Add color stops with varying opacity
-      const opacity = 0.15 - i * 0.02;
+      const opacity = 1 - i * 0.02;
       gradient.addColorStop(0, dominantRgba.replace('0.3', `${opacity + 0.1}`));
       gradient.addColorStop(0.4, dominantRgba.replace('0.3', `${opacity}`));
       gradient.addColorStop(0.6, secondaryRgba.replace('0.3', `${opacity}`));
