@@ -9,13 +9,21 @@ interface AuraColor {
 }
 
 interface AuraGlowProps {
-  colors: AuraColor[];
+  colors?: AuraColor[];
+  className?: string;
 }
 
-export function AuraGlow({ colors }: AuraGlowProps) {
+export function AuraGlow({ colors, className }: AuraGlowProps) {
+  const defaultColors: AuraColor[] = [
+    { color: "bg-purple-500/20", size: "w-64 h-64", top: "top-0", left: "left-0", delay: "0s" },
+    { color: "bg-blue-500/20", size: "w-48 h-48", top: "top-1/4", right: "right-0", delay: "1s" },
+    { color: "bg-indigo-500/20", size: "w-56 h-56", bottom: "bottom-0", left: "left-1/4", delay: "2s" }
+  ];
+  const activeColors = colors || defaultColors;
+
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {colors.map((color, index) => (
+    <div className={`absolute inset-0 overflow-hidden ${className || ''}`}>
+      {activeColors.map((color, index) => (
         <div 
           key={index}
           className={`

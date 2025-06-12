@@ -7,7 +7,7 @@ import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { PremiumFeature } from "@/components/premium/premium-feature";
+import { PremiumFeatureSimple } from "@/components/premium/premium-feature-simple";
 import { analyzeAuraImage, AuraAnalysisResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -270,8 +270,8 @@ export default function AuraAnalysis() {
                 </CardHeader>
                 <CardContent>
                   <ImageUpload 
-                    onImageUpload={handleImageUpload}
-                    disabled={isAnalyzing}
+                    onImageSelect={handleImageUpload}
+                    isLoading={isAnalyzing}
                   />
                   
                   {originalImage && (
@@ -288,14 +288,14 @@ export default function AuraAnalysis() {
 
               {/* Premium Features */}
               <div className="mt-6 space-y-4">
-                <PremiumFeature
+                <PremiumFeatureSimple
                   title="Enhanced Aura Visualization"
                   description="See your actual aura colors overlaid on your photo"
                   icon={<Crown className="w-5 h-5" />}
                   onClick={() => showPremiumModal("aura")}
                 />
                 
-                <PremiumFeature
+                <PremiumFeatureSimple
                   title="Numerology Integration"
                   description="Combine aura reading with numerology insights"
                   icon={<Zap className="w-5 h-5" />}
