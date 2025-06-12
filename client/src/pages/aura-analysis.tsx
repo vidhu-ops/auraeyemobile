@@ -1240,7 +1240,7 @@ export default function AuraAnalysis() {
             centerX, centerY, maxRadius * 2
           );
           personalityGlow.addColorStop(0, 'transparent');
-          personalityGlow.addColorStop(0.4, `${personalityColor}25`);
+          personalityGlow.addColorStop(0.8, `${personalityColor}25`);
           personalityGlow.addColorStop(0.8, `${personalityColor}40`);
           personalityGlow.addColorStop(1, `${personalityColor}20`);
           
@@ -1256,7 +1256,7 @@ export default function AuraAnalysis() {
             centerX, headY, headRadius * 1.5
           );
           thinkingGlow.addColorStop(0, `${thinkingColor}90`);
-          thinkingGlow.addColorStop(0.5, `${thinkingColor}70`);
+          thinkingGlow.addColorStop(0.8, `${thinkingColor}70`);
           thinkingGlow.addColorStop(0.9, `${thinkingColor}40`);
           thinkingGlow.addColorStop(1, 'transparent');
           
@@ -1271,7 +1271,7 @@ export default function AuraAnalysis() {
           
           // Create flowing receiving energy pattern
           for (let i = 0; i < 3; i++) {
-            const offsetY = leftY + (i - 1) * canvas.height * 0.15;
+            const offsetY = leftY + (i - 1) * canvas.height * 0.2;
             const receivingGlow = ctx.createRadialGradient(
               leftX, offsetY, 0,
               leftX + sideRadius * 0.9, offsetY, sideRadius
@@ -1286,10 +1286,10 @@ export default function AuraAnalysis() {
           }
           
           // 4. Giving Energy - Right side (dynamic life pattern creation)
-          ctx.globalCompositeOperation = 'source-over';
-          const rightX = canvas.width * 3;
+          ctx.globalCompositeOperation = 'overlay';
+          const rightX = canvas.width * 0.5;
           const rightY = centerY;
-          
+        
           // Create flowing giving energy pattern
           for (let i = 0; i < 3; i++) {
             const offsetY = rightY + (i - 1) * canvas.height * 0.2;
@@ -1325,7 +1325,7 @@ export default function AuraAnalysis() {
           ctx.stroke();
           
           // Add subtle sparkle effects around thinking area
-          ctx.globalCompositeOperation = 'screen';
+          ctx.globalCompositeOperation = 'overlay';
           for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const sparkleX = centerX + Math.cos(angle) * headRadius * 1.2;
@@ -1335,7 +1335,7 @@ export default function AuraAnalysis() {
               sparkleX, sparkleY, 0,
               sparkleX, sparkleY, headRadius * 0.15
             );
-            sparkle.addColorStop(0, `${thinkingColor}60`);
+            sparkle.addColorStop(0, `${thinkingColor}70`);
             sparkle.addColorStop(1, 'transparent');
             
             ctx.fillStyle = sparkle;
@@ -1451,7 +1451,7 @@ export default function AuraAnalysis() {
     
     // Draw multiple layers of aura clouds with different opacities and sizes
     for (let i = 0; i < 5; i++) {
-      const radius = auraSize * (0.7 + i * 0.3);
+      const radius = auraSize * (0.6 + i * 0.2);
       const gradient = ctx.createRadialGradient(
         centerX, centerY, radius * 0.2,
         centerX, centerY, radius
@@ -1466,7 +1466,7 @@ export default function AuraAnalysis() {
       
       // Apply the gradient
       ctx.fillStyle = gradient;
-      ctx.globalCompositeOperation = 'screen';
+      ctx.globalCompositeOperation = 'source-over';
       
       // Draw cloud-like shapes
       ctx.beginPath();
@@ -2400,60 +2400,8 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="energy-reading">
                             <div className="space-y-6">
-                              {/* Visual Aura Representation */}
+                              {/* Energy Reading Content */}
                               <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
-                                <h3 className="font-medium text-lg mb-4 text-center">Your Energy Aura Visualization</h3>
-                                
-                                {/* Aura Visual Display */}
-                                <div className="relative mb-6">
-                                  {enhancedAuraImage ? (
-                                    <div className="w-80 h-80 mx-auto relative">
-                                      <img 
-                                        src={enhancedAuraImage} 
-                                        alt="Enhanced Aura Visualization" 
-                                        className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white"
-                                      />
-                                      <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent"></div>
-                                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
-                                        Enhanced Aura
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="w-80 h-80 mx-auto relative">
-                                      {/* Outer Aura Layer */}
-                                      <div 
-                                        className="absolute inset-0 rounded-full opacity-30 blur-lg"
-                                        style={{
-                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}40, ${getAccurateColorCode(result.secondaryColor)}20, transparent)`
-                                        }}
-                                      ></div>
-                                      
-                                      {/* Middle Aura Layer */}
-                                      <div 
-                                        className="absolute inset-4 rounded-full opacity-50 blur-md"
-                                        style={{
-                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}60, ${getAccurateColorCode(result.secondaryColor)}30, transparent)`
-                                        }}
-                                      ></div>
-                                      
-                                      {/* Inner Aura Layer */}
-                                      <div 
-                                        className="absolute inset-8 rounded-full opacity-70 blur-sm"
-                                        style={{
-                                          background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}80, ${getAccurateColorCode(result.secondaryColor)}40, transparent)`
-                                        }}
-                                      ></div>
-                                      
-                                      {/* Core Energy */}
-                                      <div className="absolute inset-1/3 rounded-full bg-white/90 border-4 border-white shadow-xl flex items-center justify-center">
-                                        <div className="text-center">
-                                          <div className="text-2xl mb-1">🧘‍♀️</div>
-                                          <div className="text-xs text-gray-600 font-medium">Energy Core</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
 
                                 {/* Aura Color Explanations */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
