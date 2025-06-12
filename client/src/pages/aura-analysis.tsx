@@ -440,46 +440,70 @@ export default function AuraAnalysis() {
   }
 
   // Helper functions for the 4-zone aura visualization
+  const getReceivingEnergyColor = (auraData: AuraAnalysisResult): string => {
+    // Left side - How person receives energy from environment
+    // This is dynamic and changes based on environmental interactions
+    const receivingEnergyMap: Record<string, string> = {
+      'Red': 'Blue',        // Fire receives from water/air elements
+      'Orange': 'Green',    // Creative energy receives from nature
+      'Yellow': 'Purple',   // Mental energy receives from spiritual realm
+      'Green': 'Pink',      // Heart energy receives through love
+      'Blue': 'Gold',       // Communication receives divine guidance
+      'Indigo': 'Silver',   // Intuition receives cosmic wisdom
+      'Violet': 'White',    // Spiritual crown receives pure light
+      'Purple': 'Turquoise', // Mystic energy receives through clarity
+      'Pink': 'Green',      // Love receives through healing
+      'Gold': 'Blue',       // Divine wisdom receives through truth
+      'Silver': 'Indigo',   // Soul connection receives through intuition
+      'White': 'Violet',    // Pure energy receives through spirituality
+      'Turquoise': 'Rose',  // Healing communication receives through compassion
+      'Magenta': 'Yellow'   // Transformative energy receives through mental clarity
+    };
+    return receivingEnergyMap[auraData.dominantColor] || auraData.secondaryColor || 'Blue';
+  }
+
   const getGivingEnergyColor = (auraData: AuraAnalysisResult): string => {
-    // Calculate giving energy based on heart chakra activity and dominant color
+    // Right side - How person gives energy and creates life patterns
+    // This is dynamic and shows their active contribution to the world
     const givingEnergyMap: Record<string, string> = {
-      'Red': 'Orange',
-      'Orange': 'Yellow', 
-      'Yellow': 'Green',
-      'Green': 'Pink',
-      'Blue': 'Turquoise',
-      'Indigo': 'Blue',
-      'Violet': 'Purple',
-      'Purple': 'Magenta',
-      'Pink': 'Rose',
-      'Gold': 'Amber',
-      'Silver': 'White',
-      'White': 'Silver',
-      'Turquoise': 'Cyan',
-      'Magenta': 'Crimson'
+      'Red': 'Orange',      // Passionate energy gives through creativity
+      'Orange': 'Yellow',   // Creative energy gives through mental stimulation
+      'Yellow': 'Green',    // Mental energy gives through healing wisdom
+      'Green': 'Pink',      // Healing energy gives through unconditional love
+      'Blue': 'Turquoise',  // Truth gives through clear communication
+      'Indigo': 'Purple',   // Intuition gives through spiritual insight
+      'Violet': 'Gold',     // Spiritual energy gives through divine wisdom
+      'Purple': 'Magenta',  // Mystic energy gives through transformation
+      'Pink': 'Rose',       // Love gives through deeper emotional connection
+      'Gold': 'Amber',      // Divine wisdom gives through grounded spirituality
+      'Silver': 'White',    // Soul energy gives through pure light
+      'White': 'Silver',    // Pure light gives through soul connection
+      'Turquoise': 'Cyan',  // Clear communication gives through emotional clarity
+      'Magenta': 'Crimson'  // Transformation gives through passionate intensity
     };
     return givingEnergyMap[auraData.dominantColor] || auraData.dominantColor;
   }
 
-  const getSoulStarColor = (auraData: AuraAnalysisResult): string => {
-    // Soul star chakra typically manifests as transcendent colors
-    const soulStarMap: Record<string, string> = {
-      'Red': 'White',
-      'Orange': 'Gold',
-      'Yellow': 'White',
-      'Green': 'Silver',
-      'Blue': 'Indigo',
-      'Indigo': 'Violet',
-      'Violet': 'White',
-      'Purple': 'Gold',
-      'Pink': 'White',
-      'Gold': 'White',
-      'Silver': 'White',
-      'White': 'Gold',
-      'Turquoise': 'Silver',
-      'Magenta': 'Violet'
+  const getPersonalityColor = (auraData: AuraAnalysisResult): string => {
+    // Overall static background - Core personality and why things happen to them
+    // This represents their fundamental nature and karmic patterns
+    const personalityMap: Record<string, string> = {
+      'Red': 'Maroon',      // Deep passionate nature, attracts intense experiences
+      'Orange': 'Coral',    // Warm creative soul, attracts artistic opportunities
+      'Yellow': 'Gold',     // Wise mental nature, attracts learning experiences
+      'Green': 'Emerald',   // Pure healing heart, attracts those needing healing
+      'Blue': 'Navy',       // Deep truth seeker, attracts authentic connections
+      'Indigo': 'Midnight', // Profound intuitive nature, attracts mystical experiences
+      'Violet': 'Lavender', // Gentle spiritual essence, attracts peaceful environments
+      'Purple': 'Plum',     // Rich mystic soul, attracts transformational events
+      'Pink': 'Rose',       // Loving compassionate heart, attracts relationships
+      'Gold': 'Bronze',     // Ancient wisdom keeper, attracts teaching opportunities
+      'Silver': 'Platinum', // Refined soul energy, attracts elevated circumstances
+      'White': 'Pearl',     // Pure light being, attracts clarity and truth
+      'Turquoise': 'Teal',  // Balanced healer-communicator, attracts harmony
+      'Magenta': 'Fuchsia'  // Dynamic transformer, attracts change and growth
     };
-    return soulStarMap[auraData.dominantColor] || 'White';
+    return personalityMap[auraData.dominantColor] || auraData.dominantColor;
   };
 
   // Helper functions for Energy Reading tab
@@ -1203,91 +1227,120 @@ export default function AuraAnalysis() {
           const centerY = canvas.height / 2;
           const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
           
-          // Calculate energy colors for the 4 zones
-          const crownColor = getAccurateColorCode(auraData.dominantColor);
-          const receivingColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
-          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));
-          const soulStarColor = getAccurateColorCode(getSoulStarColor(auraData));
+          // Calculate energy colors for the 4 zones with proper spiritual mapping
+          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Crown - How you think
+          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Left - Receiving from environment (dynamic)
+          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Right - Giving energy, life patterns (dynamic)
+          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Overall - Static personality (why things happen)
           
-          // 1. Soul Star Chakra - Around entire picture (outermost layer)
+          // 1. Personality Color - Static background around entire picture
+          ctx.globalCompositeOperation = 'multiply';
+          const personalityGlow = ctx.createRadialGradient(
+            centerX, centerY, 0,
+            centerX, centerY, maxRadius * 1.3
+          );
+          personalityGlow.addColorStop(0, 'transparent');
+          personalityGlow.addColorStop(0.4, `${personalityColor}25`);
+          personalityGlow.addColorStop(0.8, `${personalityColor}40`);
+          personalityGlow.addColorStop(1, `${personalityColor}20`);
+          
+          ctx.fillStyle = personalityGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // 2. Crown/Thinking Energy - Above head (how you think)
           ctx.globalCompositeOperation = 'screen';
-          const soulStarGlow = ctx.createRadialGradient(
-            centerX, centerY, maxRadius * 0.8,
-            centerX, centerY, maxRadius * 1.4
+          const headY = canvas.height * 0.25;
+          const headRadius = Math.min(canvas.width, canvas.height) * 0.12;
+          const thinkingGlow = ctx.createRadialGradient(
+            centerX, headY, 0,
+            centerX, headY, headRadius * 1.8
           );
-          soulStarGlow.addColorStop(0, 'transparent');
-          soulStarGlow.addColorStop(0.3, `${soulStarColor}50`);
-          soulStarGlow.addColorStop(0.7, `${soulStarColor}30`);
-          soulStarGlow.addColorStop(1, 'transparent');
+          thinkingGlow.addColorStop(0, `${thinkingColor}90`);
+          thinkingGlow.addColorStop(0.3, `${thinkingColor}70`);
+          thinkingGlow.addColorStop(0.6, `${thinkingColor}40`);
+          thinkingGlow.addColorStop(1, 'transparent');
           
-          ctx.fillStyle = soulStarGlow;
+          ctx.fillStyle = thinkingGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // 2. Crown Energy - Top of head
+          // 3. Receiving Energy - Left side (dynamic environmental intake)
           ctx.globalCompositeOperation = 'overlay';
-          const headRadius = canvas.height * 0.15;
-          const crownGlow = ctx.createRadialGradient(
-            centerX, centerY * 0.3, 0,
-            centerX, centerY * 0.3, headRadius
-          );
-          crownGlow.addColorStop(0, `${crownColor}80`);
-          crownGlow.addColorStop(0.5, `${crownColor}60`);
-          crownGlow.addColorStop(1, 'transparent');
-          
-          ctx.fillStyle = crownGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // 3. Receiving Energy - Left side
-          ctx.globalCompositeOperation = 'color-dodge';
-          const leftX = canvas.width * 0.15;
+          const leftX = canvas.width * 0.1;
           const leftY = centerY;
-          const sideRadius = canvas.width * 0.2;
+          const sideRadius = Math.min(canvas.width, canvas.height) * 0.18;
           
-          const receivingGlow = ctx.createRadialGradient(
-            leftX, leftY, 0,
-            leftX, leftY, sideRadius
-          );
-          receivingGlow.addColorStop(0, `${receivingColor}70`);
-          receivingGlow.addColorStop(0.4, `${receivingColor}50`);
-          receivingGlow.addColorStop(0.8, `${receivingColor}30`);
-          receivingGlow.addColorStop(1, 'transparent');
+          // Create flowing receiving energy pattern
+          for (let i = 0; i < 3; i++) {
+            const offsetY = leftY + (i - 1) * canvas.height * 0.15;
+            const receivingGlow = ctx.createRadialGradient(
+              leftX, offsetY, 0,
+              leftX + sideRadius * 0.7, offsetY, sideRadius
+            );
+            receivingGlow.addColorStop(0, `${receivingColor}${80 - i * 15}`);
+            receivingGlow.addColorStop(0.4, `${receivingColor}${60 - i * 10}`);
+            receivingGlow.addColorStop(0.8, `${receivingColor}${30 - i * 5}`);
+            receivingGlow.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = receivingGlow;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
           
-          ctx.fillStyle = receivingGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // 4. Giving Energy - Right side
+          // 4. Giving Energy - Right side (dynamic life pattern creation)
           ctx.globalCompositeOperation = 'color-dodge';
-          const rightX = canvas.width * 0.85;
+          const rightX = canvas.width * 0.9;
           const rightY = centerY;
           
-          const givingGlow = ctx.createRadialGradient(
-            rightX, rightY, 0,
-            rightX, rightY, sideRadius
-          );
-          givingGlow.addColorStop(0, `${givingColor}70`);
-          givingGlow.addColorStop(0.4, `${givingColor}50`);
-          givingGlow.addColorStop(0.8, `${givingColor}30`);
-          givingGlow.addColorStop(1, 'transparent');
+          // Create flowing giving energy pattern
+          for (let i = 0; i < 3; i++) {
+            const offsetY = rightY + (i - 1) * canvas.height * 0.15;
+            const givingGlow = ctx.createRadialGradient(
+              rightX, offsetY, 0,
+              rightX - sideRadius * 0.7, offsetY, sideRadius
+            );
+            givingGlow.addColorStop(0, `${givingColor}${80 - i * 15}`);
+            givingGlow.addColorStop(0.4, `${givingColor}${60 - i * 10}`);
+            givingGlow.addColorStop(0.8, `${givingColor}${30 - i * 5}`);
+            givingGlow.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = givingGlow;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
           
-          ctx.fillStyle = givingGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // 5. Add energy flow connections between zones
+          ctx.globalCompositeOperation = 'soft-light';
+          ctx.strokeStyle = `${thinkingColor}50`;
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
           
-          // Add subtle energy flow lines connecting the zones
+          // Thinking to receiving flow (how thoughts receive environmental input)
+          ctx.beginPath();
+          ctx.moveTo(centerX - headRadius * 0.5, headY + headRadius * 0.3);
+          ctx.quadraticCurveTo(leftX + sideRadius * 0.8, centerY * 0.7, leftX + sideRadius * 0.3, leftY);
+          ctx.stroke();
+          
+          // Thinking to giving flow (how thoughts create life patterns)
+          ctx.beginPath();
+          ctx.moveTo(centerX + headRadius * 0.5, headY + headRadius * 0.3);
+          ctx.quadraticCurveTo(rightX - sideRadius * 0.8, centerY * 0.7, rightX - sideRadius * 0.3, rightY);
+          ctx.stroke();
+          
+          // Add subtle sparkle effects around thinking area
           ctx.globalCompositeOperation = 'lighter';
-          ctx.strokeStyle = `${crownColor}40`;
-          ctx.lineWidth = 2;
-          
-          // Flow from crown to receiving
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY * 0.3);
-          ctx.quadraticCurveTo(leftX, centerY * 0.6, leftX, leftY);
-          ctx.stroke();
-          
-          // Flow from crown to giving
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY * 0.3);
-          ctx.quadraticCurveTo(rightX, centerY * 0.6, rightX, rightY);
-          ctx.stroke();
+          for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const sparkleX = centerX + Math.cos(angle) * headRadius * 1.2;
+            const sparkleY = headY + Math.sin(angle) * headRadius * 0.8;
+            
+            const sparkle = ctx.createRadialGradient(
+              sparkleX, sparkleY, 0,
+              sparkleX, sparkleY, headRadius * 0.15
+            );
+            sparkle.addColorStop(0, `${thinkingColor}60`);
+            sparkle.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = sparkle;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
           
           // Reset composite operation
           ctx.globalCompositeOperation = 'source-over';
@@ -2845,9 +2898,98 @@ export default function AuraAnalysis() {
                                 </p>
                               </div>
 
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Dominant Energy Section */}
-                                <div className="space-y-4">
+                              <div className="space-y-6">
+                                {/* 4-Zone Energy Visualization */}
+                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+                                  <h4 className="font-semibold text-lg mb-4 text-center">Your 4-Zone Energy Map</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    
+                                    {/* Crown/Thinking Energy */}
+                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}
+                                        >
+                                          <span className="text-white font-bold">🧠</span>
+                                        </div>
+                                        <div>
+                                          <h5 className="font-bold text-purple-800">{result.dominantColor}</h5>
+                                          <p className="text-sm text-purple-600">Crown Energy - How You Think</p>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        This energy above your head shows your thinking patterns and mental approach to life. 
+                                        {getPositiveDescription(result.dominantColor)}
+                                      </p>
+                                    </div>
+
+                                    {/* Receiving Energy */}
+                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          style={{backgroundColor: getAccurateColorCode(getReceivingEnergyColor(result))}}
+                                        >
+                                          <span className="text-white font-bold">⬅️</span>
+                                        </div>
+                                        <div>
+                                          <h5 className="font-bold text-blue-800">{getReceivingEnergyColor(result)}</h5>
+                                          <p className="text-sm text-blue-600">Receiving Energy (Dynamic)</p>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        This dynamic energy on your left side shows how you receive and process energy from your environment, 
+                                        relationships, and external circumstances. It changes based on your surroundings.
+                                      </p>
+                                    </div>
+
+                                    {/* Giving Energy */}
+                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          style={{backgroundColor: getAccurateColorCode(getGivingEnergyColor(result))}}
+                                        >
+                                          <span className="text-white font-bold">➡️</span>
+                                        </div>
+                                        <div>
+                                          <h5 className="font-bold text-orange-800">{getGivingEnergyColor(result)}</h5>
+                                          <p className="text-sm text-orange-600">Giving Energy (Dynamic)</p>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        This dynamic energy on your right side reveals how you give energy to the world and create patterns in your life. 
+                                        It shows your active contribution and how you influence reality through actions.
+                                      </p>
+                                    </div>
+
+                                    {/* Personality Color */}
+                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          style={{backgroundColor: getAccurateColorCode(getPersonalityColor(result))}}
+                                        >
+                                          <span className="text-white font-bold">🌈</span>
+                                        </div>
+                                        <div>
+                                          <h5 className="font-bold text-amber-800">{getPersonalityColor(result)}</h5>
+                                          <p className="text-sm text-amber-600">Personality Color (Static)</p>
+                                        </div>
+                                      </div>
+                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                        This static color surrounding your entire energy field represents your fundamental personality and 
+                                        core nature. It explains why certain things happen to you and reveals your karmic patterns.
+                                      </p>
+                                    </div>
+
+                                  </div>
+                                </div>
+
+                                {/* Detailed Color Analysis */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                  {/* Primary Color Details */}
                                   <div className="bg-white border rounded-lg p-6 shadow-sm">
                                     <div className="flex items-center space-x-4 mb-4">
                                       <div 
@@ -2860,7 +3002,7 @@ export default function AuraAnalysis() {
                                       </div>
                                       <div>
                                         <h4 className="font-bold text-lg">{result.dominantColor}</h4>
-                                        <p className="text-sm text-gray-600">Dominant Energy</p>
+                                        <p className="text-sm text-gray-600">Primary Crown Energy</p>
                                       </div>
                                     </div>
 
@@ -2877,34 +3019,33 @@ export default function AuraAnalysis() {
 
                                     {/* Shadow Aspects */}
                                     <div className="mb-4">
-                                      <h5 className="font-semibold text-sm text-red-700 mb-2">
-                                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                                        Shadow: {getShadowTraits(result.dominantColor)}
+                                      <h5 className="font-semibold text-sm text-amber-700 mb-2">
+                                        <span className="inline-block w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
+                                        Areas for Growth: {getShadowTraits(result.dominantColor)}
                                       </h5>
                                       <p className="text-sm text-gray-700 leading-relaxed">
                                         {getShadowDescription(result.dominantColor)}
                                       </p>
                                     </div>
 
-                                    {/* Placement */}
+                                    {/* Spiritual Placement */}
                                     <div>
                                       <h5 className="font-semibold text-sm text-blue-700 mb-2">
                                         <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                                        Placement: {getPlacementDescription(result.dominantColor)}
+                                        Energy Placement: {getPlacementDescription(result.dominantColor)}
                                       </h5>
                                       <p className="text-sm text-gray-700 leading-relaxed">
                                         {getDetailedPlacement(result.dominantColor)}
                                       </p>
                                     </div>
                                   </div>
-                                </div>
 
-                                {/* Secondary & Supporting Colors */}
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold text-lg">Secondary & Supporting Colors</h4>
-                                  
-                                  {/* Secondary Color */}
-                                  <div className="bg-gray-50 border rounded-lg p-4">
+                                  {/* Secondary & Supporting Colors */}
+                                  <div className="space-y-4">
+                                    <h4 className="font-semibold text-lg">Secondary & Supporting Colors</h4>
+                                    
+                                    {/* Secondary Color */}
+                                    <div className="bg-gray-50 border rounded-lg p-4">
                                     <div className="flex items-center space-x-3 mb-3">
                                       <div 
                                         className="w-8 h-8 rounded-full"
