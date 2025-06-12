@@ -295,7 +295,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
   
   // Seed initial healer data
-  await seedHealers();
+  try {
+    await seedHealers();
+  } catch (error) {
+    console.error("Failed to seed healers, continuing without seeding:", error);
+  }
 
   // Configure file upload
   const upload = configureFileUpload();
