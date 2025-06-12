@@ -3160,8 +3160,6 @@ export default function AuraAnalysis() {
                                   <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
                                 </div>
                               </div>
-                                </div>
-                              </div>
                             </div>
                           </TabsContent>
                           
