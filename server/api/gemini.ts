@@ -9,7 +9,7 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<AuraA
     // This is a simplified implementation since this is fallback
     // In production, you would make an actual call to the Gemini API
     
-    const apiKey = process.env.GOOGLE_AI_API_KEY || "YOUR_GEMINI_API_KEY";
+    const apiKey = process.env.GEMINI_API_KEY;
     const apiEndpoint = "https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent";
     
     // Prepare the image for the API

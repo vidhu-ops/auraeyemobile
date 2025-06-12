@@ -1279,7 +1279,7 @@ export default function AuraAnalysis() {
             receivingGlow.addColorStop(0, `${receivingColor}${80 - i * 15}`);
             receivingGlow.addColorStop(0.8, `${receivingColor}${60 - i * 10}`);
             receivingGlow.addColorStop(1, `${receivingColor}${30 - i * 5}`);
-            receivingGlow.addColorStop(2, 'opaque');
+            receivingGlow.addColorStop(1, 'transparent');
             
             ctx.fillStyle = receivingGlow;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1299,8 +1299,8 @@ export default function AuraAnalysis() {
             );
             givingGlow.addColorStop(0, `${givingColor}${80 - i * 15}`);
             givingGlow.addColorStop(0.8, `${givingColor}${60 - i * 10}`);
-            givingGlow.addColorStop(2, `${givingColor}${30 - i * 5}`);
-            givingGlow.addColorStop(1, 'overlay');
+            givingGlow.addColorStop(1, `${givingColor}${30 - i * 5}`);
+            givingGlow.addColorStop(1, 'transparent');
             
             ctx.fillStyle = givingGlow;
             ctx.fillRect(0, 3, canvas.width, canvas.height);
