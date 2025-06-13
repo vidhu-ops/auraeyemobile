@@ -41,6 +41,78 @@ export default function AuraAnalysis() {
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
 
+  const getColorHarmonyAnalysis = (dominant: string, secondary: string | null, spectrum: string[] | undefined): string => {
+    const chakraConnections: Record<string, string> = {
+      'Red': 'Root Chakra (Muladhara)',
+      'Orange': 'Sacral Chakra (Svadhisthana)', 
+      'Yellow': 'Solar Plexus Chakra (Manipura)',
+      'Green': 'Heart Chakra (Anahata)',
+      'Blue': 'Throat Chakra (Vishuddha)',
+      'Indigo': 'Third Eye Chakra (Ajna)',
+      'Violet': 'Crown Chakra (Sahasrara)',
+      'Purple': 'Higher Crown Chakra',
+      'Pink': 'Higher Heart Chakra',
+      'Gold': 'Soul Star Chakra',
+      'Silver': 'Lunar Energy Center',
+      'Turquoise': 'Higher Throat Chakra',
+      'White': 'Divine Light Center',
+      'Lime': 'Heart Healing Chakra',
+      'Teal': 'Heart-Throat Bridge',
+      'Maroon': 'Earth Star Chakra',
+      'Navy': 'Deep Wisdom Center',
+      'Coral': 'Creative Heart Center',
+      'Mint': 'Renewal Energy Center',
+      'Peach': 'Nurturing Heart Center'
+    };
+
+    const colorMeanings: Record<string, string> = {
+      'Red': 'grounding, vitality, survival strength',
+      'Orange': 'creativity, passion, emotional flow',
+      'Yellow': 'personal power, mental clarity, confidence',
+      'Green': 'healing love, compassion, heart wisdom',
+      'Blue': 'truth, peace, authentic communication',
+      'Indigo': 'intuition, psychic sight, inner knowing',
+      'Violet': 'spiritual connection, divine consciousness',
+      'Purple': 'mystical wisdom, spiritual mastery',
+      'Pink': 'unconditional love, divine compassion',
+      'Gold': 'divine wisdom, Christ consciousness',
+      'Silver': 'lunar intuition, feminine wisdom',
+      'Turquoise': 'healing communication, divine truth',
+      'White': 'pure light, spiritual protection',
+      'Lime': 'fresh healing, renewal energy',
+      'Teal': 'emotional truth, compassionate expression',
+      'Maroon': 'deep passion, earthly wisdom',
+      'Navy': 'profound wisdom, cosmic knowledge',
+      'Coral': 'creative warmth, gentle passion',
+      'Mint': 'healing renewal, emotional cleansing',
+      'Peach': 'nurturing love, gentle care'
+    };
+
+    const totalColors = spectrum ? spectrum.length : 2;
+    const dominantChakra = chakraConnections[dominant] || `${dominant} Energy Center`;
+    const secondaryChakra = secondary ? chakraConnections[secondary] || `${secondary} Energy Center` : '';
+    const dominantMeaning = colorMeanings[dominant] || 'authentic soul expression';
+    const secondaryMeaning = secondary ? colorMeanings[secondary] || 'supportive energy' : '';
+
+    let analysis = `Your ${totalColors}-color aura spectrum reveals ${dominantChakra} dominance with ${dominantMeaning}`;
+    
+    if (secondary) {
+      analysis += ` harmonizing with ${secondaryChakra} expressing ${secondaryMeaning}`;
+    }
+
+    if (spectrum && spectrum.length > 2) {
+      const supportingColors = spectrum.slice(2, 4);
+      const supportingChakras = supportingColors.map(color => 
+        chakraConnections[color] || `${color} Center`
+      ).join(' and ');
+      analysis += `. Supporting energy from ${supportingChakras} creates multi-dimensional chakra activation`;
+    }
+
+    analysis += '. This chakra combination indicates advanced spiritual development with balanced energy flow across multiple dimensional frequencies.';
+    
+    return analysis;
+  };
+
   // Simple hash function for consistent image results
   const generateImageHash = (base64Image: string): string => {
     let hash = 0;
@@ -2936,7 +3008,77 @@ export default function AuraAnalysis() {
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
                                   <h5 className="font-medium text-sm mb-3 text-purple-700">Color Harmony Analysis</h5>
                                   <p className="text-sm text-gray-700 mb-3">
-                                    {getColorHarmonyAnalysis(result.dominantColor, result.secondaryColor, result.auraColorSpectrum)}
+                                    {(() => {
+                                      const chakraConnections: Record<string, string> = {
+                                        'Red': 'Root Chakra (Muladhara)',
+                                        'Orange': 'Sacral Chakra (Svadhisthana)', 
+                                        'Yellow': 'Solar Plexus Chakra (Manipura)',
+                                        'Green': 'Heart Chakra (Anahata)',
+                                        'Blue': 'Throat Chakra (Vishuddha)',
+                                        'Indigo': 'Third Eye Chakra (Ajna)',
+                                        'Violet': 'Crown Chakra (Sahasrara)',
+                                        'Purple': 'Higher Crown Chakra',
+                                        'Pink': 'Higher Heart Chakra',
+                                        'Gold': 'Soul Star Chakra',
+                                        'Silver': 'Lunar Energy Center',
+                                        'Turquoise': 'Higher Throat Chakra',
+                                        'White': 'Divine Light Center',
+                                        'Lime': 'Heart Healing Chakra',
+                                        'Teal': 'Heart-Throat Bridge',
+                                        'Maroon': 'Earth Star Chakra',
+                                        'Navy': 'Deep Wisdom Center',
+                                        'Coral': 'Creative Heart Center',
+                                        'Mint': 'Renewal Energy Center',
+                                        'Peach': 'Nurturing Heart Center'
+                                      };
+
+                                      const colorMeanings: Record<string, string> = {
+                                        'Red': 'grounding, vitality, survival strength',
+                                        'Orange': 'creativity, passion, emotional flow',
+                                        'Yellow': 'personal power, mental clarity, confidence',
+                                        'Green': 'healing love, compassion, heart wisdom',
+                                        'Blue': 'truth, peace, authentic communication',
+                                        'Indigo': 'intuition, psychic sight, inner knowing',
+                                        'Violet': 'spiritual connection, divine consciousness',
+                                        'Purple': 'mystical wisdom, spiritual mastery',
+                                        'Pink': 'unconditional love, divine compassion',
+                                        'Gold': 'divine wisdom, Christ consciousness',
+                                        'Silver': 'lunar intuition, feminine wisdom',
+                                        'Turquoise': 'healing communication, divine truth',
+                                        'White': 'pure light, spiritual protection',
+                                        'Lime': 'fresh healing, renewal energy',
+                                        'Teal': 'emotional truth, compassionate expression',
+                                        'Maroon': 'deep passion, earthly wisdom',
+                                        'Navy': 'profound wisdom, cosmic knowledge',
+                                        'Coral': 'creative warmth, gentle passion',
+                                        'Mint': 'healing renewal, emotional cleansing',
+                                        'Peach': 'nurturing love, gentle care'
+                                      };
+
+                                      const totalColors = result.auraColorSpectrum ? result.auraColorSpectrum.length : 2;
+                                      const dominantChakra = chakraConnections[result.dominantColor] || `${result.dominantColor} Energy Center`;
+                                      const secondaryChakra = result.secondaryColor ? chakraConnections[result.secondaryColor] || `${result.secondaryColor} Energy Center` : '';
+                                      const dominantMeaning = colorMeanings[result.dominantColor] || 'authentic soul expression';
+                                      const secondaryMeaning = result.secondaryColor ? colorMeanings[result.secondaryColor] || 'supportive energy' : '';
+
+                                      let analysis = `Your ${totalColors}-color aura spectrum reveals ${dominantChakra} dominance with ${dominantMeaning}`;
+                                      
+                                      if (result.secondaryColor) {
+                                        analysis += ` harmonizing with ${secondaryChakra} expressing ${secondaryMeaning}`;
+                                      }
+
+                                      if (result.auraColorSpectrum && result.auraColorSpectrum.length > 2) {
+                                        const supportingColors = result.auraColorSpectrum.slice(2, 4);
+                                        const supportingChakras = supportingColors.map(color => 
+                                          chakraConnections[color] || `${color} Center`
+                                        ).join(' and ');
+                                        analysis += `. Supporting energy from ${supportingChakras} creates multi-dimensional chakra activation`;
+                                      }
+
+                                      analysis += '. This chakra combination indicates advanced spiritual development with balanced energy flow across multiple dimensional frequencies.';
+                                      
+                                      return analysis;
+                                    })()}
                                   </p>
                                   <div className="flex flex-wrap gap-2">
                                     {(result.auraColorSpectrum || [result.dominantColor, result.secondaryColor]).filter(Boolean).map((color, index) => (
