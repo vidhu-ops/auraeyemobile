@@ -2977,43 +2977,11 @@ export default function AuraAnalysis() {
                               {/* Energy Reading Content */}
                               <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
 
-                                {/* Aura Color Explanations */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-3">
-                                    <h4 className="font-medium text-sm">Your Aura Colors</h4>
-                                    
-                                    <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
-                                      <div className={`w-6 h-6 rounded-full ${getColorClass(result.dominantColor)}`}></div>
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
-                                        <div className="text-xs text-gray-600 mb-1">{getColorMeaningForEnergyTab(result.dominantColor)}</div>
-                                        <div className="text-xs text-green-600 mb-1">
-                                          <span className="font-medium">Positive:</span> {getColorPositiveMeaning(result.dominantColor)}
-                                        </div>
-                                        <div className="text-xs text-orange-600">
-                                          <span className="font-medium">Watch for:</span> {getColorNegativeMeaning(result.dominantColor)}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
-                                      <div className={`w-6 h-6 rounded-full ${getColorClass(result.secondaryColor)}`}></div>
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">{result.secondaryColor} - Supporting</div>
-                                        <div className="text-xs text-gray-600 mb-1">{getColorMeaningForEnergyTab(result.secondaryColor)}</div>
-                                        <div className="text-xs text-green-600 mb-1">
-                                          <span className="font-medium">Positive:</span> {getColorPositiveMeaning(result.secondaryColor)}
-                                        </div>
-                                        <div className="text-xs text-orange-600">
-                                          <span className="font-medium">Watch for:</span> {getColorNegativeMeaning(result.secondaryColor)}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                                {/* Energy Flow Only */}
+                                <div className="space-y-3">
+                                  <h4 className="font-medium text-sm">Energy Flow</h4>
                                   
-                                  <div className="space-y-3">
-                                    <h4 className="font-medium text-sm">Energy Flow</h4>
-                                    
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="p-3 bg-white rounded-lg border">
                                       <div className="font-medium text-sm mb-1">Giving Energy</div>
                                       <div className="text-xs text-gray-600 mb-2">How you radiate energy to others</div>
