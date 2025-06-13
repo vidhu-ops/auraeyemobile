@@ -889,7 +889,7 @@ export default function AuraAnalysis() {
       'Tan': 'Natural balance energy - earth connection, practical wisdom, stable grounding'
     };
     
-    return meanings[color] || additionalColorMeanings[color] || `${color} Energy - Unique chakra frequency expressing individual soul purpose through authentic spiritual vibration and divine consciousness manifestation`;
+    return meanings[color] || additionalColorMeanings[color] || `${color} mastery - Specific chakra activation expressing authentic spiritual gifts through divine consciousness and soul purpose manifestation`;
   };
 
   const getColorFrequency = (color: string): string => {
@@ -1111,21 +1111,8 @@ export default function AuraAnalysis() {
         'Magenta': 'Your outer core center radiates deep love, intensity, passion.'
       }
     };
-    const genericLayerMeanings: Record<string, Record<string, string>> = {
-      'inner': {
-        'Default': 'Your soul core radiates ancient wisdom and divine purpose through this spiritual frequency'
-      },
-      'middle': {
-        'Default': 'Your emotional center expresses balanced healing energy and authentic self-expression'
-      },
-      'outer': {
-        'Default': 'Your protective aura emanates spiritual strength and energetic boundaries'
-      }
-    };
-    
     return layerMeanings[layer]?.[color] || 
-           genericLayerMeanings[layer]?.['Default'] || 
-           `Your ${layer} energy field channels divine ${color.toLowerCase()} frequency for spiritual growth and soul evolution`;
+           `Your ${layer} layer radiates ${color.toLowerCase()} mastery - Specific chakra activation creating authentic spiritual expression and divine consciousness manifestation through this energy field`;
   };
 
   const getEnergyPattern = (primary: string, secondary: string): string => {
@@ -1205,7 +1192,7 @@ export default function AuraAnalysis() {
       'Teal': 'Visualize teal light at your throat. Breathe in healing communication, emotional clarity, purity, connections.',
       'Bronze': 'Visualize bronze light at your root chakra. Breathe in ancient wisdom, protection, grounding.',
     };
-    return meditations[color] || `Meditate with ${color.toLowerCase()} light to enhance your natural spiritual abilities.`;
+    return meditations[color] || `Visualize ${color.toLowerCase()} light at your chakra centers. Breathe in ${color.toLowerCase()} mastery energy for authentic spiritual activation and divine consciousness enhancement.`;
   };
 
   const getColorHealing = (primary: string, secondary: string): string => {
