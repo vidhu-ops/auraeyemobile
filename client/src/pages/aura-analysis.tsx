@@ -1249,7 +1249,7 @@ export default function AuraAnalysis() {
       'White': 'All hours carry equal potential as this energy transcends time. Particularly strong during meditation and prayer.',
       'Pink': 'Heart-opening hours of sunrise and sunset when love energy is most expansive. Perfect for compassion practices.'
     };
-    return times[color] || 'Energy flows optimally during your natural rhythm cycles.';
+    return times[color] || 'Divine timing aligns with cosmic cycles - sacred hours vary by lunar phases and personal spiritual rhythm.';
   };
 
   const getCompatibleEnergies = (color: string): string => {
@@ -1273,7 +1273,19 @@ export default function AuraAnalysis() {
       'Rose': 'Green (healing), White (purity), and Heart energies. Compatible with all love-based frequencies.',
       
     };
-    return compatible[color] || 'Your energy harmonizes with authentic spiritual frequencies.';
+    const additionalCompatible: Record<string, string> = {
+      'Crimson': 'Maroon (deep earth), Red (life force), and Fire energies. Resonates with intense manifestation and warrior spirit frequencies.',
+      'Magenta': 'Pink (divine love), Purple (mysticism), and Cosmic feminine energies. Compatible with soul creativity and divine rebellion frequencies.',
+      'Aqua': 'Turquoise (healing communication), Blue (truth), and Water energies. Harmonizes with soul voice and mystical truth frequencies.',
+      'Navy': 'Indigo (wisdom), Blue (communication), and Deep water energies. Compatible with profound knowledge and soul memory frequencies.',
+      'Lime': 'Green (healing), Yellow (renewal), and Fresh earth energies. Resonates with growth acceleration and emotional cleansing frequencies.',
+      'Maroon': 'Red (passion), Brown (earth), and Stable earth energies. Compatible with grounded strength and enduring wisdom frequencies.',
+      'Chocolate': 'Brown (earth), Green (natural), and Deep earth energies. Harmonizes with practical spirituality and natural healing frequencies.',
+      'Beige': 'Brown (earth), White (peace), and Gentle earth energies. Compatible with subtle wisdom and peaceful stability frequencies.',
+      'Tan': 'Brown (earth), Yellow (balance), and Natural earth energies. Resonates with earth connection and practical wisdom frequencies.'
+    };
+    
+    return compatible[color] || additionalCompatible[color] || 'Divine soul frequency - harmonizes with cosmic consciousness and authentic spiritual vibrations.';
   };
   
   // Function to generate aura visualization with colored clouds
