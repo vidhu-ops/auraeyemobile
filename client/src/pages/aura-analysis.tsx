@@ -80,6 +80,8 @@ export default function AuraAnalysis() {
     return null;
   };
 
+
+
   // Submit review for aura analysis
   const submitReview = async () => {
     if (!currentAnalysisId || rating === 0) return;
