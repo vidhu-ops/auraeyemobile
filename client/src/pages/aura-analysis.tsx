@@ -1220,6 +1220,8 @@ export default function AuraAnalysis() {
     return placements[color] || `${color} chakra positioning - Multi-dimensional energy field activation through authentic spiritual frequency placement`;
   };
 
+
+
   const getDetailedPlacement = (color: string): string => {
     const details: Record<string, string> = {
       'Red': 'Powerful grounding energy with strong life force and survival instincts. This energy connects you deeply to the earth and physical realm, providing stability and manifestation power.',
@@ -2932,11 +2934,7 @@ export default function AuraAnalysis() {
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
                                   <h5 className="font-medium text-sm mb-3 text-purple-700">Color Harmony Analysis</h5>
                                   <p className="text-sm text-gray-700 mb-3">
-                                    Your {result.auraColorSpectrum ? result.auraColorSpectrum.length : 2}-color aura spectrum creates a unique energetic signature. 
-                                    The combination of {result.dominantColor} and {result.secondaryColor || result.dominantColor} 
-                                    {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 ? 
-                                      ` along with ${result.auraColorSpectrum.slice(2, 4).join(', ')}` : ''
-                                    } indicates a balanced and multi-dimensional spiritual nature.
+                                    {getColorHarmonyAnalysis(result.dominantColor, result.secondaryColor, result.auraColorSpectrum)}
                                   </p>
                                   <div className="flex flex-wrap gap-2">
                                     {(result.auraColorSpectrum || [result.dominantColor, result.secondaryColor]).filter(Boolean).map((color, index) => (
