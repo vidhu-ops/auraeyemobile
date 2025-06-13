@@ -603,7 +603,31 @@ export default function AuraAnalysis() {
       'Cyan': 'Emotional coldness creating communication detachment and truth expression without heart connection while fostering analytical overwhelm. This cold frequency prevents authentic emotional expression through mental rigidity and heart disconnection.'
     };
     
-    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || negativeMeanings[colorName.toLowerCase()] || `${colorName} shadow aspects - Specific chakra imbalances requiring targeted healing and energy realignment work`;
+    // First check both arrays for the color
+    const specificMeaning = negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || 
+                           negativeMeanings[colorName.toLowerCase()] || additionalNegativeMeanings[colorName.toLowerCase()];
+    
+    if (specificMeaning) {
+      return specificMeaning;
+    }
+    
+    // If no specific meaning found, provide authentic color-based shadow meanings
+    const shadowMeanings: Record<string, string> = {
+      'Orange': 'Creative stagnation creating emotional instability and sexual energy imbalances while fostering compulsive behaviors and artistic blocks.',
+      'Yellow': 'Mental overwhelm creating digestive issues and confidence crises while fostering anxiety patterns and personal power struggles.',
+      'Violet': 'Spiritual disconnection creating depression and crown chakra closure while fostering isolation from divine guidance and cosmic consciousness.',
+      'White': 'Spiritual bypassing creating perfectionism and shadow avoidance while fostering disconnection from earthly reality and human emotions.',
+      'Pink': 'Codependent love creating boundary issues and emotional manipulation while fostering self-sacrifice patterns and heart wounds.',
+      'Gold': 'Ego inflation creating spiritual materialism and divine disconnection while fostering perfectionism and fear of authentic service.',
+      'Silver': 'Psychic overwhelm creating emotional volatility and lunar sensitivity while fostering mood instability and energetic absorption.',
+      'Turquoise': 'Communication breakdown creating healer burnout and throat chakra strain while fostering emotional flooding and teaching exhaustion.',
+      'Purple': 'Spiritual bypassing creating reality disconnection and ego inflation while fostering mystical delusion and mental health struggles.',
+      'Indigo': 'Psychic confusion creating intuitive blocks and third eye cloudiness while fostering spiritual overwhelm and vision problems.',
+      'Teal': 'Emotional suppression creating authentic voice loss and heart-throat disconnection while fostering communication fears and feeling blockages.'
+    };
+    
+    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || 
+           `${colorName} shadow integration creating specific energetic imbalances that require conscious healing work to transform blocked spiritual frequencies into authentic power expression.`;
   }
 
   // Chakra healing remedies for weaker chakras
