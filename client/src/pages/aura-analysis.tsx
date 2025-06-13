@@ -4261,42 +4261,11 @@ export default function AuraAnalysis() {
                                           <div className="flex-1">
                                             <div className="text-xs text-gray-500 mb-1">Primary Aura</div>
                                             <div className="text-lg font-bold mb-2">{result.dominantColor}</div>
-                                            {(() => {
-                                              const getColorInfo = (colorName: string) => {
-                                                const colorData = {
-                                                  'Red': { chakra: 'Root Chakra', number: '1', meaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.' },
-                                                  'Orange': { chakra: 'Sacral Chakra', number: '2', meaning: 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.' },
-                                                  'Yellow': { chakra: 'Solar Plexus Chakra', number: '3', meaning: 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.' },
-                                                  'Green': { chakra: 'Heart Chakra', number: '4', meaning: 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.' },
-                                                  'Blue': { chakra: 'Throat Chakra', number: '5', meaning: 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.' },
-                                                  'Indigo': { chakra: 'Third Eye Chakra', number: '6', meaning: 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.' },
-                                                  'Violet': { chakra: 'Crown Chakra', number: '7', meaning: 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.' },
-                                                  'Purple': { chakra: 'Crown Chakra Higher Octave', number: '7', meaning: 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.' },
-                                                  'Pink': { chakra: 'Heart Chakra Higher Octave', number: '4', meaning: 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.' },
-                                                  'Gold': { chakra: 'Solar Plexus Higher Octave', number: '3', meaning: 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.' },
-                                                  'Silver': { chakra: 'Third Eye Higher Octave', number: '6', meaning: 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.' },
-                                                  'Turquoise': { chakra: 'Heart-Throat Bridge Chakra', number: '4.5', meaning: 'Advanced heart-throat communication bridging emotional healing with spiritual teaching through higher truth expression. This therapeutic frequency combines wisdom with compassion for powerful healing communication and authentic guidance.' },
-                                                  'White': { chakra: 'Crown Chakra Pure Light', number: '7', meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.' },
-                                                  'Lime': { chakra: 'Heart Chakra Renewal', number: '4', meaning: 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.' },
-                                                  'Navy': { chakra: 'Third Eye Deep Wisdom', number: '6', meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.' }
-                                                };
-                                                return colorData[colorName] || { chakra: 'Universal Energy Center', number: '∞', meaning: `${colorName} frequency carrying unique spiritual gifts and authentic divine consciousness activation through personal energy signature.` };
-                                              };
-                                              const colorInfo = getColorInfo(result.dominantColor);
-                                              return (
-                                                <div className="space-y-2">
-                                                  <div className="text-sm">
-                                                    <span className="font-medium text-purple-600">Chakra:</span> {colorInfo.chakra}
-                                                  </div>
-                                                  <div className="text-sm">
-                                                    <span className="font-medium text-indigo-600">Number:</span> {colorInfo.number}
-                                                  </div>
-                                                  <div className="text-sm text-gray-700 leading-relaxed">
-                                                    <span className="font-medium text-green-600">Meaning:</span> {colorInfo.meaning}
-                                                  </div>
-                                                </div>
-                                              );
-                                            })()}
+                                            <div className="space-y-2">
+                                              <div className="text-sm text-gray-700 leading-relaxed">
+                                                {getColorPositiveMeaning(result.dominantColor)}
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -4314,42 +4283,11 @@ export default function AuraAnalysis() {
                                             <div className="flex-1">
                                               <div className="text-xs text-gray-500 mb-1">Secondary Aura</div>
                                               <div className="text-lg font-bold mb-2">{result.secondaryColor}</div>
-                                              {(() => {
-                                                const getColorInfo = (colorName: string) => {
-                                                  const colorData = {
-                                                    'Red': { chakra: 'Root Chakra', number: '1', meaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.' },
-                                                    'Orange': { chakra: 'Sacral Chakra', number: '2', meaning: 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.' },
-                                                    'Yellow': { chakra: 'Solar Plexus Chakra', number: '3', meaning: 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.' },
-                                                    'Green': { chakra: 'Heart Chakra', number: '4', meaning: 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.' },
-                                                    'Blue': { chakra: 'Throat Chakra', number: '5', meaning: 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.' },
-                                                    'Indigo': { chakra: 'Third Eye Chakra', number: '6', meaning: 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.' },
-                                                    'Violet': { chakra: 'Crown Chakra', number: '7', meaning: 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.' },
-                                                    'Purple': { chakra: 'Crown Chakra Higher Octave', number: '7', meaning: 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.' },
-                                                    'Pink': { chakra: 'Heart Chakra Higher Octave', number: '4', meaning: 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.' },
-                                                    'Gold': { chakra: 'Solar Plexus Higher Octave', number: '3', meaning: 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.' },
-                                                    'Silver': { chakra: 'Third Eye Higher Octave', number: '6', meaning: 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.' },
-                                                    'Turquoise': { chakra: 'Heart-Throat Bridge Chakra', number: '4.5', meaning: 'Advanced heart-throat communication bridging emotional healing with spiritual teaching through higher truth expression. This therapeutic frequency combines wisdom with compassion for powerful healing communication and authentic guidance.' },
-                                                    'White': { chakra: 'Crown Chakra Pure Light', number: '7', meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.' },
-                                                    'Lime': { chakra: 'Heart Chakra Renewal', number: '4', meaning: 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.' },
-                                                    'Navy': { chakra: 'Third Eye Deep Wisdom', number: '6', meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.' }
-                                                  };
-                                                  return colorData[colorName] || { chakra: 'Universal Energy Center', number: '∞', meaning: `${colorName} frequency carrying unique spiritual gifts and authentic divine consciousness activation through personal energy signature.` };
-                                                };
-                                                const colorInfo = getColorInfo(result.secondaryColor);
-                                                return (
-                                                  <div className="space-y-2">
-                                                    <div className="text-sm">
-                                                      <span className="font-medium text-purple-600">Chakra:</span> {colorInfo.chakra}
-                                                    </div>
-                                                    <div className="text-sm">
-                                                      <span className="font-medium text-indigo-600">Number:</span> {colorInfo.number}
-                                                    </div>
-                                                    <div className="text-sm text-gray-700 leading-relaxed">
-                                                      <span className="font-medium text-green-600">Meaning:</span> {colorInfo.meaning}
-                                                    </div>
-                                                  </div>
-                                                );
-                                              })()}
+                                              <div className="space-y-2">
+                                                <div className="text-sm text-gray-700 leading-relaxed">
+                                                  {getColorPositiveMeaning(result.secondaryColor)}
+                                                </div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
