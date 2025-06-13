@@ -41,136 +41,6 @@ export default function AuraAnalysis() {
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
 
-  const getColorCompleteInfo = (colorName: string): { 
-    chakra: string; 
-    number: string; 
-    shadowMeaning: string; 
-    positiveMeaning: string; 
-    colorMeaning: string; 
-  } => {
-    const colorInfoMap: Record<string, { 
-      chakra: string; 
-      number: string; 
-      shadowMeaning: string; 
-      positiveMeaning: string; 
-      colorMeaning: string; 
-    }> = {
-      'Red': { 
-        chakra: 'Root Chakra Imbalance', 
-        number: '1', 
-        shadowMeaning: 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.',
-        positiveMeaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.',
-        colorMeaning: 'Healing & Vitality - Root chakra energy, survival instinct, life force, physical vitality, grounding power'
-      },
-      'Orange': { 
-        chakra: 'Sacral Chakra Blockage', 
-        number: '2', 
-        shadowMeaning: 'Sacral chakra blockage creating creative stagnation and sexual dysfunction while causing reproductive system imbalances and emotional instability. This restricted frequency prevents authentic creative expression and healthy emotional flow.',
-        positiveMeaning: 'Sacred creative fire flowing through your sacral chakra expressing divine feminine and masculine energies in perfect creative harmony. This passionate frequency manifests artistic inspiration and authentic emotional expression.',
-        colorMeaning: 'Creativity & Passion - Sacral chakra energy, creative expression, emotional flow, artistic inspiration, sensual vitality'
-      },
-      'Yellow': { 
-        chakra: 'Solar Plexus Weakness', 
-        number: '3', 
-        shadowMeaning: 'Solar plexus weakness generating digestive problems and low self-esteem that manifests as anxiety disorders and constant power struggles. This diminished frequency creates mental confusion and inability to maintain personal boundaries.',
-        positiveMeaning: 'Solar plexus power radiating confident personal authority and mental clarity that transforms knowledge into wisdom. This brilliant frequency empowers authentic self-expression and intellectual leadership.',
-        colorMeaning: 'Personal Power & Intellect - Solar plexus energy, mental clarity, confidence, intellectual power, self-authority'
-      },
-      'Green': { 
-        chakra: 'Heart Chakra Closure', 
-        number: '4', 
-        shadowMeaning: 'Heart chakra closure building emotional walls that create relationship difficulties and immune system weakness while manifesting lung problems. This protected frequency prevents authentic love expression and emotional vulnerability.',
-        positiveMeaning: 'Heart chakra unconditional love flowing through your being creating healing energy that nurtures both yourself and others. This harmonious frequency attracts healthy relationships and emotional balance.',
-        colorMeaning: 'Love & Healing - Heart chakra energy, unconditional love, emotional balance, healing power, relationship harmony'
-      },
-      'Blue': { 
-        chakra: 'Throat Chakra Blockage', 
-        number: '5', 
-        shadowMeaning: 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.',
-        positiveMeaning: 'Throat chakra divine communication flowing through your voice expressing higher truth and authentic wisdom. This clear frequency channels spiritual guidance and honest self-expression.',
-        colorMeaning: 'Communication & Truth - Throat chakra energy, authentic expression, spiritual communication, truth speaking, divine guidance'
-      },
-      'Indigo': { 
-        chakra: 'Third Eye Cloudiness', 
-        number: '6', 
-        shadowMeaning: 'Third eye cloudiness creating intuitive blocks and chronic headaches while causing vision problems and spiritual confusion. This clouded frequency prevents psychic development and clear spiritual perception.',
-        positiveMeaning: 'Third eye psychic vision opening to higher dimensional awareness and intuitive knowing that guides spiritual development. This mystical frequency enhances meditation and spiritual perception.',
-        colorMeaning: 'Intuition & Wisdom - Third eye energy, psychic abilities, spiritual insight, intuitive knowing, higher perception'
-      },
-      'Violet': { 
-        chakra: 'Crown Chakra Disconnection', 
-        number: '7', 
-        shadowMeaning: 'Crown chakra disconnection triggering spiritual crisis and depression while causing neurological issues and complete isolation from divine connection. This severed frequency creates existential emptiness and spiritual despair.',
-        positiveMeaning: 'Crown chakra divine connection opening to cosmic consciousness and spiritual enlightenment that transcends material limitations. This sacred frequency channels universal wisdom and divine purpose.',
-        colorMeaning: 'Spiritual Connection - Crown chakra energy, divine consciousness, spiritual enlightenment, cosmic awareness, universal wisdom'
-      },
-      'Purple': { 
-        chakra: 'Spiritual Bypassing', 
-        number: '7', 
-        shadowMeaning: 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.',
-        positiveMeaning: 'Higher crown chakra transformation integrating spiritual wisdom with earthly experience creating authentic spiritual authority. This royal frequency balances mystical insight with practical application.',
-        colorMeaning: 'Transformation & Mystery - Higher crown energy, spiritual transformation, mystical wisdom, magical consciousness, divine mystery'
-      },
-      'Pink': { 
-        chakra: 'Heart Wounds', 
-        number: '4', 
-        shadowMeaning: 'Heart wounds creating codependency patterns and boundary dissolution that leads to emotional manipulation and excessive self-sacrifice. This wounded frequency attracts unhealthy relationship dynamics and emotional exploitation.',
-        positiveMeaning: 'Higher heart chakra divine love expressing compassionate service and emotional healing that nurtures spiritual growth. This gentle frequency channels unconditional love and emotional wisdom.',
-        colorMeaning: 'Divine Love & Compassion - Higher heart energy, unconditional love, emotional healing, compassionate service, spiritual nurturing'
-      },
-      'Gold': { 
-        chakra: 'Spiritual Materialism', 
-        number: '3', 
-        shadowMeaning: 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.',
-        positiveMeaning: 'Soul star chakra divine wisdom flowing through your being expressing spiritual mastery and enlightened consciousness. This luminous frequency channels cosmic intelligence and spiritual authority.',
-        colorMeaning: 'Divine Wisdom & Mastery - Soul star energy, spiritual mastery, cosmic intelligence, divine authority, enlightened consciousness'
-      },
-      'Silver': { 
-        chakra: 'Emotional Volatility', 
-        number: '6', 
-        shadowMeaning: 'Emotional volatility causing psychic overwhelm and hormonal imbalances that create mood disorders and excessive lunar sensitivity. This unstable frequency prevents emotional regulation and psychic protection.',
-        positiveMeaning: 'Lunar energy center flowing with intuitive feminine wisdom and psychic sensitivity that enhances emotional intelligence. This reflective frequency channels lunar consciousness and intuitive healing.',
-        colorMeaning: 'Psychic Sensitivity & Intuition - Lunar energy, psychic abilities, emotional intelligence, intuitive wisdom, feminine consciousness'
-      },
-      'Turquoise': { 
-        chakra: 'Communication Breakdown', 
-        number: '4.5', 
-        shadowMeaning: 'Communication breakdown causing emotional flooding and healer burnout while creating severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.',
-        positiveMeaning: 'Higher throat chakra healing communication flowing with compassionate wisdom that bridges heart and voice. This therapeutic frequency channels emotional healing and authentic guidance expression.',
-        colorMeaning: 'Healing Communication - Higher throat energy, healing wisdom, compassionate communication, emotional guidance, therapeutic expression'
-      },
-      'White': { 
-        chakra: 'Spiritual Bypassing', 
-        number: '7', 
-        shadowMeaning: 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.',
-        positiveMeaning: 'Divine light center radiating pure consciousness and spiritual protection that purifies energy fields. This crystalline frequency channels divine clarity and spiritual purification.',
-        colorMeaning: 'Purity & Protection - Divine light energy, spiritual purification, energy cleansing, divine protection, crystalline consciousness'
-      },
-      'Lime': { 
-        chakra: 'Heart Impatience', 
-        number: '4', 
-        shadowMeaning: 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.',
-        positiveMeaning: 'Heart healing chakra flowing with renewal energy and natural healing acceleration that supports healthy spiritual growth. This vibrant frequency channels healing vitality and emotional renewal.',
-        colorMeaning: 'Renewal & Healing - Heart healing energy, natural renewal, healing acceleration, emotional vitality, spiritual refreshment'
-      },
-      'Navy': { 
-        chakra: 'Mental Rigidity', 
-        number: '6', 
-        shadowMeaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.',
-        positiveMeaning: 'Deep wisdom center flowing with profound spiritual knowledge and contemplative consciousness that honors ancient teachings. This depth frequency channels scholarly wisdom and spiritual authority.',
-        colorMeaning: 'Deep Wisdom & Authority - Deep wisdom energy, spiritual knowledge, contemplative consciousness, scholarly authority, ancient teachings'
-      }
-    };
-    
-    return colorInfoMap[colorName] || {
-      chakra: `${colorName} Chakra Center`,
-      number: '7',
-      shadowMeaning: `${colorName} shadow integration creating specific energetic imbalances that require conscious healing work to transform blocked spiritual frequencies into authentic power expression.`,
-      positiveMeaning: `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`,
-      colorMeaning: `${colorName} Energy - Unique spiritual frequency, individual chakra expression, divine consciousness, authentic power`
-    };
-  };
-
   const getColorHarmonyAnalysis = (dominant: string, secondary: string | null, spectrum: string[] | undefined): string => {
     const chakraConnections: Record<string, string> = {
       'Red': 'Root Chakra (Muladhara)',
@@ -773,8 +643,6 @@ export default function AuraAnalysis() {
     
     return colorMeanings[colorName] || `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`;
   }
-
-
 
   const getColorNegativeMeaning = (colorName: string): string => {
     const redShadow = {
@@ -4380,68 +4248,36 @@ export default function AuraAnalysis() {
                                       </p>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 gap-4">
-                                      <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                                        <div className="flex items-start gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                        <div className="flex items-center gap-3">
                                           <div 
-                                            className="w-12 h-12 rounded-full flex-shrink-0" 
+                                            className="w-10 h-10 rounded-full flex-shrink-0" 
                                             style={{ 
                                               backgroundColor: getAccurateColorCode(result.dominantColor),
                                               boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.dominantColor)}60`
                                             }}
                                           ></div>
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2">
-                                              <div className="text-xs text-gray-500">Primary Aura</div>
-                                              <div className="text-base font-bold">{result.dominantColor}</div>
-                                            </div>
-                                            {(() => {
-                                              const colorInfo = getColorCompleteInfo(result.dominantColor);
-                                              return (
-                                                <div className="space-y-2">
-                                                  <div className="text-xs text-gray-600">
-                                                    <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                    <span className="font-medium ml-2">Number:</span> {colorInfo.number}
-                                                  </div>
-                                                  <div className="text-xs text-gray-700 leading-relaxed">
-                                                    <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
-                                                  </div>
-                                                </div>
-                                              );
-                                            })()}
+                                          <div>
+                                            <div className="text-xs text-gray-500">Primary Aura</div>
+                                            <div className="text-base font-bold">{result.dominantColor}</div>
                                           </div>
                                         </div>
                                       </div>
                                       
                                       {result.secondaryColor && (
-                                        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                                          <div className="flex items-start gap-4">
+                                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                          <div className="flex items-center gap-3">
                                             <div 
-                                              className="w-12 h-12 rounded-full flex-shrink-0" 
+                                              className="w-10 h-10 rounded-full flex-shrink-0" 
                                               style={{ 
                                                 backgroundColor: getAccurateColorCode(result.secondaryColor),
                                                 boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.secondaryColor)}60`
                                               }}
                                             ></div>
-                                            <div className="flex-1">
-                                              <div className="flex items-center gap-2 mb-2">
-                                                <div className="text-xs text-gray-500">Secondary Aura</div>
-                                                <div className="text-base font-bold">{result.secondaryColor}</div>
-                                              </div>
-                                              {(() => {
-                                                const colorInfo = getColorCompleteInfo(result.secondaryColor);
-                                                return (
-                                                  <div className="space-y-2">
-                                                    <div className="text-xs text-gray-600">
-                                                      <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                      <span className="font-medium ml-2">Number:</span> {colorInfo.number}
-                                                    </div>
-                                                    <div className="text-xs text-gray-700 leading-relaxed">
-                                                      <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
-                                                    </div>
-                                                  </div>
-                                                );
-                                              })()}
+                                            <div>
+                                              <div className="text-xs text-gray-500">Secondary Aura</div>
+                                              <div className="text-base font-bold">{result.secondaryColor}</div>
                                             </div>
                                           </div>
                                         </div>
