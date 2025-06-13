@@ -426,246 +426,205 @@ export default function AuraAnalysis() {
 
 
 
-  const getColorPositiveMeaning = (colorName: string): string => {
-    const redMeaning = {
-      color: 'Red',
-      chakra: 'Root Chakra',
-      number: '1',
-      meaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.'
+  // Calculate numerology for enhanced analysis
+  const calculateNumerologyProfile = async () => {
+    if (!numerologyName || !numerologyBirthDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both your full name and birth date for numerology analysis.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCalculatingNumerology(true);
+    try {
+      const numerologyData = await calculateNumerology(numerologyName, numerologyBirthDate);
+      setNumerologyResult(numerologyData);
+      
+      if (activeTab === "numerology") {
+        setActiveTab("analysis");
+      }
+      
+      toast({
+        title: "Numerology Calculated",
+        description: "Your numerology profile has been generated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Calculation Failed",
+        description: "Could not calculate numerology. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCalculatingNumerology(false);
+    }
+  };
+
+  // Handle aura image analysis
+  const handleAnalyzeAura = async (base64Image: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to analyze your aura.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setResult(null);
+    setAnalysisProgress(0);
+    setAnalysisStage("Initializing aura scanning...");
+    
+    setReviewSubmitted(false);
+    setRating(0);
+    setReviewText("");
+    setCurrentAnalysisId(null);
+
+    try {
+      // Stage 1: Initialize analysis
+      setAnalysisProgress(10);
+      setAnalysisStage("Preparing spiritual analysis...");
+
+      if (!showPremiumModal) {
+        setIsAnalyzing(false);
+        toast({
+          title: "Analysis Unavailable",
+          description: "Aura analysis requires premium access.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Progress tracking
+      setAnalysisProgress(25);
+      setAnalysisStage("Scanning energy patterns...");
+
+      // Progress updates
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress(prev => Math.min(prev + 5, 85));
+      }, 1000);
+
+      // Stage updates
+      setTimeout(() => setAnalysisStage("Detecting chakra frequencies..."), 2000);
+      setTimeout(() => setAnalysisStage("Analyzing color vibrations..."), 4000);
+      setTimeout(() => setAnalysisStage("Computing spiritual insights..."), 6000);
+      setTimeout(() => setAnalysisStage("Generating personalized guidance..."), 8000);
+      setTimeout(() => setAnalysisStage("Finalizing analysis..."), 10000);
+
+      // Store original image
+      setOriginalImage(base64Image);
+
+      // Check cache for consistent results
+      const imageHash = generateImageHash(base64Image);
+      const cachedResult = findSimilarImage(imageHash, base64Image);
+      
+      if (cachedResult) {
+        clearInterval(progressInterval);
+        setAnalysisStage("Retrieving cached analysis...");
+        
+        // Cache the result in our local cache
+        setImageCache(prev => new Map(prev).set(imageHash, cachedResult));
+        
+        setResult(cachedResult);
+        
+        // Save to database if not already saved
+        setCurrentAnalysisId(Math.floor(Math.random() * 1000000));
+        
+        clearInterval(progressInterval);
+        setAnalysisStage("Analysis complete!");
+        
+        // Process aura visualization
+        setProcessedAuraImage(base64Image);
+        
+        setAnalysisProgress(100);
+        setAnalysisStage("Ready for review");
+      } else {
+        clearInterval(progressInterval);
+        setIsAnalyzing(false);
+        
+        setActiveTab("analysis");
+      }
+
+    } catch (error) {
+      setAnalysisProgress(0);
+      setAnalysisStage("Analysis failed");
+      
+      setIsAnalyzing(false);
+      
+      console.error("Analysis error:", error);
+      toast({
+        title: "Analysis Failed",
+        description: "Could not analyze your aura. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Chakra healing remedies for weaker chakras
+  const getChakraRemedies = (chakraName: string, activityLevel: number): string => {
+    if (activityLevel >= 70) return '';
+    
+    const remedies: Record<string, string> = {
+      'Root': 'Ground yourself daily: walk barefoot on earth, use red jasper crystal, practice warrior poses, eat root vegetables, visualize red light at tailbone, chant LAM mantra',
+      'Sacral': 'Enhance creativity: orange carnelian crystal, hip circles, swimming, creative arts, tantric breathing, visualize orange light below navel, chant VAM mantra',
+      'Solar Plexus': 'Build confidence: citrine crystal, core strengthening, yellow foods, sun gazing meditation, power breathing, visualize yellow light at stomach, chant RAM mantra',
+      'Heart': 'Open to love: rose quartz crystal, heart opening yoga, green leafy foods, loving-kindness meditation, pranayama breathing, visualize green light at chest, chant YAM mantra',
+      'Throat': 'Express truth: blue lace agate crystal, neck stretches, singing, journaling, truthful communication, visualize blue light at throat, chant HAM mantra',
+      'Third Eye': 'Enhance intuition: amethyst crystal, forward folds, meditation, purple foods, third eye massage, visualize indigo light between brows, chant OM mantra',
+      'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra'
     };
     
-    const orangeMeaning = {
-      color: 'Orange', 
-      chakra: 'Sacral Chakra',
-      number: '2',
-      meaning: 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.'
-    };
-    
-    const yellowMeaning = {
-      color: 'Yellow',
-      chakra: 'Solar Plexus Chakra', 
-      number: '3',
-      meaning: 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.'
-    };
-    
-    const greenMeaning = {
-      color: 'Green',
-      chakra: 'Heart Chakra',
-      number: '4', 
-      meaning: 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.'
-    };
-    
-    const blueMeaning = {
-      color: 'Blue',
-      chakra: 'Throat Chakra',
-      number: '5',
-      meaning: 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.'
-    };
-    
-    const indigoMeaning = {
-      color: 'Indigo', 
-      chakra: 'Third Eye Chakra',
-      number: '6',
-      meaning: 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.'
-    };
-    
-    const violetMeaning = {
-      color: 'Violet',
-      chakra: 'Crown Chakra',
-      number: '7',
-      meaning: 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.'
-    };
-    
-    const purpleMeaning = {
-      color: 'Purple',
-      chakra: 'Crown Chakra Higher Octave',
-      number: '7',
-      meaning: 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.'
-    };
-    
-    const pinkMeaning = {
-      color: 'Pink', 
-      chakra: 'Heart Chakra Higher Octave',
-      number: '4',
-      meaning: 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.'
-    };
-    
-    const goldMeaning = {
-      color: 'Gold',
-      chakra: 'Solar Plexus Higher Octave', 
-      number: '3',
-      meaning: 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.'
-    };
-    
-    const silverMeaning = {
-      color: 'Silver',
-      chakra: 'Third Eye Higher Octave',
-      number: '6',
-      meaning: 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.'
-    };
-    
-    const turquoiseMeaning = {
-      color: 'Turquoise',
-      chakra: 'Heart-Throat Bridge Chakra',
-      number: '4.5',
-      meaning: 'Advanced heart-throat communication bridging emotional healing with spiritual teaching through higher truth expression. This therapeutic frequency combines wisdom with compassion for powerful healing communication and authentic guidance.'
-    };
-    
-    const whiteMeaning = {
-      color: 'White',
-      chakra: 'Crown Chakra Pure Light',
-      number: '7',
-      meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.'
-    };
-    
-    const limeMeaning = {
-      color: 'Lime',
-      chakra: 'Heart Chakra Renewal',
-      number: '4',
-      meaning: 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.'
-    };
-    
-    const navyMeaning = {
-      color: 'Navy',
-      chakra: 'Third Eye Deep Wisdom',
-      number: '6',
-      meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.'
-    };
-    
-    const colorMeanings: Record<string, string> = {
-      'Red': redMeaning.meaning,
-      'Orange': orangeMeaning.meaning,
-      'Yellow': yellowMeaning.meaning, 
-      'Green': greenMeaning.meaning,
-      'Blue': blueMeaning.meaning,
-      'Indigo': indigoMeaning.meaning,
-      'Violet': violetMeaning.meaning,
-      'Purple': purpleMeaning.meaning,
-      'Pink': pinkMeaning.meaning,
-      'Gold': goldMeaning.meaning,
-      'Silver': silverMeaning.meaning,
-      'Turquoise': turquoiseMeaning.meaning,
-      'White': whiteMeaning.meaning,
-      'Lime': limeMeaning.meaning,
-      'Navy': navyMeaning.meaning
-    };
-    
-    return colorMeanings[colorName] || `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`;
+    return remedies[chakraName] || 'Balance through meditation, crystals, yoga, proper nutrition, and energy healing practices';
   }
 
-  const getColorNegativeMeaning = (colorName: string): string => {
-    const redShadow = {
-      color: 'Red',
-      chakra: 'Root Chakra Imbalance',
-      number: '1',
-      meaning: 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.'
+  // Helper functions for the 4-zone aura visualization
+  const getReceivingEnergyColor = (auraData: AuraAnalysisResult): string => {
+    // Left side - How person receives energy from environment
+    // This is dynamic and changes based on environmental interactions
+    const receivingEnergyMap: Record<string, string> = {
+      'Red': 'Blue',        // Fire receives from water/air elements
+      'Orange': 'Green',    // Creative energy receives from nature
+      'Yellow': 'Purple',   // Mental energy receives from spiritual realm
+      'Green': 'Pink',      // Heart energy receives through love
+      'Blue': 'Gold',       // Communication receives divine guidance
+      'Indigo': 'Silver',   // Intuition receives cosmic wisdom
+      'Violet': 'White',    // Spiritual crown receives pure light
+      'Purple': 'Turquoise', // Mystic energy receives through clarity
+      'Pink': 'Green',      // Love receives through healing
+      'Gold': 'Blue',       // Divine wisdom receives through truth
+      'Silver': 'Indigo',   // Soul connection receives through intuition
+      'White': 'Violet',    // Pure energy receives through spirituality
+      'Turquoise': 'Rose',  // Healing communication receives through compassion
+      'Magenta': 'Yellow'   // Transformative energy receives through mental clarity
     };
-    
-    const orangeShadow = {
-      color: 'Orange',
-      chakra: 'Sacral Chakra Blockage',
-      number: '2',
-      meaning: 'Sacral chakra blockage creating creative stagnation and sexual dysfunction while causing reproductive system imbalances and emotional instability. This restricted frequency prevents authentic creative expression and healthy emotional flow.'
+    return receivingEnergyMap[auraData.dominantColor] || auraData.secondaryColor || 'Blue';
+  }
+
+  const getGivingEnergyColor = (auraData: AuraAnalysisResult): string => {
+    // Right side - How person gives energy and creates life patterns
+    // This is dynamic and shows their active contribution to the world
+    const givingEnergyMap: Record<string, string> = {
+      'Red': 'Orange',      // Passionate energy gives through creativity
+      'Orange': 'Yellow',   // Creative energy gives through mental stimulation
+      'Yellow': 'Green',    // Mental energy gives through healing wisdom
+      'Green': 'Pink',      // Healing energy gives through unconditional love
+      'Blue': 'Turquoise',  // Truth gives through clear communication
+      'Indigo': 'Purple',   // Intuition gives through spiritual insight
+      'Violet': 'Gold',     // Spiritual energy gives through divine wisdom
+      'Purple': 'Magenta',  // Mystic energy gives through transformation
+      'Pink': 'Rose',       // Love gives through deeper emotional connection
+      'Gold': 'Amber',      // Divine wisdom gives through grounded spirituality
+      'Silver': 'White',    // Soul energy gives through pure light
+      'White': 'Silver',    // Pure light gives through soul connection
+      'Turquoise': 'Cyan',  // Clear communication gives through emotional clarity
+      'Magenta': 'Crimson'  // Transformation gives through passionate intensity
     };
-    
-    const yellowShadow = {
-      color: 'Yellow',
-      chakra: 'Solar Plexus Weakness',
-      number: '3',
-      meaning: 'Solar plexus weakness generating digestive problems and low self-esteem that manifests as anxiety disorders and constant power struggles. This diminished frequency creates mental confusion and inability to maintain personal boundaries.'
-    };
-    
-    const greenShadow = {
-      color: 'Green',
-      chakra: 'Heart Chakra Closure',
-      number: '4',
-      meaning: 'Heart chakra closure building emotional walls that create relationship difficulties and immune system weakness while manifesting lung problems. This protected frequency prevents authentic love expression and emotional vulnerability.'
-    };
-    
-    const blueShadow = {
-      color: 'Blue',
-      chakra: 'Throat Chakra Blockage',
-      number: '5',
-      meaning: 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.'
-    };
-    
-    const indigoShadow = {
-      color: 'Indigo',
-      chakra: 'Third Eye Cloudiness',
-      number: '6',
-      meaning: 'Third eye cloudiness creating intuitive blocks and chronic headaches while causing vision problems and spiritual confusion. This clouded frequency prevents psychic development and clear spiritual perception.'
-    };
-    
-    const violetShadow = {
-      color: 'Violet',
-      chakra: 'Crown Chakra Disconnection',
-      number: '7',
-      meaning: 'Crown chakra disconnection triggering spiritual crisis and depression while causing neurological issues and complete isolation from divine connection. This severed frequency creates existential emptiness and spiritual despair.'
-    };
-    
-    const purpleShadow = {
-      color: 'Purple',
-      chakra: 'Spiritual Bypassing',
-      number: '7',
-      meaning: 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.'
-    };
-    
-    const pinkShadow = {
-      color: 'Pink',
-      chakra: 'Heart Wounds',
-      number: '4',
-      meaning: 'Heart wounds creating codependency patterns and boundary dissolution that leads to emotional manipulation and excessive self-sacrifice. This wounded frequency attracts unhealthy relationship dynamics and emotional exploitation.'
-    };
-    
-    const goldShadow = {
-      color: 'Gold',
-      chakra: 'Spiritual Materialism',
-      number: '3',
-      meaning: 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.'
-    };
-    
-    const silverShadow = {
-      color: 'Silver',
-      chakra: 'Emotional Volatility',
-      number: '6',
-      meaning: 'Emotional volatility causing psychic overwhelm and hormonal imbalances that create mood disorders and excessive lunar sensitivity. This unstable frequency prevents emotional regulation and psychic protection.'
-    };
-    
-    const turquoiseShadow = {
-      color: 'Turquoise',
-      chakra: 'Communication Breakdown',
-      number: '4.5',
-      meaning: 'Communication breakdown causing emotional flooding and healer burnout while creating severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.'
-    };
-    
-    const whiteShadow = {
-      color: 'White',
-      chakra: 'Spiritual Bypassing',
-      number: '7',
-      meaning: 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.'
-    };
-    
-    const limeShadow = {
-      color: 'Lime',
-      chakra: 'Heart Impatience',
-      number: '4',
-      meaning: 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.'
-    };
-    
-    const navyShadow = {
-      color: 'Navy',
-      chakra: 'Mental Rigidity',
-      number: '6',
-      meaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.'
-    };
-    
-    const negativeMeanings: Record<string, string> = {
-      'Red': redShadow.meaning,
-      'Orange': orangeShadow.meaning,
-      'Yellow': yellowShadow.meaning,
-      'Green': greenShadow.meaning,
-      'Blue': blueShadow.meaning,
-      'Indigo': indigoShadow.meaning,
+    return givingEnergyMap[auraData.dominantColor] || auraData.dominantColor;
+  }
       'Violet': violetShadow.meaning,
       'Purple': purpleShadow.meaning,
       'Pink': pinkShadow.meaning,
