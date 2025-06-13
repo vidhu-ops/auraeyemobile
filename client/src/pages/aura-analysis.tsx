@@ -679,7 +679,7 @@ export default function AuraAnalysis() {
       'Gold': 'Gold energy empowers your morning with wisdom and spiritual authority.',
       'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.'
     };
-    return morningInfluences[dominant] || 'Your unique energy signature guides your morning with personal power.';
+    return morningInfluences[dominant] || `${dominant} consciousness awakens your morning with divine soul purpose and authentic spiritual expression.`;
   };
 
   const getPeakEnergyHours = (dominant: string): string => {
@@ -697,7 +697,7 @@ export default function AuraAnalysis() {
       'Gold': 'Wisdom energy peaks during afternoon (3-5pm) for important decisions.',
       'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.'
     };
-    return peakHours[dominant] || 'Your unique energy rhythm creates personal peak hours aligned with your spiritual nature.';
+    return peakHours[dominant] || `${dominant} energy peaks during cosmic alignment hours when your soul frequency resonates with divine timing.`;
   };
 
   const getEveningEnergyGuidance = (dominant: string): string => {
@@ -1015,7 +1015,46 @@ export default function AuraAnalysis() {
   };
 
   const getEnergyPattern = (primary: string, secondary: string): string => {
-    return `Your aura demonstrates a ${primary.toLowerCase()}-${secondary.toLowerCase()} energy pattern, creating a dynamic flow between ${getColorKeyword(primary).toLowerCase()} and ${getColorKeyword(secondary).toLowerCase()}. This combination suggests a balanced approach to spiritual and material matters.`;
+    const patterns: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Fire-water pattern - passionate action balanced with calm wisdom, creating powerful leadership energy',
+        'Green': 'Fire-earth pattern - vital force channeled through healing, creating natural healer energy',
+        'Yellow': 'Fire-air pattern - physical power merged with mental clarity, creating strong manifestation energy',
+        'Purple': 'Fire-spirit pattern - earthly passion elevated to spiritual service, creating warrior-mystic energy',
+        'Orange': 'Double fire pattern - life force amplified through creativity, creating dynamic artistic energy'
+      },
+      'Blue': {
+        'Red': 'Water-fire pattern - truthful communication empowered by passion, creating inspiring teacher energy',
+        'Green': 'Water-earth pattern - peaceful wisdom flowing through healing love, creating gentle counselor energy',
+        'Yellow': 'Water-air pattern - clear truth merged with bright intellect, creating wise communicator energy',
+        'Purple': 'Water-spirit pattern - authentic voice channeling divine wisdom, creating spiritual messenger energy',
+        'Pink': 'Water-heart pattern - truthful expression softened by compassion, creating loving guide energy'
+      },
+      'Green': {
+        'Red': 'Earth-fire pattern - healing love energized by passion, creating dynamic healer energy',
+        'Blue': 'Earth-water pattern - heart wisdom expressed through clear truth, creating compassionate teacher energy',
+        'Yellow': 'Earth-air pattern - healing heart illuminated by wisdom, creating enlightened healer energy',
+        'Purple': 'Earth-spirit pattern - healing love elevated to divine service, creating sacred healer energy',
+        'Pink': 'Double heart pattern - healing love amplified by divine compassion, creating pure love energy'
+      },
+      'Yellow': {
+        'Red': 'Air-fire pattern - brilliant mind empowered by passionate will, creating visionary leader energy',
+        'Blue': 'Air-water pattern - clear wisdom expressed through peaceful truth, creating wise teacher energy',
+        'Green': 'Air-earth pattern - mental clarity grounded in healing love, creating balanced teacher energy',
+        'Purple': 'Air-spirit pattern - intellectual wisdom elevated to divine understanding, creating enlightened sage energy',
+        'Orange': 'Air-fire pattern - mental brightness enhanced by creative joy, creating inspired teacher energy'
+      },
+      'Purple': {
+        'Red': 'Spirit-fire pattern - divine wisdom empowered by earthly passion, creating spiritual warrior energy',
+        'Blue': 'Spirit-water pattern - mystical knowledge expressed through truthful communication, creating prophet energy',
+        'Green': 'Spirit-earth pattern - divine love channeled through healing service, creating saint energy',
+        'Yellow': 'Spirit-air pattern - cosmic wisdom merged with brilliant intellect, creating master teacher energy',
+        'White': 'Double spirit pattern - divine consciousness amplified by pure light, creating avatar energy'
+      }
+    };
+    
+    return patterns[primary]?.[secondary] || patterns[secondary]?.[primary] || 
+           `${primary}-${secondary} pattern - divine soul frequencies creating cosmic consciousness awakening energy`;
   };
 
   const getColorMeditation = (color: string): string => {
@@ -1222,19 +1261,112 @@ export default function AuraAnalysis() {
       'Crown chakra around the body shows a spiritual awareness and divine connection',
       'Throat chakra around the body shows a truth-speaking abilities and authentic communication',
     ];
-    return locations[index] || 'Supporting energy field';
+    return locations[index] || 'Divine energy anchor point - cosmic positioning for spiritual growth and soul evolution';
   };
 
   const getSupportingColorDescription = (color: string): string => {
-    return `This ${color.toLowerCase()} energy provides additional support to your overall aura pattern, contributing ${getColorKeyword(color).toLowerCase()} qualities to your spiritual signature.`;
+    const supportingDescriptions: Record<string, string> = {
+      'Red': 'Root chakra support - strengthens your foundation with grounding, survival instincts, and physical vitality',
+      'Orange': 'Sacral chakra support - enhances your creativity with emotional flow, artistic expression, and joyful passion',
+      'Yellow': 'Solar plexus support - empowers your confidence with personal power, mental clarity, and intellectual wisdom',
+      'Green': 'Heart chakra support - opens your compassion with healing love, emotional balance, and natural harmony',
+      'Blue': 'Throat chakra support - clarifies your communication with truthful expression, authentic voice, and peaceful wisdom',
+      'Indigo': 'Third eye support - awakens your intuition with psychic abilities, inner knowing, and spiritual sight',
+      'Purple': 'Crown chakra support - connects your spirit with divine wisdom, mystical awareness, and cosmic consciousness',
+      'Pink': 'Higher heart support - expands your love with unconditional compassion, divine grace, and soul connection',
+      'Gold': 'Christ consciousness support - illuminates your purpose with divine wisdom, spiritual mastery, and soul mission',
+      'Silver': 'Lunar energy support - activates your intuition with feminine wisdom, psychic protection, and mystical insight',
+      'White': 'Pure light support - purifies your energy with spiritual protection, angelic connection, and divine grace',
+      'Turquoise': 'Higher throat support - elevates your expression with healing communication, divine truth, and soul voice'
+    };
+    
+    return supportingDescriptions[color] || `${color} frequency support - channels divine consciousness through authentic spiritual expression and soul purpose activation`;
   };
 
   const getEnergyFlowPattern = (primary: string, secondary: string): string => {
-    return `Your energy flows from a ${primary.toLowerCase()} core through ${secondary.toLowerCase()} channels, creating a dynamic pattern that balances ${getColorKeyword(primary).toLowerCase()} with ${getColorKeyword(secondary).toLowerCase()}. This flow pattern indicates a natural ability to maintain energetic equilibrium.`;
+    const flowPatterns: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Passion flows into peaceful wisdom - fiery determination channeled through calm truth-speaking',
+        'Green': 'Life force flows into healing love - vital energy channeled through heart-centered compassion',
+        'Yellow': 'Physical power flows into mental clarity - grounding strength channeled through brilliant wisdom',
+        'Purple': 'Earthly passion flows into divine wisdom - material strength channeled through spiritual service',
+        'Orange': 'Root vitality flows into creative joy - survival energy channeled through artistic expression'
+      },
+      'Blue': {
+        'Red': 'Peaceful truth flows into passionate action - calm wisdom channeled through determined service',
+        'Green': 'Clear communication flows into healing love - authentic voice channeled through heart wisdom',
+        'Yellow': 'Truthful wisdom flows into mental brilliance - honest expression channeled through intellectual clarity',
+        'Purple': 'Authentic voice flows into mystical knowing - truthful communication channeled through divine wisdom',
+        'Pink': 'Clear truth flows into gentle love - honest expression channeled through compassionate understanding'
+      },
+      'Green': {
+        'Red': 'Healing love flows into passionate service - heart wisdom channeled through determined action',
+        'Blue': 'Heart compassion flows into truthful expression - healing love channeled through authentic communication',
+        'Yellow': 'Emotional healing flows into mental clarity - heart wisdom channeled through brilliant understanding',
+        'Purple': 'Heart love flows into spiritual service - healing compassion channeled through divine wisdom',
+        'Pink': 'Heart healing flows into divine love - compassionate service channeled through unconditional acceptance'
+      },
+      'Yellow': {
+        'Red': 'Mental clarity flows into passionate manifestation - brilliant wisdom channeled through determined action',
+        'Blue': 'Intellectual light flows into peaceful truth - mental clarity channeled through honest communication',
+        'Green': 'Brilliant wisdom flows into healing service - mental clarity channeled through heart-centered action',
+        'Purple': 'Intellectual understanding flows into spiritual wisdom - mental clarity channeled through divine knowing',
+        'Orange': 'Mental brightness flows into creative expression - intellectual clarity channeled through joyful creation'
+      },
+      'Purple': {
+        'Red': 'Divine wisdom flows into earthly service - spiritual knowing channeled through passionate action',
+        'Blue': 'Mystical understanding flows into truthful expression - divine wisdom channeled through authentic voice',
+        'Green': 'Spiritual love flows into healing service - divine compassion channeled through heart-centered action',
+        'Yellow': 'Cosmic consciousness flows into mental clarity - spiritual wisdom channeled through brilliant understanding',
+        'White': 'Divine knowing flows into pure light - mystical consciousness channeled through spiritual illumination'
+      }
+    };
+    
+    return flowPatterns[primary]?.[secondary] || flowPatterns[secondary]?.[primary] || 
+           `${primary} consciousness flows into ${secondary} expression - divine soul energy channeled through authentic spiritual service`;
   };
 
   const getBalancingRecommendations = (primary: string, secondary: string): string => {
-    return `To maintain optimal energy balance, focus on ${primary.toLowerCase()} grounding practices combined with ${secondary.toLowerCase()} expression activities. Consider meditation with both colors and surrounding yourself with these energetic frequencies.`;
+    const balancingGuidance: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Balance passion with meditation - physical exercise followed by calming breathwork and truthful journaling',
+        'Green': 'Balance action with compassion - grounding exercises followed by heart-opening yoga and nature connection',
+        'Yellow': 'Balance strength with wisdom - weightlifting or martial arts followed by study and intellectual pursuits',
+        'Purple': 'Balance earthly work with spiritual practice - physical service followed by meditation and prayer',
+        'Orange': 'Balance power with creativity - strength training followed by artistic expression and joyful creation'
+      },
+      'Blue': {
+        'Red': 'Balance communication with action - vocal exercises followed by physical movement and passionate pursuits',
+        'Green': 'Balance truth with love - honest expression followed by heart-centered healing and compassionate service',
+        'Yellow': 'Balance voice with mind - singing or chanting followed by intellectual study and mental clarity practices',
+        'Purple': 'Balance authentic speaking with spiritual silence - truthful communication followed by mystical meditation',
+        'Pink': 'Balance clear expression with gentle love - honest dialogue followed by compassionate listening and heart work'
+      },
+      'Green': {
+        'Red': 'Balance healing with vitality - heart-opening meditation followed by energizing physical activity',
+        'Blue': 'Balance love with truth - compassionate service followed by honest communication and authentic expression',
+        'Yellow': 'Balance emotion with intellect - heart meditation followed by mental study and clarity practices',
+        'Purple': 'Balance human love with divine love - emotional healing followed by spiritual contemplation',
+        'Pink': 'Balance healing service with self-love - caring for others followed by self-compassion and inner nurturing'
+      },
+      'Yellow': {
+        'Red': 'Balance mental work with physical action - intellectual study followed by vigorous exercise and grounding',
+        'Blue': 'Balance thinking with speaking - mental clarity practices followed by truthful communication and expression',
+        'Green': 'Balance mind with heart - intellectual pursuits followed by emotional healing and compassionate service',
+        'Purple': 'Balance human wisdom with divine wisdom - mental study followed by spiritual contemplation and mystical practice',
+        'Orange': 'Balance intellect with creativity - analytical work followed by artistic expression and joyful creation'
+      },
+      'Purple': {
+        'Red': 'Balance spiritual practice with earthly service - meditation followed by passionate action and material work',
+        'Blue': 'Balance mystical silence with truthful expression - contemplative prayer followed by authentic communication',
+        'Green': 'Balance divine love with human service - spiritual communion followed by healing work and compassionate action',
+        'Yellow': 'Balance cosmic consciousness with practical wisdom - mystical meditation followed by intellectual study',
+        'White': 'Balance divine communion with pure service - deep spiritual practice followed by selfless action and light work'
+      }
+    };
+    
+    return balancingGuidance[primary]?.[secondary] || balancingGuidance[secondary]?.[primary] || 
+           `Balance ${primary} energy with ${secondary} expression - alternate between focused spiritual practice and authentic soul service`;
   };
 
   const getOptimalEnergyTimes = (color: string): string => {
