@@ -514,7 +514,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'Deep cosmic wisdom - mystical knowledge, universal truth, profound insight'
     };
     
-    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || `Unknown color energy - spiritual frequency beyond current understanding`;
+    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || `${colorName} mastery - Authentic soul gifts expressing through unique chakra activation patterns and divine consciousness manifestation`;
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
@@ -574,7 +574,7 @@ export default function AuraAnalysis() {
       'Tan': 'Bland existence, avoiding spiritual growth, fear of intensity, mediocrity acceptance'
     };
     
-    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || negativeMeanings[colorName.toLowerCase()] || 'Shadow work needed for spiritual growth and chakra balance';
+    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || negativeMeanings[colorName.toLowerCase()] || `${colorName} shadow aspects - Specific chakra imbalances requiring targeted healing and energy realignment work`;
   }
 
   // Chakra healing remedies for weaker chakras
@@ -1023,7 +1023,7 @@ export default function AuraAnalysis() {
       'Topaz': 'Ancient Wisdom & Emotions'
         
     };
-    return keywords[color] || 'Unique Energy';
+    return keywords[color] || `${color} Mastery`;
   };
 
   const getLayerMeaning = (layer: string, color: string): string => {
@@ -1230,7 +1230,7 @@ export default function AuraAnalysis() {
       'Peach': 'Gentle love, caring, emotional warmth.',
       
     };
-    return traits[color] || 'Unique positive energy signature';
+    return traits[color] || `${color} spiritual mastery - Divine consciousness expressing through authentic soul gifts and chakra activation power`;
   };
 
   const getPositiveDescription = (color: string): string => {
@@ -1285,7 +1285,7 @@ export default function AuraAnalysis() {
       'Gray': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Black': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality'
     };
-    return shadows[color] || 'Shadow aspects to integrate';
+    return shadows[color] || `${color} shadow integration - Specific chakra blockages requiring targeted healing and conscious transformation work`;
   };
 
   const getShadowDescription = (color: string): string => {
@@ -1304,7 +1304,7 @@ export default function AuraAnalysis() {
       'Lavender': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
       'Coral': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
     };
-    return descriptions[color] || 'Balance is needed to integrate shadow aspects of your energy.';
+    return descriptions[color] || `${color} integration needed - Specific chakra healing work required to balance energy imbalances and transform shadow patterns.`;
   };
 
   const getPlacementDescription = (color: string): string => {
@@ -1331,7 +1331,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'head chakra higher octave, understandinf and higher connection',
       
     };
-    return placements[color] || `${color} chakra positioning - Multi-dimensional energy field activation through authentic spiritual frequency placement`;
+    return placements[color] || `${color} chakra positioning - Specific energy alignment creating focused spiritual activation through precise chakra coordination`;
   };
 
 
