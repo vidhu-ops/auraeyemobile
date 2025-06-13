@@ -556,53 +556,14 @@ export default function ObjectAnalysis() {
                               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-100">
                                 <h4 className="font-medium mb-3">Historical Significance</h4>
                                 <p className="text-sm text-gray-700">
-                                  {result.historicalSignificance || 
-                                    `Objects with ${result.auraColor.toLowerCase()} auras have historically been associated with ${
-                                      result.auraColor.toLowerCase() === 'red' ? 'power and protection rituals' :
-                                      result.auraColor.toLowerCase() === 'blue' ? 'communication and truth-seeking' :
-                                      result.auraColor.toLowerCase() === 'green' ? 'healing and balance' :
-                                      result.auraColor.toLowerCase() === 'purple' ? 'spiritual wisdom and connection' :
-                                      result.auraColor.toLowerCase() === 'yellow' ? 'optimism and mental clarity' :
-                                      result.auraColor.toLowerCase() === 'orange' ? 'creativity and enthusiasm' :
-                                      result.auraColor.toLowerCase() === 'pink' ? 'love and compassion' :
-                                      result.auraColor.toLowerCase() === 'white' ? 'purity and protection' :
-                                      result.auraColor.toLowerCase() === 'black' ? 'grounding and protection' :
-                                      result.auraColor.toLowerCase() === 'gold' ? 'divine connection and wisdom' :
-                                      'various ceremonial and ritual purposes'
-                                    }. Throughout different cultures, similar objects have been used for ${
-                                      result.objectPurpose.toLowerCase().includes('healing') ? 'healing ceremonies and energy balancing' :
-                                      result.objectPurpose.toLowerCase().includes('protect') ? 'protection against negative influences' :
-                                      result.objectPurpose.toLowerCase().includes('commun') ? 'communication with higher realms' :
-                                      result.objectPurpose.toLowerCase().includes('wisdom') ? 'gaining wisdom and insight' :
-                                      'enhancing spiritual practices and daily rituals'
-                                    }.`
-                                  }
+                                  {result.historicalSignificance}
                                 </p>
                               </div>
                               
                               <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-5 border border-violet-100">
                                 <h4 className="font-medium mb-3">Spiritual Significance</h4>
                                 <p className="text-sm text-gray-700">
-                                  {result.spiritualSignificance || 
-                                    `This object carries energies that can potentially influence ${
-                                      result.energyQualities.some(q => q.toLowerCase().includes('heal')) ? 'healing and restoration' :
-                                      result.energyQualities.some(q => q.toLowerCase().includes('protect')) ? 'protection and safety' :
-                                      result.energyQualities.some(q => q.toLowerCase().includes('calm')) ? 'peace and tranquility' :
-                                      result.energyQualities.some(q => q.toLowerCase().includes('focus')) ? 'focus and concentration' :
-                                      result.energyQualities.some(q => q.toLowerCase().includes('creative')) ? 'creativity and expression' :
-                                      'spiritual awareness and connection'
-                                    }. Its ${result.auraColor.toLowerCase()} aura suggests alignment with ${
-                                      result.auraColor.toLowerCase() === 'red' ? 'the root chakra, grounding physical energy' :
-                                      result.auraColor.toLowerCase() === 'orange' ? 'the sacral chakra, enhancing creative flow' :
-                                      result.auraColor.toLowerCase() === 'yellow' ? 'the solar plexus chakra, boosting personal power' :
-                                      result.auraColor.toLowerCase() === 'green' ? 'the heart chakra, opening to love and compassion' :
-                                      result.auraColor.toLowerCase() === 'blue' ? 'the throat chakra, facilitating clear expression' :
-                                      result.auraColor.toLowerCase() === 'indigo' ? 'the third eye chakra, enhancing intuition' :
-                                      result.auraColor.toLowerCase() === 'purple' || result.auraColor.toLowerCase() === 'violet' ? 
-                                        'the crown chakra, connecting to higher consciousness' :
-                                      'multiple chakra centers, offering balanced energy work'
-                                    }.`
-                                  }
+                                  {result.spiritualSignificance}
                                 </p>
                               </div>
                             </div>
@@ -610,18 +571,12 @@ export default function ObjectAnalysis() {
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-5 border border-emerald-100">
                               <h4 className="font-medium mb-3">Energy Interactions & Recommendations</h4>
                               <p className="text-sm text-gray-700 mb-4">
-                                This object's energy signature interacts with human energy fields in 
-                                {result.energyLevel > 7 ? ' powerful and immediate ways' : 
-                                 result.energyLevel > 4 ? ' noticeable and consistent ways' : 
-                                 ' subtle but significant ways'}.
-                                Its vibration may {result.energyLevel > 6 ? 'actively transform' : 'gently influence'} 
-                                surrounding energies.
+                                {result.auraColor} consciousness signature activates specific chakra frequencies and enhances spiritual development through authentic color vibration energy fields.
                               </p>
                               
                               <h5 className="font-medium text-sm mb-2">Recommendations for Use:</h5>
                               <ul className="text-sm list-disc list-inside space-y-1 text-gray-700">
-                                <li>Place in a {result.energyLevel > 6 ? 'central' : 'thoughtfully chosen'} location 
-                                  where you spend {result.energyLevel > 5 ? 'focused time' : 'restful moments'}</li>
+                                <li>Sacred placement for {result.auraColor.toLowerCase()} energy activation - position where divine consciousness can flow freely through your spiritual practice space</li>
                                 <li>Consider combining with {
                                   result.auraColor.toLowerCase() === 'red' ? 'black tourmaline for grounding excess energy' :
                                   result.auraColor.toLowerCase() === 'blue' ? 'clear quartz to amplify communication properties' :

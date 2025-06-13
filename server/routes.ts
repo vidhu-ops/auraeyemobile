@@ -194,17 +194,35 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
+  // Specific color meanings for objects
+  const objectColorMeanings: Record<string, string> = {
+    'Red': 'Root chakra activation - grounding energy, survival strength, physical vitality, manifestation power',
+    'Blue': 'Throat chakra enhancement - truthful communication, peaceful wisdom, authentic expression, calming presence',
+    'Green': 'Heart chakra healing - unconditional love, emotional balance, natural harmony, compassionate energy',
+    'Yellow': 'Solar plexus empowerment - personal confidence, mental clarity, intellectual wisdom, willpower activation',
+    'Purple': 'Crown chakra connection - divine wisdom, spiritual mastery, mystical awareness, cosmic consciousness',
+    'Orange': 'Sacral chakra stimulation - creative flow, emotional expression, artistic inspiration, joyful passion',
+    'Pink': 'Higher heart activation - unconditional compassion, divine love, soul connection, gentle healing',
+    'Violet': 'Spiritual transformation - consciousness elevation, mystical awakening, divine connection, soul evolution',
+    'Indigo': 'Third eye opening - psychic abilities, intuitive wisdom, spiritual sight, inner knowing',
+    'Gold': 'Christ consciousness - divine illumination, spiritual mastery, soul purpose, sacred wisdom',
+    'Silver': 'Lunar energy - feminine wisdom, psychic protection, intuitive insight, mystical reflection',
+    'Turquoise': 'Higher throat expression - healing communication, divine truth, soul voice, spiritual expression'
+  };
+
+  const colorMeaning = objectColorMeanings[selectedAuraColor] || `${selectedAuraColor} consciousness - divine soul frequency activation and spiritual purpose alignment`;
+
   return {
     objectName: selectedObjectType,
-    objectDescription: `This ${selectedObjectType.toLowerCase()} exhibits distinctive spiritual energy patterns and appears to be energetically active.`,
-    objectPurpose: `This ${selectedObjectType.toLowerCase()} appears designed to enhance ${primaryQuality.toLowerCase()} energy and promote spiritual awareness.`,
+    objectDescription: `This ${selectedObjectType.toLowerCase()} channels ${colorMeaning.toLowerCase()} through its crystalline structure and sacred geometry.`,
+    objectPurpose: `Sacred ${selectedObjectType.toLowerCase()} for ${colorMeaning.split(' - ')[1] || 'spiritual awakening and consciousness expansion'}.`,
     auraColor: selectedAuraColor,
-    auraDescription: `The object emanates a ${selectedAuraColor.toLowerCase()} aura, suggesting ${qualitiesText.toLowerCase()} properties.`,
+    auraDescription: `${selectedAuraColor} aura emanation - ${colorMeaning.split(' - ')[1] || 'divine consciousness activation and soul purpose alignment'}.`,
     energyLevel: energyLevel,
     energyQualities: selectedQualities,
-    historicalSignificance: `Objects of this type have historically been used in spiritual practices for their ${primaryQuality.toLowerCase()} properties.`,
-    spiritualSignificance: `This object resonates with energies that promote ${qualitiesText.toLowerCase()} states of being.`,
-    detailedAnalysis: `The energy signature reveals a ${selectedAuraColor.toLowerCase()} dominant frequency with ${qualitiesText.toLowerCase()} undertones. This suggests the object can be used for meditation, energy work, and spiritual development practices.`
+    historicalSignificance: `Sacred ${selectedObjectType.toLowerCase()} traditionally used for ${colorMeaning.split(' - ')[1]?.split(',')[0] || 'spiritual transformation'} in ancient wisdom traditions.`,
+    spiritualSignificance: `This object resonates with ${colorMeaning.split(' - ')[0] || selectedAuraColor + ' consciousness'} frequencies for spiritual development and soul evolution.`,
+    detailedAnalysis: `Energy signature: ${colorMeaning}. This sacred ${selectedObjectType.toLowerCase()} activates specific chakra frequencies and enhances spiritual practices through authentic color vibration.`
   };
 }
 

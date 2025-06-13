@@ -715,7 +715,7 @@ export default function AuraAnalysis() {
       'Gold': 'Gold energy illuminates evening with wisdom sharing and spiritual teaching.',
       'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.'
     };
-    return eveningGuidance[dominant] || 'Your evening energy invites personal spiritual practices aligned with your unique energy signature.';
+    return eveningGuidance[dominant] || `${dominant} consciousness guides your evening toward soul purpose practices and divine spiritual alignment.`;
   };
 
   // Helper functions for 9-chakra system calculations (using existing functions below)
@@ -1381,7 +1381,7 @@ export default function AuraAnalysis() {
       'White': 'All hours carry equal potential as this energy transcends time. Particularly strong during meditation and prayer.',
       'Pink': 'Heart-opening hours of sunrise and sunset when love energy is most expansive. Perfect for compassion practices.'
     };
-    return times[color] || 'Divine timing aligns with cosmic cycles - sacred hours vary by lunar phases and personal spiritual rhythm.';
+    return times[color] || `${color} consciousness flows through cosmic timing - sacred power hours activate during lunar phases and divine spiritual alignment.`;
   };
 
   const getCompatibleEnergies = (color: string): string => {
