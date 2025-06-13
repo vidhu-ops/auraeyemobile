@@ -213,10 +213,10 @@ export default function AuraAnalysis() {
     };
 
     const totalColors = spectrum ? spectrum.length : 2;
-    const dominantChakra = chakraConnections[dominant] || `${dominant} Energy Center`;
-    const secondaryChakra = secondary ? chakraConnections[secondary] || `${secondary} Energy Center` : '';
-    const dominantMeaning = colorMeanings[dominant] || 'authentic soul expression';
-    const secondaryMeaning = secondary ? colorMeanings[secondary] || 'supportive energy' : '';
+    const dominantChakra = chakraConnections[dominant] || chakraConnections['Purple'];
+    const secondaryChakra = secondary ? chakraConnections[secondary] || chakraConnections['Purple'] : '';
+    const dominantMeaning = colorMeanings[dominant] || colorMeanings['Purple'];
+    const secondaryMeaning = secondary ? colorMeanings[secondary] || colorMeanings['Purple'] : '';
 
     let analysis = `Your ${totalColors}-color aura spectrum reveals ${dominantChakra} dominance with ${dominantMeaning}`;
     
@@ -227,7 +227,7 @@ export default function AuraAnalysis() {
     if (spectrum && spectrum.length > 2) {
       const supportingColors = spectrum.slice(2, 4);
       const supportingChakras = supportingColors.map(color => 
-        chakraConnections[color] || `${color} Center`
+        chakraConnections[color] || chakraConnections['Purple']
       ).join(' and ');
       analysis += `. Supporting energy from ${supportingChakras} creates multi-dimensional chakra activation`;
     }
