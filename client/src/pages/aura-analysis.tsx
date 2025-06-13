@@ -1273,7 +1273,7 @@ export default function AuraAnalysis() {
       'Crimson': 'Earth star chakra. Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
       
     };
-    return frequencies[color] || `${color} Frequency - Specific vibrational rate activating corresponding chakra energy centers and soul consciousness pathways through authentic spiritual resonance.`;
+    return frequencies[color] || frequencies['Purple'];
   };
 
   const getChakraConnection = (color: string): string => {
@@ -1387,7 +1387,7 @@ export default function AuraAnalysis() {
       'Topaz': 'Ancient Wisdom & Emotions'
         
     };
-    return keywords[color] || `${color} Mastery`;
+    return keywords[color] || keywords['Purple'];
   };
 
   const getLayerMeaning = (layer: string, color: string): string => {
@@ -1556,7 +1556,7 @@ export default function AuraAnalysis() {
       'Teal': 'Visualize teal light at your throat. Breathe in healing communication, emotional clarity, purity, connections.',
       'Bronze': 'Visualize bronze light at your root chakra. Breathe in ancient wisdom, protection, grounding.',
     };
-    return meditations[color] || `Visualize ${color.toLowerCase()} light at your chakra centers. Breathe in ${color.toLowerCase()} mastery energy for authentic spiritual activation and divine consciousness enhancement.`;
+    return meditations[color] || meditations['Purple'];
   };
 
   const getColorHealing = (primary: string, secondary: string): string => {
@@ -1581,7 +1581,7 @@ export default function AuraAnalysis() {
       'Peach': 'Gentle love, caring, emotional warmth.',
       
     };
-    return traits[color] || `${color} spiritual mastery - Divine consciousness expressing through authentic soul gifts and chakra activation power`;
+    return traits[color] || traits['Purple'];
   };
 
   const getPositiveDescription = (color: string): string => {
@@ -1636,7 +1636,7 @@ export default function AuraAnalysis() {
       'Gray': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Black': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality'
     };
-    return shadows[color] || `${color} shadow integration - Specific chakra blockages requiring targeted healing and conscious transformation work`;
+    return shadows[color] || shadows['Purple'];
   };
 
   const getShadowDescription = (color: string): string => {
@@ -1655,7 +1655,7 @@ export default function AuraAnalysis() {
       'Lavender': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
       'Coral': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
     };
-    return descriptions[color] || `${color} integration needed - Specific chakra healing work required to balance energy imbalances and transform shadow patterns.`;
+    return descriptions[color] || descriptions['Purple'];
   };
 
   const getPlacementDescription = (color: string): string => {
@@ -1682,7 +1682,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'head chakra higher octave, understandinf and higher connection',
       
     };
-    return placements[color] || `${color} chakra positioning - Specific energy alignment creating focused spiritual activation through precise chakra coordination`;
+    return placements[color] || placements['Purple'];
   };
 
 
@@ -1705,7 +1705,7 @@ export default function AuraAnalysis() {
         'Mint': 'Fresh healing energy, renewal, growth.',
         'Peach': 'Gentle love, caring, emotional warmth.',
     };
-    return details[color] || `${color} energy creates specific chakra activation patterns through multi-dimensional spiritual field positioning and authentic soul consciousness expression.`;
+    return details[color] || details['Purple'];
   };
 
   const getSecondaryColorDescription = (color: string): string => {
@@ -1747,7 +1747,7 @@ export default function AuraAnalysis() {
       'Turquoise': 'Higher throat support - elevates your expression with healing communication, divine truth, and soul voice'
     };
     
-    return supportingDescriptions[color] || `${color} frequency support - channels divine consciousness through authentic spiritual expression and soul purpose activation`;
+    return supportingDescriptions[color] || supportingDescriptions['Purple'];
   };
 
   const getEnergyFlowPattern = (primary: string, secondary: string): string => {
@@ -1848,7 +1848,7 @@ export default function AuraAnalysis() {
       'White': 'All hours carry equal potential as this energy transcends time. Particularly strong during meditation and prayer.',
       'Pink': 'Heart-opening hours of sunrise and sunset when love energy is most expansive. Perfect for compassion practices.'
     };
-    return times[color] || `${color} consciousness flows through cosmic timing - sacred power hours activate during lunar phases and divine spiritual alignment.`;
+    return times[color] || times['Purple'];
   };
 
   const getCompatibleEnergies = (color: string): string => {
