@@ -518,68 +518,254 @@ export default function AuraAnalysis() {
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
-    const positiveMeanings: Record<string, string> = {
-      'Red': 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.',
-      'Orange': 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.',
-      'Yellow': 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.',
-      'Green': 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.',
-      'Blue': 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.',
-      'Indigo': 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.',
-      'Violet': 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.',
-      'Purple': 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.',
-      'Pink': 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.',
-      'Gold': 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.',
-      'Silver': 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.',
-      'Turquoise': 'Advanced heart-throat communication bridging emotional healing with spiritual teaching through higher truth expression. This therapeutic frequency combines wisdom with compassion for powerful healing communication and authentic guidance.',
-      'White': 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.',
-      'Teal': 'Heart-throat chakra bridge creating emotional communication pathways for healing expression through truth combined with compassion. This balanced frequency enables authentic voice expression while maintaining heart-centered wisdom and gentle authority.',
-      'Bronze': 'Ancient earth wisdom activation channeling ancestral knowledge through practical spirituality and grounded spiritual power. This timeless frequency connects you to generational healing wisdom and earth-based spiritual practices.',
-      'Emerald': 'Heart healing mastery frequency activating abundance consciousness and accelerated spiritual growth through love manifestation. This precious frequency enhances natural healing touch abilities and creates prosperity through heart-centered service.',
-      'Jade': 'Wisdom cultivation energy promoting emotional balance through peaceful power and harmonious relationship creation. This serene frequency builds gentle strength while fostering wise decision-making and balanced emotional expression.',
-      'Sapphire': 'Divine truth frequency establishing cosmic law understanding and spiritual justice through higher knowledge access. This sacred frequency channels divine wisdom and creates connection to universal truth and spiritual authority.',
-      'Lime': 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.',
-      'Maroon': 'Grounded passion energy channeling earthly wisdom through stable life force and enduring spiritual strength. This deep frequency enables practical manifestation while building unwavering commitment to your soul purpose and earthly service.',
-      'Navy': 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.',
-      'Chocolate': 'Earth wisdom frequency establishing practical spirituality through grounding energy and natural healing connection. This nurturing frequency creates material stability while maintaining authentic earthly spiritual connection and embodied wisdom.',
-      'Beige': 'Gentle earth energy emanating subtle healing through quiet wisdom and peaceful grounding presence. This calming frequency provides neutral balance while creating serene spiritual foundation and harmonious energy stabilization.',
-      'Tan': 'Natural balance frequency connecting earth energy with practical wisdom and gentle spiritual strength. This stable frequency builds solid foundation while creating harmonious grounding and sustainable spiritual growth.',
-      'Crimson': 'Deep passion chakra ignition channeling intense life force energy for powerful manifestation through warrior spirit activation. This primal frequency masters survival energy while directing raw spiritual power toward divine purpose.',
-      'Magenta': 'Soul love chakra expansion radiating divine feminine power through cosmic love and spiritual creativity. This mystical frequency creates heart expansion while awakening mystical romance and divine feminine wisdom.',
-      'Aqua': 'Higher communication center opening divine truth speaking channels through soul voice and mystical expression. This clear frequency enables spiritual teaching while providing emotional clarity and authentic truth expression.',
-      'Coral': 'Creative heart energy flowing artistic passion through gentle warmth and nurturing creativity. This harmonious frequency creates social connection while expressing emotional truth through beautiful creative manifestation.',
-      'Mint': 'Renewal chakra activation bringing fresh healing energy through emotional cleansing and spiritual rebirth. This purifying frequency accelerates growth while channeling powerful purification energy for complete spiritual renewal.',
-      'Peach': 'Nurturing heart center radiating gentle love energy through emotional healing and compassionate care. This tender frequency provides soft strength while channeling healing wisdom through gentle spiritual authority.',
-      'Sky Blue': 'Higher throat chakra expansion enabling unlimited expression through cosmic truth and divine communication. This celestial frequency provides voice freedom while channeling clear spiritual communication and heavenly clarity.',
-      'Rose': 'Divine love frequency creating soul mate connections through romantic heart healing and pure love expression. This sacred frequency masters emotional harmony while manifesting perfect relationship balance and heart wisdom.',
-      'Amber': 'Ancient earth wisdom activation providing protection energy through timeless knowledge and golden healing. This ancestral frequency channels spiritual grounding while connecting to generational wisdom and protective earth energy.',
-      'Gray': 'Neutral wisdom frequency establishing spiritual balance through cosmic neutrality and divine equilibrium. This balanced frequency creates peaceful detachment while maintaining clear perspective and spiritual objectivity.',
-      'Black': 'Shadow integration mastery channeling transformation power through deep inner work and void consciousness. This mysterious frequency provides protective strength while enabling complete spiritual transformation through shadow healing.',
-      'Brown': 'Earth connection frequency establishing material stability through physical grounding and natural wisdom. This foundational frequency builds practical power while creating strong spiritual foundation and embodied earth wisdom.',
-      'Cyan': 'Emotional clarity frequency enabling healing communication through pure emotion and crystal clear truth. This therapeutic frequency enhances emotional intelligence while providing clear spiritual expression and authentic emotional wisdom.'
+    const redMeaning = {
+      color: 'Red',
+      chakra: 'Root Chakra',
+      number: '1',
+      meaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.'
     };
-    return positiveMeanings[colorName] || `${colorName} mastery - Authentic soul gifts, chakra activation power, divine consciousness expression abilities`;
+    
+    const orangeMeaning = {
+      color: 'Orange', 
+      chakra: 'Sacral Chakra',
+      number: '2',
+      meaning: 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.'
+    };
+    
+    const yellowMeaning = {
+      color: 'Yellow',
+      chakra: 'Solar Plexus Chakra', 
+      number: '3',
+      meaning: 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.'
+    };
+    
+    const greenMeaning = {
+      color: 'Green',
+      chakra: 'Heart Chakra',
+      number: '4', 
+      meaning: 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.'
+    };
+    
+    const blueMeaning = {
+      color: 'Blue',
+      chakra: 'Throat Chakra',
+      number: '5',
+      meaning: 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.'
+    };
+    
+    const indigoMeaning = {
+      color: 'Indigo', 
+      chakra: 'Third Eye Chakra',
+      number: '6',
+      meaning: 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.'
+    };
+    
+    const violetMeaning = {
+      color: 'Violet',
+      chakra: 'Crown Chakra',
+      number: '7',
+      meaning: 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.'
+    };
+    
+    const purpleMeaning = {
+      color: 'Purple',
+      chakra: 'Crown Chakra Higher Octave',
+      number: '7',
+      meaning: 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.'
+    };
+    
+    const pinkMeaning = {
+      color: 'Pink', 
+      chakra: 'Heart Chakra Higher Octave',
+      number: '4',
+      meaning: 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.'
+    };
+    
+    const goldMeaning = {
+      color: 'Gold',
+      chakra: 'Solar Plexus Higher Octave', 
+      number: '3',
+      meaning: 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.'
+    };
+    
+    const silverMeaning = {
+      color: 'Silver',
+      chakra: 'Third Eye Higher Octave',
+      number: '6',
+      meaning: 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.'
+    };
+    
+    const turquoiseMeaning = {
+      color: 'Turquoise',
+      chakra: 'Heart-Throat Bridge Chakra',
+      number: '4.5',
+      meaning: 'Advanced heart-throat communication bridging emotional healing with spiritual teaching through higher truth expression. This therapeutic frequency combines wisdom with compassion for powerful healing communication and authentic guidance.'
+    };
+    
+    const whiteMeaning = {
+      color: 'White',
+      chakra: 'Crown Chakra Pure Light',
+      number: '7',
+      meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.'
+    };
+    
+    const limeMeaning = {
+      color: 'Lime',
+      chakra: 'Heart Chakra Renewal',
+      number: '4',
+      meaning: 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.'
+    };
+    
+    const navyMeaning = {
+      color: 'Navy',
+      chakra: 'Third Eye Deep Wisdom',
+      number: '6',
+      meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.'
+    };
+    
+    const colorMeanings: Record<string, string> = {
+      'Red': redMeaning.meaning,
+      'Orange': orangeMeaning.meaning,
+      'Yellow': yellowMeaning.meaning, 
+      'Green': greenMeaning.meaning,
+      'Blue': blueMeaning.meaning,
+      'Indigo': indigoMeaning.meaning,
+      'Violet': violetMeaning.meaning,
+      'Purple': purpleMeaning.meaning,
+      'Pink': pinkMeaning.meaning,
+      'Gold': goldMeaning.meaning,
+      'Silver': silverMeaning.meaning,
+      'Turquoise': turquoiseMeaning.meaning,
+      'White': whiteMeaning.meaning,
+      'Lime': limeMeaning.meaning,
+      'Navy': navyMeaning.meaning
+    };
+    
+    return colorMeanings[colorName] || `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`;
   }
 
   const getColorNegativeMeaning = (colorName: string): string => {
+    const redShadow = {
+      color: 'Red',
+      chakra: 'Root Chakra Imbalance',
+      number: '1',
+      meaning: 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.'
+    };
+    
+    const orangeShadow = {
+      color: 'Orange',
+      chakra: 'Sacral Chakra Blockage',
+      number: '2',
+      meaning: 'Sacral chakra blockage creating creative stagnation and sexual dysfunction while causing reproductive system imbalances and emotional instability. This restricted frequency prevents authentic creative expression and healthy emotional flow.'
+    };
+    
+    const yellowShadow = {
+      color: 'Yellow',
+      chakra: 'Solar Plexus Weakness',
+      number: '3',
+      meaning: 'Solar plexus weakness generating digestive problems and low self-esteem that manifests as anxiety disorders and constant power struggles. This diminished frequency creates mental confusion and inability to maintain personal boundaries.'
+    };
+    
+    const greenShadow = {
+      color: 'Green',
+      chakra: 'Heart Chakra Closure',
+      number: '4',
+      meaning: 'Heart chakra closure building emotional walls that create relationship difficulties and immune system weakness while manifesting lung problems. This protected frequency prevents authentic love expression and emotional vulnerability.'
+    };
+    
+    const blueShadow = {
+      color: 'Blue',
+      chakra: 'Throat Chakra Blockage',
+      number: '5',
+      meaning: 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.'
+    };
+    
+    const indigoShadow = {
+      color: 'Indigo',
+      chakra: 'Third Eye Cloudiness',
+      number: '6',
+      meaning: 'Third eye cloudiness creating intuitive blocks and chronic headaches while causing vision problems and spiritual confusion. This clouded frequency prevents psychic development and clear spiritual perception.'
+    };
+    
+    const violetShadow = {
+      color: 'Violet',
+      chakra: 'Crown Chakra Disconnection',
+      number: '7',
+      meaning: 'Crown chakra disconnection triggering spiritual crisis and depression while causing neurological issues and complete isolation from divine connection. This severed frequency creates existential emptiness and spiritual despair.'
+    };
+    
+    const purpleShadow = {
+      color: 'Purple',
+      chakra: 'Spiritual Bypassing',
+      number: '7',
+      meaning: 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.'
+    };
+    
+    const pinkShadow = {
+      color: 'Pink',
+      chakra: 'Heart Wounds',
+      number: '4',
+      meaning: 'Heart wounds creating codependency patterns and boundary dissolution that leads to emotional manipulation and excessive self-sacrifice. This wounded frequency attracts unhealthy relationship dynamics and emotional exploitation.'
+    };
+    
+    const goldShadow = {
+      color: 'Gold',
+      chakra: 'Spiritual Materialism',
+      number: '3',
+      meaning: 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.'
+    };
+    
+    const silverShadow = {
+      color: 'Silver',
+      chakra: 'Emotional Volatility',
+      number: '6',
+      meaning: 'Emotional volatility causing psychic overwhelm and hormonal imbalances that create mood disorders and excessive lunar sensitivity. This unstable frequency prevents emotional regulation and psychic protection.'
+    };
+    
+    const turquoiseShadow = {
+      color: 'Turquoise',
+      chakra: 'Communication Breakdown',
+      number: '4.5',
+      meaning: 'Communication breakdown causing emotional flooding and healer burnout while creating severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.'
+    };
+    
+    const whiteShadow = {
+      color: 'White',
+      chakra: 'Spiritual Bypassing',
+      number: '7',
+      meaning: 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.'
+    };
+    
+    const limeShadow = {
+      color: 'Lime',
+      chakra: 'Heart Impatience',
+      number: '4',
+      meaning: 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.'
+    };
+    
+    const navyShadow = {
+      color: 'Navy',
+      chakra: 'Mental Rigidity',
+      number: '6',
+      meaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.'
+    };
+    
     const negativeMeanings: Record<string, string> = {
-      'Red': 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.',
-      'Orange': 'Sacral chakra blockage creating creative stagnation and sexual dysfunction while causing reproductive system imbalances and emotional instability. This restricted frequency prevents authentic creative expression and healthy emotional flow.',
-      'Yellow': 'Solar plexus weakness generating digestive problems and low self-esteem that manifests as anxiety disorders and constant power struggles. This diminished frequency creates mental confusion and inability to maintain personal boundaries.',
-      'Green': 'Heart chakra closure building emotional walls that create relationship difficulties and immune system weakness while manifesting lung problems. This protected frequency prevents authentic love expression and emotional vulnerability.',
-      'Blue': 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.',
-      'Indigo': 'Third eye cloudiness creating intuitive blocks and chronic headaches while causing vision problems and spiritual confusion. This clouded frequency prevents psychic development and clear spiritual perception.',
-      'Violet': 'Crown chakra disconnection triggering spiritual crisis and depression while causing neurological issues and complete isolation from divine connection. This severed frequency creates existential emptiness and spiritual despair.',
-      'Purple': 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.',
-      'Pink': 'Heart wounds creating codependency patterns and boundary dissolution that leads to emotional manipulation and excessive self-sacrifice. This wounded frequency attracts unhealthy relationship dynamics and emotional exploitation.',
-      'Gold': 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.',
-      'Silver': 'Emotional volatility causing psychic overwhelm and hormonal imbalances that create mood disorders and excessive lunar sensitivity. This unstable frequency prevents emotional regulation and psychic protection.',
-      'Turquoise': 'Communication breakdown causing emotional flooding and healer burnout while creating severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.',
-      'White': 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.',
-      'Teal': 'Heart-throat disconnection creating difficulty expressing authentic feelings while causing emotional suppression and complete loss of authentic voice. This blocked frequency prevents emotional honesty and heart-centered communication.',
-      'Bronze': 'Earthly disconnection creating impractical spirituality and unresolved ancestral trauma while causing severe grounding issues. This unrooted frequency prevents embodied spiritual practice and material world integration.',
-      'Emerald': 'Heart protection walls creating fear of emotional vulnerability and attachment to healing outcomes while causing resistance to deeper transformation. This guarded frequency prevents authentic heart opening and spiritual growth.',
-      'Jade': 'Stagnant energy creating resistance to necessary spiritual growth while causing emotional numbness and paralyzing fear of change. This stuck frequency prevents life force flow and authentic evolution.',
-      'Sapphire': 'Harsh spiritual judgment creating rigid spiritual beliefs and throat chakra hardness while weaponizing truth for personal power. This hardened frequency prevents compassionate wisdom and authentic spiritual authority.'
+      'Red': redShadow.meaning,
+      'Orange': orangeShadow.meaning,
+      'Yellow': yellowShadow.meaning,
+      'Green': greenShadow.meaning,
+      'Blue': blueShadow.meaning,
+      'Indigo': indigoShadow.meaning,
+      'Violet': violetShadow.meaning,
+      'Purple': purpleShadow.meaning,
+      'Pink': pinkShadow.meaning,
+      'Gold': goldShadow.meaning,
+      'Silver': silverShadow.meaning,
+      'Turquoise': turquoiseShadow.meaning,
+      'White': whiteShadow.meaning,
+      'Lime': limeShadow.meaning,
+      'Navy': navyShadow.meaning
     };
     const additionalNegativeMeanings: Record<string, string> = {
       'Crimson': 'Destructive anger patterns manifesting through violent tendencies and overwhelming emotional intensity that creates uncontrolled passion and dangerous impulse expression. This explosive frequency can lead to physical aggression and complete loss of spiritual self-control.',
