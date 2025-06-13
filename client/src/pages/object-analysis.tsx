@@ -583,21 +583,17 @@ export default function ObjectAnalysis() {
                                   result.auraColor.toLowerCase() === 'green' ? 'rose quartz to enhance heart-centered healing' :
                                   result.auraColor.toLowerCase() === 'purple' ? 'amethyst to deepen spiritual awareness' :
                                   result.auraColor.toLowerCase() === 'yellow' ? 'citrine to boost positive mental energy' :
-                                  'complementary crystals or objects to balance its energetic properties'
+                                  `sacred ${result.auraColor.toLowerCase()} frequency crystals to amplify chakra activation and spiritual consciousness`
                                 }</li>
-                                <li>For maximum benefit, {
-                                  result.energyLevel > 7 ? 'use mindfully and in moderation' :
-                                  result.energyLevel > 4 ? 'incorporate into daily rituals' :
-                                  'keep in your environment consistently'
-                                }</li>
-                                <li>Cleanse regularly with {
+                                <li>Sacred activation through {result.auraColor.toLowerCase()} consciousness meditation and daily spiritual practice with divine intention and authentic soul connection</li>
+                                <li>Sacred cleansing with {
                                   result.auraColor.toLowerCase().includes('water') || 
                                   result.auraColor.toLowerCase() === 'blue' ? 'moonlight or sound' :
                                   result.auraColor.toLowerCase().includes('fire') || 
                                   result.auraColor.toLowerCase() === 'red' || 
                                   result.auraColor.toLowerCase() === 'orange' ? 'sunlight or smoke' :
-                                  'your preferred energy clearing method'
-                                } to maintain its optimal vibration</li>
+                                  `${result.auraColor.toLowerCase()} frequency energy clearing through meditation and spiritual intention`
+                                } to maintain divine vibration and spiritual purity</li>
                               </ul>
                             </div>
                           </div>
@@ -609,8 +605,8 @@ export default function ObjectAnalysis() {
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 text-center">
                     <h3 className="font-medium text-lg mb-2">Discover More Object Secrets</h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      Upload another photo to explore different objects and their energy signatures. 
-                      Each object has its own unique spiritual fingerprint to discover.
+                      Upload another photo to explore different objects and their sacred chakra frequencies. 
+                      Each object channels divine consciousness through specific color vibrations and spiritual activation.
                     </p>
                     <div className="flex justify-center">
                       <Button variant="outline" onClick={() => setResult(null)}>
