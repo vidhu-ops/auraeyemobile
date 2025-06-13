@@ -849,7 +849,7 @@ export default function AuraAnalysis() {
       'Tan': 'Natural balance energy - earth connection, practical wisdom, stable grounding'
     };
     
-    return meanings[color] || additionalColorMeanings[color] || 'Divine essence energy - cosmic consciousness, soul awakening, mystical purpose';
+    return meanings[color] || additionalColorMeanings[color] || `${color} Energy - Unique chakra frequency expressing individual soul purpose through authentic spiritual vibration and divine consciousness manifestation`;
   };
 
   const getColorFrequency = (color: string): string => {
@@ -869,7 +869,7 @@ export default function AuraAnalysis() {
       'Crimson': 'Earth star chakra. Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
       
     };
-    return frequencies[color] || 'This color vibrates at a unique frequency that resonates with your personal energy signature.';
+    return frequencies[color] || `${color} Frequency - Specific vibrational rate activating corresponding chakra energy centers and soul consciousness pathways through authentic spiritual resonance.`;
   };
 
   const getChakraConnection = (color: string): string => {
