@@ -113,43 +113,70 @@ export default function AuraAnalysis() {
     return analysis;
   };
 
-  // Simple hash function for consistent image results
+  // Enhanced hash function for consistent image results
   const generateImageHash = (base64Image: string): string => {
-    let hash = 0;
-    const str = base64Image.substring(0, 1000); // Use first 1000 chars for hash
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(36);
+    // Use multiple sections of the image for better uniqueness
+    const sections = [
+      base64Image.substring(0, 500),
+      base64Image.substring(Math.floor(base64Image.length * 0.25), Math.floor(base64Image.length * 0.25) + 500),
+      base64Image.substring(Math.floor(base64Image.length * 0.5), Math.floor(base64Image.length * 0.5) + 500),
+      base64Image.substring(Math.floor(base64Image.length * 0.75), Math.floor(base64Image.length * 0.75) + 500),
+      base64Image.substring(base64Image.length - 500)
+    ];
+    
+    let combinedHash = '';
+    sections.forEach((section, index) => {
+      let hash = 0;
+      for (let i = 0; i < section.length; i++) {
+        const char = section.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char + index;
+        hash = hash & hash; // Convert to 32-bit integer
+      }
+      combinedHash += Math.abs(hash).toString(36);
+    });
+    
+    return combinedHash;
   };
 
-  // Check if image is similar to cached images (basic similarity check)
+  // Enhanced image similarity detection for consistent results
   const findSimilarImage = (newHash: string, base64Image: string): AuraAnalysisResult | null => {
     // Check for exact match first
     if (imageCache.has(newHash)) {
+      console.log('Returning cached result for identical image');
       return imageCache.get(newHash) || null;
     }
     
-    // Check for similar hashes
+    // For identical images with slight compression differences, check content similarity
     const entries = Array.from(imageCache.entries());
     for (let i = 0; i < entries.length; i++) {
       const [cachedHash, cachedResult] = entries[i];
       
-      // Check for similar hashes (edit distance of 1-2 characters)
-      if (Math.abs(cachedHash.length - newHash.length) <= 2) {
-        let differences = 0;
-        const minLength = Math.min(cachedHash.length, newHash.length);
-        for (let j = 0; j < minLength; j++) {
-          if (cachedHash[j] !== newHash[j]) differences++;
-        }
-        if (differences <= 2) {
-          return cachedResult; // Similar image
-        }
+      // Compare hash similarity - identical images should have very similar hashes
+      const similarity = calculateHashSimilarity(newHash, cachedHash);
+      if (similarity > 0.85) { // 85% similarity threshold for same image
+        console.log('Returning cached result for similar image (similarity:', similarity, ')');
+        return cachedResult;
       }
     }
     return null;
+  };
+
+  // Calculate similarity between two hash strings
+  const calculateHashSimilarity = (hash1: string, hash2: string): number => {
+    if (hash1 === hash2) return 1.0;
+    
+    const maxLength = Math.max(hash1.length, hash2.length);
+    const minLength = Math.min(hash1.length, hash2.length);
+    
+    // If lengths are very different, it's likely a different image
+    if (maxLength - minLength > maxLength * 0.2) return 0;
+    
+    let matches = 0;
+    for (let i = 0; i < minLength; i++) {
+      if (hash1[i] === hash2[i]) matches++;
+    }
+    
+    return matches / maxLength;
   };
 
 
@@ -471,10 +498,23 @@ export default function AuraAnalysis() {
       'Maroon': 'Grounded passion - earthly wisdom, stable life force, enduring strength',
       'Chocolate': 'Earth wisdom - practical spirituality, grounding energy, natural healing',
       'Beige': 'Gentle earth energy - subtle healing, quiet wisdom, peaceful grounding',
-      'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength'
+      'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength',
+      'Teal': 'Heart-throat bridge - healing communication, emotional truth, compassionate expression',
+      'Coral': 'Creative heart energy - artistic passion, gentle warmth, nurturing creativity',
+      'Mint': 'Renewal chakra - fresh healing energy, emotional cleansing, spiritual rebirth',
+      'Peach': 'Nurturing heart - gentle love energy, emotional healing, compassionate care',
+      'Sky Blue': 'Higher throat chakra - unlimited expression, cosmic truth, divine communication',
+      'Rose': 'Divine love frequency - soul mate connection, romantic heart healing, pure love',
+      'Amber': 'Ancient earth wisdom - protection energy, timeless knowledge, golden healing',
+      'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality, divine equilibrium',
+      'Black': 'Shadow integration - transformation power, deep inner work, void consciousness',
+      'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
+      'Cyan': 'Emotional clarity - healing communication, pure emotion, crystal clear truth',
+      'Bronze': 'Ancient strength - enduring wisdom, protective power, timeless resilience',
+      'Cobalt': 'Deep cosmic wisdom - mystical knowledge, universal truth, profound insight'
     };
     
-    return meaningMap[colorName] || additionalMeanings[colorName] || `${colorName} Frequency - Multi-dimensional chakra activation, authentic soul expression, divine consciousness channeling`;
+    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || `Unknown color energy - spiritual frequency beyond current understanding`;
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
