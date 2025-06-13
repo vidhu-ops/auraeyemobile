@@ -393,90 +393,67 @@ export default function AuraAnalysis() {
 
   const getColorPositiveMeaning = (colorName: string): string => {
     const positiveMeanings: Record<string, string> = {
-      'Red': 'Leadership, courage, passion, vitality, determination',
-      'Orange': 'Creativity, joy, enthusiasm, confidence, artistic expression',
-      'Yellow': 'Intelligence, wisdom, optimism, mental clarity, analytical thinking',
-      'Green': 'Love, compassion, healing, growth, harmony',
-      'Blue': 'Truth, communication, peace, intuition, spiritual awareness',
-      'Indigo': 'Deep intuition, psychic gifts, spiritual insight, mystical awareness',
-      'Violet': 'Spiritual transformation, divine connection, magic, enlightenment',
-      'Purple': 'Spiritual nobility, mysticism, divine wisdom, higher consciousness',
-      'Pink': 'Unconditional love, compassion, emotional healing, nurturing energy',
-      'Gold': 'Divine wisdom, spiritual mastery, enlightenment, higher purpose',
-      'Silver': 'Intuitive wisdom, feminine power, psychic protection, lunar energy',
-      'Turquoise': 'Healing abilities, higher communication, emotional balance, therapeutic energy',
-      'White': 'Purity, divine protection, spiritual clarity, angelic connection',
-      'Lavender': 'Gentle spirituality, peaceful wisdom, calm guidance',
-      'Coral': 'Emotional warmth, creative expression, social harmony, artistic gifts',
-      'Mint': 'Fresh healing energy, renewal, growth, rejuvenation',
-      'Peach': 'Gentle love, caring nature, emotional warmth, nurturing spirit',
-      'Sky Blue': 'Clear communication, freedom, openness, expansive thinking',
-      'Rose': 'Deep love, emotional healing, romance, heart-centered wisdom',
-      'Amber': 'Ancient wisdom, protection, grounding, earth connection',
-      'Gray': 'Balance, neutrality, contemplation, wisdom',
-      'Black': 'Protection, transformation, mystery, deep inner wisdom',
-      'Crimson': 'Deep passion, intensity, vitality, powerful life force',
-      'Magenta': 'Innovation, uniqueness, spiritual rebellion, non-conformity',
-      'Brown': 'Grounding, stability, reliability, practical wisdom',
-      'Beige': 'Neutral wisdom, adaptability, peaceful energy',
-      'Cyan': 'Clear healing communication, emotional clarity, therapeutic expression',
-      'Lime': 'Fresh energy, renewal, vibrant growth, new beginnings',
-      'Maroon': 'Deep passion, mature intensity, grounded vitality',
-      'Navy': 'Deep intuition, profound wisdom, grounding, spiritual depth',
-      'Olive': 'Natural balance, harmony, practicality, peaceful strength',
-      'Teal': 'Healing communication, emotional clarity, pure connections',
-      'Bronze': 'Ancient wisdom, protective strength, grounding, enduring knowledge',
-      'Cobalt': 'Deep intuition, profound wisdom, spiritual grounding, mystical connection',
-      'Emerald': 'Deep healing energy, renewal, growth, heart-centered wisdom',
-      'Jade': 'Pure healing energy, compassion, balanced growth, harmonious wisdom',
-      'Sapphire': 'Divine truth, deep insight, spiritual wisdom, truth-seeking nature',
-      'Topaz': 'Ancient wisdom, emotional depth, creative inspiration, spiritual creativity'
+      'Red': 'Kundalini activation, life force energy, physical vitality, leadership magnetism, courage in action',
+      'Orange': 'Sacral chakra balance, creative manifestation, sexual vitality, emotional freedom, artistic genius',
+      'Yellow': 'Solar plexus power, mental brilliance, digestive harmony, personal will, intellectual mastery',
+      'Green': 'Heart chakra opening, unconditional love, natural healing abilities, emotional balance, prosperity consciousness',
+      'Blue': 'Throat chakra clarity, divine truth expression, psychic communication, spiritual teaching, peaceful authority',
+      'Indigo': 'Third eye awakening, clairvoyant sight, spiritual wisdom, intuitive knowing, mystical understanding',
+      'Violet': 'Crown chakra activation, divine connection, spiritual mastery, cosmic consciousness, enlightened awareness',
+      'Purple': 'Royal spiritual power, divine nobility, magical abilities, higher wisdom, mystical authority',
+      'Pink': 'Divine feminine love, emotional healing mastery, nurturing power, compassionate leadership, heart wisdom',
+      'Gold': 'Christ consciousness, divine wisdom, spiritual wealth, enlightened mastery, cosmic protection',
+      'Silver': 'Lunar intuition, psychic protection, feminine wisdom, emotional intelligence, intuitive mastery',
+      'Turquoise': 'Advanced communication, emotional healing, spiritual teaching, higher truth, therapeutic power',
+      'White': 'Pure divine light, angelic protection, spiritual clarity, cosmic consciousness, divine guidance',
+      'Teal': 'Heart-throat bridge, emotional communication, healing expression, truth with compassion, authentic voice',
+      'Bronze': 'Earth wisdom, ancestral knowledge, practical spirituality, grounded power, ancient healing',
+      'Emerald': 'Heart healing mastery, abundance consciousness, growth acceleration, love manifestation, healing touch',
+      'Jade': 'Wisdom cultivation, emotional balance, peaceful power, harmonious relationships, gentle strength',
+      'Sapphire': 'Divine truth, cosmic law understanding, spiritual justice, higher knowledge, sacred wisdom'
     };
-    return positiveMeanings[colorName] || 'Wisdom, balance, harmony, spiritual growth, positive transformation';
+    return positiveMeanings[colorName] || 'Unique spiritual gifts, divine purpose activation, higher consciousness awakening';
   }
 
   const getColorNegativeMeaning = (colorName: string): string => {
     const negativeMeanings: Record<string, string> = {
-      'Red': 'Anger, aggression, impatience, frustration, overwhelming intensity',
-      'Orange': 'Overconfidence, attention-seeking, restlessness, scattered energy',
-      'Yellow': 'Overthinking, anxiety, critical judgment, mental exhaustion',
-      'Green': 'Jealousy, possessiveness, codependency, emotional imbalance',
-      'Blue': 'Communication blocks, sadness, withdrawal, suppressed emotions',
-      'Indigo': 'Confusion, overwhelm from psychic input, spiritual disconnection',
-      'Violet': 'Spiritual arrogance, disconnection from reality, ego inflation',
-      'Purple': 'Superiority complex, spiritual materialism, misuse of power',
-      'Pink': 'Codependency, emotional manipulation, martyrdom',
-      'Gold': 'Spiritual ego, pride, feeling superior to others',
-      'Silver': 'Emotional instability, moodiness, psychic vulnerability',
-      'Turquoise': 'Emotional overwhelm, taking on others\' pain, healing burnout',
-      'White': 'Spiritual bypassing, avoidance of shadow work, perfectionism',
-      'Lavender': 'Spiritual escapism, avoidance of reality, passive withdrawal',
-      'Coral': 'Emotional dependency, people-pleasing, fear of rejection',
-      'Mint': 'Superficial healing, avoiding deep work, quick-fix mentality',
-      'Peach': 'Over-nurturing, loss of boundaries, emotional exhaustion',
-      'Sky Blue': 'Scattered thinking, lack of focus, unrealistic expectations',
-      'Rose': 'Romantic illusions, emotional dependency, heart-based manipulation',
-      'Amber': 'Resistance to change, stubbornness, stuck in the past',
-      'Gray': 'Indecision, lack of direction, emotional numbness',
-      'Black': 'Depression, negativity, absorption of others\' dark energy',
-      'Crimson': 'Overwhelming intensity, destructive passion, uncontrolled anger',
-      'Magenta': 'Rebellion without purpose, spiritual confusion, feeling misunderstood',
-      'Brown': 'Stubbornness, resistance to change, overly materialistic',
-      'Beige': 'Apathy, lack of passion, emotional flatness',
-      'Cyan': 'Emotional coldness, detachment, superficial communication',
-      'Lime': 'Hyperactivity, scattered energy, impatience with natural timing',
-      'Maroon': 'Suppressed anger, hidden resentment, emotional stagnation',
-      'Navy': 'Emotional rigidity, pessimism, overly serious nature',
-      'Olive': 'Dullness, lack of inspiration, resistance to change',
-      'Teal': 'Emotional overwhelm, boundary confusion, taking on others\' emotions',
-      'Bronze': 'Outdated thinking, resistance to modern ideas, inflexibility',
-      'Cobalt': 'Emotional intensity, overwhelming depth, spiritual obsession',
-      'Emerald': 'Possessiveness, jealousy, attachment to outcomes',
-      'Jade': 'Complacency, emotional stagnation, resistance to necessary change',
-      'Sapphire': 'Harsh judgment, overly critical nature, spiritual rigidity',
-      'Topaz': 'Emotional volatility, creative blocks, scattered artistic energy'
+      'Red': 'Root chakra imbalance, survival fears, aggressive tendencies, blood pressure issues, adrenal exhaustion',
+      'Orange': 'Sacral chakra blockage, creative blocks, sexual dysfunction, reproductive issues, emotional instability',
+      'Yellow': 'Solar plexus weakness, digestive problems, low self-esteem, anxiety disorders, power struggles',
+      'Green': 'Heart chakra closure, relationship difficulties, immune system weakness, lung problems, emotional walls',
+      'Blue': 'Throat chakra blockage, communication fears, thyroid issues, neck tension, truth suppression',
+      'Indigo': 'Third eye cloudiness, intuitive blocks, headaches, vision problems, spiritual confusion',
+      'Violet': 'Crown chakra disconnection, spiritual crisis, depression, neurological issues, isolation from divine',
+      'Purple': 'Spiritual bypassing, ego inflation, mental health struggles, disconnection from reality',
+      'Pink': 'Heart wounds, codependency patterns, boundary issues, emotional manipulation, self-sacrifice',
+      'Gold': 'Spiritual materialism, ego attachment, fear of responsibility, perfectionism, divine disconnection',
+      'Silver': 'Emotional volatility, psychic overwhelm, hormonal imbalances, mood disorders, lunar sensitivity',
+      'Turquoise': 'Communication breakdown, emotional flooding, healer burnout, throat chakra strain',
+      'White': 'Spiritual bypassing, avoidance of shadow work, perfectionism, disconnection from earthly matters',
+      'Teal': 'Heart-throat disconnection, difficulty expressing feelings, emotional suppression, authentic voice loss',
+      'Bronze': 'Earthly disconnection, impractical spirituality, ancestral trauma, grounding issues',
+      'Emerald': 'Heart protection walls, fear of vulnerability, attachment to outcomes, healing resistance',
+      'Jade': 'Stagnant energy, resistance to growth, emotional numbness, fear of change',
+      'Sapphire': 'Harsh judgment, spiritual rigidity, throat chakra hardness, truth weaponization'
     };
-    return negativeMeanings[colorName] || 'Imbalance, scattered energy, emotional blocks, need for grounding';
+    return negativeMeanings[colorName] || 'Energy blockages, chakra imbalances, need for spiritual healing and grounding work';
+  }
+
+  // Chakra healing remedies for weaker chakras
+  const getChakraRemedies = (chakraName: string, activityLevel: number): string => {
+    if (activityLevel >= 70) return '';
+    
+    const remedies: Record<string, string> = {
+      'Root': 'Ground yourself daily: walk barefoot on earth, use red jasper crystal, practice warrior poses, eat root vegetables, visualize red light at tailbone, chant LAM mantra',
+      'Sacral': 'Enhance creativity: orange carnelian crystal, hip circles, swimming, creative arts, tantric breathing, visualize orange light below navel, chant VAM mantra',
+      'Solar Plexus': 'Build confidence: citrine crystal, core strengthening, yellow foods, sun gazing meditation, power breathing, visualize yellow light at stomach, chant RAM mantra',
+      'Heart': 'Open to love: rose quartz crystal, heart opening yoga, green leafy foods, loving-kindness meditation, pranayama breathing, visualize green light at chest, chant YAM mantra',
+      'Throat': 'Express truth: blue lace agate crystal, neck stretches, singing, journaling, truthful communication, visualize blue light at throat, chant HAM mantra',
+      'Third Eye': 'Enhance intuition: amethyst crystal, forward folds, meditation, purple foods, third eye massage, visualize indigo light between brows, chant OM mantra',
+      'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra'
+    };
+    
+    return remedies[chakraName] || 'Balance through meditation, crystals, yoga, proper nutrition, and energy healing practices';
   }
 
   // Helper functions for the 4-zone aura visualization
@@ -3868,6 +3845,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.crown * 10} className="h-3 bg-violet-100" />
+                                  {result.chakraActivity.crown * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-violet-50 rounded-lg border border-violet-200">
+                                      <h5 className="font-medium text-sm text-violet-800 mb-2">Healing Remedies for Crown Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Crown', result.chakraActivity.crown * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Third Eye Chakra - Number 8 */}
