@@ -432,7 +432,7 @@ export default function AuraAnalysis() {
       'Sapphire': 'Divine truth, deep insight, spiritual wisdom, truth-seeking nature',
       'Topaz': 'Ancient wisdom, emotional depth, creative inspiration, spiritual creativity'
     };
-    return positiveMeanings[colorName] || 'Unique energy signature, special gifts, positive spiritual qualities';
+    return positiveMeanings[colorName] || 'Wisdom, balance, harmony, spiritual growth, positive transformation';
   }
 
   const getColorNegativeMeaning = (colorName: string): string => {
@@ -476,7 +476,7 @@ export default function AuraAnalysis() {
       'Sapphire': 'Harsh judgment, overly critical nature, spiritual rigidity',
       'Topaz': 'Emotional volatility, creative blocks, scattered artistic energy'
     };
-    return negativeMeanings[colorName] || 'Energy blocks, need for balance and healing';
+    return negativeMeanings[colorName] || 'Imbalance, scattered energy, emotional blocks, need for grounding';
   }
 
   // Helper functions for the 4-zone aura visualization
