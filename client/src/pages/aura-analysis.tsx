@@ -65,39 +65,16 @@ export default function AuraAnalysis() {
       'Peach': 'Nurturing Heart Center'
     };
 
-    const colorMeanings: Record<string, string> = {
-      'Red': 'grounding, vitality, survival strength',
-      'Orange': 'creativity, passion, emotional flow',
-      'Yellow': 'personal power, mental clarity, confidence',
-      'Green': 'healing love, compassion, heart wisdom',
-      'Blue': 'truth, peace, authentic communication',
-      'Indigo': 'intuition, psychic sight, inner knowing',
-      'Violet': 'spiritual connection, divine consciousness',
-      'Purple': 'mystical wisdom, spiritual mastery',
-      'Pink': 'unconditional love, divine compassion',
-      'Gold': 'divine wisdom, Christ consciousness',
-      'Silver': 'lunar intuition, feminine wisdom',
-      'Turquoise': 'healing communication, divine truth',
-      'White': 'pure light, spiritual protection',
-      'Lime': 'fresh healing, renewal energy',
-      'Teal': 'emotional truth, compassionate expression',
-      'Maroon': 'deep passion, earthly wisdom',
-      'Navy': 'profound wisdom, cosmic knowledge',
-      'Coral': 'creative warmth, gentle passion',
-      'Mint': 'healing renewal, emotional cleansing',
-      'Peach': 'nurturing love, gentle care'
-    };
+
 
     const totalColors = spectrum ? spectrum.length : 2;
     const dominantChakra = chakraConnections[dominant] || `${dominant} Energy Center`;
     const secondaryChakra = secondary ? chakraConnections[secondary] || `${secondary} Energy Center` : '';
-    const dominantMeaning = colorMeanings[dominant] || 'authentic soul expression';
-    const secondaryMeaning = secondary ? colorMeanings[secondary] || 'supportive energy' : '';
 
-    let analysis = `Your ${totalColors}-color aura spectrum reveals ${dominantChakra} dominance with ${dominantMeaning}`;
+    let analysis = `Your ${totalColors}-color aura spectrum reveals ${dominantChakra} dominance`;
     
     if (secondary) {
-      analysis += ` harmonizing with ${secondaryChakra} expressing ${secondaryMeaning}`;
+      analysis += ` harmonizing with ${secondaryChakra}`;
     }
 
     if (spectrum && spectrum.length > 2) {
@@ -447,75 +424,7 @@ export default function AuraAnalysis() {
     return '#9932CC'; // Default purple if no match
   };
 
-  // Helper function to get color meanings
-  const getColorMeaning = (colorName: string): string => {
-    const meaningMap: Record<string, string> = {
-      'Red': 'Healing & Vitality - Root chakra energy, survival instinct, life force, physical vitality, grounding power',
-      'Orange': 'Creativity & Joy - Sacral chakra energy, creativity, sexuality, emotional flow, artistic expression',
-      'Yellow': 'Wisdom & Clarity - Solar plexus chakra, personal power, confidence, willpower, mental clarity',
-      'Green': 'Love & Healing - Heart chakra, unconditional love, healing abilities, compassion, emotional balance',
-      'Blue': 'Truth, Peace & Communication - Throat chakra, communication, truth speaking, self-expression, authentic voice',
-      'Indigo': 'Intuition & Vision - Third eye chakra, psychic abilities, intuition, inner wisdom, spiritual sight',
-      'Violet': 'Spiritual Connection - Crown chakra, spiritual connection, divine consciousness, enlightenment, mysticism',
-      'Purple': 'Divine Wisdom - Higher crown chakra, spiritual mastery, mystical awareness, divine wisdom',
-      'Pink': 'Unconditional Love - Higher heart chakra, unconditional love, divine compassion, soul connection',
-      'Gold': 'Divine Illumination - Christ consciousness, divine wisdom, spiritual illumination, soul purpose',
-      'Silver': 'Lunar Intuition - Lunar energy, intuitive wisdom, feminine power, psychic protection',
-      'Turquoise': 'Healing Communication - Higher throat chakra, healing communication, divine truth, soul expression',
-      'White': 'Pure Light - Pure divine light, spiritual protection, angelic connection, soul purification',
-      'Lavender': 'Spiritual Peace - Gentle awakening, cosmic consciousness, divine grace, serene wisdom',
-      'Coral': 'Creative Heart - Creative heart energy, artistic expression, gentle passion, emotional creativity',
-      'Mint': 'Renewal & Healing - Healing heart energy, renewal power, fresh growth, emotional cleansing',
-      'Peach': 'Nurturing Love - Nurturing heart energy, gentle love, emotional healing, caring vibration',
-      'Sky Blue': 'Cosmic Truth - Higher communication, cosmic truth, unlimited expression, divine clarity',
-      'Rose': 'Divine Love - Divine love frequency, soul mate connection, spiritual romance, heart healing',
-      'Amber': 'Ancient Wisdom - Ancient earth wisdom, protection energy, grounding force, timeless knowledge',
-      'Gray': 'Neutral Balance - Neutral wisdom, spiritual balance, detachment, cosmic neutrality',
-      'Black': 'Shadow Work - Shadow integration, transformation power, protection energy, deep inner work',
-      'Crimson': 'Life Force Power - Intense vitality, warrior energy, passionate purpose, primal strength',
-      'Magenta': 'Soul Rebellion - Unique spiritual path, divine independence, cosmic uniqueness, spiritual freedom',
-      'Brown': 'Earth Connection - Material stability, practical wisdom, physical grounding, earthly wisdom',
-      'Beige': 'Gentle Grounding - Peaceful stability, calm presence, neutral harmony, quiet strength',
-      'Cyan': 'Emotional Clarity - Clear feeling expression, healing communication, pure emotion, transparent truth',
-      'Lime': 'Fresh Energy - New growth energy, vibrant renewal, spring awakening, fresh life force',
-      'Maroon': 'Deep Passion - Sustained passion, grounded intensity, mature strength, enduring power',
-      'Navy': 'Deep Wisdom - Profound intuition, cosmic knowledge, soul depth, mystical understanding',
-      'Olive': 'Natural Harmony - Earth wisdom, practical spirituality, balanced growth, nature connection',
-      'Teal': 'Heart-Throat Bridge - Healing words, emotional truth, compassionate communication, authentic expression',
-      'Bronze': 'Ancient Strength - Enduring wisdom, protective power, timeless stability, ancestral knowledge',
-      'Cobalt': 'Cosmic Wisdom - Profound spiritual insight, mystical knowledge, universal truth, divine understanding',
-      'Emerald': 'Heart Healing - Deep compassion, abundant love, soul growth energy, healing mastery',
-      'Jade': 'Balanced Wisdom - Harmonious love, peaceful healing, soul balance, gentle strength',
-      'Sapphire': 'Divine Truth - Spiritual clarity, cosmic insight, soul wisdom, sacred knowledge',
-      'Topaz': 'Golden Creativity - Creative intelligence, emotional depth, spiritual creativity, inspired wisdom'
-    };
-    const additionalMeanings: Record<string, string> = {
-      'Crimson': 'Deep passion chakra - intense life force, powerful manifestation, warrior spirit',
-      'Magenta': 'Soul love chakra - divine feminine power, cosmic love, spiritual creativity',
-      'Aqua': 'Higher communication - divine truth speaking, soul voice, mystical expression',
-      'Navy': 'Deep wisdom chakra - profound spiritual knowledge, cosmic intelligence, soul memory',
-      'Lime': 'Heart healing chakra - renewal energy, fresh growth, emotional cleansing',
-      'Maroon': 'Grounded passion - earthly wisdom, stable life force, enduring strength',
-      'Chocolate': 'Earth wisdom - practical spirituality, grounding energy, natural healing',
-      'Beige': 'Gentle earth energy - subtle healing, quiet wisdom, peaceful grounding',
-      'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength',
-      'Teal': 'Heart-throat bridge - healing communication, emotional truth, compassionate expression',
-      'Coral': 'Creative heart energy - artistic passion, gentle warmth, nurturing creativity',
-      'Mint': 'Renewal chakra - fresh healing energy, emotional cleansing, spiritual rebirth',
-      'Peach': 'Nurturing heart - gentle love energy, emotional healing, compassionate care',
-      'Sky Blue': 'Higher throat chakra - unlimited expression, cosmic truth, divine communication',
-      'Rose': 'Divine love frequency - soul mate connection, romantic heart healing, pure love',
-      'Amber': 'Ancient earth wisdom - protection energy, timeless knowledge, golden healing',
-      'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality, divine equilibrium',
-      'Black': 'Shadow integration - transformation power, deep inner work, void consciousness',
-      'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
-      'Cyan': 'Emotional clarity - healing communication, pure emotion, crystal clear truth',
-      'Bronze': 'Ancient strength - enduring wisdom, protective power, timeless resilience',
-      'Cobalt': 'Deep cosmic wisdom - mystical knowledge, universal truth, profound insight'
-    };
-    
-    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || `${colorName} mastery - Authentic soul gifts expressing through unique chakra activation patterns and divine consciousness manifestation`;
-  }
+
 
   const getColorPositiveMeaning = (colorName: string): string => {
     const redMeaning = {
