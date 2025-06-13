@@ -162,13 +162,7 @@ export default function AuraAnalysis() {
       }
     };
     
-    return colorInfoMap[colorName] || {
-      chakra: `${colorName} Chakra Center`,
-      number: '7',
-      shadowMeaning: `${colorName} shadow integration creating specific energetic imbalances that require conscious healing work to transform blocked spiritual frequencies into authentic power expression.`,
-      positiveMeaning: `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`,
-      colorMeaning: `${colorName} Energy - Unique spiritual frequency, individual chakra expression, divine consciousness, authentic power`
-    };
+    return colorInfoMap[colorName] || colorInfoMap['Purple']; // Default to Purple if color not found
   };
 
   const getColorHarmonyAnalysis = (dominant: string, secondary: string | null, spectrum: string[] | undefined): string => {
@@ -644,7 +638,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'Deep cosmic wisdom - mystical knowledge, universal truth, profound insight'
     };
     
-    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || `${colorName} mastery - Authentic soul gifts expressing through unique chakra activation patterns and divine consciousness manifestation`;
+    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || meaningMap['Purple'];
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
@@ -771,7 +765,7 @@ export default function AuraAnalysis() {
       'Navy': navyMeaning.meaning
     };
     
-    return colorMeanings[colorName] || `${colorName} individual chakra mastery expressing unique spiritual gifts through authentic divine consciousness activation.`;
+    return colorMeanings[colorName] || colorMeanings['Purple'];
   }
 
 
@@ -944,8 +938,7 @@ export default function AuraAnalysis() {
       'Teal': 'Emotional suppression creating authentic voice loss and heart-throat disconnection while fostering communication fears and feeling blockages.'
     };
     
-    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || 
-           `${colorName} shadow integration creating specific energetic imbalances that require conscious healing work to transform blocked spiritual frequencies into authentic power expression.`;
+    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || shadowMeanings['Purple'];
   }
 
   // Chakra healing remedies for weaker chakras
@@ -1164,7 +1157,7 @@ export default function AuraAnalysis() {
       'Gold': 'Gold energy empowers your morning with wisdom and spiritual authority.',
       'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.'
     };
-    return morningInfluences[dominant] || `${dominant} consciousness awakens your morning with divine soul purpose and authentic spiritual expression.`;
+    return morningInfluences[dominant] || morningInfluences['Purple'];
   };
 
   const getPeakEnergyHours = (dominant: string): string => {
@@ -1182,7 +1175,7 @@ export default function AuraAnalysis() {
       'Gold': 'Wisdom energy peaks during afternoon (3-5pm) for important decisions.',
       'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.'
     };
-    return peakHours[dominant] || `${dominant} energy peaks during cosmic alignment hours when your soul frequency resonates with divine timing.`;
+    return peakHours[dominant] || peakHours['Purple'];
   };
 
   const getEveningEnergyGuidance = (dominant: string): string => {
@@ -1200,7 +1193,7 @@ export default function AuraAnalysis() {
       'Gold': 'Gold energy illuminates evening with wisdom sharing and spiritual teaching.',
       'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.'
     };
-    return eveningGuidance[dominant] || `${dominant} consciousness guides your evening toward soul purpose practices and divine spiritual alignment.`;
+    return eveningGuidance[dominant] || eveningGuidance['Purple'];
   };
 
   // Helper functions for 9-chakra system calculations (using existing functions below)
@@ -1260,7 +1253,7 @@ export default function AuraAnalysis() {
       'Tan': 'Natural balance energy - earth connection, practical wisdom, stable grounding'
     };
     
-    return meanings[color] || additionalColorMeanings[color] || `${color} mastery - Specific chakra activation expressing authentic spiritual gifts through divine consciousness and soul purpose manifestation`;
+    return meanings[color] || additionalColorMeanings[color] || meanings['Purple'];
   };
 
   const getColorFrequency = (color: string): string => {
