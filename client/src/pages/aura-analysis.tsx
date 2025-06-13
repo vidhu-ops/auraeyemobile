@@ -388,7 +388,19 @@ export default function AuraAnalysis() {
       'Sapphire': 'Divine truth seeking - spiritual clarity, cosmic insight, soul wisdom',
       'Topaz': 'Golden wisdom - creative intelligence, emotional depth, spiritual creativity'
     };
-    return meaningMap[colorName] || 'Unique soul energy signature with special spiritual purpose';
+    const additionalMeanings: Record<string, string> = {
+      'Crimson': 'Deep passion chakra - intense life force, powerful manifestation, warrior spirit',
+      'Magenta': 'Soul love chakra - divine feminine power, cosmic love, spiritual creativity',
+      'Aqua': 'Higher communication - divine truth speaking, soul voice, mystical expression',
+      'Navy': 'Deep wisdom chakra - profound spiritual knowledge, cosmic intelligence, soul memory',
+      'Lime': 'Heart healing chakra - renewal energy, fresh growth, emotional cleansing',
+      'Maroon': 'Grounded passion - earthly wisdom, stable life force, enduring strength',
+      'Chocolate': 'Earth wisdom - practical spirituality, grounding energy, natural healing',
+      'Beige': 'Gentle earth energy - subtle healing, quiet wisdom, peaceful grounding',
+      'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength'
+    };
+    
+    return meaningMap[colorName] || additionalMeanings[colorName] || 'Divine spiritual essence - cosmic consciousness, soul purpose, mystical awareness';
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
@@ -436,7 +448,19 @@ export default function AuraAnalysis() {
       'Jade': 'Stagnant energy, resistance to growth, emotional numbness, fear of change',
       'Sapphire': 'Harsh judgment, spiritual rigidity, throat chakra hardness, truth weaponization'
     };
-    return negativeMeanings[colorName] || 'Energy blockages, chakra imbalances, need for spiritual healing and grounding work';
+    const additionalNegativeMeanings: Record<string, string> = {
+      'Crimson': 'Destructive anger, violent tendencies, overwhelming intensity, uncontrolled passion',
+      'Magenta': 'Emotional overwhelm, unrealistic expectations, spiritual delusion, excessive attachment',
+      'Aqua': 'Communication confusion, spiritual bypassing, emotional detachment, truth distortion',
+      'Navy': 'Mental rigidity, spiritual arrogance, intellectual superiority, wisdom hoarding',
+      'Lime': 'Impatience with healing, forced growth, emotional instability, restless energy',
+      'Maroon': 'Stubborn resistance, earthly attachment, fear of change, spiritual stagnation',
+      'Chocolate': 'Material obsession, earthly heaviness, resistance to higher wisdom, practical limitations',
+      'Beige': 'Spiritual apathy, energy depletion, lack of passion, disconnection from purpose',
+      'Tan': 'Bland existence, avoiding spiritual growth, fear of intensity, mediocrity acceptance'
+    };
+    
+    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || 'Spiritual shadow work needed - releasing old patterns, clearing energy blocks, transforming limiting beliefs';
   }
 
   // Chakra healing remedies for weaker chakras
@@ -739,7 +763,19 @@ export default function AuraAnalysis() {
       'Sapphire': 'Divine truth seeking - spiritual clarity, soul wisdom',
       'Topaz': 'Golden wisdom - creative intelligence, spiritual creativity'     
     };
-    return meanings[color] || 'Unique soul energy signature with spiritual purpose';
+    const additionalColorMeanings: Record<string, string> = {
+      'Crimson': 'Deep passion energy - intense life force, warrior spirit, primal power',
+      'Magenta': 'Soul love energy - divine feminine, cosmic creativity, spiritual passion',
+      'Aqua': 'Higher communication - soul voice, mystical truth, divine expression',
+      'Navy': 'Deep wisdom energy - cosmic knowledge, soul memory, profound insight',
+      'Lime': 'Renewal energy - fresh healing, growth acceleration, emotional cleansing',
+      'Maroon': 'Grounded passion - stable strength, earthly wisdom, enduring power',
+      'Chocolate': 'Earth wisdom energy - practical spirituality, natural healing, grounded insight',
+      'Beige': 'Gentle earth energy - subtle wisdom, peaceful healing, quiet strength',
+      'Tan': 'Natural balance energy - earth connection, practical wisdom, stable grounding'
+    };
+    
+    return meanings[color] || additionalColorMeanings[color] || 'Divine essence energy - cosmic consciousness, soul awakening, mystical purpose';
   };
 
   const getColorFrequency = (color: string): string => {
@@ -961,8 +997,21 @@ export default function AuraAnalysis() {
         'Magenta': 'Your outer core center radiates deep love, intensity, passion.'
       }
     };
+    const genericLayerMeanings: Record<string, Record<string, string>> = {
+      'inner': {
+        'Default': 'Your soul core radiates ancient wisdom and divine purpose through this spiritual frequency'
+      },
+      'middle': {
+        'Default': 'Your emotional center expresses balanced healing energy and authentic self-expression'
+      },
+      'outer': {
+        'Default': 'Your protective aura emanates spiritual strength and energetic boundaries'
+      }
+    };
+    
     return layerMeanings[layer]?.[color] || 
-           `This ${layer} layer carries ${color.toLowerCase()} energy that influences your energetic field.`;
+           genericLayerMeanings[layer]?.['Default'] || 
+           `Your ${layer} energy field channels divine ${color.toLowerCase()} frequency for spiritual growth and soul evolution`;
   };
 
   const getEnergyPattern = (primary: string, secondary: string): string => {
@@ -1129,7 +1178,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'head chakra higher octave, understandinf and higher connection',
       
     };
-    return placements[color] || 'Unique energy placement pattern';
+    return placements[color] || 'Divine energy alignment - cosmic positioning for spiritual growth and soul evolution';
   };
 
   const getDetailedPlacement = (color: string): string => {
