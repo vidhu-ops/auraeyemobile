@@ -574,7 +574,7 @@ export default function AuraAnalysis() {
       'Tan': 'Bland existence, avoiding spiritual growth, fear of intensity, mediocrity acceptance'
     };
     
-    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || `${colorName} shadow integration - Chakra clearing needed, energy blocks to release, authentic soul healing required`;
+    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || negativeMeanings[colorName.toLowerCase()] || 'Shadow work needed for spiritual growth and chakra balance';
   }
 
   // Chakra healing remedies for weaker chakras
