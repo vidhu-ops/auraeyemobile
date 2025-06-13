@@ -3867,6 +3867,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.thirdEye * 10} className="h-3 bg-indigo-100" />
+                                  {result.chakraActivity.thirdEye * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                                      <h5 className="font-medium text-sm text-indigo-800 mb-2">Healing Remedies for Third Eye Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Third Eye', result.chakraActivity.thirdEye * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Throat Chakra - Number 5 */}
@@ -3881,6 +3889,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.throat * 10} className="h-3 bg-blue-100" />
+                                  {result.chakraActivity.throat * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                      <h5 className="font-medium text-sm text-blue-800 mb-2">Healing Remedies for Throat Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Throat', result.chakraActivity.throat * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Heart Chakra - Number 2 */}
@@ -3895,6 +3911,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.heart * 10} className="h-3 bg-green-100" />
+                                  {result.chakraActivity.heart * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                                      <h5 className="font-medium text-sm text-green-800 mb-2">Healing Remedies for Heart Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Heart', result.chakraActivity.heart * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Solar Plexus Chakra - Number 1 */}
@@ -3909,6 +3933,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.solarPlexus * 10} className="h-3 bg-yellow-100" />
+                                  {result.chakraActivity.solarPlexus * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                      <h5 className="font-medium text-sm text-yellow-800 mb-2">Healing Remedies for Solar Plexus Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Solar Plexus', result.chakraActivity.solarPlexus * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Sacral Chakra - Number 6 */}
@@ -3923,6 +3955,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.sacral * 10} className="h-3 bg-orange-100" />
+                                  {result.chakraActivity.sacral * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                      <h5 className="font-medium text-sm text-orange-800 mb-2">Healing Remedies for Sacral Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Sacral', result.chakraActivity.sacral * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {/* Root Chakra - Number 9 */}
@@ -3937,6 +3977,14 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={result.chakraActivity.root * 10} className="h-3 bg-red-100" />
+                                  {result.chakraActivity.root * 10 < 70 && (
+                                    <div className="mt-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                                      <h5 className="font-medium text-sm text-red-800 mb-2">Healing Remedies for Root Chakra</h5>
+                                      <p className="text-xs text-gray-700 leading-relaxed">
+                                        {getChakraRemedies('Root', result.chakraActivity.root * 10)}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* Earth Star Chakra - Number 4 */}
