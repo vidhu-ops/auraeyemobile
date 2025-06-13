@@ -625,37 +625,44 @@ export default function AuraAnalysis() {
     };
     return givingEnergyMap[auraData.dominantColor] || auraData.dominantColor;
   }
-      'Violet': violetShadow.meaning,
-      'Purple': purpleShadow.meaning,
-      'Pink': pinkShadow.meaning,
-      'Gold': goldShadow.meaning,
-      'Silver': silverShadow.meaning,
-      'Turquoise': turquoiseShadow.meaning,
-      'White': whiteShadow.meaning,
-      'Lime': limeShadow.meaning,
-      'Navy': navyShadow.meaning
+
+  const getPersonalityColor = (auraData: AuraAnalysisResult): string => {
+    // Overall static background - Core personality and why things happen to them
+    // This represents their fundamental nature and karmic patterns
+    const personalityMap: Record<string, string> = {
+      'Red': 'Maroon',      // Deep passionate nature, attracts intense experiences
+      'Orange': 'Coral',    // Warm creative soul, attracts artistic opportunities
+      'Yellow': 'Gold',     // Wise mental nature, attracts learning experiences
+      'Green': 'Emerald',   // Pure healing heart, attracts those needing healing
+      'Blue': 'Navy',       // Deep truth seeker, attracts authentic connections
+      'Indigo': 'Midnight', // Profound intuitive nature, attracts mystical experiences
+      'Violet': 'Lavender', // Gentle spiritual essence, attracts peaceful environments
+      'Purple': 'Amethyst', // Mystical soul nature, attracts spiritual teachings
+      'Pink': 'Rose',       // Love-based personality, attracts healing relationships
+      'Gold': 'Amber',      // Wise teacher nature, attracts students and learning
+      'Silver': 'Pearl',    // Intuitive feminine nature, attracts emotional healing
+      'White': 'Crystal',   // Pure spiritual nature, attracts divine experiences
+      'Turquoise': 'Aquamarine', // Healing communicator, attracts those needing guidance
+      'Magenta': 'Fuchsia'  // Transformative nature, attracts change and growth
     };
-    const additionalNegativeMeanings: Record<string, string> = {
-      'Crimson': 'Destructive anger patterns manifesting through violent tendencies and overwhelming emotional intensity that creates uncontrolled passion and dangerous impulse expression. This explosive frequency can lead to physical aggression and complete loss of spiritual self-control.',
-      'Magenta': 'Emotional overwhelm creating unrealistic spiritual expectations and delusional thinking while fostering excessive attachment to outcomes. This ungrounded frequency prevents authentic spiritual development through fantasy and spiritual materialism.',
-      'Aqua': 'Communication confusion creating spiritual bypassing tendencies and emotional detachment while distorting truth for personal agenda. This disconnected frequency prevents authentic spiritual teaching and genuine emotional expression.',
-      'Navy': 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.',
-      'Lime': 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.',
-      'Maroon': 'Stubborn resistance creating earthly attachment and paralyzing fear of necessary change while fostering spiritual stagnation. This rigid frequency prevents growth through excessive attachment to material security and comfort zones.',
-      'Chocolate': 'Material obsession creating earthly heaviness and complete resistance to higher spiritual wisdom while imposing practical limitations on soul expansion. This dense frequency prevents spiritual transcendence through material fixation.',
-      'Beige': 'Spiritual apathy creating energy depletion and complete lack of life passion while fostering disconnection from soul purpose. This lifeless frequency prevents authentic spiritual engagement through emotional numbness and spiritual laziness.',
-      'Tan': 'Bland existence patterns creating avoidance of spiritual growth and fear of emotional intensity while accepting mediocrity as life standard. This dull frequency prevents authentic living through comfort zone addiction and spiritual complacency.',
-      'Coral': 'Overwhelming emotional expression creating codependent creativity patterns and exhausting social energy that leads to complete burnout from excessive giving. This depleted frequency prevents sustainable creative expression and healthy boundaries.',
-      'Mint': 'Superficial healing approaches creating avoidance of necessary deep inner work while fostering spiritual impatience that bypasses essential integration processes. This rushed frequency prevents authentic transformation through spiritual shortcuts.',
-      'Peach': 'Emotional dependency patterns creating excessive nurturing that leads to self-neglect through compulsive caring and complete boundary dissolution. This codependent frequency prevents healthy relationships through martyrdom and emotional manipulation.',
-      'Sky Blue': 'Communication overwhelm creating truth expression without wisdom while fostering scattered mental expression and emotional instability. This chaotic frequency prevents clear spiritual communication through mental hyperactivity and lack of focus.',
-      'Rose': 'Romantic delusion creating love addiction patterns and unrealistic idealistic expectations while enabling heart manipulation and emotional fantasy. This deluded frequency prevents authentic love through projection and emotional dependency.',
-      'Amber': 'Living trapped in past patterns creating resistance to necessary change while fostering spiritual stagnation and overwhelming ancestral burden. This stuck frequency prevents forward progress through historical attachment and fear of the unknown.',
-      'Gray': 'Emotional numbness creating spiritual detachment and complete avoidance of life engagement while fostering depression tendencies. This void frequency prevents authentic feeling and spiritual connection through emotional disconnection.',
-      'Black': 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation patterns from others. This dark frequency prevents healthy shadow integration through darkness addiction and social withdrawal.',
-      'Brown': 'Material attachment creating earthly limitation and spiritual heaviness while fostering excessive grounding that prevents transcendence. This heavy frequency prevents spiritual elevation through material world fixation.',
-      'Cyan': 'Emotional coldness creating communication detachment and truth expression without heart connection while fostering analytical overwhelm. This cold frequency prevents authentic emotional expression through mental rigidity and heart disconnection.'
-    };
+    return personalityMap[auraData.dominantColor] || auraData.dominantColor;
+  }
+
+  // Handle analyze image function
+  const handleAnalyzeImage = async (base64Image: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to analyze your aura.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    await handleAnalyzeAura(base64Image);
+  };
+
+  return (
     
     // First check both arrays for the color
     const specificMeaning = negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || 
