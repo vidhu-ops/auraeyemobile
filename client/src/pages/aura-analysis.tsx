@@ -400,7 +400,7 @@ export default function AuraAnalysis() {
       'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength'
     };
     
-    return meaningMap[colorName] || additionalMeanings[colorName] || 'Divine spiritual essence - cosmic consciousness, soul purpose, mystical awareness';
+    return meaningMap[colorName] || additionalMeanings[colorName] || `${colorName} Frequency - Multi-dimensional chakra activation, authentic soul expression, divine consciousness channeling`;
   }
 
   const getColorPositiveMeaning = (colorName: string): string => {
@@ -424,7 +424,7 @@ export default function AuraAnalysis() {
       'Jade': 'Wisdom cultivation, emotional balance, peaceful power, harmonious relationships, gentle strength',
       'Sapphire': 'Divine truth, cosmic law understanding, spiritual justice, higher knowledge, sacred wisdom'
     };
-    return positiveMeanings[colorName] || 'Unique spiritual gifts, divine purpose activation, higher consciousness awakening';
+    return positiveMeanings[colorName] || `${colorName} mastery - Authentic soul gifts, chakra activation power, divine consciousness expression abilities`;
   }
 
   const getColorNegativeMeaning = (colorName: string): string => {
@@ -460,7 +460,7 @@ export default function AuraAnalysis() {
       'Tan': 'Bland existence, avoiding spiritual growth, fear of intensity, mediocrity acceptance'
     };
     
-    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || 'Spiritual shadow work needed - releasing old patterns, clearing energy blocks, transforming limiting beliefs';
+    return negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || `${colorName} shadow integration - Chakra clearing needed, energy blocks to release, authentic soul healing required`;
   }
 
   // Chakra healing remedies for weaker chakras
@@ -1217,7 +1217,7 @@ export default function AuraAnalysis() {
       'Cobalt': 'head chakra higher octave, understandinf and higher connection',
       
     };
-    return placements[color] || 'Divine energy alignment - cosmic positioning for spiritual growth and soul evolution';
+    return placements[color] || `${color} chakra positioning - Multi-dimensional energy field activation through authentic spiritual frequency placement`;
   };
 
   const getDetailedPlacement = (color: string): string => {
@@ -1238,7 +1238,7 @@ export default function AuraAnalysis() {
         'Mint': 'Fresh healing energy, renewal, growth.',
         'Peach': 'Gentle love, caring, emotional warmth.',
     };
-    return details[color] || 'This energy placement creates unique patterns in your spiritual development.';
+    return details[color] || `${color} energy creates specific chakra activation patterns through multi-dimensional spiritual field positioning and authentic soul consciousness expression.`;
   };
 
   const getSecondaryColorDescription = (color: string): string => {
