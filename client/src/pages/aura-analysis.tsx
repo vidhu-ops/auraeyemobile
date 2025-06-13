@@ -4398,13 +4398,22 @@ export default function AuraAnalysis() {
                                             {(() => {
                                               const colorInfo = getColorCompleteInfo(result.dominantColor);
                                               return (
-                                                <div className="space-y-2">
+                                                <div className="space-y-3">
                                                   <div className="text-xs text-gray-600">
-                                                    <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                    <span className="font-medium ml-2">Number:</span> {colorInfo.number}
+                                                    <span className="font-medium">Number:</span> {colorInfo.number} | 
+                                                    <span className="font-medium ml-2">Chakra:</span> {colorInfo.chakra}
                                                   </div>
-                                                  <div className="text-xs text-gray-700 leading-relaxed">
-                                                    <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
+                                                  <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                                                    <div className="text-xs text-green-800 leading-relaxed">
+                                                      <span className="font-medium text-green-900">Positive Meaning:</span><br />
+                                                      {colorInfo.positiveMeaning}
+                                                    </div>
+                                                  </div>
+                                                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                                    <div className="text-xs text-blue-800 leading-relaxed">
+                                                      <span className="font-medium text-blue-900">Color Meaning:</span><br />
+                                                      {colorInfo.colorMeaning}
+                                                    </div>
                                                   </div>
                                                 </div>
                                               );
@@ -4431,13 +4440,22 @@ export default function AuraAnalysis() {
                                               {(() => {
                                                 const colorInfo = getColorCompleteInfo(result.secondaryColor);
                                                 return (
-                                                  <div className="space-y-2">
+                                                  <div className="space-y-3">
                                                     <div className="text-xs text-gray-600">
-                                                      <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                      <span className="font-medium ml-2">Number:</span> {colorInfo.number}
+                                                      <span className="font-medium">Number:</span> {colorInfo.number} | 
+                                                      <span className="font-medium ml-2">Chakra:</span> {colorInfo.chakra}
                                                     </div>
-                                                    <div className="text-xs text-gray-700 leading-relaxed">
-                                                      <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
+                                                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                                                      <div className="text-xs text-green-800 leading-relaxed">
+                                                        <span className="font-medium text-green-900">Positive Meaning:</span><br />
+                                                        {colorInfo.positiveMeaning}
+                                                      </div>
+                                                    </div>
+                                                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                                      <div className="text-xs text-blue-800 leading-relaxed">
+                                                        <span className="font-medium text-blue-900">Color Meaning:</span><br />
+                                                        {colorInfo.colorMeaning}
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 );
