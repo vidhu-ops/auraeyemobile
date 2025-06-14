@@ -859,7 +859,7 @@ export default function AuraAnalysis() {
       color: 'White',
       chakra: 'Spiritual Bypassing',
       number: '7',
-      meaning: 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.'
+      meaning: 'Because they are so in tune with the spiritual realm, white auras might be detached from the material world and ungrounded. They are trusting and discerning but may give people the benefit of the doubt even when they don’t deserve it. Because they are good-natured and see the best in everyone, young and inexperienced white auras can fall prey to trickery and manipulation.'
     };
     
     const limeShadow = {
@@ -3162,7 +3162,7 @@ export default function AuraAnalysis() {
                                   
                                   {/* Extended Chakras */}
                                   <div>
-                                    <h4 className="font-medium text-sm mb-3">Extended Chakras</h4>
+                                    <h4 className="font-medium text-sm mb-3">Higher Chakras</h4>
                                     <div className="space-y-3">
                                       <div className="flex items-center space-x-3">
                                         <div className="w-16 text-xs text-gray-600">Earth Star</div>
@@ -4327,7 +4327,7 @@ export default function AuraAnalysis() {
                                                     <span className="font-medium ml-2">Number:</span> {colorInfo.number}
                                                   </div>
                                                   <div className="text-xs text-gray-700 leading-relaxed">
-                                                    <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
+                                                    {colorInfo.shadowMeaning}
                                                   </div>
                                                 </div>
                                               );
@@ -4360,7 +4360,7 @@ export default function AuraAnalysis() {
                                                       <span className="font-medium ml-2">Number:</span> {colorInfo.number}
                                                     </div>
                                                     <div className="text-xs text-gray-700 leading-relaxed">
-                                                      <span className="font-medium">Shadow Aspect:</span> {colorInfo.shadowMeaning}
+                                                      {colorInfo.shadowMeaning}
                                                     </div>
                                                   </div>
                                                 );
