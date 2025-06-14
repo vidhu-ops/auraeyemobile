@@ -663,6 +663,16 @@ export default function ObjectAnalysis() {
                                 <span>High</span>
                               </div>
                             </div>
+                            
+                            {/* Spiritual Significance Section */}
+                            {result.spiritualSignificance && (
+                              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-100">
+                                <h4 className="font-medium text-sm mb-2">Spiritual Significance</h4>
+                                <p className="text-sm text-gray-700">
+                                  {result.spiritualSignificance}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </TabsContent>
                         
@@ -740,12 +750,7 @@ export default function ObjectAnalysis() {
                                 </p>
                               </div>
                               
-                              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-5 border border-violet-100">
-                                <h4 className="font-medium mb-3">Spiritual Significance</h4>
-                                <p className="text-sm text-gray-700">
-                                  {result.spiritualSignificance}
-                                </p>
-                              </div>
+
                             </div>
                             
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-5 border border-emerald-100">
