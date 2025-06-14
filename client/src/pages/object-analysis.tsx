@@ -445,12 +445,7 @@ export default function ObjectAnalysis() {
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h3 className="font-medium text-lg">{result.objectName}</h3>
-                                <p className="text-sm text-gray-600">{result.objectDescription}</p>
-                              </div>
-                            </div>
+
                             
                             <div>
                               <h4 className="text-sm text-gray-500 mb-1">Object Purpose</h4>
