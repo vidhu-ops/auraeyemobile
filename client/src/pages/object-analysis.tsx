@@ -53,13 +53,13 @@ export default function ObjectAnalysis() {
       'pink': 'sepia(100%) saturate(150%) hue-rotate(320deg) brightness(1.2)',
       'violet': 'sepia(100%) saturate(200%) hue-rotate(260deg) brightness(1.1)',
       'indigo': 'sepia(100%) saturate(200%) hue-rotate(240deg) brightness(1.0)',
-      'gold': 'sepia(100%) saturate(200%) hue-rotate(40deg) brightness(1.3)',
+      'gold': 'sepia(90%) saturate(90%) hue-rotate(10deg) brightness(1.2)',
       'silver': 'grayscale(30%) brightness(1.2) contrast(110%)',
       'turquoise': 'sepia(100%) saturate(200%) hue-rotate(180deg) brightness(1.2)',
       'magenta': 'sepia(100%) saturate(200%) hue-rotate(300deg) brightness(1.1)'
     };
     
-    return colorFilters[auraColor.toLowerCase()] || 'sepia(50%) saturate(150%) hue-rotate(270deg) brightness(1.1)';
+    return colorFilters[auraColor.toLowerCase()] || 'sepia(20%) saturate(70%) hue-rotate(150deg) brightness(1.3)';
   };
 
   // Function to get hex color for aura overlay
@@ -388,7 +388,7 @@ export default function ObjectAnalysis() {
                                         <img 
                                           src={originalImage} 
                                           alt="Original object"
-                                          className="w-full h-64 object-cover"
+                                          className="w-full h-full object-cover"
                                         />
                                       </div>
                                     </div>
@@ -407,7 +407,7 @@ export default function ObjectAnalysis() {
                                             <img 
                                               src={processedImage} 
                                               alt="Object with aura gradient"
-                                              className="w-full h-64 object-cover"
+                                              className="w-full h-full object-cover"
                                               style={{ 
                                                 filter: getAuraFilter(result.auraColor),
                                                 transition: 'filter 0.5s ease-in-out'
@@ -416,8 +416,8 @@ export default function ObjectAnalysis() {
                                             <div 
                                               className="absolute inset-0 pointer-events-none"
                                               style={{
-                                                background: `radial-gradient(circle, ${getAuraColorHex(result.auraColor)}40 0%, transparent 70%)`,
-                                                opacity: 0.3
+                                                background: `radial-gradient(circle, ${getAuraColorHex(result.auraColor)}40 0%, transparent 30%)`,
+                                                opacity: 0.5
                                               }}
                                             />
                                           </div>
