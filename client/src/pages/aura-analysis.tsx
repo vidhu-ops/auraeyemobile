@@ -831,6 +831,13 @@ export default function AuraAnalysis() {
       meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.'
     };
     
+    const tealMeaning = {
+      color: 'Teal',
+      chakra: 'Heart-Throat Bridge Chakra',
+      number: '4.5',
+      meaning: 'Heart-throat bridge chakra activation combining emotional healing wisdom with authentic communication. This balanced frequency enables healing words, compassionate truth-telling, and the ability to speak from the heart with clarity and love.'
+    };
+    
     const colorMeanings: Record<string, string> = {
       'Red': redMeaning.meaning,
       'Orange': orangeMeaning.meaning,
@@ -846,7 +853,8 @@ export default function AuraAnalysis() {
       'Turquoise': turquoiseMeaning.meaning,
       'White': whiteMeaning.meaning,
       'Lime': limeMeaning.meaning,
-      'Navy': navyMeaning.meaning
+      'Navy': navyMeaning.meaning,
+      'Teal': tealMeaning.meaning
     };
     
     return colorMeanings[colorName] || colorMeanings['Purple'];
@@ -960,6 +968,13 @@ export default function AuraAnalysis() {
       meaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.'
     };
     
+    const tealShadow = {
+      color: 'Teal',
+      chakra: 'Communication Overwhelm',
+      number: '4.5',
+      meaning: 'Heart-throat communication overwhelm creating emotional flooding and healer burnout while causing severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.'
+    };
+    
     const negativeMeanings: Record<string, string> = {
       'Red': redShadow.meaning,
       'Orange': orangeShadow.meaning,
@@ -975,7 +990,8 @@ export default function AuraAnalysis() {
       'Turquoise': turquoiseShadow.meaning,
       'White': whiteShadow.meaning,
       'Lime': limeShadow.meaning,
-      'Navy': navyShadow.meaning
+      'Navy': navyShadow.meaning,
+      'Teal': tealShadow.meaning
     };
     const additionalNegativeMeanings: Record<string, string> = {
       'Crimson': 'Destructive anger patterns manifesting through violent tendencies and overwhelming emotional intensity that creates uncontrolled passion and dangerous impulse expression. This explosive frequency can lead to physical aggression and complete loss of spiritual self-control.',
@@ -1381,7 +1397,7 @@ export default function AuraAnalysis() {
       'Magenta': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Deep love, intensity, and emotional passion. Practice: Emotional flow and relationship harmony.',
       'Crimson': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Deep passion, intensity, and physical vitality. Practice: Physical grounding and courage building.'
     };
-    return chakras[color] || 'This color resonates with multiple chakra centers, creating a unique energetic pattern.';
+    return chakras[color] || chakras['Purple'] || 'Number:7. Planet:Neptune. Crown Chakra (Sahasrara) - Spiritual mastery, divine connection, and cosmic consciousness. Practice: Meditation and spiritual contemplation.';
   };
 
   const getColorBalance = (primary: string, secondary: string): string => {
