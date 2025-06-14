@@ -3574,23 +3574,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
-                              {/* Personality Integration */}
-                              <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Personality Integration</h4>
-                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                                  <p className="text-sm text-gray-700 mb-3">
-                                    Your aura field reveals these dominant traits that combine to form your unique spiritual signature:
-                                  </p>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {result.personalityTraits.map((trait, index) => (
-                                      <div key={index} className="p-2 bg-gray-50 rounded-md text-sm border border-gray-100">
-                                        <span className="font-medium block">{trait}</span>
-                                        <span className="text-xs text-gray-600 block">{getTraitExplanation(trait, result.dominantColor)}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
+
 
                               {/* Complete Spectrum Visualization */}
                               <div className="space-y-4">
@@ -4302,6 +4286,24 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="analysis">
                             <div className="space-y-10">
+                              {/* Personality Integration */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Personality Integration</h4>
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <p className="text-sm text-gray-700 mb-3">
+                                    Your aura field reveals these dominant traits that combine to form your unique spiritual signature:
+                                  </p>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {result.personalityTraits.map((trait, index) => (
+                                      <div key={index} className="p-2 bg-gray-50 rounded-md text-sm border border-gray-100">
+                                        <span className="font-medium block">{trait}</span>
+                                        <span className="text-xs text-gray-600 block">{getTraitExplanation(trait, result.dominantColor)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+
                               <div className="flex items-center justify-between">
                                 <div>
                                   <h3 className="font-medium text-lg mt-2.5">Your Aura Photo Analysis</h3>
