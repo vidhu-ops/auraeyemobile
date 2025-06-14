@@ -606,7 +606,7 @@ export default function AuraAnalysis() {
     try {
       toast({
         title: "Generating PDF",
-        description: "Please wait while we create your spiritual analysis report...",
+        description: "Capturing all tabs for your complete spiritual analysis report...",
       });
 
       const pdf = new jsPDF({
@@ -674,80 +674,148 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Capture content from each tab
-      for (const tab of tabs) {
-        const tabContent = document.querySelector(tab.selector);
-        if (tabContent) {
-          try {
-            // Make the tab visible temporarily
-            const originalDisplay = (tabContent as HTMLElement).style.display;
-            (tabContent as HTMLElement).style.display = 'block';
+      // Store original active tab to restore later
+      const originalActiveTab = activeTab;
+      
+      // Capture content from each tab by actually switching to them
+      for (let i = 0; i < tabs.length; i++) {
+        const tab = tabs[i];
+        const tabValue = tab.selector.replace('[data-tab="', '').replace('"]', '');
+        let actualTabValue = '';
+        
+        // Update progress
+        toast({
+          title: "Generating PDF",
+          description: `Capturing ${tab.name} (${i + 1}/${tabs.length})...`,
+        });
+        
+        // Map data-tab values to actual tab values
+        switch (tabValue) {
+          case 'basic': actualTabValue = 'analysis'; break;
+          case 'energy': actualTabValue = 'energy-reading'; break;
+          case 'meanings': actualTabValue = 'spectrum'; break;
+          case 'energy-map': actualTabValue = 'energy-map'; break;
+          case 'combined': actualTabValue = 'combined'; break;
+          case 'chakras': actualTabValue = 'chakras'; break;
+          case 'guidance': actualTabValue = 'guidance'; break;
+          case 'insights': actualTabValue = 'detailed'; break;
+          default: actualTabValue = tabValue;
+        }
+        
+        try {
+          // Switch to the specific tab
+          setActiveTab(actualTabValue);
+          
+          // Wait for tab to fully render and load
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Find the active tab content
+          const tabContent = document.querySelector(`[data-tab="${tabValue}"]`);
+          
+          if (tabContent && (tabContent as HTMLElement).offsetHeight > 0) {
+            // Ensure tab content is visible and force render
+            const tabElement = tabContent as HTMLElement;
+            tabElement.style.display = 'block';
+            tabElement.style.visibility = 'visible';
+            tabElement.style.opacity = '1';
+            tabElement.style.position = 'relative';
+            tabElement.style.zIndex = '1';
             
-            // Wait for content to render
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Force reflow
+            tabElement.offsetHeight;
             
-            // Capture the tab content
-            const canvas = await html2canvas(tabContent as HTMLElement, {
-              scale: 1,
+            // Wait for content to fully render
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Capture the tab content with optimized settings
+            const canvas = await html2canvas(tabElement, {
+              scale: 1.5,
               useCORS: true,
+              allowTaint: true,
               backgroundColor: '#ffffff',
               logging: false,
               removeContainer: false,
-              width: (tabContent as HTMLElement).scrollWidth,
-              height: (tabContent as HTMLElement).scrollHeight
+              width: tabElement.scrollWidth,
+              height: tabElement.scrollHeight,
+              windowWidth: 1200,
+              windowHeight: 800,
+              scrollX: 0,
+              scrollY: 0
             });
 
-            // Restore original display
-            (tabContent as HTMLElement).style.display = originalDisplay;
-
-            // Add new page for this tab
-            pdf.addPage();
-            pdf.setFontSize(16);
-            pdf.text(tab.name, 20, 25);
-
-            const imgData = canvas.toDataURL('image/png');
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            // Add image, splitting across pages if needed
-            let yPosition = 35;
-            let sourceY = 0;
-            let remainingHeight = imgHeight;
-
-            while (remainingHeight > 0) {
-              const pageSpace = pageHeight - yPosition;
-              const printHeight = Math.min(remainingHeight, pageSpace);
+            if (canvas.width > 0 && canvas.height > 0) {
+              // Add new page for this tab
+              pdf.addPage();
+              pdf.setFontSize(18);
+              pdf.setTextColor(51, 51, 51);
+              pdf.text(tab.name, 20, 25);
               
-              if (printHeight > 0) {
-                const sourceHeight = (printHeight / imgWidth) * canvas.width;
+              // Add a separator line
+              pdf.setLineWidth(0.5);
+              pdf.setDrawColor(200, 200, 200);
+              pdf.line(20, 30, 190, 30);
+
+              const imgData = canvas.toDataURL('image/png', 1.0);
+              const imgHeight = (canvas.height * imgWidth) / canvas.width;
+              
+              // Add image, splitting across pages if needed
+              let yPosition = 40;
+              let sourceY = 0;
+              let remainingHeight = imgHeight;
+
+              while (remainingHeight > 0) {
+                const pageSpace = pageHeight - yPosition;
+                const printHeight = Math.min(remainingHeight, pageSpace);
                 
-                // Create a cropped version of the canvas
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = sourceHeight;
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                if (tempCtx) {
-                  tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-                  const tempData = tempCanvas.toDataURL('image/png');
-                  pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
+                if (printHeight > 0) {
+                  const sourceHeight = (printHeight / imgWidth) * canvas.width;
+                  
+                  // Create a cropped version of the canvas
+                  const tempCanvas = document.createElement('canvas');
+                  tempCanvas.width = canvas.width;
+                  tempCanvas.height = sourceHeight;
+                  const tempCtx = tempCanvas.getContext('2d');
+                  
+                  if (tempCtx) {
+                    tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+                    const tempData = tempCanvas.toDataURL('image/png', 1.0);
+                    pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
+                  }
+                  
+                  remainingHeight -= printHeight;
+                  sourceY += sourceHeight;
+                  
+                  if (remainingHeight > 0) {
+                    pdf.addPage();
+                    yPosition = 20;
+                  }
+                } else {
+                  break;
                 }
-                
-                remainingHeight -= printHeight;
-                sourceY += sourceHeight;
-                
-                if (remainingHeight > 0) {
-                  pdf.addPage();
-                  yPosition = 20;
-                }
-              } else {
-                break;
               }
+              
+              console.log(`Successfully captured ${tab.name} - Canvas: ${canvas.width}x${canvas.height}`);
+            } else {
+              console.warn(`Empty canvas for ${tab.name}`);
             }
-          } catch (error) {
-            console.error(`Error capturing ${tab.name} tab:`, error);
+          } else {
+            console.warn(`Tab content not found or empty for ${tab.name}`);
           }
+        } catch (error) {
+          console.error(`Error capturing ${tab.name} tab:`, error);
+          
+          // Add error page with more details
+          pdf.addPage();
+          pdf.setFontSize(16);
+          pdf.text(tab.name, 20, 25);
+          pdf.setFontSize(12);
+          pdf.text('Content capture failed. Please ensure all content is loaded.', 20, 45);
+          pdf.text('Try refreshing the page and generating the PDF again.', 20, 55);
         }
       }
+      
+      // Restore original active tab
+      setActiveTab(originalActiveTab);
 
       // Add numerology summary if available
       if (numerologyResult) {
