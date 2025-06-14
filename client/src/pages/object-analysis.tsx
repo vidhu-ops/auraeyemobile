@@ -331,6 +331,127 @@ export default function ObjectAnalysis() {
     return energyProperties[color] || energyProperties["Purple"];
   };
 
+  // Enhanced energy influence functions
+  const getEnvironmentalInfluence = (color: string): string => {
+    const environmentalEffects: Record<string, string> = {
+      "Purple": "Creates a sacred sanctuary atmosphere that elevates spiritual consciousness and transforms ordinary spaces into temples of higher wisdom. The purple energy field generates an electromagnetic frequency that opens portals to divine realms and facilitates deep meditative states.",
+      "Red": "Infuses spaces with powerful life force energy that stimulates physical vitality and grounds scattered energies. Red vibrations create an atmosphere of strength, protection, and material manifestation while anchoring spiritual energies into physical reality.",
+      "Orange": "Transforms environments into creative sanctuaries that inspire artistic expression and emotional healing. Orange energy fields encourage spontaneous creativity, dissolve emotional blockages, and create warm, nurturing atmospheres that support personal transformation.",
+      "Yellow": "Illuminates spaces with solar consciousness that enhances mental clarity and intellectual pursuits. Yellow vibrations create learning environments that stimulate the mind, boost confidence, and facilitate clear communication and decision-making processes.",
+      "Green": "Harmonizes environmental energies to create healing sanctuaries that promote heart-centered living. Green fields generate natural balance, emotional stability, and abundance consciousness while connecting spaces to the healing power of nature.",
+      "Blue": "Establishes peaceful communication zones that promote truth, wisdom, and spiritual teaching. Blue energy creates calming atmospheres that facilitate honest dialogue, meditative contemplation, and connection to divine guidance.",
+      "Indigo": "Opens psychic portals that enhance intuitive abilities and spiritual sight. Indigo vibrations create mystical environments that stimulate third eye activation, facilitate prophetic dreams, and connect spaces to cosmic consciousness.",
+      "Pink": "Generates unconditional love fields that heal emotional wounds and open hearts. Pink energy creates nurturing environments that promote self-love, compassion, and emotional healing while dissolving fear-based patterns.",
+      "White": "Purifies and sanctifies spaces with divine light that clears negative energies and elevates consciousness. White vibrations create temples of purity that facilitate spiritual cleansing, divine connection, and cosmic awareness.",
+      "Black": "Creates protective energy shields that absorb negativity and facilitate shadow work. Black vibrations establish grounding sanctuaries that support deep transformation, mystery exploration, and psychic protection.",
+      "Gold": "Establishes divine wisdom temples that facilitate spiritual teaching and enlightenment. Gold energy creates sacred spaces that enhance spiritual mastery, divine connection, and transmission of cosmic knowledge.",
+      "Silver": "Generates lunar consciousness fields that enhance psychic abilities and emotional intuition. Silver vibrations create mystical environments that support dream work, psychic development, and feminine wisdom activation."
+    };
+    return environmentalEffects[color] || environmentalEffects["Purple"];
+  };
+
+  const getChakraInfluence = (color: string): string => {
+    const chakraEffects: Record<string, string> = {
+      "Purple": "Directly activates the crown chakra (Sahasrara) and soul star chakra, creating a powerful vortex of spiritual energy that connects to cosmic consciousness. This activation facilitates enlightenment experiences, divine downloads, and spiritual awakening processes.",
+      "Red": "Powerfully stimulates the root chakra (Muladhara) and earth star chakra, creating strong grounding connections that anchor spiritual energies into physical reality. This activation enhances survival instincts, physical vitality, and material manifestation abilities.",
+      "Orange": "Activates the sacral chakra (Svadhishthana) and creative centers, generating passionate life force energy that enhances creativity, sexuality, and personal power. This stimulation supports artistic expression and emotional healing processes.",
+      "Yellow": "Energizes the solar plexus chakra (Manipura) and mental body centers, boosting personal power, confidence, and intellectual abilities. This activation enhances decision-making capabilities and mental clarity while strengthening personal will.",
+      "Green": "Opens and balances the heart chakra (Anahata) and higher heart center, creating powerful healing energy that promotes love, compassion, and emotional balance. This activation facilitates heart-centered living and unconditional love expression.",
+      "Blue": "Activates the throat chakra (Vishuddha) and communication centers, enhancing truth expression, clear communication, and spiritual teaching abilities. This stimulation supports authentic self-expression and divine truth transmission.",
+      "Indigo": "Stimulates the third eye chakra (Ajna) and psychic centers, opening channels of intuitive knowing and spiritual sight. This activation enhances clairvoyance, prophetic abilities, and connection to cosmic wisdom.",
+      "Pink": "Gently opens the heart chakra and higher heart center with divine feminine energy, promoting unconditional love, emotional healing, and compassion. This activation supports self-love development and heart wound healing.",
+      "White": "Activates all chakras simultaneously with pure divine light, creating perfect energetic alignment and spiritual purification. This comprehensive activation facilitates cosmic consciousness and divine union experiences.",
+      "Black": "Grounds and protects all chakra centers while facilitating deep shadow work and transformational processes. This protective activation supports spiritual evolution through darkness integration.",
+      "Gold": "Illuminates the crown chakra and higher spiritual centers with divine wisdom, facilitating spiritual mastery and enlightenment experiences. This golden activation enhances spiritual teaching abilities and cosmic knowledge transmission.",
+      "Silver": "Activates the sacral and third eye chakras with lunar feminine energy, enhancing psychic abilities, emotional intuition, and dream consciousness. This lunar activation supports feminine wisdom and psychic development."
+    };
+    return chakraEffects[color] || chakraEffects["Purple"];
+  };
+
+  const getEmotionalInfluence = (color: string): string => {
+    const emotionalEffects: Record<string, string> = {
+      "Purple": "Induces profound spiritual euphoria and transcendent states that elevate consciousness beyond ordinary emotional patterns. Creates feelings of divine connection, cosmic love, and mystical bliss while dissolving ego-based emotional reactions.",
+      "Red": "Generates intense emotional energy that stimulates passion, courage, and vital life force. Enhances emotional strength, survival instincts, and physical confidence while grounding scattered emotional energies into focused action.",
+      "Orange": "Promotes emotional healing and creative expression that dissolves blocked feelings and inspires artistic passion. Enhances emotional flexibility, personal power, and sacred sexuality while balancing masculine and feminine energies.",
+      "Yellow": "Brightens mental outlook and emotional optimism while enhancing self-confidence and personal power. Stimulates joyful emotions, intellectual curiosity, and clear emotional communication while dissolving fear-based thought patterns.",
+      "Green": "Creates emotional balance and heart-centered feelings that promote love, compassion, and healing. Enhances emotional stability, natural harmony, and abundance consciousness while dissolving heart wounds and fear patterns.",
+      "Blue": "Induces peaceful emotional states that promote inner calm, truth, and spiritual serenity. Enhances emotional wisdom, clear communication, and peaceful resolution of conflicts while connecting to divine tranquility.",
+      "Indigo": "Deepens emotional intuition and psychic sensitivity while enhancing spiritual emotional experiences. Promotes mystical feelings, prophetic emotions, and deep inner knowing while connecting to cosmic emotional wisdom.",
+      "Pink": "Generates unconditional love feelings that heal emotional wounds and open hearts to compassion. Enhances self-love, emotional nurturing, and heart-centered living while dissolving fear, anger, and emotional pain.",
+      "White": "Purifies emotional body and creates feelings of divine peace, spiritual clarity, and cosmic love. Enhances emotional purity, spiritual serenity, and connection to divine emotional states while clearing negative emotional patterns.",
+      "Black": "Facilitates deep emotional transformation and shadow work that integrates suppressed feelings. Enhances emotional protection, mystery exploration, and transformational emotional processes while absorbing negative emotional energies.",
+      "Gold": "Elevates emotions to divine wisdom states that transcend ordinary emotional patterns. Enhances feelings of spiritual mastery, divine love, and enlightened emotional expression while connecting to cosmic emotional intelligence.",
+      "Silver": "Enhances emotional intuition and psychic emotional sensitivity while connecting to lunar emotional wisdom. Promotes empathic feelings, dream emotions, and feminine emotional knowing while balancing emotional polarities."
+    };
+    return emotionalEffects[color] || emotionalEffects["Purple"];
+  };
+
+  const getSpiritualInfluence = (color: string): string => {
+    const spiritualEffects: Record<string, string> = {
+      "Purple": "Accelerates spiritual awakening and facilitates direct communication with higher dimensional beings, spirit guides, and ascended masters. Enhances meditation practices, mystical experiences, and connection to divine wisdom while opening portals to cosmic consciousness.",
+      "Red": "Grounds spiritual energies into physical reality and enhances manifestation of spiritual goals in material world. Supports earthly spiritual service, sacred activism, and integration of spiritual wisdom into daily life while maintaining strong connection to Earth energies.",
+      "Orange": "Enhances spiritual creativity and sacred sexuality while promoting emotional healing on spiritual levels. Supports tantric practices, creative spiritual expression, and healing of spiritual wounds related to personal power and creative expression.",
+      "Yellow": "Illuminates spiritual understanding and enhances spiritual communication abilities. Supports spiritual teaching, wisdom sharing, and mental clarity in spiritual studies while connecting to solar spiritual consciousness and divine illumination.",
+      "Green": "Facilitates spiritual healing and connection to nature's wisdom while promoting heart-centered spirituality. Supports healing work, environmental spiritual practices, and abundance consciousness while connecting to Earth's spiritual energies.",
+      "Blue": "Enhances spiritual communication and connection to divine truth while promoting peaceful spiritual practices. Supports spiritual teaching, truthful spiritual expression, and connection to divine wisdom while facilitating clear spiritual communication.",
+      "Indigo": "Opens psychic spiritual abilities and facilitates deep spiritual sight and knowing. Supports mystical experiences, prophetic spiritual abilities, and connection to cosmic spiritual wisdom while enhancing spiritual intuition and inner knowing.",
+      "Pink": "Promotes unconditional spiritual love and healing of spiritual heart wounds. Supports compassionate spiritual service, self-love spiritual practices, and healing of spiritual relationship wounds while connecting to divine feminine spiritual energy.",
+      "White": "Facilitates direct connection to divine source and cosmic consciousness while promoting spiritual purification. Supports all spiritual practices, divine union experiences, and connection to highest spiritual realms while clearing spiritual blockages.",
+      "Black": "Supports deep spiritual transformation and shadow work while providing spiritual protection. Facilitates spiritual evolution through darkness integration, mystery spiritual practices, and protection from negative spiritual influences.",
+      "Gold": "Enhances spiritual mastery and connection to divine wisdom while promoting enlightenment experiences. Supports advanced spiritual practices, spiritual teaching abilities, and transmission of cosmic spiritual knowledge while connecting to divine intelligence.",
+      "Silver": "Enhances psychic spiritual abilities and connection to lunar spiritual wisdom. Supports dream spiritual work, psychic spiritual development, and feminine spiritual practices while connecting to lunar spiritual consciousness."
+    };
+    return spiritualEffects[color] || spiritualEffects["Purple"];
+  };
+
+  const getOptimalPlacement = (color: string): string[] => {
+    const placementTips: Record<string, string[]> = {
+      "Purple": [
+        "Place in meditation spaces or spiritual practice areas to enhance divine connection",
+        "Position near crown chakra level (head height) for maximum spiritual activation",
+        "Combine with amethyst or clear quartz to amplify spiritual energy",
+        "Use during full moon ceremonies for heightened mystical experiences",
+        "Keep in sacred spaces dedicated to spiritual study or contemplation"
+      ],
+      "Red": [
+        "Position at ground level or near root chakra area for maximum grounding effect",
+        "Place in areas where physical strength and vitality are needed",
+        "Use in protection rituals or spaces requiring energetic boundaries",
+        "Combine with black tourmaline or hematite for enhanced grounding",
+        "Position in workout areas or spaces dedicated to physical wellness"
+      ],
+      "Orange": [
+        "Place in creative studios or artistic spaces to enhance inspiration",
+        "Position at sacral chakra level (lower abdomen height) for creative activation",
+        "Use in bedrooms or intimate spaces to enhance sacred sexuality",
+        "Combine with carnelian or orange calcite for amplified creative energy",
+        "Keep in areas dedicated to emotional healing or artistic expression"
+      ],
+      "Yellow": [
+        "Position in study areas or workspaces to enhance mental clarity",
+        "Place at solar plexus level for personal power activation",
+        "Use in communication spaces or areas for important conversations",
+        "Combine with citrine or golden topaz for enhanced confidence",
+        "Keep in areas dedicated to learning or intellectual pursuits"
+      ],
+      "Green": [
+        "Place in healing spaces or areas dedicated to wellness practices",
+        "Position at heart level for maximum heart chakra activation",
+        "Use in nature-connected spaces or gardens for harmony",
+        "Combine with rose quartz or green aventurine for enhanced healing",
+        "Keep in spaces dedicated to abundance manifestation or healing work"
+      ],
+      "Blue": [
+        "Position in communication areas or spaces for teaching and learning",
+        "Place at throat chakra level for enhanced truthful expression",
+        "Use in meditation spaces for peaceful contemplation",
+        "Combine with blue lace agate or sodalite for enhanced communication",
+        "Keep in areas dedicated to spiritual study or wisdom sharing"
+      ]
+    };
+    return placementTips[color] || placementTips["Purple"];
+  };
+
   // Helper to get CSS color class from aura color
   const getColorClass = (color: string): string => {
     const colorMap: Record<string, string> = {
@@ -563,50 +684,42 @@ export default function ObjectAnalysis() {
                               <p className="text-sm text-gray-600">{result.detailedAnalysis}</p>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
-                                <h4 className="font-medium text-sm mb-2">Energy Classification</h4>
-                                <div className="space-y-2">
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span>Receptive vs. Projective</span>
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div 
-                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" 
-                                        style={{ width: `${Math.random() * 100}%` }}
-                                      ></div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span>Static vs. Dynamic</span>
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div 
-                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" 
-                                        style={{ width: `${Math.random() * 100}%` }}
-                                      ></div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span>Grounding vs. Elevating</span>
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div 
-                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" 
-                                        style={{ width: `${Math.random() * 100}%` }}
-                                      ></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                            {/* Enhanced Energy Influence Section */}
+                            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-6 border border-amber-100">
+                              <h4 className="font-medium text-lg mb-4 flex items-center">
+                                <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
+                                Detailed Energy Influence Analysis
+                              </h4>
                               
-                              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-100">
-                                <h4 className="font-medium text-sm mb-2">Energy Influence</h4>
-                                <p className="text-sm">This object may influence its surroundings by:</p>
-                                <ul className="text-sm list-disc list-inside mt-2 space-y-1">
-                                  <li>Affecting emotional states</li>
-                                  <li>Influencing spatial energy</li>
-                                  <li>Connecting to specific chakras</li>
-                                </ul>
+                              <div className="space-y-4">
+                                <div>
+                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Environmental Energy Impact</h5>
+                                  <p className="text-sm text-gray-700 mb-2">{getEnvironmentalInfluence(result.auraColor)}</p>
+                                </div>
+                                
+                                <div>
+                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Chakra System Activation</h5>
+                                  <p className="text-sm text-gray-700 mb-2">{getChakraInfluence(result.auraColor)}</p>
+                                </div>
+                                
+                                <div>
+                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Emotional & Mental Effects</h5>
+                                  <p className="text-sm text-gray-700 mb-2">{getEmotionalInfluence(result.auraColor)}</p>
+                                </div>
+                                
+                                <div>
+                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Spiritual Development Support</h5>
+                                  <p className="text-sm text-gray-700 mb-2">{getSpiritualInfluence(result.auraColor)}</p>
+                                </div>
+                                
+                                <div className="mt-4 p-3 bg-white rounded-lg border border-amber-200">
+                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Optimal Placement & Usage</h5>
+                                  <ul className="text-sm list-disc list-inside space-y-1 text-gray-700">
+                                    {getOptimalPlacement(result.auraColor).map((tip, index) => (
+                                      <li key={index}>{tip}</li>
+                                    ))}
+                                  </ul>
+                                </div>
                               </div>
                             </div>
                           </div>
