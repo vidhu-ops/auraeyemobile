@@ -5,8 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Star, Download, Share2, Eye, EyeOff, Camera, Upload } from 'lucide-react';
-import { Navbar } from '@/components/layout/navbar';
-import { ImageUpload } from '@/components/forms/image-upload';
+import Navbar from '@/components/layout/navbar';
+import ImageUpload from '@/components/forms/image-upload';
 import { AuraGlow } from '@/components/ui/aura-glow';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
@@ -612,49 +612,296 @@ export default function AuraAnalysis() {
                               </div>
                             </div>
 
-                            {/* Rest of analysis content */}
-                            <div className="bg-white/70 rounded-xl p-6 border border-gray-200">
-                              <h3 className="font-medium text-lg">Additional Analysis</h3>
-                              <p className="text-sm text-gray-600 mt-2">Further insights and analysis continue here...</p>
+                            {/* Aura Colors Overview */}
+                            <div className="space-y-4">
+                              <h4 className="font-semibold text-lg">Aura Color Analysis</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <div className="flex items-center mb-3">
+                                    <div 
+                                      className="w-6 h-6 rounded-full mr-3 border border-gray-300"
+                                      style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                    ></div>
+                                    <h5 className="font-medium">Primary Aura: {result.dominantColor}</h5>
+                                  </div>
+                                  <p className="text-sm text-gray-700 mb-2">
+                                    <strong>{result.dominantPercentage}%</strong> of your energy field
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    {result.spiritualInsights}
+                                  </p>
+                                </div>
+                                
+                                {result.secondaryColor && (
+                                  <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                    <div className="flex items-center mb-3">
+                                      <div 
+                                        className="w-6 h-6 rounded-full mr-3 border border-gray-300"
+                                        style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                      ></div>
+                                      <h5 className="font-medium">Secondary Aura: {result.secondaryColor}</h5>
+                                    </div>
+                                    <p className="text-sm text-gray-700 mb-2">
+                                      <strong>{result.secondaryPercentage}%</strong> of your energy field
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      This secondary energy balances and enhances your primary aura color.
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Energy Pattern */}
+                            <div className="space-y-4">
+                              <h4 className="font-semibold text-lg">Energy Pattern & Emotional State</h4>
+                              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <h5 className="font-medium mb-2">Energy Pattern</h5>
+                                    <p className="text-sm text-gray-600">{result.energyPattern}</p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium mb-2">Emotional State</h5>
+                                    <p className="text-sm text-gray-600">{result.emotionalState}</p>
+                                  </div>
+                                </div>
+                                <div className="mt-4">
+                                  <h5 className="font-medium mb-2">Aura Strength</h5>
+                                  <Progress value={result.auraStrength} className="w-full" />
+                                  <p className="text-xs text-gray-500 mt-1">{result.auraStrength}% intensity</p>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </TabsContent>
 
-                        {/* Other tabs remain the same */}
                         <TabsContent value="chakras">
-                          <div className="space-y-4">
-                            <h3 className="font-medium text-lg">Chakra Energy Analysis</h3>
-                            {/* Chakra content */}
+                          <div className="space-y-6">
+                            <h3 className="font-medium text-lg">9-Chakra Energy Analysis</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {Object.entries(result.chakraAnalysis).map(([chakra, analysis]) => (
+                                <div key={chakra} className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <div className="flex items-center mb-3">
+                                    <div 
+                                      className="w-4 h-4 rounded-full mr-2 border border-gray-300"
+                                      style={{ backgroundColor: getAccurateColorCode(analysis.color) }}
+                                    ></div>
+                                    <h4 className="font-medium capitalize">{chakra} Chakra</h4>
+                                  </div>
+                                  <div className="mb-3">
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-sm text-gray-600">Energy Level</span>
+                                      <span className="text-sm font-medium">{analysis.energy}%</span>
+                                    </div>
+                                    <Progress value={analysis.energy} className="w-full h-2" />
+                                  </div>
+                                  <div className="mb-2">
+                                    <Badge 
+                                      variant={analysis.status === 'balanced' ? 'default' : 'secondary'}
+                                      className="text-xs"
+                                    >
+                                      {analysis.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-xs text-gray-600">{analysis.description}</p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </TabsContent>
 
                         <TabsContent value="insights">
-                          <div className="space-y-4">
-                            <h3 className="font-medium text-lg">Spiritual Insights</h3>
-                            {/* Insights content */}
+                          <div className="space-y-6">
+                            <h3 className="font-medium text-lg">Spiritual Insights & Life Phase</h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-4">
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <h4 className="font-medium mb-3">Current Life Phase</h4>
+                                  <p className="text-sm text-gray-700 mb-2">
+                                    <strong>{result.lifePhase}</strong>
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    This phase represents your current spiritual journey and the lessons you're meant to learn.
+                                  </p>
+                                </div>
+                                
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <h4 className="font-medium mb-3">Elemental Connection</h4>
+                                  <p className="text-sm text-gray-700 mb-2">
+                                    <strong>{result.elementalConnection}</strong>
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    Your strongest elemental affinity influences your energy patterns and spiritual approach.
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                <h4 className="font-medium mb-3">Spiritual Insights</h4>
+                                <p className="text-sm text-gray-700">{result.spiritualInsights}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                              <h4 className="font-medium mb-3">Auric Layer Analysis</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {Object.entries(result.auricLayers).map(([layer, data]) => (
+                                  <div key={layer} className="text-center">
+                                    <div className="mb-2">
+                                      <div 
+                                        className="w-8 h-8 rounded-full mx-auto border border-gray-300 mb-2"
+                                        style={{ backgroundColor: getAccurateColorCode(data.color) }}
+                                      ></div>
+                                      <h5 className="font-medium text-sm capitalize">{layer}</h5>
+                                    </div>
+                                    <Progress value={data.intensity} className="w-full h-2 mb-2" />
+                                    <p className="text-xs text-gray-600">{data.meaning}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </TabsContent>
 
                         <TabsContent value="guidance">
-                          <div className="space-y-4">
-                            <h3 className="font-medium text-lg">Personal Guidance</h3>
-                            {/* Guidance content */}
+                          <div className="space-y-6">
+                            <h3 className="font-medium text-lg">Personal Guidance & Recommendations</h3>
+                            
+                            <div className="space-y-4">
+                              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
+                                <h4 className="font-medium mb-3 text-blue-800">Spiritual Guidance</h4>
+                                <p className="text-sm text-gray-700">{result.guidance}</p>
+                              </div>
+                              
+                              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                <h4 className="font-medium mb-3">Personalized Recommendations</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {result.recommendations.map((recommendation, index) => (
+                                    <div key={index} className="flex items-start">
+                                      <span className="text-primary mr-2 mt-1">•</span>
+                                      <p className="text-sm text-gray-700">{recommendation}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </TabsContent>
 
                         {numerologyResult && (
                           <TabsContent value="numerology">
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                               <h3 className="font-medium text-lg">Numerology Analysis</h3>
-                              {/* Numerology content */}
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 text-center">
+                                  <h4 className="font-medium mb-2">Life Path</h4>
+                                  <div className="text-2xl font-bold text-primary mb-2">{numerologyResult.lifePath}</div>
+                                  <p className="text-xs text-gray-600">Your life's purpose and journey</p>
+                                </div>
+                                
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 text-center">
+                                  <h4 className="font-medium mb-2">Destiny</h4>
+                                  <div className="text-2xl font-bold text-primary mb-2">{numerologyResult.destiny}</div>
+                                  <p className="text-xs text-gray-600">Your life's mission and goals</p>
+                                </div>
+                                
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 text-center">
+                                  <h4 className="font-medium mb-2">Soul Urge</h4>
+                                  <div className="text-2xl font-bold text-primary mb-2">{numerologyResult.soulUrge}</div>
+                                  <p className="text-xs text-gray-600">Your heart's deepest desires</p>
+                                </div>
+                                
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 text-center">
+                                  <h4 className="font-medium mb-2">Personality</h4>
+                                  <div className="text-2xl font-bold text-primary mb-2">{numerologyResult.personality}</div>
+                                  <p className="text-xs text-gray-600">How others perceive you</p>
+                                </div>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <h4 className="font-medium mb-3">Life Theme</h4>
+                                  <p className="text-sm text-gray-700">{numerologyResult.lifeTheme}</p>
+                                </div>
+                                
+                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                  <h4 className="font-medium mb-3">Interpretation</h4>
+                                  <p className="text-sm text-gray-700">{numerologyResult.interpretation}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                                <h4 className="font-medium mb-3">Numerological Guidance</h4>
+                                <p className="text-sm text-gray-700">{numerologyResult.guidance}</p>
+                              </div>
                             </div>
                           </TabsContent>
                         )}
 
                         <TabsContent value="visualization">
-                          <div className="space-y-4">
+                          <div className="space-y-6">
                             <h3 className="font-medium text-lg">Aura Visualization</h3>
-                            {/* Visualization content */}
+                            
+                            {originalImage && (
+                              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                <h4 className="font-medium mb-4 text-center">Image Comparison: Original vs Aura Visualization</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  <div className="text-center">
+                                    <h5 className="font-medium mb-3">Original Photo</h5>
+                                    <div className="relative bg-white rounded-lg shadow-sm border p-4">
+                                      <img 
+                                        src={originalImage} 
+                                        alt="Original uploaded image" 
+                                        className="w-full h-full object-cover rounded-lg"
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-center">
+                                    <h5 className="font-medium mb-3">With Aura Colors</h5>
+                                    <div className="relative bg-white rounded-lg shadow-sm border p-4">
+                                      <div className="w-full h-64 bg-gradient-to-br rounded-lg flex items-center justify-center"
+                                           style={{ 
+                                             background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)}20, ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}10)`
+                                           }}>
+                                        <img 
+                                          src={originalImage} 
+                                          alt="Aura visualization" 
+                                          className="w-full h-full object-cover rounded-lg opacity-80"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                              <h4 className="font-medium mb-3">Color Spectrum Analysis</h4>
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                <div className="flex items-center">
+                                  <div 
+                                    className="w-6 h-6 rounded-full mr-2 border border-gray-300"
+                                    style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                  ></div>
+                                  <span className="text-sm font-medium">{result.dominantColor}</span>
+                                  <span className="text-xs text-gray-500 ml-2">({result.dominantPercentage}%)</span>
+                                </div>
+                                {result.secondaryColor && (
+                                  <div className="flex items-center">
+                                    <div 
+                                      className="w-6 h-6 rounded-full mr-2 border border-gray-300"
+                                      style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                    ></div>
+                                    <span className="text-sm font-medium">{result.secondaryColor}</span>
+                                    <span className="text-xs text-gray-500 ml-2">({result.secondaryPercentage}%)</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </TabsContent>
                       </div>
