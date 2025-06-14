@@ -2991,6 +2991,96 @@ export default function AuraAnalysis() {
     return traitExplanations[trait] || "This trait represents a unique expression of your spiritual signature.";
   };
 
+  const getColorPersonalityInfluence = (color: string): string => {
+    const influences: Record<string, string> = {
+      "Red": "passionate leadership, strong will, and courageous action that drives others to follow your vision.",
+      "Orange": "creative enthusiasm, social magnetism, and infectious joy that brings vitality to any environment.",
+      "Yellow": "intellectual clarity, optimistic outlook, and mental agility that illuminates solutions and possibilities.",
+      "Green": "balanced harmony, healing presence, and nurturing wisdom that creates growth and restoration.",
+      "Blue": "truthful communication, peaceful authority, and clear expression that builds trust and understanding.",
+      "Indigo": "intuitive perception, spiritual insight, and visionary awareness that sees beyond surface reality.",
+      "Violet": "spiritual mastery, divine connection, and transcendent wisdom that bridges earthly and cosmic realms.",
+      "Purple": "mystical understanding, transformative power, and magical consciousness that transmutes energy.",
+      "Pink": "unconditional love, emotional healing, and compassionate service that nurtures heart connections.",
+      "White": "pure consciousness, spiritual protection, and divine clarity that maintains energetic boundaries.",
+      "Gold": "divine wisdom, spiritual achievement, and enlightened mastery that guides others toward truth.",
+      "Silver": "psychic sensitivity, lunar wisdom, and reflective insight that enhances intuitive abilities."
+    };
+    return influences[color] || "unique spiritual qualities that shape your energetic expression.";
+  };
+
+  const getPersonalityStrengths = (color: string, traits: string[]): string => {
+    const strengths: Record<string, string> = {
+      "Red": "Natural leadership abilities, unwavering determination, and the courage to take decisive action in challenging situations.",
+      "Orange": "Exceptional creative vision, magnetic social presence, and the ability to inspire joy and enthusiasm in others.",
+      "Yellow": "Sharp intellectual capabilities, clear communication skills, and the gift of bringing clarity to complex situations.",
+      "Green": "Natural healing abilities, emotional balance, and the capacity to create harmony in relationships and environments.",
+      "Blue": "Authentic expression, trustworthy communication, and the ability to speak truth with compassion and wisdom.",
+      "Indigo": "Highly developed intuition, psychic sensitivity, and the gift of seeing deeper meanings in life experiences.",
+      "Violet": "Strong spiritual connection, transcendent awareness, and the ability to access higher wisdom and guidance.",
+      "Purple": "Mystical insight, transformative presence, and the power to facilitate deep spiritual and personal change.",
+      "Pink": "Unconditional love, emotional intelligence, and the natural ability to heal hearts and nurture growth.",
+      "White": "Spiritual purity, energetic protection, and the gift of maintaining clarity in chaotic situations.",
+      "Gold": "Divine wisdom, spiritual authority, and the ability to guide others toward enlightenment and truth.",
+      "Silver": "Psychic abilities, intuitive guidance, and the gift of reflecting wisdom and insight to others."
+    };
+    return strengths[color] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
+  };
+
+  const getPersonalityGrowthAreas = (color: string, traits: string[]): string => {
+    const growthAreas: Record<string, string> = {
+      "Red": "Learning patience and gentleness, balancing action with reflection, and softening intensity when needed.",
+      "Orange": "Developing focus and completion skills, grounding creative energy, and maintaining emotional boundaries.",
+      "Yellow": "Balancing mental analysis with heart wisdom, practicing emotional expression, and staying grounded in body.",
+      "Green": "Setting healthy boundaries, avoiding over-giving, and learning to receive support from others.",
+      "Blue": "Expressing emotions more freely, accepting imperfection, and allowing vulnerability in relationships.",
+      "Indigo": "Grounding intuitive insights in practical action, trusting inner knowing, and maintaining physical health.",
+      "Violet": "Integrating spiritual insights with earthly responsibilities and maintaining connection to physical reality.",
+      "Purple": "Balancing mystical pursuits with practical needs and sharing wisdom in accessible ways.",
+      "Pink": "Setting emotional boundaries, practicing self-love, and avoiding codependent patterns in relationships.",
+      "White": "Integrating shadow aspects, accepting human imperfection, and balancing purity with compassion.",
+      "Gold": "Remaining humble while expressing wisdom, accepting others' paths, and avoiding spiritual superiority.",
+      "Silver": "Trusting psychic impressions, maintaining energetic boundaries, and grounding intuitive gifts practically."
+    };
+    return growthAreas[color] || "Focus on integrating all aspects of your personality for balanced growth and authentic expression.";
+  };
+
+  const getRelationshipDynamics = (primary: string, secondary: string): string => {
+    const dynamics: Record<string, string> = {
+      "Red": "You bring passion and excitement to relationships but may need to practice patience and gentle communication.",
+      "Orange": "You create joyful, creative connections but benefit from developing deeper emotional intimacy and consistency.",
+      "Yellow": "You offer intellectual stimulation and clarity but may need to express emotions more openly and vulnerably.",
+      "Green": "You naturally nurture and heal relationships but must learn to receive love and set healthy boundaries.",
+      "Blue": "You build trust through honest communication but may need to express emotions beyond just facts and logic.",
+      "Indigo": "You offer deep understanding and insight but may struggle with practical relationship maintenance and presence.",
+      "Violet": "You bring spiritual depth to connections but need to balance transcendence with earthly intimacy.",
+      "Purple": "You facilitate transformation in relationships but must ensure changes serve mutual growth and healing.",
+      "Pink": "You embody unconditional love but need to maintain identity and avoid losing yourself in others' needs.",
+      "White": "You offer pure, honest connection but may need to embrace human messiness and emotional complexity.",
+      "Gold": "You provide wisdom and guidance but must remember to be a partner, not just a teacher or advisor.",
+      "Silver": "You reflect others' truth back to them but need to share your own feelings and desires openly."
+    };
+    return dynamics[primary] || "Your unique energy signature creates distinctive patterns in how you connect with others.";
+  };
+
+  const getCareerAlignment = (color: string, traits: string[]): string => {
+    const careers: Record<string, string> = {
+      "Red": "Leadership roles, entrepreneurship, emergency services, sports, or any field requiring decisive action and courage.",
+      "Orange": "Creative industries, entertainment, teaching, marketing, event planning, or work involving artistic expression.",
+      "Yellow": "Education, research, writing, consulting, technology, or careers requiring analytical thinking and communication.",
+      "Green": "Healthcare, counseling, environmental work, nutrition, or any field focused on healing and nurturing others.",
+      "Blue": "Communication, journalism, public speaking, mediation, or roles requiring authentic expression and truth-telling.",
+      "Indigo": "Psychology, intuitive counseling, research, investigation, or work involving pattern recognition and insight.",
+      "Violet": "Spiritual teaching, philosophy, metaphysics, or careers bridging spiritual wisdom with practical application.",
+      "Purple": "Alternative healing, mystical studies, transformation coaching, or work facilitating deep personal change.",
+      "Pink": "Caregiving, social work, nursing, childcare, or any field focused on emotional healing and support.",
+      "White": "Spiritual guidance, energy healing, purification work, or roles requiring clarity and energetic sensitivity.",
+      "Gold": "Teaching, mentoring, spiritual leadership, or positions requiring wisdom, authority, and guidance of others.",
+      "Silver": "Intuitive services, psychic work, counseling, or careers utilizing reflective and empathetic abilities."
+    };
+    return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -4286,23 +4376,7 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="analysis">
                             <div className="space-y-10">
-                              {/* Personality Integration */}
-                              <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Personality Integration</h4>
-                                <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                                  <p className="text-sm text-gray-700 mb-3">
-                                    Your aura field reveals these dominant traits that combine to form your unique spiritual signature:
-                                  </p>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {result.personalityTraits.map((trait, index) => (
-                                      <div key={index} className="p-2 bg-gray-50 rounded-md text-sm border border-gray-100">
-                                        <span className="font-medium block">{trait}</span>
-                                        <span className="text-xs text-gray-600 block">{getTraitExplanation(trait, result.dominantColor)}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
+
 
                               <div className="flex items-center justify-between">
                                 <div>
@@ -4568,6 +4642,105 @@ export default function AuraAnalysis() {
                                         ))}
                                       </div>
                                     </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Enhanced Personality Integration */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Personality Integration</h4>
+                                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+                                  <div className="mb-6">
+                                    <p className="text-sm text-gray-700 mb-4">
+                                      Your aura field reveals these dominant traits that combine to form your unique spiritual signature. 
+                                      These characteristics are energetically embedded in your personal vibration and influence how you interact with the world.
+                                    </p>
+                                    
+                                    {/* Color-Personality Connection */}
+                                    <div className="mb-4 p-3 bg-white rounded-lg border border-indigo-100">
+                                      <h5 className="font-medium text-sm mb-2 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                        ></span>
+                                        {result.dominantColor} Energy Influence
+                                      </h5>
+                                      <p className="text-xs text-gray-600">
+                                        Your dominant {result.dominantColor.toLowerCase()} aura creates a personality foundation of {getColorPersonalityInfluence(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {/* Core Personality Traits */}
+                                  <div className="mb-6">
+                                    <h5 className="font-medium text-sm mb-3 text-indigo-800">Core Personality Traits</h5>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {result.personalityTraits.map((trait, index) => (
+                                        <div key={index} className="p-3 bg-white rounded-lg border border-indigo-100 shadow-sm">
+                                          <div className="flex items-start gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-indigo-400 mt-1 flex-shrink-0"></div>
+                                            <div>
+                                              <span className="font-medium block text-sm text-indigo-900">{trait}</span>
+                                              <span className="text-xs text-gray-600 block mt-1 leading-relaxed">
+                                                {getTraitExplanation(trait, result.dominantColor)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Personality Strengths & Growth Areas */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                                      <h5 className="font-medium text-sm mb-2 text-green-800 flex items-center">
+                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                        Natural Strengths
+                                      </h5>
+                                      <p className="text-xs text-green-700">
+                                        {getPersonalityStrengths(result.dominantColor, result.personalityTraits)}
+                                      </p>
+                                    </div>
+                                    <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                                      <h5 className="font-medium text-sm mb-2 text-amber-800 flex items-center">
+                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                        </svg>
+                                        Growth Opportunities
+                                      </h5>
+                                      <p className="text-xs text-amber-700">
+                                        {getPersonalityGrowthAreas(result.dominantColor, result.personalityTraits)}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {/* Relationship Dynamics */}
+                                  <div className="p-4 bg-rose-50 rounded-lg border border-rose-200 mb-6">
+                                    <h5 className="font-medium text-sm mb-2 text-rose-800 flex items-center">
+                                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                      </svg>
+                                      Relationship Dynamics
+                                    </h5>
+                                    <p className="text-xs text-rose-700">
+                                      {getRelationshipDynamics(result.dominantColor, result.secondaryColor)}
+                                    </p>
+                                  </div>
+
+                                  {/* Career & Life Path Alignment */}
+                                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h5 className="font-medium text-sm mb-2 text-blue-800 flex items-center">
+                                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      Career & Life Path Alignment
+                                    </h5>
+                                    <p className="text-xs text-blue-700">
+                                      {getCareerAlignment(result.dominantColor, result.personalityTraits)}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
