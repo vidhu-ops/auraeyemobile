@@ -19,6 +19,66 @@ import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+// Color code mapping function - moved outside component for global access
+const getAccurateColorCode = (colorName: string): string => {
+  const colorCodes: Record<string, string> = {
+    'red': '#FF0000',
+    'Red': '#FF0000',
+    'orange': '#FFA500',
+    'Orange': '#FFA500',
+    'yellow': '#FFFF00',
+    'Yellow': '#FFFF00',
+    'green': '#00FF00',
+    'Green': '#00FF00',
+    'blue': '#0000FF',
+    'Blue': '#0000FF',
+    'purple': '#800080',
+    'Purple': '#800080',
+    'pink': '#FFC0CB',
+    'Pink': '#FFC0CB',
+    'white': '#FFFFFF',
+    'White': '#FFFFFF',
+    'black': '#000000',
+    'Black': '#000000',
+    'brown': '#A52A2A',
+    'Brown': '#A52A2A',
+    'gray': '#808080',
+    'Gray': '#808080',
+    'grey': '#808080',
+    'Grey': '#808080',
+    'silver': '#C0C0C0',
+    'Silver': '#C0C0C0',
+    'gold': '#FFD700',
+    'Gold': '#FFD700',
+    'lime': '#32CD32',
+    'Lime': '#32CD32',
+    'turquoise': '#40E0D0',
+    'Turquoise': '#40E0D0',
+    'teal': '#008080',
+    'Teal': '#008080',
+    'coral': '#FF7F50',
+    'Coral': '#FF7F50',
+    'mint': '#98FB98',
+    'Mint': '#98FB98',
+    'peach': '#FFCBA4',
+    'Peach': '#FFCBA4',
+    'lavender': '#E6E6FA',
+    'Lavender': '#E6E6FA',
+    'crimson': '#DC143C',
+    'Crimson': '#DC143C',
+    'magenta': '#FF00FF',
+    'Magenta': '#FF00FF',
+    'navy': '#000080',
+    'Navy': '#000080',
+    'indigo': '#4B0082',
+    'Indigo': '#4B0082',
+    'violet': '#8A2BE2',
+    'Violet': '#8A2BE2'
+  };
+  
+  return colorCodes[colorName] || '#800080'; // Default to purple if color not found
+};
+
 export default function AuraAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -40,65 +100,6 @@ export default function AuraAnalysis() {
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
-
-  const getAccurateColorCode = (colorName: string): string => {
-    const colorCodes: Record<string, string> = {
-      'red': '#FF0000',
-      'Red': '#FF0000',
-      'orange': '#FFA500',
-      'Orange': '#FFA500',
-      'yellow': '#FFFF00',
-      'Yellow': '#FFFF00',
-      'green': '#00FF00',
-      'Green': '#00FF00',
-      'blue': '#0000FF',
-      'Blue': '#0000FF',
-      'purple': '#800080',
-      'Purple': '#800080',
-      'pink': '#FFC0CB',
-      'Pink': '#FFC0CB',
-      'white': '#FFFFFF',
-      'White': '#FFFFFF',
-      'black': '#000000',
-      'Black': '#000000',
-      'brown': '#A52A2A',
-      'Brown': '#A52A2A',
-      'gray': '#808080',
-      'Gray': '#808080',
-      'grey': '#808080',
-      'Grey': '#808080',
-      'silver': '#C0C0C0',
-      'Silver': '#C0C0C0',
-      'gold': '#FFD700',
-      'Gold': '#FFD700',
-      'lime': '#32CD32',
-      'Lime': '#32CD32',
-      'turquoise': '#40E0D0',
-      'Turquoise': '#40E0D0',
-      'teal': '#008080',
-      'Teal': '#008080',
-      'coral': '#FF7F50',
-      'Coral': '#FF7F50',
-      'mint': '#98FB98',
-      'Mint': '#98FB98',
-      'peach': '#FFCBA4',
-      'Peach': '#FFCBA4',
-      'lavender': '#E6E6FA',
-      'Lavender': '#E6E6FA',
-      'crimson': '#DC143C',
-      'Crimson': '#DC143C',
-      'magenta': '#FF00FF',
-      'Magenta': '#FF00FF',
-      'navy': '#000080',
-      'Navy': '#000080',
-      'indigo': '#4B0082',
-      'Indigo': '#4B0082',
-      'violet': '#8A2BE2',
-      'Violet': '#8A2BE2'
-    };
-    
-    return colorCodes[colorName] || '#800080'; // Default to purple if color not found
-  };
 
   const getColorCompleteInfo = (colorName: string): { 
     chakra: string; 
