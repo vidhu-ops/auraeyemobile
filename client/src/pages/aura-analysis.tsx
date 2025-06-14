@@ -3452,7 +3452,7 @@ export default function AuraAnalysis() {
                                           <div className="text-sm text-primary font-medium">Dominant Energy</div>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.dominantColor)}</p>
+                                      <p className="text-sm text-gray-700 mb-2">{getColorPositiveMeaning(result.dominantColor)}</p>
                                       
                                       {/* Positive and Negative Meanings */}
                                       <div className="mt-3 space-y-2">
@@ -3485,7 +3485,7 @@ export default function AuraAnalysis() {
                                           <div className="text-sm text-secondary font-medium">Secondary Energy</div>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 mb-2">{getColorMeaning(result.secondaryColor || result.dominantColor)}</p>
+                                      <p className="text-sm text-gray-700 mb-2">{getColorPositiveMeaning(result.secondaryColor || result.dominantColor)}</p>
                                       
                                       {/* Positive and Negative Meanings */}
                                       <div className="mt-3 space-y-2">
@@ -3527,7 +3527,7 @@ export default function AuraAnalysis() {
                                               </div>
                                             </div>
                                           </div>
-                                          <p className="text-xs text-gray-600 mb-2">{getColorMeaning(color)}</p>
+                                          <p className="text-xs text-gray-600 mb-2">{getColorPositiveMeaning(color)}</p>
                                           <div className="text-xs text-gray-400">
                                             Hex: {getAccurateColorCode(color)}
                                           </div>
@@ -3537,23 +3537,7 @@ export default function AuraAnalysis() {
                                   </div>
                                 )}
 
-                                {/* Color Interaction Analysis */}
-                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-100">
-                                  <h5 className="font-medium text-sm mb-3 text-purple-700">Color Harmony Analysis</h5>
-                                  <p className="text-sm text-gray-700 mb-3">
-                                    {getColorHarmonyAnalysis(result.dominantColor, result.secondaryColor, result.auraColorSpectrum)}
-                                  </p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {(result.auraColorSpectrum || [result.dominantColor, result.secondaryColor]).filter(Boolean).map((color, index) => (
-                                      <div 
-                                        key={index}
-                                        className="w-4 h-4 rounded-full border border-white shadow-sm"
-                                        style={{ backgroundColor: getAccurateColorCode(color) }}
-                                        title={`${color}: ${getColorMeaning(color)}`}
-                                      ></div>
-                                    ))}
-                                  </div>
-                                </div>
+
                               </div>
 
                               {/* Primary Color Analysis */}
