@@ -655,22 +655,22 @@ export default function AuraAnalysis() {
     }
   };
 
-  // Helper function to get color meanings
+  // Helper function to get color meanings with positive and shadow aspects
   const getColorMeaning = (colorName: string): string => {
     const meaningMap: Record<string, string> = {
-      'Red': 'Healing & Vitality - Root chakra energy, survival instinct, life force, physical vitality, grounding power',
-      'Orange': 'Creativity & Joy - Sacral chakra energy, creativity, sexuality, emotional flow, artistic expression',
-      'Yellow': 'Wisdom & Clarity - Solar plexus chakra, personal power, confidence, willpower, mental clarity',
-      'Green': 'Love & Healing - Heart chakra, unconditional love, healing abilities, compassion, emotional balance',
-      'Blue': 'Truth, Peace & Communication - Throat chakra, communication, truth speaking, self-expression, authentic voice',
-      'Indigo': 'Intuition & Vision - Third eye chakra, psychic abilities, intuition, inner wisdom, spiritual sight',
-      'Violet': 'Spiritual Connection - Crown chakra, spiritual connection, divine consciousness, enlightenment, mysticism',
-      'Purple': 'Divine Wisdom - Higher crown chakra, spiritual mastery, mystical awareness, divine wisdom',
-      'Pink': 'Unconditional Love - Higher heart chakra, unconditional love, divine compassion, soul connection',
-      'Gold': 'Divine Illumination - Christ consciousness, divine wisdom, spiritual illumination, soul purpose',
-      'Silver': 'Lunar Intuition - Lunar energy, intuitive wisdom, feminine power, psychic protection',
-      'Turquoise': 'Healing Communication - Higher throat chakra, healing communication, divine truth, soul expression',
-      'White': 'Pure Light - Pure divine light, spiritual protection, angelic connection, soul purification',
+      'Red': 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.',
+      'Orange': 'Sacral chakra creative fire igniting passionate artistic expression and joyful emotional flow. This vibrant frequency awakens sensual pleasure, creative abundance, and the ability to manifest dreams through inspired action.',
+      'Yellow': 'Solar plexus radiance illuminating personal power and intellectual brilliance. This golden frequency activates confidence, mental clarity, and the ability to transform knowledge into wisdom while maintaining optimistic leadership.',
+      'Green': 'Heart chakra emerald light radiating unconditional love and natural healing abilities. This nurturing frequency opens compassionate service, emotional balance, and the gift of creating harmony while facilitating deep healing.',
+      'Blue': 'Throat chakra sapphire truth activating authentic communication and peaceful wisdom. This calming frequency enables honest expression, trustworthy leadership, and the ability to speak divine truth with compassion.',
+      'Indigo': 'Third eye indigo flame awakening psychic abilities and intuitive wisdom. This mystical frequency opens spiritual sight, enhances dream work, and develops the ability to see beyond physical reality into deeper truths.',
+      'Violet': 'Crown chakra violet ray connecting to cosmic consciousness and divine guidance. This transcendent frequency opens spiritual channels, enhances meditation, and develops the ability to access higher wisdom.',
+      'Purple': 'Higher crown mystical purple activating spiritual mastery and divine authority. This regal frequency channels cosmic wisdom, enables spiritual teaching, and develops the ability to bridge earthly and heavenly realms.',
+      'Pink': 'Higher heart rose frequency radiating unconditional divine love and emotional healing. This gentle frequency opens soul-level compassion, enables heart healing, and develops the ability to love without conditions.',
+      'Gold': 'Christ consciousness golden flame illuminating soul purpose and divine wisdom. This sacred frequency activates spiritual mastery, enables divine teaching, and develops the ability to guide others toward enlightenment.',
+      'Silver': 'Lunar silver light activating intuitive wisdom and psychic protection. This reflective frequency enhances feminine wisdom, enables emotional sensitivity, and develops the ability to reflect truth.',
+      'Turquoise': 'Higher throat turquoise wave enabling healing communication and soul expression. This flowing frequency combines heart wisdom with authentic voice, enabling the ability to speak healing truth.',
+      'White': 'Pure divine light encompassing all frequencies in perfect spiritual protection. This transcendent frequency provides angelic connection, enables spiritual purification, and develops the ability to channel pure divine energy.',
       'Lavender': 'Spiritual Peace - Gentle awakening, cosmic consciousness, divine grace, serene wisdom',
       'Coral': 'Creative Heart - Creative heart energy, artistic expression, gentle passion, emotional creativity',
       'Mint': 'Renewal & Healing - Healing heart energy, renewal power, fresh growth, emotional cleansing',
@@ -2988,7 +2988,7 @@ export default function AuraAnalysis() {
       "Protective": "Your energy field is a barrier against negative influences and energies.",
     };
     
-    return traitExplanations[trait] || "This trait represents a unique expression of your spiritual signature.";
+    return traitExplanations[trait] || "";
   };
 
   const getColorPersonalityInfluence = (color: string): string => {
@@ -3623,19 +3623,19 @@ export default function AuraAnalysis() {
                                   <div className="space-y-3">
                                     {result.auraLayerColors.inner && (
                                       <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
-                                        <h5 className="font-medium text-sm">Inner Layer - {result.auraLayerColors.inner}</h5>
+                                        <h5 className="font-medium text-sm">Recieving Layer - {result.auraLayerColors.inner}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
                                       </div>
                                     )}
                                     {result.auraLayerColors.middle && (
                                       <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
-                                        <h5 className="font-medium text-sm">Middle Layer - {result.auraLayerColors.middle}</h5>
+                                        <h5 className="font-medium text-sm">Giving Layer - {result.auraLayerColors.middle}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
                                       </div>
                                     )}
                                     {result.auraLayerColors.outer && (
                                       <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
-                                        <h5 className="font-medium text-sm">Outer Layer - {result.auraLayerColors.outer}</h5>
+                                        <h5 className="font-medium text-sm">Thinking Layer - {result.auraLayerColors.outer}</h5>
                                         <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
                                       </div>
                                     )}
