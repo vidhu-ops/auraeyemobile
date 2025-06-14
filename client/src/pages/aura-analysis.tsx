@@ -13,73 +13,56 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2, Palette } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-interface AuraAnalysisResult {
-  dominantColor: string;
-  secondaryColor: string;
-  colorMeanings: Record<string, string>;
-  energyLevel: number;
-  emotionalState: string;
-  spiritualInsights: string;
-  chakraActivity: Record<string, number>;
-  personalityTraits: string[];
-  recommendations: string[];
-  detailedAnalysis: string;
-  enhancedGuidance?: string;
-  soulPurpose?: string;
-  lifePathInsights?: string;
-  relationshipDynamics?: string;
-  careerAlignment?: string;
-  shadowWork?: string;
-  spiritualGifts?: string[];
-  numerologyCorrelation?: string;
-}
-
-interface NumerologyResult {
-  lifePath: number;
-  destiny: number;
-  soulUrge: number;
-  personality: number;
-  birthDay: number;
-  maturity: number;
-  lifePathMeaning: string;
-  destinyMeaning: string;
-  soulUrgeMeaning: string;
-  personalityMeaning: string;
-  overallInterpretation: string;
-  yearlyForecast: string;
-  monthlyInsights: string;
-  compatibility: Record<number, string>;
-  challenges: string[];
-  strengths: string[];
-  recommendations: string[];
-}
+// Color code mapping function
+const getAccurateColorCode = (colorName: string): string => {
+  const colorCodes: Record<string, string> = {
+    'red': '#FF0000', 'Red': '#FF0000',
+    'orange': '#FFA500', 'Orange': '#FFA500',
+    'yellow': '#FFFF00', 'Yellow': '#FFFF00',
+    'green': '#00FF00', 'Green': '#00FF00',
+    'blue': '#0000FF', 'Blue': '#0000FF',
+    'purple': '#800080', 'Purple': '#800080',
+    'pink': '#FFC0CB', 'Pink': '#FFC0CB',
+    'white': '#FFFFFF', 'White': '#FFFFFF',
+    'black': '#000000', 'Black': '#000000',
+    'silver': '#C0C0C0', 'Silver': '#C0C0C0',
+    'gold': '#FFD700', 'Gold': '#FFD700',
+    'lime': '#32CD32', 'Lime': '#32CD32',
+    'turquoise': '#40E0D0', 'Turquoise': '#40E0D0',
+    'teal': '#008080', 'Teal': '#008080',
+    'navy': '#000080', 'Navy': '#000080',
+    'indigo': '#4B0082', 'Indigo': '#4B0082',
+    'violet': '#8A2BE2', 'Violet': '#8A2BE2'
+  };
+  return colorCodes[colorName] || '#800080';
+};
 
 export default function AuraAnalysis() {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [originalImage, setOriginalImage] = useState<string>('');
-  const [processedAuraImage, setProcessedAuraImage] = useState<string>('');
-  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string>('');
-  const [result, setResult] = useState<AuraAnalysisResult | null>(null);
-  const [numerologyResult, setNumerologyResult] = useState<NumerologyResult | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [analysisStage, setAnalysisStage] = useState('');
-  const [activeTab, setActiveTab] = useState('analysis');
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
-  const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
-  const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { showPremiumModal } = usePremium();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [result, setResult] = useState<AuraAnalysisResult | null>(null);
+  const [activeTab, setActiveTab] = useState("analysis");
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [processedAuraImage, setProcessedAuraImage] = useState<string | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
 
+  // Multi-dimensional aura color meanings with your specified format
   const getColorDetails = (colorName: string) => {
     const colorDetails: Record<string, any> = {
       'Red': { 
@@ -198,60 +181,121 @@ export default function AuraAnalysis() {
     
     return colorDetails[colorName] || colorDetails['Purple'];
   };
-  
-  const getColorPositiveMeaning = (colorName: string): string => {
-    return getColorDetails(colorName).positiveMeaning;
-  };
 
-  const getColorNegativeMeaning = (colorName: string): string => {
-    return getColorDetails(colorName).shadowMeaning;
-  };
+  const handleImageUpload = async (file: File) => {
+    if (!user) {
+      showPremiumModal();
+      return;
+    }
 
-  const getColorMeaningShort = (colorName: string): string => {
-    return getColorDetails(colorName).colorMeaning;
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+    setAnalysisStage("Preparing image for analysis...");
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      setAnalysisProgress(25);
+      setAnalysisStage("Analyzing aura patterns...");
+
+      const response = await apiRequest('/api/analyze-aura', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+
+      const data = await response.json();
+      
+      setAnalysisProgress(75);
+      setAnalysisStage("Processing insights...");
+
+      setResult(data.result);
+      setCurrentAnalysisId(data.id);
+      setOriginalImage(URL.createObjectURL(file));
+      
+      setAnalysisProgress(100);
+      setAnalysisStage("Analysis complete!");
+      
+      setTimeout(() => {
+        setActiveTab("analysis");
+      }, 1000);
+
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Analysis Failed",
+        description: "Please try again with a different image.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
-              Aura Analysis Portal
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover your unique energy signature through advanced AI-powered aura reading and spiritual insights
-            </p>
+      <main className="flex-grow">
+        {/* Header section */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
+          <AuraGlow 
+            colors={[
+              { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
+              { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
+            ]} 
+          />
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="text-center">
+              <h1 className="text-5xl md:text-6xl font-heading font-bold mb-6 bg-gradient-to-r from-primary-light to-secondary-light bg-clip-text text-transparent">
+                Aura Analysis Portal
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
+                Discover your unique energy signature through advanced AI-powered aura reading and spiritual insights
+              </p>
+            </div>
           </div>
+        </section>
 
+        <div className="container mx-auto px-6 py-12">
           {/* Multi-dimensional Aura Colors Section */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Palette className="h-6 w-6" />
                 Multi-dimensional Aura Colors
               </CardTitle>
+              <CardDescription>
+                Explore the authentic meanings and spiritual significance of each aura color
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet', 'Purple', 'Pink', 'Gold', 'Silver', 'Turquoise', 'White', 'Lime', 'Navy', 'Teal'].map((color) => {
                   const details = getColorDetails(color);
                   return (
-                    <Card key={color} className="border-l-4" style={{ borderLeftColor: color.toLowerCase() }}>
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold mb-2">{color}</h4>
-                        <p className="text-sm text-muted-foreground mb-2">{details.colorMeaning}</p>
-                        <div className="space-y-2">
+                    <Card key={color} className="border-l-4 hover:shadow-lg transition-shadow" style={{ borderLeftColor: getAccurateColorCode(color) }}>
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div 
+                            className="w-4 h-4 rounded-full border border-gray-300" 
+                            style={{ backgroundColor: getAccurateColorCode(color) }}
+                          ></div>
+                          <h4 className="font-semibold text-lg">{color}</h4>
+                        </div>
+                        <p className="text-sm font-medium text-muted-foreground mb-4">{details.colorMeaning}</p>
+                        <div className="space-y-3">
                           <div>
-                            <h5 className="text-xs font-medium text-green-600">Positive Aspect:</h5>
-                            <p className="text-xs">{details.positiveMeaning}</p>
+                            <h5 className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">Positive Aspect:</h5>
+                            <p className="text-sm leading-relaxed">{details.positiveMeaning}</p>
                           </div>
                           <div>
-                            <h5 className="text-xs font-medium text-red-600">Shadow Aspect:</h5>
-                            <p className="text-xs">{details.shadowMeaning}</p>
+                            <h5 className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">Shadow Aspect:</h5>
+                            <p className="text-sm leading-relaxed">{details.shadowMeaning}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -265,55 +309,139 @@ export default function AuraAnalysis() {
           {/* Upload Section */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="h-5 w-5" />
-                Upload Your Photo
-              </CardTitle>
+              <CardTitle>Upload Your Photo for Aura Analysis</CardTitle>
+              <CardDescription>
+                Upload a clear photo of yourself to begin your spiritual journey of discovery
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={() => {}}
-                  className="hidden"
-                />
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Select Your Photo</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Upload a clear photo of yourself for accurate aura analysis
-                    </p>
-                    <Button 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    >
-                      Choose File
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <ImageUpload
+                onImageUpload={handleImageUpload}
+                isAnalyzing={isAnalyzing}
+                analysisProgress={analysisProgress}
+                analysisStage={analysisStage}
+                className="w-full"
+              />
             </CardContent>
           </Card>
 
-          {/* Placeholder for Results */}
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="font-semibold mb-2">Your Aura Analysis Will Appear Here</h3>
-              <p className="text-muted-foreground">
-                Upload a photo to begin your spiritual journey of self-discovery
-              </p>
-            </CardContent>
-          </Card>
+          {/* Results Section */}
+          {result && (
+            <div className="space-y-8">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                  <TabsTrigger value="spectrum">Color Spectrum</TabsTrigger>
+                  <TabsTrigger value="guidance">Spiritual Guidance</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="analysis" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5" />
+                        Your Aura Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <h3 className="font-semibold mb-2">Dominant Color</h3>
+                          <Badge 
+                            variant="secondary" 
+                            className="text-lg px-4 py-2"
+                            style={{ backgroundColor: getAccurateColorCode(result.dominantColor), color: 'white' }}
+                          >
+                            {result.dominantColor}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Secondary Color</h3>
+                          <Badge 
+                            variant="secondary" 
+                            className="text-lg px-4 py-2"
+                            style={{ backgroundColor: getAccurateColorCode(result.secondaryColor), color: 'white' }}
+                          >
+                            {result.secondaryColor}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="mt-6">
+                        <h3 className="font-semibold mb-2">Detailed Analysis</h3>
+                        <p className="text-muted-foreground leading-relaxed">{result.detailedAnalysis}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="spectrum" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Your Color Spectrum</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div 
+                            className="h-24 rounded-lg border-2 border-white shadow-md"
+                            style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                          ></div>
+                          <div 
+                            className="h-24 rounded-lg border-2 border-white shadow-md"
+                            style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                          ></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                          <div>
+                            <h4 className="font-semibold">{result.dominantColor}</h4>
+                            <p className="text-sm text-muted-foreground">{getColorDetails(result.dominantColor).colorMeaning}</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold">{result.secondaryColor}</h4>
+                            <p className="text-sm text-muted-foreground">{getColorDetails(result.secondaryColor).colorMeaning}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="guidance" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Crown className="h-5 w-5" />
+                        Spiritual Guidance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="font-semibold mb-2">Spiritual Insights</h3>
+                          <p className="text-muted-foreground leading-relaxed">{result.spiritualInsights}</p>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Recommendations</h3>
+                          <ul className="space-y-2">
+                            {result.recommendations.map((rec, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-1 flex-shrink-0" />
+                                <span className="text-sm">{rec}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
