@@ -2914,6 +2914,21 @@ export default function AuraAnalysis() {
   // Helper functions for the detailed analysis tab
   const getAuraLayerAnalysis = (layer: string, color: string): string => {
     const layerAnalysis: Record<string, Record<string, string>> = {
+      physical: {
+        "Purple": "Your physical layer shows strong spiritual vitality supporting immune system function and cellular regeneration. Purple energy enhances your body's natural healing abilities and connection to divine health.",
+        "Blue": "Your physical layer indicates excellent communication between body systems and peaceful nervous system function. Blue energy supports throat, thyroid, and respiratory health.",
+        "Green": "Your physical layer demonstrates powerful healing capacity and heart-centered health. Green energy supports cardiovascular function, immune strength, and natural detoxification processes.",
+        "Yellow": "Your physical layer shows strong digestive fire and mental-physical coordination. Yellow energy supports metabolism, nervous system clarity, and solar plexus vitality.",
+        "Orange": "Your physical layer indicates vibrant reproductive and creative energy. Orange energy supports hormonal balance, reproductive health, and creative life force circulation.",
+        "Red": "Your physical layer demonstrates robust survival energy and physical strength. Red energy supports bone health, blood circulation, adrenal function, and physical endurance.",
+        "White": "Your physical layer carries pure vitality and energetic protection. White energy supports overall health optimization, cellular purification, and divine healing integration.",
+        "Gold": "Your physical layer resonates with divine healing wisdom. Gold energy supports regenerative health, spiritual healing integration, and advanced cellular repair mechanisms.",
+        "Indigo": "Your physical layer shows enhanced nervous system sensitivity and brain-body connection. Indigo energy supports neurological health, pineal gland function, and intuitive body awareness.",
+        "Pink": "Your physical layer demonstrates nurturing self-care and heart-centered health. Pink energy supports emotional-physical healing, stress reduction, and loving body relationship.",
+        "Silver": "Your physical layer carries lunar wisdom affecting hormonal cycles and fluid balance. Silver energy supports reproductive health, emotional-physical integration, and psychic body awareness.",
+        "Turquoise": "Your physical layer shows balanced healing communication. Turquoise energy supports throat chakra health, clear body expression, and healing voice activation.",
+        "Lavender": "Your physical layer demonstrates gentle healing and nervous system support. Lavender energy promotes relaxation, stress relief, and peaceful body restoration."
+      },
       etheric: {
         "Purple": "Your etheric layer shows strong spiritual development and healing energy fields. Physical vitality is enhanced through psychic connections rather than purely physical sources.",
         "Blue": "Your etheric layer is strongly aligned with truth and clear expression. Physical health responds well to sound therapy and throat chakra work.",
@@ -5106,7 +5121,22 @@ export default function AuraAnalysis() {
                                   </div>
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Aura Layers Interpretation</h4>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                    <div className="p-3 bg-white rounded-lg shadow-sm">
+                                      <h5 className="text-sm font-medium mb-1 flex items-center">
+                                        <span 
+                                          className="inline-block w-3 h-3 rounded-full mr-2" 
+                                          style={{ 
+                                            backgroundColor: result.dominantColor.toLowerCase(),
+                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
+                                          }}
+                                        ></span>
+                                        Physical Layer
+                                      </h5>
+                                      <p className="text-xs text-gray-600">
+                                        {getAuraLayerAnalysis("physical", result.dominantColor)}
+                                      </p>
+                                    </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-1 flex items-center">
                                         <span 
@@ -5161,7 +5191,7 @@ export default function AuraAnalysis() {
                                             boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
                                           }}
                                         ></span>
-                                        Spiritual Layer
+                                        Astral Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
                                         {getAuraLayerAnalysis("spiritual", result.secondaryColor || result.dominantColor)}
