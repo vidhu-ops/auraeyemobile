@@ -41,6 +41,65 @@ export default function AuraAnalysis() {
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
 
+  const getAccurateColorCode = (colorName: string): string => {
+    const colorCodes: Record<string, string> = {
+      'red': '#FF0000',
+      'Red': '#FF0000',
+      'orange': '#FFA500',
+      'Orange': '#FFA500',
+      'yellow': '#FFFF00',
+      'Yellow': '#FFFF00',
+      'green': '#00FF00',
+      'Green': '#00FF00',
+      'blue': '#0000FF',
+      'Blue': '#0000FF',
+      'purple': '#800080',
+      'Purple': '#800080',
+      'pink': '#FFC0CB',
+      'Pink': '#FFC0CB',
+      'white': '#FFFFFF',
+      'White': '#FFFFFF',
+      'black': '#000000',
+      'Black': '#000000',
+      'brown': '#A52A2A',
+      'Brown': '#A52A2A',
+      'gray': '#808080',
+      'Gray': '#808080',
+      'grey': '#808080',
+      'Grey': '#808080',
+      'silver': '#C0C0C0',
+      'Silver': '#C0C0C0',
+      'gold': '#FFD700',
+      'Gold': '#FFD700',
+      'lime': '#32CD32',
+      'Lime': '#32CD32',
+      'turquoise': '#40E0D0',
+      'Turquoise': '#40E0D0',
+      'teal': '#008080',
+      'Teal': '#008080',
+      'coral': '#FF7F50',
+      'Coral': '#FF7F50',
+      'mint': '#98FB98',
+      'Mint': '#98FB98',
+      'peach': '#FFCBA4',
+      'Peach': '#FFCBA4',
+      'lavender': '#E6E6FA',
+      'Lavender': '#E6E6FA',
+      'crimson': '#DC143C',
+      'Crimson': '#DC143C',
+      'magenta': '#FF00FF',
+      'Magenta': '#FF00FF',
+      'navy': '#000080',
+      'Navy': '#000080',
+      'indigo': '#4B0082',
+      'Indigo': '#4B0082',
+      'violet': '#8A2BE2',
+      'Violet': '#8A2BE2'
+    };
+    
+    return colorCodes[colorName] || '#800080'; // Default to purple if color not found
+  };
+
   const getColorCompleteInfo = (colorName: string): { 
     chakra: string; 
     number: string; 
@@ -593,66 +652,6 @@ export default function AuraAnalysis() {
         variant: "destructive",
       });
     }
-  };
-
-  // Helper function to get accurate color hex values
-  const getAccurateColorCode = (colorName: string): string => {
-    // Enhanced color map with proper spiritual aura colors
-    const colorMap: Record<string, string> = {
-      'Red': '#FF4444',
-      'Orange': '#FF8533', 
-      'Yellow': '#FFD700',
-      'Green': '#32CD32',
-      'Blue': '#4169E1',
-      'Indigo': '#4B0082',
-      'Violet': '#8A2BE2',
-      'Purple': '#9932CC',
-      'Pink': '#FF69B4',
-      'Gold': '#FFD700',
-      'Silver': '#C0C0C0',
-      'Turquoise': '#40E0D0',
-      'White': '#F8F8FF',
-      'Lavender': '#E6E6FA',
-      'Coral': '#FF7F50',
-      'Mint': '#98FB98',
-      'Peach': '#FFDAB9',
-      'Sky Blue': '#87CEEB',
-      'Rose': '#FF66CC',
-      'Amber': '#FFBF00',
-      'Gray': '#808080',
-      'Black': '#2C2C2C',
-      'Crimson': '#DC143C',
-      'Magenta': '#FF00FF',
-      'Brown': '#A52A2A',
-      'Beige': '#F5F5DC',
-      'Cyan': '#00FFFF',
-      'Lime': '#32CD32',
-      'Maroon': '#800000',
-      'Navy': '#000080',
-      'Olive': '#808000',
-      'Teal': '#008080',
-      'Bronze': '#CD7F32',
-      'Cobalt': '#0047AB',
-      'Emerald': '#50C878',
-      'Jade': '#00A36C',
-      'Sapphire': '#0F52BA',
-      'Topaz': '#FFC87C'
-    };
-    
-    // Normalize color name (handle case variations)
-    const normalizedName = colorName.trim();
-    const exactMatch = colorMap[normalizedName];
-    if (exactMatch) return exactMatch;
-    
-    // Try case-insensitive match
-    const lowerName = normalizedName.toLowerCase();
-    for (const [key, value] of Object.entries(colorMap)) {
-      if (key.toLowerCase() === lowerName) {
-        return value;
-      }
-    }
-    
-    return '#9932CC'; // Default purple if no match
   };
 
   // Helper function to get color meanings
