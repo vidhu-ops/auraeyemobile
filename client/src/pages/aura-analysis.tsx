@@ -105,9 +105,9 @@ export default function AuraAnalysis() {
         colorMeaning: 'Spiritual Connection - Crown chakra energy, divine consciousness, spiritual enlightenment, cosmic awareness, universal wisdom'
       },
       'Purple': { 
-        chakra: 'Spiritual Bypassing', 
+        chakra: 'Higher Crown Chakra Disconnection', 
         number: '7', 
-        shadowMeaning: 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.',
+        shadowMeaning: 'Higher crown chakra disconnection creating spiritual arrogance and ego inflation while manifesting neurological imbalances and severe mental health struggles. This distorted frequency prevents authentic spiritual growth through dangerous disconnection from physical reality and shadow integration work.',
         positiveMeaning: 'Higher crown chakra transformation integrating spiritual wisdom with earthly experience creating authentic spiritual authority. This royal frequency balances mystical insight with practical application.',
         colorMeaning: 'Transformation & Mystery - Higher crown energy, spiritual transformation, mystical wisdom, magical consciousness, divine mystery'
       },
@@ -140,7 +140,7 @@ export default function AuraAnalysis() {
         colorMeaning: 'Healing Communication - Higher throat energy, healing wisdom, compassionate communication, emotional guidance, therapeutic expression'
       },
       'White': { 
-        chakra: 'Spiritual Bypassing', 
+        chakra: 'Divine Light Center', 
         number: '7', 
         shadowMeaning: 'Spiritual bypassing creating avoidance of necessary shadow work while manifesting perfectionism and complete disconnection from earthly matters. This dissociated frequency prevents grounded spiritual integration.',
         positiveMeaning: 'Divine light center radiating pure consciousness and spiritual protection that purifies energy fields. This crystalline frequency channels divine clarity and spiritual purification.',
