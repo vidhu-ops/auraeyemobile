@@ -208,10 +208,45 @@ export default function AuraAnalysis() {
         shadowMeaning: 'Soul star chakra disconnection creating spiritual delusion and unrealistic expectations while manifesting emotional overwhelm and fantasy addiction. This ungrounded frequency prevents authentic spiritual development and practical manifestation.',
         positiveMeaning: 'Soul star chakra flowing with divine love and cosmic consciousness. This transcendent frequency channels universal love and spiritual transformation.',
         colorMeaning: 'Divine Love - Soul star energy, universal love, spiritual transformation, cosmic consciousness'
+      },
+      // Lowercase versions for case-insensitive matching
+      'lime': { 
+        chakra: 'Heart Impatience', 
+        number: '4', 
+        shadowMeaning: 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.',
+        positiveMeaning: 'Heart healing chakra flowing with renewal energy and natural healing acceleration that supports healthy spiritual growth. This vibrant frequency channels healing vitality and emotional renewal.',
+        colorMeaning: 'Renewal & Healing - Heart healing energy, natural renewal, healing acceleration, emotional vitality, spiritual refreshment'
+      },
+      'green': { 
+        chakra: 'Heart Center Depletion', 
+        number: '4', 
+        shadowMeaning: 'Heart center depletion creating emotional numbness and relationship withdrawal while manifesting cardiovascular stress and immune system weakness. This closed frequency prevents authentic love expression and emotional healing.',
+        positiveMeaning: 'Heart chakra flowing with unconditional love and emotional healing that creates harmony in relationships. This nurturing frequency channels compassionate love and natural healing energy.',
+        colorMeaning: 'Love & Healing - Heart chakra energy, unconditional love, emotional healing, relationship harmony, natural growth'
+      },
+      'purple': { 
+        chakra: 'Higher Crown Chakra Disconnection', 
+        number: '7', 
+        shadowMeaning: 'Higher crown chakra disconnection creating spiritual arrogance and ego inflation while manifesting neurological imbalances and severe mental health struggles. This distorted frequency prevents authentic spiritual growth through dangerous disconnection from physical reality and shadow integration work.',
+        positiveMeaning: 'Higher crown chakra transformation integrating spiritual wisdom with earthly experience creating authentic spiritual authority. This royal frequency balances mystical insight with practical application.',
+        colorMeaning: 'Transformation & Mystery - Higher crown energy, spiritual transformation, mystical wisdom, magical consciousness, divine mystery'
       }
     };
     
-    return colorInfoMap[colorName] || colorInfoMap['Purple']; // Default to Purple if color not found
+    // Try exact match first, then case-insensitive match
+    if (colorInfoMap[colorName]) {
+      return colorInfoMap[colorName];
+    }
+    
+    // Try case-insensitive match
+    const lowerColorName = colorName.toLowerCase();
+    const matchingKey = Object.keys(colorInfoMap).find(key => key.toLowerCase() === lowerColorName);
+    if (matchingKey) {
+      return colorInfoMap[matchingKey];
+    }
+    
+    // Default fallback
+    return colorInfoMap['Purple'];
   };
 
   const getColorHarmonyAnalysis = (dominant: string, secondary: string | null, spectrum: string[] | undefined): string => {
