@@ -630,82 +630,118 @@ export default function AuraAnalysis() {
       const date = new Date().toLocaleDateString();
       pdf.text(`Generated on: ${date}`, 105, 90, { align: 'center' });
 
-      // Get the main analysis container
-      const analysisContainer = document.querySelector('#aura-reading-section');
-      if (analysisContainer) {
-        // Temporarily make all tabs visible for capture
-        const allTabs = analysisContainer.querySelectorAll('[role="tabpanel"]');
-        const originalStyles: Array<{element: HTMLElement, display: string}> = [];
-        
-        allTabs.forEach(tab => {
-          const tabElement = tab as HTMLElement;
-          originalStyles.push({
-            element: tabElement,
-            display: tabElement.style.display
-          });
-          tabElement.style.display = 'block';
-        });
+      // Capture each tab separately for comprehensive PDF
+      const tabs = [
+        { name: 'Basic Analysis', selector: '[data-tab="basic"]' },
+        { name: 'Energy Profile', selector: '[data-tab="energy"]' },
+        { name: 'Color Meanings', selector: '[data-tab="meanings"]' },
+        { name: 'Spiritual Guidance', selector: '[data-tab="guidance"]' },
+        { name: 'Personalized Insights', selector: '[data-tab="insights"]' }
+      ];
 
-        // Wait for all content to render
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Capture the entire analysis container
-        const canvas = await html2canvas(analysisContainer as HTMLElement, {
-          scale: 1,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          removeContainer: false,
-          width: (analysisContainer as HTMLElement).scrollWidth,
-          height: (analysisContainer as HTMLElement).scrollHeight
-        });
-
-        // Restore original tab visibility
-        originalStyles.forEach(({element, display}) => {
-          element.style.display = display;
-        });
-
-        // Add the captured image to PDF
+      // Add aura visualization image if available
+      if (processedAuraImage) {
         pdf.addPage();
         pdf.setFontSize(16);
-        pdf.text('Aura Analysis Results', 20, 25);
-
-        const imgData = canvas.toDataURL('image/png');
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.text('Aura Visualization', 20, 25);
         
-        // Add image, splitting across pages if needed
-        let yPosition = 35;
-        let sourceY = 0;
-        let remainingHeight = imgHeight;
-
-        while (remainingHeight > 0) {
-          const pageSpace = pageHeight - yPosition;
-          const printHeight = Math.min(remainingHeight, pageSpace);
+        try {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = processedAuraImage;
+          });
           
-          if (printHeight > 0) {
-            const sourceHeight = (printHeight / imgWidth) * canvas.width;
+          const aspectRatio = img.height / img.width;
+          const maxWidth = 170;
+          const maxHeight = 200;
+          let width = maxWidth;
+          let height = width * aspectRatio;
+          
+          if (height > maxHeight) {
+            height = maxHeight;
+            width = height / aspectRatio;
+          }
+          
+          pdf.addImage(processedAuraImage, 'PNG', 20, 35, width, height);
+        } catch (error) {
+          console.error('Error adding aura image to PDF:', error);
+        }
+      }
+
+      // Capture content from each tab
+      for (const tab of tabs) {
+        const tabContent = document.querySelector(tab.selector);
+        if (tabContent) {
+          try {
+            // Make the tab visible temporarily
+            const originalDisplay = (tabContent as HTMLElement).style.display;
+            (tabContent as HTMLElement).style.display = 'block';
             
-            // Create a cropped version of the canvas
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = sourceHeight;
-            const tempCtx = tempCanvas.getContext('2d');
+            // Wait for content to render
+            await new Promise(resolve => setTimeout(resolve, 500));
             
-            if (tempCtx) {
-              tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-              const tempData = tempCanvas.toDataURL('image/png');
-              pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
+            // Capture the tab content
+            const canvas = await html2canvas(tabContent as HTMLElement, {
+              scale: 1,
+              useCORS: true,
+              backgroundColor: '#ffffff',
+              logging: false,
+              removeContainer: false,
+              width: (tabContent as HTMLElement).scrollWidth,
+              height: (tabContent as HTMLElement).scrollHeight
+            });
+
+            // Restore original display
+            (tabContent as HTMLElement).style.display = originalDisplay;
+
+            // Add new page for this tab
+            pdf.addPage();
+            pdf.setFontSize(16);
+            pdf.text(tab.name, 20, 25);
+
+            const imgData = canvas.toDataURL('image/png');
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            // Add image, splitting across pages if needed
+            let yPosition = 35;
+            let sourceY = 0;
+            let remainingHeight = imgHeight;
+
+            while (remainingHeight > 0) {
+              const pageSpace = pageHeight - yPosition;
+              const printHeight = Math.min(remainingHeight, pageSpace);
+              
+              if (printHeight > 0) {
+                const sourceHeight = (printHeight / imgWidth) * canvas.width;
+                
+                // Create a cropped version of the canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = sourceHeight;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                if (tempCtx) {
+                  tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+                  const tempData = tempCanvas.toDataURL('image/png');
+                  pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
+                }
+                
+                remainingHeight -= printHeight;
+                sourceY += sourceHeight;
+                
+                if (remainingHeight > 0) {
+                  pdf.addPage();
+                  yPosition = 20;
+                }
+              } else {
+                break;
+              }
             }
-            
-            remainingHeight -= printHeight;
-            sourceY += sourceHeight;
-            
-            if (remainingHeight > 0) {
-              pdf.addPage();
-              yPosition = 20;
-            }
-          } else {
-            break;
+          } catch (error) {
+            console.error(`Error capturing ${tab.name} tab:`, error);
           }
         }
       }
@@ -3420,7 +3456,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsList>
                           
-                          <TabsContent value="energy-reading">
+                          <TabsContent value="energy-reading" data-tab="energy">
                             <div className="space-y-6">
                               {/* Energy Reading Content */}
                               <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
@@ -3569,7 +3605,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
 
-                          <TabsContent value="spectrum">
+                          <TabsContent value="spectrum" data-tab="meanings">
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
@@ -3712,7 +3748,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="energy-map">
+                          <TabsContent value="energy-map" data-tab="energy-map">
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Energy Map & Color Analysis</h3>
@@ -4398,7 +4434,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="analysis">
+                          <TabsContent value="analysis" data-tab="basic">
                             <div className="space-y-10">
 
 
@@ -4771,7 +4807,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="chakras">
+                          <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
                               <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
@@ -4989,14 +5025,14 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="guidance">
+                          <TabsContent value="guidance" data-tab="guidance">
                             <div>
                               <h3 className="font-medium mb-3">Spiritual Guidance</h3>
                               <p className="text-gray-700 whitespace-pre-line">{result.spiritualGuidance}</p>
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="detailed">
+                          <TabsContent value="detailed" data-tab="insights">
                             <div>
                               <div className="mb-6 relative">
                                 <div className="absolute -top-3 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-17 mb-5">
