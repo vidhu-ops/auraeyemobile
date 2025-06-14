@@ -1038,7 +1038,7 @@ export default function AuraAnalysis() {
       'Teal': 'Emotional suppression creating authentic voice loss and heart-throat disconnection while fostering communication fears and feeling blockages.'
     };
     
-    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || additionalNegativeMeanings[colorName] || additionalNegativeMeanings[colorName.toLowerCase()] || shadowMeanings['Purple'];
+    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || shadowMeanings['Purple'];
   }
 
   // Chakra healing remedies for weaker chakras
@@ -3445,116 +3445,7 @@ export default function AuraAnalysis() {
                                 </p>
                               </div>
 
-                              {/* Enhanced Color Spectrum Display */}
-                              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                                <h4 className="font-medium text-lg mb-4">Your Multi-Dimensional Aura Colors</h4>
-                                
-                                {/* Primary Colors Section */}
-                                <div className="mb-6">
-                                  <h5 className="font-medium text-sm mb-3 text-gray-700">Primary Energy Colors</h5>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* Dominant Color */}
-                                    <div className="p-4 rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-                                      <div className="flex items-center space-x-3 mb-3">
-                                        <div 
-                                          className="w-12 h-12 rounded-full shadow-lg border-4 border-white"
-                                          style={{ 
-                                            backgroundColor: getAccurateColorCode(result.dominantColor),
-                                            boxShadow: `0 0 20px ${getAccurateColorCode(result.dominantColor)}40`
-                                          }}
-                                        ></div>
-                                        <div>
-                                          <div className="font-semibold text-lg">{result.dominantColor}</div>
-                                          <div className="text-sm text-primary font-medium">Dominant Energy</div>
-                                        </div>
-                                      </div>
-                                      <p className="text-sm text-gray-700 mb-2">{getColorPositiveMeaning(result.dominantColor)}</p>
-                                      
-                                      {/* Positive and Negative Meanings */}
-                                      <div className="mt-3 space-y-2">
-                                        <div className="p-2 bg-green-50 rounded-md border border-green-200">
-                                          <div className="text-xs font-medium text-green-800 mb-1">✓ Positive Aspects</div>
-                                          <div className="text-xs text-green-700">{getColorPositiveMeaning(result.dominantColor)}</div>
-                                        </div>
-                                        <div className="p-2 bg-amber-50 rounded-md border border-amber-200">
-                                          <div className="text-xs font-medium text-amber-800 mb-1">⚠ Areas for Growth</div>
-                                          <div className="text-xs text-amber-700">{getColorNegativeMeaning(result.dominantColor)}</div>
-                                        </div>
-                                      </div>
-                                      <div className="text-xs text-gray-500">
-                                        Hex: {getAccurateColorCode(result.dominantColor)}
-                                      </div>
-                                    </div>
 
-                                    {/* Secondary Color */}
-                                    <div className="p-4 rounded-lg border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10">
-                                      <div className="flex items-center space-x-3 mb-3">
-                                        <div 
-                                          className="w-12 h-12 rounded-full shadow-lg border-4 border-white"
-                                          style={{ 
-                                            backgroundColor: getAccurateColorCode(result.secondaryColor || result.dominantColor),
-                                            boxShadow: `0 0 20px ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}40`
-                                          }}
-                                        ></div>
-                                        <div>
-                                          <div className="font-semibold text-lg">{result.secondaryColor || result.dominantColor}</div>
-                                          <div className="text-sm text-secondary font-medium">Secondary Energy</div>
-                                        </div>
-                                      </div>
-                                      <p className="text-sm text-gray-700 mb-2">{getColorPositiveMeaning(result.secondaryColor || result.dominantColor)}</p>
-                                      
-                                      {/* Positive and Negative Meanings */}
-                                      <div className="mt-3 space-y-2">
-                                        <div className="p-2 bg-green-50 rounded-md border border-green-200">
-                                          <div className="text-xs font-medium text-green-800 mb-1">✓ Positive Aspects</div>
-                                          <div className="text-xs text-green-700">{getColorPositiveMeaning(result.secondaryColor || result.dominantColor)}</div>
-                                        </div>
-                                        <div className="p-2 bg-amber-50 rounded-md border border-amber-200">
-                                          <div className="text-xs font-medium text-amber-800 mb-1">⚠ Areas for Growth</div>
-                                          <div className="text-xs text-amber-700">{getColorNegativeMeaning(result.secondaryColor || result.dominantColor)}</div>
-                                        </div>
-                                      </div>
-                                      <div className="text-xs text-gray-500">
-                                        Hex: {getAccurateColorCode(result.secondaryColor || result.dominantColor)}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Supporting Colors Section */}
-                                {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
-                                  <div className="mb-6">
-                                    <h5 className="font-medium text-sm mb-3 text-gray-700">Supporting Energy Colors</h5>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                      {result.auraColorSpectrum.slice(2, 6).map((color, index) => (
-                                        <div key={index} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
-                                          <div className="flex items-center space-x-3 mb-2">
-                                            <div 
-                                              className="w-8 h-8 rounded-full shadow-md border-2 border-white"
-                                              style={{ 
-                                                backgroundColor: getAccurateColorCode(color),
-                                                boxShadow: `0 0 15px ${getAccurateColorCode(color)}30`
-                                              }}
-                                            ></div>
-                                            <div>
-                                              <div className="font-medium text-sm">{color}</div>
-                                              <div className="text-xs text-gray-500">
-                                                {index === 0 ? 'Tertiary' : index === 1 ? 'Quaternary' : 'Accent'} Energy
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <p className="text-xs text-gray-600 mb-2">{getColorPositiveMeaning(color)}</p>
-                                          <div className="text-xs text-gray-400">
-                                            Hex: {getAccurateColorCode(color)}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-
-                              </div>
 
                               {/* Primary Color Analysis */}
                               <div className="space-y-4">
@@ -5072,12 +4963,6 @@ export default function AuraAnalysis() {
                                     <div className="relative h-14 bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-violet-600 rounded-md mb-2 overflow-hidden">
                                       {/* Frequency markers */}
                                       <div className="absolute inset-0 flex justify-between px-1">
-                                        <div className="h-full w-px bg-white/30"></div>
-                                        <div className="h-full w-px bg-white/30"></div>
-                                        <div className="h-full w-px bg-white/30"></div>
-                                        <div className="h-full w-px bg-white/30"></div>
-                                        <div className="h-full w-px bg-white/30"></div>
-                                        <div className="h-full w-px bg-white/30"></div>
                                       </div>
                                       
                                       {/* Primary and secondary colors */}
