@@ -633,10 +633,13 @@ export default function AuraAnalysis() {
       // Capture each tab separately for comprehensive PDF
       const tabs = [
         { name: 'Basic Analysis', selector: '[data-tab="basic"]' },
-        { name: 'Energy Profile', selector: '[data-tab="energy"]' },
-        { name: 'Color Meanings', selector: '[data-tab="meanings"]' },
+        { name: 'Energy Reading', selector: '[data-tab="energy"]' },
+        { name: 'Color Spectrum Analysis', selector: '[data-tab="meanings"]' },
+        { name: 'Energy Map', selector: '[data-tab="energy-map"]' },
+        { name: 'Combined Analysis', selector: '[data-tab="combined"]' },
+        { name: 'Chakra Analysis', selector: '[data-tab="chakras"]' },
         { name: 'Spiritual Guidance', selector: '[data-tab="guidance"]' },
-        { name: 'Personalized Insights', selector: '[data-tab="insights"]' }
+        { name: 'Detailed Insights', selector: '[data-tab="insights"]' }
       ];
 
       // Add aura visualization image if available
@@ -4023,7 +4026,7 @@ export default function AuraAnalysis() {
                           </div>
                           </TabsContent>
                           
-                          <TabsContent value="combined">
+                          <TabsContent value="combined" data-tab="combined">
                             <div className="space-y-6">
                               {!numerologyResult ? (
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
