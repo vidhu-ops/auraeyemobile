@@ -159,6 +159,55 @@ export default function AuraAnalysis() {
         shadowMeaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.',
         positiveMeaning: 'Deep wisdom center flowing with profound spiritual knowledge and contemplative consciousness that honors ancient teachings. This depth frequency channels scholarly wisdom and spiritual authority.',
         colorMeaning: 'Deep Wisdom & Authority - Deep wisdom energy, spiritual knowledge, contemplative consciousness, scholarly authority, ancient teachings'
+      },
+      'Teal': { 
+        chakra: 'Heart-Throat Disconnection', 
+        number: '4.5', 
+        shadowMeaning: 'Heart-throat disconnection creating communication fears and emotional suppression while manifesting thyroid imbalances and relationship conflicts. This blocked frequency prevents authentic voice expression and emotional truth sharing.',
+        positiveMeaning: 'Heart-throat bridge chakra flowing with emotional communication and healing truth expression. This balanced frequency channels compassionate communication and heart-centered wisdom.',
+        colorMeaning: 'Emotional Communication - Heart-throat energy, emotional truth, compassionate expression, healing communication'
+      },
+      'Coral': { 
+        chakra: 'Creative Heart Depletion', 
+        number: '4', 
+        shadowMeaning: 'Creative heart depletion causing artistic burnout and emotional exhaustion while manifesting circulatory problems and creative blocks. This drained frequency prevents sustainable creative expression and heart-centered artistry.',
+        positiveMeaning: 'Creative heart chakra flowing with artistic passion and warm emotional expression. This nurturing frequency channels creative love and artistic healing.',
+        colorMeaning: 'Creative Love - Creative heart energy, artistic expression, emotional warmth, creative healing'
+      },
+      'Mint': { 
+        chakra: 'Healing Heart Impatience', 
+        number: '4', 
+        shadowMeaning: 'Healing heart impatience creating rushed recovery and superficial healing while manifesting emotional volatility and healing addiction. This accelerated frequency prevents deep integration and authentic transformation.',
+        positiveMeaning: 'Healing heart chakra flowing with renewal energy and gentle restoration. This refreshing frequency channels emotional cleansing and natural healing.',
+        colorMeaning: 'Renewal Energy - Healing heart energy, emotional cleansing, natural restoration, gentle healing'
+      },
+      'Peach': { 
+        chakra: 'Nurturing Heart Depletion', 
+        number: '4', 
+        shadowMeaning: 'Nurturing heart depletion creating codependent caregiving and self-sacrifice while manifesting digestive issues and emotional exhaustion. This depleted frequency prevents healthy boundaries and self-care.',
+        positiveMeaning: 'Nurturing heart chakra flowing with gentle care and emotional support. This tender frequency channels maternal wisdom and compassionate healing.',
+        colorMeaning: 'Gentle Care - Nurturing heart energy, maternal wisdom, emotional support, gentle healing'
+      },
+      'Lavender': { 
+        chakra: 'Spiritual Sensitivity Overload', 
+        number: '6', 
+        shadowMeaning: 'Spiritual sensitivity overload creating psychic overwhelm and nervous system stress while manifesting anxiety disorders and spiritual confusion. This oversensitive frequency prevents grounded psychic development and clear spiritual discernment.',
+        positiveMeaning: 'Higher crown chakra flowing with gentle spiritual awakening and cosmic consciousness. This serene frequency channels divine grace and peaceful enlightenment.',
+        colorMeaning: 'Spiritual Serenity - Higher crown energy, gentle awakening, cosmic consciousness, divine grace'
+      },
+      'Crimson': { 
+        chakra: 'Earth Star Dysfunction', 
+        number: '1', 
+        shadowMeaning: 'Earth star chakra dysfunction creating violent anger and uncontrolled rage while manifesting blood disorders and aggressive tendencies. This explosive frequency prevents grounded stability and peaceful conflict resolution.',
+        positiveMeaning: 'Earth star chakra flowing with passionate life force and grounded strength. This powerful frequency channels vital energy and earthly wisdom.',
+        colorMeaning: 'Passionate Grounding - Earth star energy, vital force, passionate strength, earthly wisdom'
+      },
+      'Magenta': { 
+        chakra: 'Soul Star Disconnection', 
+        number: '8', 
+        shadowMeaning: 'Soul star chakra disconnection creating spiritual delusion and unrealistic expectations while manifesting emotional overwhelm and fantasy addiction. This ungrounded frequency prevents authentic spiritual development and practical manifestation.',
+        positiveMeaning: 'Soul star chakra flowing with divine love and cosmic consciousness. This transcendent frequency channels universal love and spiritual transformation.',
+        colorMeaning: 'Divine Love - Soul star energy, universal love, spiritual transformation, cosmic consciousness'
       }
     };
     
