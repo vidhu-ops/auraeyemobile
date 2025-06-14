@@ -677,11 +677,34 @@ export default function AuraAnalysis() {
       // Store original active tab to restore later
       const originalActiveTab = activeTab;
       
-      // Capture content from each tab by actually switching to them
+      // Get all tab panels and make them visible for capture
+      const allTabPanels = document.querySelectorAll('[role="tabpanel"]');
+      const originalStyles: Array<{element: HTMLElement, display: string, visibility: string, position: string}> = [];
+      
+      // Store original styles and make all tabs visible
+      allTabPanels.forEach(panel => {
+        const panelElement = panel as HTMLElement;
+        originalStyles.push({
+          element: panelElement,
+          display: panelElement.style.display,
+          visibility: panelElement.style.visibility,
+          position: panelElement.style.position
+        });
+        
+        // Make all panels visible
+        panelElement.style.display = 'block';
+        panelElement.style.visibility = 'visible';
+        panelElement.style.position = 'relative';
+        panelElement.style.opacity = '1';
+      });
+
+      // Wait for all content to render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Now capture each tab panel directly
       for (let i = 0; i < tabs.length; i++) {
         const tab = tabs[i];
         const tabValue = tab.selector.replace('[data-tab="', '').replace('"]', '');
-        let actualTabValue = '';
         
         // Update progress
         toast({
@@ -689,45 +712,25 @@ export default function AuraAnalysis() {
           description: `Capturing ${tab.name} (${i + 1}/${tabs.length})...`,
         });
         
-        // Map data-tab values to actual tab values
-        switch (tabValue) {
-          case 'basic': actualTabValue = 'analysis'; break;
-          case 'energy': actualTabValue = 'energy-reading'; break;
-          case 'meanings': actualTabValue = 'spectrum'; break;
-          case 'energy-map': actualTabValue = 'energy-map'; break;
-          case 'combined': actualTabValue = 'combined'; break;
-          case 'chakras': actualTabValue = 'chakras'; break;
-          case 'guidance': actualTabValue = 'guidance'; break;
-          case 'insights': actualTabValue = 'detailed'; break;
-          default: actualTabValue = tabValue;
-        }
-        
         try {
-          // Switch to the specific tab
-          setActiveTab(actualTabValue);
+          // Find the specific tab panel by data attribute
+          const tabPanel = document.querySelector(`[data-tab="${tabValue}"]`);
           
-          // Wait for tab to fully render and load
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          console.log(`Looking for tab panel with data-tab="${tabValue}":`, tabPanel);
           
-          // Find the active tab content
-          const tabContent = document.querySelector(`[data-tab="${tabValue}"]`);
-          
-          if (tabContent && (tabContent as HTMLElement).offsetHeight > 0) {
-            // Ensure tab content is visible and force render
-            const tabElement = tabContent as HTMLElement;
-            tabElement.style.display = 'block';
-            tabElement.style.visibility = 'visible';
-            tabElement.style.opacity = '1';
-            tabElement.style.position = 'relative';
-            tabElement.style.zIndex = '1';
+          if (tabPanel && (tabPanel as HTMLElement).offsetHeight > 0) {
+            const tabElement = tabPanel as HTMLElement;
+            
+            // Ensure content is fully visible
+            tabElement.scrollIntoView({ behavior: 'instant', block: 'start' });
             
             // Force reflow
             tabElement.offsetHeight;
             
-            // Wait for content to fully render
+            // Wait for content to stabilize
             await new Promise(resolve => setTimeout(resolve, 1000));
             
-            // Capture the tab content with optimized settings
+            // Capture the tab content
             const canvas = await html2canvas(tabElement, {
               scale: 1.5,
               useCORS: true,
@@ -799,20 +802,33 @@ export default function AuraAnalysis() {
               console.warn(`Empty canvas for ${tab.name}`);
             }
           } else {
-            console.warn(`Tab content not found or empty for ${tab.name}`);
+            console.warn(`Tab panel not found for ${tab.name} with selector [data-tab="${tabValue}"]`);
+            
+            // Add placeholder page
+            pdf.addPage();
+            pdf.setFontSize(16);
+            pdf.text(tab.name, 20, 25);
+            pdf.setFontSize(12);
+            pdf.text('Content not available for capture', 20, 45);
           }
         } catch (error) {
           console.error(`Error capturing ${tab.name} tab:`, error);
           
-          // Add error page with more details
+          // Add error page
           pdf.addPage();
           pdf.setFontSize(16);
           pdf.text(tab.name, 20, 25);
           pdf.setFontSize(12);
-          pdf.text('Content capture failed. Please ensure all content is loaded.', 20, 45);
-          pdf.text('Try refreshing the page and generating the PDF again.', 20, 55);
+          pdf.text('Content capture failed', 20, 45);
         }
       }
+      
+      // Restore original styles
+      originalStyles.forEach(({element, display, visibility, position}) => {
+        element.style.display = display;
+        element.style.visibility = visibility;
+        element.style.position = position;
+      });
       
       // Restore original active tab
       setActiveTab(originalActiveTab);
@@ -1701,7 +1717,7 @@ export default function AuraAnalysis() {
       'Topaz': 'Ancient Wisdom & Emotions'
         
     };
-    return keywords[color] || keywords['Purple'];
+    return keywords[color] || keywords['Purple, blue, red, teal, gold, silver, lavender, coral, mint, peach, sky blue, rose, amber, gray, black, crimson, magenta, ocher, brown, beige, cyan, lime, maroon, navy, olive, te'];
   };
 
   const getLayerMeaning = (layer: string, color: string): string => {
