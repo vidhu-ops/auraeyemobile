@@ -276,6 +276,61 @@ export default function ObjectAnalysis() {
     }
   };
 
+  // Enhanced color meanings for aura analysis
+  const getEnhancedColorMeaning = (color: string): string => {
+    const colorMeanings: Record<string, string> = {
+      "Purple": "Purple in an object's aura represents profound spiritual transformation, divine wisdom, and connection to higher realms. This color indicates the object carries ancient knowledge, mystical properties, and serves as a bridge between physical and spiritual dimensions. Purple energy suggests the object enhances intuition, meditation practices, and spiritual awakening.",
+      "Red": "Red aura energy signifies powerful life force, grounding strength, and physical vitality. Objects with red auras possess intense energy that stimulates action, courage, and survival instincts. This color indicates strong connection to Earth elements and material world manifestation.",
+      "Orange": "Orange aura represents creative expression, emotional healing, and personal power. Objects carrying orange energy enhance artistic abilities, emotional balance, and sacred sexuality. This vibration supports creative projects and emotional transformation.",
+      "Yellow": "Yellow aura embodies mental clarity, intellectual power, and solar energy. Objects with yellow vibrations enhance learning, memory, communication, and personal confidence. This color indicates connection to solar plexus chakra and mental empowerment.",
+      "Green": "Green aura signifies heart healing, natural harmony, and abundance manifestation. Objects with green energy promote emotional healing, nature connection, prosperity, and unconditional love. This vibration supports heart chakra opening and emotional balance.",
+      "Blue": "Blue aura represents divine communication, truth expression, and peaceful wisdom. Objects carrying blue energy enhance clear communication, spiritual teaching, and throat chakra activation. This color indicates connection to divine truth and peaceful expression.",
+      "Indigo": "Indigo aura embodies psychic abilities, deep intuition, and third eye activation. Objects with indigo energy enhance clairvoyance, spiritual seeing, and intuitive knowledge. This vibration supports mystical experiences and inner knowing.",
+      "Pink": "Pink aura signifies unconditional love, emotional healing, and heart chakra opening. Objects with pink energy promote self-love, compassion, and emotional nurturing. This color indicates divine feminine energy and heart healing properties.",
+      "White": "White aura represents pure divine energy, spiritual protection, and cosmic consciousness. Objects carrying white energy provide spiritual cleansing, divine connection, and energetic purification. This vibration indicates highest spiritual attunement.",
+      "Black": "Black aura signifies protective energy, mystery, and deep transformation. Objects with black energy provide psychic protection, absorb negative energies, and facilitate shadow work. This color indicates powerful grounding and protective properties.",
+      "Gold": "Gold aura embodies divine wisdom, spiritual mastery, and enlightened consciousness. Objects with gold energy enhance spiritual teaching, divine connection, and wisdom transmission. This vibration indicates advanced spiritual development.",
+      "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom."
+    };
+    return colorMeanings[color] || colorMeanings["Purple"];
+  };
+
+  const getColorPositiveTraits = (color: string): string => {
+    const positiveTraits: Record<string, string> = {
+      "Purple": "Enhances spiritual awareness, deepens meditation practice, amplifies intuitive abilities, connects to divine guidance, promotes mystical experiences",
+      "Red": "Increases physical vitality, strengthens willpower, enhances survival instincts, promotes courage, grounds excess energy",
+      "Orange": "Stimulates creativity, balances emotions, enhances personal power, supports artistic expression, promotes emotional healing",
+      "Yellow": "Boosts mental clarity, enhances communication, increases confidence, supports learning, amplifies personal power",
+      "Green": "Opens heart chakra, promotes healing, attracts abundance, enhances compassion, connects to nature",
+      "Blue": "Enhances communication, promotes truth, brings peace, supports teaching, activates throat chakra",
+      "Indigo": "Amplifies psychic abilities, enhances intuition, supports spiritual seeing, deepens meditation, activates third eye",
+      "Pink": "Promotes self-love, enhances compassion, supports emotional healing, opens heart, brings nurturing energy",
+      "White": "Provides spiritual protection, purifies energy, connects to divine, enhances clarity, promotes peace",
+      "Black": "Offers psychic protection, absorbs negativity, supports transformation, provides grounding, enhances mystery work",
+      "Gold": "Enhances wisdom, promotes enlightenment, connects to divine mind, supports teaching, amplifies spiritual power",
+      "Silver": "Enhances psychic sensitivity, supports dream work, amplifies intuition, connects to lunar energy, promotes emotional clarity"
+    };
+    return positiveTraits[color] || positiveTraits["Purple"];
+  };
+
+  const getColorEnergyProperties = (color: string): string => {
+    const energyProperties: Record<string, string> = {
+      "Purple": "High-frequency spiritual vibration, crown chakra activation, connects to cosmic consciousness, transmutes lower energies, facilitates spiritual awakening",
+      "Red": "Root chakra activation, grounding earth energy, physical vitality boost, survival instinct enhancement, material manifestation",
+      "Orange": "Sacral chakra activation, creative life force, emotional balance, sexual energy, artistic inspiration",
+      "Yellow": "Solar plexus activation, mental energy amplification, confidence building, intellectual power, personal will enhancement",
+      "Green": "Heart chakra opening, healing energy transmission, nature connection, abundance attraction, emotional equilibrium",
+      "Blue": "Throat chakra activation, communication enhancement, truth vibration, peaceful energy, divine expression",
+      "Indigo": "Third eye activation, psychic energy amplification, spiritual sight enhancement, intuitive knowing, mystical connection",
+      "Pink": "Heart healing frequency, unconditional love vibration, emotional nurturing, compassion amplification, feminine divine energy",
+      "White": "Highest spiritual frequency, divine protection energy, purification vibration, cosmic consciousness connection, spiritual clarity",
+      "Black": "Protective energy absorption, grounding earth frequency, shadow integration, mystery exploration, transformative power",
+      "Gold": "Divine wisdom frequency, enlightenment energy, spiritual mastery vibration, cosmic intelligence, advanced consciousness",
+      "Silver": "Lunar frequency vibration, psychic enhancement energy, emotional intuition, feminine wisdom, dream consciousness"
+    };
+    return energyProperties[color] || energyProperties["Purple"];
+  };
+
   // Helper to get CSS color class from aura color
   const getColorClass = (color: string): string => {
     const colorMap: Record<string, string> = {
@@ -459,6 +514,23 @@ export default function ObjectAnalysis() {
                                 <span className="font-medium">{result.auraColor}</span>
                               </div>
                               <p className="text-sm mt-2">{result.auraDescription}</p>
+                              
+                              {/* Enhanced Color Meaning Section */}
+                              <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+                                <h5 className="text-xs font-medium text-gray-700 mb-2">Aura Color Spiritual Meaning</h5>
+                                <p className="text-xs text-gray-600 mb-2">{getEnhancedColorMeaning(result.auraColor)}</p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                  <div className="p-2 bg-green-50 rounded border border-green-200">
+                                    <div className="text-xs font-medium text-green-800 mb-1">✓ Positive Energy</div>
+                                    <div className="text-xs text-green-700">{getColorPositiveTraits(result.auraColor)}</div>
+                                  </div>
+                                  <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                                    <div className="text-xs font-medium text-blue-800 mb-1">⚡ Energy Properties</div>
+                                    <div className="text-xs text-blue-700">{getColorEnergyProperties(result.auraColor)}</div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             
                             <div>
