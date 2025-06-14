@@ -493,6 +493,113 @@ export default function AuraAnalysis() {
   };
 
   // Function to download complete aura and numerology analysis as PDF
+  // Function to share aura image on social media
+  const shareAuraImage = async (platform: 'facebook' | 'instagram' | 'twitter') => {
+    if (!result || !processedAuraImage) {
+      toast({
+        title: "No Image Available",
+        description: "Please complete your aura analysis first to share the visualization.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create a canvas with the processed aura image and overlay text
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = 800;
+      canvas.height = 800;
+
+      // Create image element from processed aura image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = processedAuraImage;
+      });
+
+      // Draw the aura image
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Add overlay with aura information
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, canvas.height - 150, canvas.width, 150);
+
+      // Add text overlay
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`My Aura: ${result.dominantColor}`, canvas.width / 2, canvas.height - 100);
+      
+      ctx.font = '18px Arial';
+      ctx.fillText('Discover your spiritual energy with Aurfy', canvas.width / 2, canvas.height - 70);
+      
+      ctx.font = '16px Arial';
+      ctx.fillText(`Energy Level: ${result.energyLevel}/10`, canvas.width / 2, canvas.height - 40);
+
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => {
+          resolve(blob!);
+        }, 'image/png', 0.9);
+      });
+
+      // Check if Web Share API is supported and has file sharing capability
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'aura-analysis.png', { type: 'image/png' })] })) {
+        const file = new File([blob], 'aura-analysis.png', { type: 'image/png' });
+        await navigator.share({
+          title: `My Aura Analysis - ${result.dominantColor}`,
+          text: `Check out my aura analysis! My dominant color is ${result.dominantColor} with an energy level of ${result.energyLevel}/10. Discover your spiritual energy with Aurfy!`,
+          files: [file]
+        });
+      } else {
+        // Fallback: Create download link and open social media sharing
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'aura-analysis.png';
+        link.click();
+        URL.revokeObjectURL(url);
+
+        // Open social media sharing after download
+        const shareText = `Check out my aura analysis! My dominant color is ${result.dominantColor} with an energy level of ${result.energyLevel}/10. Discover your spiritual energy with Aurfy! ${window.location.href}`;
+        
+        switch (platform) {
+          case 'facebook':
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+            break;
+          case 'instagram':
+            // Instagram doesn't support direct URL sharing, so we'll open Instagram and show instructions
+            toast({
+              title: "Image Downloaded",
+              description: "Your aura image has been downloaded. Open Instagram and upload the downloaded image to share your aura analysis!",
+            });
+            break;
+          case 'twitter':
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+            break;
+        }
+
+        toast({
+          title: "Ready to Share",
+          description: "Your aura visualization has been downloaded. Upload it when sharing on social media!",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing aura image:', error);
+      toast({
+        title: "Share Failed",
+        description: "Failed to prepare image for sharing. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const downloadAuraPDF = async () => {
     if (!result) return;
 
@@ -3182,7 +3289,7 @@ export default function AuraAnalysis() {
                           variant="outline" 
                           size="sm"
                           className="flex items-center text-sm"
-                          onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(`My aura today is ${result.dominantColor}! Check out my spiritual energy reading from Aurfy.`)}`, '_blank')}
+                          onClick={() => shareAuraImage('facebook')}
                         >
                           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
@@ -3193,10 +3300,21 @@ export default function AuraAnalysis() {
                           variant="outline" 
                           size="sm"
                           className="flex items-center text-sm"
-                          onClick={() => window.open(`https://www.instagram.com/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                          onClick={() => shareAuraImage('instagram')}
                         >
                           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153.509.5.902 1.105 1.153 1.772.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 01-1.153 1.772c-.5.508-1.105.902-1.772 1.153-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 01-1.772-1.153 4.904 4.904 0 01-1.153-1.772c-.247-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428.247-.67.636-1.276 1.153-1.772a4.91 4.91 0 011.772-1.153c.637-.247 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.986.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.048 1.055-.058 1.37-.058 4.04 0 2.669.01 2.986.058 4.04.045.976.207 1.504.344 1.857.181.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.04.058 2.669 0 2.986-.01 4.04-.058.976-.045 1.504-.207 1.857-.344.466-.181.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.04 0-2.669-.01-2.986-.058-4.04-.045-.976-.207-1.504-.344-1.857a3.097 3.097 0 00-.748-1.15c-.35-.35-.683-.567-1.15-.748-.353-.137-.882-.3-1.857-.344-1.055-.048-1.37-.058-4.04-.058zm0 3.063a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 8.468a3.333 3.333 0 100-6.666 3.333 3.333 0 000 6.666zm6.538-8.469a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/>
+                          </svg>
+                          Share
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center text-sm"
+                          onClick={() => shareAuraImage('twitter')}
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                           </svg>
                           Share
                         </Button>
