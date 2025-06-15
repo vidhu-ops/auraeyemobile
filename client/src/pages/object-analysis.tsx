@@ -453,6 +453,66 @@ export default function ObjectAnalysis() {
   };
 
   // Helper to get CSS color class from aura color
+  // Get accurate color codes for proper color display
+  const getAccurateColorCode = (color: string): string => {
+    const colorMap: Record<string, string> = {
+      "Red": "#FF0000",
+      "Orange": "#FF8C00", 
+      "Yellow": "#FFFF00",
+      "Green": "#00FF00",
+      "Blue": "#0000FF",
+      "Indigo": "#4B0082",
+      "Violet": "#8B00FF",
+      "Purple": "#800080",
+      "Pink": "#FFC0CB",
+      "White": "#FFFFFF",
+      "Black": "#000000",
+      "Gold": "#FFD700",
+      "Silver": "#C0C0C0",
+      "Turquoise": "#40E0D0",
+      "Magenta": "#FF00FF",
+      "Brown": "#8B4513",
+      "Gray": "#808080",
+      "Grey": "#808080",
+      "Charcoal": "#36454F",
+      "Slate": "#708090",
+      "Smoke": "#848884",
+      "Obsidian": "#0F0F0F",
+      "Pewter": "#96A8A1",
+      "Ash": "#B2BEB5",
+      "Onyx": "#353839",
+      "Graphite": "#41424C",
+      "Coral": "#FF7F7F",
+      "Peach": "#FFCBA4",
+      "Lavender": "#E6E6FA",
+      "Mint": "#3EB489",
+      "Rose": "#FF66CC",
+      "Amber": "#FFBF00",
+      "Jade": "#00A86B",
+      "Sapphire": "#0F52BA",
+      "Ruby": "#E0115F",
+      "Emerald": "#50C878",
+      "Topaz": "#FFC87C",
+      "Opal": "#A8C3BC",
+      "Pearl": "#F8F6F0",
+      "Copper": "#B87333",
+      "Bronze": "#CD7F32",
+      "Platinum": "#E5E4E2",
+      "Crimson": "#DC143C",
+      "Scarlet": "#FF2400",
+      "Azure": "#007FFF",
+      "Cyan": "#00FFFF",
+      "Teal": "#008080",
+      "Lime": "#00FF00",
+      "Olive": "#808000",
+      "Navy": "#000080",
+      "Maroon": "#800000",
+      "Fuchsia": "#FF00FF",
+      "Aqua": "#00FFFF"
+    };
+    return colorMap[color] || "#808080";
+  };
+
   const getColorClass = (color: string): string => {
     const colorMap: Record<string, string> = {
       "Red": "bg-red-500",
@@ -613,7 +673,10 @@ export default function ObjectAnalysis() {
                                 <div className="flex items-center justify-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100">
                                   <span className="text-sm text-gray-600">Aura Color:</span>
                                   <div className="flex items-center gap-2">
-                                    <span className={`inline-block w-6 h-6 rounded-full border-2 border-white shadow-sm ${getColorClass(result.auraColor)}`}></span>
+                                    <span 
+                                      className="inline-block w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                      style={{ backgroundColor: getAccurateColorCode(result.auraColor) }}
+                                    ></span>
                                     <span className="font-medium text-gray-800">{result.auraColor}</span>
                                   </div>
                                 </div>
@@ -630,7 +693,10 @@ export default function ObjectAnalysis() {
                             <div>
                               <h4 className="text-sm text-gray-500 mb-1">Aura Color</h4>
                               <div className="flex items-center">
-                                <span className={`inline-block w-4 h-4 rounded-full ${getColorClass(result.auraColor)} mr-2`}></span>
+                                <span 
+                                  className="inline-block w-4 h-4 rounded-full mr-2"
+                                  style={{ backgroundColor: getAccurateColorCode(result.auraColor) }}
+                                ></span>
                                 <span className="font-medium">{result.auraColor}</span>
                               </div>
                               <p className="text-sm mt-2">{result.auraDescription}</p>
