@@ -5111,7 +5111,257 @@ export default function AuraAnalysis() {
                                   </div>
                                 </div>
 
-                                {/* Detailed Color Analysis */}
+                                {/* Complete Aura Color Profile - All 4 Colors */}
+                                <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
+                                  <h3 className="text-xl font-bold text-purple-800 mb-6 flex items-center">
+                                    <span className="mr-3">🌈</span>
+                                    Complete Aura Color Profile
+                                  </h3>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                    {(() => {
+                                      const detectedColors = extractAllAuraColors(result);
+                                      return [
+                                        { 
+                                          name: getColorNameFromHex(detectedColors.thinking), 
+                                          hex: detectedColors.thinking, 
+                                          type: 'Crown/Thinking', 
+                                          icon: '🧠',
+                                          meaning: getThinkingEnergyMeaning(getColorNameFromHex(detectedColors.thinking))
+                                        },
+                                        { 
+                                          name: getColorNameFromHex(detectedColors.receiving), 
+                                          hex: detectedColors.receiving, 
+                                          type: 'Receiving Energy', 
+                                          icon: '⬇️',
+                                          meaning: getReceivingEnergyMeaning(getColorNameFromHex(detectedColors.receiving))
+                                        },
+                                        { 
+                                          name: getColorNameFromHex(detectedColors.giving), 
+                                          hex: detectedColors.giving, 
+                                          type: 'Giving Energy', 
+                                          icon: '⬆️',
+                                          meaning: getGivingEnergyMeaning(getColorNameFromHex(detectedColors.giving))
+                                        },
+                                        { 
+                                          name: getColorNameFromHex(detectedColors.personality), 
+                                          hex: detectedColors.personality, 
+                                          type: 'Personality Color', 
+                                          icon: '🌟',
+                                          meaning: getPersonalityEnergyMeaning(getColorNameFromHex(detectedColors.personality))
+                                        }
+                                      ].map((colorData, index) => (
+                                        <div key={index} className="border rounded-lg p-4 bg-gradient-to-br from-white to-gray-50">
+                                          <div className="flex items-center space-x-3 mb-3">
+                                            <div 
+                                              className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                              style={{backgroundColor: colorData.hex}}
+                                            >
+                                              <span className="text-white text-lg">{colorData.icon}</span>
+                                            </div>
+                                            <div>
+                                              <h4 className="font-bold text-purple-800">{colorData.name}</h4>
+                                              <p className="text-xs text-gray-600">{colorData.type}</p>
+                                            </div>
+                                          </div>
+                                          <p className="text-xs text-gray-700 leading-relaxed">
+                                            {colorData.meaning.split(' - ')[0]}
+                                          </p>
+                                        </div>
+                                      ));
+                                    })()}
+                                  </div>
+                                </div>
+
+                                {/* Detailed Analysis Section - Specialized Aura Interpretation */}
+                                <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
+                                  <h3 className="text-xl font-bold text-purple-800 mb-6 flex items-center">
+                                    <span className="mr-3">🔮</span>
+                                    Specialized Aura Interpretation - Detailed Analysis
+                                  </h3>
+                                  
+                                  {/* Aura Strength Analysis */}
+                                  <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                                    <h4 className="font-bold text-purple-800 mb-3 flex items-center">
+                                      <span className="mr-2">⚡</span>
+                                      Aura Strength & Intensity Analysis
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-700 mb-2">Overall Energy Level:</p>
+                                        <div className="flex items-center space-x-3">
+                                          <div className="flex-1 bg-gray-200 rounded-full h-3">
+                                            <div 
+                                              className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                                              style={{width: `${(result.energyLevel || 5) * 10}%`}}
+                                            ></div>
+                                          </div>
+                                          <span className="text-sm font-bold text-purple-700">{result.energyLevel || 5}/10</span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 mt-1">
+                                          {(result.energyLevel || 5) >= 8 ? 'Exceptionally Strong' : 
+                                           (result.energyLevel || 5) >= 6 ? 'Strong & Vibrant' : 
+                                           (result.energyLevel || 5) >= 4 ? 'Balanced & Stable' : 'Gentle & Subtle'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-700 mb-2">Color Intensity:</p>
+                                        <div className="space-y-2">
+                                          {(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return [
+                                              { name: 'Crown', color: detectedColors.thinking },
+                                              { name: 'Receiving', color: detectedColors.receiving },
+                                              { name: 'Giving', color: detectedColors.giving },
+                                              { name: 'Personality', color: detectedColors.personality }
+                                            ].map((zone, index) => {
+                                              const intensity = 60 + (index * 10) + ((result.energyLevel || 5) * 3);
+                                              return (
+                                                <div key={index} className="flex items-center space-x-2">
+                                                  <div className="w-4 h-4 rounded" style={{backgroundColor: zone.color}}></div>
+                                                  <span className="text-xs text-gray-600 flex-1">{zone.name}</span>
+                                                  <span className="text-xs font-medium text-purple-700">{intensity}%</span>
+                                                </div>
+                                              );
+                                            });
+                                          })()}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Color Composition Analysis */}
+                                  <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border">
+                                    <h4 className="font-bold text-amber-800 mb-3 flex items-center">
+                                      <span className="mr-2">🎨</span>
+                                      Aura Color Composition & Balance
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-700 mb-3">Primary Color Dominance:</p>
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm text-gray-600">Dominant Color</span>
+                                            <span className="text-sm font-bold text-amber-700">{result.dominantColor} (35%)</span>
+                                          </div>
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm text-gray-600">Secondary Color</span>
+                                            <span className="text-sm font-bold text-amber-700">{result.secondaryColor} (25%)</span>
+                                          </div>
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm text-gray-600">Supporting Colors</span>
+                                            <span className="text-sm font-bold text-amber-700">{(result.auraColorSpectrum?.length || 2) - 2} colors (40%)</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-700 mb-3">Energy Distribution:</p>
+                                        <div className="space-y-2">
+                                          {(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return [
+                                              { zone: 'Crown/Thinking', percentage: 30 },
+                                              { zone: 'Receiving Energy', percentage: 25 },
+                                              { zone: 'Giving Energy', percentage: 25 },
+                                              { zone: 'Personality Base', percentage: 20 }
+                                            ].map((item, index) => (
+                                              <div key={index} className="flex items-center justify-between">
+                                                <span className="text-sm text-gray-600">{item.zone}</span>
+                                                <span className="text-sm font-bold text-amber-700">{item.percentage}%</span>
+                                              </div>
+                                            ));
+                                          })()}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Comprehensive Color Meanings */}
+                                  <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border">
+                                    <h4 className="font-bold text-green-800 mb-3 flex items-center">
+                                      <span className="mr-2">📚</span>
+                                      Comprehensive Color Meanings & Interpretations
+                                    </h4>
+                                    <div className="space-y-4">
+                                      {(() => {
+                                        const detectedColors = extractAllAuraColors(result);
+                                        return [
+                                          { 
+                                            zone: 'Crown/Thinking Energy',
+                                            color: getColorNameFromHex(detectedColors.thinking),
+                                            hex: detectedColors.thinking,
+                                            meaning: getThinkingEnergyMeaning(getColorNameFromHex(detectedColors.thinking))
+                                          },
+                                          { 
+                                            zone: 'Receiving Energy Field',
+                                            color: getColorNameFromHex(detectedColors.receiving),
+                                            hex: detectedColors.receiving,
+                                            meaning: getReceivingEnergyMeaning(getColorNameFromHex(detectedColors.receiving))
+                                          },
+                                          { 
+                                            zone: 'Giving Energy Projection',
+                                            color: getColorNameFromHex(detectedColors.giving),
+                                            hex: detectedColors.giving,
+                                            meaning: getGivingEnergyMeaning(getColorNameFromHex(detectedColors.giving))
+                                          },
+                                          { 
+                                            zone: 'Core Personality Foundation',
+                                            color: getColorNameFromHex(detectedColors.personality),
+                                            hex: detectedColors.personality,
+                                            meaning: getPersonalityEnergyMeaning(getColorNameFromHex(detectedColors.personality))
+                                          }
+                                        ].map((item, index) => (
+                                          <div key={index} className="border-l-4 border-green-400 pl-4">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                              <div className="w-6 h-6 rounded" style={{backgroundColor: item.hex}}></div>
+                                              <h5 className="font-bold text-green-800">{item.zone}: {item.color}</h5>
+                                            </div>
+                                            <p className="text-sm text-gray-700 leading-relaxed">{item.meaning}</p>
+                                          </div>
+                                        ));
+                                      })()}
+                                    </div>
+                                  </div>
+
+                                  {/* Spiritual & Emotional Insights */}
+                                  <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border">
+                                    <h4 className="font-bold text-indigo-800 mb-3 flex items-center">
+                                      <span className="mr-2">🔮</span>
+                                      Spiritual & Emotional Insights
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h5 className="font-semibold text-indigo-700 mb-2">Current Life Phase:</h5>
+                                        <p className="text-sm text-gray-700 mb-3">
+                                          {result.energyCycle === 'Expanding' ? 
+                                            'You are in an expansion phase, growing and manifesting new possibilities in your life.' :
+                                            'You are in an integration phase, processing and harmonizing recent life experiences.'
+                                          }
+                                        </p>
+                                        <h5 className="font-semibold text-indigo-700 mb-2">Spiritual Strengths:</h5>
+                                        <ul className="text-sm text-gray-700 space-y-1">
+                                          {(result.personalityTraits || ['Intuitive', 'Compassionate']).slice(0, 3).map((trait, index) => (
+                                            <li key={index} className="flex items-center">
+                                              <span className="w-2 h-2 bg-indigo-400 rounded-full mr-2"></span>
+                                              {trait} nature
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h5 className="font-semibold text-indigo-700 mb-2">Recommended Focus Areas:</h5>
+                                        <div className="text-sm text-gray-700 space-y-2">
+                                          <p>• Develop your {getColorNameFromHex(extractAllAuraColors(result).thinking).toLowerCase()} thinking patterns</p>
+                                          <p>• Strengthen {getColorNameFromHex(extractAllAuraColors(result).receiving).toLowerCase()} energy reception</p>
+                                          <p>• Express {getColorNameFromHex(extractAllAuraColors(result).giving).toLowerCase()} giving qualities</p>
+                                          <p>• Embrace your {getColorNameFromHex(extractAllAuraColors(result).personality).toLowerCase()} core nature</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Traditional Color Analysis */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                   {/* Primary Color Details */}
                                   <div className="bg-white border rounded-lg p-6 shadow-sm">
