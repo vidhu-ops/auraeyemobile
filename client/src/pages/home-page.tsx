@@ -45,7 +45,7 @@ export default function HomePage() {
             
             <div className="max-w-2xl mx-auto mb-10 animate-fade-in">
               <p className="text-white/90 text-xl md:text-2xl">
-                Unlock the power of your personal energy field with AI-powered aura readings, personalized spiritual guidance, and healing practices.
+                Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
               </p>
             </div>
             

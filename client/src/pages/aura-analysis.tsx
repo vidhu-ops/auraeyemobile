@@ -353,7 +353,16 @@ export default function AuraAnalysis() {
       'Navy': 'profound wisdom, cosmic knowledge',
       'Coral': 'creative warmth, gentle passion',
       'Mint': 'healing renewal, emotional cleansing',
-      'Peach': 'nurturing love, gentle care'
+      'Peach': 'nurturing love, gentle care',
+      'Grey': 'balanced wisdom, neutral authority',
+      'Charcoal': 'deep grounding, protective strength',
+      'Slate': 'steady wisdom, reliable foundation',
+      'Smoke': 'mysterious depth, transformative power',
+      'Obsidian': 'intense protection, spiritual grounding',
+      'Pewter': 'refined balance, gentle strength',
+      'Ash': 'renewal after transformation, phoenix rebirth',
+      'Onyx': 'profound protection, inner strength',
+      'Graphite': 'creative foundation, structured wisdom'
     };
 
     const totalColors = spectrum ? spectrum.length : 2;
@@ -1876,7 +1885,16 @@ export default function AuraAnalysis() {
         'Emerald': 'Your emotional core center radiates fresh healing energy and depth.',
         'Jade': 'Your emotional core center radiates fresh healing energy and compassion.',
         'Sapphire': 'Your emotional core center radiates trust, insight, and divine wisdom.',
-        'Topaz': 'Your emotional core center radiates ancient wisdom and emotional clarity.'
+        'Topaz': 'Your emotional core center radiates ancient wisdom and emotional clarity.',
+        'Grey': 'Your emotional core center radiates balance, neutrality, and wise adaptability.',
+        'Charcoal': 'Your emotional core center radiates deep grounding, protective strength, and inner fortitude.',
+        'Slate': 'Your emotional core center radiates steady wisdom, reliable foundation, and calm endurance.',
+        'Smoke': 'Your emotional core center radiates mysterious depth, transformative power, and hidden wisdom.',
+        'Obsidian': 'Your emotional core center radiates intense protection, spiritual grounding, and deep transformation.',
+        'Pewter': 'Your emotional core center radiates refined balance, gentle strength, and sophisticated wisdom.',
+        'Ash': 'Your emotional core center radiates renewal after transformation, phoenix-like rebirth energy.',
+        'Onyx': 'Your emotional core center radiates profound protection, inner strength, and spiritual defense.',
+        'Graphite': 'Your emotional core center radiates creative foundation, structured wisdom, and artistic grounding.'
       },
       'outer': {
         'Red': 'You project dynamic energy and commanding presence to the world.',
@@ -1917,7 +1935,16 @@ export default function AuraAnalysis() {
         'Emerald': 'Your outer core center radiates fresh healing energy and depth.',
         'Jade': 'Your outer core center radiates fresh healing energy and compassion.',
         'Sapphire': 'You project trust, insight, and divine wisdom to the world.',
-        'Topaz': 'Your outer core center radiates ancient wisdom and emotional clarity.'
+        'Topaz': 'Your outer core center radiates ancient wisdom and emotional clarity.',
+        'Grey': 'You project balanced wisdom, neutral authority, and adaptable leadership to the world.',
+        'Charcoal': 'You emanate deep protective strength, grounded power, and fortified presence.',
+        'Slate': 'You project steady reliability, foundational wisdom, and calm enduring strength.',
+        'Smoke': 'You emanate mysterious depth, transformative presence, and hidden wisdom to others.',
+        'Obsidian': 'You project intense spiritual protection, grounding authority, and transformative power.',
+        'Pewter': 'You emanate refined balance, sophisticated strength, and gentle authoritative wisdom.',
+        'Ash': 'You project renewal energy, phoenix-like transformation, and rebirth inspiration.',
+        'Onyx': 'You emanate profound protective presence, inner strength, and spiritual defense to the world.',
+        'Graphite': 'You project creative foundation, structured artistic wisdom, and grounded inspiration.'
       }
     };
     return layerMeanings[layer]?.[color] || layerMeanings[layer]?.[color.charAt(0).toUpperCase() + color.slice(1)] || 
@@ -2601,7 +2628,6 @@ export default function AuraAnalysis() {
       ocher: 'rgba(255, 255, 0, 0.3)',
       lavender: 'rgba(230, 230, 250, 0.3)',
       coral: 'rgba(255, 127, 80, 0.3)',
-      mint: 'rgba(152, 251, 152, 0.3)',
       peach: 'rgba(255, 218, 185, 0.3)',
       skyblue: 'rgba(135, 206, 235, 0.3)',
       rose: 'rgba(255, 105, 180, 0.3)',
@@ -2618,7 +2644,18 @@ export default function AuraAnalysis() {
       emerald: 'rgba(80, 200, 120, 0.3)',
       jade: 'rgba(0, 163, 108, 0.3)',
       sapphire: 'rgba(15, 82, 186, 0.3)',
-      topaz: 'rgba(255, 200, 124, 0.3)'
+      topaz: 'rgba(255, 200, 124, 0.3)',
+      grey: 'rgba(128, 128, 128, 0.3)',
+      charcoal: 'rgba(54, 69, 79, 0.3)',
+      slate: 'rgba(112, 128, 144, 0.3)',
+      smoke: 'rgba(115, 130, 118, 0.3)',
+      obsidian: 'rgba(11, 20, 38, 0.3)',
+      pewter: 'rgba(150, 168, 161, 0.3)',
+      ash: 'rgba(178, 190, 181, 0.3)',
+      onyx: 'rgba(53, 56, 57, 0.3)',
+      graphite: 'rgba(65, 66, 76, 0.3)',
+      crimson: 'rgba(220, 20, 60, 0.3)',
+      mint: 'rgba(152, 251, 152, 0.3)'
       
     };
     
