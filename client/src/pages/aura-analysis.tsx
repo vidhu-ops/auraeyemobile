@@ -2602,56 +2602,56 @@ export default function AuraAnalysis() {
     // Set blend mode for smokey effect
     ctx.globalCompositeOperation = 'screen';
 
-    // 1. Crown/Thinking Energy - Particles above head
-    const crownParticles = 40 + Math.floor(energyLevel * 5);
+    // 1. Crown/Thinking Energy - Dense particles above head
+    const crownParticles = 120 + Math.floor(energyLevel * 15);
     for (let i = 0; i < crownParticles; i++) {
       const angle = (i / crownParticles) * Math.PI * 2;
-      const distance = 60 + seededRandom() * 120;
+      const distance = 40 + seededRandom() * 180;
       const particleX = centerX + Math.cos(angle) * distance;
-      const particleY = centerY - personHeight * 0.3 - seededRandom() * 150;
+      const particleY = centerY - personHeight * 0.25 - seededRandom() * 200;
       
-      const particleSize = 2 + seededRandom() * 6;
-      const opacity = 0.2 + seededRandom() * 0.4;
+      const particleSize = 3 + seededRandom() * 12;
+      const opacity = 0.4 + seededRandom() * 0.6;
       
       drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.thinkingRGB, opacity);
     }
 
-    // 2. Receiving Energy - Particles on right side
-    const receivingParticles = 35 + Math.floor(energyLevel * 4);
+    // 2. Receiving Energy - Dense particles on right side
+    const receivingParticles = 100 + Math.floor(energyLevel * 12);
     for (let i = 0; i < receivingParticles; i++) {
-      const yPos = centerY - personHeight * 0.4 + (i / receivingParticles) * personHeight * 0.8;
-      const particleX = centerX + personWidth * 0.5 + seededRandom() * 100;
-      const particleY = yPos + (seededRandom() - 0.5) * 80;
+      const yPos = centerY - personHeight * 0.5 + (i / receivingParticles) * personHeight;
+      const particleX = centerX + personWidth * 0.4 + seededRandom() * 150;
+      const particleY = yPos + (seededRandom() - 0.5) * 120;
       
-      const particleSize = 2 + seededRandom() * 5;
-      const opacity = 0.15 + seededRandom() * 0.35;
+      const particleSize = 3 + seededRandom() * 10;
+      const opacity = 0.3 + seededRandom() * 0.5;
       
       drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.receivingRGB, opacity);
     }
 
-    // 3. Giving Energy - Particles on left side
-    const givingParticles = 35 + Math.floor(energyLevel * 4);
+    // 3. Giving Energy - Dense particles on left side
+    const givingParticles = 100 + Math.floor(energyLevel * 12);
     for (let i = 0; i < givingParticles; i++) {
-      const yPos = centerY - personHeight * 0.4 + (i / givingParticles) * personHeight * 0.8;
-      const particleX = centerX - personWidth * 0.5 - seededRandom() * 100;
-      const particleY = yPos + (seededRandom() - 0.5) * 80;
+      const yPos = centerY - personHeight * 0.5 + (i / givingParticles) * personHeight;
+      const particleX = centerX - personWidth * 0.4 - seededRandom() * 150;
+      const particleY = yPos + (seededRandom() - 0.5) * 120;
       
-      const particleSize = 2 + seededRandom() * 5;
-      const opacity = 0.15 + seededRandom() * 0.35;
+      const particleSize = 3 + seededRandom() * 10;
+      const opacity = 0.3 + seededRandom() * 0.5;
       
       drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.givingRGB, opacity);
     }
 
-    // 4. Personality Energy - Particles around the entire perimeter
-    const personalityParticles = 50 + Math.floor(energyLevel * 6);
+    // 4. Personality Energy - Dense particles around the entire perimeter
+    const personalityParticles = 150 + Math.floor(energyLevel * 18);
     for (let i = 0; i < personalityParticles; i++) {
       const angle = (i / personalityParticles) * Math.PI * 2;
-      const distance = Math.max(personWidth, personHeight) * 0.6 + seededRandom() * 80;
+      const distance = Math.max(personWidth, personHeight) * 0.5 + seededRandom() * 120;
       const particleX = centerX + Math.cos(angle) * distance;
       const particleY = centerY + Math.sin(angle) * distance * 0.8;
       
-      const particleSize = 1 + seededRandom() * 4;
-      const opacity = 0.1 + seededRandom() * 0.25;
+      const particleSize = 2 + seededRandom() * 8;
+      const opacity = 0.25 + seededRandom() * 0.45;
       
       drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.personalityRGB, opacity);
     }
@@ -2663,7 +2663,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  // Function to draw individual smokey particles
+  // Function to draw individual smokey particles with enhanced density
   const drawSmokeyParticle = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -2672,16 +2672,18 @@ export default function AuraAnalysis() {
     rgb: { r: number, g: number, b: number },
     opacity: number
   ) => {
-    // Create multi-layered particle for smokey effect
-    const layers = 3;
+    // Create dense multi-layered particle for realistic smokey effect
+    const layers = 5;
     
     for (let layer = 0; layer < layers; layer++) {
-      const layerSize = size * (1 + layer * 0.8);
-      const layerOpacity = opacity * (1 - layer * 0.3);
+      const layerSize = size * (1 + layer * 0.6);
+      const layerOpacity = opacity * (1 - layer * 0.15);
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
       gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity})`);
-      gradient.addColorStop(0.4, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity * 0.6})`);
+      gradient.addColorStop(0.2, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity * 0.8})`);
+      gradient.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity * 0.5})`);
+      gradient.addColorStop(0.8, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity * 0.2})`);
       gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -2689,9 +2691,20 @@ export default function AuraAnalysis() {
       ctx.arc(x, y, layerSize, 0, Math.PI * 2);
       ctx.fill();
     }
+    
+    // Add additional dense inner glow for visibility
+    const innerGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 0.5);
+    innerGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.9})`);
+    innerGradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.4})`);
+    innerGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+    
+    ctx.fillStyle = innerGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
+    ctx.fill();
   };
 
-  // Function to create flowing energy streams between zones
+  // Function to create dense flowing energy streams between zones
   const createEnergyStreams = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2701,7 +2714,7 @@ export default function AuraAnalysis() {
   ) => {
     const centerX = width / 2;
     const centerY = height / 2;
-    const streamCount = Math.floor(energyLevel / 2) + 3;
+    const streamCount = Math.floor(energyLevel * 2) + 12; // More streams
     
     // Seeded random for consistent streams
     let streamSeed = 54321;
@@ -2712,8 +2725,8 @@ export default function AuraAnalysis() {
 
     for (let i = 0; i < streamCount; i++) {
       const angle = (i / streamCount) * Math.PI * 2;
-      const startRadius = 80 + streamRandom() * 40;
-      const endRadius = startRadius + 60 + streamRandom() * 100;
+      const startRadius = 60 + streamRandom() * 80;
+      const endRadius = startRadius + 100 + streamRandom() * 150;
       
       const startX = centerX + Math.cos(angle) * startRadius;
       const startY = centerY + Math.sin(angle) * startRadius * 0.8;
@@ -2727,27 +2740,64 @@ export default function AuraAnalysis() {
       else if (angle < 3 * Math.PI / 2) streamColor = colors.givingRGB;
       else streamColor = colors.thinkingRGB;
       
-      const streamOpacity = 0.15 + streamRandom() * 0.2;
+      const streamOpacity = 0.3 + streamRandom() * 0.4; // Higher opacity
       
-      // Draw flowing stream
-      const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-      gradient.addColorStop(0, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${streamOpacity})`);
-      gradient.addColorStop(0.5, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${streamOpacity * 0.7})`);
-      gradient.addColorStop(1, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, 0)`);
-      
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 2 + streamRandom() * 4;
-      ctx.lineCap = 'round';
-      
-      // Create curved path for natural flow
-      const controlX = (startX + endX) / 2 + (streamRandom() - 0.5) * 60;
-      const controlY = (startY + endY) / 2 + (streamRandom() - 0.5) * 60;
-      
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-      ctx.stroke();
+      // Draw multiple overlapping streams for density
+      for (let layer = 0; layer < 3; layer++) {
+        const layerOpacity = streamOpacity * (1 - layer * 0.2);
+        const layerWidth = (3 + streamRandom() * 6) * (1 + layer * 0.5);
+        
+        const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+        gradient.addColorStop(0, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity})`);
+        gradient.addColorStop(0.3, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity * 0.8})`);
+        gradient.addColorStop(0.7, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity * 0.5})`);
+        gradient.addColorStop(1, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, 0)`);
+        
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = layerWidth;
+        ctx.lineCap = 'round';
+        
+        // Create curved path for natural flow
+        const controlOffset = 80 + layer * 20;
+        const controlX = (startX + endX) / 2 + (streamRandom() - 0.5) * controlOffset;
+        const controlY = (startY + endY) / 2 + (streamRandom() - 0.5) * controlOffset;
+        
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+        ctx.stroke();
+      }
     }
+    
+    // Add additional dense background aura glow
+    ctx.globalCompositeOperation = 'multiply';
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let colorIndex = 0; colorIndex < allColors.length; colorIndex++) {
+      const color = allColors[colorIndex];
+      const glowCount = 20 + Math.floor(energyLevel * 3);
+      
+      for (let g = 0; g < glowCount; g++) {
+        const glowAngle = (g / glowCount + colorIndex * 0.25) * Math.PI * 2;
+        const glowRadius = 100 + streamRandom() * 200;
+        const glowX = centerX + Math.cos(glowAngle) * glowRadius;
+        const glowY = centerY + Math.sin(glowAngle) * glowRadius * 0.7;
+        const glowSize = 15 + streamRandom() * 30;
+        const glowOpacity = 0.1 + streamRandom() * 0.2;
+        
+        const glowGradient = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowSize);
+        glowGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${glowOpacity})`);
+        glowGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${glowOpacity * 0.5})`);
+        glowGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = glowGradient;
+        ctx.beginPath();
+        ctx.arc(glowX, glowY, glowSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    ctx.globalCompositeOperation = 'screen';
   };
 
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
