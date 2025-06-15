@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { serveProductionStatic } from "./production-static";
 
 const app = express();
 // Configure body parsers with increased limits
@@ -54,7 +55,13 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    try {
+      serveProductionStatic(app);
+    } catch (error) {
+      console.error("Failed to serve static files with flexible approach:", error);
+      // Fallback to original approach
+      serveStatic(app);
+    }
   }
 
   // ALWAYS serve the app on port 5000
