@@ -606,7 +606,7 @@ export default function AuraAnalysis() {
     try {
       toast({
         title: "Generating PDF",
-        description: "Capturing all tabs for your complete spiritual analysis report...",
+        description: "Creating your complete spiritual analysis report...",
       });
 
       const pdf = new jsPDF({
@@ -615,255 +615,238 @@ export default function AuraAnalysis() {
         format: 'a4'
       });
 
-      const imgWidth = 200; // Slightly smaller for margins
-      const pageHeight = 280; // Leave room for margins
+      const pageWidth = 190;
+      const pageHeight = 270;
+      let yPosition = 50;
       
       // Add title page
-      pdf.setFontSize(20);
+      pdf.setFontSize(22);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Analysis Report', 105, 50, { align: 'center' });
+      pdf.text('Spiritual Analysis Report', 105, yPosition, { align: 'center' });
       
-      pdf.setFontSize(14);
-      pdf.text('Aura Reading & Numerology Analysis', 105, 70, { align: 'center' });
+      yPosition += 20;
+      pdf.setFontSize(16);
+      pdf.text('Aura Reading & Energy Analysis', 105, yPosition, { align: 'center' });
       
-      pdf.setFontSize(10);
+      yPosition += 20;
+      pdf.setFontSize(12);
       const date = new Date().toLocaleDateString();
-      pdf.text(`Generated on: ${date}`, 105, 90, { align: 'center' });
+      pdf.text(`Generated on: ${date}`, 105, yPosition, { align: 'center' });
 
-      // Capture each tab separately for comprehensive PDF
-      const tabs = [
-        { name: 'Basic Analysis', selector: '[data-tab="basic"]' },
-        { name: 'Energy Reading', selector: '[data-tab="energy"]' },
-        { name: 'Color Spectrum Analysis', selector: '[data-tab="meanings"]' },
-        { name: 'Energy Map', selector: '[data-tab="energy-map"]' },
-        { name: 'Combined Analysis', selector: '[data-tab="combined"]' },
-        { name: 'Chakra Analysis', selector: '[data-tab="chakras"]' },
-        { name: 'Spiritual Guidance', selector: '[data-tab="guidance"]' },
-        { name: 'Detailed Insights', selector: '[data-tab="insights"]' }
+      // Start content
+      pdf.addPage();
+      yPosition = 30;
+
+      // BASIC ANALYSIS
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Basic Analysis', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(`Primary Aura Color: ${result.dominantColor}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Secondary Aura Color: ${result.secondaryColor}`, 20, yPosition);
+      yPosition += 8;
+      pdf.text(`Energy Level: ${result.energyLevel}`, 20, yPosition);
+      yPosition += 15;
+
+      if (result.spiritualGuidance) {
+        pdf.text('Aura Description:', 20, yPosition);
+        yPosition += 8;
+        const descLines = pdf.splitTextToSize(result.spiritualGuidance, pageWidth - 40);
+        pdf.text(descLines, 20, yPosition);
+        yPosition += descLines.length * 6 + 10;
+      }
+
+      // ENERGY READING
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Energy Reading', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      
+      const dominantInfo = getColorInfoForAura(result.dominantColor);
+      pdf.text(`Primary Color Analysis - ${result.dominantColor}:`, 20, yPosition);
+      yPosition += 8;
+      const positiveLines = pdf.splitTextToSize(dominantInfo.positiveMeaning, pageWidth - 40);
+      pdf.text(positiveLines, 20, yPosition);
+      yPosition += positiveLines.length * 6 + 10;
+
+      if (result.secondaryColor) {
+        const secondaryInfo = getColorInfoForAura(result.secondaryColor);
+        pdf.text(`Secondary Color Analysis - ${result.secondaryColor}:`, 20, yPosition);
+        yPosition += 8;
+        const secondaryLines = pdf.splitTextToSize(secondaryInfo.positiveMeaning, pageWidth - 40);
+        pdf.text(secondaryLines, 20, yPosition);
+        yPosition += secondaryLines.length * 6 + 10;
+      }
+
+      // COLOR SPECTRUM
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Extended Color Spectrum', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      
+      // Display 4 colors with meanings
+      const spectrumColors = [
+        result.dominantColor,
+        result.secondaryColor,
+        result.auraColorSpectrum?.[2] || 'Gold',
+        result.auraColorSpectrum?.[3] || 'White'
       ];
 
-      // Add aura visualization image if available
-      if (processedAuraImage) {
+      spectrumColors.forEach((color, index) => {
+        if (color) {
+          pdf.text(`${index + 1}. ${color}: ${getColorKeyword(color)}`, 20, yPosition);
+          yPosition += 8;
+        }
+      });
+      yPosition += 10;
+
+      // AURA LAYER BREAKDOWN
+      if (result.auraLayerColors) {
+        pdf.text('Aura Layer Analysis:', 20, yPosition);
+        yPosition += 10;
+
+        if (result.auraLayerColors.inner) {
+          pdf.text(`Receiving Layer - ${result.auraLayerColors.inner}:`, 20, yPosition);
+          yPosition += 6;
+          const innerLines = pdf.splitTextToSize(getLayerMeaning('inner', result.auraLayerColors.inner), pageWidth - 40);
+          pdf.text(innerLines, 20, yPosition);
+          yPosition += innerLines.length * 6 + 8;
+        }
+
+        if (result.auraLayerColors.middle) {
+          pdf.text(`Giving Layer - ${result.auraLayerColors.middle}:`, 20, yPosition);
+          yPosition += 6;
+          const middleLines = pdf.splitTextToSize(getLayerMeaning('middle', result.auraLayerColors.middle), pageWidth - 40);
+          pdf.text(middleLines, 20, yPosition);
+          yPosition += middleLines.length * 6 + 8;
+        }
+
+        if (result.auraLayerColors.outer) {
+          pdf.text(`Thinking Layer - ${result.auraLayerColors.outer}:`, 20, yPosition);
+          yPosition += 6;
+          const outerLines = pdf.splitTextToSize(getLayerMeaning('outer', result.auraLayerColors.outer), pageWidth - 40);
+          pdf.text(outerLines, 20, yPosition);
+          yPosition += outerLines.length * 6 + 8;
+        }
+      }
+
+      // SPIRITUAL GUIDANCE
+      if (yPosition > 200) {
         pdf.addPage();
-        pdf.setFontSize(16);
-        pdf.text('Aura Visualization', 20, 25);
-        
-        try {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = processedAuraImage;
-          });
-          
-          const aspectRatio = img.height / img.width;
-          const maxWidth = 170;
-          const maxHeight = 200;
-          let width = maxWidth;
-          let height = width * aspectRatio;
-          
-          if (height > maxHeight) {
-            height = maxHeight;
-            width = height / aspectRatio;
-          }
-          
-          pdf.addImage(processedAuraImage, 'PNG', 20, 35, width, height);
-        } catch (error) {
-          console.error('Error adding aura image to PDF:', error);
-        }
+        yPosition = 30;
       }
 
-      // Store original active tab to restore later
-      const originalActiveTab = activeTab;
-      
-      // Get all tab panels and make them visible for capture
-      const allTabPanels = document.querySelectorAll('[role="tabpanel"]');
-      const originalStyles: Array<{element: HTMLElement, display: string, visibility: string, position: string}> = [];
-      
-      // Store original styles and make all tabs visible
-      allTabPanels.forEach(panel => {
-        const panelElement = panel as HTMLElement;
-        originalStyles.push({
-          element: panelElement,
-          display: panelElement.style.display,
-          visibility: panelElement.style.visibility,
-          position: panelElement.style.position
-        });
-        
-        // Make all panels visible
-        panelElement.style.display = 'block';
-        panelElement.style.visibility = 'visible';
-        panelElement.style.position = 'relative';
-        panelElement.style.opacity = '1';
-      });
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Spiritual Guidance', 20, yPosition);
+      yPosition += 15;
 
-      // Wait for all content to render
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
 
-      // Now capture each tab panel directly
-      for (let i = 0; i < tabs.length; i++) {
-        const tab = tabs[i];
-        const tabValue = tab.selector.replace('[data-tab="', '').replace('"]', '');
-        
-        // Update progress
-        toast({
-          title: "Generating PDF",
-          description: `Capturing ${tab.name} (${i + 1}/${tabs.length})...`,
-        });
-        
-        try {
-          // Find the specific tab panel by data attribute
-          const tabPanel = document.querySelector(`[data-tab="${tabValue}"]`);
-          
-          console.log(`Looking for tab panel with data-tab="${tabValue}":`, tabPanel);
-          
-          if (tabPanel && (tabPanel as HTMLElement).offsetHeight > 0) {
-            const tabElement = tabPanel as HTMLElement;
-            
-            // Ensure content is fully visible
-            tabElement.scrollIntoView({ behavior: 'instant', block: 'start' });
-            
-            // Force reflow
-            tabElement.offsetHeight;
-            
-            // Wait for content to stabilize
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Capture the tab content
-            const canvas = await html2canvas(tabElement, {
-              scale: 1.5,
-              useCORS: true,
-              allowTaint: true,
-              backgroundColor: '#ffffff',
-              logging: false,
-              removeContainer: false,
-              width: tabElement.scrollWidth,
-              height: tabElement.scrollHeight,
-              windowWidth: 1200,
-              windowHeight: 800,
-              scrollX: 0,
-              scrollY: 0
-            });
-
-            if (canvas.width > 0 && canvas.height > 0) {
-              // Add new page for this tab
-              pdf.addPage();
-              pdf.setFontSize(18);
-              pdf.setTextColor(51, 51, 51);
-              pdf.text(tab.name, 20, 25);
-              
-              // Add a separator line
-              pdf.setLineWidth(0.5);
-              pdf.setDrawColor(200, 200, 200);
-              pdf.line(20, 30, 190, 30);
-
-              const imgData = canvas.toDataURL('image/png', 1.0);
-              const imgHeight = (canvas.height * imgWidth) / canvas.width;
-              
-              // Add image, splitting across pages if needed
-              let yPosition = 40;
-              let sourceY = 0;
-              let remainingHeight = imgHeight;
-
-              while (remainingHeight > 0) {
-                const pageSpace = pageHeight - yPosition;
-                const printHeight = Math.min(remainingHeight, pageSpace);
-                
-                if (printHeight > 0) {
-                  const sourceHeight = (printHeight / imgWidth) * canvas.width;
-                  
-                  // Create a cropped version of the canvas
-                  const tempCanvas = document.createElement('canvas');
-                  tempCanvas.width = canvas.width;
-                  tempCanvas.height = sourceHeight;
-                  const tempCtx = tempCanvas.getContext('2d');
-                  
-                  if (tempCtx) {
-                    tempCtx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-                    const tempData = tempCanvas.toDataURL('image/png', 1.0);
-                    pdf.addImage(tempData, 'PNG', 5, yPosition, imgWidth, printHeight);
-                  }
-                  
-                  remainingHeight -= printHeight;
-                  sourceY += sourceHeight;
-                  
-                  if (remainingHeight > 0) {
-                    pdf.addPage();
-                    yPosition = 20;
-                  }
-                } else {
-                  break;
-                }
-              }
-              
-              console.log(`Successfully captured ${tab.name} - Canvas: ${canvas.width}x${canvas.height}`);
-            } else {
-              console.warn(`Empty canvas for ${tab.name}`);
-            }
-          } else {
-            console.warn(`Tab panel not found for ${tab.name} with selector [data-tab="${tabValue}"]`);
-            
-            // Add placeholder page
-            pdf.addPage();
-            pdf.setFontSize(16);
-            pdf.text(tab.name, 20, 25);
-            pdf.setFontSize(12);
-            pdf.text('Content not available for capture', 20, 45);
-          }
-        } catch (error) {
-          console.error(`Error capturing ${tab.name} tab:`, error);
-          
-          // Add error page
-          pdf.addPage();
-          pdf.setFontSize(16);
-          pdf.text(tab.name, 20, 25);
-          pdf.setFontSize(12);
-          pdf.text('Content capture failed', 20, 45);
-        }
+      if (result.spiritualGuidance) {
+        const guidanceLines = pdf.splitTextToSize(result.spiritualGuidance, pageWidth - 40);
+        pdf.text(guidanceLines, 20, yPosition);
+        yPosition += guidanceLines.length * 6 + 15;
       }
-      
-      // Restore original styles
-      originalStyles.forEach(({element, display, visibility, position}) => {
-        element.style.display = display;
-        element.style.visibility = visibility;
-        element.style.position = position;
-      });
-      
-      // Restore original active tab
-      setActiveTab(originalActiveTab);
 
-      // Add numerology summary if available
+      // ENERGY ASPECTS
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Energy Aspects', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+
+      if (result.energyAspects && result.energyAspects.length > 0) {
+        result.energyAspects.forEach((aspect, index) => {
+          pdf.text(`${index + 1}. ${aspect}`, 20, yPosition);
+          yPosition += 8;
+        });
+        yPosition += 10;
+      }
+
+      // PERSONALITY INTEGRATION
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Personality Integration', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+
+      if (result.personalityIntegration) {
+        const personalityLines = pdf.splitTextToSize(result.personalityIntegration, pageWidth - 40);
+        pdf.text(personalityLines, 20, yPosition);
+        yPosition += personalityLines.length * 6 + 15;
+      }
+
+      // NUMEROLOGY ANALYSIS
       if (numerologyResult) {
         pdf.addPage();
-        pdf.setFontSize(16);
-        pdf.text('Numerology Analysis', 20, 25);
+        yPosition = 30;
+
+        pdf.setFontSize(18);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Numerology Analysis', 20, yPosition);
+        yPosition += 15;
         
-        pdf.setFontSize(10);
-        let yPos = 40;
+        pdf.setFontSize(12);
+        pdf.setTextColor(55, 65, 81);
         
-        pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 20, yPos);
-        yPos += 7;
-        pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 20, yPos);
-        yPos += 7;
-        pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 20, yPos);
-        yPos += 7;
-        pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 20, yPos);
-        yPos += 15;
+        pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 20, yPosition);
+        yPosition += 15;
         
         if (numerologyResult.interpretation) {
-          pdf.text('Interpretation:', 20, yPos);
-          yPos += 7;
-          const lines = pdf.splitTextToSize(numerologyResult.interpretation, 170);
-          pdf.text(lines, 20, yPos);
+          pdf.text('Interpretation:', 20, yPosition);
+          yPosition += 8;
+          const numLines = pdf.splitTextToSize(numerologyResult.interpretation, pageWidth - 40);
+          pdf.text(numLines, 20, yPosition);
         }
+      }
+
+      // Add footer to all pages
+      const totalPages = pdf.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(156, 163, 175);
+        pdf.text('Generated by Aurafy - Your Spiritual Wellness Platform', 105, 285, { align: 'center' });
+        pdf.text(`Page ${i} of ${totalPages}`, 190, 285, { align: 'right' });
       }
 
       // Add metadata
       pdf.setProperties({
         title: 'Spiritual Analysis Report',
         subject: 'Aura and Numerology Analysis',
-        author: 'Spiritual Wellness Dashboard'
+        author: 'Aurafy Spiritual Wellness Platform'
       });
 
       // Download
@@ -872,7 +855,7 @@ export default function AuraAnalysis() {
 
       toast({
         title: "PDF Downloaded Successfully",
-        description: "Your spiritual analysis report has been saved",
+        description: "Your complete spiritual analysis report has been saved",
       });
 
     } catch (error) {
