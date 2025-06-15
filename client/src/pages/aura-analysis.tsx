@@ -119,6 +119,155 @@ export default function AuraAnalysis() {
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
 
+  // Zone-specific color meanings for 4-Zone Energy Map
+  const getThinkingEnergyMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Direct analytical thinking - cuts through mental confusion with laser focus',
+      'Orange': 'Creative problem-solving mind - generates innovative solutions through imagination',
+      'Yellow': 'Logical reasoning power - processes information with brilliant mental clarity',
+      'Green': 'Balanced decision-making - weighs all options with harmonious judgment',
+      'Blue': 'Deep contemplative thinking - accesses profound wisdom through quiet reflection',
+      'Indigo': 'Intuitive mental processes - receives insights beyond conventional reasoning',
+      'Violet': 'Visionary thought patterns - conceives breakthrough ideas and spiritual concepts',
+      'Purple': 'Mystical intelligence - understands hidden connections and cosmic principles',
+      'Pink': 'Compassionate reasoning - makes decisions guided by love and emotional intelligence',
+      'White': 'Pure mental clarity - thinks with crystal-clear perception and divine guidance',
+      'Gold': 'Illuminated consciousness - processes thoughts with enlightened understanding',
+      'Silver': 'Reflective intelligence - mirrors wisdom from higher dimensional thinking',
+      'Turquoise': 'Healing mental energy - transforms negative thought patterns into positive ones',
+      'Lavender': 'Gentle mental processing - approaches problems with calm spiritual insight',
+      'Coral': 'Warm intellectual energy - combines heart wisdom with mental understanding',
+      'Mint': 'Refreshing mental clarity - cleanses confused thinking with renewed perspective',
+      'Peach': 'Nurturing thought patterns - develops ideas with patient loving attention',
+      'Sky Blue': 'Expansive mental vision - thinks beyond limitations with unlimited perspective',
+      'Rose': 'Love-centered intelligence - makes all decisions from a foundation of divine love',
+      'Amber': 'Ancient mental wisdom - accesses timeless knowledge from collective consciousness',
+      'Gray': 'Neutral analytical mind - processes information without emotional bias',
+      'Black': 'Deep transformative thinking - penetrates mysteries and embraces shadow wisdom',
+      'Crimson': 'Passionate mental fire - thinks with intense focus and unwavering determination',
+      'Magenta': 'Revolutionary thought patterns - breaks conventional thinking with creative rebellion',
+      'Brown': 'Grounded practical thinking - approaches problems with earth-based common sense',
+      'Cyan': 'Clear emotional intelligence - thinks with perfect balance of heart and mind',
+      'Lime': 'Fresh mental energy - generates new ideas with vibrant intellectual vitality',
+      'Maroon': 'Mature mental strength - thinks with depth and sustained intellectual power',
+      'Navy': 'Profound wisdom thinking - accesses deep universal knowledge and cosmic understanding',
+      'Olive': 'Natural mental harmony - thinks in alignment with earth wisdom and natural cycles',
+      'Teal': 'Healing communication thoughts - processes ideas that bring peace and understanding'
+    };
+    return meanings[color] || 'Unique mental processing pattern - develops individual thinking approach';
+  };
+
+  const getReceivingEnergyMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Absorbs intense life force - draws vital energy from passionate encounters',
+      'Orange': 'Receives creative inspiration - attracts artistic energy from surroundings',
+      'Yellow': 'Attracts mental stimulation - draws intellectual energy from conversations',
+      'Green': 'Absorbs healing energy - receives natural restoration from environment',
+      'Blue': 'Receives calming vibrations - attracts peaceful energy that soothes the soul',
+      'Indigo': 'Attracts psychic impressions - receives intuitive messages from other dimensions',
+      'Violet': 'Absorbs spiritual transmissions - draws divine energy from higher realms',
+      'Purple': 'Receives mystical frequencies - attracts magical energy from cosmic sources',
+      'Pink': 'Absorbs love vibrations - draws compassionate energy from all relationships',
+      'White': 'Receives pure light energy - attracts divine protection and angelic guidance',
+      'Gold': 'Absorbs wisdom transmissions - draws enlightened energy from spiritual teachers',
+      'Silver': 'Receives lunar vibrations - attracts feminine intuitive energy from moon cycles',
+      'Turquoise': 'Absorbs healing frequencies - draws therapeutic energy from natural sources',
+      'Lavender': 'Receives gentle spiritual energy - attracts peaceful cosmic vibrations',
+      'Coral': 'Absorbs warm emotional energy - draws nurturing vibrations from loving connections',
+      'Mint': 'Receives refreshing energy - attracts cleansing vibrations that restore balance',
+      'Peach': 'Absorbs nurturing frequencies - draws supportive energy from caring relationships',
+      'Sky Blue': 'Receives unlimited cosmic energy - attracts boundless universal vibrations',
+      'Rose': 'Absorbs unconditional love - draws pure heart energy from divine sources',
+      'Amber': 'Receives ancient wisdom energy - attracts knowledge from ancestral connections',
+      'Gray': 'Absorbs neutral balance - draws stabilizing energy that maintains equilibrium',
+      'Black': 'Receives transformative power - attracts deep change energy from shadow work',
+      'Crimson': 'Absorbs warrior energy - draws strength from challenging life experiences',
+      'Magenta': 'Receives rebellious frequency - attracts independent energy that breaks conformity',
+      'Brown': 'Absorbs earth stability - draws grounding energy from natural environments',
+      'Cyan': 'Receives emotional clarity - attracts pure feeling energy that heals emotional wounds',
+      'Lime': 'Absorbs growth energy - draws fresh vitality from new opportunities',
+      'Maroon': 'Receives mature strength - attracts seasoned wisdom from life experiences',
+      'Navy': 'Absorbs cosmic depth - draws profound universal energy from mystical sources',
+      'Olive': 'Receives natural harmony - attracts balanced energy from earth connections',
+      'Teal': 'Absorbs communication healing - draws energy that repairs relationship wounds'
+    };
+    return meanings[color] || 'Receives unique energy signature - attracts special vibrations suited to your soul';
+  };
+
+  const getGivingEnergyMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Radiates passionate life force - energizes others with intense vitality',
+      'Orange': 'Projects creative inspiration - ignites artistic expression in others',
+      'Yellow': 'Emanates mental brilliance - illuminates minds with intellectual clarity',
+      'Green': 'Radiates healing vibrations - restores balance in people and environments',
+      'Blue': 'Projects peaceful energy - calms chaos and brings tranquility to situations',
+      'Indigo': 'Emanates psychic awareness - awakens intuitive abilities in others',
+      'Violet': 'Radiates spiritual light - elevates consciousness in all encounters',
+      'Purple': 'Projects mystical power - creates magical transformations in reality',
+      'Pink': 'Emanates love frequency - heals hearts and opens emotional connections',
+      'White': 'Radiates pure divine light - offers spiritual protection and guidance',
+      'Gold': 'Projects wisdom energy - shares enlightened knowledge that transforms lives',
+      'Silver': 'Emanates reflective wisdom - helps others see their true spiritual nature',
+      'Turquoise': 'Radiates healing communication - brings therapeutic words and understanding',
+      'Lavender': 'Projects gentle awakening - gradually opens spiritual awareness in others',
+      'Coral': 'Emanates warm support - provides emotional comfort and encouragement',
+      'Mint': 'Radiates refreshing clarity - cleanses negative energy from people and spaces',
+      'Peach': 'Projects nurturing care - offers gentle healing and emotional support',
+      'Sky Blue': 'Emanates limitless possibility - inspires others to expand beyond boundaries',
+      'Rose': 'Radiates unconditional love - creates safe spaces for authentic expression',
+      'Amber': 'Projects ancient wisdom - shares timeless knowledge that guides decisions',
+      'Gray': 'Emanates balanced perspective - helps others find neutral ground in conflicts',
+      'Black': 'Radiates transformative power - catalyzes deep change and shadow integration',
+      'Crimson': 'Projects warrior strength - empowers others to overcome challenges',
+      'Magenta': 'Emanates creative rebellion - inspires unique individual expression',
+      'Brown': 'Radiates grounding stability - provides practical support and earth wisdom',
+      'Cyan': 'Projects emotional healing - clears emotional blockages with pure compassion',
+      'Lime': 'Emanates fresh vitality - energizes others with renewed life force',
+      'Maroon': 'Radiates mature wisdom - offers guidance from deep life experience',
+      'Navy': 'Projects cosmic understanding - shares profound universal truths',
+      'Olive': 'Emanates natural harmony - brings peace through earth-based wisdom',
+      'Teal': 'Radiates healing words - communicates in ways that repair and restore'
+    };
+    return meanings[color] || 'Projects unique energy signature - shares special gifts that only you can offer';
+  };
+
+  const getPersonalityEnergyMeaning = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Core passionate nature - your essence burns with fierce determination and courage',
+      'Orange': 'Creative soul foundation - your spirit naturally expresses through artistic innovation',
+      'Yellow': 'Intellectual core being - your essence thrives on mental exploration and learning',
+      'Green': 'Harmonious soul nature - your core seeks balance and natural healing connections',
+      'Blue': 'Peaceful inner foundation - your essence naturally creates calm and stability',
+      'Indigo': 'Psychic soul structure - your core nature operates through intuitive awareness',
+      'Violet': 'Spiritual essence - your soul naturally connects to higher dimensional wisdom',
+      'Purple': 'Mystical core nature - your essence embraces mystery and magical transformation',
+      'Pink': 'Love-centered foundation - your soul core operates through heart-based compassion',
+      'White': 'Pure spirit essence - your core nature channels divine light and protection',
+      'Gold': 'Enlightened soul foundation - your essence naturally embodies spiritual wisdom',
+      'Silver': 'Reflective core nature - your soul mirrors cosmic truth and lunar wisdom',
+      'Turquoise': 'Healing soul essence - your core purpose involves therapeutic transformation',
+      'Lavender': 'Gentle spirit foundation - your essence brings peaceful spiritual awakening',
+      'Coral': 'Warm soul nature - your core radiates emotional support and creative nurturing',
+      'Mint': 'Refreshing essence - your soul naturally cleanses and renews energy patterns',
+      'Peach': 'Nurturing core foundation - your essence provides gentle care and emotional healing',
+      'Sky Blue': 'Boundless soul nature - your core operates without limitations or restrictions',
+      'Rose': 'Divine love essence - your soul foundation is pure unconditional compassion',
+      'Amber': 'Ancient soul wisdom - your core carries timeless knowledge from past lifetimes',
+      'Gray': 'Balanced core nature - your essence maintains spiritual equilibrium in all situations',
+      'Black': 'Transformative soul foundation - your core purpose involves deep shadow integration',
+      'Crimson': 'Warrior soul essence - your core nature embodies spiritual strength and determination',
+      'Magenta': 'Revolutionary spirit foundation - your essence breaks conventional spiritual patterns',
+      'Brown': 'Earth-connected soul - your core nature is grounded in practical spiritual wisdom',
+      'Cyan': 'Emotionally clear essence - your soul foundation operates through pure feeling',
+      'Lime': 'Vitality soul core - your essence naturally generates fresh life force energy',
+      'Maroon': 'Mature soul foundation - your core operates with deep spiritual experience',
+      'Navy': 'Cosmic soul depth - your essence connects to profound universal mysteries',
+      'Olive': 'Naturally wise soul - your core operates in harmony with earth and cosmic cycles',
+      'Teal': 'Communication soul essence - your foundation involves healing through authentic expression'
+    };
+    return meanings[color] || 'Unique soul signature - your core essence carries special spiritual gifts';
+  };
+
   // Generate deterministic hash from image data for consistent results
   const generateImageHash = (imageData: string): string => {
     // Use multiple sections of the image for better uniqueness
