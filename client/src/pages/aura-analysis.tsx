@@ -2574,7 +2574,7 @@ export default function AuraAnalysis() {
     });
   };
 
-  // Function to create realistic smokey particle aura effects that fill the image
+  // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2589,282 +2589,228 @@ export default function AuraAnalysis() {
   ) => {
     const centerX = width / 2;
     const centerY = height / 2;
-    const personWidth = width * 0.3;
-    const personHeight = height * 0.5;
+    const personWidth = width * 0.25;
+    const personHeight = height * 0.4;
     
-    // Seeded random for consistent particle placement
+    // Seeded random for consistent effects
     let seed = 12345;
     const seededRandom = () => {
       seed = (seed * 9301 + 49297) % 233280;
       return seed / 233280;
     };
 
-    // Set blend mode for smokey effect that preserves the face
-    ctx.globalCompositeOperation = 'source-over';
+    // Set blend mode for natural smoke blending
+    ctx.globalCompositeOperation = 'multiply';
 
-    // Create full-image smokey aura effect with face preservation
-    
-    // 1. Full Background Aura - Fill entire image with subtle base aura
-    const backgroundParticles = 1000 + Math.floor(energyLevel * 25);
-    for (let i = 0; i < backgroundParticles; i++) {
-      const particleX = seededRandom() * width;
-      const particleY = seededRandom() * height;
-      
-      // Avoid face area (center-top region)
-      const faceAreaX = centerX - personWidth * 0.3;
-      const faceAreaY = centerY - personHeight * 0.7;
-      const faceAreaWidth = personWidth * 0.8;
-      const faceAreaHeight = personHeight * 0.9;
-      
-      const inFaceArea = particleX > faceAreaX && particleX < faceAreaX + faceAreaWidth &&
-                        particleY > faceAreaY && particleY < faceAreaY + faceAreaHeight;
-      
-      if (!inFaceArea) {
-        // Calculate distance from face center for opacity falloff
-        const faceDistance = Math.sqrt(Math.pow(particleX - centerX, 2) + Math.pow(particleY - (centerY - personHeight * 0.3), 2));
-        const fadeDistance = personWidth * 0.6;
-        const distanceFactor = Math.min(1, faceDistance / fadeDistance);
-        
-        const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-        const colorIndex = Math.floor(seededRandom() * allColors.length);
-        const selectedColor = allColors[colorIndex];
-        
-        const particleSize = 5 + seededRandom() * 25;
-        const baseOpacity = 0.08 + seededRandom() * 0.15;
-        const opacity = baseOpacity * distanceFactor;
-        
-        if (opacity > 0.02) {
-          drawSmokeyParticle(ctx, particleX, particleY, particleSize, selectedColor, opacity);
-        }
-      }
-    }
-
-    // 2. Crown/Thinking Energy - Dense flowing upward from head, avoiding face
-    const crownParticles = 180 + Math.floor(energyLevel * 20);
-    for (let i = 0; i < crownParticles; i++) {
-      const baseX = centerX + (seededRandom() - 0.5) * personWidth * 1.2;
-      const baseY = centerY - personHeight * 0.2;
-      
-      // Create upward flowing effect that curves around the face
-      const flowHeight = seededRandom() * height * 0.6;
-      const particleX = baseX + (seededRandom() - 0.5) * flowHeight * 0.4;
-      const particleY = baseY - flowHeight;
-      
-      // Check if particle is too close to face area
-      const faceDistance = Math.sqrt(Math.pow(particleX - centerX, 2) + Math.pow(particleY - (centerY - personHeight * 0.3), 2));
-      const minFaceDistance = personWidth * 0.4;
-      
-      if (particleY >= 0 && faceDistance > minFaceDistance) {
-        const particleSize = 8 + seededRandom() * 20;
-        const opacity = 0.15 + seededRandom() * 0.25;
-        
-        drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.thinkingRGB, opacity);
-      }
-    }
-
-    // 3. Side Energy Fields - Left and right extending to edges
-    const sideParticles = 200 + Math.floor(energyLevel * 15);
-    for (let side = 0; side < 2; side++) {
-      const isLeft = side === 0;
-      const sideColor = isLeft ? colors.givingRGB : colors.receivingRGB;
-      
-      for (let i = 0; i < sideParticles; i++) {
-        const baseX = centerX + (isLeft ? -1 : 1) * personWidth * 0.5;
-        const baseY = centerY + (seededRandom() - 0.5) * personHeight;
-        
-        // Extend to image edges
-        const flowDistance = seededRandom() * (width * 0.4);
-        const particleX = baseX + (isLeft ? -1 : 1) * flowDistance;
-        const particleY = baseY + (seededRandom() - 0.5) * flowDistance * 0.5;
-        
-        if (particleX >= 0 && particleX <= width && particleY >= 0 && particleY <= height) {
-          const particleSize = 6 + seededRandom() * 18;
-          const opacity = 0.12 + seededRandom() * 0.22;
-          
-          drawSmokeyParticle(ctx, particleX, particleY, particleSize, sideColor, opacity);
-        }
-      }
-    }
-
-    // 4. Perimeter Energy - Dense particles around entire image border
-    const perimeterParticles = 250 + Math.floor(energyLevel * 20);
-    for (let i = 0; i < perimeterParticles; i++) {
-      let particleX, particleY;
-      const edge = Math.floor(seededRandom() * 4);
-      
-      switch (edge) {
-        case 0: // Top edge
-          particleX = seededRandom() * width;
-          particleY = seededRandom() * height * 0.3;
-          break;
-        case 1: // Right edge
-          particleX = width - seededRandom() * width * 0.3;
-          particleY = seededRandom() * height;
-          break;
-        case 2: // Bottom edge
-          particleX = seededRandom() * width;
-          particleY = height - seededRandom() * height * 0.3;
-          break;
-        default: // Left edge
-          particleX = seededRandom() * width * 0.3;
-          particleY = seededRandom() * height;
-          break;
-      }
-      
-      const particleSize = 4 + seededRandom() * 15;
-      const opacity = 0.1 + seededRandom() * 0.2;
-      
-      drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.personalityRGB, opacity);
-    }
-
-    // Add flowing energy streams between zones
-    createEnergyStreams(ctx, width, height, colors, energyLevel);
+    // Create natural flowing smoke wisps
+    createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
 
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  // Function to draw realistic smokey particles that blend naturally
-  const drawSmokeyParticle = (
+  // Function to create natural smoke wisps that flow around the person
+  const createNaturalSmokeWisps = (
     ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    size: number,
-    rgb: { r: number, g: number, b: number },
-    opacity: number
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
   ) => {
-    // Create dense, natural smoke-like effect
-    const layers = 4;
-    
-    for (let layer = 0; layer < layers; layer++) {
-      const layerSize = size * (0.8 + layer * 0.4);
-      const layerOpacity = opacity * (0.8 - layer * 0.15);
+    // Define face protection area
+    const faceX = centerX - personWidth * 0.5;
+    const faceY = centerY - personHeight * 0.6;
+    const faceWidth = personWidth;
+    const faceHeight = personHeight * 0.5;
+
+    // Create natural smoke flows from different body zones
+    const smokeZones = [
+      { 
+        color: colors.thinkingRGB, 
+        startX: centerX, 
+        startY: centerY - personHeight * 0.3, 
+        direction: { x: 0, y: -1 },
+        spread: personWidth * 0.8,
+        name: 'crown'
+      },
+      { 
+        color: colors.receivingRGB, 
+        startX: centerX + personWidth * 0.3, 
+        startY: centerY, 
+        direction: { x: 1, y: 0 },
+        spread: personHeight * 0.8,
+        name: 'right'
+      },
+      { 
+        color: colors.givingRGB, 
+        startX: centerX - personWidth * 0.3, 
+        startY: centerY, 
+        direction: { x: -1, y: 0 },
+        spread: personHeight * 0.8,
+        name: 'left'
+      },
+      { 
+        color: colors.personalityRGB, 
+        startX: centerX, 
+        startY: centerY + personHeight * 0.4, 
+        direction: { x: 0, y: 1 },
+        spread: personWidth,
+        name: 'base'
+      }
+    ];
+
+    smokeZones.forEach((zone, zoneIndex) => {
+      const smokeWisps = 8 + Math.floor(energyLevel * 2);
       
-      // Create soft, irregular smoke gradient
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+      for (let wisp = 0; wisp < smokeWisps; wisp++) {
+        // Create flowing smoke trail
+        const trailPoints = [];
+        const maxDistance = Math.min(width, height) * 0.7;
+        const segments = 25 + Math.floor(seededRandom() * 15);
+        
+        for (let segment = 0; segment < segments; segment++) {
+          const progress = segment / segments;
+          const distance = maxDistance * progress;
+          
+          // Add natural turbulence and wind effects
+          const turbulenceX = Math.sin(progress * Math.PI * 6 + zoneIndex + wisp) * 40 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 4 + zoneIndex + wisp) * 30 * progress;
+          
+          // Calculate spread based on zone
+          const spread = (seededRandom() - 0.5) * zone.spread * progress;
+          
+          const smokeX = zone.startX + 
+                        zone.direction.x * distance + 
+                        (zone.direction.y !== 0 ? spread : turbulenceX);
+          const smokeY = zone.startY + 
+                        zone.direction.y * distance + 
+                        (zone.direction.x !== 0 ? spread : turbulenceY);
+          
+          // Check if point is within image bounds and not in face area
+          if (smokeX >= 0 && smokeX <= width && smokeY >= 0 && smokeY <= height) {
+            const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                              smokeY >= faceY && smokeY <= faceY + faceHeight;
+            
+            if (!inFaceArea) {
+              trailPoints.push({ x: smokeX, y: smokeY, progress });
+            }
+          }
+        }
+        
+        // Draw smooth smoke trail
+        if (trailPoints.length > 1) {
+          drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom);
+        }
+      }
+    });
+
+    // Add ambient atmospheric haze
+    createAtmosphericHaze(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+  };
+
+  // Function to draw smooth smoke trails
+  const drawSmokeTrail = (
+    ctx: CanvasRenderingContext2D,
+    points: Array<{ x: number, y: number, progress: number }>,
+    color: { r: number, g: number, b: number },
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    points.forEach((point, index) => {
+      if (index === 0) return;
       
-      // Enhance colors for better visibility while keeping natural look
-      const smokeR = rgb.r;
-      const smokeG = rgb.g;
-      const smokeB = rgb.b;
+      const prevPoint = points[index - 1];
+      const smokeSize = 30 + seededRandom() * 60 * (1 - point.progress * 0.3);
+      const opacity = 0.15 * (1 - point.progress * 0.8) * (0.5 + seededRandom() * 0.5);
       
-      gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.7})`);
-      gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
-      gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
+      // Create natural smoke gradient
+      const gradient = ctx.createRadialGradient(
+        point.x, point.y, 0,
+        point.x, point.y, smokeSize
+      );
+      
+      const smokeR = Math.min(255, color.r + 20);
+      const smokeG = Math.min(255, color.g + 20);
+      const smokeB = Math.min(255, color.b + 20);
+      
+      gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity})`);
+      gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+      ctx.arc(point.x, point.y, smokeSize, 0, Math.PI * 2);
       ctx.fill();
-    }
-    
-    // Add bright inner core for visibility
-    const coreGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 0.3);
-    coreGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.9})`);
-    coreGradient.addColorStop(0.8, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.4})`);
-    coreGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
-    
-    ctx.fillStyle = coreGradient;
-    ctx.beginPath();
-    ctx.arc(x, y, size * 0.3, 0, Math.PI * 2);
-    ctx.fill();
+      
+      // Add connecting wisps between points
+      if (index > 0) {
+        const midX = (point.x + prevPoint.x) / 2;
+        const midY = (point.y + prevPoint.y) / 2;
+        const wispSize = smokeSize * 0.6;
+        const wispOpacity = opacity * 0.5;
+        
+        const wispGradient = ctx.createRadialGradient(
+          midX, midY, 0,
+          midX, midY, wispSize
+        );
+        
+        wispGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${wispOpacity})`);
+        wispGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+        
+        ctx.fillStyle = wispGradient;
+        ctx.beginPath();
+        ctx.arc(midX, midY, wispSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
   };
 
-  // Function to create dense flowing energy streams between zones
-  const createEnergyStreams = (
+  // Function to create subtle atmospheric haze
+  const createAtmosphericHaze = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
     colors: any,
-    energyLevel: number
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
   ) => {
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const streamCount = Math.floor(energyLevel * 2) + 12; // More streams
-    
-    // Seeded random for consistent streams
-    let streamSeed = 54321;
-    const streamRandom = () => {
-      streamSeed = (streamSeed * 9301 + 49297) % 233280;
-      return streamSeed / 233280;
-    };
-
-    for (let i = 0; i < streamCount; i++) {
-      const angle = (i / streamCount) * Math.PI * 2;
-      const startRadius = 60 + streamRandom() * 80;
-      const endRadius = startRadius + 100 + streamRandom() * 150;
-      
-      const startX = centerX + Math.cos(angle) * startRadius;
-      const startY = centerY + Math.sin(angle) * startRadius * 0.8;
-      const endX = centerX + Math.cos(angle) * endRadius;
-      const endY = centerY + Math.sin(angle) * endRadius * 0.8;
-      
-      // Select color based on angle (zone-based)
-      let streamColor;
-      if (angle < Math.PI / 2) streamColor = colors.receivingRGB;
-      else if (angle < Math.PI) streamColor = colors.personalityRGB;
-      else if (angle < 3 * Math.PI / 2) streamColor = colors.givingRGB;
-      else streamColor = colors.thinkingRGB;
-      
-      const streamOpacity = 0.3 + streamRandom() * 0.4; // Higher opacity
-      
-      // Draw multiple overlapping streams for density
-      for (let layer = 0; layer < 3; layer++) {
-        const layerOpacity = streamOpacity * (1 - layer * 0.2);
-        const layerWidth = (3 + streamRandom() * 6) * (1 + layer * 0.5);
-        
-        const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-        gradient.addColorStop(0, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity})`);
-        gradient.addColorStop(0.3, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity * 0.8})`);
-        gradient.addColorStop(0.7, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${layerOpacity * 0.5})`);
-        gradient.addColorStop(1, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, 0)`);
-        
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = layerWidth;
-        ctx.lineCap = 'round';
-        
-        // Create curved path for natural flow
-        const controlOffset = 80 + layer * 20;
-        const controlX = (startX + endX) / 2 + (streamRandom() - 0.5) * controlOffset;
-        const controlY = (startY + endY) / 2 + (streamRandom() - 0.5) * controlOffset;
-        
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-        ctx.stroke();
-      }
-    }
-    
-    // Add additional dense background aura glow
-    ctx.globalCompositeOperation = 'multiply';
+    const hazeZones = 12 + Math.floor(energyLevel * 2);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    for (let colorIndex = 0; colorIndex < allColors.length; colorIndex++) {
-      const color = allColors[colorIndex];
-      const glowCount = 20 + Math.floor(energyLevel * 3);
+    for (let zone = 0; zone < hazeZones; zone++) {
+      const hazeX = seededRandom() * width;
+      const hazeY = seededRandom() * height;
       
-      for (let g = 0; g < glowCount; g++) {
-        const glowAngle = (g / glowCount + colorIndex * 0.25) * Math.PI * 2;
-        const glowRadius = 100 + streamRandom() * 200;
-        const glowX = centerX + Math.cos(glowAngle) * glowRadius;
-        const glowY = centerY + Math.sin(glowAngle) * glowRadius * 0.7;
-        const glowSize = 15 + streamRandom() * 30;
-        const glowOpacity = 0.1 + streamRandom() * 0.2;
+      // Avoid face area
+      const inFaceArea = hazeX >= faceX && hazeX <= faceX + faceWidth &&
+                        hazeY >= faceY && hazeY <= faceY + faceHeight;
+      
+      if (!inFaceArea) {
+        const hazeSize = 80 + seededRandom() * 150;
+        const hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+        const hazeOpacity = 0.03 + seededRandom() * 0.08;
         
-        const glowGradient = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowSize);
-        glowGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${glowOpacity})`);
-        glowGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${glowOpacity * 0.5})`);
-        glowGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        const hazeGradient = ctx.createRadialGradient(hazeX, hazeY, 0, hazeX, hazeY, hazeSize);
+        hazeGradient.addColorStop(0, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity})`);
+        hazeGradient.addColorStop(0.6, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.5})`);
+        hazeGradient.addColorStop(1, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, 0)`);
         
-        ctx.fillStyle = glowGradient;
+        ctx.fillStyle = hazeGradient;
         ctx.beginPath();
-        ctx.arc(glowX, glowY, glowSize, 0, Math.PI * 2);
+        ctx.arc(hazeX, hazeY, hazeSize, 0, Math.PI * 2);
         ctx.fill();
       }
     }
-    
-    ctx.globalCompositeOperation = 'screen';
   };
 
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
