@@ -237,7 +237,7 @@ export default function JournalPage() {
 
               {/* Reflections */}
               <div className="space-y-2">
-                <Label htmlFor="reflections">Daily Reflections</Label>
+                <Label htmlFor="reflections">How do you feel about your self and your aura today?</Label>
                 <Textarea
                   id="reflections"
                   placeholder="Share your thoughts, insights, and spiritual experiences from today..."
