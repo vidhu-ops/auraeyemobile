@@ -2605,44 +2605,56 @@ export default function AuraAnalysis() {
     // Create full-image smokey aura effect with face preservation
     
     // 1. Full Background Aura - Fill entire image with subtle base aura
-    const backgroundParticles = 300 + Math.floor(energyLevel * 25);
+    const backgroundParticles = 1000 + Math.floor(energyLevel * 25);
     for (let i = 0; i < backgroundParticles; i++) {
       const particleX = seededRandom() * width;
       const particleY = seededRandom() * height;
       
       // Avoid face area (center-top region)
       const faceAreaX = centerX - personWidth * 0.3;
-      const faceAreaY = centerY - personHeight * 0.4;
-      const faceAreaWidth = personWidth * 0.6;
-      const faceAreaHeight = personHeight * 0.4;
+      const faceAreaY = centerY - personHeight * 0.7;
+      const faceAreaWidth = personWidth * 0.8;
+      const faceAreaHeight = personHeight * 0.9;
       
       const inFaceArea = particleX > faceAreaX && particleX < faceAreaX + faceAreaWidth &&
                         particleY > faceAreaY && particleY < faceAreaY + faceAreaHeight;
       
       if (!inFaceArea) {
+        // Calculate distance from face center for opacity falloff
+        const faceDistance = Math.sqrt(Math.pow(particleX - centerX, 2) + Math.pow(particleY - (centerY - personHeight * 0.3), 2));
+        const fadeDistance = personWidth * 0.6;
+        const distanceFactor = Math.min(1, faceDistance / fadeDistance);
+        
         const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
         const colorIndex = Math.floor(seededRandom() * allColors.length);
         const selectedColor = allColors[colorIndex];
         
         const particleSize = 5 + seededRandom() * 25;
-        const opacity = 0.08 + seededRandom() * 0.15;
+        const baseOpacity = 0.08 + seededRandom() * 0.15;
+        const opacity = baseOpacity * distanceFactor;
         
-        drawSmokeyParticle(ctx, particleX, particleY, particleSize, selectedColor, opacity);
+        if (opacity > 0.02) {
+          drawSmokeyParticle(ctx, particleX, particleY, particleSize, selectedColor, opacity);
+        }
       }
     }
 
-    // 2. Crown/Thinking Energy - Dense flowing upward from head
+    // 2. Crown/Thinking Energy - Dense flowing upward from head, avoiding face
     const crownParticles = 180 + Math.floor(energyLevel * 20);
     for (let i = 0; i < crownParticles; i++) {
-      const baseX = centerX + (seededRandom() - 0.5) * personWidth * 0.8;
-      const baseY = centerY - personHeight * 0.3;
+      const baseX = centerX + (seededRandom() - 0.5) * personWidth * 1.2;
+      const baseY = centerY - personHeight * 0.2;
       
-      // Create upward flowing effect
+      // Create upward flowing effect that curves around the face
       const flowHeight = seededRandom() * height * 0.6;
-      const particleX = baseX + (seededRandom() - 0.5) * flowHeight * 0.3;
+      const particleX = baseX + (seededRandom() - 0.5) * flowHeight * 0.4;
       const particleY = baseY - flowHeight;
       
-      if (particleY >= 0) {
+      // Check if particle is too close to face area
+      const faceDistance = Math.sqrt(Math.pow(particleX - centerX, 2) + Math.pow(particleY - (centerY - personHeight * 0.3), 2));
+      const minFaceDistance = personWidth * 0.4;
+      
+      if (particleY >= 0 && faceDistance > minFaceDistance) {
         const particleSize = 8 + seededRandom() * 20;
         const opacity = 0.15 + seededRandom() * 0.25;
         
@@ -2657,7 +2669,7 @@ export default function AuraAnalysis() {
       const sideColor = isLeft ? colors.givingRGB : colors.receivingRGB;
       
       for (let i = 0; i < sideParticles; i++) {
-        const baseX = centerX + (isLeft ? -1 : 1) * personWidth * 0.4;
+        const baseX = centerX + (isLeft ? -1 : 1) * personWidth * 0.5;
         const baseY = centerY + (seededRandom() - 0.5) * personHeight;
         
         // Extend to image edges
