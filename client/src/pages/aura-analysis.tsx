@@ -4924,13 +4924,13 @@ export default function AuraAnalysis() {
                                   <div className="bg-white border rounded-lg p-3 text-center">
                                     <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}></div>
                                     <h6 className="font-medium text-sm">{result.dominantColor}</h6>
-                                    <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.dominantColor)}</p>
+                                    <p className="text-xs text-gray-600 mt-1" key={`${result.dominantColor}-${Date.now()}`}>{getColorKeyword(result.dominantColor)}</p>
                                   </div>
                                   
                                   <div className="bg-white border rounded-lg p-3 text-center">
                                     <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}></div>
                                     <h6 className="font-medium text-sm">{result.secondaryColor}</h6>
-                                    <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.secondaryColor)}</p>
+                                    <p className="text-xs text-gray-600 mt-1" key={`${result.secondaryColor}-${Date.now()}`}>{getColorKeyword(result.secondaryColor)}</p>
                                   </div>
                                   
                                   {/* Third color - either from spectrum or complementary */}
@@ -4938,13 +4938,13 @@ export default function AuraAnalysis() {
                                     <div className="bg-white border rounded-lg p-3 text-center">
                                       <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.auraColorSpectrum[2])}}></div>
                                       <h6 className="font-medium text-sm">{result.auraColorSpectrum[2]}</h6>
-                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.auraColorSpectrum[2])}</p>
+                                      <p className="text-xs text-gray-600 mt-1" key={`${result.auraColorSpectrum[2]}-${Date.now()}`}>{getColorKeyword(result.auraColorSpectrum[2])}</p>
                                     </div>
                                   ) : (
                                     <div className="bg-white border rounded-lg p-3 text-center">
-                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode('White')}}></div>
-                                      <h6 className="font-medium text-sm">White</h6>
-                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword('White')}</p>
+                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode('Amber')}}></div>
+                                      <h6 className="font-medium text-sm">Amber</h6>
+                                      <p className="text-xs text-gray-600 mt-1" key={`Amber-${Date.now()}`}>{getColorKeyword('Amber')}</p>
                                     </div>
                                   )}
                                   
@@ -4953,13 +4953,13 @@ export default function AuraAnalysis() {
                                     <div className="bg-white border rounded-lg p-3 text-center">
                                       <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.auraColorSpectrum[3])}}></div>
                                       <h6 className="font-medium text-sm">{result.auraColorSpectrum[3]}</h6>
-                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.auraColorSpectrum[3])}</p>
+                                      <p className="text-xs text-gray-600 mt-1" key={`${result.auraColorSpectrum[3]}-${Date.now()}`}>{getColorKeyword(result.auraColorSpectrum[3])}</p>
                                     </div>
                                   ) : (
                                     <div className="bg-white border rounded-lg p-3 text-center">
-                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode('Gold')}}></div>
-                                      <h6 className="font-medium text-sm">Gold</h6>
-                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword('Gold')}</p>
+                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode('Magenta')}}></div>
+                                      <h6 className="font-medium text-sm">Magenta</h6>
+                                      <p className="text-xs text-gray-600 mt-1" key={`Magenta-${Date.now()}`}>{getColorKeyword('Magenta')}</p>
                                     </div>
                                   )}
                                 </div>
