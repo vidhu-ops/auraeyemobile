@@ -13,6 +13,7 @@ import HealerDashboard from "@/pages/healer-dashboard";
 import AuraAnalysis from "@/pages/aura-analysis";
 import ObjectAnalysis from "@/pages/object-analysis";
 import DailyHoroscope from "@/pages/daily-horoscope";
+import PersonalizedHoroscope from "@/pages/personalized-horoscope";
 import Numerology from "@/pages/numerology";
 import Journal from "@/pages/journal";
 import About from "@/pages/about";
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/aura-analysis" component={AuraAnalysis} />
       <Route path="/object-analysis" component={ObjectAnalysis} />
       <Route path="/daily-horoscope" component={DailyHoroscope} />
+      <ProtectedRoute path="/personalized-horoscope" component={PersonalizedHoroscope} />
       <Route path="/numerology" component={Numerology} />
       <ProtectedRoute path="/journal" component={Journal} />
       <Route path="/about" component={About} />
