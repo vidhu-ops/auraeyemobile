@@ -25,10 +25,19 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const seed4 = parseInt(hash.substring(24, 32), 16);
   const seed5 = parseInt(hash.substring(32, 40), 16);
   
-  // Additional image characteristics for better differentiation
+  // Enhanced image characteristics for maximum differentiation
   const imageSize = imageBuffer.length;
   const sizeVariation = imageSize % 10000; // Size-based variation
-  const complexitySeed = (seed1 ^ seed2 ^ seed3) + sizeVariation;
+  
+  // Extract additional entropy from image data patterns
+  let dataEntropy = 0;
+  for (let i = 0; i < Math.min(1000, imageBuffer.length); i += 100) {
+    dataEntropy ^= imageBuffer[i] << (i % 8);
+  }
+  
+  // Combine multiple entropy sources
+  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy;
+  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211) % 999983;
   
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
@@ -73,29 +82,51 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const auraColors = [];
   const usedIndices = new Set();
   
-  // Enhanced distribution algorithm using all seeds for maximum variety
+  // Enhanced distribution algorithm with anti-repetition and better variety
+  const avoidRepetitiveIndices = [6, 7]; // Avoid violet and purple indices for primary colors
+  
   for (let i = 0; i < colorCount; i++) {
-    // Use all hash segments plus image characteristics for better distribution
-    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1)) + 
-                     (seed4 >> (i * 4)) + (seed5 >> (i * 2)) + (complexitySeed * (i + 1)) + (i * 7919);
-    let colorIndex = Math.abs(colorSeed) % enhancedColors.length;
+    // Create highly varied seeds using all available entropy sources
+    const baseSeed = (seed1 * (i + 1)) ^ (seed2 << (i + 2)) ^ (seed3 >>> (i + 1)) ^ 
+                    (seed4 * (i + 3)) ^ (seed5 << (i + 4)) ^ (complexitySeed * (i * i + 1));
+    const imageSizeFactor = (imageSize % 997) * (i + 1);
+    const entropyFactor = (dataEntropy >>> (i % 4)) * (i + 7);
+    const signatureFactor = (imageSignature * (i + 1)) % 1009;
+    const combinedSeed = baseSeed + imageSizeFactor + entropyFactor + signatureFactor + (i * 12289);
     
-    // Promote vivid colors for primary positions while allowing some neutrals
-    const vividColorIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]; // First 24 colors
-    const neutralColorIndices = [24, 25, 26, 27, 28, 29, 30, 31, 32]; // Neutral/dark colors
+    let colorIndex = Math.abs(combinedSeed) % enhancedColors.length;
     
-    // For primary colors (first 4), strongly prefer vivid colors
-    if (i < 4 && neutralColorIndices.includes(colorIndex)) {
-      // Use different jump patterns based on image characteristics
-      const jumpSize = 11 + (sizeVariation % 7); // Variable jump size
-      colorIndex = (colorIndex + jumpSize) % vividColorIndices.length;
+    // For primary colors (first 4), avoid repetitive purple/violet and prefer diverse colors
+    if (i < 4) {
+      // Avoid purple/violet for primary positions to reduce repetition
+      if (avoidRepetitiveIndices.includes(colorIndex)) {
+        colorIndex = (colorIndex + 17 + (sizeVariation % 11)) % enhancedColors.length;
+      }
+      
+      // Ensure first 4 colors are from different color families
+      const colorFamilies = {
+        red: [0, 14], orange: [1, 13], yellow: [2, 9, 15], green: [3, 16, 19, 23], 
+        blue: [4, 11, 17, 21], indigo: [5], violet: [6], purple: [7], 
+        pink: [8], gold: [9], silver: [10], others: [12, 18, 20, 22]
+      };
+      
+      // Try to distribute across different color families
+      const usedFamilies = new Set();
+      for (const [family, indices] of Object.entries(colorFamilies)) {
+        if (indices.includes(colorIndex) && usedFamilies.has(family)) {
+          colorIndex = (colorIndex + 13 + (imageSizeFactor % 7)) % enhancedColors.length;
+          break;
+        }
+        if (indices.includes(colorIndex)) {
+          usedFamilies.add(family);
+        }
+      }
     }
     
-    // Ensure uniqueness with smart distribution
+    // Ensure uniqueness with enhanced spacing
     let attempts = 0;
     while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
-      // Use prime number spacing with variation based on image size
-      const spacing = 7 + (sizeVariation % 5);
+      const spacing = 11 + (combinedSeed % 7) + (attempts * 3);
       colorIndex = (colorIndex + spacing) % enhancedColors.length;
       attempts++;
     }
