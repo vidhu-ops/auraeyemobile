@@ -1992,49 +1992,91 @@ export default function AuraAnalysis() {
   };
 
   const getColorKeyword = (color: string): string => {
+    console.log('Getting keyword for color:', color);
     const keywords: Record<string, string> = {
       'Red': 'Life Force & Vitality',
+      'red': 'Life Force & Vitality',
       'Orange': 'Creative Expression & Sensuality',
+      'orange': 'Creative Expression & Sensuality',
       'Yellow': 'Mental Clarity & Confidence',
+      'yellow': 'Mental Clarity & Confidence',
       'Green': 'Heart Healing & Compassion',
+      'green': 'Heart Healing & Compassion',
       'Blue': 'Authentic Communication & Truth',
+      'blue': 'Authentic Communication & Truth',
       'Indigo': 'Psychic Abilities & Inner Vision',
+      'indigo': 'Psychic Abilities & Inner Vision',
       'Violet': 'Divine Connection & Enlightenment',
+      'violet': 'Divine Connection & Enlightenment',
       'Purple': 'Spiritual Mastery & Transformation',
+      'purple': 'Spiritual Mastery & Transformation',
       'Pink': 'Unconditional Love & Tenderness',
+      'pink': 'Unconditional Love & Tenderness',
       'White': 'Divine Light & Purification',
+      'white': 'Divine Light & Purification',
       'Gold': 'Christ Consciousness & Illumination',
+      'gold': 'Christ Consciousness & Illumination',
       'Silver': 'Feminine Intuition & Reflection',
+      'silver': 'Feminine Intuition & Reflection',
       'Turquoise': 'Emotional Healing & Expression',
+      'turquoise': 'Emotional Healing & Expression',
       'Lavender': 'Peaceful Awakening & Serenity',
+      'lavender': 'Peaceful Awakening & Serenity',
       'Coral': 'Nurturing Creativity & Warmth',
+      'coral': 'Nurturing Creativity & Warmth',
       'Mint': 'Renewal Energy & Fresh Growth',
+      'mint': 'Renewal Energy & Fresh Growth',
       'Peach': 'Gentle Comfort & Emotional Support',
+      'peach': 'Gentle Comfort & Emotional Support',
       'Sky Blue': 'Limitless Expression & Freedom',
+      'sky blue': 'Limitless Expression & Freedom',
       'Rose': 'Soul Love & Heart Opening',
+      'rose': 'Soul Love & Heart Opening',
       'Amber': 'Ancient Protection & Earth Wisdom',
+      'amber': 'Ancient Protection & Earth Wisdom',
       'Gray': 'Neutral Balance & Wisdom',
+      'gray': 'Neutral Balance & Wisdom',
       'Black': 'Shadow Work & Deep Transformation',
+      'black': 'Shadow Work & Deep Transformation',
       'Crimson': 'Passionate Purpose & Warrior Spirit',
+      'crimson': 'Passionate Purpose & Warrior Spirit',
       'Magenta': 'Divine Rebellion & Soul Independence',
+      'magenta': 'Divine Rebellion & Soul Independence',
       'ocher': 'Primal Earth Connection & Stability',
+      'Ocher': 'Primal Earth Connection & Stability',
       'Brown': 'Material Grounding & Natural Wisdom',
+      'brown': 'Material Grounding & Natural Wisdom',
       'Beige': 'Subtle Harmony & Gentle Strength',
+      'beige': 'Subtle Harmony & Gentle Strength',
       'Cyan': 'Pure Emotion & Clarity',
+      'cyan': 'Pure Emotion & Clarity',
       'Lime': 'Spring Awakening & Vitality',
+      'lime': 'Spring Awakening & Vitality',
       'Maroon': 'Mature Strength & Enduring Power',
+      'maroon': 'Mature Strength & Enduring Power',
       'Navy': 'Profound Knowledge & Soul Depth',
+      'navy': 'Profound Knowledge & Soul Depth',
       'Olive': 'Natural Balance & Steady Growth',
+      'olive': 'Natural Balance & Steady Growth',
       'Teal': 'Heart-Voice Bridge & Compassionate Truth',
+      'teal': 'Heart-Voice Bridge & Compassionate Truth',
       'Bronze': 'Ancient Endurance & Protective Strength',
+      'bronze': 'Ancient Endurance & Protective Strength',
       'Cobalt': 'Cosmic Wisdom & Universal Truth',
+      'cobalt': 'Cosmic Wisdom & Universal Truth',
       'Emerald': 'Pure Heart Healing & Soul Growth',
+      'emerald': 'Pure Heart Healing & Soul Growth',
       'Jade': 'Harmonious Love & Peaceful Healing',
+      'jade': 'Harmonious Love & Peaceful Healing',
       'Sapphire': 'Divine Truth Seeking & Soul Wisdom',
-      'Topaz': 'Golden Intelligence & Creative Wisdom'
+      'sapphire': 'Divine Truth Seeking & Soul Wisdom',
+      'Topaz': 'Golden Intelligence & Creative Wisdom',
+      'topaz': 'Golden Intelligence & Creative Wisdom'
         
     };
-    return keywords[color] || 'Spiritual Essence & Mystery';
+    const result = keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
+    console.log('Returning keyword:', result);
+    return result;
   };
 
 
@@ -3576,7 +3618,7 @@ export default function AuraAnalysis() {
     const personHeight = height * 0.7;
 
     // Create smokey particle system around person outline
-    const particleCount = 150 + (energyLevel * 20);
+    const particleCount = 200 + (energyLevel * 20);
     
     for (let i = 0; i < particleCount; i++) {
       // Generate particles around person silhouette
@@ -3625,7 +3667,7 @@ export default function AuraAnalysis() {
       
       // Draw particle as soft circle
       ctx.beginPath();
-      ctx.arc(particleX, particleY, particleSize * 3, 0, Math.PI * 2);
+      ctx.arc(particleX, particleY, particleSize * 4, 0, Math.PI * 2);
       ctx.fill();
     }
 
