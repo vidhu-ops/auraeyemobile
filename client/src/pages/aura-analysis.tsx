@@ -119,6 +119,31 @@ export default function AuraAnalysis() {
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
 
+  // Generate deterministic hash from image data for consistent results
+  const generateImageHash = (imageData: string): string => {
+    // Use multiple sections of the image for better uniqueness
+    const sections = [
+      imageData.substring(0, 500),
+      imageData.substring(Math.floor(imageData.length * 0.25), Math.floor(imageData.length * 0.25) + 500),
+      imageData.substring(Math.floor(imageData.length * 0.5), Math.floor(imageData.length * 0.5) + 500),
+      imageData.substring(Math.floor(imageData.length * 0.75), Math.floor(imageData.length * 0.75) + 500),
+      imageData.substring(imageData.length - 500)
+    ];
+    
+    let combinedHash = '';
+    sections.forEach((section, index) => {
+      let hash = 0;
+      for (let i = 0; i < section.length; i++) {
+        const char = section.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char + index;
+        hash = hash & hash; // Convert to 32-bit integer
+      }
+      combinedHash += Math.abs(hash).toString(36);
+    });
+    
+    return combinedHash;
+  };
+
 
 
   const getColorCompleteInfo = (colorName: string): { 
@@ -473,30 +498,7 @@ export default function AuraAnalysis() {
     return analysis;
   };
 
-  // Enhanced hash function for consistent image results
-  const generateImageHash = (base64Image: string): string => {
-    // Use multiple sections of the image for better uniqueness
-    const sections = [
-      base64Image.substring(0, 500),
-      base64Image.substring(Math.floor(base64Image.length * 0.25), Math.floor(base64Image.length * 0.25) + 500),
-      base64Image.substring(Math.floor(base64Image.length * 0.5), Math.floor(base64Image.length * 0.5) + 500),
-      base64Image.substring(Math.floor(base64Image.length * 0.75), Math.floor(base64Image.length * 0.75) + 500),
-      base64Image.substring(base64Image.length - 500)
-    ];
-    
-    let combinedHash = '';
-    sections.forEach((section, index) => {
-      let hash = 0;
-      for (let i = 0; i < section.length; i++) {
-        const char = section.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char + index;
-        hash = hash & hash; // Convert to 32-bit integer
-      }
-      combinedHash += Math.abs(hash).toString(36);
-    });
-    
-    return combinedHash;
-  };
+
 
   // Enhanced image similarity detection for consistent results
   const findSimilarImage = (newHash: string, base64Image: string): AuraAnalysisResult | null => {
