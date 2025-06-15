@@ -14,33 +14,86 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Analyze image buffer to extract aura colors from processed aura photographs
+// Helper function to identify typical aura color patterns
+function isTypicalAuraColor(r: number, g: number, b: number): boolean {
+  // Identify common aura color signatures
+  const colorRatios = {
+    redDominant: r > g * 1.3 && r > b * 1.3,
+    blueDominant: b > r * 1.3 && b > g * 1.3,
+    greenDominant: g > r * 1.3 && g > b * 1.3,
+    purpleViolet: r > 100 && b > 100 && Math.abs(r - b) < 50,
+    yellow: r > 150 && g > 150 && b < 100,
+    orange: r > 150 && g > 100 && g < r && b < g,
+    pink: r > 150 && g > 100 && b > 100 && r > g,
+    turquoise: g > 120 && b > 120 && r < g * 0.8
+  };
+  
+  return Object.values(colorRatios).some(ratio => ratio);
+}
+
+// Calculate priority score for aura colors based on visibility and significance
+function calculateAuraPriority(r: number, g: number, b: number, saturation: number, brightness: number): number {
+  let priority = 0;
+  
+  // Base priority from saturation (most important for aura colors)
+  priority += saturation * 2;
+  
+  // Brightness contribution (visible aura colors are typically bright)
+  if (brightness > 100) priority += 30;
+  if (brightness > 150) priority += 20;
+  
+  // Color-specific bonuses for typical aura colors
+  if (r > 150 && b > 150 && Math.abs(r - b) < 50) priority += 40; // Purple/Violet
+  if (b > r * 1.5 && b > g * 1.5) priority += 35; // Blue
+  if (g > r * 1.5 && g > b * 1.5) priority += 35; // Green
+  if (r > g * 1.5 && r > b * 1.5) priority += 35; // Red
+  if (r > 150 && g > 150 && b < 80) priority += 30; // Yellow/Gold
+  if (r > 150 && g > 100 && g < r && b < g) priority += 30; // Orange
+  
+  // Penalty for skin tones and common backgrounds
+  if (r > 120 && g > 90 && b > 70 && Math.abs(r - g) < 30) priority -= 50; // Skin tones
+  if (r < 80 && g < 80 && b < 80) priority -= 30; // Very dark colors
+  if (r > 200 && g > 200 && b > 200) priority -= 20; // Very light/white
+  
+  return Math.max(0, priority);
+}
+
+// Analyze image buffer to extract actual visible aura colors from processed aura photographs
 function analyzeImageBufferColors(imageBuffer: Buffer) {
   const colors = [];
-  const step = 15; // Fine sampling for precise aura color detection
+  const step = 10; // Very fine sampling for maximum precision in aura color detection
   
-  // Enhanced color extraction specifically for aura photography analysis
+  // Enhanced color extraction specifically targeting visible aura energy patterns
   for (let i = 0; i < imageBuffer.length - 3; i += step) {
     const r = imageBuffer[i] || 0;
     const g = imageBuffer[i + 1] || 0;
     const b = imageBuffer[i + 2] || 0;
     
-    // Focus on vibrant aura colors while filtering background
-    if ((r + g + b) > 30 && (r + g + b) < 720) {
-      // Prioritize saturated colors that indicate aura energy
+    // Focus on aura-specific color ranges while filtering skin tones and backgrounds
+    if ((r + g + b) > 40 && (r + g + b) < 700) {
+      // Calculate color properties for aura identification
       const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-      if (saturation > 15) { // Only include colors with sufficient saturation
+      const brightness = (r + g + b) / 3;
+      
+      // Enhanced criteria for aura colors: high saturation or specific color signatures
+      const isAuraColor = saturation > 25 || 
+                         (brightness > 80 && saturation > 10) || // Bright, moderately saturated
+                         isTypicalAuraColor(r, g, b); // Known aura color patterns
+      
+      if (isAuraColor) {
         colors.push({ 
           r, g, b, 
           hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`,
-          saturation
+          saturation,
+          brightness,
+          priority: calculateAuraPriority(r, g, b, saturation, brightness)
         });
       }
     }
   }
   
-  // Sort colors by saturation to prioritize visible aura colors
-  colors.sort((a, b) => b.saturation - a.saturation);
+  // Sort colors by aura priority to get the most significant visible colors
+  colors.sort((a, b) => b.priority - a.priority);
   
   // Enhanced zone detection for aura photography - map actual visible colors to body zones
   const totalColors = colors.length;
