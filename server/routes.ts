@@ -14,13 +14,81 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
+// Analyze image buffer to extract color characteristics
+function analyzeImageBufferColors(imageBuffer: Buffer) {
+  const colors = [];
+  const step = 50; // Sample every 50th byte
+  
+  // Extract RGB-like patterns from buffer
+  for (let i = 0; i < imageBuffer.length - 3; i += step) {
+    const r = imageBuffer[i] || 0;
+    const g = imageBuffer[i + 1] || 0;
+    const b = imageBuffer[i + 2] || 0;
+    
+    if ((r + g + b) > 30) { // Skip very dark pixels
+      colors.push({ r, g, b, hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}` });
+    }
+  }
+  
+  // Analyze color distribution across different zones
+  const zones = {
+    crown: colors.slice(0, Math.floor(colors.length * 0.25)),
+    heart: colors.slice(Math.floor(colors.length * 0.25), Math.floor(colors.length * 0.5)),
+    solar: colors.slice(Math.floor(colors.length * 0.5), Math.floor(colors.length * 0.75)),
+    aura: colors.slice(Math.floor(colors.length * 0.75))
+  };
+  
+  // Find dominant colors in each zone
+  const dominantColors: Record<string, string> = {};
+  for (const [zoneName, zoneColors] of Object.entries(zones)) {
+    const colorFreq: Record<string, number> = {};
+    zoneColors.forEach(color => {
+      const groupedColor = groupSimilarColors(color.hex);
+      colorFreq[groupedColor] = (colorFreq[groupedColor] || 0) + 1;
+    });
+    
+    const sortedColors = Object.entries(colorFreq).sort(([,a], [,b]) => (b as number) - (a as number));
+    dominantColors[zoneName] = sortedColors[0]?.[0] || '#FF6B6B';
+  }
+  
+  return {
+    totalColors: colors.length,
+    zones: dominantColors,
+    overallDominant: Object.values(dominantColors)[0] || '#FF6B6B',
+    overallSecondary: Object.values(dominantColors)[1] || '#4ECDC4',
+    colorVariety: new Set(colors.map(c => groupSimilarColors(c.hex))).size,
+    energyIntensity: colors.reduce((sum, c) => sum + (c.r + c.g + c.b), 0) / colors.length / 3
+  };
+}
+
+function groupSimilarColors(hex: string): string {
+  const r = parseInt(hex.substring(1, 3), 16);
+  const g = parseInt(hex.substring(3, 5), 16);
+  const b = parseInt(hex.substring(5, 7), 16);
+  
+  const threshold = 40;
+  
+  // Group colors into broader categories
+  if (r > g + threshold && r > b + threshold) return '#FF4444'; // Red family
+  if (g > r + threshold && g > b + threshold) return '#44FF44'; // Green family
+  if (b > r + threshold && b > g + threshold) return '#4444FF'; // Blue family
+  if (r > threshold && g > threshold && b < r - threshold) return '#FFFF44'; // Yellow family
+  if (r > threshold && b > threshold && g < r - threshold) return '#FF44FF'; // Purple family
+  if (g > threshold && b > threshold && r < g - threshold) return '#44FFFF'; // Cyan family
+  if (r > g && g > b && r - g < threshold) return '#FF8844'; // Orange family
+  if (r > 200 && g > 200 && b > 200) return '#FFFFFF'; // White/Light
+  if (r < 60 && g < 60 && b < 60) return '#333333'; // Dark
+  
+  return hex;
+}
+
 // Function to generate deterministic aura analysis based on actual image color analysis
-async function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
+function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Create SHA-256 hash for strong consistency - identical images get identical results
   const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
   
-  // Analyze actual colors in the image around the person
-  const imageColorAnalysis = await analyzeImageColors(imageBuffer);
+  // Analyze actual colors in the image buffer for enhanced differentiation
+  const imageColorData = analyzeImageBufferColors(imageBuffer);
   
   // Extract multiple seeds from different hash segments for enhanced variability
   const seed1 = parseInt(hash.substring(0, 8), 16);
@@ -58,8 +126,14 @@ async function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy) % 999983;
   const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13) % 1000003;
   
-  // Map detected colors to our enhanced color palette based on actual image analysis
-  const detectedColorInfluence = mapImageColorsToAuraPalette(imageColorAnalysis);
+  // Use image color analysis to influence aura color selection
+  const colorInfluence = {
+    dominantHue: imageColorData.overallDominant,
+    secondaryHue: imageColorData.overallSecondary,
+    energyLevel: imageColorData.energyIntensity,
+    colorVariety: imageColorData.colorVariety,
+    zoneColors: imageColorData.zones
+  };
   
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
