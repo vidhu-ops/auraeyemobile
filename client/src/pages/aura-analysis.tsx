@@ -2586,26 +2586,55 @@ export default function AuraAnalysis() {
 
   // Function to extract all 4 distinct aura colors from analysis result
   const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
-    // Extract the first 4 colors from the aura color spectrum
-    const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor || auraData.dominantColor];
+    // Start with available spectrum colors
+    const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor];
     
-    // Ensure we have at least 4 colors by filling with variations if needed
-    const color1 = getAccurateColorCode(spectrum[0] || auraData.dominantColor);
-    const color2 = getAccurateColorCode(spectrum[1] || auraData.secondaryColor || auraData.dominantColor);
-    const color3 = getAccurateColorCode(spectrum[2] || auraData.dominantColor);
-    const color4 = getAccurateColorCode(spectrum[3] || auraData.secondaryColor || auraData.dominantColor);
+    // Define a diverse color palette to ensure uniqueness
+    const colorPalette = [
+      '#4B0082', '#FF4444', '#32CD32', '#FFD700', // Indigo, Red, Green, Gold
+      '#FF6600', '#00FFFF', '#8A2BE2', '#FF69B4', // Orange, Cyan, Blue Violet, Hot Pink
+      '#40E0D0', '#DC143C', '#00FF7F', '#FF1493', // Turquoise, Crimson, Spring Green, Deep Pink
+      '#9370DB', '#FF8C00', '#00CED1', '#DA70D6', // Medium Purple, Dark Orange, Dark Turquoise, Orchid
+      '#87CEEB', '#F4A460', '#98FB98', '#DDA0DD'  // Sky Blue, Sandy Brown, Pale Green, Plum
+    ];
     
-    // Validate all colors are defined
-    const safeColor1 = color1 || '#4B0082'; // Default to indigo
-    const safeColor2 = color2 || '#FF4444'; // Default to red
-    const safeColor3 = color3 || '#32CD32'; // Default to green
-    const safeColor4 = color4 || '#FFD700'; // Default to gold
+    // Collect available colors from spectrum
+    const availableColors: string[] = [];
+    for (let i = 0; i < spectrum.length; i++) {
+      const color = getAccurateColorCode(spectrum[i]);
+      if (color && !availableColors.includes(color)) {
+        availableColors.push(color);
+      }
+    }
+    
+    // Fill remaining slots with palette colors that aren't already used
+    let paletteIndex = 0;
+    while (availableColors.length < 4 && paletteIndex < colorPalette.length) {
+      const paletteColor = colorPalette[paletteIndex];
+      if (!availableColors.includes(paletteColor)) {
+        availableColors.push(paletteColor);
+      }
+      paletteIndex++;
+    }
+    
+    // Ensure we have exactly 4 unique colors
+    const uniqueColors = Array.from(new Set(availableColors)).slice(0, 4);
+    
+    // If still missing colors, add remaining palette colors
+    while (uniqueColors.length < 4) {
+      for (const paletteColor of colorPalette) {
+        if (!uniqueColors.includes(paletteColor)) {
+          uniqueColors.push(paletteColor);
+          break;
+        }
+      }
+    }
     
     return {
-      thinking: safeColor1,    // First color - thinking energy (crown/top)
-      receiving: safeColor2,   // Second color - receiving energy (right side)
-      giving: safeColor3,      // Third color - giving energy (left side)
-      personality: safeColor4  // Fourth color - personality energy (base/bottom)
+      thinking: uniqueColors[0],    // Crown energy - first unique color
+      receiving: uniqueColors[1],   // Receiving energy - second unique color  
+      giving: uniqueColors[2],      // Giving energy - third unique color
+      personality: uniqueColors[3]  // Personality energy - fourth unique color
     };
   };
 
@@ -2623,21 +2652,27 @@ export default function AuraAnalysis() {
   // Function to convert hex color back to color name
   const getColorNameFromHex = (hex: string): string => {
     const colorMap: Record<string, string> = {
-      '#FF0000': 'Red', '#DC143C': 'Crimson', '#8B0000': 'Maroon',
-      '#FFA500': 'Orange', '#FF7F50': 'Coral',
-      '#FFFF00': 'Yellow', '#FFD700': 'Gold', '#FFBF00': 'Amber',
-      '#00FF00': 'Green', '#50C878': 'Emerald', '#98FB98': 'Mint',
-      '#0000FF': 'Blue', '#000080': 'Navy', '#87CEEB': 'Sky Blue',
-      '#40E0D0': 'Turquoise', '#008080': 'Teal', '#00FFFF': 'Cyan',
-      '#800080': 'Purple', '#8A2BE2': 'Violet', '#FF00FF': 'Magenta', '#E6E6FA': 'Lavender',
-      '#FFC0CB': 'Pink', '#FF69B4': 'Rose', '#FFCBA4': 'Peach',
+      '#4B0082': 'Indigo', '#FF4444': 'Red', '#32CD32': 'Green', '#FFD700': 'Gold',
+      '#FF6600': 'Orange', '#00FFFF': 'Cyan', '#8A2BE2': 'Blue Violet', '#FF69B4': 'Hot Pink',
+      '#40E0D0': 'Turquoise', '#DC143C': 'Crimson', '#00FF7F': 'Spring Green', '#FF1493': 'Deep Pink',
+      '#9370DB': 'Medium Purple', '#FF8C00': 'Dark Orange', '#00CED1': 'Dark Turquoise', '#DA70D6': 'Orchid',
+      '#87CEEB': 'Sky Blue', '#F4A460': 'Sandy Brown', '#98FB98': 'Pale Green', '#DDA0DD': 'Plum',
+      '#FF0000': 'Bright Red', '#8B0000': 'Maroon',
+      '#FFA500': 'Bright Orange', '#FF7F50': 'Coral',
+      '#FFFF00': 'Yellow', '#FFBF00': 'Amber',
+      '#00FF00': 'Bright Green', '#50C878': 'Emerald',
+      '#0000FF': 'Blue', '#000080': 'Navy',
+      '#008080': 'Teal',
+      '#800080': 'Purple', '#FF00FF': 'Magenta', '#E6E6FA': 'Lavender',
+      '#FFC0CB': 'Pink', '#FFCBA4': 'Peach',
       '#FFFFFF': 'White', '#000000': 'Black', '#C0C0C0': 'Silver', '#808080': 'Gray',
-      '#A52A2A': 'Brown', '#4B0082': 'Indigo'
+      '#A52A2A': 'Brown'
     };
     
     // Find exact match first
-    if (colorMap[hex.toUpperCase()]) {
-      return colorMap[hex.toUpperCase()];
+    const upperHex = hex.toUpperCase();
+    if (colorMap[upperHex]) {
+      return colorMap[upperHex];
     }
     
     // Convert hex to RGB for approximate matching
@@ -4711,7 +4746,10 @@ export default function AuraAnalysis() {
                                           <span className="text-white font-bold">🧠</span>
                                         </div>
                                         <div>
-                                          <h5 className="font-bold text-purple-800">{result.dominantColor}</h5>
+                                          <h5 className="font-bold text-purple-800">{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.thinking);
+                                          })()}</h5>
                                           <p className="text-sm text-purple-600">Crown Energy - How You Think</p>
                                         </div>
                                       </div>
@@ -4739,7 +4777,10 @@ export default function AuraAnalysis() {
                                           <span className="text-white font-bold">⬅️</span>
                                         </div>
                                         <div>
-                                          <h5 className="font-bold text-blue-800">{getReceivingEnergyColor(result)}</h5>
+                                          <h5 className="font-bold text-blue-800">{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.receiving);
+                                          })()}</h5>
                                           <p className="text-sm text-blue-600">Receiving Energy (Dynamic)</p>
                                         </div>
                                       </div>
@@ -4767,7 +4808,10 @@ export default function AuraAnalysis() {
                                           <span className="text-white font-bold">➡️</span>
                                         </div>
                                         <div>
-                                          <h5 className="font-bold text-orange-800">{getGivingEnergyColor(result)}</h5>
+                                          <h5 className="font-bold text-orange-800">{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.giving);
+                                          })()}</h5>
                                           <p className="text-sm text-orange-600">Giving Energy (Dynamic)</p>
                                         </div>
                                       </div>
@@ -4795,7 +4839,10 @@ export default function AuraAnalysis() {
                                           <span className="text-white font-bold">🌈</span>
                                         </div>
                                         <div>
-                                          <h5 className="font-bold text-amber-800">{getPersonalityColor(result)}</h5>
+                                          <h5 className="font-bold text-amber-800">{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.personality);
+                                          })()}</h5>
                                           <p className="text-sm text-amber-600">Personality Color (Static)</p>
                                         </div>
                                       </div>
