@@ -14,30 +14,43 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Analyze image buffer to extract color characteristics optimized for full body images
+// Analyze image buffer to extract aura colors from processed aura photographs
 function analyzeImageBufferColors(imageBuffer: Buffer) {
   const colors = [];
-  const step = 25; // Smaller step for better sampling in full body images
+  const step = 15; // Fine sampling for precise aura color detection
   
-  // Extract RGB-like patterns from buffer with enhanced sampling
+  // Enhanced color extraction specifically for aura photography analysis
   for (let i = 0; i < imageBuffer.length - 3; i += step) {
     const r = imageBuffer[i] || 0;
     const g = imageBuffer[i + 1] || 0;
     const b = imageBuffer[i + 2] || 0;
     
-    // More inclusive color detection for full body images
-    if ((r + g + b) > 20 && (r + g + b) < 750) { // Skip very dark and very bright pixels
-      colors.push({ r, g, b, hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}` });
+    // Focus on vibrant aura colors while filtering background
+    if ((r + g + b) > 30 && (r + g + b) < 720) {
+      // Prioritize saturated colors that indicate aura energy
+      const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+      if (saturation > 15) { // Only include colors with sufficient saturation
+        colors.push({ 
+          r, g, b, 
+          hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`,
+          saturation
+        });
+      }
     }
   }
   
-  // Enhanced zone detection for full body images - distribute zones more effectively
+  // Sort colors by saturation to prioritize visible aura colors
+  colors.sort((a, b) => b.saturation - a.saturation);
+  
+  // Enhanced zone detection for aura photography - map actual visible colors to body zones
   const totalColors = colors.length;
+  const highSaturationColors = colors.filter(c => c.saturation > 30);
+  
   const zones = {
-    crown: colors.slice(0, Math.floor(totalColors * 0.2)), // Top 20% - head/crown area
-    heart: colors.slice(Math.floor(totalColors * 0.3), Math.floor(totalColors * 0.6)), // Middle 30% - chest/heart area
-    solar: colors.slice(Math.floor(totalColors * 0.6), Math.floor(totalColors * 0.8)), // Lower middle - solar plexus
-    aura: colors.filter((_, index) => index % 4 === 0) // Distributed sampling for overall aura
+    crown: colors.slice(0, Math.floor(totalColors * 0.15)), // Top 15% - crown/head aura
+    heart: colors.slice(Math.floor(totalColors * 0.25), Math.floor(totalColors * 0.55)), // Heart center
+    solar: colors.slice(Math.floor(totalColors * 0.55), Math.floor(totalColors * 0.80)), // Solar plexus
+    aura: highSaturationColors.length > 0 ? highSaturationColors : colors.filter((_, index) => index % 3 === 0)
   };
   
   // Find dominant colors in each zone
@@ -73,19 +86,75 @@ function groupSimilarColors(hex: string): string {
   const g = parseInt(hex.substring(3, 5), 16);
   const b = parseInt(hex.substring(5, 7), 16);
   
-  const threshold = 40;
+  const threshold = 30; // Tighter grouping for aura colors
   
-  // Group colors into broader categories
-  if (r > g + threshold && r > b + threshold) return '#FF4444'; // Red family
-  if (g > r + threshold && g > b + threshold) return '#44FF44'; // Green family
-  if (b > r + threshold && b > g + threshold) return '#4444FF'; // Blue family
-  if (r > threshold && g > threshold && b < r - threshold) return '#FFFF44'; // Yellow family
-  if (r > threshold && b > threshold && g < r - threshold) return '#FF44FF'; // Purple family
-  if (g > threshold && b > threshold && r < g - threshold) return '#44FFFF'; // Cyan family
-  if (r > g && g > b && r - g < threshold) return '#FF8844'; // Orange family
-  if (r > 200 && g > 200 && b > 200) return '#FFFFFF'; // White/Light
-  if (r < 60 && g < 60 && b < 60) return '#333333'; // Dark
+  // Enhanced aura color detection - preserve actual visible colors
+  // Red spectrum (passion, vitality)
+  if (r > g + threshold && r > b + threshold) {
+    if (r > 200) return '#FF4444'; // Bright red
+    if (r > 150) return '#CC3333'; // Medium red
+    return '#AA2222'; // Deep red
+  }
   
+  // Blue spectrum (communication, truth)
+  if (b > r + threshold && b > g + threshold) {
+    if (b > 200) return '#4444FF'; // Bright blue
+    if (b > 150) return '#3333CC'; // Medium blue
+    return '#2222AA'; // Deep blue
+  }
+  
+  // Green spectrum (healing, heart)
+  if (g > r + threshold && g > b + threshold) {
+    if (g > 200) return '#44FF44'; // Bright green
+    if (g > 150) return '#33CC33'; // Medium green
+    return '#22AA22'; // Deep green
+  }
+  
+  // Purple/Violet spectrum (spirituality, intuition)
+  if (r > threshold && b > threshold && Math.abs(r - b) < 50) {
+    if (r > 180 && b > 180) return '#AA44FF'; // Violet
+    if (r > 120 && b > 120) return '#8833CC'; // Purple
+    return '#663399'; // Deep purple
+  }
+  
+  // Yellow spectrum (wisdom, mental clarity)
+  if (r > threshold && g > threshold && b < r - threshold) {
+    if (r > 200 && g > 200) return '#FFFF44'; // Bright yellow
+    return '#DDDD33'; // Medium yellow
+  }
+  
+  // Orange spectrum (creativity, emotion)
+  if (r > g && g > b && r - g < threshold && g > 100) {
+    return '#FF8844'; // Orange
+  }
+  
+  // Cyan/Turquoise spectrum (communication, healing)
+  if (g > threshold && b > threshold && r < g - 30) {
+    return '#44FFFF'; // Cyan/Turquoise
+  }
+  
+  // Pink spectrum (love, compassion)
+  if (r > 150 && g > 100 && b > 150 && r > g) {
+    return '#FF88CC'; // Pink
+  }
+  
+  // Gold spectrum (divine wisdom)
+  if (r > 180 && g > 150 && b < 100) {
+    return '#FFD700'; // Gold
+  }
+  
+  // Silver spectrum (intuition, lunar energy)
+  if (Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && r > 150) {
+    return '#C0C0C0'; // Silver
+  }
+  
+  // White/Light spectrum
+  if (r > 220 && g > 220 && b > 220) return '#FFFFFF';
+  
+  // Dark/Black spectrum
+  if (r < 50 && g < 50 && b < 50) return '#333333';
+  
+  // Return original color if no clear category
   return hex;
 }
 
@@ -464,8 +533,10 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     personalityTraits: selectedTraits,
     energyLevel,
     energyMap: energyMap, // Include the 4-Zone Energy Map based on actual detected colors
+    actualDetectedColors: colorInfluence.zoneColors, // Include raw detected colors for verification
+    imageAnalysisType: colorInfluence.imageType, // Show if full body or portrait
     spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase() as keyof typeof spiritualGuidanceMessages] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
-    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field. Image analysis detected distinct color patterns in different energy zones, indicating ${Object.keys(colorInfluence.zoneColors).length} distinct energy centers with varying intensities.`,
+    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field. Actual aura photography analysis detected ${colorInfluence.colorVariety} distinct color frequencies across different energy zones: Crown (${colorInfluence.zoneColors.crown}), Heart (${colorInfluence.zoneColors.heart}), Solar (${colorInfluence.zoneColors.solar}), and Overall Aura (${colorInfluence.zoneColors.aura}).`,
     personalityIntegration: personalityIntegrationAnalysis,
     energyAspects: energyAspects,
     chakraActivity,
