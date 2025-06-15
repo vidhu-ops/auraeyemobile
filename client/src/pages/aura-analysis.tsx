@@ -2431,140 +2431,84 @@ export default function AuraAnalysis() {
           const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side - Giving energy to others
           const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Edges - Static personality energy
           
-          // 1. Personality Color - Static background around entire picture edges
-          ctx.globalCompositeOperation = 'screen';
-          const personalityGlow = ctx.createRadialGradient(
-            centerX, centerY, Math.min(canvas.width, canvas.height) * 0.3,
-            centerX, centerY, maxRadius * 1.2
-          );
-          personalityGlow.addColorStop(0, 'transparent');
-          personalityGlow.addColorStop(0.7, `${personalityColor}60`);
-          personalityGlow.addColorStop(0.9, `${personalityColor}80`);
-          personalityGlow.addColorStop(1, `${personalityColor}40`);
+          // 1. Personality Color - 3 circles around edges at 50% opacity
+          ctx.globalCompositeOperation = 'source-over';
           
-          ctx.fillStyle = personalityGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Helper function to convert hex to RGBA
+          const hexToRGBA = (hex: string, alpha: number) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          };
           
-          // 2. Crown/Thinking Energy - Above head (how you think)
-          ctx.globalCompositeOperation = 'screen';
-          const headY = canvas.height * 0.15;
-          const headRadius = Math.min(canvas.width, canvas.height) * 0.18;
-          const thinkingGlow = ctx.createRadialGradient(
-            centerX, headY, 0,
-            centerX, headY, headRadius * 2
-          );
-          thinkingGlow.addColorStop(0, `${thinkingColor}FF`);
-          thinkingGlow.addColorStop(0.4, `${thinkingColor}CC`);
-          thinkingGlow.addColorStop(0.7, `${thinkingColor}88`);
-          thinkingGlow.addColorStop(1, 'transparent');
+          // Convert hex to RGBA with 50% opacity
+          const personalityRGBA = hexToRGBA(personalityColor, 0.5);
           
-          ctx.fillStyle = thinkingGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Draw 3 circles around the edges
+          const edgePositions = [
+            { x: canvas.width * 0.1, y: canvas.height * 0.2 },
+            { x: canvas.width * 0.9, y: canvas.height * 0.8 },
+            { x: canvas.width * 0.5, y: canvas.height * 0.95 }
+          ];
           
-          // 3. Giving Energy - Left side of person (energy you give to others)
-          ctx.globalCompositeOperation = 'screen';
-          const leftX = canvas.width * 0.05;
-          const leftY = centerY;
-          const sideRadius = Math.min(canvas.width, canvas.height) * 0.5;
+          edgePositions.forEach(pos => {
+            ctx.fillStyle = personalityRGBA;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+          });
           
-          // Create bright giving energy glow on left side
-          const givingGlow = ctx.createRadialGradient(
-            leftX, leftY, 0,
-            leftX + sideRadius * 1.2, leftY, sideRadius
-          );
-          givingGlow.addColorStop(0, `${givingColor}FF`);
-          givingGlow.addColorStop(0.3, `${givingColor}DD`);
-          givingGlow.addColorStop(0.6, `${givingColor}AA`);
-          givingGlow.addColorStop(0.8, `${givingColor}66`);
-          givingGlow.addColorStop(1, 'transparent');
+          // 2. Crown/Thinking Energy - 3 circles above head at 50% opacity
+          const thinkingRGBA = hexToRGBA(thinkingColor, 0.5);
           
-          ctx.fillStyle = givingGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Draw 3 circles above head area
+          const headPositions = [
+            { x: centerX - 30, y: canvas.height * 0.1 },
+            { x: centerX, y: canvas.height * 0.05 },
+            { x: centerX + 30, y: canvas.height * 0.1 }
+          ];
           
-          // Add additional flowing energy layers
-          for (let i = 0; i < 2; i++) {
-            const offsetY = leftY + (i - 0.5) * canvas.height * 0.3;
-            const flowGlow = ctx.createRadialGradient(
-              leftX + 20, offsetY, 0,
-              leftX + sideRadius * 0.9, offsetY, sideRadius * 0.8
-            );
-            flowGlow.addColorStop(0, `${givingColor}CC`);
-            flowGlow.addColorStop(0.5, `${givingColor}77`);
-            flowGlow.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = flowGlow;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
+          headPositions.forEach(pos => {
+            ctx.fillStyle = thinkingRGBA;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+          });
           
-          // 4. Receiving Energy - Right side of person (energy you receive from environment)
-          ctx.globalCompositeOperation = 'screen';
-          const rightX = canvas.width * 0.95;
-          const rightY = centerY;
-        
-          // Create bright receiving energy glow on right side
-          const receivingGlow = ctx.createRadialGradient(
-            rightX, rightY, 0,
-            rightX - sideRadius * 1.2, rightY, sideRadius
-          );
-          receivingGlow.addColorStop(0, `${receivingColor}FF`);
-          receivingGlow.addColorStop(0.3, `${receivingColor}DD`);
-          receivingGlow.addColorStop(0.6, `${receivingColor}AA`);
-          receivingGlow.addColorStop(0.8, `${receivingColor}66`);
-          receivingGlow.addColorStop(1, 'transparent');
+          // 3. Giving Energy - 3 circles on left side at 50% opacity
+          const givingRGBA = hexToRGBA(givingColor, 0.5);
           
-          ctx.fillStyle = receivingGlow;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Draw 3 circles on left side
+          const leftPositions = [
+            { x: canvas.width * 0.05, y: centerY - 40 },
+            { x: canvas.width * 0.02, y: centerY },
+            { x: canvas.width * 0.05, y: centerY + 40 }
+          ];
           
-          // Add additional flowing energy layers
-          for (let i = 0; i < 2; i++) {
-            const offsetY = rightY + (i - 0.5) * canvas.height * 0.3;
-            const flowGlow = ctx.createRadialGradient(
-              rightX - 20, offsetY, 0,
-              rightX - sideRadius * 0.9, offsetY, sideRadius * 0.8
-            );
-            flowGlow.addColorStop(0, `${receivingColor}CC`);
-            flowGlow.addColorStop(0.5, `${receivingColor}77`);
-            flowGlow.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = flowGlow;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
+          leftPositions.forEach(pos => {
+            ctx.fillStyle = givingRGBA;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+          });
           
-          // 5. Add energy flow connections between zones
-          ctx.globalCompositeOperation = 'overlay';
-          ctx.strokeStyle = `${thinkingColor}80`;
-          ctx.lineWidth = 5;
-          ctx.lineCap = 'round';
+          // 4. Receiving Energy - 3 circles on right side at 50% opacity
+          const receivingRGBA = hexToRGBA(receivingColor, 0.5);
           
-          // Thinking to giving flow (how thoughts create giving energy - left side)
-          ctx.beginPath();
-          ctx.moveTo(centerX - headRadius * 0.8, headY + headRadius * 0.3);
-          ctx.quadraticCurveTo(leftX + sideRadius * 0.8, centerY * 0.7, leftX + sideRadius * 0.3, leftY);
-          ctx.stroke();
+          // Draw 3 circles on right side
+          const rightPositions = [
+            { x: canvas.width * 0.95, y: centerY - 40 },
+            { x: canvas.width * 0.98, y: centerY },
+            { x: canvas.width * 0.95, y: centerY + 40 }
+          ];
           
-          // Thinking to receiving flow (how thoughts receive environmental input - right side)
-          ctx.beginPath();
-          ctx.moveTo(centerX + headRadius * 0.5, headY + headRadius * 0.3);
-          ctx.quadraticCurveTo(rightX - sideRadius * 0.8, centerY * 0.7, rightX - sideRadius * 0.3, rightY);
-          ctx.stroke();
-          
-          // Add subtle sparkle effects around thinking area
-          ctx.globalCompositeOperation = 'overlay';
-          for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const sparkleX = centerX + Math.cos(angle) * headRadius * 1.2;
-            const sparkleY = headY + Math.sin(angle) * headRadius * 0.8;
-            
-            const sparkle = ctx.createRadialGradient(
-              sparkleX, sparkleY, 0,
-              sparkleX, sparkleY, headRadius * 0.15
-            );
-            sparkle.addColorStop(0, `${thinkingColor}70`);
-            sparkle.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = sparkle;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
+          rightPositions.forEach(pos => {
+            ctx.fillStyle = receivingRGBA;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+          });
           
           // Reset composite operation
           ctx.globalCompositeOperation = 'source-over';
