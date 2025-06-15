@@ -1751,8 +1751,17 @@ export default function AuraAnalysis() {
         'Cyan': 'Your inner core center radiates healing communication, emotional clarity.',
         'Lime': 'Your inner core center radiates fresh healing energy, renewal, growth.',
         'Maroon': 'Your inner core center radiates deep passion, intensity, vitality.',
-        'Navy': 'Your inner core center radiates deep intuition, wisdom, grounding.'
-    
+        'Navy': 'Your inner core center radiates deep intuition, wisdom, grounding.',
+        'Teal': 'Your inner core center radiates healing communication and purity.',
+        'Violet': 'Your spiritual essence carries ancient wisdom and mystical power.',
+        'Orange': 'Your inner core center radiates creativity, joy, and vital energy.',
+        'Olive': 'Your inner core center radiates balance, harmony, and peaceful energy.',
+        'Bronze': 'Your inner core center radiates ancient wisdom, protection, grounding.',
+        'Cobalt': 'Your inner core center radiates deep intuition, wisdom, grounding.',
+        'Emerald': 'Your inner core center radiates fresh healing energy and depth.',
+        'Jade': 'Your inner core center radiates fresh healing energy and compassion.',
+        'Sapphire': 'Your inner core center radiates trust, insight, and divine wisdom.',
+        'Topaz': 'Your inner core center radiates ancient wisdom and emotional clarity.'
       },
       'middle': {
         'Red': 'Your emotional body processes through passionate and intense feeling.',
@@ -1778,7 +1787,22 @@ export default function AuraAnalysis() {
         'Crimson': 'Your emotional core center radiates deep passion, intensity, vitality.',
         'Magenta': 'Your emotional core center radiates deep love, intensity, passion.',
         'ocher': 'Your emotional core center radiates ancient wisdom, protection, grounding.',
-        'Brown': 'Your emotional core center radiates stability, grounding, practicality.'
+        'Brown': 'Your emotional core center radiates stability, grounding, practicality.',
+        'Beige': 'Your emotional core center radiates neutrality, balance, adaptability.',
+        'Cyan': 'Your emotional core center radiates healing communication, emotional clarity.',
+        'Lime': 'Your emotional core center radiates fresh healing energy, renewal, growth.',
+        'Maroon': 'Your emotional core center radiates deep passion, intensity, vitality.',
+        'Navy': 'Your emotional core center radiates deep intuition, wisdom, grounding.',
+        'Teal': 'Your emotional core center radiates healing communication and purity.',
+        'Violet': 'Your emotional body connects feelings to spiritual insights.',
+        'Orange': 'Your emotional core center radiates creativity, joy, and vital energy.',
+        'Olive': 'Your emotional core center radiates balance, harmony, and peaceful energy.',
+        'Bronze': 'Your emotional core center radiates ancient wisdom, protection, grounding.',
+        'Cobalt': 'Your emotional core center radiates deep intuition, wisdom, grounding.',
+        'Emerald': 'Your emotional core center radiates fresh healing energy and depth.',
+        'Jade': 'Your emotional core center radiates fresh healing energy and compassion.',
+        'Sapphire': 'Your emotional core center radiates trust, insight, and divine wisdom.',
+        'Topaz': 'Your emotional core center radiates ancient wisdom and emotional clarity.'
       },
       'outer': {
         'Red': 'You project dynamic energy and commanding presence to the world.',
@@ -1802,11 +1826,29 @@ export default function AuraAnalysis() {
         'Gray': 'Your outer core center radiates balance, neutrality, adaptability.',
         'Black': 'Your outer core center radiates power, protection, transformation.',
         'Crimson': 'Your outer core center radiates deep passion, intensity, vitality.',
-        'Magenta': 'Your outer core center radiates deep love, intensity, passion.'
+        'Magenta': 'Your outer core center radiates deep love, intensity, passion.',
+        'ocher': 'Your outer core center radiates ancient wisdom, protection, grounding.',
+        'Brown': 'Your outer core center radiates stability, grounding, practicality.',
+        'Beige': 'Your outer core center radiates neutrality, balance, adaptability.',
+        'Cyan': 'Your outer core center radiates healing communication, emotional clarity.',
+        'Lime': 'Your outer core center radiates fresh healing energy, renewal, growth.',
+        'Maroon': 'Your outer core center radiates deep passion, intensity, vitality.',
+        'Navy': 'Your outer core center radiates deep intuition, wisdom, grounding.',
+        'Teal': 'You emanate healing communication and purity to the world.',
+        'Violet': 'You emanate spiritual authority and mystical presence.',
+        'Orange': 'You project creative energy and inspiring enthusiasm to the world.',
+        'Olive': 'You radiate balance, harmony, and peaceful energy to others.',
+        'Bronze': 'Your outer core center radiates ancient wisdom, protection, grounding.',
+        'Cobalt': 'Your outer core center radiates deep intuition, wisdom, grounding.',
+        'Emerald': 'Your outer core center radiates fresh healing energy and depth.',
+        'Jade': 'Your outer core center radiates fresh healing energy and compassion.',
+        'Sapphire': 'You project trust, insight, and divine wisdom to the world.',
+        'Topaz': 'Your outer core center radiates ancient wisdom and emotional clarity.'
       }
     };
-    return layerMeanings[layer]?.[color] || 
-           `Your ${layer} layer radiates ${color.toLowerCase()} mastery - Specific chakra activation creating authentic spiritual expression and divine consciousness manifestation through this energy field`;
+    return layerMeanings[layer]?.[color] || layerMeanings[layer]?.[color.charAt(0).toUpperCase() + color.slice(1)] || 
+           layerMeanings['inner']?.[color] || layerMeanings['inner']?.[color.charAt(0).toUpperCase() + color.slice(1)] ||
+           'Authentic energy interpretation not available for this color combination';
   };
 
   const getEnergyPattern = (primary: string, secondary: string): string => {
