@@ -59,19 +59,27 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "graphite", hex: "#41424C", meaning: "Creative shadow integration, artistic depth" }
   ];
   
-  // Generate 6-8 colors for versatile array
+  // Generate 6-8 diverse colors ensuring vivid results
   const colorCount = 6 + (seed1 % 3); // Always 6, 7, or 8 colors
   const auraColors = [];
   const usedIndices = new Set();
   
+  // Enhanced distribution algorithm for more vivid variety
   for (let i = 0; i < colorCount; i++) {
-    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1));
+    // Use multiple hash segments for better distribution
+    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1)) + (i * 7919);
     let colorIndex = Math.abs(colorSeed) % enhancedColors.length;
     
-    // Ensure uniqueness
+    // Skip dull colors for more vivid results by avoiding certain ranges
+    const dullColorIndices = [24, 25, 26, 27, 28]; // black, grey, charcoal, slate, smoke
+    if (i < 4 && dullColorIndices.includes(colorIndex)) {
+      colorIndex = (colorIndex + 13) % enhancedColors.length; // Jump to more vivid colors
+    }
+    
+    // Ensure uniqueness with enhanced distribution
     let attempts = 0;
     while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
-      colorIndex = (colorIndex + 1) % enhancedColors.length;
+      colorIndex = (colorIndex + 7) % enhancedColors.length; // Prime number spacing
       attempts++;
     }
     
