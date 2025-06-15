@@ -136,21 +136,60 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Extract just the color names for the spectrum
   const auraColorSpectrum = auraColors.map(color => color.name);
   
+  // Generate comprehensive spiritual guidance based on color combinations
+  const spiritualGuidanceMessages = {
+    red: "Your root chakra energy manifests as primal life force, grounding you in physical reality while empowering leadership qualities. This fundamental frequency channels courage and manifestation power.",
+    orange: "Sacral chakra creative fire ignites passionate expression and emotional flow. This vibrant frequency awakens artistic gifts and the ability to manifest through inspired action.",
+    yellow: "Solar plexus radiance illuminates personal power and intellectual brilliance. This golden frequency activates confidence and transforms knowledge into wisdom.",
+    green: "Heart chakra emerald light radiates unconditional love and natural healing abilities. This nurturing frequency opens compassionate service and emotional balance.",
+    blue: "Throat chakra sapphire truth activates authentic communication and peaceful wisdom. This calming frequency enables honest expression and trustworthy leadership.",
+    indigo: "Third eye indigo flame awakens psychic abilities and intuitive wisdom. This mystical frequency opens spiritual sight and enhances dream work.",
+    violet: "Crown chakra violet ray connects to cosmic consciousness and divine guidance. This transcendent frequency opens spiritual channels.",
+    purple: "Higher crown chakra transformation integrates spiritual wisdom with earthly experience. This royal frequency balances mystical insight with practical application.",
+    pink: "Higher heart chakra divine love energy channels unconditional compassion and soul-level healing. This gentle frequency opens cosmic love consciousness.",
+    gold: "Soul star chakra divine wisdom channels Christ consciousness and enlightened understanding. This luminous frequency connects to divine intelligence.",
+    silver: "Lunar energy center feminine wisdom channels intuitive gifts and psychic sensitivity. This reflective frequency enhances inner sight.",
+    turquoise: "Higher throat chakra healing communication channels divine truth through compassionate expression. This bridge frequency connects heart and mind.",
+    magenta: "Universal love frequency channels divine transformation and cosmic consciousness. This transcendent color bridges earthly and celestial energies.",
+    coral: "Creative heart center gentle passion channels artistic expression through loving action. This warm frequency balances creativity with compassion.",
+    crimson: "Earth star chakra vital passion channels grounded strength and courageous action. This intense frequency connects survival wisdom with spiritual power.",
+    amber: "Ancient wisdom keeper protective energy channels timeless knowledge and earthly grounding. This stabilizing frequency connects to ancestral wisdom.",
+    emerald: "Heart healing chakra abundant love channels prosperity consciousness and emotional renewal. This rich frequency manifests through heart-centered action.",
+    sapphire: "Divine truth center spiritual insight channels higher wisdom and ethical clarity. This noble frequency guides righteous action.",
+    lavender: "Gentle spirituality higher crown energy channels peaceful awakening and cosmic grace. This serene frequency opens divine connection without overwhelming.",
+    mint: "Fresh healing energy renewal chakra channels emotional cleansing and energetic refreshment. This revitalizing frequency clears stagnant patterns.",
+    navy: "Deep wisdom center authority chakra channels profound understanding and stable leadership. This grounding frequency combines wisdom with practical power.",
+    teal: "Emotional balance heart-throat bridge channels clear feeling communication and healing dialogue. This balancing frequency harmonizes emotion and expression.",
+    maroon: "Grounded passion earth star energy channels mature strength and embodied wisdom. This stable frequency manifests spiritual insights through practical action.",
+    lime: "Vibrant growth heart healing chakra channels accelerated spiritual development and energetic renewal. This dynamic frequency catalyzes positive transformation."
+  };
+
+  // Enhanced personality integration analysis
+  const personalityIntegrationAnalysis = `Your ${dominantColor.name.toLowerCase()} aura energy creates a foundation of ${dominantColor.meaning.toLowerCase()}, while your ${secondaryColor.name.toLowerCase()} secondary frequency adds ${secondaryColor.meaning.toLowerCase()}. This unique combination manifests as ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities that support your spiritual evolution. The ${auraColorSpectrum.length}-color spectrum reveals a complex energetic signature indicating advanced soul development through ${selectedTraits.slice(2).join(', ').toLowerCase()} characteristics.`;
+
+  // Energy aspects based on color spectrum
+  const energyAspects = auraColors.slice(0, 5).map((color, index) => {
+    const aspectTypes = ['Life Force', 'Creative Expression', 'Emotional Flow', 'Mental Clarity', 'Spiritual Connection'];
+    return `${aspectTypes[index]}: ${color.meaning}`;
+  });
+
   return {
     dominantColor: dominantColor.name,
     secondaryColor: secondaryColor.name,
-    auraColors: auraColorSpectrum, // 6-8 color versatile array
-    auraColorSpectrum: auraColorSpectrum, // Alias for compatibility
+    auraColors: auraColorSpectrum,
+    auraColorSpectrum: auraColorSpectrum,
     auraLayerColors,
     personalityTraits: selectedTraits,
     energyLevel,
-    spiritualGuidance: `Your aura reveals a ${dominantColor.name} dominant energy with ${secondaryColor.name} undertones, creating a unique ${auraColorSpectrum.length}-color energetic signature. This versatile spectrum indicates ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities with ${selectedTraits.slice(2).join(', ').toLowerCase()} wisdom.`,
-    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum (${auraColorSpectrum.join(', ')}) reveals a complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field.`,
+    spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase()] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
+    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field.`,
+    personalityIntegration: personalityIntegrationAnalysis,
+    energyAspects: energyAspects,
     chakraActivity,
     colorMeanings,
     colorHexValues,
-    energyCycle: "Balanced",
-    recommendations: `Focus on developing your ${selectedTraits[0]} abilities while maintaining your ${selectedTraits[1]} nature. The ${auraColorSpectrum.length}-color spectrum indicates advanced spiritual development.`
+    energyCycle: seed1 % 2 === 0 ? "Expanding" : "Integrating",
+    recommendations: `Focus on developing your ${selectedTraits[0].toLowerCase()} abilities while maintaining your ${selectedTraits[1].toLowerCase()} nature. Work with ${dominantColor.name.toLowerCase()} energy meditation and ${secondaryColor.name.toLowerCase()} visualization to strengthen your energetic foundation. The ${auraColorSpectrum.length}-color spectrum indicates advanced spiritual development requiring conscious integration.`
   };
 }
 
@@ -414,27 +453,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Determine if we should use AI or deterministic analysis
-      let auraAnalysis;
-      
-      // Check if API keys are available for authentic AI analysis
-      if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
-        try {
-          // Use enhanced analysis with AI integration and numerological correlation
-          auraAnalysis = await enhancedAuraAnalysis(
-            "data:image/jpeg;base64," + imageData,
-            userNumerology,
-            previousReadings
-          );
-        } catch (error) {
-          console.log("AI analysis failed, using deterministic fallback");
-          // Use deterministic analysis for consistent results
-          auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
-        }
-      } else {
-        // Use deterministic analysis for consistent results when no API keys
-        auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
-      }
+      // Always use deterministic analysis for 100% consistent results
+      // Same image will always produce identical results
+      const auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
 
       // Cache the result for this specific image hash
       imageHashCache.set(imageHash, auraAnalysis);
