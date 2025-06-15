@@ -2533,114 +2533,38 @@ export default function AuraAnalysis() {
         ctx?.drawImage(img, 0, 0);
         
         if (ctx) {
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          const maxRadius = Math.max(canvas.width, canvas.height) * 0.9;
+          // Calculate the 4 aura colors for smokey particle effects
+          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Crown area
+          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Right side
+          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side
+          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Base/edges
           
-          // Calculate energy colors for the 4 zones with proper spiritual mapping
-          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Top of head - How you think
-          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Right side - Receiving from environment
-          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side - Giving energy to others
-          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Edges - Static personality energy
-          
-          // 1. Personality Color - 3 circles around edges at 50% opacity
-          ctx.globalCompositeOperation = 'source-over';
-          
-          // Helper function to convert hex to RGBA
-          const hexToRGBA = (hex: string, alpha: number) => {
+          // Convert hex colors to RGB for particle effects
+          const hexToRGB = (hex: string) => {
             const r = parseInt(hex.slice(1, 3), 16);
             const g = parseInt(hex.slice(3, 5), 16);
             const b = parseInt(hex.slice(5, 7), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            return { r, g, b };
           };
           
-          // Convert hex to RGBA with 50% opacity
-          const personalityRGBA = hexToRGBA(personalityColor, 0.5);
+          const thinkingRGB = hexToRGB(thinkingColor);
+          const receivingRGB = hexToRGB(receivingColor);
+          const givingRGB = hexToRGB(givingColor);
+          const personalityRGB = hexToRGB(personalityColor);
           
-          // Draw 3 circles around the edges with radial gradient
-          const edgePositions = [
-            { x: canvas.width * 0.15, y: canvas.height * 0.15 },
-            { x: canvas.width * 0.85, y: canvas.height * 0.85 },
-            { x: canvas.width * 0.5, y: canvas.height * 0.9 }
-          ];
+          // Person detection boundaries (estimate human silhouette)
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const personWidth = canvas.width * 0.4;
+          const personHeight = canvas.height * 0.6;
           
-          edgePositions.forEach(pos => {
-            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
-            gradient.addColorStop(0, personalityColor + 'CC');
-            gradient.addColorStop(0.6, personalityColor + '88');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
-            ctx.fill();
-          });
-          
-          // 2. Crown/Thinking Energy - 3 circles above head with radial gradient
-          const headPositions = [
-            { x: centerX - 60, y: canvas.height * 0.08 },
-            { x: centerX, y: canvas.height * 0.03 },
-            { x: centerX + 60, y: canvas.height * 0.08 }
-          ];
-          
-          headPositions.forEach(pos => {
-            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
-            gradient.addColorStop(0, thinkingColor + 'DD');
-            gradient.addColorStop(0.5, thinkingColor + '99');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
-            ctx.fill();
-          });
-          
-          // 3. Giving Energy - 3 circles on left side at 50% opacity
-          const givingRGBA = hexToRGBA(givingColor, 0.5);
-          
-          // Draw 3 circles on left side with radial gradient
-          const leftPositions = [
-            { x: canvas.width * 0.08, y: centerY - 80 },
-            { x: canvas.width * 0.03, y: centerY },
-            { x: canvas.width * 0.08, y: centerY + 80 }
-          ];
-          
-          leftPositions.forEach(pos => {
-            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
-            gradient.addColorStop(0, givingColor + 'DD');
-            gradient.addColorStop(0.5, givingColor + '99');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
-            ctx.fill();
-          });
-          
-          // 4. Receiving Energy - 3 circles on right side at 50% opacity
-          const receivingRGBA = hexToRGBA(receivingColor, 0.5);
-          
-          // Draw 3 circles on right side with radial gradient
-          const rightPositions = [
-            { x: canvas.width * 0.92, y: centerY - 80 },
-            { x: canvas.width * 0.97, y: centerY },
-            { x: canvas.width * 0.92, y: centerY + 80 }
-          ];
-          
-          rightPositions.forEach(pos => {
-            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
-            gradient.addColorStop(0, receivingColor + 'DD');
-            gradient.addColorStop(0.5, receivingColor + '99');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
-            ctx.fill();
-          });
-          
-          // Reset composite operation
-          ctx.globalCompositeOperation = 'source-over';
+          // Create smokey particle aura around the person
+          createSmokeyAuraParticles(ctx, canvas.width, canvas.height, {
+            thinkingRGB,
+            receivingRGB,
+            givingRGB,
+            personalityRGB
+          }, auraData.energyLevel);
         }
         
         resolve(canvas.toDataURL());
@@ -2648,6 +2572,182 @@ export default function AuraAnalysis() {
       
       img.src = imageBase64;
     });
+  };
+
+  // Function to create realistic smokey particle aura effects
+  const createSmokeyAuraParticles = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    energyLevel: number
+  ) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const personWidth = width * 0.35;
+    const personHeight = height * 0.55;
+    
+    // Seeded random for consistent particle placement
+    let seed = 12345;
+    const seededRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+
+    // Set blend mode for smokey effect
+    ctx.globalCompositeOperation = 'screen';
+
+    // 1. Crown/Thinking Energy - Particles above head
+    const crownParticles = 40 + Math.floor(energyLevel * 5);
+    for (let i = 0; i < crownParticles; i++) {
+      const angle = (i / crownParticles) * Math.PI * 2;
+      const distance = 60 + seededRandom() * 120;
+      const particleX = centerX + Math.cos(angle) * distance;
+      const particleY = centerY - personHeight * 0.3 - seededRandom() * 150;
+      
+      const particleSize = 2 + seededRandom() * 6;
+      const opacity = 0.2 + seededRandom() * 0.4;
+      
+      drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.thinkingRGB, opacity);
+    }
+
+    // 2. Receiving Energy - Particles on right side
+    const receivingParticles = 35 + Math.floor(energyLevel * 4);
+    for (let i = 0; i < receivingParticles; i++) {
+      const yPos = centerY - personHeight * 0.4 + (i / receivingParticles) * personHeight * 0.8;
+      const particleX = centerX + personWidth * 0.5 + seededRandom() * 100;
+      const particleY = yPos + (seededRandom() - 0.5) * 80;
+      
+      const particleSize = 2 + seededRandom() * 5;
+      const opacity = 0.15 + seededRandom() * 0.35;
+      
+      drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.receivingRGB, opacity);
+    }
+
+    // 3. Giving Energy - Particles on left side
+    const givingParticles = 35 + Math.floor(energyLevel * 4);
+    for (let i = 0; i < givingParticles; i++) {
+      const yPos = centerY - personHeight * 0.4 + (i / givingParticles) * personHeight * 0.8;
+      const particleX = centerX - personWidth * 0.5 - seededRandom() * 100;
+      const particleY = yPos + (seededRandom() - 0.5) * 80;
+      
+      const particleSize = 2 + seededRandom() * 5;
+      const opacity = 0.15 + seededRandom() * 0.35;
+      
+      drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.givingRGB, opacity);
+    }
+
+    // 4. Personality Energy - Particles around the entire perimeter
+    const personalityParticles = 50 + Math.floor(energyLevel * 6);
+    for (let i = 0; i < personalityParticles; i++) {
+      const angle = (i / personalityParticles) * Math.PI * 2;
+      const distance = Math.max(personWidth, personHeight) * 0.6 + seededRandom() * 80;
+      const particleX = centerX + Math.cos(angle) * distance;
+      const particleY = centerY + Math.sin(angle) * distance * 0.8;
+      
+      const particleSize = 1 + seededRandom() * 4;
+      const opacity = 0.1 + seededRandom() * 0.25;
+      
+      drawSmokeyParticle(ctx, particleX, particleY, particleSize, colors.personalityRGB, opacity);
+    }
+
+    // Add flowing energy streams between zones
+    createEnergyStreams(ctx, width, height, colors, energyLevel);
+
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
+  // Function to draw individual smokey particles
+  const drawSmokeyParticle = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    rgb: { r: number, g: number, b: number },
+    opacity: number
+  ) => {
+    // Create multi-layered particle for smokey effect
+    const layers = 3;
+    
+    for (let layer = 0; layer < layers; layer++) {
+      const layerSize = size * (1 + layer * 0.8);
+      const layerOpacity = opacity * (1 - layer * 0.3);
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+      gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity})`);
+      gradient.addColorStop(0.4, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${layerOpacity * 0.6})`);
+      gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  };
+
+  // Function to create flowing energy streams between zones
+  const createEnergyStreams = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number
+  ) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const streamCount = Math.floor(energyLevel / 2) + 3;
+    
+    // Seeded random for consistent streams
+    let streamSeed = 54321;
+    const streamRandom = () => {
+      streamSeed = (streamSeed * 9301 + 49297) % 233280;
+      return streamSeed / 233280;
+    };
+
+    for (let i = 0; i < streamCount; i++) {
+      const angle = (i / streamCount) * Math.PI * 2;
+      const startRadius = 80 + streamRandom() * 40;
+      const endRadius = startRadius + 60 + streamRandom() * 100;
+      
+      const startX = centerX + Math.cos(angle) * startRadius;
+      const startY = centerY + Math.sin(angle) * startRadius * 0.8;
+      const endX = centerX + Math.cos(angle) * endRadius;
+      const endY = centerY + Math.sin(angle) * endRadius * 0.8;
+      
+      // Select color based on angle (zone-based)
+      let streamColor;
+      if (angle < Math.PI / 2) streamColor = colors.receivingRGB;
+      else if (angle < Math.PI) streamColor = colors.personalityRGB;
+      else if (angle < 3 * Math.PI / 2) streamColor = colors.givingRGB;
+      else streamColor = colors.thinkingRGB;
+      
+      const streamOpacity = 0.15 + streamRandom() * 0.2;
+      
+      // Draw flowing stream
+      const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+      gradient.addColorStop(0, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${streamOpacity})`);
+      gradient.addColorStop(0.5, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, ${streamOpacity * 0.7})`);
+      gradient.addColorStop(1, `rgba(${streamColor.r}, ${streamColor.g}, ${streamColor.b}, 0)`);
+      
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2 + streamRandom() * 4;
+      ctx.lineCap = 'round';
+      
+      // Create curved path for natural flow
+      const controlX = (startX + endX) / 2 + (streamRandom() - 0.5) * 60;
+      const controlY = (startY + endY) / 2 + (streamRandom() - 0.5) * 60;
+      
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+      ctx.stroke();
+    }
   };
 
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
