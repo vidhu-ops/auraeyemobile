@@ -2445,68 +2445,85 @@ export default function AuraAnalysis() {
           // Convert hex to RGBA with 50% opacity
           const personalityRGBA = hexToRGBA(personalityColor, 0.5);
           
-          // Draw 3 circles around the edges
+          // Draw 3 circles around the edges with radial gradient
           const edgePositions = [
-            { x: canvas.width * 0.1, y: canvas.height * 0.2 },
-            { x: canvas.width * 0.9, y: canvas.height * 0.8 },
-            { x: canvas.width * 0.5, y: canvas.height * 0.95 }
+            { x: canvas.width * 0.15, y: canvas.height * 0.15 },
+            { x: canvas.width * 0.85, y: canvas.height * 0.85 },
+            { x: canvas.width * 0.5, y: canvas.height * 0.9 }
           ];
           
           edgePositions.forEach(pos => {
-            ctx.fillStyle = personalityRGBA;
+            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
+            gradient.addColorStop(0, personalityColor + 'CC');
+            gradient.addColorStop(0.6, personalityColor + '88');
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
             ctx.fill();
           });
           
-          // 2. Crown/Thinking Energy - 3 circles above head at 50% opacity
-          const thinkingRGBA = hexToRGBA(thinkingColor, 0.5);
-          
-          // Draw 3 circles above head area
+          // 2. Crown/Thinking Energy - 3 circles above head with radial gradient
           const headPositions = [
-            { x: centerX - 20, y: canvas.height * 0.5 },
-            { x: centerX, y: canvas.height * 0.05 },
-            { x: centerX + 20, y: canvas.height * 0.7 }
+            { x: centerX - 60, y: canvas.height * 0.08 },
+            { x: centerX, y: canvas.height * 0.03 },
+            { x: centerX + 60, y: canvas.height * 0.08 }
           ];
           
           headPositions.forEach(pos => {
-            ctx.fillStyle = thinkingRGBA;
+            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
+            gradient.addColorStop(0, thinkingColor + 'DD');
+            gradient.addColorStop(0.5, thinkingColor + '99');
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
             ctx.fill();
           });
           
           // 3. Giving Energy - 3 circles on left side at 50% opacity
           const givingRGBA = hexToRGBA(givingColor, 0.5);
           
-          // Draw 3 circles on left side
+          // Draw 3 circles on left side with radial gradient
           const leftPositions = [
-            { x: canvas.width * 1, y: centerY - 30 },
-            { x: canvas.width * 0.02, y: centerY },
-            { x: canvas.width * 0.05, y: centerY + 30 }
+            { x: canvas.width * 0.08, y: centerY - 80 },
+            { x: canvas.width * 0.03, y: centerY },
+            { x: canvas.width * 0.08, y: centerY + 80 }
           ];
           
           leftPositions.forEach(pos => {
-            ctx.fillStyle = givingRGBA;
+            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
+            gradient.addColorStop(0, givingColor + 'DD');
+            gradient.addColorStop(0.5, givingColor + '99');
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
             ctx.fill();
           });
           
           // 4. Receiving Energy - 3 circles on right side at 50% opacity
           const receivingRGBA = hexToRGBA(receivingColor, 0.5);
           
-          // Draw 3 circles on right side
+          // Draw 3 circles on right side with radial gradient
           const rightPositions = [
-            { x: canvas.width * 0.95, y: centerY - 40 },
-            { x: canvas.width * 0.98, y: centerY },
-            { x: canvas.width * 0.95, y: centerY + 40 }
+            { x: canvas.width * 0.92, y: centerY - 80 },
+            { x: canvas.width * 0.97, y: centerY },
+            { x: canvas.width * 0.92, y: centerY + 80 }
           ];
           
           rightPositions.forEach(pos => {
-            ctx.fillStyle = receivingRGBA;
+            const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 175);
+            gradient.addColorStop(0, receivingColor + 'DD');
+            gradient.addColorStop(0.5, receivingColor + '99');
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 175, 0, Math.PI * 2);
             ctx.fill();
           });
           
