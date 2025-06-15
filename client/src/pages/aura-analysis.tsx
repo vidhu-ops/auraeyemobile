@@ -2431,76 +2431,102 @@ export default function AuraAnalysis() {
           const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side - Giving energy to others
           const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Edges - Static personality energy
           
-          // 1. Personality Color - Static background around entire picture
-          ctx.globalCompositeOperation = 'overlay';
+          // 1. Personality Color - Static background around entire picture edges
+          ctx.globalCompositeOperation = 'screen';
           const personalityGlow = ctx.createRadialGradient(
-            centerX, centerY, 0,
-            centerX, centerY, maxRadius * 2
+            centerX, centerY, Math.min(canvas.width, canvas.height) * 0.3,
+            centerX, centerY, maxRadius * 1.2
           );
           personalityGlow.addColorStop(0, 'transparent');
-          personalityGlow.addColorStop(0.8, `${personalityColor}25`);
-          personalityGlow.addColorStop(0.8, `${personalityColor}40`);
-          personalityGlow.addColorStop(1, `${personalityColor}20`);
+          personalityGlow.addColorStop(0.7, `${personalityColor}60`);
+          personalityGlow.addColorStop(0.9, `${personalityColor}80`);
+          personalityGlow.addColorStop(1, `${personalityColor}40`);
           
           ctx.fillStyle = personalityGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
           // 2. Crown/Thinking Energy - Above head (how you think)
-          ctx.globalCompositeOperation = 'overlay';
-          const headY = canvas.height * 0.25;
-          const headRadius = Math.min(canvas.width, canvas.height) * 0.12;
+          ctx.globalCompositeOperation = 'screen';
+          const headY = canvas.height * 0.15;
+          const headRadius = Math.min(canvas.width, canvas.height) * 0.18;
           const thinkingGlow = ctx.createRadialGradient(
             centerX, headY, 0,
-            centerX, headY, headRadius * 1.5
+            centerX, headY, headRadius * 2
           );
-          thinkingGlow.addColorStop(0, `${thinkingColor}90`);
-          thinkingGlow.addColorStop(0.8, `${thinkingColor}70`);
-          thinkingGlow.addColorStop(0.9, `${thinkingColor}40`);
+          thinkingGlow.addColorStop(0, `${thinkingColor}FF`);
+          thinkingGlow.addColorStop(0.4, `${thinkingColor}CC`);
+          thinkingGlow.addColorStop(0.7, `${thinkingColor}88`);
           thinkingGlow.addColorStop(1, 'transparent');
           
           ctx.fillStyle = thinkingGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
           // 3. Giving Energy - Left side of person (energy you give to others)
-          ctx.globalCompositeOperation = 'overlay';
-          const leftX = canvas.width * 0.15;
+          ctx.globalCompositeOperation = 'screen';
+          const leftX = canvas.width * 0.05;
           const leftY = centerY;
-          const sideRadius = Math.min(canvas.width, canvas.height) * 0.4;
+          const sideRadius = Math.min(canvas.width, canvas.height) * 0.5;
           
-          // Create giving energy glow on left side
-          for (let i = 0; i < 3; i++) {
-            const offsetY = leftY + (i - 1) * canvas.height * 0.2;
-            const givingGlow = ctx.createRadialGradient(
-              leftX, offsetY, 0,
-              leftX + sideRadius * 0.8, offsetY, sideRadius
+          // Create bright giving energy glow on left side
+          const givingGlow = ctx.createRadialGradient(
+            leftX, leftY, 0,
+            leftX + sideRadius * 1.2, leftY, sideRadius
+          );
+          givingGlow.addColorStop(0, `${givingColor}FF`);
+          givingGlow.addColorStop(0.3, `${givingColor}DD`);
+          givingGlow.addColorStop(0.6, `${givingColor}AA`);
+          givingGlow.addColorStop(0.8, `${givingColor}66`);
+          givingGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = givingGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Add additional flowing energy layers
+          for (let i = 0; i < 2; i++) {
+            const offsetY = leftY + (i - 0.5) * canvas.height * 0.3;
+            const flowGlow = ctx.createRadialGradient(
+              leftX + 20, offsetY, 0,
+              leftX + sideRadius * 0.9, offsetY, sideRadius * 0.8
             );
-            givingGlow.addColorStop(0, givingColor + (80 - i * 15).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(0.6, givingColor + (60 - i * 10).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(0.9, givingColor + (30 - i * 5).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(1, 'transparent');
+            flowGlow.addColorStop(0, `${givingColor}CC`);
+            flowGlow.addColorStop(0.5, `${givingColor}77`);
+            flowGlow.addColorStop(1, 'transparent');
             
-            ctx.fillStyle = givingGlow;
+            ctx.fillStyle = flowGlow;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
           }
           
           // 4. Receiving Energy - Right side of person (energy you receive from environment)
-          ctx.globalCompositeOperation = 'overlay';
-          const rightX = canvas.width * 0.85;
+          ctx.globalCompositeOperation = 'screen';
+          const rightX = canvas.width * 0.95;
           const rightY = centerY;
         
-          // Create receiving energy glow on right side
-          for (let i = 0; i < 3; i++) {
-            const offsetY = rightY + (i - 1) * canvas.height * 0.2;
-            const receivingGlow = ctx.createRadialGradient(
-              rightX, offsetY, 0,
-              rightX - sideRadius * 0.8, offsetY, sideRadius
+          // Create bright receiving energy glow on right side
+          const receivingGlow = ctx.createRadialGradient(
+            rightX, rightY, 0,
+            rightX - sideRadius * 1.2, rightY, sideRadius
+          );
+          receivingGlow.addColorStop(0, `${receivingColor}FF`);
+          receivingGlow.addColorStop(0.3, `${receivingColor}DD`);
+          receivingGlow.addColorStop(0.6, `${receivingColor}AA`);
+          receivingGlow.addColorStop(0.8, `${receivingColor}66`);
+          receivingGlow.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = receivingGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Add additional flowing energy layers
+          for (let i = 0; i < 2; i++) {
+            const offsetY = rightY + (i - 0.5) * canvas.height * 0.3;
+            const flowGlow = ctx.createRadialGradient(
+              rightX - 20, offsetY, 0,
+              rightX - sideRadius * 0.9, offsetY, sideRadius * 0.8
             );
-            receivingGlow.addColorStop(0, receivingColor + (80 - i * 15).toString(16).padStart(2, '0'));
-            receivingGlow.addColorStop(0.6, receivingColor + (60 - i * 10).toString(16).padStart(2, '0'));
-            receivingGlow.addColorStop(0.9, receivingColor + (30 - i * 5).toString(16).padStart(2, '0'));
-            receivingGlow.addColorStop(1, 'transparent');
+            flowGlow.addColorStop(0, `${receivingColor}CC`);
+            flowGlow.addColorStop(0.5, `${receivingColor}77`);
+            flowGlow.addColorStop(1, 'transparent');
             
-            ctx.fillStyle = receivingGlow;
+            ctx.fillStyle = flowGlow;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
           }
           
