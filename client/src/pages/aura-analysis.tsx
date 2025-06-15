@@ -2574,6 +2574,16 @@ export default function AuraAnalysis() {
     });
   };
 
+  // Helper function to convert hex to RGB
+  const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 150, g: 150, b: 200 };
+  };
+
   // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
@@ -2837,8 +2847,15 @@ export default function AuraAnalysis() {
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
       const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
       
-      // Draw aura clouds
-      drawAuraClouds(ctx, img.width, img.height, dominantColor, secondaryColor, auraData.energyLevel);
+      // Create natural smoke aura effect
+      const colors = {
+        thinkingRGB: hexToRgb(getThinkingEnergyColor(auraData)),
+        receivingRGB: hexToRgb(getReceivingEnergyColor(auraData)),
+        givingRGB: hexToRgb(getGivingEnergyColor(auraData)),
+        personalityRGB: hexToRgb(getPersonalityColor(auraData))
+      };
+      
+      createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
       
       // Convert back to base64
       const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
