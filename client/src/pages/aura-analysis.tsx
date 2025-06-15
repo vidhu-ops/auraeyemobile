@@ -2423,7 +2423,7 @@ export default function AuraAnalysis() {
         if (ctx) {
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
+          const maxRadius = Math.max(canvas.width, canvas.height) * 0.9;
           
           // Calculate energy colors for the 4 zones with proper spiritual mapping
           const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Top of head - How you think
@@ -2455,7 +2455,7 @@ export default function AuraAnalysis() {
           edgePositions.forEach(pos => {
             ctx.fillStyle = personalityRGBA;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
             ctx.fill();
           });
           
@@ -2464,15 +2464,15 @@ export default function AuraAnalysis() {
           
           // Draw 3 circles above head area
           const headPositions = [
-            { x: centerX - 30, y: canvas.height * 0.1 },
+            { x: centerX - 20, y: canvas.height * 0.5 },
             { x: centerX, y: canvas.height * 0.05 },
-            { x: centerX + 30, y: canvas.height * 0.1 }
+            { x: centerX + 20, y: canvas.height * 0.7 }
           ];
           
           headPositions.forEach(pos => {
             ctx.fillStyle = thinkingRGBA;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
             ctx.fill();
           });
           
@@ -2481,15 +2481,15 @@ export default function AuraAnalysis() {
           
           // Draw 3 circles on left side
           const leftPositions = [
-            { x: canvas.width * 0.05, y: centerY - 40 },
+            { x: canvas.width * 1, y: centerY - 30 },
             { x: canvas.width * 0.02, y: centerY },
-            { x: canvas.width * 0.05, y: centerY + 40 }
+            { x: canvas.width * 0.05, y: centerY + 30 }
           ];
           
           leftPositions.forEach(pos => {
             ctx.fillStyle = givingRGBA;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
             ctx.fill();
           });
           
@@ -2506,7 +2506,7 @@ export default function AuraAnalysis() {
           rightPositions.forEach(pos => {
             ctx.fillStyle = receivingRGBA;
             ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+            ctx.arc(pos.x, pos.y, 100, 0, Math.PI * 2);
             ctx.fill();
           });
           
