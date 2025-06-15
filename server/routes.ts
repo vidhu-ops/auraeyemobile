@@ -691,6 +691,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Personalized horoscope endpoint based on user's birth date
+  app.get("/api/personalized-horoscope", async (req, res) => {
+    try {
+      // Check if user is authenticated and has birth date
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ message: "Authentication required for personalized horoscope" });
+      }
+
+      const user = await storage.getUser(req.user.id);
+      if (!user || !user.birthDate) {
+        return res.status(400).json({ 
+          message: "Birth date required for personalized horoscope. Please update your profile." 
+        });
+      }
+
+      // Generate comprehensive horoscope based on user's birth date
+      const personalizedHoroscope = await getPersonalizedHoroscope(user.birthDate);
+      
+      res.json(personalizedHoroscope);
+    } catch (error) {
+      console.error("Error generating personalized horoscope:", error);
+      res.status(500).json({ message: "Failed to generate personalized horoscope" });
+    }
+  });
+
   app.post("/api/calculate-numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;

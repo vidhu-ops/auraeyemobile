@@ -408,7 +408,7 @@ export default function ClientDashboard() {
                 <CardDescription>Access your most used spiritual tools</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2">
                     <Link href="/aura-analysis">
                       <Camera className="h-6 w-6 text-primary" />
@@ -431,6 +431,13 @@ export default function ClientDashboard() {
                     <Link href="/daily-horoscope">
                       <Star className="h-6 w-6 text-secondary" />
                       <span>Daily Horoscope</span>
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2 border-primary/50 bg-primary/5">
+                    <Link href="/personalized-horoscope">
+                      <Target className="h-6 w-6 text-primary" />
+                      <span className="text-xs text-center">Personal Horoscope</span>
                     </Link>
                   </Button>
                   
