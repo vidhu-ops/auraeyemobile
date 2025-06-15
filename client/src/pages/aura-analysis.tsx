@@ -3926,6 +3926,11 @@ export default function AuraAnalysis() {
                                         This energy above your head shows your thinking patterns and mental approach to life. 
                                         {getPositiveDescription(result.dominantColor)}
                                       </p>
+                                      <div className="mt-3 p-2 bg-purple-50 rounded border-l-4 border-purple-300">
+                                        <p className="text-sm font-medium text-purple-800">
+                                          '{result.dominantColor}': '{getColorMeaningForEnergyTab(result.dominantColor)}'
+                                        </p>
+                                      </div>
                                     </div>
 
                                     {/* Receiving Energy */}
@@ -3946,6 +3951,11 @@ export default function AuraAnalysis() {
                                         This dynamic energy on your left side shows how you receive and process energy from your environment, 
                                         relationships, and external circumstances. It changes based on your surroundings.
                                       </p>
+                                      <div className="mt-3 p-2 bg-blue-50 rounded border-l-4 border-blue-300">
+                                        <p className="text-sm font-medium text-blue-800">
+                                          '{getReceivingEnergyColor(result)}': '{getColorMeaningForEnergyTab(getReceivingEnergyColor(result))}'
+                                        </p>
+                                      </div>
                                     </div>
 
                                     {/* Giving Energy */}
@@ -3966,6 +3976,11 @@ export default function AuraAnalysis() {
                                         This dynamic energy on your right side reveals how you give energy to the world and create patterns in your life. 
                                         It shows your active contribution and how you influence reality through actions.
                                       </p>
+                                      <div className="mt-3 p-2 bg-orange-50 rounded border-l-4 border-orange-300">
+                                        <p className="text-sm font-medium text-orange-800">
+                                          '{getGivingEnergyColor(result)}': '{getColorMeaningForEnergyTab(getGivingEnergyColor(result))}'
+                                        </p>
+                                      </div>
                                     </div>
 
                                     {/* Personality Color */}
@@ -3986,6 +4001,11 @@ export default function AuraAnalysis() {
                                         This static color surrounding your entire energy field represents your fundamental personality and 
                                         core nature. It explains why certain things happen to you and reveals your karmic patterns.
                                       </p>
+                                      <div className="mt-3 p-2 bg-amber-50 rounded border-l-4 border-amber-300">
+                                        <p className="text-sm font-medium text-amber-800">
+                                          '{getPersonalityColor(result)}': '{getColorMeaningForEnergyTab(getPersonalityColor(result))}'
+                                        </p>
+                                      </div>
                                     </div>
 
                                   </div>
