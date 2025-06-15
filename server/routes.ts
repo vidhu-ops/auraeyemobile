@@ -880,13 +880,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: userId || 0, // Use 0 for anonymous users
           imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
           dominantColor: auraAnalysis.dominantColor,
-          secondaryColor: auraAnalysis.secondaryColor || "",
-          energyLevel: auraAnalysis.energyLevel,
+          secondaryColor: auraAnalysis.secondaryColor || auraAnalysis.dominantColor,
+          energyLevel: auraAnalysis.energyLevel || 5,
           analysis: JSON.stringify(auraAnalysis)
         });
         
         // Add the reading ID to the response for review functionality
-        (auraAnalysis as any).id = savedReading.id;
+        if (savedReading) {
+          (auraAnalysis as any).id = savedReading.id;
+        }
       } catch (error) {
         console.log("Could not save reading to database:", (error as Error).message);
         // Continue without saving if database unavailable
