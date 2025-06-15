@@ -669,18 +669,18 @@ export default function AuraAnalysis() {
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
       
-      const dominantInfo = getColorInfoForAura(result.dominantColor);
       pdf.text(`Primary Color Analysis - ${result.dominantColor}:`, 20, yPosition);
       yPosition += 8;
-      const positiveLines = pdf.splitTextToSize(dominantInfo.positiveMeaning, pageWidth - 40);
+      const dominantMeaning = getColorMeaningForEnergyTab(result.dominantColor);
+      const positiveLines = pdf.splitTextToSize(dominantMeaning, pageWidth - 40);
       pdf.text(positiveLines, 20, yPosition);
       yPosition += positiveLines.length * 6 + 10;
 
       if (result.secondaryColor) {
-        const secondaryInfo = getColorInfoForAura(result.secondaryColor);
         pdf.text(`Secondary Color Analysis - ${result.secondaryColor}:`, 20, yPosition);
         yPosition += 8;
-        const secondaryLines = pdf.splitTextToSize(secondaryInfo.positiveMeaning, pageWidth - 40);
+        const secondaryMeaning = getColorMeaningForEnergyTab(result.secondaryColor);
+        const secondaryLines = pdf.splitTextToSize(secondaryMeaning, pageWidth - 40);
         pdf.text(secondaryLines, 20, yPosition);
         yPosition += secondaryLines.length * 6 + 10;
       }
@@ -765,24 +765,22 @@ export default function AuraAnalysis() {
         yPosition += guidanceLines.length * 6 + 15;
       }
 
-      // ENERGY ASPECTS
+      // ENERGY MAP ANALYSIS
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Energy Aspects', 20, yPosition);
+      pdf.text('Energy Map', 20, yPosition);
       yPosition += 15;
 
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
 
-      if (result.energyAspects && result.energyAspects.length > 0) {
-        result.energyAspects.forEach((aspect, index) => {
-          pdf.text(`${index + 1}. ${aspect}`, 20, yPosition);
-          yPosition += 8;
-        });
-        yPosition += 10;
-      }
+      // Energy harmony analysis
+      const harmonyAnalysis = getColorHarmonyAnalysis(result.dominantColor, result.secondaryColor, result.auraColorSpectrum);
+      const harmonyLines = pdf.splitTextToSize(harmonyAnalysis, pageWidth - 40);
+      pdf.text(harmonyLines, 20, yPosition);
+      yPosition += harmonyLines.length * 6 + 15;
 
-      // PERSONALITY INTEGRATION
+      // COMBINED ANALYSIS
       if (yPosition > 200) {
         pdf.addPage();
         yPosition = 30;
@@ -790,17 +788,17 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Personality Integration', 20, yPosition);
+      pdf.text('Combined Analysis', 20, yPosition);
       yPosition += 15;
 
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
 
-      if (result.personalityIntegration) {
-        const personalityLines = pdf.splitTextToSize(result.personalityIntegration, pageWidth - 40);
-        pdf.text(personalityLines, 20, yPosition);
-        yPosition += personalityLines.length * 6 + 15;
-      }
+      // Color balance and energy pattern
+      const energyPattern = getEnergyPattern(result.dominantColor, result.secondaryColor);
+      const patternLines = pdf.splitTextToSize(energyPattern, pageWidth - 40);
+      pdf.text(patternLines, 20, yPosition);
+      yPosition += patternLines.length * 6 + 15;
 
       // NUMEROLOGY ANALYSIS
       if (numerologyResult) {
