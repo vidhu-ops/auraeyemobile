@@ -82,8 +82,24 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const auraColors = [];
   const usedIndices = new Set();
   
-  // Enhanced distribution algorithm with anti-repetition and better variety
-  const avoidRepetitiveIndices = [6, 7]; // Avoid violet and purple indices for primary colors
+  // Enhanced distribution algorithm with stronger anti-repetition controls
+  const avoidRepetitiveIndices = [5, 6, 7]; // Avoid indigo, violet, and purple indices for primary colors
+  const preferredPrimaryIndices = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16]; // Prefer diverse colors for primaries
+  
+  // Define color family groups for diversity enforcement
+  const colorFamilyGroups = [
+    [0, 14], // red family
+    [1, 13], // orange family  
+    [2, 9, 15], // yellow/gold family
+    [3, 16, 19, 23], // green family
+    [4, 11, 17, 21], // blue family
+    [8], // pink family
+    [10], // silver family
+    [12, 18, 20, 22] // other diverse colors
+  ];
+  
+  // Track which color families have been used across all iterations
+  const globalUsedGroupIndices = new Set();
   
   for (let i = 0; i < colorCount; i++) {
     // Create highly varied seeds using all available entropy sources
@@ -96,30 +112,47 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     
     let colorIndex = Math.abs(combinedSeed) % enhancedColors.length;
     
-    // For primary colors (first 4), avoid repetitive purple/violet and prefer diverse colors
+    // For primary colors (first 4), enforce strong diversity and avoid repetitive colors
     if (i < 4) {
-      // Avoid purple/violet for primary positions to reduce repetition
-      if (avoidRepetitiveIndices.includes(colorIndex)) {
-        colorIndex = (colorIndex + 17 + (sizeVariation % 11)) % enhancedColors.length;
+      // Force selection from preferred primary colors for first 4 positions
+      if (avoidRepetitiveIndices.includes(colorIndex) || !preferredPrimaryIndices.includes(colorIndex)) {
+        // Map to preferred primary colors using the seed
+        const preferredIndex = Math.abs(combinedSeed + i * 1337) % preferredPrimaryIndices.length;
+        colorIndex = preferredPrimaryIndices[preferredIndex];
       }
       
-      // Ensure first 4 colors are from different color families
-      const colorFamilies = {
-        red: [0, 14], orange: [1, 13], yellow: [2, 9, 15], green: [3, 16, 19, 23], 
-        blue: [4, 11, 17, 21], indigo: [5], violet: [6], purple: [7], 
-        pink: [8], gold: [9], silver: [10], others: [12, 18, 20, 22]
-      };
-      
-      // Try to distribute across different color families
-      const usedFamilies = new Set();
-      for (const [family, indices] of Object.entries(colorFamilies)) {
-        if (indices.includes(colorIndex) && usedFamilies.has(family)) {
-          colorIndex = (colorIndex + 13 + (imageSizeFactor % 7)) % enhancedColors.length;
+      // Find which color family the current selection belongs to
+      let currentGroupIdx = -1;
+      for (let groupIdx = 0; groupIdx < colorFamilyGroups.length; groupIdx++) {
+        if (colorFamilyGroups[groupIdx].includes(colorIndex)) {
+          currentGroupIdx = groupIdx;
           break;
         }
-        if (indices.includes(colorIndex)) {
-          usedFamilies.add(family);
+      }
+      
+      // If this family has already been used or it's indigo/violet family, find a new one
+      if (currentGroupIdx !== -1 && globalUsedGroupIndices.has(currentGroupIdx)) {
+        // Find an unused family group
+        let newGroupIdx = -1;
+        for (let groupIdx = 0; groupIdx < colorFamilyGroups.length; groupIdx++) {
+          if (!globalUsedGroupIndices.has(groupIdx)) {
+            newGroupIdx = groupIdx;
+            break;
+          }
         }
+        
+        // If no unused families, pick the least similar one
+        if (newGroupIdx === -1) {
+          newGroupIdx = (currentGroupIdx + 3 + (imageSizeFactor % 4)) % colorFamilyGroups.length;
+        }
+        
+        // Select a color from the new family
+        const newGroup = colorFamilyGroups[newGroupIdx];
+        const newColorIdx = Math.abs(combinedSeed + i * 2003) % newGroup.length;
+        colorIndex = newGroup[newColorIdx];
+        globalUsedGroupIndices.add(newGroupIdx);
+      } else if (currentGroupIdx !== -1) {
+        globalUsedGroupIndices.add(currentGroupIdx);
       }
     }
     
