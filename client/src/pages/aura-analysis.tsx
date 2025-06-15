@@ -855,6 +855,40 @@ export default function AuraAnalysis() {
       pdf.text(healingLines, 20, yPosition);
       yPosition += healingLines.length * 6 + 10;
 
+      // 9 CHAKRA SYSTEM ANALYSIS
+      if (yPosition > 160) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('9 Chakra System Analysis', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+
+      const chakraSystem = get9ChakraAnalysis(result.dominantColor, result.secondaryColor);
+      
+      chakraSystem.forEach((chakra, index) => {
+        if (yPosition > 240) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(`${index + 1}. ${chakra.name} (${chakra.location})`, 20, yPosition);
+        yPosition += 8;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        const chakraLines = pdf.splitTextToSize(chakra.analysis, pageWidth - 40);
+        pdf.text(chakraLines, 20, yPosition);
+        yPosition += chakraLines.length * 5 + 8;
+      });
+
       // NUMEROLOGY ANALYSIS
       if (numerologyResult) {
         if (yPosition > 180) {
@@ -2120,6 +2154,76 @@ export default function AuraAnalysis() {
     return details[color] || details['Purple'];
   };
 
+  const get9ChakraAnalysis = (primaryColor: string, secondaryColor: string): Array<{name: string, location: string, analysis: string}> => {
+    const chakraColorMapping: Record<string, string> = {
+      'Red': 'Root',
+      'Orange': 'Sacral', 
+      'Yellow': 'Solar Plexus',
+      'Green': 'Heart',
+      'Blue': 'Throat',
+      'Indigo': 'Third Eye',
+      'Purple': 'Crown',
+      'Violet': 'Crown',
+      'Gold': 'Soul Star',
+      'White': 'Soul Star',
+      'Pink': 'Higher Heart',
+      'Silver': 'Soul Star',
+      'Turquoise': 'Higher Throat',
+      'Lavender': 'Higher Crown'
+    };
+
+    const primaryChakra = chakraColorMapping[primaryColor] || 'Crown';
+    const secondaryChakra = chakraColorMapping[secondaryColor] || 'Heart';
+
+    return [
+      {
+        name: 'Earth Star Chakra',
+        location: 'Below feet, grounding to Earth',
+        analysis: `Your connection to Earth's energy shows ${primaryColor.toLowerCase()} influence, indicating ${primaryChakra === 'Root' ? 'strong grounding and stability' : 'need for deeper earth connection'}. This chakra anchors your spiritual work in physical reality.`
+      },
+      {
+        name: 'Root Chakra (Muladhara)',
+        location: 'Base of spine',
+        analysis: `Your survival and grounding energy resonates with ${primaryColor} frequency. ${primaryChakra === 'Root' ? 'This chakra is powerfully activated, providing strong foundation and manifestation abilities.' : 'Focus on red energy meditation to strengthen your foundation and sense of security.'}`
+      },
+      {
+        name: 'Sacral Chakra (Svadhisthana)',
+        location: 'Lower abdomen',
+        analysis: `Creative and sexual energies flow through ${secondaryColor.toLowerCase()} vibration. ${secondaryChakra === 'Sacral' ? 'Your creative expression and emotional flow are well-balanced and vibrant.' : 'Orange energy work will enhance creativity and emotional processing.'}`
+      },
+      {
+        name: 'Solar Plexus Chakra (Manipura)',
+        location: 'Upper abdomen',
+        analysis: `Personal power center shows ${primaryColor === 'Yellow' ? 'bright activation with strong willpower and confidence' : 'potential for development through yellow light meditation'}. This chakra governs your sense of personal authority and decision-making abilities.`
+      },
+      {
+        name: 'Heart Chakra (Anahata)',
+        location: 'Center of chest',
+        analysis: `Love and healing energies pulse with ${primaryColor === 'Green' || secondaryColor === 'Green' ? 'beautiful green harmony, indicating natural healing abilities and compassionate nature' : 'potential for deeper heart opening through green energy practices'}. Your emotional balance and relationships are influenced by this center.`
+      },
+      {
+        name: 'Throat Chakra (Vishuddha)',
+        location: 'Throat area',
+        analysis: `Communication and truth expression channels ${primaryColor === 'Blue' || secondaryColor === 'Blue' ? 'clear blue energy, showing authentic self-expression and truthful communication' : 'opportunity for enhanced expression through blue energy work'}. This governs how you share your inner truth with the world.`
+      },
+      {
+        name: 'Third Eye Chakra (Ajna)',
+        location: 'Between eyebrows',
+        analysis: `Intuitive sight and inner wisdom operate through ${primaryColor === 'Indigo' || primaryColor === 'Purple' ? 'activated indigo/purple frequencies, indicating strong psychic abilities and spiritual insight' : 'developing intuitive gifts that benefit from purple meditation'}. This center governs your spiritual perception and inner knowing.`
+      },
+      {
+        name: 'Crown Chakra (Sahasrara)',
+        location: 'Top of head',
+        analysis: `Divine connection flows through ${primaryColor === 'Purple' || primaryColor === 'Violet' || primaryColor === 'White' ? 'luminous spiritual frequencies, showing open connection to higher consciousness and divine wisdom' : 'emerging spiritual awareness that grows through purple and white light practices'}. This is your gateway to cosmic consciousness.`
+      },
+      {
+        name: 'Soul Star Chakra',
+        location: 'Above the crown',
+        analysis: `Higher spiritual purpose radiates ${primaryColor === 'Gold' || primaryColor === 'White' || secondaryColor === 'Gold' ? 'brilliant golden-white light, indicating advanced soul development and spiritual mastery' : 'developing connection to soul mission through gold and white energy meditation'}. This chakra connects you to your highest spiritual destiny and cosmic purpose.`
+      }
+    ];
+  };
+
   const getSecondaryColorDescription = (color: string): string => {
     return `${getColorMeaningForEnergyTab(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;
   };
@@ -2370,9 +2474,9 @@ export default function AuraAnalysis() {
               leftX, offsetY, 0,
               leftX + sideRadius * 0.9, offsetY, sideRadius
             );
-            receivingGlow.addColorStop(0, `${receivingColor}${80 - i * 15}`);
-            receivingGlow.addColorStop(0.8, `${receivingColor}${60 - i * 10}`);
-            receivingGlow.addColorStop(1, `${receivingColor}${30 - i * 5}`);
+            receivingGlow.addColorStop(0, receivingColor + (80 - i * 15).toString(16).padStart(2, '0'));
+            receivingGlow.addColorStop(0.6, receivingColor + (60 - i * 10).toString(16).padStart(2, '0'));
+            receivingGlow.addColorStop(0.9, receivingColor + (30 - i * 5).toString(16).padStart(2, '0'));
             receivingGlow.addColorStop(1, 'transparent');
             
             ctx.fillStyle = receivingGlow;
@@ -2391,9 +2495,9 @@ export default function AuraAnalysis() {
               rightX, offsetY, 0,
               rightX - sideRadius * 0.9, offsetY, sideRadius
             );
-            givingGlow.addColorStop(0, `${givingColor}${80 - i * 15}`);
-            givingGlow.addColorStop(0.8, `${givingColor}${60 - i * 10}`);
-            givingGlow.addColorStop(1, `${givingColor}${30 - i * 5}`);
+            givingGlow.addColorStop(0, givingColor + (80 - i * 15).toString(16).padStart(2, '0'));
+            givingGlow.addColorStop(0.6, givingColor + (60 - i * 10).toString(16).padStart(2, '0'));
+            givingGlow.addColorStop(0.9, givingColor + (30 - i * 5).toString(16).padStart(2, '0'));
             givingGlow.addColorStop(1, 'transparent');
             
             ctx.fillStyle = givingGlow;
