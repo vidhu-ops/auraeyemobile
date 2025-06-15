@@ -800,10 +800,67 @@ export default function AuraAnalysis() {
       pdf.text(patternLines, 20, yPosition);
       yPosition += patternLines.length * 6 + 15;
 
-      // NUMEROLOGY ANALYSIS
-      if (numerologyResult) {
+      // CHAKRA ANALYSIS
+      if (yPosition > 200) {
         pdf.addPage();
         yPosition = 30;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Chakra Analysis', 20, yPosition);
+      yPosition += 15;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+
+      // Primary chakra connection
+      const primaryChakra = getChakraInfo(result.dominantColor);
+      pdf.text(`Primary Chakra Connection - ${result.dominantColor}:`, 20, yPosition);
+      yPosition += 8;
+      const primaryChakraLines = pdf.splitTextToSize(primaryChakra, pageWidth - 40);
+      pdf.text(primaryChakraLines, 20, yPosition);
+      yPosition += primaryChakraLines.length * 6 + 10;
+
+      // Secondary chakra connection
+      if (result.secondaryColor) {
+        const secondaryChakra = getChakraInfo(result.secondaryColor);
+        pdf.text(`Secondary Chakra Connection - ${result.secondaryColor}:`, 20, yPosition);
+        yPosition += 8;
+        const secondaryChakraLines = pdf.splitTextToSize(secondaryChakra, pageWidth - 40);
+        pdf.text(secondaryChakraLines, 20, yPosition);
+        yPosition += secondaryChakraLines.length * 6 + 10;
+      }
+
+      // Chakra strengths and shadow aspects
+      pdf.text('Chakra Strengths:', 20, yPosition);
+      yPosition += 8;
+      const positiveTraits = getPositiveTraits(result.dominantColor);
+      const strengthLines = pdf.splitTextToSize(positiveTraits, pageWidth - 40);
+      pdf.text(strengthLines, 20, yPosition);
+      yPosition += strengthLines.length * 6 + 10;
+
+      pdf.text('Shadow Aspects to Balance:', 20, yPosition);
+      yPosition += 8;
+      const shadowTraits = getShadowTraits(result.dominantColor);
+      const shadowLines = pdf.splitTextToSize(shadowTraits, pageWidth - 40);
+      pdf.text(shadowLines, 20, yPosition);
+      yPosition += shadowLines.length * 6 + 10;
+
+      // Chakra healing recommendations
+      pdf.text('Healing Recommendations:', 20, yPosition);
+      yPosition += 8;
+      const healingRec = getColorHealing(result.dominantColor, result.secondaryColor || 'White');
+      const healingLines = pdf.splitTextToSize(healingRec, pageWidth - 40);
+      pdf.text(healingLines, 20, yPosition);
+      yPosition += healingLines.length * 6 + 10;
+
+      // NUMEROLOGY ANALYSIS
+      if (numerologyResult) {
+        if (yPosition > 180) {
+          pdf.addPage();
+          yPosition = 30;
+        }
 
         pdf.setFontSize(18);
         pdf.setTextColor(75, 85, 99);
@@ -4984,7 +5041,7 @@ export default function AuraAnalysis() {
                                       The Soul Star Chakra connects you to divine consciousness and spiritual transcendence, representing your highest potential and cosmic awareness.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Soul Star Chakra (7)</span>
+                                      <span className="font-medium">Soul Star Chakra</span>
                                       <span className="text-gray-600">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
                                     </div>
                                   </div>
@@ -4998,7 +5055,7 @@ export default function AuraAnalysis() {
                                       The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Crown Chakra (3)</span>
+                                      <span className="font-medium">Crown Chakra</span>
                                       <span className="text-violet-600">{result.chakraActivity.crown}/10 ({result.chakraActivity.crown * 10}%)</span>
                                     </div>
                                   </div>
@@ -5020,7 +5077,7 @@ export default function AuraAnalysis() {
                                       The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Third Eye Chakra (8)</span>
+                                      <span className="font-medium">Third Eye Chakra</span>
                                       <span className="text-indigo-600">{result.chakraActivity.thirdEye}/10 ({result.chakraActivity.thirdEye * 10}%)</span>
                                     </div>
                                   </div>
@@ -5042,7 +5099,7 @@ export default function AuraAnalysis() {
                                       The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Throat Chakra (5)</span>
+                                      <span className="font-medium">Throat Chakra</span>
                                       <span className="text-blue-600">{result.chakraActivity.throat}/10 ({result.chakraActivity.throat * 10}%)</span>
                                     </div>
                                   </div>
@@ -5064,7 +5121,7 @@ export default function AuraAnalysis() {
                                       The Heart Chakra controls love, compassion, emotional healing, relationships, and your ability to give and receive love.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Heart Chakra (2)</span>
+                                      <span className="font-medium">Heart Chakra</span>
                                       <span className="text-green-600">{result.chakraActivity.heart}/10 ({result.chakraActivity.heart * 10}%)</span>
                                     </div>
                                   </div>
@@ -5086,7 +5143,7 @@ export default function AuraAnalysis() {
                                       The Solar Plexus Chakra governs personal power, confidence, willpower, and your sense of identity and self-worth.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Solar Plexus Chakra (1)</span>
+                                      <span className="font-medium">Solar Plexus Chakra</span>
                                       <span className="text-yellow-600">{result.chakraActivity.solarPlexus}/10 ({result.chakraActivity.solarPlexus * 10}%)</span>
                                     </div>
                                   </div>
@@ -5108,7 +5165,7 @@ export default function AuraAnalysis() {
                                       The Sacral Chakra influences creativity, sexuality, emotional flow, pleasure, and your capacity for joy and passion.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Sacral Chakra (6)</span>
+                                      <span className="font-medium">Sacral Chakra</span>
                                       <span className="text-orange-600">{result.chakraActivity.sacral}/10 ({result.chakraActivity.sacral * 10}%)</span>
                                     </div>
                                   </div>
@@ -5130,7 +5187,7 @@ export default function AuraAnalysis() {
                                       The Root Chakra provides grounding, survival instincts, physical vitality, and your connection to earth energy and stability.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Root Chakra (9)</span>
+                                      <span className="font-medium">Root Chakra</span>
                                       <span className="text-red-600">{result.chakraActivity.root}/10 ({result.chakraActivity.root * 10}%)</span>
                                     </div>
                                   </div>
@@ -5152,7 +5209,7 @@ export default function AuraAnalysis() {
                                       The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Earth Star Chakra (4)</span>
+                                      <span className="font-medium">Earth Star Chakra</span>
                                       <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
                                     </div>
                                   </div>
