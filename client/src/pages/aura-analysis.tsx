@@ -2635,8 +2635,8 @@ export default function AuraAnalysis() {
   ) => {
     const centerX = width / 2;
     const centerY = height / 2;
-    const personWidth = width * 0.25;
-    const personHeight = height * 0.4;
+    const personWidth = width * 0.3;
+    const personHeight = height * 0.5;
     
     // Seeded random for consistent effects
     let seed = 12345;
@@ -2645,14 +2645,11 @@ export default function AuraAnalysis() {
       return seed / 233280;
     };
 
-    // Set blend mode for natural smoke blending
-    ctx.globalCompositeOperation = 'multiply';
-
-    // Create natural flowing smoke wisps
-    createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
-
-    // Reset composite operation
+    // Use normal blend mode for transparent smoke particles
     ctx.globalCompositeOperation = 'source-over';
+
+    // Create natural flowing smoke wisps with proper transparency
+    createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
   };
 
   // Function to create natural smoke wisps that flow around the person
@@ -2862,7 +2859,7 @@ export default function AuraAnalysis() {
     });
   };
 
-  // Function to draw natural smoke without particles
+  // Function to draw natural smoke particles with proper transparency
   const drawNaturalSmoke = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -2872,18 +2869,19 @@ export default function AuraAnalysis() {
     opacity: number,
     progress: number
   ) => {
-    // Create organic, wispy smoke gradient
+    // Create organic, wispy smoke gradient with low opacity
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
-    // Enhance colors for better visibility
-    const smokeR = Math.min(255, rgb.r + 25);
-    const smokeG = Math.min(255, rgb.g + 25);
-    const smokeB = Math.min(255, rgb.b + 25);
+    // Use original colors with enhanced visibility but maintain transparency
+    const smokeR = rgb.r;
+    const smokeG = rgb.g;
+    const smokeB = rgb.b;
     
-    // Create natural smoke density gradient
-    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.9})`);
-    gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.7})`);
-    gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.4})`);
+    // Create natural smoke density gradient with proper transparency
+    const baseOpacity = Math.min(0.15, opacity * 0.3); // Much lower opacity for natural effect
+    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity})`);
+    gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.7})`);
+    gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.3})`);
     gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
     
     ctx.fillStyle = gradient;
@@ -2891,18 +2889,19 @@ export default function AuraAnalysis() {
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add wispy tendrils for realism
-    if (progress < 0.8) {
-      const tendrilCount = 2 + Math.floor(size / 40);
+    // Add subtle wispy tendrils for realism with even lower opacity
+    if (progress < 0.8 && size > 30) {
+      const tendrilCount = 2 + Math.floor(size / 60);
       for (let t = 0; t < tendrilCount; t++) {
-        const tendrilAngle = (t / tendrilCount) * Math.PI * 2;
-        const tendrilLength = size * 0.7;
+        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.5;
+        const tendrilLength = size * 0.6;
         const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
         const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
-        const tendrilSize = size * 0.5;
+        const tendrilSize = size * 0.3;
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.5})`);
+        const tendrilOpacity = baseOpacity * 0.4;
+        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
         tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
         
         ctx.fillStyle = tendrilGradient;
@@ -2913,7 +2912,7 @@ export default function AuraAnalysis() {
     }
   };
 
-  // Function to draw smooth smoke trails
+  // Function to draw smooth smoke trails with proper transparency
   const drawSmokeTrail = (
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
