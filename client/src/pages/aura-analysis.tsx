@@ -5272,55 +5272,7 @@ export default function AuraAnalysis() {
                                     Specialized Aura Interpretation - Detailed Analysis
                                   </h3>
                                   
-                                  {/* Aura Strength Analysis */}
-                                  <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
-                                    <h4 className="font-bold text-purple-800 mb-3 flex items-center">
-                                      <span className="mr-2">⚡</span>
-                                      Aura Strength & Intensity Analysis
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div>
-                                        <p className="text-sm font-medium text-gray-700 mb-2">Overall Energy Level:</p>
-                                        <div className="flex items-center space-x-3">
-                                          <div className="flex-1 bg-gray-200 rounded-full h-3">
-                                            <div 
-                                              className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-500"
-                                              style={{width: `${(result.energyLevel || 5) * 10}%`}}
-                                            ></div>
-                                          </div>
-                                          <span className="text-sm font-bold text-purple-700">{result.energyLevel || 5}/10</span>
-                                        </div>
-                                        <p className="text-xs text-gray-600 mt-1">
-                                          {(result.energyLevel || 5) >= 8 ? 'Exceptionally Strong' : 
-                                           (result.energyLevel || 5) >= 6 ? 'Strong & Vibrant' : 
-                                           (result.energyLevel || 5) >= 4 ? 'Balanced & Stable' : 'Gentle & Subtle'}
-                                        </p>
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-medium text-gray-700 mb-2">Color Intensity:</p>
-                                        <div className="space-y-2">
-                                          {(() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return [
-                                              { name: 'Crown', color: detectedColors.thinking },
-                                              { name: 'Receiving', color: detectedColors.receiving },
-                                              { name: 'Giving', color: detectedColors.giving },
-                                              { name: 'Personality', color: detectedColors.personality }
-                                            ].map((zone, index) => {
-                                              const intensity = 60 + (index * 10) + ((result.energyLevel || 5) * 3);
-                                              return (
-                                                <div key={index} className="flex items-center space-x-2">
-                                                  <div className="w-4 h-4 rounded" style={{backgroundColor: zone.color}}></div>
-                                                  <span className="text-xs text-gray-600 flex-1">{zone.name}</span>
-                                                  <span className="text-xs font-medium text-purple-700">{intensity}%</span>
-                                                </div>
-                                              );
-                                            });
-                                          })()}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+
 
                                   {/* Color Composition Analysis */}
                                   <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border">
