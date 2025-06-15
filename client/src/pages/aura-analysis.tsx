@@ -2632,67 +2632,70 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Define face protection area
-    const faceX = centerX - personWidth * 0.5;
-    const faceY = centerY - personHeight * 0.6;
-    const faceWidth = personWidth;
-    const faceHeight = personHeight * 0.5;
+    // Define face protection area - smaller to allow more smoke coverage
+    const faceX = centerX - personWidth * 0.4;
+    const faceY = centerY - personHeight * 0.5;
+    const faceWidth = personWidth * 0.8;
+    const faceHeight = personHeight * 0.6;
 
-    // Create natural smoke flows from different body zones
+    // Create full-image background smoke base
+    createFullImageSmokeBase(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+
+    // Create natural smoke flows from different body zones extending to image edges
     const smokeZones = [
       { 
         color: colors.thinkingRGB, 
         startX: centerX, 
-        startY: centerY - personHeight * 0.3, 
+        startY: centerY - personHeight * 0.2, 
         direction: { x: 0, y: -1 },
-        spread: personWidth * 0.8,
+        spread: width * 0.6,
         name: 'crown'
       },
       { 
         color: colors.receivingRGB, 
-        startX: centerX + personWidth * 0.3, 
+        startX: centerX + personWidth * 0.2, 
         startY: centerY, 
         direction: { x: 1, y: 0 },
-        spread: personHeight * 0.8,
+        spread: height * 0.8,
         name: 'right'
       },
       { 
         color: colors.givingRGB, 
-        startX: centerX - personWidth * 0.3, 
+        startX: centerX - personWidth * 0.2, 
         startY: centerY, 
         direction: { x: -1, y: 0 },
-        spread: personHeight * 0.8,
+        spread: height * 0.8,
         name: 'left'
       },
       { 
         color: colors.personalityRGB, 
         startX: centerX, 
-        startY: centerY + personHeight * 0.4, 
+        startY: centerY + personHeight * 0.3, 
         direction: { x: 0, y: 1 },
-        spread: personWidth,
+        spread: width * 0.8,
         name: 'base'
       }
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = 8 + Math.floor(energyLevel * 2);
+      const smokeWisps = 15 + Math.floor(energyLevel * 3);
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
-        // Create flowing smoke trail
+        // Create flowing smoke trail that extends to image edges
         const trailPoints = [];
-        const maxDistance = Math.min(width, height) * 0.7;
-        const segments = 25 + Math.floor(seededRandom() * 15);
+        const maxDistance = Math.max(width, height);
+        const segments = 35 + Math.floor(seededRandom() * 20);
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
           const distance = maxDistance * progress;
           
           // Add natural turbulence and wind effects
-          const turbulenceX = Math.sin(progress * Math.PI * 6 + zoneIndex + wisp) * 40 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 4 + zoneIndex + wisp) * 30 * progress;
+          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 60 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 45 * progress;
           
-          // Calculate spread based on zone
-          const spread = (seededRandom() - 0.5) * zone.spread * progress;
+          // Calculate spread based on zone to fill entire image
+          const spread = (seededRandom() - 0.5) * zone.spread * (0.5 + progress * 0.5);
           
           const smokeX = zone.startX + 
                         zone.direction.x * distance + 
@@ -2719,8 +2722,138 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add ambient atmospheric haze
-    createAtmosphericHaze(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add dense perimeter smoke around all edges
+    createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+  };
+
+  // Function to create full-image smoke base coverage
+  const createFullImageSmokeBase = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    const baseSmokeDensity = 200 + Math.floor(energyLevel * 50);
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < baseSmokeDensity; i++) {
+      const smokeX = seededRandom() * width;
+      const smokeY = seededRandom() * height;
+      
+      // Avoid face area
+      const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                        smokeY >= faceY && smokeY <= faceY + faceHeight;
+      
+      if (!inFaceArea) {
+        const smokeSize = 25 + seededRandom() * 80;
+        const smokeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+        const smokeOpacity = 0.08 + seededRandom() * 0.15;
+        
+        drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
+      }
+    }
+  };
+
+  // Function to create dense perimeter smoke
+  const createPerimeterSmoke = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    const perimeterDensity = 100 + Math.floor(energyLevel * 25);
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    // Create dense smoke around all four edges
+    const edges = [
+      { name: 'top', coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.25 }) },
+      { name: 'right', coords: () => ({ x: width - seededRandom() * width * 0.25, y: seededRandom() * height }) },
+      { name: 'bottom', coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.25 }) },
+      { name: 'left', coords: () => ({ x: seededRandom() * width * 0.25, y: seededRandom() * height }) }
+    ];
+    
+    edges.forEach(edge => {
+      for (let i = 0; i < perimeterDensity / 4; i++) {
+        const coords = edge.coords();
+        const smokeX = coords.x;
+        const smokeY = coords.y;
+        
+        // Avoid face area
+        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                          smokeY >= faceY && smokeY <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 40 + seededRandom() * 100;
+          const smokeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+          const smokeOpacity = 0.12 + seededRandom() * 0.20;
+          
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.3);
+        }
+      }
+    });
+  };
+
+  // Function to draw natural smoke without particles
+  const drawNaturalSmoke = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    rgb: { r: number, g: number, b: number },
+    opacity: number,
+    progress: number
+  ) => {
+    // Create organic, wispy smoke gradient
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+    
+    // Enhance colors for better visibility
+    const smokeR = Math.min(255, rgb.r + 25);
+    const smokeG = Math.min(255, rgb.g + 25);
+    const smokeB = Math.min(255, rgb.b + 25);
+    
+    // Create natural smoke density gradient
+    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.9})`);
+    gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.7})`);
+    gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.4})`);
+    gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add wispy tendrils for realism
+    if (progress < 0.8) {
+      const tendrilCount = 2 + Math.floor(size / 40);
+      for (let t = 0; t < tendrilCount; t++) {
+        const tendrilAngle = (t / tendrilCount) * Math.PI * 2;
+        const tendrilLength = size * 0.7;
+        const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
+        const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
+        const tendrilSize = size * 0.5;
+        
+        const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
+        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.5})`);
+        tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+        
+        ctx.fillStyle = tendrilGradient;
+        ctx.beginPath();
+        ctx.arc(tendrilX, tendrilY, tendrilSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
   };
 
   // Function to draw smooth smoke trails
@@ -2847,12 +2980,12 @@ export default function AuraAnalysis() {
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
       const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
       
-      // Create natural smoke aura effect
+      // Create natural smoke aura effect using calculated colors
       const colors = {
-        thinkingRGB: hexToRgb(getThinkingEnergyColor(auraData)),
-        receivingRGB: hexToRgb(getReceivingEnergyColor(auraData)),
-        givingRGB: hexToRgb(getGivingEnergyColor(auraData)),
-        personalityRGB: hexToRgb(getPersonalityColor(auraData))
+        thinkingRGB: hexToRgb(dominantColor),
+        receivingRGB: hexToRgb(secondaryColor),
+        givingRGB: hexToRgb(getAccurateColorCode(auraData.dominantColor)),
+        personalityRGB: hexToRgb(getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor))
       };
       
       createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
