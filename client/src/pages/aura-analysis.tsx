@@ -2620,6 +2620,56 @@ export default function AuraAnalysis() {
     return `#${adjusted.r.toString(16).padStart(2, '0')}${adjusted.g.toString(16).padStart(2, '0')}${adjusted.b.toString(16).padStart(2, '0')}`;
   };
 
+  // Function to convert hex color back to color name
+  const getColorNameFromHex = (hex: string): string => {
+    const colorMap: Record<string, string> = {
+      '#FF0000': 'Red', '#DC143C': 'Crimson', '#8B0000': 'Maroon',
+      '#FFA500': 'Orange', '#FF7F50': 'Coral',
+      '#FFFF00': 'Yellow', '#FFD700': 'Gold', '#FFBF00': 'Amber',
+      '#00FF00': 'Green', '#50C878': 'Emerald', '#98FB98': 'Mint',
+      '#0000FF': 'Blue', '#000080': 'Navy', '#87CEEB': 'Sky Blue',
+      '#40E0D0': 'Turquoise', '#008080': 'Teal', '#00FFFF': 'Cyan',
+      '#800080': 'Purple', '#8A2BE2': 'Violet', '#FF00FF': 'Magenta', '#E6E6FA': 'Lavender',
+      '#FFC0CB': 'Pink', '#FF69B4': 'Rose', '#FFCBA4': 'Peach',
+      '#FFFFFF': 'White', '#000000': 'Black', '#C0C0C0': 'Silver', '#808080': 'Gray',
+      '#A52A2A': 'Brown', '#4B0082': 'Indigo'
+    };
+    
+    // Find exact match first
+    if (colorMap[hex.toUpperCase()]) {
+      return colorMap[hex.toUpperCase()];
+    }
+    
+    // Convert hex to RGB for approximate matching
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // Find closest color by dominant component
+    if (r > g && r > b) {
+      if (g > 100 && b > 100) return 'Pink';
+      if (g > 80 && b < 80) return 'Orange';
+      return 'Red';
+    }
+    if (g > r && g > b) {
+      if (b > 100) return 'Turquoise';
+      return 'Green';
+    }
+    if (b > r && b > g) {
+      if (r > 100) return 'Purple';
+      return 'Blue';
+    }
+    
+    // Equal components suggest neutral colors
+    if (Math.abs(r - g) < 30 && Math.abs(g - b) < 30) {
+      if (r > 200) return 'White';
+      if (r < 80) return 'Black';
+      return 'Silver';
+    }
+    
+    return 'Purple'; // Default fallback
+  };
+
   // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
@@ -4653,7 +4703,10 @@ export default function AuraAnalysis() {
                                       <div className="flex items-center space-x-3 mb-3">
                                         <div 
                                           className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                                          style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}
+                                          style={{backgroundColor: (() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return detectedColors.thinking;
+                                          })()}}
                                         >
                                           <span className="text-white font-bold">🧠</span>
                                         </div>
@@ -4678,7 +4731,10 @@ export default function AuraAnalysis() {
                                       <div className="flex items-center space-x-3 mb-3">
                                         <div 
                                           className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                                          style={{backgroundColor: getAccurateColorCode(getReceivingEnergyColor(result))}}
+                                          style={{backgroundColor: (() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return detectedColors.receiving;
+                                          })()}}
                                         >
                                           <span className="text-white font-bold">⬅️</span>
                                         </div>
@@ -4703,7 +4759,10 @@ export default function AuraAnalysis() {
                                       <div className="flex items-center space-x-3 mb-3">
                                         <div 
                                           className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                                          style={{backgroundColor: getAccurateColorCode(getGivingEnergyColor(result))}}
+                                          style={{backgroundColor: (() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return detectedColors.giving;
+                                          })()}}
                                         >
                                           <span className="text-white font-bold">➡️</span>
                                         </div>
@@ -4728,7 +4787,10 @@ export default function AuraAnalysis() {
                                       <div className="flex items-center space-x-3 mb-3">
                                         <div 
                                           className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                                          style={{backgroundColor: getAccurateColorCode(getPersonalityColor(result))}}
+                                          style={{backgroundColor: (() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return detectedColors.personality;
+                                          })()}}
                                         >
                                           <span className="text-white font-bold">🌈</span>
                                         </div>
