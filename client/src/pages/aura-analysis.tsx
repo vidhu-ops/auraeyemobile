@@ -91,8 +91,7 @@ const getAccurateColorCode = (colorName: string): string => {
     'Emerald': '#50C878',
     'emerald': '#50C878',
     'Sapphire': '#0F52BA',
-    'coral': '#FF7F50',
-    'coral': '#FF7F50',
+    'sapphire': '#0F52BA',
   };
   
   return colorCodes[colorName] || '#FFFFFF'; // Default to purple if color not found
@@ -119,6 +118,8 @@ export default function AuraAnalysis() {
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
+
+
 
   const getColorCompleteInfo = (colorName: string): { 
     chakra: string; 
@@ -2689,104 +2690,145 @@ export default function AuraAnalysis() {
     secondaryColor: string,
     energyLevel: number
   ) => {
-    // Map color names to rgba values
-    const colorMap: Record<string, string> = {
-      red: 'rgba(255, 0, 0, 0.3)',
-      orange: 'rgba(255, 165, 0, 0.3)',
-      yellow: 'rgba(255, 255, 55, 0.8)',
-      green: 'rgba(0, 128, 0, 0.3)',
-      blue: 'rgba(0, 0, 255, 0.3)',
-      indigo: 'rgba(22, 39, 119, 0.8)',
-      violet: 'rgba(134, 55, 220, 0.8)',
-      purple: 'rgba(128, 0, 128, 0.3)',
-      pink: 'rgba(255, 182, 193, 0.3)',
-      white: 'rgba(237, 196, 32, 0)',
-      gold: 'rgba(237, 196, 32, 0.8)',
-      silver: 'rgba(232, 232, 232, 0.03)',
-      black: 'rgba(0, 0, 0, 0.3)',
-      turquoise: 'rgba(64, 224, 208, 0.3)',
-      magenta: 'rgba(255, 0, 255, 0.3)',
-      brown: 'rgba(165, 42, 42, 0.3)',
-      ocher: 'rgba(255, 255, 0, 0.3)',
-      lavender: 'rgba(230, 230, 250, 0.3)',
-      coral: 'rgba(255, 127, 80, 0.3)',
-      peach: 'rgba(255, 218, 185, 0.3)',
-      skyblue: 'rgba(135, 206, 235, 0.3)',
-      rose: 'rgba(255, 105, 180, 0.3)',
-      amber: 'rgba(255, 191, 0, 0.3)',
-      gray: 'rgba(128, 128, 128, 0.3)',
-      cyan: 'rgba(0, 255, 255, 0.3)',
-      lime: 'rgba(0, 255, 0, 0.3)',
-      maroon: 'rgba(128, 0, 0, 0.3)',
-      navy: 'rgba(0, 0, 128, 0.3)',
-      olive: 'rgba(128, 128, 0, 0.3)',
-      teal: 'rgba(0, 128, 128, 0.3)',
-      bronze: 'rgba(205, 127, 50, 0.3)',
-      cobalt: 'rgba(0, 71, 171, 0.3)',
-      emerald: 'rgba(6, 82, 0, 0.8)',
-      jade: 'rgba(0, 163, 108, 0.3)',
-      sapphire: 'rgba(15, 82, 186, 0.3)',
-      topaz: 'rgba(255, 200, 124, 0.3)',
-      grey: 'rgba(128, 128, 128, 0.3)',
-      charcoal: 'rgba(54, 69, 79, 0.3)',
-      slate: 'rgba(112, 128, 144, 0.3)',
-      smoke: 'rgba(115, 130, 118, 0.3)',
-      obsidian: 'rgba(11, 20, 38, 0.3)',
-      pewter: 'rgba(150, 168, 161, 0.3)',
-      ash: 'rgba(178, 190, 181, 0.3)',
-      onyx: 'rgba(53, 56, 57, 0.3)',
-      graphite: 'rgba(65, 66, 76, 0.3)',
-      crimson: 'rgba(220, 20, 60, 0.3)',
-      mint: 'rgba(152, 251, 152, 0.3)'
-      
+    // Enhanced color mapping with proper hex values
+    const colorMap: Record<string, { r: number, g: number, b: number }> = {
+      red: { r: 255, g: 68, b: 68 },
+      orange: { r: 255, g: 136, b: 0 },
+      yellow: { r: 255, g: 215, b: 0 },
+      green: { r: 50, g: 205, b: 50 },
+      blue: { r: 65, g: 105, b: 225 },
+      indigo: { r: 75, g: 0, b: 130 },
+      violet: { r: 138, g: 43, b: 226 },
+      purple: { r: 153, g: 50, b: 204 },
+      pink: { r: 255, g: 105, b: 180 },
+      white: { r: 255, g: 255, b: 255 },
+      gold: { r: 255, g: 215, b: 0 },
+      silver: { r: 192, g: 192, b: 192 },
+      black: { r: 0, g: 0, b: 0 },
+      turquoise: { r: 64, g: 224, b: 208 },
+      magenta: { r: 255, g: 0, b: 255 },
+      coral: { r: 255, g: 127, b: 80 },
+      peach: { r: 255, g: 218, b: 185 },
+      lime: { r: 50, g: 205, b: 50 },
+      teal: { r: 0, g: 128, b: 128 },
+      navy: { r: 0, g: 0, b: 128 },
+      maroon: { r: 128, g: 0, b: 0 },
+      lavender: { r: 230, g: 230, b: 250 },
+      mint: { r: 152, g: 251, b: 152 },
+      grey: { r: 128, g: 128, b: 128 },
+      crimson: { r: 220, g: 20, b: 60 },
+      emerald: { r: 80, g: 200, b: 120 },
+      sapphire: { r: 15, g: 82, b: 186 },
+      amber: { r: 255, g: 191, b: 0 }
     };
+
+    // Get color values
+    const dominantRGB = colorMap[dominantColor.toLowerCase()] || colorMap.violet;
+    const secondaryRGB = colorMap[secondaryColor.toLowerCase()] || dominantRGB;
+
+    // Create deterministic random based on image content for consistent results
+    const seedValue = dominantColor.charCodeAt(0) + secondaryColor.charCodeAt(0) + energyLevel;
+    let randomSeed = seedValue;
+    const seededRandom = () => {
+      randomSeed = (randomSeed * 9301 + 49297) % 233280;
+      return randomSeed / 233280;
+    };
+
+    // Find person outline using edge detection approximation
+    const centerX = width * 0.5;
+    const centerY = height * 0.6; // Assume person is in lower half
+    const personWidth = width * 0.3;
+    const personHeight = height * 0.7;
+
+    // Create smokey particle system around person outline
+    const particleCount = 150 + (energyLevel * 20);
     
-    // Get RGBA values for dominant and secondary colors
-    const dominantRgba = colorMap[dominantColor] || 'rgba(134, 55, 220, 0.8)';
-    const secondaryRgba = colorMap[secondaryColor] || 'rgba(134, 55, 220, 0.8)';
-    
-    // Create a radial gradient for the aura effect
-    const centerX = width / 4;
-    const centerY = height / 4;
-    
-    // Intensity of the aura based on energy level (1-10)
-    const intensityFactor = energyLevel / 10;
-    const auraSize = Math.max(width, height) * (0.2 + intensityFactor * 0.3);
-    
-    // Draw multiple layers of aura clouds with different opacities and sizes
-    for (let i = 0; i < 5; i++) {
-      const radius = auraSize * (0.6 + i * 0.2);
-      const gradient = ctx.createRadialGradient(
-        centerX, centerY, radius * 0.2,
-        centerX, centerY, radius
+    for (let i = 0; i < particleCount; i++) {
+      // Generate particles around person silhouette
+      const angle = (seededRandom() * 2 * Math.PI);
+      const distance = (seededRandom() * 100 + 20) * (energyLevel / 10);
+      
+      // Create oval distribution around person
+      const ellipseX = Math.cos(angle) * (personWidth * 0.6 + distance);
+      const ellipseY = Math.sin(angle) * (personHeight * 0.5 + distance * 0.7);
+      
+      const particleX = centerX + ellipseX;
+      const particleY = centerY + ellipseY;
+
+      // Skip particles that would be inside the person area
+      const distanceFromCenter = Math.sqrt(
+        Math.pow((particleX - centerX) / (personWidth * 0.4), 2) + 
+        Math.pow((particleY - centerY) / (personHeight * 0.4), 2)
       );
       
-      // Add color stops with varying opacity
-      const opacity = 1 - i * 0.02;
-      gradient.addColorStop(0, dominantRgba.replace('0.3', `${opacity + 0.1}`));
-      gradient.addColorStop(0.4, dominantRgba.replace('0.3', `${opacity}`));
-      gradient.addColorStop(0.6, secondaryRgba.replace('0.3', `${opacity}`));
-      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      if (distanceFromCenter < 1) continue;
+
+      // Determine particle color (blend dominant and secondary)
+      const colorBlend = seededRandom();
+      const useSecondary = colorBlend > 0.7;
+      const rgb = useSecondary ? secondaryRGB : dominantRGB;
       
-      // Apply the gradient
+      // Particle size and opacity based on distance from person
+      const particleSize = (3 + seededRandom() * 8) * (energyLevel / 10);
+      const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
+      const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
+
+      // Create smokey gradient for each particle
+      const gradient = ctx.createRadialGradient(
+        particleX, particleY, 0,
+        particleX, particleY, particleSize * 3
+      );
+      
+      gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
+      gradient.addColorStop(0.3, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+
+      // Set blend mode for smokey effect
+      ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = gradient;
-      ctx.globalCompositeOperation = 'source-over';
       
-      // Draw cloud-like shapes
+      // Draw particle as soft circle
       ctx.beginPath();
-      for (let j = 0; j < 8; j++) {
-        const angle = (j / 8) * Math.PI * 2;
-        const cloudX = centerX + Math.cos(angle) * radius * (0.8 + Math.random() * 0.4);
-        const cloudY = centerY + Math.sin(angle) * radius * (0.8 + Math.random() * 0.4);
-        const cloudRadius = radius * 0.3 * (0.7 + Math.random() * 0.6);
-        
-        ctx.moveTo(cloudX + cloudRadius, cloudY);
-        ctx.arc(cloudX, cloudY, cloudRadius, 0, Math.PI * 2);
-      }
-      
+      ctx.arc(particleX, particleY, particleSize * 3, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    // Add flowing aura streams around the outline
+    const streamCount = 8 + Math.floor(energyLevel / 2);
+    ctx.globalCompositeOperation = 'screen';
     
+    for (let s = 0; s < streamCount; s++) {
+      const streamAngle = (s / streamCount) * Math.PI * 2;
+      const streamStartX = centerX + Math.cos(streamAngle) * personWidth * 0.5;
+      const streamStartY = centerY + Math.sin(streamAngle) * personHeight * 0.4;
+      
+      // Create flowing curve
+      const controlX = streamStartX + Math.cos(streamAngle) * 50;
+      const controlY = streamStartY + Math.sin(streamAngle) * 30;
+      const endX = streamStartX + Math.cos(streamAngle) * 100;
+      const endY = streamStartY + Math.sin(streamAngle) * 80;
+      
+      // Color selection for stream
+      const streamRGB = seededRandom() > 0.5 ? dominantRGB : secondaryRGB;
+      const streamOpacity = 0.2 + seededRandom() * 0.3;
+      
+      // Draw stream with gradient
+      const streamGradient = ctx.createLinearGradient(streamStartX, streamStartY, endX, endY);
+      streamGradient.addColorStop(0, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity})`);
+      streamGradient.addColorStop(0.5, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity * 0.7})`);
+      streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
+      
+      ctx.strokeStyle = streamGradient;
+      ctx.lineWidth = 3 + seededRandom() * 5;
+      ctx.lineCap = 'round';
+      
+      ctx.beginPath();
+      ctx.moveTo(streamStartX, streamStartY);
+      ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+      ctx.stroke();
+    }
+
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
   };
