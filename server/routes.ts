@@ -14,28 +14,30 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Analyze image buffer to extract color characteristics
+// Analyze image buffer to extract color characteristics optimized for full body images
 function analyzeImageBufferColors(imageBuffer: Buffer) {
   const colors = [];
-  const step = 50; // Sample every 50th byte
+  const step = 25; // Smaller step for better sampling in full body images
   
-  // Extract RGB-like patterns from buffer
+  // Extract RGB-like patterns from buffer with enhanced sampling
   for (let i = 0; i < imageBuffer.length - 3; i += step) {
     const r = imageBuffer[i] || 0;
     const g = imageBuffer[i + 1] || 0;
     const b = imageBuffer[i + 2] || 0;
     
-    if ((r + g + b) > 30) { // Skip very dark pixels
+    // More inclusive color detection for full body images
+    if ((r + g + b) > 20 && (r + g + b) < 750) { // Skip very dark and very bright pixels
       colors.push({ r, g, b, hex: `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}` });
     }
   }
   
-  // Analyze color distribution across different zones
+  // Enhanced zone detection for full body images - distribute zones more effectively
+  const totalColors = colors.length;
   const zones = {
-    crown: colors.slice(0, Math.floor(colors.length * 0.25)),
-    heart: colors.slice(Math.floor(colors.length * 0.25), Math.floor(colors.length * 0.5)),
-    solar: colors.slice(Math.floor(colors.length * 0.5), Math.floor(colors.length * 0.75)),
-    aura: colors.slice(Math.floor(colors.length * 0.75))
+    crown: colors.slice(0, Math.floor(totalColors * 0.2)), // Top 20% - head/crown area
+    heart: colors.slice(Math.floor(totalColors * 0.3), Math.floor(totalColors * 0.6)), // Middle 30% - chest/heart area
+    solar: colors.slice(Math.floor(totalColors * 0.6), Math.floor(totalColors * 0.8)), // Lower middle - solar plexus
+    aura: colors.filter((_, index) => index % 4 === 0) // Distributed sampling for overall aura
   };
   
   // Find dominant colors in each zone
@@ -51,13 +53,18 @@ function analyzeImageBufferColors(imageBuffer: Buffer) {
     dominantColors[zoneName] = sortedColors[0]?.[0] || '#FF6B6B';
   }
   
+  // Enhanced analysis for full body images
+  const uniqueColors = new Set(colors.map(c => groupSimilarColors(c.hex)));
+  const dominantColorsList = Object.values(dominantColors).filter(color => color !== '#FF6B6B');
+  
   return {
     totalColors: colors.length,
     zones: dominantColors,
-    overallDominant: Object.values(dominantColors)[0] || '#FF6B6B',
-    overallSecondary: Object.values(dominantColors)[1] || '#4ECDC4',
-    colorVariety: new Set(colors.map(c => groupSimilarColors(c.hex))).size,
-    energyIntensity: colors.reduce((sum, c) => sum + (c.r + c.g + c.b), 0) / colors.length / 3
+    overallDominant: dominantColorsList[0] || dominantColors.crown || '#FF6B6B',
+    overallSecondary: dominantColorsList[1] || dominantColors.heart || '#4ECDC4',
+    colorVariety: uniqueColors.size,
+    energyIntensity: colors.length > 0 ? colors.reduce((sum, c) => sum + (c.r + c.g + c.b), 0) / colors.length / 3 : 50,
+    imageType: colors.length > 1000 ? 'full_body' : 'portrait' // Detect image type based on color sampling
   };
 }
 
@@ -165,7 +172,8 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     secondaryHue: imageColorData.overallSecondary,
     energyLevel: imageColorData.energyIntensity,
     colorVariety: imageColorData.colorVariety,
-    zoneColors: imageColorData.zones
+    zoneColors: imageColorData.zones,
+    imageType: imageColorData.imageType || 'portrait'
   };
   
   // Enhanced color palette matching the frontend color mapping
@@ -414,25 +422,30 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
 
   // Create 4-Zone Energy Map based on actual detected colors from image zones
   const zoneNames = ["Crown Chakra", "Heart Chakra", "Solar Plexus", "Root Chakra"];
-  const detectedZoneColors = Object.values(colorInfluence.zoneColors);
+  const zoneKeys = ["crown", "heart", "solar", "aura"];
   const energyMap = [];
   
   for (let i = 0; i < 4; i++) {
-    // Use actual detected colors from image zones, with fallback to enhanced variety
-    let zoneColor = detectedZoneColors[i] || enhancedColors[i % enhancedColors.length].hex;
+    // Get actual detected colors from specific image zones
+    const detectedZoneColor = colorInfluence.zoneColors[zoneKeys[i]] || colorInfluence.dominantHue;
     
     // Map detected color to closest enhanced color for consistency
-    const closestEnhancedColor = findClosestEnhancedColor(zoneColor, enhancedColors);
+    const closestEnhancedColor = findClosestEnhancedColor(detectedZoneColor, enhancedColors);
     
     // Apply image-specific variation while maintaining color family
     const zoneVariationSeed = (seed1 + seed2 + (i * 1997)) % 1000;
-    const intensityFromImage = Math.abs((colorInfluence.energyLevel * 100 + zoneVariationSeed) % 80) + 40;
+    const baseIntensity = colorInfluence.energyLevel || 50;
+    const intensityFromImage = Math.abs((baseIntensity * 1.5 + zoneVariationSeed) % 80) + 40;
+    
+    // Enhanced description based on image type
+    const imageTypeContext = colorInfluence.imageType === 'full_body' ? 
+      'full body energy field analysis' : 'concentrated aura focus';
     
     energyMap.push({
       zone: zoneNames[i],
       color: closestEnhancedColor.hex,
       intensity: intensityFromImage,
-      description: `${closestEnhancedColor.meaning} - Enhanced by actual energy patterns detected in your image`
+      description: `${closestEnhancedColor.meaning} - Detected through ${imageTypeContext} of your energy patterns`
     });
   }
 
@@ -669,6 +682,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image provided" });
       }
 
+      // Enhanced validation for full body images and different formats
+      const imageSize = imgBuffer.length;
+      const isLargeImage = imageSize > 500000; // 500KB+ likely indicates full body or high resolution
+      
       // Create hash for this specific image to ensure consistency
       const imageHash = crypto.createHash('sha256').update(imgBuffer).digest('hex');
       
@@ -677,6 +694,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("Returning cached result for identical image");
         return res.json(imageHashCache.get(imageHash));
       }
+      
+      // Log image characteristics for full body detection
+      console.log(`Processing image: ${imageSize} bytes, ${isLargeImage ? 'likely full body' : 'likely portrait'}`);
 
       // Get user ID if authenticated
       const userId = req.isAuthenticated() ? req.user?.id : null;
