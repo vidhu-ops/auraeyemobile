@@ -2698,7 +2698,7 @@ export default function AuraAnalysis() {
       purple: 'rgba(128, 0, 128, 0.3)',
       pink: 'rgba(255, 182, 193, 0.3)',
       white: 'rgba(255, 255, 255, 0.3)',
-      gold: 'rgba(255, 215, 0, 0.3)',
+      gold: 'rgba(222, 163, 62, 0.3)',
       silver: 'rgba(192, 192, 192, 0.3)',
       black: 'rgba(0, 0, 0, 0.3)',
       turquoise: 'rgba(64, 224, 208, 0.3)',
@@ -4503,7 +4503,13 @@ export default function AuraAnalysis() {
                                     <div className="bg-white rounded-lg p-4 border border-gray-200">
                                       <h4 className="font-medium mb-3">Dominant Chakra Energy</h4>
                                       <div className="text-center">
-                                        <div className={`w-16 h-16 rounded-full mx-auto mb-2 ${getColorClass(result.dominantColor)} opacity-80`}></div>
+                                        <div 
+                                          className="w-16 h-16 rounded-full mx-auto mb-2 opacity-80"
+                                          style={{ 
+                                            backgroundColor: getAccurateColorCode(result.dominantColor),
+                                            boxShadow: `0 0 15px ${getAccurateColorCode(result.dominantColor)}60`
+                                          }}
+                                        ></div>
                                         <div className="text-sm font-medium">{getChakraConnection(result.dominantColor).split('Chakra')[0]}Chakra</div>
                                         <div className="text-xs text-gray-600 mt-1">
                                           Energy Level: {result.energyLevel}/10
@@ -4575,7 +4581,10 @@ export default function AuraAnalysis() {
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Dominant Aura Color</span>
                                           <div className="flex items-center space-x-2">
-                                            <div className={`w-4 h-4 rounded-full ${getColorClass(result.dominantColor)}`}></div>
+                                            <div 
+                                              className="w-4 h-4 rounded-full"
+                                              style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                            ></div>
                                             <span className="text-sm font-medium">{result.dominantColor}</span>
                                           </div>
                                         </div>
@@ -4586,7 +4595,10 @@ export default function AuraAnalysis() {
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Life Path Color</span>
                                           <div className="flex items-center space-x-2">
-                                            <div className={`w-4 h-4 rounded-full ${getColorClass(getCombinedInsights(result, numerologyResult).lifePathColor)}`}></div>
+                                            <div 
+                                              className="w-4 h-4 rounded-full"
+                                              style={{ backgroundColor: getAccurateColorCode(getCombinedInsights(result, numerologyResult).lifePathColor) }}
+                                            ></div>
                                             <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).lifePathColor}</span>
                                           </div>
                                         </div>
@@ -5668,11 +5680,11 @@ export default function AuraAnalysis() {
                                           <>
                                             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
                                               <div 
-                                                className="w-8 h-8 rounded-full flex-shrink-0 bg-opacity-70"
+                                                className="w-8 h-8 rounded-full flex-shrink-0"
                                                 style={{ 
-                                                  backgroundColor: result.dominantColor.toLowerCase(),
-                                                  opacity: 0.6,
-                                                  boxShadow: `0 0 10px ${result.dominantColor.toLowerCase()}30`
+                                                  backgroundColor: getAccurateColorCode(auraHelpers.getComplementaryColor(result.dominantColor)),
+                                                  opacity: 0.8,
+                                                  boxShadow: `0 0 10px ${getAccurateColorCode(auraHelpers.getComplementaryColor(result.dominantColor))}60`
                                                 }}
                                               ></div>
                                               <div>
@@ -5683,17 +5695,15 @@ export default function AuraAnalysis() {
                                             
                                             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
                                               <div 
-                                                className="w-8 h-8 rounded-full flex-shrink-0 bg-opacity-70"
+                                                className="w-8 h-8 rounded-full flex-shrink-0"
                                                 style={{ 
-                                                  backgroundColor: result.secondaryColor?.toLowerCase() || 
-                                                    (auraHelpers.getComplementaryColor(result.dominantColor) || "white").toLowerCase(),
-                                                  opacity: 0.6,
-                                                  boxShadow: `0 0 10px ${(result.secondaryColor?.toLowerCase() || 
-                                                    (auraHelpers.getComplementaryColor(result.dominantColor) || "white").toLowerCase())}30`
+                                                  backgroundColor: getAccurateColorCode(auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor)),
+                                                  opacity: 0.8,
+                                                  boxShadow: `0 0 10px ${getAccurateColorCode(auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor))}60`
                                                 }}
                                               ></div>
                                               <div>
-                                                <div className="text-xs text-gray-500">Complementary</div>
+                                                <div className="text-xs text-gray-500">Harmonious</div>
                                                 <div className="text-sm font-medium">{auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor)}</div>
                                               </div>
                                             </div>
