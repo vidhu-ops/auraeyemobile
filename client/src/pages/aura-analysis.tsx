@@ -815,7 +815,7 @@ export default function AuraAnalysis() {
       pdf.setTextColor(55, 65, 81);
 
       // Primary chakra connection
-      const primaryChakra = getChakraInfo(result.dominantColor);
+      const primaryChakra = getDetailedPlacement(result.dominantColor);
       pdf.text(`Primary Chakra Connection - ${result.dominantColor}:`, 20, yPosition);
       yPosition += 8;
       const primaryChakraLines = pdf.splitTextToSize(primaryChakra, pageWidth - 40);
@@ -824,7 +824,7 @@ export default function AuraAnalysis() {
 
       // Secondary chakra connection
       if (result.secondaryColor) {
-        const secondaryChakra = getChakraInfo(result.secondaryColor);
+        const secondaryChakra = getDetailedPlacement(result.secondaryColor);
         pdf.text(`Secondary Chakra Connection - ${result.secondaryColor}:`, 20, yPosition);
         yPosition += 8;
         const secondaryChakraLines = pdf.splitTextToSize(secondaryChakra, pageWidth - 40);
@@ -1755,7 +1755,7 @@ export default function AuraAnalysis() {
       'Topaz': 'Ancient Wisdom & Emotions'
         
     };
-    return keywords[color] || keywords['Purple, blue, red, teal, gold, silver, lavender, coral, mint, peach, sky blue, rose, amber, gray, black, crimson, magenta, ocher, brown, beige, cyan, lime, maroon, navy, olive, te'];
+    return keywords[color] || 'Mysticism & Nobility';
   };
 
 
