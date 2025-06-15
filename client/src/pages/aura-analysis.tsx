@@ -2765,7 +2765,7 @@ export default function AuraAnalysis() {
         direction: { x: 0, y: -1 },
         spread: width * 0.9,
         name: 'crown',
-        density: 20 // Increased density for better visibility
+        density: 30 // Increased density for better visibility
       },
       { 
         color: colors.receivingRGB, 
@@ -2774,7 +2774,7 @@ export default function AuraAnalysis() {
         direction: { x: 1, y: 0 },
         spread: height * 0.9,
         name: 'right',
-        density: 18
+        density: 30
       },
       { 
         color: colors.givingRGB, 
@@ -2783,7 +2783,7 @@ export default function AuraAnalysis() {
         direction: { x: -1, y: 0 },
         spread: height * 0.9,
         name: 'left',
-        density: 18
+        density: 30
       },
       { 
         color: colors.personalityRGB, 
@@ -2792,7 +2792,7 @@ export default function AuraAnalysis() {
         direction: { x: 0, y: 1 },
         spread: width * 0.9,
         name: 'base',
-        density: 16
+        density: 30
       }
     ];
 
