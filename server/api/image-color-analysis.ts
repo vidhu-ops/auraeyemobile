@@ -1,13 +1,13 @@
 // Direct image buffer analysis without Canvas dependency
 
-interface ColorZone {
+export interface ColorZone {
   name: string;
   colors: string[];
   dominantColor: string;
   intensity: number;
 }
 
-interface ImageColorAnalysis {
+export interface ImageColorAnalysis {
   zones: ColorZone[];
   overallDominant: string;
   overallSecondary: string;
@@ -62,29 +62,39 @@ export async function analyzeImageColors(imageBuffer: Buffer): Promise<ImageColo
   }
 }
 
-function extractZoneColors(imageData: Uint8ClampedArray, zone: any, width: number): string[] {
+function extractColorPatternsFromBuffer(imageBuffer: Buffer): string[] {
   const colors: string[] = [];
-  const step = 8; // Sample every 8th pixel for performance
+  const step = 100; // Sample every 100th byte for performance
   
-  for (let y = zone.y; y < zone.y + zone.height; y += step) {
-    for (let x = zone.x; x < zone.x + zone.width; x += step) {
-      const index = (y * width + x) * 4;
-      if (index < imageData.length - 3) {
-        const r = imageData[index];
-        const g = imageData[index + 1];
-        const b = imageData[index + 2];
-        const alpha = imageData[index + 3];
-        
-        // Skip transparent or very dark pixels
-        if (alpha > 100 && (r + g + b) > 30) {
-          const color = rgbToHex(r, g, b);
-          colors.push(color);
-        }
-      }
+  // Extract color patterns from image buffer
+  for (let i = 0; i < imageBuffer.length - 3; i += step) {
+    const r = imageBuffer[i] || 0;
+    const g = imageBuffer[i + 1] || 0;
+    const b = imageBuffer[i + 2] || 0;
+    
+    // Skip very dark pixels and focus on meaningful colors
+    if ((r + g + b) > 50) {
+      const color = rgbToHex(r, g, b);
+      colors.push(color);
     }
   }
   
   return colors;
+}
+
+function analyzeImageZones(imageBuffer: Buffer, colorPatterns: string[]): Record<string, string[]> {
+  const bufferLength = imageBuffer.length;
+  const zoneSize = Math.floor(bufferLength / 4);
+  
+  // Divide buffer into 4 zones representing different energy areas
+  const zones = {
+    'Crown': colorPatterns.slice(0, Math.floor(colorPatterns.length * 0.25)),
+    'Heart': colorPatterns.slice(Math.floor(colorPatterns.length * 0.25), Math.floor(colorPatterns.length * 0.5)),
+    'Solar': colorPatterns.slice(Math.floor(colorPatterns.length * 0.5), Math.floor(colorPatterns.length * 0.75)),
+    'Aura': colorPatterns.slice(Math.floor(colorPatterns.length * 0.75))
+  };
+  
+  return zones;
 }
 
 function findDominantColor(colors: string[]): string {
