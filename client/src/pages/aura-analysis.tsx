@@ -76,7 +76,7 @@ const getAccurateColorCode = (colorName: string): string => {
     'Violet': '#8A2BE2'
   };
   
-  return colorCodes[colorName] || '#800080'; // Default to purple if color not found
+  return colorCodes[colorName] || '#FFFFFF'; // Default to purple if color not found
 };
 
 export default function AuraAnalysis() {
@@ -2426,13 +2426,13 @@ export default function AuraAnalysis() {
           const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
           
           // Calculate energy colors for the 4 zones with proper spiritual mapping
-          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Crown - How you think
-          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Left - Receiving from environment (dynamic)
-          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Right - Giving energy, life patterns (dynamic)
-          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Overall - Static personality (why things happen)
+          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Top of head - How you think
+          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Right side - Receiving from environment
+          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side - Giving energy to others
+          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Edges - Static personality energy
           
           // 1. Personality Color - Static background around entire picture
-          ctx.globalCompositeOperation = 'multiply';
+          ctx.globalCompositeOperation = 'overlay';
           const personalityGlow = ctx.createRadialGradient(
             centerX, centerY, 0,
             centerX, centerY, maxRadius * 2
@@ -2461,18 +2461,39 @@ export default function AuraAnalysis() {
           ctx.fillStyle = thinkingGlow;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // 3. Receiving Energy - Left side (dynamic environmental intake)
+          // 3. Giving Energy - Left side of person (energy you give to others)
           ctx.globalCompositeOperation = 'overlay';
-          const leftX = canvas.width * 0.5;
+          const leftX = canvas.width * 0.15;
           const leftY = centerY;
-          const sideRadius = Math.min(canvas.width, canvas.height) * 0.3;
+          const sideRadius = Math.min(canvas.width, canvas.height) * 0.4;
           
-          // Create flowing receiving energy pattern
+          // Create giving energy glow on left side
           for (let i = 0; i < 3; i++) {
             const offsetY = leftY + (i - 1) * canvas.height * 0.2;
-            const receivingGlow = ctx.createRadialGradient(
+            const givingGlow = ctx.createRadialGradient(
               leftX, offsetY, 0,
-              leftX + sideRadius * 0.9, offsetY, sideRadius
+              leftX + sideRadius * 0.8, offsetY, sideRadius
+            );
+            givingGlow.addColorStop(0, givingColor + (80 - i * 15).toString(16).padStart(2, '0'));
+            givingGlow.addColorStop(0.6, givingColor + (60 - i * 10).toString(16).padStart(2, '0'));
+            givingGlow.addColorStop(0.9, givingColor + (30 - i * 5).toString(16).padStart(2, '0'));
+            givingGlow.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = givingGlow;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          
+          // 4. Receiving Energy - Right side of person (energy you receive from environment)
+          ctx.globalCompositeOperation = 'overlay';
+          const rightX = canvas.width * 0.85;
+          const rightY = centerY;
+        
+          // Create receiving energy glow on right side
+          for (let i = 0; i < 3; i++) {
+            const offsetY = rightY + (i - 1) * canvas.height * 0.2;
+            const receivingGlow = ctx.createRadialGradient(
+              rightX, offsetY, 0,
+              rightX - sideRadius * 0.8, offsetY, sideRadius
             );
             receivingGlow.addColorStop(0, receivingColor + (80 - i * 15).toString(16).padStart(2, '0'));
             receivingGlow.addColorStop(0.6, receivingColor + (60 - i * 10).toString(16).padStart(2, '0'));
@@ -2483,40 +2504,19 @@ export default function AuraAnalysis() {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
           }
           
-          // 4. Giving Energy - Right side (dynamic life pattern creation)
-          ctx.globalCompositeOperation = 'overlay';
-          const rightX = canvas.width * 0.5;
-          const rightY = centerY;
-        
-          // Create flowing giving energy pattern
-          for (let i = 0; i < 3; i++) {
-            const offsetY = rightY + (i - 1) * canvas.height * 0.2;
-            const givingGlow = ctx.createRadialGradient(
-              rightX, offsetY, 0,
-              rightX - sideRadius * 0.9, offsetY, sideRadius
-            );
-            givingGlow.addColorStop(0, givingColor + (80 - i * 15).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(0.6, givingColor + (60 - i * 10).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(0.9, givingColor + (30 - i * 5).toString(16).padStart(2, '0'));
-            givingGlow.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = givingGlow;
-            ctx.fillRect(0, 3, canvas.width, canvas.height);
-          }
-          
           // 5. Add energy flow connections between zones
           ctx.globalCompositeOperation = 'overlay';
           ctx.strokeStyle = `${thinkingColor}80`;
           ctx.lineWidth = 5;
           ctx.lineCap = 'round';
           
-          // Thinking to receiving flow (how thoughts receive environmental input)
+          // Thinking to giving flow (how thoughts create giving energy - left side)
           ctx.beginPath();
           ctx.moveTo(centerX - headRadius * 0.8, headY + headRadius * 0.3);
           ctx.quadraticCurveTo(leftX + sideRadius * 0.8, centerY * 0.7, leftX + sideRadius * 0.3, leftY);
           ctx.stroke();
           
-          // Thinking to giving flow (how thoughts create life patterns)
+          // Thinking to receiving flow (how thoughts receive environmental input - right side)
           ctx.beginPath();
           ctx.moveTo(centerX + headRadius * 0.5, headY + headRadius * 0.3);
           ctx.quadraticCurveTo(rightX - sideRadius * 0.8, centerY * 0.7, rightX - sideRadius * 0.3, rightY);
@@ -4839,17 +4839,17 @@ export default function AuraAnalysis() {
                                       className="absolute inset-0 rounded-full animate-pulse" 
                                       style={{
                                         background: `radial-gradient(circle at center, 
-                                          ${getAccurateColorCode(result.dominantColor)} 30%, 
+                                          ${getAccurateColorCode(result.dominantColor)} 80%, 
                                           ${getAccurateColorCode(result.secondaryColor || result.dominantColor)} 70%)`,
                                         boxShadow: `0 0 30px 10px ${getAccurateColorCode(result.dominantColor)}80`,
-                                        opacity: 0.7
+                                        opacity: 0.9
                                       }}
                                     ></div>
                                     <div 
                                       className="absolute inset-8 rounded-full" 
                                       style={{
                                         background: `radial-gradient(circle at center, 
-                                          ${getAccurateColorCode(result.dominantColor)}99 40%, 
+                                          ${getAccurateColorCode(result.dominantColor)}99 90%, 
                                           ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}99 80%)`,
                                         opacity: 0.8
                                       }}
