@@ -2533,11 +2533,8 @@ export default function AuraAnalysis() {
         ctx?.drawImage(img, 0, 0);
         
         if (ctx) {
-          // Calculate the 4 aura colors for smokey particle effects
-          const thinkingColor = getAccurateColorCode(auraData.dominantColor);           // Crown area
-          const receivingColor = getAccurateColorCode(getReceivingEnergyColor(auraData)); // Right side
-          const givingColor = getAccurateColorCode(getGivingEnergyColor(auraData));       // Left side
-          const personalityColor = getAccurateColorCode(getPersonalityColor(auraData));   // Base/edges
+          // Extract the exact same 4 unique colors used in the Energy Map
+          const detectedColors = extractAllAuraColors(auraData);
           
           // Convert hex colors to RGB for particle effects
           const hexToRGB = (hex: string) => {
@@ -2547,10 +2544,10 @@ export default function AuraAnalysis() {
             return { r, g, b };
           };
           
-          const thinkingRGB = hexToRGB(thinkingColor);
-          const receivingRGB = hexToRGB(receivingColor);
-          const givingRGB = hexToRGB(givingColor);
-          const personalityRGB = hexToRGB(personalityColor);
+          const thinkingRGB = hexToRGB(detectedColors.thinking);
+          const receivingRGB = hexToRGB(detectedColors.receiving);
+          const givingRGB = hexToRGB(detectedColors.giving);
+          const personalityRGB = hexToRGB(detectedColors.personality);
           
           // Person detection boundaries (estimate human silhouette)
           const centerX = canvas.width / 2;
@@ -2764,39 +2761,43 @@ export default function AuraAnalysis() {
       { 
         color: colors.thinkingRGB, 
         startX: centerX, 
-        startY: centerY - personHeight * 0.2, 
+        startY: centerY - personHeight * 0.3, 
         direction: { x: 0, y: -1 },
-        spread: width * 0.6,
-        name: 'crown'
+        spread: width * 0.9,
+        name: 'crown',
+        density: 20 // Increased density for better visibility
       },
       { 
         color: colors.receivingRGB, 
-        startX: centerX + personWidth * 0.2, 
+        startX: centerX + personWidth * 0.3, 
         startY: centerY, 
         direction: { x: 1, y: 0 },
-        spread: height * 0.8,
-        name: 'right'
+        spread: height * 0.9,
+        name: 'right',
+        density: 18
       },
       { 
         color: colors.givingRGB, 
-        startX: centerX - personWidth * 0.2, 
+        startX: centerX - personWidth * 0.3, 
         startY: centerY, 
         direction: { x: -1, y: 0 },
-        spread: height * 0.8,
-        name: 'left'
+        spread: height * 0.9,
+        name: 'left',
+        density: 18
       },
       { 
         color: colors.personalityRGB, 
         startX: centerX, 
-        startY: centerY + personHeight * 0.3, 
+        startY: centerY + personHeight * 0.4, 
         direction: { x: 0, y: 1 },
-        spread: width * 0.8,
-        name: 'base'
+        spread: width * 0.9,
+        name: 'base',
+        density: 16
       }
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = 15 + Math.floor(energyLevel * 3);
+      const smokeWisps = zone.density + Math.floor(energyLevel * 4);
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
         // Create flowing smoke trail that extends to image edges
@@ -2849,6 +2850,9 @@ export default function AuraAnalysis() {
     
     // Add dedicated edge coverage to ensure smoke reaches image borders
     createEdgeCoverage(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Increase the density of existing smoke zones to make colors more visible
+    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 2, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create full-image smoke base coverage with proper transparency
@@ -2864,7 +2868,7 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 150 + Math.floor(energyLevel * 40); // Reduced density
+    const baseSmokeDensity = 400 + Math.floor(energyLevel * 40); // Reduced density
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Create equal distribution for each of the 4 colors with proper transparency
