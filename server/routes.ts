@@ -46,7 +46,17 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "navy", hex: "#000080", meaning: "Deep wisdom, authority, stability" },
     { name: "teal", hex: "#008080", meaning: "Emotional balance, clarity" },
     { name: "maroon", hex: "#800000", meaning: "Grounded passion, earthly wisdom" },
-    { name: "lime", hex: "#32CD32", meaning: "Vibrant growth, renewal energy" }
+    { name: "lime", hex: "#32CD32", meaning: "Vibrant growth, renewal energy" },
+    { name: "black", hex: "#000000", meaning: "Shadow integration, protection, mystery" },
+    { name: "grey", hex: "#808080", meaning: "Neutral balance, practical wisdom" },
+    { name: "charcoal", hex: "#36454F", meaning: "Deep transformation, ancient wisdom" },
+    { name: "slate", hex: "#708090", meaning: "Mental clarity, emotional stability" },
+    { name: "smoke", hex: "#738276", meaning: "Ethereal transition, spiritual cleansing" },
+    { name: "obsidian", hex: "#0B1426", meaning: "Psychic protection, shadow work" },
+    { name: "pewter", hex: "#96A8A1", meaning: "Balanced wisdom, grounded insight" },
+    { name: "ash", hex: "#B2BEB5", meaning: "Transformation completion, renewal cycles" },
+    { name: "onyx", hex: "#353839", meaning: "Deep protection, spiritual fortitude" },
+    { name: "graphite", hex: "#41424C", meaning: "Creative shadow integration, artistic depth" }
   ];
   
   // Generate 6-8 colors for versatile array
@@ -159,7 +169,17 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     navy: "Deep wisdom center authority chakra channels profound understanding and stable leadership. This grounding frequency combines wisdom with practical power.",
     teal: "Emotional balance heart-throat bridge channels clear feeling communication and healing dialogue. This balancing frequency harmonizes emotion and expression.",
     maroon: "Grounded passion earth star energy channels mature strength and embodied wisdom. This stable frequency manifests spiritual insights through practical action.",
-    lime: "Vibrant growth heart healing chakra channels accelerated spiritual development and energetic renewal. This dynamic frequency catalyzes positive transformation."
+    lime: "Vibrant growth heart healing chakra channels accelerated spiritual development and energetic renewal. This dynamic frequency catalyzes positive transformation.",
+    black: "Root chakra shadow integration channels deep transformation and protective grounding. This powerful frequency absorbs negative energy while providing stability and mystery.",
+    grey: "Neutral balance center channels practical wisdom and emotional equilibrium. This stabilizing frequency provides clarity during transitions and balanced perspective.",
+    charcoal: "Deep earth connection shadow work channels profound transformation and ancient wisdom. This grounding frequency connects to primordial knowledge and protective strength.",
+    slate: "Mental clarity shadow integration channels intellectual depth and emotional stability. This balancing frequency provides steady foundation during spiritual growth.",
+    smoke: "Ethereal transition energy channels spiritual cleansing and dimensional awareness. This flowing frequency clears energy blockages and facilitates spiritual travel.",
+    obsidian: "Protective shield earth star energy channels psychic protection and shadow integration. This powerful frequency absorbs negativity while maintaining spiritual strength.",
+    pewter: "Balanced wisdom neutral center channels practical spirituality and grounded insight. This stabilizing frequency harmonizes material and spiritual worlds.",
+    ash: "Transformation completion energy channels rebirth wisdom and renewal cycles. This cleansing frequency represents endings that create new beginnings.",
+    onyx: "Deep protection root energy channels strength through adversity and spiritual fortitude. This powerful frequency provides unshakeable foundation and inner strength.",
+    graphite: "Creative shadow integration channels artistic depth and intellectual prowess. This flowing frequency transforms difficult experiences into creative expression."
   };
 
   // Enhanced personality integration analysis
