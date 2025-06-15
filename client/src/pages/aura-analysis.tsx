@@ -2690,16 +2690,16 @@ export default function AuraAnalysis() {
     const colorMap: Record<string, string> = {
       red: 'rgba(255, 0, 0, 0.3)',
       orange: 'rgba(255, 165, 0, 0.3)',
-      yellow: 'rgba(255, 255, 0, 0.3)',
+      yellow: 'rgba(238, 248, 57, 0.8)',
       green: 'rgba(0, 128, 0, 0.3)',
       blue: 'rgba(0, 0, 255, 0.3)',
       indigo: 'rgba(75, 0, 130, 0.3)',
-      violet: 'rgba(148, 0, 211, 0.3)',
+      violet: 'rgba(153, 48, 215, 0.03)',
       purple: 'rgba(128, 0, 128, 0.3)',
       pink: 'rgba(255, 182, 193, 0.3)',
-      white: 'rgba(255, 255, 255, 0.3)',
-      gold: 'rgba(222, 163, 62, 0.3)',
-      silver: 'rgba(192, 192, 192, 0.3)',
+      white: 'rgba(237, 196, 32, 0)',
+      gold: 'rgba(237, 196, 32, 0.8)',
+      silver: 'rgba(232, 232, 232, 0.03)',
       black: 'rgba(0, 0, 0, 0.3)',
       turquoise: 'rgba(64, 224, 208, 0.3)',
       magenta: 'rgba(255, 0, 255, 0.3)',
@@ -2739,8 +2739,8 @@ export default function AuraAnalysis() {
     };
     
     // Get RGBA values for dominant and secondary colors
-    const dominantRgba = colorMap[dominantColor] || 'rgba(255, 255, 255, 0.3)';
-    const secondaryRgba = colorMap[secondaryColor] || 'rgba(128, 128, 255, 0.3)';
+    const dominantRgba = colorMap[dominantColor] || 'rgba(255, 255, 255, 0.8)';
+    const secondaryRgba = colorMap[secondaryColor] || 'rgba(128, 128, 255, 0.8)';
     
     // Create a radial gradient for the aura effect
     const centerX = width / 4;
