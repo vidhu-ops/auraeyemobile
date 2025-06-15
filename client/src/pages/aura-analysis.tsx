@@ -2586,16 +2586,20 @@ export default function AuraAnalysis() {
 
   // Function to extract all 4 distinct aura colors from analysis result
   const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
-    const dominant = getAccurateColorCode(auraData.dominantColor);
-    const secondary = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
+    // Extract the first 4 colors from the aura color spectrum
+    const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor || auraData.dominantColor];
     
-    // Create 4 distinct colors by modifying the dominant and secondary colors
-    // This ensures all 4 aura energies have unique, visible colors in the smoke
+    // Ensure we have at least 4 colors by filling with variations if needed
+    const color1 = getAccurateColorCode(spectrum[0] || auraData.dominantColor);
+    const color2 = getAccurateColorCode(spectrum[1] || auraData.secondaryColor || auraData.dominantColor);
+    const color3 = getAccurateColorCode(spectrum[2] || auraData.dominantColor);
+    const color4 = getAccurateColorCode(spectrum[3] || auraData.secondaryColor || auraData.dominantColor);
+    
     return {
-      thinking: dominant, // Crown chakra - thinking energy (top)
-      receiving: adjustColorBrightness(secondary, 1.2), // Enhanced secondary for receiving energy (right)
-      giving: adjustColorBrightness(dominant, 0.8), // Darker dominant for giving energy (left)
-      personality: secondary // Base personality energy (bottom)
+      thinking: color1,    // First color - thinking energy (crown/top)
+      receiving: color2,   // Second color - receiving energy (right side)
+      giving: color3,      // Third color - giving energy (left side)
+      personality: color4  // Fourth color - personality energy (base/bottom)
     };
   };
 
@@ -2765,28 +2769,33 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 200 + Math.floor(energyLevel * 50);
+    const baseSmokeDensity = 300 + Math.floor(energyLevel * 75);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    for (let i = 0; i < baseSmokeDensity; i++) {
-      const smokeX = seededRandom() * width;
-      const smokeY = seededRandom() * height;
+    // Create equal distribution for each of the 4 colors
+    for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
+      const colorDensity = Math.floor(baseSmokeDensity / 4);
+      const smokeColor = allColors[colorIndex];
       
-      // Avoid face area
-      const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                        smokeY >= faceY && smokeY <= faceY + faceHeight;
-      
-      if (!inFaceArea) {
-        const smokeSize = 25 + seededRandom() * 80;
-        const smokeColor = allColors[Math.floor(seededRandom() * allColors.length)];
-        const smokeOpacity = 0.08 + seededRandom() * 0.15;
+      for (let i = 0; i < colorDensity; i++) {
+        const smokeX = seededRandom() * width;
+        const smokeY = seededRandom() * height;
         
-        drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
+        // Avoid face area
+        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                          smokeY >= faceY && smokeY <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 30 + seededRandom() * 100;
+          const smokeOpacity = 0.12 + seededRandom() * 0.20; // Increased opacity for better visibility
+          
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
+        }
       }
     }
   };
 
-  // Function to create dense perimeter smoke
+  // Function to create dense perimeter smoke with color-specific zones
   const createPerimeterSmoke = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2799,20 +2808,37 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const perimeterDensity = 100 + Math.floor(energyLevel * 25);
-    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    const perimeterDensity = 150 + Math.floor(energyLevel * 35);
     
-    // Create dense smoke around all four edges
-    const edges = [
-      { name: 'top', coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.25 }) },
-      { name: 'right', coords: () => ({ x: width - seededRandom() * width * 0.25, y: seededRandom() * height }) },
-      { name: 'bottom', coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.25 }) },
-      { name: 'left', coords: () => ({ x: seededRandom() * width * 0.25, y: seededRandom() * height }) }
+    // Assign specific colors to specific zones for better visibility
+    const colorZones = [
+      { 
+        name: 'top', 
+        color: colors.thinkingRGB,
+        coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.3 }) 
+      },
+      { 
+        name: 'right', 
+        color: colors.receivingRGB,
+        coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height }) 
+      },
+      { 
+        name: 'bottom', 
+        color: colors.personalityRGB,
+        coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.3 }) 
+      },
+      { 
+        name: 'left', 
+        color: colors.givingRGB,
+        coords: () => ({ x: seededRandom() * width * 0.3, y: seededRandom() * height }) 
+      }
     ];
     
-    edges.forEach(edge => {
-      for (let i = 0; i < perimeterDensity / 4; i++) {
-        const coords = edge.coords();
+    colorZones.forEach(zone => {
+      const zoneDensity = Math.floor(perimeterDensity / 4);
+      
+      for (let i = 0; i < zoneDensity; i++) {
+        const coords = zone.coords();
         const smokeX = coords.x;
         const smokeY = coords.y;
         
@@ -2821,11 +2847,10 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 40 + seededRandom() * 100;
-          const smokeColor = allColors[Math.floor(seededRandom() * allColors.length)];
-          const smokeOpacity = 0.12 + seededRandom() * 0.20;
+          const smokeSize = 45 + seededRandom() * 120;
+          const smokeOpacity = 0.15 + seededRandom() * 0.25; // Higher opacity for edge visibility
           
-          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.3);
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.3);
         }
       }
     });
