@@ -7,16 +7,20 @@ import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
 import { analyzeImageWithGemini } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
+import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Function to generate deterministic aura analysis based on enhanced image characteristics
-function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
+// Function to generate deterministic aura analysis based on actual image color analysis
+async function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Create SHA-256 hash for strong consistency - identical images get identical results
   const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
+  
+  // Analyze actual colors in the image around the person
+  const imageColorAnalysis = await analyzeImageColors(imageBuffer);
   
   // Extract multiple seeds from different hash segments for enhanced variability
   const seed1 = parseInt(hash.substring(0, 8), 16);
@@ -53,6 +57,9 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation;
   const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy) % 999983;
   const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13) % 1000003;
+  
+  // Map detected colors to our enhanced color palette based on actual image analysis
+  const detectedColorInfluence = mapImageColorsToAuraPalette(imageColorAnalysis);
   
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
