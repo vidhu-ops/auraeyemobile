@@ -2882,7 +2882,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 20 + seededRandom() * 60; // Smaller particles
-          const smokeOpacity = 0.05 + seededRandom() * 0.08; // Much lower opacity
+          const smokeOpacity = 0.06 + seededRandom() * 0.096; // Increased by 20% from 0.05 and 0.08
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
@@ -2943,7 +2943,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 25 + seededRandom() * 60; // Smaller particles
-          const smokeOpacity = 0.04 + seededRandom() * 0.08; // Much lower opacity
+          const smokeOpacity = 0.048 + seededRandom() * 0.096; // Increased by 20% from 0.04 and 0.08
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
         }
@@ -2990,7 +2990,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 15 + seededRandom() * 45;
-          const smokeOpacity = 0.03 + seededRandom() * 0.06;
+          const smokeOpacity = 0.036 + seededRandom() * 0.072; // Increased by 20% from 0.03 and 0.06
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, edgeColor, smokeOpacity, seededRandom() * 0.5);
         }
@@ -3028,7 +3028,7 @@ export default function AuraAnalysis() {
     });
   };
 
-  // Function to draw natural smoke particles with proper transparency
+  // Function to draw natural smoke particles with enhanced visibility
   const drawNaturalSmoke = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -3038,16 +3038,16 @@ export default function AuraAnalysis() {
     opacity: number,
     progress: number
   ) => {
-    // Create organic, wispy smoke gradient with low opacity
+    // Create organic, wispy smoke gradient with increased opacity for better visibility
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
-    // Use original colors with enhanced visibility but maintain transparency
+    // Use original colors with enhanced visibility
     const smokeR = rgb.r;
     const smokeG = rgb.g;
     const smokeB = rgb.b;
     
-    // Create natural smoke density gradient with proper transparency
-    const baseOpacity = Math.min(0.15, opacity * 0.3); // Much lower opacity for natural effect
+    // Create natural smoke density gradient with 20% increased opacity
+    const baseOpacity = Math.min(0.18, opacity * 0.36); // Increased by 20% from 0.15 and 0.3
     gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity})`);
     gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.7})`);
     gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.3})`);
@@ -3058,7 +3058,7 @@ export default function AuraAnalysis() {
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add subtle wispy tendrils for realism with even lower opacity
+    // Add subtle wispy tendrils for realism with increased opacity
     if (progress < 0.8 && size > 30) {
       const tendrilCount = 2 + Math.floor(size / 60);
       for (let t = 0; t < tendrilCount; t++) {
@@ -3069,7 +3069,7 @@ export default function AuraAnalysis() {
         const tendrilSize = size * 0.3;
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        const tendrilOpacity = baseOpacity * 0.4;
+        const tendrilOpacity = baseOpacity * 0.48; // Increased by 20% from 0.4
         tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
         tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
         
@@ -3081,7 +3081,7 @@ export default function AuraAnalysis() {
     }
   };
 
-  // Function to draw smooth smoke trails with proper transparency
+  // Function to draw smooth smoke trails with enhanced visibility
   const drawSmokeTrail = (
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
@@ -3093,15 +3093,15 @@ export default function AuraAnalysis() {
       if (index === 0) return;
       
       const smokeSize = 25 + seededRandom() * 45 * (1 - point.progress * 0.4);
-      const baseOpacity = 0.08 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4);
+      const baseOpacity = 0.096 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4); // Increased by 20% from 0.08
       
-      // Create natural smoke gradient with proper transparency
+      // Create natural smoke gradient with enhanced opacity
       const gradient = ctx.createRadialGradient(
         point.x, point.y, 0,
         point.x, point.y, smokeSize
       );
       
-      // Use original colors without brightening to avoid solid overlays
+      // Use original colors with enhanced visibility
       gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
       gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.6})`);
       gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
