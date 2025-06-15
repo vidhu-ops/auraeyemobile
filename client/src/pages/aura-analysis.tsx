@@ -2642,8 +2642,8 @@ export default function AuraAnalysis() {
       return seed / 233280;
     };
 
-    // Set blend mode for natural smoke blending
-    ctx.globalCompositeOperation = 'multiply';
+    // Set blend mode for vibrant color overlay
+    ctx.globalCompositeOperation = 'screen';
 
     // Create natural flowing smoke wisps
     createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
@@ -2711,24 +2711,24 @@ export default function AuraAnalysis() {
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = 15 + Math.floor(energyLevel * 3);
+      const smokeWisps = 25 + Math.floor(energyLevel * 5); // More wisps per zone
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
         // Create flowing smoke trail that extends to image edges
         const trailPoints = [];
-        const maxDistance = Math.max(width, height);
-        const segments = 35 + Math.floor(seededRandom() * 20);
+        const maxDistance = Math.max(width, height) * 1.2; // Extend further
+        const segments = 45 + Math.floor(seededRandom() * 25); // More segments for better coverage
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
           const distance = maxDistance * progress;
           
           // Add natural turbulence and wind effects
-          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 60 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 45 * progress;
+          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 80 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 60 * progress;
           
-          // Calculate spread based on zone to fill entire image
-          const spread = (seededRandom() - 0.5) * zone.spread * (0.5 + progress * 0.5);
+          // Calculate spread based on zone to fill entire image aggressively
+          const spread = (seededRandom() - 0.5) * zone.spread * (0.3 + progress * 0.7);
           
           const smokeX = zone.startX + 
                         zone.direction.x * distance + 
@@ -2738,7 +2738,7 @@ export default function AuraAnalysis() {
                         (zone.direction.x !== 0 ? spread : turbulenceY);
           
           // Check if point is within image bounds and not in face area
-          if (smokeX >= 0 && smokeX <= width && smokeY >= 0 && smokeY <= height) {
+          if (smokeX >= -50 && smokeX <= width + 50 && smokeY >= -50 && smokeY <= height + 50) {
             const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
                               smokeY >= faceY && smokeY <= faceY + faceHeight;
             
@@ -2748,7 +2748,7 @@ export default function AuraAnalysis() {
           }
         }
         
-        // Draw smooth smoke trail
+        // Draw smooth smoke trail with enhanced opacity
         if (trailPoints.length > 1) {
           drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom);
         }
@@ -2772,7 +2772,7 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 300 + Math.floor(energyLevel * 75);
+    const baseSmokeDensity = 500 + Math.floor(energyLevel * 100);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Create equal distribution for each of the 4 colors
@@ -2789,8 +2789,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 30 + seededRandom() * 100;
-          const smokeOpacity = 0.12 + seededRandom() * 0.20; // Increased opacity for better visibility
+          const smokeSize = 40 + seededRandom() * 120;
+          const smokeOpacity = 0.25 + seededRandom() * 0.35; // Much higher opacity for visibility
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
@@ -2850,8 +2850,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 45 + seededRandom() * 120;
-          const smokeOpacity = 0.15 + seededRandom() * 0.25; // Higher opacity for edge visibility
+          const smokeSize = 60 + seededRandom() * 150;
+          const smokeOpacity = 0.35 + seededRandom() * 0.45; // Much higher opacity for visibility
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.3);
         }
@@ -2872,13 +2872,13 @@ export default function AuraAnalysis() {
     // Create organic, wispy smoke gradient
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
-    // Enhance colors for maximum visibility and vibrancy
-    const smokeR = Math.min(255, rgb.r + 40);
-    const smokeG = Math.min(255, rgb.g + 40);
-    const smokeB = Math.min(255, rgb.b + 40);
+    // Use pure, saturated colors for maximum visibility
+    const smokeR = Math.min(255, Math.max(rgb.r, 180));
+    const smokeG = Math.min(255, Math.max(rgb.g, 180));
+    const smokeB = Math.min(255, Math.max(rgb.b, 180));
     
-    // Increase opacity for better color visibility
-    const enhancedOpacity = Math.min(1, opacity * 1.5);
+    // Significantly increase opacity for better color visibility
+    const enhancedOpacity = Math.min(0.8, opacity * 2.0);
     
     // Create vibrant smoke density gradient
     gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity})`);
