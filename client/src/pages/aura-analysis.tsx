@@ -2595,11 +2595,17 @@ export default function AuraAnalysis() {
     const color3 = getAccurateColorCode(spectrum[2] || auraData.dominantColor);
     const color4 = getAccurateColorCode(spectrum[3] || auraData.secondaryColor || auraData.dominantColor);
     
+    // Validate all colors are defined
+    const safeColor1 = color1 || '#4B0082'; // Default to indigo
+    const safeColor2 = color2 || '#FF4444'; // Default to red
+    const safeColor3 = color3 || '#32CD32'; // Default to green
+    const safeColor4 = color4 || '#FFD700'; // Default to gold
+    
     return {
-      thinking: color1,    // First color - thinking energy (crown/top)
-      receiving: color2,   // Second color - receiving energy (right side)
-      giving: color3,      // Third color - giving energy (left side)
-      personality: color4  // Fourth color - personality energy (base/bottom)
+      thinking: safeColor1,    // First color - thinking energy (crown/top)
+      receiving: safeColor2,   // Second color - receiving energy (right side)
+      giving: safeColor3,      // Third color - giving energy (left side)
+      personality: safeColor4  // Fourth color - personality energy (base/bottom)
     };
   };
 

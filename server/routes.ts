@@ -13,13 +13,22 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Function to generate deterministic aura analysis based on image hash
+// Function to generate deterministic aura analysis based on enhanced image characteristics
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Create SHA-256 hash for strong consistency - identical images get identical results
   const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
+  
+  // Extract multiple seeds from different hash segments for enhanced variability
   const seed1 = parseInt(hash.substring(0, 8), 16);
   const seed2 = parseInt(hash.substring(8, 16), 16);
   const seed3 = parseInt(hash.substring(16, 24), 16);
+  const seed4 = parseInt(hash.substring(24, 32), 16);
+  const seed5 = parseInt(hash.substring(32, 40), 16);
+  
+  // Additional image characteristics for better differentiation
+  const imageSize = imageBuffer.length;
+  const sizeVariation = imageSize % 10000; // Size-based variation
+  const complexitySeed = (seed1 ^ seed2 ^ seed3) + sizeVariation;
   
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
@@ -64,22 +73,30 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const auraColors = [];
   const usedIndices = new Set();
   
-  // Enhanced distribution algorithm for more vivid variety
+  // Enhanced distribution algorithm using all seeds for maximum variety
   for (let i = 0; i < colorCount; i++) {
-    // Use multiple hash segments for better distribution
-    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1)) + (i * 7919);
+    // Use all hash segments plus image characteristics for better distribution
+    const colorSeed = (seed1 >> (i * 2)) + (seed2 >> (i * 3)) + (seed3 >> (i * 1)) + 
+                     (seed4 >> (i * 4)) + (seed5 >> (i * 2)) + (complexitySeed * (i + 1)) + (i * 7919);
     let colorIndex = Math.abs(colorSeed) % enhancedColors.length;
     
-    // Skip dull colors for more vivid results by avoiding certain ranges
-    const dullColorIndices = [24, 25, 26, 27, 28]; // black, grey, charcoal, slate, smoke
-    if (i < 4 && dullColorIndices.includes(colorIndex)) {
-      colorIndex = (colorIndex + 13) % enhancedColors.length; // Jump to more vivid colors
+    // Promote vivid colors for primary positions while allowing some neutrals
+    const vividColorIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]; // First 24 colors
+    const neutralColorIndices = [24, 25, 26, 27, 28, 29, 30, 31, 32]; // Neutral/dark colors
+    
+    // For primary colors (first 4), strongly prefer vivid colors
+    if (i < 4 && neutralColorIndices.includes(colorIndex)) {
+      // Use different jump patterns based on image characteristics
+      const jumpSize = 11 + (sizeVariation % 7); // Variable jump size
+      colorIndex = (colorIndex + jumpSize) % vividColorIndices.length;
     }
     
-    // Ensure uniqueness with enhanced distribution
+    // Ensure uniqueness with smart distribution
     let attempts = 0;
     while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
-      colorIndex = (colorIndex + 7) % enhancedColors.length; // Prime number spacing
+      // Use prime number spacing with variation based on image size
+      const spacing = 7 + (sizeVariation % 5);
+      colorIndex = (colorIndex + spacing) % enhancedColors.length;
       attempts++;
     }
     
