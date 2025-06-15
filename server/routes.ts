@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
 import { analyzeImageWithGemini } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
-import { getHoroscopeForSign, calculateNumerologyProfile } from "./api/horoscope";
+import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
