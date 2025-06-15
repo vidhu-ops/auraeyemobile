@@ -82,6 +82,39 @@ function groupSimilarColors(hex: string): string {
   return hex;
 }
 
+function findClosestEnhancedColor(detectedHex: string, enhancedColors: any[]) {
+  const detectedRgb = {
+    r: parseInt(detectedHex.substring(1, 3), 16),
+    g: parseInt(detectedHex.substring(3, 5), 16),
+    b: parseInt(detectedHex.substring(5, 7), 16)
+  };
+  
+  let closestColor = enhancedColors[0];
+  let minDistance = Infinity;
+  
+  for (const color of enhancedColors) {
+    const colorRgb = {
+      r: parseInt(color.hex.substring(1, 3), 16),
+      g: parseInt(color.hex.substring(3, 5), 16),
+      b: parseInt(color.hex.substring(5, 7), 16)
+    };
+    
+    // Calculate color distance using weighted RGB
+    const distance = Math.sqrt(
+      Math.pow(detectedRgb.r - colorRgb.r, 2) * 0.3 +
+      Math.pow(detectedRgb.g - colorRgb.g, 2) * 0.59 +
+      Math.pow(detectedRgb.b - colorRgb.b, 2) * 0.11
+    );
+    
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestColor = color;
+    }
+  }
+  
+  return closestColor;
+}
+
 // Function to generate deterministic aura analysis based on actual image color analysis
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Create SHA-256 hash for strong consistency - identical images get identical results
@@ -379,6 +412,30 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Enhanced personality integration analysis
   const personalityIntegrationAnalysis = `Your ${dominantColor.name.toLowerCase()} aura energy creates a foundation of ${dominantColor.meaning.toLowerCase()}, while your ${secondaryColor.name.toLowerCase()} secondary frequency adds ${secondaryColor.meaning.toLowerCase()}. This unique combination manifests as ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities that support your spiritual evolution. The ${auraColorSpectrum.length}-color spectrum reveals a complex energetic signature indicating advanced soul development through ${selectedTraits.slice(2).join(', ').toLowerCase()} characteristics.`;
 
+  // Create 4-Zone Energy Map based on actual detected colors from image zones
+  const zoneNames = ["Crown Chakra", "Heart Chakra", "Solar Plexus", "Root Chakra"];
+  const detectedZoneColors = Object.values(colorInfluence.zoneColors);
+  const energyMap = [];
+  
+  for (let i = 0; i < 4; i++) {
+    // Use actual detected colors from image zones, with fallback to enhanced variety
+    let zoneColor = detectedZoneColors[i] || enhancedColors[i % enhancedColors.length].hex;
+    
+    // Map detected color to closest enhanced color for consistency
+    const closestEnhancedColor = findClosestEnhancedColor(zoneColor, enhancedColors);
+    
+    // Apply image-specific variation while maintaining color family
+    const zoneVariationSeed = (seed1 + seed2 + (i * 1997)) % 1000;
+    const intensityFromImage = Math.abs((colorInfluence.energyLevel * 100 + zoneVariationSeed) % 80) + 40;
+    
+    energyMap.push({
+      zone: zoneNames[i],
+      color: closestEnhancedColor.hex,
+      intensity: intensityFromImage,
+      description: `${closestEnhancedColor.meaning} - Enhanced by actual energy patterns detected in your image`
+    });
+  }
+
   // Energy aspects based on color spectrum
   const energyAspects = auraColors.slice(0, 5).map((color, index) => {
     const aspectTypes = ['Life Force', 'Creative Expression', 'Emotional Flow', 'Mental Clarity', 'Spiritual Connection'];
@@ -393,14 +450,15 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     auraLayerColors,
     personalityTraits: selectedTraits,
     energyLevel,
+    energyMap: energyMap, // Include the 4-Zone Energy Map based on actual detected colors
     spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase() as keyof typeof spiritualGuidanceMessages] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
-    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field.`,
+    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field. Image analysis detected distinct color patterns in different energy zones, indicating ${Object.keys(colorInfluence.zoneColors).length} distinct energy centers with varying intensities.`,
     personalityIntegration: personalityIntegrationAnalysis,
     energyAspects: energyAspects,
     chakraActivity,
     colorMeanings,
     energyCycle: seed1 % 2 === 0 ? "Expanding" : "Integrating",
-    recommendations: `Focus on developing your ${selectedTraits[0].toLowerCase()} abilities while maintaining your ${selectedTraits[1].toLowerCase()} nature. Work with ${dominantColor.name.toLowerCase()} energy meditation and ${secondaryColor.name.toLowerCase()} visualization to strengthen your energetic foundation. The ${auraColorSpectrum.length}-color spectrum indicates advanced spiritual development requiring conscious integration.`
+    recommendations: `Focus on developing your ${selectedTraits[0].toLowerCase()} abilities while maintaining your ${selectedTraits[1].toLowerCase()} nature. Work with ${dominantColor.name.toLowerCase()} energy meditation and ${secondaryColor.name.toLowerCase()} visualization to strengthen your energetic foundation. The detected energy patterns show ${colorInfluence.colorVariety} distinct color frequencies, indicating advanced spiritual development requiring conscious integration.`
   };
 }
 
