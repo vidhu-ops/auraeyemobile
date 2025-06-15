@@ -2586,23 +2586,20 @@ export default function AuraAnalysis() {
 
   // Function to extract all 4 distinct aura colors from analysis result
   const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
-    // Extract the specific 4 colors from the Complete Aura Color Profile
-    const spectrum = auraData.auraColorSpectrum || [];
+    // Extract the first 4 colors from the aura color spectrum
+    const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor || auraData.dominantColor];
     
-    // Use the 4 colors exactly as shown in the Complete Aura Color Profile
-    // Primary color is always the dominant color from analysis
-    const primaryColor = getAccurateColorCode(auraData.dominantColor); 
-    
-    // Extract remaining 3 colors from spectrum or use complementary colors
-    const secondaryColor = spectrum.length > 1 ? getAccurateColorCode(spectrum[1]) : getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
-    const complementaryColor = spectrum.length > 2 ? getAccurateColorCode(spectrum[2]) : getAccurateColorCode('Yellow');
-    const harmoniousColor = spectrum.length > 3 ? getAccurateColorCode(spectrum[3]) : getAccurateColorCode('Gold');
+    // Ensure we have at least 4 colors by filling with variations if needed
+    const color1 = getAccurateColorCode(spectrum[0] || auraData.dominantColor);
+    const color2 = getAccurateColorCode(spectrum[1] || auraData.secondaryColor || auraData.dominantColor);
+    const color3 = getAccurateColorCode(spectrum[2] || auraData.dominantColor);
+    const color4 = getAccurateColorCode(spectrum[3] || auraData.secondaryColor || auraData.dominantColor);
     
     return {
-      thinking: primaryColor,        // Primary - thinking energy (crown/top) - Indigo
-      receiving: secondaryColor,     // Secondary - receiving energy (right side) - Violet  
-      giving: complementaryColor,    // Complementary - giving energy (left side) - Yellow
-      personality: harmoniousColor   // Harmonious - personality energy (base/bottom) - Gold
+      thinking: color1,    // First color - thinking energy (crown/top)
+      receiving: color2,   // Second color - receiving energy (right side)
+      giving: color3,      // Third color - giving energy (left side)
+      personality: color4  // Fourth color - personality energy (base/bottom)
     };
   };
 
@@ -2642,8 +2639,8 @@ export default function AuraAnalysis() {
       return seed / 233280;
     };
 
-    // Set blend mode for vibrant color overlay
-    ctx.globalCompositeOperation = 'screen';
+    // Set blend mode for natural smoke blending
+    ctx.globalCompositeOperation = 'multiply';
 
     // Create natural flowing smoke wisps
     createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
@@ -2711,24 +2708,24 @@ export default function AuraAnalysis() {
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = 25 + Math.floor(energyLevel * 5); // More wisps per zone
+      const smokeWisps = 15 + Math.floor(energyLevel * 3);
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
         // Create flowing smoke trail that extends to image edges
         const trailPoints = [];
-        const maxDistance = Math.max(width, height) * 1.2; // Extend further
-        const segments = 45 + Math.floor(seededRandom() * 25); // More segments for better coverage
+        const maxDistance = Math.max(width, height);
+        const segments = 35 + Math.floor(seededRandom() * 20);
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
           const distance = maxDistance * progress;
           
           // Add natural turbulence and wind effects
-          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 80 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 60 * progress;
+          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 60 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 45 * progress;
           
-          // Calculate spread based on zone to fill entire image aggressively
-          const spread = (seededRandom() - 0.5) * zone.spread * (0.3 + progress * 0.7);
+          // Calculate spread based on zone to fill entire image
+          const spread = (seededRandom() - 0.5) * zone.spread * (0.5 + progress * 0.5);
           
           const smokeX = zone.startX + 
                         zone.direction.x * distance + 
@@ -2738,7 +2735,7 @@ export default function AuraAnalysis() {
                         (zone.direction.x !== 0 ? spread : turbulenceY);
           
           // Check if point is within image bounds and not in face area
-          if (smokeX >= -50 && smokeX <= width + 50 && smokeY >= -50 && smokeY <= height + 50) {
+          if (smokeX >= 0 && smokeX <= width && smokeY >= 0 && smokeY <= height) {
             const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
                               smokeY >= faceY && smokeY <= faceY + faceHeight;
             
@@ -2748,7 +2745,7 @@ export default function AuraAnalysis() {
           }
         }
         
-        // Draw smooth smoke trail with enhanced opacity
+        // Draw smooth smoke trail
         if (trailPoints.length > 1) {
           drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom);
         }
@@ -2772,7 +2769,7 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 500 + Math.floor(energyLevel * 100);
+    const baseSmokeDensity = 300 + Math.floor(energyLevel * 75);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Create equal distribution for each of the 4 colors
@@ -2789,8 +2786,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 40 + seededRandom() * 120;
-          const smokeOpacity = 0.25 + seededRandom() * 0.35; // Much higher opacity for visibility
+          const smokeSize = 30 + seededRandom() * 100;
+          const smokeOpacity = 0.12 + seededRandom() * 0.20; // Increased opacity for better visibility
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
@@ -2850,8 +2847,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 60 + seededRandom() * 150;
-          const smokeOpacity = 0.35 + seededRandom() * 0.45; // Much higher opacity for visibility
+          const smokeSize = 45 + seededRandom() * 120;
+          const smokeOpacity = 0.15 + seededRandom() * 0.25; // Higher opacity for edge visibility
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.3);
         }
@@ -2872,19 +2869,15 @@ export default function AuraAnalysis() {
     // Create organic, wispy smoke gradient
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
-    // Use pure, saturated colors for maximum visibility
-    const smokeR = Math.min(255, Math.max(rgb.r, 180));
-    const smokeG = Math.min(255, Math.max(rgb.g, 180));
-    const smokeB = Math.min(255, Math.max(rgb.b, 180));
+    // Enhance colors for better visibility
+    const smokeR = Math.min(255, rgb.r + 25);
+    const smokeG = Math.min(255, rgb.g + 25);
+    const smokeB = Math.min(255, rgb.b + 25);
     
-    // Significantly increase opacity for better color visibility
-    const enhancedOpacity = Math.min(0.8, opacity * 2.0);
-    
-    // Create vibrant smoke density gradient
-    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity})`);
-    gradient.addColorStop(0.2, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity * 0.8})`);
-    gradient.addColorStop(0.5, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity * 0.6})`);
-    gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity * 0.3})`);
+    // Create natural smoke density gradient
+    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.9})`);
+    gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.7})`);
+    gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.4})`);
     gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
     
     ctx.fillStyle = gradient;
@@ -2892,19 +2885,18 @@ export default function AuraAnalysis() {
     ctx.arc(x, y, size, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add wispy tendrils for realism with enhanced colors
+    // Add wispy tendrils for realism
     if (progress < 0.8) {
-      const tendrilCount = 3 + Math.floor(size / 35);
+      const tendrilCount = 2 + Math.floor(size / 40);
       for (let t = 0; t < tendrilCount; t++) {
         const tendrilAngle = (t / tendrilCount) * Math.PI * 2;
-        const tendrilLength = size * 0.8;
+        const tendrilLength = size * 0.7;
         const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
         const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
-        const tendrilSize = size * 0.6;
+        const tendrilSize = size * 0.5;
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity * 0.7})`);
-        tendrilGradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${enhancedOpacity * 0.4})`);
+        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.5})`);
         tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
         
         ctx.fillStyle = tendrilGradient;
