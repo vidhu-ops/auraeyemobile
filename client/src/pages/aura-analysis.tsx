@@ -1720,6 +1720,8 @@ export default function AuraAnalysis() {
     return keywords[color] || keywords['Purple, blue, red, teal, gold, silver, lavender, coral, mint, peach, sky blue, rose, amber, gray, black, crimson, magenta, ocher, brown, beige, cyan, lime, maroon, navy, olive, te'];
   };
 
+
+
   const getLayerMeaning = (layer: string, color: string): string => {
     const layerMeanings: Record<string, Record<string, string>> = {
       'inner': {
@@ -3790,20 +3792,38 @@ export default function AuraAnalysis() {
                               </div>
 
                               {/* Extended Color Spectrum */}
-                              {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold text-lg">Extended Color Spectrum</h4>
-                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    {result.auraColorSpectrum.slice(2).map((color, index) => (
-                                      <div key={index} className="bg-white border rounded-lg p-3 text-center">
-                                        <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(color)}}></div>
-                                        <h6 className="font-medium text-sm">{color}</h6>
-                                        <p className="text-xs text-gray-600 mt-1">{getColorKeyword(color)}</p>
-                                      </div>
-                                    ))}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Extended Color Spectrum</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                  {/* Show only 3 colors: dominant, secondary, and one additional */}
+                                  <div className="bg-white border rounded-lg p-3 text-center">
+                                    <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}></div>
+                                    <h6 className="font-medium text-sm">{result.dominantColor}</h6>
+                                    <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.dominantColor)}</p>
                                   </div>
+                                  
+                                  <div className="bg-white border rounded-lg p-3 text-center">
+                                    <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}></div>
+                                    <h6 className="font-medium text-sm">{result.secondaryColor}</h6>
+                                    <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.secondaryColor)}</p>
+                                  </div>
+                                  
+                                  {/* Third color - either from spectrum or complementary */}
+                                  {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 ? (
+                                    <div className="bg-white border rounded-lg p-3 text-center">
+                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode(result.auraColorSpectrum[2])}}></div>
+                                      <h6 className="font-medium text-sm">{result.auraColorSpectrum[2]}</h6>
+                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword(result.auraColorSpectrum[2])}</p>
+                                    </div>
+                                  ) : (
+                                    <div className="bg-white border rounded-lg p-3 text-center">
+                                      <div className={`w-8 h-8 rounded-full mx-auto mb-2`} style={{backgroundColor: getAccurateColorCode('White')}}></div>
+                                      <h6 className="font-medium text-sm">White</h6>
+                                      <p className="text-xs text-gray-600 mt-1">{getColorKeyword('White')}</p>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                              </div>
 
                               {/* Aura Layer Analysis */}
                               {result.auraLayerColors && (
