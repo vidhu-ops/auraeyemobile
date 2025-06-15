@@ -124,13 +124,11 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     outer: auraColors[4]?.name || dominantColor.name
   };
   
-  // Create color meanings and hex mappings
+  // Create color meanings (hex values handled on frontend)
   const colorMeanings: Record<string, string> = {};
-  const colorHexValues: Record<string, string> = {};
   
   auraColors.forEach(color => {
     colorMeanings[color.name] = color.meaning;
-    colorHexValues[color.name] = color.hex;
   });
   
   // Extract just the color names for the spectrum
@@ -187,7 +185,6 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     energyAspects: energyAspects,
     chakraActivity,
     colorMeanings,
-    colorHexValues,
     energyCycle: seed1 % 2 === 0 ? "Expanding" : "Integrating",
     recommendations: `Focus on developing your ${selectedTraits[0].toLowerCase()} abilities while maintaining your ${selectedTraits[1].toLowerCase()} nature. Work with ${dominantColor.name.toLowerCase()} energy meditation and ${secondaryColor.name.toLowerCase()} visualization to strengthen your energetic foundation. The ${auraColorSpectrum.length}-color spectrum indicates advanced spiritual development requiring conscious integration.`
   };
