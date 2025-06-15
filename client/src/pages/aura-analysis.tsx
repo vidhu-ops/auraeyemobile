@@ -1696,6 +1696,8 @@ export default function AuraAnalysis() {
 
   // Color spectrum analysis helper functions (duplicate removed)
 
+
+
   const getColorMeaningForEnergyTab = (color: string): string => {
     const meanings: Record<string, string> = {
       'Red': 'Root chakra energy - survival instinct, life force, physical vitality',
@@ -4835,7 +4837,13 @@ export default function AuraAnalysis() {
                                       </p>
                                       <div className="mt-3 p-2 bg-purple-50 rounded border-l-4 border-purple-300">
                                         <p className="text-sm font-medium text-purple-800">
-                                          '{result.dominantColor}': '{getColorMeaningForEnergyTab(result.dominantColor)}'
+                                          '{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.thinking);
+                                          })()}': '{getThinkingEnergyMeaning((() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.thinking);
+                                          })())}'
                                         </p>
                                       </div>
                                     </div>
@@ -4866,7 +4874,13 @@ export default function AuraAnalysis() {
                                       </p>
                                       <div className="mt-3 p-2 bg-blue-50 rounded border-l-4 border-blue-300">
                                         <p className="text-sm font-medium text-blue-800">
-                                          '{getReceivingEnergyColor(result)}': '{getColorMeaningForEnergyTab(getReceivingEnergyColor(result))}'
+                                          '{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.receiving);
+                                          })()}': '{getReceivingEnergyMeaning((() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.receiving);
+                                          })())}'
                                         </p>
                                       </div>
                                     </div>
@@ -4897,7 +4911,13 @@ export default function AuraAnalysis() {
                                       </p>
                                       <div className="mt-3 p-2 bg-orange-50 rounded border-l-4 border-orange-300">
                                         <p className="text-sm font-medium text-orange-800">
-                                          '{getGivingEnergyColor(result)}': '{getColorMeaningForEnergyTab(getGivingEnergyColor(result))}'
+                                          '{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.giving);
+                                          })()}': '{getGivingEnergyMeaning((() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.giving);
+                                          })())}'
                                         </p>
                                       </div>
                                     </div>
@@ -4928,7 +4948,13 @@ export default function AuraAnalysis() {
                                       </p>
                                       <div className="mt-3 p-2 bg-amber-50 rounded border-l-4 border-amber-300">
                                         <p className="text-sm font-medium text-amber-800">
-                                          '{getPersonalityColor(result)}': '{getColorMeaningForEnergyTab(getPersonalityColor(result))}'
+                                          '{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.personality);
+                                          })()}': '{getPersonalityEnergyMeaning((() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.personality);
+                                          })())}'
                                         </p>
                                       </div>
                                     </div>
