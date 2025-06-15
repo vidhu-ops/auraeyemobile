@@ -4628,7 +4628,10 @@ export default function AuraAnalysis() {
                                     {/* Chakra Alignment Details */}
                                     <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6 border border-emerald-100">
                                       <h4 className="font-medium mb-4 flex items-center">
-                                        <div className={`w-4 h-4 rounded-full mr-2 ${getColorClass(result.dominantColor)}`}></div>
+                                        <div 
+                                          className="w-4 h-4 rounded-full mr-2"
+                                          style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                        ></div>
                                         Dominant Soul Chakra Analysis
                                       </h4>
                                       <div className="space-y-3">
