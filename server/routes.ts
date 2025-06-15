@@ -29,15 +29,30 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const imageSize = imageBuffer.length;
   const sizeVariation = imageSize % 10000; // Size-based variation
   
-  // Extract additional entropy from image data patterns
+  // Extract comprehensive entropy from image data patterns for maximum differentiation
   let dataEntropy = 0;
-  for (let i = 0; i < Math.min(1000, imageBuffer.length); i += 100) {
-    dataEntropy ^= imageBuffer[i] << (i % 8);
+  let pixelVariation = 0;
+  let colorDistribution = 0;
+  
+  // Sample different regions of the image for enhanced entropy
+  const samplePoints = Math.min(2000, imageBuffer.length);
+  for (let i = 0; i < samplePoints; i += 50) {
+    const byte = imageBuffer[i];
+    dataEntropy ^= byte << (i % 8);
+    pixelVariation += byte * (i % 7);
+    colorDistribution ^= (byte >>> 2) * (i % 11);
   }
   
-  // Combine multiple entropy sources
-  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy;
-  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211) % 999983;
+  // Extract edge pattern entropy (different compression affects edges differently)
+  let edgeEntropy = 0;
+  for (let i = 0; i < Math.min(500, imageBuffer.length); i += 73) {
+    edgeEntropy ^= imageBuffer[i] * (i % 13);
+  }
+  
+  // Combine all entropy sources for maximum image differentiation
+  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation;
+  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy) % 999983;
+  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13) % 1000003;
   
   // Enhanced color palette matching the frontend color mapping
   const enhancedColors = [
@@ -102,22 +117,29 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const globalUsedGroupIndices = new Set();
   
   for (let i = 0; i < colorCount; i++) {
-    // Create highly varied seeds using all available entropy sources
+    // Create maximally varied seeds using comprehensive entropy sources
     const baseSeed = (seed1 * (i + 1)) ^ (seed2 << (i + 2)) ^ (seed3 >>> (i + 1)) ^ 
                     (seed4 * (i + 3)) ^ (seed5 << (i + 4)) ^ (complexitySeed * (i * i + 1));
     const imageSizeFactor = (imageSize % 997) * (i + 1);
     const entropyFactor = (dataEntropy >>> (i % 4)) * (i + 7);
+    const pixelFactor = (pixelVariation * (i + 1)) % 2003;
+    const colorFactor = (colorDistribution << (i % 3)) * (i + 5);
+    const edgeFactor = (edgeEntropy * (i + 2)) % 3001;
+    const uniqueFactor = (uniquenessFactor * (i + 1)) % 5003;
     const signatureFactor = (imageSignature * (i + 1)) % 1009;
-    const combinedSeed = baseSeed + imageSizeFactor + entropyFactor + signatureFactor + (i * 12289);
+    
+    const combinedSeed = baseSeed + imageSizeFactor + entropyFactor + pixelFactor + 
+                        colorFactor + edgeFactor + uniqueFactor + signatureFactor + (i * 12289);
     
     let colorIndex = Math.abs(combinedSeed) % enhancedColors.length;
     
     // For primary colors (first 4), enforce strong diversity and avoid repetitive colors
     if (i < 4) {
-      // Force selection from preferred primary colors for first 4 positions
+      // Force selection from preferred primary colors for first 4 positions with enhanced mapping
       if (avoidRepetitiveIndices.includes(colorIndex) || !preferredPrimaryIndices.includes(colorIndex)) {
-        // Map to preferred primary colors using the seed
-        const preferredIndex = Math.abs(combinedSeed + i * 1337) % preferredPrimaryIndices.length;
+        // Use multiple entropy factors to map to preferred primary colors
+        const mappingSeed = combinedSeed + pixelFactor + edgeFactor + (i * 1337);
+        const preferredIndex = Math.abs(mappingSeed) % preferredPrimaryIndices.length;
         colorIndex = preferredPrimaryIndices[preferredIndex];
       }
       
@@ -141,14 +163,16 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
           }
         }
         
-        // If no unused families, pick the least similar one
+        // If no unused families, pick using maximum entropy for differentiation
         if (newGroupIdx === -1) {
-          newGroupIdx = (currentGroupIdx + 3 + (imageSizeFactor % 4)) % colorFamilyGroups.length;
+          const familySelector = (currentGroupIdx + 3 + (pixelFactor % 4) + (edgeFactor % 3)) % colorFamilyGroups.length;
+          newGroupIdx = familySelector;
         }
         
-        // Select a color from the new family
+        // Select a color from the new family using all entropy sources
         const newGroup = colorFamilyGroups[newGroupIdx];
-        const newColorIdx = Math.abs(combinedSeed + i * 2003) % newGroup.length;
+        const familySeed = combinedSeed + pixelFactor + colorFactor + (i * 2003);
+        const newColorIdx = Math.abs(familySeed) % newGroup.length;
         colorIndex = newGroup[newColorIdx];
         globalUsedGroupIndices.add(newGroupIdx);
       } else if (currentGroupIdx !== -1) {
