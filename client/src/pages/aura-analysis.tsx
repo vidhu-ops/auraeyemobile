@@ -2899,7 +2899,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 45 + seededRandom() * 120;
-          const smokeOpacity = 0.15 + seededRandom() * 0.25; // Higher opacity for edge visibility
+          const smokeOpacity = zone.opacity + seededRandom() * 0.15; // Zone-specific opacity for layering
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.3);
         }
