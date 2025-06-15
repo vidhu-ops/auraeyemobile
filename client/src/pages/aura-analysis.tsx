@@ -2759,7 +2759,7 @@ export default function AuraAnalysis() {
     createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
-  // Function to create full-image smoke base coverage
+  // Function to create full-image smoke base coverage with proper transparency
   const createFullImageSmokeBase = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2772,10 +2772,10 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 300 + Math.floor(energyLevel * 75);
+    const baseSmokeDensity = 150 + Math.floor(energyLevel * 40); // Reduced density
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Create equal distribution for each of the 4 colors
+    // Create equal distribution for each of the 4 colors with proper transparency
     for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
       const colorDensity = Math.floor(baseSmokeDensity / 4);
       const smokeColor = allColors[colorIndex];
@@ -2789,8 +2789,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 30 + seededRandom() * 100;
-          const smokeOpacity = 0.12 + seededRandom() * 0.20; // Increased opacity for better visibility
+          const smokeSize = 20 + seededRandom() * 60; // Smaller particles
+          const smokeOpacity = 0.05 + seededRandom() * 0.08; // Much lower opacity
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
@@ -2811,7 +2811,7 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const perimeterDensity = 150 + Math.floor(energyLevel * 35);
+    const perimeterDensity = 60 + Math.floor(energyLevel * 20); // Much lower density
     
     // Assign specific colors to specific zones for better visibility
     const colorZones = [
@@ -2850,10 +2850,10 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 45 + seededRandom() * 120;
-          const smokeOpacity = 0.15 + seededRandom() * 0.25; // Higher opacity for edge visibility
+          const smokeSize = 25 + seededRandom() * 60; // Smaller particles
+          const smokeOpacity = 0.04 + seededRandom() * 0.08; // Much lower opacity
           
-          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.3);
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
         }
       }
     });
@@ -2923,50 +2923,24 @@ export default function AuraAnalysis() {
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      const prevPoint = points[index - 1];
-      const smokeSize = 30 + seededRandom() * 60 * (1 - point.progress * 0.3);
-      const opacity = 0.15 * (1 - point.progress * 0.8) * (0.5 + seededRandom() * 0.5);
+      const smokeSize = 25 + seededRandom() * 45 * (1 - point.progress * 0.4);
+      const baseOpacity = 0.08 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4);
       
-      // Create natural smoke gradient
+      // Create natural smoke gradient with proper transparency
       const gradient = ctx.createRadialGradient(
         point.x, point.y, 0,
         point.x, point.y, smokeSize
       );
       
-      const smokeR = Math.min(255, color.r + 20);
-      const smokeG = Math.min(255, color.g + 20);
-      const smokeB = Math.min(255, color.b + 20);
-      
-      gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity})`);
-      gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+      // Use original colors without brightening to avoid solid overlays
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
+      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.6})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(point.x, point.y, smokeSize, 0, Math.PI * 2);
       ctx.fill();
-      
-      // Add connecting wisps between points
-      if (index > 0) {
-        const midX = (point.x + prevPoint.x) / 2;
-        const midY = (point.y + prevPoint.y) / 2;
-        const wispSize = smokeSize * 0.6;
-        const wispOpacity = opacity * 0.5;
-        
-        const wispGradient = ctx.createRadialGradient(
-          midX, midY, 0,
-          midX, midY, wispSize
-        );
-        
-        wispGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${wispOpacity})`);
-        wispGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
-        
-        ctx.fillStyle = wispGradient;
-        ctx.beginPath();
-        ctx.arc(midX, midY, wispSize, 0, Math.PI * 2);
-        ctx.fill();
-      }
     });
   };
 
