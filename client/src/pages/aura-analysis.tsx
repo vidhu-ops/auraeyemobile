@@ -2584,22 +2584,27 @@ export default function AuraAnalysis() {
     } : { r: 150, g: 150, b: 200 };
   };
 
-  // Function to extract all 4 distinct aura colors from analysis result
+  // Function to extract all aura colors including complementary and harmonious colors
   const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
-    // Extract the first 4 colors from the aura color spectrum
+    // Extract all available colors from the aura color spectrum
     const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor || auraData.dominantColor];
     
-    // Ensure we have at least 4 colors by filling with variations if needed
-    const color1 = getAccurateColorCode(spectrum[0] || auraData.dominantColor);
-    const color2 = getAccurateColorCode(spectrum[1] || auraData.secondaryColor || auraData.dominantColor);
-    const color3 = getAccurateColorCode(spectrum[2] || auraData.dominantColor);
-    const color4 = getAccurateColorCode(spectrum[3] || auraData.secondaryColor || auraData.dominantColor);
+    // Get all colors from spectrum for complete visualization
+    const allColors = spectrum.map(color => getAccurateColorCode(color));
+    
+    // Ensure we have at least 6 colors for comprehensive display
+    while (allColors.length < 6) {
+      allColors.push(getAccurateColorCode(auraData.dominantColor));
+    }
     
     return {
-      thinking: color1,    // First color - thinking energy (crown/top)
-      receiving: color2,   // Second color - receiving energy (right side)
-      giving: color3,      // Third color - giving energy (left side)
-      personality: color4  // Fourth color - personality energy (base/bottom)
+      primary: allColors[0],      // Primary dominant color
+      secondary: allColors[1],    // Secondary color
+      tertiary: allColors[2],     // Third complementary color
+      quaternary: allColors[3],   // Fourth harmonious color
+      complementary: allColors[4], // Fifth complementary color
+      harmonious: allColors[5],   // Sixth harmonious color
+      allSpectrum: allColors      // Complete spectrum for layered effects
     };
   };
 
@@ -2671,39 +2676,61 @@ export default function AuraAnalysis() {
     // Create full-image background smoke base
     createFullImageSmokeBase(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
 
-    // Create natural smoke flows from different body zones extending to image edges
+    // Create layered smoke flows using all detected aura colors
     const smokeZones = [
       { 
-        color: colors.thinkingRGB, 
+        color: colors.primaryRGB, 
         startX: centerX, 
         startY: centerY - personHeight * 0.2, 
         direction: { x: 0, y: -1 },
         spread: width * 0.6,
-        name: 'crown'
+        name: 'crown',
+        opacity: 0.25
       },
       { 
-        color: colors.receivingRGB, 
+        color: colors.secondaryRGB, 
         startX: centerX + personWidth * 0.2, 
         startY: centerY, 
         direction: { x: 1, y: 0 },
         spread: height * 0.8,
-        name: 'right'
+        name: 'right',
+        opacity: 0.22
       },
       { 
-        color: colors.givingRGB, 
+        color: colors.tertiaryRGB, 
         startX: centerX - personWidth * 0.2, 
         startY: centerY, 
         direction: { x: -1, y: 0 },
         spread: height * 0.8,
-        name: 'left'
+        name: 'left',
+        opacity: 0.22
       },
       { 
-        color: colors.personalityRGB, 
+        color: colors.quaternaryRGB, 
         startX: centerX, 
         startY: centerY + personHeight * 0.3, 
         direction: { x: 0, y: 1 },
         spread: width * 0.8,
-        name: 'base'
+        name: 'base',
+        opacity: 0.20
+      },
+      { 
+        color: colors.complementaryRGB, 
+        startX: centerX + personWidth * 0.15, 
+        startY: centerY - personHeight * 0.1, 
+        direction: { x: 0.7, y: -0.7 },
+        spread: width * 0.5,
+        name: 'upper_right',
+        opacity: 0.18
+      },
+      { 
+        color: colors.harmoniousRGB, 
+        startX: centerX - personWidth * 0.15, 
+        startY: centerY - personHeight * 0.1, 
+        direction: { x: -0.7, y: -0.7 },
+        spread: width * 0.5,
+        name: 'upper_left',
+        opacity: 0.18
       }
     ];
 
@@ -2745,9 +2772,9 @@ export default function AuraAnalysis() {
           }
         }
         
-        // Draw smooth smoke trail
+        // Draw smooth smoke trail with zone-specific opacity
         if (trailPoints.length > 1) {
-          drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom);
+          drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom, zone.opacity);
         }
       }
     });
@@ -2756,7 +2783,7 @@ export default function AuraAnalysis() {
     createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
-  // Function to create full-image smoke base coverage
+  // Function to create full-image smoke base coverage with all spectrum colors
   const createFullImageSmokeBase = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2769,13 +2796,13 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 300 + Math.floor(energyLevel * 75);
-    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    const baseSmokeDensity = 400 + Math.floor(energyLevel * 100);
+    const allSpectrumColors = colors.allSpectrumRGB || [colors.primaryRGB, colors.secondaryRGB, colors.tertiaryRGB, colors.quaternaryRGB];
     
-    // Create equal distribution for each of the 4 colors
-    for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
-      const colorDensity = Math.floor(baseSmokeDensity / 4);
-      const smokeColor = allColors[colorIndex];
+    // Create layered distribution for all spectrum colors
+    allSpectrumColors.forEach((smokeColor, colorIndex) => {
+      const colorDensity = Math.floor(baseSmokeDensity / allSpectrumColors.length);
+      const layerOpacity = 0.08 + (colorIndex * 0.02); // Graduated opacity for layering
       
       for (let i = 0; i < colorDensity; i++) {
         const smokeX = seededRandom() * width;
@@ -2786,13 +2813,13 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 30 + seededRandom() * 100;
-          const smokeOpacity = 0.12 + seededRandom() * 0.20; // Increased opacity for better visibility
+          const smokeSize = 25 + seededRandom() * 85;
+          const smokeOpacity = layerOpacity + seededRandom() * 0.12;
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
       }
-    }
+    });
   };
 
   // Function to create dense perimeter smoke with color-specific zones
@@ -2810,29 +2837,53 @@ export default function AuraAnalysis() {
   ) => {
     const perimeterDensity = 150 + Math.floor(energyLevel * 35);
     
-    // Assign specific colors to specific zones for better visibility
+    // Assign spectrum colors to specific zones for complete visibility
+    const allSpectrumColors = colors.allSpectrumRGB || [colors.primaryRGB, colors.secondaryRGB, colors.tertiaryRGB, colors.quaternaryRGB];
     const colorZones = [
       { 
         name: 'top', 
-        color: colors.thinkingRGB,
-        coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.3 }) 
+        color: colors.primaryRGB,
+        coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.3 }),
+        opacity: 0.20
       },
       { 
         name: 'right', 
-        color: colors.receivingRGB,
-        coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height }) 
+        color: colors.secondaryRGB,
+        coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height }),
+        opacity: 0.18
       },
       { 
         name: 'bottom', 
-        color: colors.personalityRGB,
-        coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.3 }) 
+        color: colors.tertiaryRGB,
+        coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.3 }),
+        opacity: 0.18
       },
       { 
         name: 'left', 
-        color: colors.givingRGB,
-        coords: () => ({ x: seededRandom() * width * 0.3, y: seededRandom() * height }) 
+        color: colors.quaternaryRGB,
+        coords: () => ({ x: seededRandom() * width * 0.3, y: seededRandom() * height }),
+        opacity: 0.16
       }
     ];
+    
+    // Add additional zones for complementary and harmonious colors
+    if (colors.complementaryRGB) {
+      colorZones.push({
+        name: 'top_right',
+        color: colors.complementaryRGB,
+        coords: () => ({ x: width - seededRandom() * width * 0.2, y: seededRandom() * height * 0.2 }),
+        opacity: 0.14
+      });
+    }
+    
+    if (colors.harmoniousRGB) {
+      colorZones.push({
+        name: 'top_left',
+        color: colors.harmoniousRGB,
+        coords: () => ({ x: seededRandom() * width * 0.2, y: seededRandom() * height * 0.2 }),
+        opacity: 0.14
+      });
+    }
     
     colorZones.forEach(zone => {
       const zoneDensity = Math.floor(perimeterDensity / 4);
@@ -2913,14 +2964,15 @@ export default function AuraAnalysis() {
     points: Array<{ x: number, y: number, progress: number }>,
     color: { r: number, g: number, b: number },
     energyLevel: number,
-    seededRandom: () => number
+    seededRandom: () => number,
+    baseOpacity: number = 0.15
   ) => {
     points.forEach((point, index) => {
       if (index === 0) return;
       
       const prevPoint = points[index - 1];
       const smokeSize = 30 + seededRandom() * 60 * (1 - point.progress * 0.3);
-      const opacity = 0.15 * (1 - point.progress * 0.8) * (0.5 + seededRandom() * 0.5);
+      const opacity = baseOpacity * (1 - point.progress * 0.8) * (0.5 + seededRandom() * 0.5);
       
       // Create natural smoke gradient
       const gradient = ctx.createRadialGradient(
@@ -3031,14 +3083,17 @@ export default function AuraAnalysis() {
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
       const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
       
-      // Extract all 4 distinct aura colors from the analysis result
+      // Extract all aura colors including complementary and harmonious colors
       const detectedColors = extractAllAuraColors(auraData);
       
       const colors = {
-        thinkingRGB: hexToRgb(detectedColors.thinking),
-        receivingRGB: hexToRgb(detectedColors.receiving), 
-        givingRGB: hexToRgb(detectedColors.giving),
-        personalityRGB: hexToRgb(detectedColors.personality)
+        primaryRGB: hexToRgb(detectedColors.primary),
+        secondaryRGB: hexToRgb(detectedColors.secondary),
+        tertiaryRGB: hexToRgb(detectedColors.tertiary),
+        quaternaryRGB: hexToRgb(detectedColors.quaternary),
+        complementaryRGB: hexToRgb(detectedColors.complementary),
+        harmoniousRGB: hexToRgb(detectedColors.harmonious),
+        allSpectrumRGB: detectedColors.allSpectrum.map(color => hexToRgb(color))
       };
       
       createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
