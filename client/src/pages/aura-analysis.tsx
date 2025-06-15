@@ -2916,7 +2916,7 @@ export default function AuraAnalysis() {
         direction: { x: 0, y: -1 },
         spread: width * 0.9,
         name: 'crown',
-        density: 30 // Increased density for better visibility
+        density: 40 // Increased density for better visibility
       },
       { 
         color: colors.receivingRGB, 
@@ -2925,7 +2925,7 @@ export default function AuraAnalysis() {
         direction: { x: 1, y: 0 },
         spread: height * 0.9,
         name: 'right',
-        density: 30
+        density: 40
       },
       { 
         color: colors.givingRGB, 
@@ -2934,12 +2934,12 @@ export default function AuraAnalysis() {
         direction: { x: -1, y: 0 },
         spread: height * 0.9,
         name: 'left',
-        density: 30
+        density: 40
       },
       { 
         color: colors.personalityRGB, 
         startX: centerX, 
-        startY: centerY + personHeight * 0.4, 
+        startY: centerY + personHeight * 0.3, 
         direction: { x: 0, y: 1 },
         spread: width * 0.9,
         name: 'base',
@@ -3004,6 +3004,69 @@ export default function AuraAnalysis() {
     
     // Add concentrated color zones for maximum visibility of all 4 Energy Map colors
     createConcentratedColorDisplay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add enhanced personality color perimeter halo effect
+    createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+  };
+
+  // Function to create enhanced personality color halo effect around entire image perimeter
+  const createPersonalityHaloEffect = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    personalityColor: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    const haloParticles = 80 + Math.floor(energyLevel * 10); // More particles for stronger halo
+    const edgeMargin = Math.min(width, height) * 0.08; // Distance from image edge
+    
+    // Create multiple layers of halo for depth
+    const haloLayers = [
+      { distance: edgeMargin * 0.3, opacity: 0.18, size: 25 },
+      { distance: edgeMargin * 0.6, opacity: 0.15, size: 35 },
+      { distance: edgeMargin * 1.0, opacity: 0.12, size: 45 }
+    ];
+    
+    haloLayers.forEach(layer => {
+      for (let i = 0; i < haloParticles; i++) {
+        // Calculate position around perimeter
+        const perimeter = (width + height) * 2;
+        const position = seededRandom() * perimeter;
+        let x, y;
+        
+        if (position < width) {
+          // Top edge
+          x = position;
+          y = seededRandom() * layer.distance;
+        } else if (position < width + height) {
+          // Right edge
+          x = width - (seededRandom() * layer.distance);
+          y = position - width;
+        } else if (position < width * 2 + height) {
+          // Bottom edge
+          x = width - (position - width - height);
+          y = height - (seededRandom() * layer.distance);
+        } else {
+          // Left edge
+          x = seededRandom() * layer.distance;
+          y = height - (position - width * 2 - height);
+        }
+        
+        // Avoid face area
+        const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
+                          y >= faceY && y <= faceY + faceHeight;
+        
+        if (!inFaceArea && x >= 0 && x <= width && y >= 0 && y <= height) {
+          const smokeSize = layer.size + seededRandom() * 30;
+          drawNaturalSmoke(ctx, x, y, smokeSize, personalityColor, layer.opacity, seededRandom() * 0.8);
+        }
+      }
+    });
   };
 
   // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
@@ -3023,7 +3086,7 @@ export default function AuraAnalysis() {
       { 
         color: colors.thinkingRGB, 
         zone: 'top',
-        density: 35,
+        density: 40,
         getCoords: () => ({
           x: width * 0.15 + seededRandom() * (width * 0.7),
           y: seededRandom() * (height * 0.3)
@@ -3032,7 +3095,7 @@ export default function AuraAnalysis() {
       { 
         color: colors.receivingRGB, 
         zone: 'right',
-        density: 32,
+        density: 40,
         getCoords: () => ({
           x: width * 0.7 + seededRandom() * (width * 0.3),
           y: height * 0.15 + seededRandom() * (height * 0.7)
@@ -3041,7 +3104,7 @@ export default function AuraAnalysis() {
       { 
         color: colors.givingRGB, 
         zone: 'left',
-        density: 32,
+        density: 40,
         getCoords: () => ({
           x: seededRandom() * (width * 0.3),
           y: height * 0.15 + seededRandom() * (height * 0.7)
@@ -3049,12 +3112,41 @@ export default function AuraAnalysis() {
       },
       { 
         color: colors.personalityRGB, 
-        zone: 'bottom',
-        density: 30,
-        getCoords: () => ({
-          x: width * 0.15 + seededRandom() * (width * 0.7),
-          y: height * 0.7 + seededRandom() * (height * 0.3)
-        })
+        zone: 'perimeter_halo',
+        density: 50,
+        getCoords: () => {
+          // Create halo effect around entire image perimeter
+          const side = Math.floor(seededRandom() * 4); // 0=top, 1=right, 2=bottom, 3=left
+          const edgeThickness = width * 0.12; // How far from edge to place particles
+          
+          switch(side) {
+            case 0: // Top edge
+              return {
+                x: seededRandom() * width,
+                y: seededRandom() * edgeThickness
+              };
+            case 1: // Right edge
+              return {
+                x: width - (seededRandom() * edgeThickness),
+                y: seededRandom() * height
+              };
+            case 2: // Bottom edge
+              return {
+                x: seededRandom() * width,
+                y: height - (seededRandom() * edgeThickness)
+              };
+            case 3: // Left edge
+              return {
+                x: seededRandom() * edgeThickness,
+                y: seededRandom() * height
+              };
+            default:
+              return {
+                x: seededRandom() * width,
+                y: seededRandom() * height
+              };
+          }
+        }
       }
     ];
 
@@ -5333,7 +5425,7 @@ export default function AuraAnalysis() {
                                       <div>
                                         <h5 className="font-semibold text-indigo-700 mb-2">Current Life Phase:</h5>
                                         <p className="text-sm text-gray-700 mb-3">
-                                          {result.energyCycle === 'Expanding' ? 
+                                          {((result as any).energyCycle || 'Expanding') === 'Expanding' ? 
                                             'You are in an expansion phase, growing and manifesting new possibilities in your life.' :
                                             'You are in an integration phase, processing and harmonizing recent life experiences.'
                                           }
