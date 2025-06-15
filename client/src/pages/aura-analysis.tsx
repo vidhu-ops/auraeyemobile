@@ -2753,8 +2753,8 @@ export default function AuraAnalysis() {
     const faceWidth = personWidth * 0.8;
     const faceHeight = personHeight * 0.6;
 
-    // Create full-image background smoke base
-    createFullImageSmokeBase(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Create full-image background smoke base with enhanced density
+    createFullImageSmokeBase(ctx, width, height, colors, energyLevel * 1.5, seededRandom, faceX, faceY, faceWidth, faceHeight);
 
     // Create natural smoke flows from different body zones extending to image edges
     const smokeZones = [
@@ -2845,14 +2845,86 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add dense perimeter smoke around all edges
-    createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add dense perimeter smoke around all edges with increased visibility
+    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 1.8, seededRandom, faceX, faceY, faceWidth, faceHeight);
     
-    // Add dedicated edge coverage to ensure smoke reaches image borders
-    createEdgeCoverage(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add dedicated edge coverage to ensure smoke reaches image borders  
+    createEdgeCoverage(ctx, width, height, colors, energyLevel * 1.6, seededRandom, faceX, faceY, faceWidth, faceHeight);
     
-    // Increase the density of existing smoke zones to make colors more visible
-    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 2, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add concentrated color zones for maximum visibility of all 4 Energy Map colors
+    createConcentratedColorDisplay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+  };
+
+  // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
+  const createConcentratedColorDisplay = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    const colorZones = [
+      { 
+        color: colors.thinkingRGB, 
+        zone: 'top',
+        density: 35,
+        getCoords: () => ({
+          x: width * 0.15 + seededRandom() * (width * 0.7),
+          y: seededRandom() * (height * 0.3)
+        })
+      },
+      { 
+        color: colors.receivingRGB, 
+        zone: 'right',
+        density: 32,
+        getCoords: () => ({
+          x: width * 0.7 + seededRandom() * (width * 0.3),
+          y: height * 0.15 + seededRandom() * (height * 0.7)
+        })
+      },
+      { 
+        color: colors.givingRGB, 
+        zone: 'left',
+        density: 32,
+        getCoords: () => ({
+          x: seededRandom() * (width * 0.3),
+          y: height * 0.15 + seededRandom() * (height * 0.7)
+        })
+      },
+      { 
+        color: colors.personalityRGB, 
+        zone: 'bottom',
+        density: 30,
+        getCoords: () => ({
+          x: width * 0.15 + seededRandom() * (width * 0.7),
+          y: height * 0.7 + seededRandom() * (height * 0.3)
+        })
+      }
+    ];
+
+    colorZones.forEach(zone => {
+      const totalParticles = zone.density + Math.floor(energyLevel * 6);
+      
+      for (let i = 0; i < totalParticles; i++) {
+        const coords = zone.getCoords();
+        
+        // Avoid face area
+        const inFaceArea = coords.x >= faceX && coords.x <= faceX + faceWidth &&
+                          coords.y >= faceY && coords.y <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 35 + seededRandom() * 80;
+          const smokeOpacity = 0.12 + seededRandom() * 0.15; // Higher opacity for clear visibility
+          
+          drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.7);
+        }
+      }
+    });
   };
 
   // Function to create full-image smoke base coverage with proper transparency
