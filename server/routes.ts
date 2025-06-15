@@ -106,8 +106,8 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   
   // Add additional traits if needed
   while (selectedTraits.length < traitCount) {
-    const additionalTraitSet = spiritualTraits[(traitSetIndex + selectedTraits.length) % spiritualTraits.length];
-    const newTrait = additionalTraitSet[0];
+    const additionalTraitSet: string[] = spiritualTraits[(traitSetIndex + selectedTraits.length) % spiritualTraits.length];
+    const newTrait: string = additionalTraitSet[0];
     if (!selectedTraits.includes(newTrait)) {
       selectedTraits.push(newTrait);
     }
@@ -145,7 +145,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const auraColorSpectrum = auraColors.map(color => color.name);
   
   // Generate comprehensive spiritual guidance based on color combinations
-  const spiritualGuidanceMessages = {
+  const spiritualGuidanceMessages: Record<string, string> = {
     red: "Your root chakra energy manifests as primal life force, grounding you in physical reality while empowering leadership qualities. This fundamental frequency channels courage and manifestation power.",
     orange: "Sacral chakra creative fire ignites passionate expression and emotional flow. This vibrant frequency awakens artistic gifts and the ability to manifest through inspired action.",
     yellow: "Solar plexus radiance illuminates personal power and intellectual brilliance. This golden frequency activates confidence and transforms knowledge into wisdom.",
@@ -199,7 +199,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     auraLayerColors,
     personalityTraits: selectedTraits,
     energyLevel,
-    spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase()] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
+    spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase() as keyof typeof spiritualGuidanceMessages] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
     detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field.`,
     personalityIntegration: personalityIntegrationAnalysis,
     energyAspects: energyAspects,

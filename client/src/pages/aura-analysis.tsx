@@ -73,7 +73,23 @@ const getAccurateColorCode = (colorName: string): string => {
     'indigo': '#4B0082',
     'Indigo': '#4B0082',
     'violet': '#8A2BE2',
-    'Violet': '#8A2BE2'
+    'Violet': '#8A2BE2',
+    'charcoal': '#36454F',
+    'Charcoal': '#36454F',
+    'slate': '#708090',
+    'Slate': '#708090',
+    'smoke': '#738276',
+    'Smoke': '#738276',
+    'obsidian': '#0B1426',
+    'Obsidian': '#0B1426',
+    'pewter': '#96A8A1',
+    'Pewter': '#96A8A1',
+    'ash': '#B2BEB5',
+    'Ash': '#B2BEB5',
+    'onyx': '#353839',
+    'Onyx': '#353839',
+    'graphite': '#41424C',
+    'Graphite': '#41424C'
   };
   
   return colorCodes[colorName] || '#FFFFFF'; // Default to purple if color not found
@@ -268,6 +284,69 @@ export default function AuraAnalysis() {
         shadowMeaning: 'Soul star chakra disconnection creating spiritual delusion and unrealistic expectations while manifesting emotional overwhelm and fantasy addiction. This ungrounded frequency prevents authentic spiritual development and practical manifestation.',
         positiveMeaning: 'Soul star chakra flowing with divine love and cosmic consciousness. This transcendent frequency channels universal love and spiritual transformation.',
         colorMeaning: 'Divine Love - Soul star energy, universal love, spiritual transformation, cosmic consciousness'
+      },
+      'Grey': { 
+        chakra: 'Neutral Balance Center', 
+        number: '0', 
+        shadowMeaning: 'Emotional detachment creating spiritual apathy and lack of passion while manifesting depression and complete disconnection from life force energy. This neutral frequency prevents authentic engagement and emotional expression.',
+        positiveMeaning: 'Neutral balance center flowing with wise neutrality and adaptable wisdom that maintains equilibrium in all situations. This balanced frequency channels diplomatic wisdom and peaceful resolution.',
+        colorMeaning: 'Balanced Wisdom - Neutral energy, wise neutrality, diplomatic balance, peaceful resolution, adaptable wisdom'
+      },
+      'Charcoal': { 
+        chakra: 'Deep Grounding Center', 
+        number: '1', 
+        shadowMeaning: 'Deep shadow integration resistance creating overwhelming darkness and despair while manifesting severe depression and complete spiritual disconnection. This heavy frequency prevents light integration and hopeful transformation.',
+        positiveMeaning: 'Deep grounding center flowing with protective strength and inner fortitude that provides spiritual foundation. This fortified frequency channels deep wisdom and protective grounding.',
+        colorMeaning: 'Protective Grounding - Deep earth energy, protective strength, inner fortitude, spiritual foundation, shadow integration'
+      },
+      'Slate': { 
+        chakra: 'Steady Foundation Center', 
+        number: '1', 
+        shadowMeaning: 'Rigid foundation creating inflexibility and stubborn resistance while manifesting joint problems and inability to adapt to change. This fixed frequency prevents growth and spiritual evolution.',
+        positiveMeaning: 'Steady foundation center flowing with reliable wisdom and calm endurance that provides stable spiritual base. This enduring frequency channels steady strength and foundational wisdom.',
+        colorMeaning: 'Steady Foundation - Stable earth energy, reliable wisdom, calm endurance, foundational strength, persistent stability'
+      },
+      'Smoke': { 
+        chakra: 'Mystery Integration Center', 
+        number: '6', 
+        shadowMeaning: 'Mystery avoidance creating confusion and spiritual cloudiness while manifesting mental fog and inability to discern truth. This clouded frequency prevents clear spiritual perception and wisdom integration.',
+        positiveMeaning: 'Mystery integration center flowing with transformative wisdom and hidden knowledge that reveals spiritual secrets. This mysterious frequency channels deep transformation and mystical wisdom.',
+        colorMeaning: 'Transformative Mystery - Mystical energy, hidden wisdom, transformative power, spiritual secrets, deep transformation'
+      },
+      'Obsidian': { 
+        chakra: 'Spiritual Protection Center', 
+        number: '1', 
+        shadowMeaning: 'Spiritual protection overdrive creating paranoia and excessive shielding while manifesting isolation and fear of spiritual vulnerability. This guarded frequency prevents authentic connection and spiritual growth.',
+        positiveMeaning: 'Spiritual protection center flowing with intense grounding and transformative power that shields from negative energy. This protective frequency channels spiritual defense and deep transformation.',
+        colorMeaning: 'Intense Protection - Spiritual shield energy, intense grounding, transformative protection, spiritual defense, shadow transformation'
+      },
+      'Pewter': { 
+        chakra: 'Refined Balance Center', 
+        number: '6', 
+        shadowMeaning: 'Refined detachment creating emotional coldness and spiritual superiority while manifesting social isolation and lack of warmth. This aloof frequency prevents genuine connection and emotional authenticity.',
+        positiveMeaning: 'Refined balance center flowing with sophisticated wisdom and gentle strength that maintains graceful equilibrium. This elegant frequency channels refined wisdom and sophisticated balance.',
+        colorMeaning: 'Refined Wisdom - Sophisticated energy, refined balance, gentle strength, graceful equilibrium, elegant wisdom'
+      },
+      'Ash': { 
+        chakra: 'Phoenix Transformation Center', 
+        number: '7', 
+        shadowMeaning: 'Transformation resistance creating spiritual stagnation and fear of rebirth while manifesting depression and inability to release the past. This stagnant frequency prevents renewal and spiritual evolution.',
+        positiveMeaning: 'Phoenix transformation center flowing with renewal energy and rebirth power that transforms destruction into creation. This regenerative frequency channels phoenix wisdom and spiritual renewal.',
+        colorMeaning: 'Phoenix Renewal - Transformation energy, rebirth power, renewal wisdom, phoenix transformation, spiritual regeneration'
+      },
+      'Onyx': { 
+        chakra: 'Inner Strength Center', 
+        number: '1', 
+        shadowMeaning: 'Inner strength hoarding creating spiritual pride and refusal to show vulnerability while manifesting emotional rigidity and isolation. This hardened frequency prevents authentic connection and emotional flow.',
+        positiveMeaning: 'Inner strength center flowing with profound protection and spiritual defense that maintains inner power. This fortified frequency channels deep strength and spiritual fortitude.',
+        colorMeaning: 'Profound Strength - Inner power energy, spiritual defense, profound protection, deep strength, fortified wisdom'
+      },
+      'Graphite': { 
+        chakra: 'Creative Foundation Center', 
+        number: '3', 
+        shadowMeaning: 'Creative foundation rigidity creating artistic blocks and perfectionism while manifesting creative stagnation and fear of expression. This constrained frequency prevents authentic artistic flow and creative freedom.',
+        positiveMeaning: 'Creative foundation center flowing with structured wisdom and artistic grounding that supports creative expression. This grounded frequency channels creative foundation and artistic stability.',
+        colorMeaning: 'Creative Foundation - Artistic grounding energy, structured creativity, artistic stability, creative foundation, grounded expression'
       },
       // Lowercase versions for case-insensitive matching
       'lime': { 
