@@ -76,8 +76,6 @@ const getAccurateColorCode = (colorName: string): string => {
     'Violet': '#8A2BE2',
     'charcoal': '#36454F',
     'Charcoal': '#36454F',
-    'slate': '#708090',
-    'Slate': '#708090',
     'smoke': '#738276',
     'Smoke': '#738276',
     'obsidian': '#0B1426',
@@ -89,7 +87,12 @@ const getAccurateColorCode = (colorName: string): string => {
     'onyx': '#353839',
     'Onyx': '#353839',
     'graphite': '#41424C',
-    'Graphite': '#41424C'
+    'Graphite': '#41424C',
+    'Emerald': '#50C878',
+    'emerald': '#50C878',
+    'Sapphire': '#0F52BA',
+    'coral': '#FF7F50',
+    'coral': '#FF7F50',
   };
   
   return colorCodes[colorName] || '#FFFFFF'; // Default to purple if color not found
@@ -2690,11 +2693,11 @@ export default function AuraAnalysis() {
     const colorMap: Record<string, string> = {
       red: 'rgba(255, 0, 0, 0.3)',
       orange: 'rgba(255, 165, 0, 0.3)',
-      yellow: 'rgba(238, 248, 57, 0.8)',
+      yellow: 'rgba(255, 255, 55, 0.8)',
       green: 'rgba(0, 128, 0, 0.3)',
       blue: 'rgba(0, 0, 255, 0.3)',
-      indigo: 'rgba(75, 0, 130, 0.3)',
-      violet: 'rgba(153, 48, 215, 0.03)',
+      indigo: 'rgba(22, 39, 119, 0.8)',
+      violet: 'rgba(134, 55, 220, 0.8)',
       purple: 'rgba(128, 0, 128, 0.3)',
       pink: 'rgba(255, 182, 193, 0.3)',
       white: 'rgba(237, 196, 32, 0)',
@@ -2720,7 +2723,7 @@ export default function AuraAnalysis() {
       teal: 'rgba(0, 128, 128, 0.3)',
       bronze: 'rgba(205, 127, 50, 0.3)',
       cobalt: 'rgba(0, 71, 171, 0.3)',
-      emerald: 'rgba(80, 200, 120, 0.3)',
+      emerald: 'rgba(6, 82, 0, 0.8)',
       jade: 'rgba(0, 163, 108, 0.3)',
       sapphire: 'rgba(15, 82, 186, 0.3)',
       topaz: 'rgba(255, 200, 124, 0.3)',
@@ -2739,8 +2742,8 @@ export default function AuraAnalysis() {
     };
     
     // Get RGBA values for dominant and secondary colors
-    const dominantRgba = colorMap[dominantColor] || 'rgba(255, 255, 255, 0.8)';
-    const secondaryRgba = colorMap[secondaryColor] || 'rgba(128, 128, 255, 0.8)';
+    const dominantRgba = colorMap[dominantColor] || 'rgba(134, 55, 220, 0.8)';
+    const secondaryRgba = colorMap[secondaryColor] || 'rgba(134, 55, 220, 0.8)';
     
     // Create a radial gradient for the aura effect
     const centerX = width / 4;
