@@ -2800,7 +2800,7 @@ export default function AuraAnalysis() {
     const allSpectrumColors = colors.allSpectrumRGB || [colors.primaryRGB, colors.secondaryRGB, colors.tertiaryRGB, colors.quaternaryRGB];
     
     // Create layered distribution for all spectrum colors
-    allSpectrumColors.forEach((smokeColor, colorIndex) => {
+    allSpectrumColors.forEach((smokeColor: { r: number, g: number, b: number }, colorIndex: number) => {
       const colorDensity = Math.floor(baseSmokeDensity / allSpectrumColors.length);
       const layerOpacity = 0.08 + (colorIndex * 0.02); // Graduated opacity for layering
       
@@ -2913,10 +2913,15 @@ export default function AuraAnalysis() {
     x: number,
     y: number,
     size: number,
-    rgb: { r: number, g: number, b: number },
+    rgb: { r: number, g: number, b: number } | undefined,
     opacity: number,
     progress: number
   ) => {
+    // Fallback for undefined colors
+    if (!rgb || typeof rgb.r === 'undefined') {
+      rgb = { r: 150, g: 150, b: 200 }; // Default purple-blue color
+    }
+
     // Create organic, wispy smoke gradient
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
@@ -3087,6 +3092,12 @@ export default function AuraAnalysis() {
       const detectedColors = extractAllAuraColors(auraData);
       
       const colors = {
+        // Legacy structure for compatibility
+        thinkingRGB: hexToRgb(detectedColors.primary),
+        receivingRGB: hexToRgb(detectedColors.secondary), 
+        givingRGB: hexToRgb(detectedColors.tertiary),
+        personalityRGB: hexToRgb(detectedColors.quaternary),
+        // New spectrum structure for enhanced visualization
         primaryRGB: hexToRgb(detectedColors.primary),
         secondaryRGB: hexToRgb(detectedColors.secondary),
         tertiaryRGB: hexToRgb(detectedColors.tertiary),
