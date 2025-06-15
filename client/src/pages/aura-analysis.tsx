@@ -2584,6 +2584,32 @@ export default function AuraAnalysis() {
     } : { r: 150, g: 150, b: 200 };
   };
 
+  // Function to extract all 4 distinct aura colors from analysis result
+  const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
+    const dominant = getAccurateColorCode(auraData.dominantColor);
+    const secondary = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
+    
+    // Create 4 distinct colors by modifying the dominant and secondary colors
+    // This ensures all 4 aura energies have unique, visible colors in the smoke
+    return {
+      thinking: dominant, // Crown chakra - thinking energy (top)
+      receiving: adjustColorBrightness(secondary, 1.2), // Enhanced secondary for receiving energy (right)
+      giving: adjustColorBrightness(dominant, 0.8), // Darker dominant for giving energy (left)
+      personality: secondary // Base personality energy (bottom)
+    };
+  };
+
+  // Function to adjust color brightness for distinction
+  const adjustColorBrightness = (hex: string, factor: number): string => {
+    const rgb = hexToRgb(hex);
+    const adjusted = {
+      r: Math.min(255, Math.max(0, Math.round(rgb.r * factor))),
+      g: Math.min(255, Math.max(0, Math.round(rgb.g * factor))),
+      b: Math.min(255, Math.max(0, Math.round(rgb.b * factor)))
+    };
+    return `#${adjusted.r.toString(16).padStart(2, '0')}${adjusted.g.toString(16).padStart(2, '0')}${adjusted.b.toString(16).padStart(2, '0')}`;
+  };
+
   // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
@@ -2980,12 +3006,14 @@ export default function AuraAnalysis() {
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
       const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
       
-      // Create natural smoke aura effect using calculated colors
+      // Extract all 4 distinct aura colors from the analysis result
+      const detectedColors = extractAllAuraColors(auraData);
+      
       const colors = {
-        thinkingRGB: hexToRgb(dominantColor),
-        receivingRGB: hexToRgb(secondaryColor),
-        givingRGB: hexToRgb(getAccurateColorCode(auraData.dominantColor)),
-        personalityRGB: hexToRgb(getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor))
+        thinkingRGB: hexToRgb(detectedColors.thinking),
+        receivingRGB: hexToRgb(detectedColors.receiving), 
+        givingRGB: hexToRgb(detectedColors.giving),
+        personalityRGB: hexToRgb(detectedColors.personality)
       };
       
       createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
