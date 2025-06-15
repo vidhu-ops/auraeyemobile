@@ -2721,14 +2721,14 @@ export default function AuraAnalysis() {
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
-          const distance = maxDistance * progress;
+          const distance = maxDistance * progress * 1.2; // Extended distance beyond image bounds
           
           // Add natural turbulence and wind effects
-          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 60 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 45 * progress;
+          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 80 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 60 * progress;
           
-          // Calculate spread based on zone to fill entire image
-          const spread = (seededRandom() - 0.5) * zone.spread * (0.5 + progress * 0.5);
+          // Calculate spread based on zone to fill entire image including edges
+          const spread = (seededRandom() - 0.5) * zone.spread * (0.8 + progress * 0.8);
           
           const smokeX = zone.startX + 
                         zone.direction.x * distance + 
@@ -2737,13 +2737,17 @@ export default function AuraAnalysis() {
                         zone.direction.y * distance + 
                         (zone.direction.x !== 0 ? spread : turbulenceY);
           
-          // Check if point is within image bounds and not in face area
-          if (smokeX >= 0 && smokeX <= width && smokeY >= 0 && smokeY <= height) {
-            const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                              smokeY >= faceY && smokeY <= faceY + faceHeight;
+          // Allow smoke to extend to and beyond image edges - clamp to bounds
+          const clampedX = Math.max(-50, Math.min(width + 50, smokeX));
+          const clampedY = Math.max(-50, Math.min(height + 50, smokeY));
+          
+          // Check if point is within extended bounds and not in face area
+          if (clampedX >= -20 && clampedX <= width + 20 && clampedY >= -20 && clampedY <= height + 20) {
+            const inFaceArea = clampedX >= faceX && clampedX <= faceX + faceWidth &&
+                              clampedY >= faceY && clampedY <= faceY + faceHeight;
             
             if (!inFaceArea) {
-              trailPoints.push({ x: smokeX, y: smokeY, progress });
+              trailPoints.push({ x: clampedX, y: clampedY, progress });
             }
           }
         }
@@ -2757,6 +2761,9 @@ export default function AuraAnalysis() {
 
     // Add dense perimeter smoke around all edges
     createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add dedicated edge coverage to ensure smoke reaches image borders
+    createEdgeCoverage(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create full-image smoke base coverage with proper transparency
@@ -2854,6 +2861,83 @@ export default function AuraAnalysis() {
           const smokeOpacity = 0.04 + seededRandom() * 0.08; // Much lower opacity
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
+        }
+      }
+    });
+  };
+
+  // Function to create dedicated edge coverage ensuring smoke reaches all borders
+  const createEdgeCoverage = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    const edgeThickness = 80; // How far from edge to create smoke
+    
+    // Create smoke strips along each edge
+    const edges = [
+      { name: 'top', coords: () => ({ x: seededRandom() * width, y: seededRandom() * edgeThickness }) },
+      { name: 'right', coords: () => ({ x: width - seededRandom() * edgeThickness, y: seededRandom() * height }) },
+      { name: 'bottom', coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * edgeThickness }) },
+      { name: 'left', coords: () => ({ x: seededRandom() * edgeThickness, y: seededRandom() * height }) }
+    ];
+    
+    edges.forEach((edge, edgeIndex) => {
+      const edgeColor = allColors[edgeIndex % 4];
+      const edgeDensity = 25 + Math.floor(energyLevel * 8);
+      
+      for (let i = 0; i < edgeDensity; i++) {
+        const coords = edge.coords();
+        const smokeX = coords.x;
+        const smokeY = coords.y;
+        
+        // Check if not in face area
+        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                          smokeY >= faceY && smokeY <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 15 + seededRandom() * 45;
+          const smokeOpacity = 0.03 + seededRandom() * 0.06;
+          
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, edgeColor, smokeOpacity, seededRandom() * 0.5);
+        }
+      }
+    });
+    
+    // Add corner coverage to ensure complete border coverage
+    const corners = [
+      { x: 0, y: 0, color: colors.thinkingRGB },
+      { x: width, y: 0, color: colors.receivingRGB },
+      { x: width, y: height, color: colors.personalityRGB },
+      { x: 0, y: height, color: colors.givingRGB }
+    ];
+    
+    corners.forEach(corner => {
+      const cornerDensity = 15;
+      for (let i = 0; i < cornerDensity; i++) {
+        const smokeX = corner.x + (seededRandom() - 0.5) * 120;
+        const smokeY = corner.y + (seededRandom() - 0.5) * 120;
+        
+        // Clamp to image bounds
+        const clampedX = Math.max(0, Math.min(width, smokeX));
+        const clampedY = Math.max(0, Math.min(height, smokeY));
+        
+        const inFaceArea = clampedX >= faceX && clampedX <= faceX + faceWidth &&
+                          clampedY >= faceY && clampedY <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 20 + seededRandom() * 40;
+          const smokeOpacity = 0.04 + seededRandom() * 0.07;
+          
+          drawNaturalSmoke(ctx, clampedX, clampedY, smokeSize, corner.color, smokeOpacity, seededRandom() * 0.6);
         }
       }
     });
