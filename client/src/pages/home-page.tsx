@@ -49,15 +49,10 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 animate-fade-in">
+            <div className="flex justify-center animate-fade-in">
               <Button asChild size="lg" className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/aura-analysis">
                   <Camera className="mr-2 h-5 w-5" /> Scan Your Aura
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/30 hover:bg-white/10 text-black px-8 py-6 rounded-full">
-                <Link href="/services">
-                  <BookOpen className="mr-2 h-5 w-5" /> Explore Services
                 </Link>
               </Button>
             </div>
