@@ -5122,19 +5122,12 @@ export default function AuraAnalysis() {
                                           <p className="text-sm text-blue-600">Receiving Energy (Dynamic)</p>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        This dynamic energy on your left side shows how you receive and process energy from your environment, 
-                                        relationships, and external circumstances. It changes based on your surroundings.
-                                      </p>
                                       <div className="mt-3 p-2 bg-blue-50 rounded border-l-4 border-blue-300">
                                         <p className="text-sm font-medium text-blue-800">
-                                          '{(() => {
+                                          {getReceivingEnergyInterpretation((() => {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.receiving);
-                                          })()}': '{getReceivingEnergyMeaning((() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.receiving);
-                                          })())}'
+                                          })())}
                                         </p>
                                       </div>
                                     </div>
@@ -5159,19 +5152,12 @@ export default function AuraAnalysis() {
                                           <p className="text-sm text-orange-600">Giving Energy (Dynamic)</p>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        This dynamic energy on your right side reveals how you give energy to the world and create patterns in your life. 
-                                        It shows your active contribution and how you influence reality through actions.
-                                      </p>
                                       <div className="mt-3 p-2 bg-orange-50 rounded border-l-4 border-orange-300">
                                         <p className="text-sm font-medium text-orange-800">
-                                          '{(() => {
+                                          {getGivingEnergyInterpretation((() => {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.giving);
-                                          })()}': '{getGivingEnergyMeaning((() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.giving);
-                                          })())}'
+                                          })())}
                                         </p>
                                       </div>
                                     </div>
@@ -5196,19 +5182,12 @@ export default function AuraAnalysis() {
                                           <p className="text-sm text-amber-600">Personality Color (Static)</p>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        This static color surrounding your entire energy field represents your fundamental personality and 
-                                        core nature. It explains why certain things happen to you and reveals your karmic patterns.
-                                      </p>
                                       <div className="mt-3 p-2 bg-amber-50 rounded border-l-4 border-amber-300">
                                         <p className="text-sm font-medium text-amber-800">
-                                          '{(() => {
+                                          {getOverallEnergyInterpretation((() => {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.personality);
-                                          })()}': '{getPersonalityEnergyMeaning((() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.personality);
-                                          })())}'
+                                          })())}
                                         </p>
                                       </div>
                                     </div>
