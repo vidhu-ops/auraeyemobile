@@ -52,7 +52,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
               <Button asChild size="lg" className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/aura-analysis">
-                  <Camera className="mr-2 h-5 w-5" /> Scan Your Aura
+                  <Camera className="mr-2 h-5 w-5" /> Human Aura Analysis
                 </Link>
               </Button>
               <Button asChild size="lg" className="bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 border-0 text-white px-8 py-6 rounded-full">

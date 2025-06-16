@@ -608,58 +608,153 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
 
 // Function to generate deterministic analysis based on image hash
 function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
-  const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
-  const seed = parseInt(hash.substring(0, 8), 16);
+  const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
   
-  // Deterministic object types based on hash
+  // Add time-based and random variation for object analysis
+  const uploadTime = Date.now();
+  const timeVariation = uploadTime % 100000;
+  const randomComponent = Math.floor(Math.random() * 50000);
+  
+  // Extract multiple seeds from different hash segments
+  const seed1 = parseInt(hash.substring(0, 8), 16);
+  const seed2 = parseInt(hash.substring(8, 16), 16);
+  const seed3 = parseInt(hash.substring(16, 24), 16);
+  const seed4 = parseInt(hash.substring(24, 32), 16);
+  
+  // Enhanced object types with more variety
   const objectTypes = [
     "Crystal", "Stone", "Jewelry", "Artifact", "Ornament", "Talisman", 
-    "Figurine", "Coin", "Ring", "Pendant", "Sculpture", "Charm"
+    "Figurine", "Coin", "Ring", "Pendant", "Sculpture", "Charm",
+    "Amulet", "Gemstone", "Relic", "Totem", "Medallion", "Compass",
+    "Mirror", "Vessel", "Sphere", "Pyramid", "Wand", "Bracelet"
   ];
   
-  // Deterministic aura colors
+  // Expanded aura colors with much more diversity
   const auraColors = [
-    "Red", "Blue", "Green", "Yellow", "Purple", "Orange", 
-    "Pink", "Violet", "Indigo", "Gold", "Silver", "Turquoise"
+    "Crimson", "Scarlet", "Ruby", "Coral", "Salmon", "Rose",
+    "Orange", "Amber", "Copper", "Bronze", "Apricot", "Peach",
+    "Yellow", "Gold", "Citrine", "Lemon", "Cream", "Ivory",
+    "Emerald", "Jade", "Forest", "Lime", "Mint", "Sage",
+    "Azure", "Sapphire", "Cobalt", "Navy", "Teal", "Aqua",
+    "Amethyst", "Lavender", "Plum", "Mauve", "Periwinkle", "Lilac",
+    "Magenta", "Fuchsia", "Pink", "Blush", "Cherry", "Wine",
+    "Silver", "Platinum", "Pearl", "Opal", "Moonstone", "Crystal"
   ];
   
-  // Deterministic energy qualities
+  // Enhanced energy qualities with more variety
   const energyQualities = [
     ["Calming", "Protective", "Grounding"],
     ["Energizing", "Inspiring", "Creative"],
     ["Healing", "Nurturing", "Compassionate"],
     ["Intuitive", "Mystical", "Spiritual"],
     ["Balancing", "Harmonizing", "Peaceful"],
-    ["Empowering", "Confident", "Strong"]
+    ["Empowering", "Confident", "Strong"],
+    ["Transformative", "Cleansing", "Purifying"],
+    ["Manifesting", "Attracting", "Abundant"],
+    ["Communicative", "Expressive", "Truthful"],
+    ["Illuminating", "Enlightening", "Wise"]
   ];
   
-  const objectTypeIndex = seed % objectTypes.length;
-  const auraColorIndex = (seed >> 4) % auraColors.length;
-  const energyIndex = (seed >> 8) % energyQualities.length;
-  const energyLevel = 3 + (seed % 8); // Energy level between 3-10
+  // Enhanced selection logic with multiple entropy sources
+  const imageSize = imageBuffer.length;
+  const sizeVariation = imageSize % 10000;
+  
+  // Create diverse seeds using all available entropy
+  const complexSeed1 = (seed1 ^ seed2 ^ timeVariation ^ randomComponent) + sizeVariation;
+  const complexSeed2 = (seed2 ^ seed3 ^ (timeVariation << 2) ^ (randomComponent >>> 3)) + (imageSize % 7919);
+  const complexSeed3 = (seed3 ^ seed4 ^ (timeVariation >>> 1) ^ (randomComponent << 1)) + (uploadTime % 5003);
+  
+  // Avoid purple/violet family colors for diversity (indices 35-41 in the array)
+  const avoidIndices = [35, 36, 37, 38, 39, 40]; // Amethyst, Lavender, Plum, Mauve, Periwinkle, Lilac
+  
+  let objectTypeIndex = Math.abs(complexSeed1) % objectTypes.length;
+  let auraColorIndex = Math.abs(complexSeed2) % auraColors.length;
+  let energyIndex = Math.abs(complexSeed3) % energyQualities.length;
+  
+  // Force diversity by avoiding overused purple/violet colors
+  if (avoidIndices.includes(auraColorIndex)) {
+    // Map to different color families
+    const alternativeSeeds = [
+      Math.abs(complexSeed1 + complexSeed2) % auraColors.length,
+      Math.abs(complexSeed2 + complexSeed3) % auraColors.length,
+      Math.abs(complexSeed3 + timeVariation) % auraColors.length
+    ];
+    
+    // Find first non-purple alternative
+    for (const altSeed of alternativeSeeds) {
+      if (!avoidIndices.includes(altSeed)) {
+        auraColorIndex = altSeed;
+        break;
+      }
+    }
+    
+    // If still in purple range, force to earth tones or metals
+    if (avoidIndices.includes(auraColorIndex)) {
+      const earthTones = [1, 7, 8, 9, 16, 17, 43, 44, 45, 46, 47]; // Scarlet, Amber, Copper, Bronze, Cream, Ivory, Silver, Platinum, Pearl, Opal, etc.
+      auraColorIndex = earthTones[Math.abs(complexSeed1) % earthTones.length];
+    }
+  }
+  
+  const energyLevel = 3 + (Math.abs(complexSeed1 + complexSeed2) % 8); // Energy level between 3-10
   
   const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
-  const selectedAuraColor = auraColors[auraColorIndex] || "Purple";
+  const selectedAuraColor = auraColors[auraColorIndex] || "Amber";
   const selectedQualities = energyQualities[energyIndex] || ["Calming", "Protective", "Grounding"];
   
   // Ensure we have valid qualities
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
-  // Specific color meanings for objects
+  // Comprehensive color meanings for objects including all new colors
   const objectColorMeanings: Record<string, string> = {
-    'Red': 'Root chakra activation - grounding energy, survival strength, physical vitality, manifestation power',
-    'Blue': 'Throat chakra enhancement - truthful communication, peaceful wisdom, authentic expression, calming presence',
-    'Green': 'Heart chakra healing - unconditional love, emotional balance, natural harmony, compassionate energy',
-    'Yellow': 'Solar plexus empowerment - personal confidence, mental clarity, intellectual wisdom, willpower activation',
-    'Purple': 'Crown chakra connection - divine wisdom, spiritual mastery, mystical awareness, cosmic consciousness',
-    'Orange': 'Sacral chakra stimulation - creative flow, emotional expression, artistic inspiration, joyful passion',
-    'Pink': 'Higher heart activation - unconditional compassion, divine love, soul connection, gentle healing',
-    'Violet': 'Spiritual transformation - consciousness elevation, mystical awakening, divine connection, soul evolution',
-    'Indigo': 'Third eye opening - psychic abilities, intuitive wisdom, spiritual sight, inner knowing',
-    'Gold': 'Christ consciousness - divine illumination, spiritual mastery, soul purpose, sacred wisdom',
-    'Silver': 'Lunar energy - feminine wisdom, psychic protection, intuitive insight, mystical reflection',
-    'Turquoise': 'Higher throat expression - healing communication, divine truth, soul voice, spiritual expression'
+    'Crimson': 'Passionate power - intense life force, warrior strength, primal energy, bold manifestation',
+    'Scarlet': 'Sacred fire - divine courage, spiritual passion, transformative energy, soul awakening',
+    'Ruby': 'Royal vitality - noble strength, regal power, commanding presence, leadership energy',
+    'Coral': 'Ocean wisdom - emotional healing, fluid adaptability, nurturing protection, gentle strength',
+    'Salmon': 'Life current - flowing vitality, reproductive energy, creative fertility, abundance manifestation',
+    'Rose': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
+    'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
+    'Amber': 'Ancient wisdom - preserved knowledge, timeless insight, protective energy, earth connection',
+    'Copper': 'Conductive energy - electrical awakening, neural activation, psychic enhancement, mental clarity',
+    'Bronze': 'Warrior shield - protective strength, battle wisdom, enduring courage, strategic power',
+    'Apricot': 'Gentle warmth - soft healing, nurturing comfort, peaceful energy, harmonious balance',
+    'Peach': 'Sweet harmony - loving kindness, gentle strength, emotional balance, heart healing',
+    'Yellow': 'Mental brilliance - intellectual power, solar energy, conscious awakening, wisdom activation',
+    'Gold': 'Divine illumination - cosmic consciousness, spiritual mastery, sacred geometry, enlightened awareness',
+    'Citrine': 'Abundance flow - prosperity energy, wealth manifestation, success attraction, golden opportunities',
+    'Lemon': 'Purifying light - cleansing energy, mental clarity, detoxification power, fresh beginnings',
+    'Cream': 'Pure essence - spiritual purity, divine grace, angelic presence, sacred innocence',
+    'Ivory': 'Ancient knowledge - timeless wisdom, sacred teachings, preserved truth, eternal understanding',
+    'Emerald': 'Heart mastery - unconditional love, emotional healing, compassionate wisdom, soul connection',
+    'Jade': 'Protective harmony - balanced energy, peaceful strength, harmonious protection, stable growth',
+    'Forest': 'Nature wisdom - earth connection, grounding energy, natural healing, environmental harmony',
+    'Lime': 'Fresh energy - revitalizing power, new growth, spring awakening, renewal force',
+    'Mint': 'Cooling balance - soothing energy, mental freshness, emotional cooling, peaceful clarity',
+    'Sage': 'Elder wisdom - ancient knowledge, spiritual guidance, ceremonial power, sacred understanding',
+    'Azure': 'Sky consciousness - limitless awareness, infinite potential, heavenly connection, divine perspective',
+    'Sapphire': 'Truth crystal - divine wisdom, spiritual insight, celestial knowledge, sacred communication',
+    'Cobalt': 'Deep truth - profound understanding, oceanic wisdom, mysterious knowledge, hidden insights',
+    'Navy': 'Authority power - command presence, leadership strength, disciplined energy, structured wisdom',
+    'Teal': 'Healing waters - emotional cleansing, spiritual purification, therapeutic energy, soul washing',
+    'Aqua': 'Flow state - fluid consciousness, adaptable energy, emotional fluidity, psychic currents',
+    'Amethyst': 'Spiritual protection - psychic shielding, divine connection, mystical awareness, soul guarding',
+    'Lavender': 'Gentle spirituality - peaceful awakening, soft mysticism, calming presence, serene wisdom',
+    'Plum': 'Royal mysticism - noble spirituality, regal intuition, aristocratic wisdom, refined consciousness',
+    'Mauve': 'Subtle magic - gentle enchantment, soft power, understated strength, quiet wisdom',
+    'Periwinkle': 'Fairy energy - magical lightness, ethereal connection, whimsical power, enchanted awareness',
+    'Lilac': 'Spring awakening - new spiritual growth, fresh intuition, budding psychic abilities, emerging wisdom',
+    'Magenta': 'Divine rebellion - unconventional wisdom, breakthrough energy, revolutionary spirit, paradigm shifting',
+    'Fuchsia': 'Electric passion - intense creativity, vibrant expression, dynamic energy, powerful manifestation',
+    'Pink': 'Universal love - all-encompassing compassion, divine feminine, nurturing strength, heart opening',
+    'Blush': 'Innocent awakening - gentle emergence, soft power, tender strength, delicate wisdom',
+    'Cherry': 'Sweet vitality - joyful energy, celebratory spirit, life appreciation, happiness manifestation',
+    'Wine': 'Mature wisdom - aged knowledge, refined understanding, sophisticated insight, cultured awareness',
+    'Silver': 'Lunar reflection - feminine intuition, moon energy, psychic mirroring, ethereal wisdom',
+    'Platinum': 'Rare excellence - precious energy, refined power, elite consciousness, exceptional awareness',
+    'Pearl': 'Ocean treasure - hidden wisdom, deep mysteries, lunar magic, feminine power',
+    'Opal': 'Rainbow consciousness - multi-dimensional awareness, spectrum energy, prismatic wisdom, colorful insight',
+    'Moonstone': 'Cyclical wisdom - natural rhythms, feminine cycles, intuitive timing, lunar connection',
+    'Crystal': 'Pure amplification - energy enhancement, clarity magnification, spiritual broadcasting, divine transmission'
   };
 
   const colorMeaning = objectColorMeanings[selectedAuraColor] || `${selectedAuraColor} consciousness - divine soul frequency activation and spiritual purpose alignment`;
