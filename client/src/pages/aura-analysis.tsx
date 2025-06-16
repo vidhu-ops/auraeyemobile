@@ -3918,7 +3918,7 @@ export default function AuraAnalysis() {
     return numberColors[number] || 'White';
   };
   
-  // Function to detect human faces for aura analysis
+  // Function to detect human presence for aura analysis (faces or full body)
   const detectHumanFace = (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -3935,80 +3935,65 @@ export default function AuraAnalysis() {
         if (imageData) {
           const data = imageData.data;
           let skinPixels = 0;
-          let facePatternPixels = 0;
+          let clothingPixels = 0;
+          let hairPixels = 0;
           let totalPixels = data.length / 4;
           
-          // Face detection for aura analysis
-          for (let i = 0; i < data.length; i += 4) {
+          // Enhanced human detection for faces AND full body images
+          for (let i = 0; i < data.length; i += 8) { // Sample every 2nd pixel for efficiency
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // Skin tone detection criteria for human faces
+            // Comprehensive skin tone detection for all ethnicities
             const skinTone1 = r > 120 && g > 80 && b > 60 && r > g && r > b && 
-                             Math.abs(r - g) > 20 && Math.abs(r - b) > 30;
-            const skinTone2 = r > 240 && g > 220 && b > 180 && r - g < 30 && r - b < 80; // Very light skin
-            const skinTone3 = r > 110 && r < 140 && g > 80 && g < 110 && b > 60 && b < 90 && 
-                             r > g && r > b; // Medium skin with strict bounds
+                             Math.abs(r - g) > 15 && Math.abs(r - b) > 25;
+            const skinTone2 = r > 200 && g > 160 && b > 120 && r - g < 50 && r - b < 100; // Light skin
+            const skinTone3 = r > 100 && r < 160 && g > 70 && g < 120 && b > 50 && b < 100 && 
+                             r > g && r > b; // Medium skin
+            const skinTone4 = r > 70 && r < 130 && g > 50 && g < 100 && b > 30 && b < 80; // Dark skin
+            const skinTone5 = r > 40 && r < 100 && g > 30 && g < 80 && b > 20 && b < 70; // Very dark skin
             
-            // Face pattern detection
-            if (skinTone1 || skinTone2 || skinTone3) {
+            // Clothing detection (common clothing colors)
+            const clothing1 = r < 60 && g < 60 && b < 60; // Dark clothing (black, navy)
+            const clothing2 = r > 200 && g > 200 && b > 200; // White/light clothing
+            const clothing3 = b > r + 30 && b > g + 20 && b > 80; // Blue clothing (jeans, etc.)
+            const clothing4 = Math.max(r, g, b) - Math.min(r, g, b) > 60 && Math.max(r, g, b) > 100; // Colorful clothing
+            
+            // Hair detection (various hair colors)
+            const hair1 = r < 80 && g < 60 && b < 50; // Dark hair
+            const hair2 = r > 80 && r < 150 && g > 60 && g < 120 && b > 40 && b < 100; // Brown hair
+            const hair3 = r > 150 && g > 120 && b > 80 && r > g && g > b; // Blonde hair
+            const hair4 = r > 60 && r < 120 && g > 40 && g < 100 && b > 30 && b < 90; // Medium hair
+            
+            if (skinTone1 || skinTone2 || skinTone3 || skinTone4 || skinTone5) {
               skinPixels++;
-              
-              // Check for face-like patterns
-              const pixelIndex = Math.floor(i / 4);
-              const x = pixelIndex % canvas.width;
-              const y = Math.floor(pixelIndex / canvas.width);
-              
-              let horizontalSkin = 0;
-              let verticalSkin = 0;
-              
-              // Check horizontal continuity
-              for (let dx = -2; dx <= 2; dx++) {
-                const checkX = x + dx;
-                if (checkX >= 0 && checkX < canvas.width) {
-                  const checkIndex = (y * canvas.width + checkX) * 4;
-                  const checkR = data[checkIndex];
-                  const checkG = data[checkIndex + 1];
-                  const checkB = data[checkIndex + 2];
-                  
-                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
-                      (checkR > 240 && checkG > 220 && checkB > 180) ||
-                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
-                    horizontalSkin++;
-                  }
-                }
-              }
-              
-              // Check vertical continuity
-              for (let dy = -2; dy <= 2; dy++) {
-                const checkY = y + dy;
-                if (checkY >= 0 && checkY < canvas.height) {
-                  const checkIndex = (checkY * canvas.width + x) * 4;
-                  const checkR = data[checkIndex];
-                  const checkG = data[checkIndex + 1];
-                  const checkB = data[checkIndex + 2];
-                  
-                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
-                      (checkR > 240 && checkG > 220 && checkB > 180) ||
-                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
-                    verticalSkin++;
-                  }
-                }
-              }
-              
-              if (horizontalSkin >= 3 && verticalSkin >= 3) {
-                facePatternPixels++;
-              }
+            }
+            
+            if (clothing1 || clothing2 || clothing3 || clothing4) {
+              clothingPixels++;
+            }
+            
+            if (hair1 || hair2 || hair3 || hair4) {
+              hairPixels++;
             }
           }
           
-          const skinRatio = skinPixels / totalPixels;
-          const facePatternRatio = facePatternPixels / totalPixels;
+          // Calculate detection ratios
+          const sampledPixels = totalPixels / 2; // We sampled every 2nd pixel
+          const skinRatio = skinPixels / sampledPixels;
+          const clothingRatio = clothingPixels / sampledPixels;
+          const hairRatio = hairPixels / sampledPixels;
           
-          // For aura analysis, we need significant skin area AND face patterns
-          const hasFace = skinRatio > 0.15 && facePatternRatio > 0.03;
-          resolve(hasFace);
+          // Enhanced human detection criteria for full body images
+          const hasEnoughSkin = skinRatio > 0.015; // Face or visible skin (lowered threshold)
+          const hasClothingAndSkin = clothingRatio > 0.08 && skinRatio > 0.005; // Full body with clothes
+          const hasHumanFeatures = hairRatio > 0.02 && skinRatio > 0.003; // Hair + some skin
+          const hasOverallHumanPresence = (skinRatio + clothingRatio + hairRatio) > 0.12;
+          
+          // Accept if ANY criteria are met for full body or face detection
+          const hasHuman = hasEnoughSkin || hasClothingAndSkin || hasHumanFeatures || hasOverallHumanPresence;
+          resolve(hasHuman);
         } else {
           resolve(false);
         }
