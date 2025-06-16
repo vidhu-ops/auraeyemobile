@@ -1992,7 +1992,6 @@ export default function AuraAnalysis() {
   };
 
   const getColorKeyword = (color: string): string => {
-    console.log('Getting keyword for color:', color);
     const keywords: Record<string, string> = {
       'Red': 'Life Force & Vitality',
       'red': 'Life Force & Vitality',
@@ -2074,9 +2073,7 @@ export default function AuraAnalysis() {
       'topaz': 'Golden Intelligence & Creative Wisdom'
         
     };
-    const result = keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
-    console.log('Returning keyword:', result);
-    return result;
+    return keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
   };
 
 
@@ -3033,7 +3030,7 @@ export default function AuraAnalysis() {
         
         // Draw smooth smoke trail
         if (trailPoints.length > 1) {
-          drawSmokeTrail(ctx, trailPoints, zone.color, energyLevel, seededRandom);
+          drawSmokeTrail(ctx, trailPoints, zone.color, seededRandom);
         }
       }
     });
@@ -3447,13 +3444,12 @@ export default function AuraAnalysis() {
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
     color: { r: number, g: number, b: number },
-    energyLevel: number,
     seededRandom: () => number
   ) => {
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      const smokeSize = 25 + seededRandom() * 45 * (1 - point.progress * 0.4);
+      const smokeSize = 30 + seededRandom() * 45 * (1 - point.progress * 0.4);
       const baseOpacity = 0.096 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4); // Increased by 20% from 0.08
       
       // Create natural smoke gradient with enhanced opacity
@@ -3618,7 +3614,7 @@ export default function AuraAnalysis() {
     const personHeight = height * 0.7;
 
     // Create smokey particle system around person outline
-    const particleCount = 200 + (energyLevel * 20);
+    const particleCount = 900 + (energyLevel * 80);
     
     for (let i = 0; i < particleCount; i++) {
       // Generate particles around person silhouette
@@ -3646,14 +3642,14 @@ export default function AuraAnalysis() {
       const rgb = useSecondary ? secondaryRGB : dominantRGB;
       
       // Particle size and opacity based on distance from person
-      const particleSize = (3 + seededRandom() * 8) * (energyLevel / 10);
+      const particleSize = (4 + seededRandom() * 8) * (energyLevel / 10);
       const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
       const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
 
       // Create smokey gradient for each particle
       const gradient = ctx.createRadialGradient(
         particleX, particleY, 0,
-        particleX, particleY, particleSize * 3
+        particleX, particleY, particleSize * 8
       );
       
       gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
@@ -3667,7 +3663,7 @@ export default function AuraAnalysis() {
       
       // Draw particle as soft circle
       ctx.beginPath();
-      ctx.arc(particleX, particleY, particleSize * 4, 0, Math.PI * 2);
+      ctx.arc(particleX, particleY, particleSize * 10, 0, Math.PI * 3);
       ctx.fill();
     }
 
