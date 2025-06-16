@@ -3046,6 +3046,9 @@ export default function AuraAnalysis() {
     
     // Add enhanced personality color perimeter halo effect
     createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add dense atmospheric haze that fills the entire field for mystical effect
+    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
@@ -3477,28 +3480,41 @@ export default function AuraAnalysis() {
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      const smokeSize = 30 + seededRandom() * 45 * (1 - point.progress * 0.4);
-      const baseOpacity = 0.096 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4); // Increased by 20% from 0.08
+      // Much larger smoke particles for dense mystical trails
+      const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
+      const baseOpacity = 0.2 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Dramatically increased opacity
       
-      // Create natural smoke gradient with enhanced opacity
-      const gradient = ctx.createRadialGradient(
-        point.x, point.y, 0,
-        point.x, point.y, smokeSize
-      );
+      // Create multiple layers for dense trail effect
+      const trailLayers = [
+        { sizeMultiplier: 1.0, opacityMultiplier: 1.0 },
+        { sizeMultiplier: 0.7, opacityMultiplier: 1.3 },
+        { sizeMultiplier: 1.4, opacityMultiplier: 0.6 }
+      ];
       
-      // Use original colors with enhanced visibility
-      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
-      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.6})`);
-      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, smokeSize, 0, Math.PI * 2);
-      ctx.fill();
+      trailLayers.forEach(layer => {
+        const layerSize = smokeSize * layer.sizeMultiplier;
+        const layerOpacity = baseOpacity * layer.opacityMultiplier;
+        
+        // Create dense smoke gradient
+        const gradient = ctx.createRadialGradient(
+          point.x, point.y, 0,
+          point.x, point.y, layerSize
+        );
+        
+        gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
+        gradient.addColorStop(0.4, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.8})`);
+        gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.4})`);
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, layerSize, 0, Math.PI * 2);
+        ctx.fill();
+      });
     });
   };
 
-  // Function to create subtle atmospheric haze
+  // Function to create dense atmospheric haze that fills the entire field
   const createAtmosphericHaze = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3511,33 +3527,44 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const hazeZones = 12 + Math.floor(energyLevel * 2);
+    // Dramatically increased haze coverage for mystical density
+    const hazeZones = 60 + Math.floor(energyLevel * 15);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    for (let zone = 0; zone < hazeZones; zone++) {
-      const hazeX = seededRandom() * width;
-      const hazeY = seededRandom() * height;
-      
-      // Avoid face area
-      const inFaceArea = hazeX >= faceX && hazeX <= faceX + faceWidth &&
-                        hazeY >= faceY && hazeY <= faceY + faceHeight;
-      
-      if (!inFaceArea) {
-        const hazeSize = 80 + seededRandom() * 150;
-        const hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
-        const hazeOpacity = 0.03 + seededRandom() * 0.08;
+    // Create multiple haze layers for maximum mystical density
+    const hazeLayers = [
+      { density: hazeZones * 0.4, sizeRange: [120, 200], opacity: [0.08, 0.15] }, // Large background haze
+      { density: hazeZones * 0.3, sizeRange: [80, 140], opacity: [0.12, 0.20] },  // Medium haze
+      { density: hazeZones * 0.3, sizeRange: [50, 100], opacity: [0.15, 0.25] }   // Dense detail haze
+    ];
+    
+    hazeLayers.forEach(layer => {
+      for (let zone = 0; zone < layer.density; zone++) {
+        const hazeX = seededRandom() * width;
+        const hazeY = seededRandom() * height;
         
-        const hazeGradient = ctx.createRadialGradient(hazeX, hazeY, 0, hazeX, hazeY, hazeSize);
-        hazeGradient.addColorStop(0, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity})`);
-        hazeGradient.addColorStop(0.6, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.5})`);
-        hazeGradient.addColorStop(1, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, 0)`);
+        // Avoid face area
+        const inFaceArea = hazeX >= faceX && hazeX <= faceX + faceWidth &&
+                          hazeY >= faceY && hazeY <= faceY + faceHeight;
         
-        ctx.fillStyle = hazeGradient;
-        ctx.beginPath();
-        ctx.arc(hazeX, hazeY, hazeSize, 0, Math.PI * 2);
-        ctx.fill();
+        if (!inFaceArea) {
+          const hazeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
+          const hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+          const hazeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
+          
+          const hazeGradient = ctx.createRadialGradient(hazeX, hazeY, 0, hazeX, hazeY, hazeSize);
+          hazeGradient.addColorStop(0, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity})`);
+          hazeGradient.addColorStop(0.5, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.7})`);
+          hazeGradient.addColorStop(0.8, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.3})`);
+          hazeGradient.addColorStop(1, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, 0)`);
+          
+          ctx.fillStyle = hazeGradient;
+          ctx.beginPath();
+          ctx.arc(hazeX, hazeY, hazeSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
-    }
+    });
   };
 
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
