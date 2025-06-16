@@ -292,25 +292,88 @@ export default function ObjectAnalysis() {
       "Gold": "Gold aura embodies divine wisdom, spiritual mastery, and enlightened consciousness. Objects with gold energy enhance spiritual teaching, divine connection, and wisdom transmission. This vibration indicates advanced spiritual development.",
       "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom."
     };
-    return colorMeanings[color] || colorMeanings["Purple"];
+    return colorMeanings[color] || `${color} aura embodies unique spiritual frequencies and metaphysical properties. Objects carrying ${color.toLowerCase()} energy provide specialized vibrational healing and consciousness expansion through distinctive color therapy principles.`;
   };
 
   const getColorPositiveTraits = (color: string): string => {
     const positiveTraits: Record<string, string> = {
-      "Purple": "Enhances spiritual awareness, deepens meditation practice, amplifies intuitive abilities, connects to divine guidance, promotes mystical experiences",
+      // Red Family
+      "Crimson": "Ignites passionate life force, strengthens warrior spirit, enhances primal power, promotes bold action, activates survival instincts",
+      "Scarlet": "Awakens sacred fire energy, promotes divine courage, enhances spiritual passion, supports transformative power, ignites soul awakening",
+      "Ruby": "Amplifies royal vitality, strengthens noble power, enhances commanding presence, promotes leadership energy, activates regal strength",
       "Red": "Increases physical vitality, strengthens willpower, enhances survival instincts, promotes courage, grounds excess energy",
+      
+      // Orange Family  
+      "Coral": "Provides emotional healing wisdom, enhances fluid adaptability, promotes nurturing protection, supports gentle strength, brings ocean wisdom",
+      "Salmon": "Activates life current flow, enhances creative fertility, promotes abundance manifestation, supports reproductive energy, brings flowing vitality",
       "Orange": "Stimulates creativity, balances emotions, enhances personal power, supports artistic expression, promotes emotional healing",
+      "Amber": "Connects to ancient earth wisdom, provides protective energy, enhances timeless insight, supports preserved knowledge, brings earth connection",
+      "Copper": "Activates electrical awakening, enhances neural activation, amplifies psychic abilities, promotes mental clarity, supports conductive energy",
+      "Bronze": "Provides warrior shield protection, enhances enduring courage, promotes strategic power, supports battle wisdom, brings protective strength",
+      "Apricot": "Offers gentle healing warmth, promotes nurturing comfort, enhances peaceful energy, supports harmonious balance, brings soft healing",
+      "Peach": "Enhances sweet harmony, promotes loving kindness, supports emotional balance, provides heart healing, brings gentle strength",
+      
+      // Yellow Family
       "Yellow": "Boosts mental clarity, enhances communication, increases confidence, supports learning, amplifies personal power",
-      "Green": "Opens heart chakra, promotes healing, attracts abundance, enhances compassion, connects to nature",
-      "Blue": "Enhances communication, promotes truth, brings peace, supports teaching, activates throat chakra",
-      "Indigo": "Amplifies psychic abilities, enhances intuition, supports spiritual seeing, deepens meditation, activates third eye",
-      "Pink": "Promotes self-love, enhances compassion, supports emotional healing, opens heart, brings nurturing energy",
-      "White": "Provides spiritual protection, purifies energy, connects to divine, enhances clarity, promotes peace",
-      "Black": "Offers psychic protection, absorbs negativity, supports transformation, provides grounding, enhances mystery work",
       "Gold": "Enhances wisdom, promotes enlightenment, connects to divine mind, supports teaching, amplifies spiritual power",
-      "Silver": "Enhances psychic sensitivity, supports dream work, amplifies intuition, connects to lunar energy, promotes emotional clarity"
+      "Citrine": "Activates abundance flow, promotes prosperity energy, enhances wealth manifestation, supports success attraction, brings golden opportunities",
+      "Lemon": "Provides purifying light energy, enhances mental clarity, promotes detoxification power, supports fresh beginnings, brings cleansing energy",
+      "Cream": "Offers pure spiritual essence, enhances divine grace, promotes angelic presence, supports sacred innocence, brings spiritual purity",
+      "Ivory": "Connects to ancient knowledge, enhances timeless wisdom, promotes sacred teachings, supports preserved truth, brings eternal understanding",
+      
+      // Green Family
+      "Emerald": "Activates heart mastery, promotes unconditional love, enhances emotional healing, supports compassionate wisdom, brings soul connection",
+      "Jade": "Provides protective harmony, enhances balanced energy, promotes peaceful strength, supports stable growth, brings harmonious protection",
+      "Forest": "Connects to nature wisdom, enhances earth connection, promotes natural healing, supports environmental harmony, brings grounding energy",
+      "Lime": "Activates fresh energy, promotes revitalizing power, enhances new growth, supports spring awakening, brings renewal force",
+      "Mint": "Provides cooling balance, enhances soothing energy, promotes mental freshness, supports emotional cooling, brings peaceful clarity",
+      "Sage": "Connects to elder wisdom, enhances ancient knowledge, promotes spiritual guidance, supports ceremonial power, brings sacred understanding",
+      "Green": "Opens heart chakra, promotes healing, attracts abundance, enhances compassion, connects to nature",
+      
+      // Blue Family
+      "Azure": "Connects to sky consciousness, enhances limitless awareness, promotes infinite potential, supports heavenly connection, brings divine perspective",
+      "Sapphire": "Activates truth crystal energy, enhances divine wisdom, promotes spiritual insight, supports celestial knowledge, brings sacred communication",
+      "Cobalt": "Provides deep truth understanding, enhances oceanic wisdom, promotes mysterious knowledge, supports hidden insights, brings profound understanding",
+      "Navy": "Enhances authority power, promotes command presence, strengthens leadership energy, supports disciplined wisdom, brings structured authority",
+      "Teal": "Activates healing waters, promotes emotional cleansing, enhances spiritual purification, supports therapeutic energy, brings soul washing",
+      "Aqua": "Provides flow state consciousness, enhances fluid adaptability, promotes emotional fluidity, supports psychic currents, brings adaptable energy",
+      "Blue": "Enhances communication, promotes truth, brings peace, supports teaching, activates throat chakra",
+      
+      // Purple Family
+      "Amethyst": "Provides spiritual protection, enhances psychic shielding, promotes divine connection, supports mystical awareness, brings soul guarding",
+      "Lavender": "Offers gentle spirituality, promotes peaceful awakening, enhances soft mysticism, supports calming presence, brings serene wisdom",
+      "Plum": "Activates royal mysticism, enhances noble spirituality, promotes regal intuition, supports aristocratic wisdom, brings refined consciousness",
+      "Mauve": "Provides subtle magic, enhances gentle enchantment, promotes soft power, supports understated strength, brings quiet wisdom",
+      "Periwinkle": "Connects to fairy energy, enhances magical lightness, promotes ethereal connection, supports whimsical power, brings enchanted awareness",
+      "Lilac": "Activates spring awakening, promotes new spiritual growth, enhances fresh intuition, supports budding psychic abilities, brings emerging wisdom",
+      "Purple": "Enhances spiritual awareness, deepens meditation practice, amplifies intuitive abilities, connects to divine guidance, promotes mystical experiences",
+      "Indigo": "Amplifies psychic abilities, enhances intuition, supports spiritual seeing, deepens meditation, activates third eye",
+      "Violet": "Promotes spiritual transformation, enhances consciousness elevation, supports mystical awakening, brings divine connection, activates soul evolution",
+      
+      // Pink/Magenta Family
+      "Magenta": "Activates divine rebellion, enhances unconventional wisdom, promotes breakthrough energy, supports revolutionary spirit, brings paradigm shifting",
+      "Fuchsia": "Provides electric passion, enhances intense creativity, promotes vibrant expression, supports dynamic energy, brings powerful manifestation",
+      "Pink": "Promotes self-love, enhances compassion, supports emotional healing, opens heart, brings nurturing energy",
+      "Blush": "Offers innocent awakening, promotes gentle emergence, enhances soft power, supports tender strength, brings delicate wisdom",
+      "Cherry": "Activates sweet vitality, enhances joyful energy, promotes celebratory spirit, supports life appreciation, brings happiness manifestation",
+      "Wine": "Provides mature wisdom, enhances aged knowledge, promotes refined understanding, supports sophisticated insight, brings cultured awareness",
+      "Rose": "Activates divine love frequency, enhances unconditional acceptance, promotes heart opening, supports compassionate healing, brings soul recognition",
+      
+      // Metallic Family
+      "Silver": "Enhances psychic sensitivity, supports dream work, amplifies intuition, connects to lunar energy, promotes emotional clarity",
+      "Platinum": "Activates rare excellence, enhances precious energy, promotes refined power, supports elite consciousness, brings exceptional awareness",
+      "Pearl": "Connects to ocean treasure, enhances hidden wisdom, promotes deep mysteries, supports lunar magic, brings feminine power",
+      "Opal": "Activates rainbow consciousness, enhances multi-dimensional awareness, promotes spectrum energy, supports prismatic wisdom, brings colorful insight",
+      "Moonstone": "Connects to cyclical wisdom, enhances natural rhythms, promotes feminine cycles, supports intuitive timing, brings lunar connection",
+      "Crystal": "Provides pure amplification, enhances energy enhancement, promotes clarity magnification, supports spiritual broadcasting, brings divine transmission",
+      
+      // Neutral Family
+      "White": "Provides spiritual protection, purifies energy, connects to divine, enhances clarity, promotes peace",
+      "Black": "Offers psychic protection, absorbs negativity, supports transformation, provides grounding, enhances mystery work"
     };
-    return positiveTraits[color] || positiveTraits["Purple"];
+    
+    // Return specific color meaning or generate a meaningful default based on the color name
+    return positiveTraits[color] || `Enhances ${color.toLowerCase()} energy frequencies, promotes spiritual development through unique vibrational qualities, supports personal transformation and consciousness expansion`;
   };
 
   const getColorEnergyProperties = (color: string): string => {
@@ -328,7 +391,7 @@ export default function ObjectAnalysis() {
       "Gold": "Divine wisdom frequency, enlightenment energy, spiritual mastery vibration, cosmic intelligence, advanced consciousness",
       "Silver": "Lunar frequency vibration, psychic enhancement energy, emotional intuition, feminine wisdom, dream consciousness"
     };
-    return energyProperties[color] || energyProperties["Purple"];
+    return energyProperties[color] || `${color} energy carries unique vibrational frequencies that activate specific spiritual centers and enhance consciousness through distinctive metaphysical properties and energy field interactions.`;
   };
 
   // Enhanced energy influence functions
@@ -347,7 +410,7 @@ export default function ObjectAnalysis() {
       "Gold": "Establishes divine wisdom temples that facilitate spiritual teaching and enlightenment. Gold energy creates sacred spaces that enhance spiritual mastery, divine connection, and transmission of cosmic knowledge.",
       "Silver": "Generates lunar consciousness fields that enhance psychic abilities and emotional intuition. Silver vibrations create mystical environments that support dream work, psychic development, and feminine wisdom activation."
     };
-    return environmentalEffects[color] || environmentalEffects["Purple"];
+    return environmentalEffects[color] || `${color} energy creates a unique atmospheric field that transforms the surrounding environment through specific vibrational frequencies, enhancing the space with distinctive metaphysical properties and energetic influences.`;
   };
 
   const getChakraInfluence = (color: string): string => {
@@ -365,7 +428,7 @@ export default function ObjectAnalysis() {
       "Gold": "Illuminates the crown chakra and higher spiritual centers with divine wisdom, facilitating spiritual mastery and enlightenment experiences. This golden activation enhances spiritual teaching abilities and cosmic knowledge transmission.",
       "Silver": "Activates the sacral and third eye chakras with lunar feminine energy, enhancing psychic abilities, emotional intuition, and dream consciousness. This lunar activation supports feminine wisdom and psychic development."
     };
-    return chakraEffects[color] || chakraEffects["Purple"];
+    return chakraEffects[color] || `${color} energy activates specific chakra centers through resonant vibrational frequencies, creating targeted energy vortexes that enhance spiritual development and consciousness expansion through unique color therapy principles.`;
   };
 
   const getEmotionalInfluence = (color: string): string => {
@@ -383,7 +446,7 @@ export default function ObjectAnalysis() {
       "Gold": "Elevates emotions to divine wisdom states that transcend ordinary emotional patterns. Enhances feelings of spiritual mastery, divine love, and enlightened emotional expression while connecting to cosmic emotional intelligence.",
       "Silver": "Enhances emotional intuition and psychic emotional sensitivity while connecting to lunar emotional wisdom. Promotes empathic feelings, dream emotions, and feminine emotional knowing while balancing emotional polarities."
     };
-    return emotionalEffects[color] || emotionalEffects["Purple"];
+    return emotionalEffects[color] || `${color} energy influences emotional states through specific vibrational frequencies, creating unique emotional atmospheres that support healing, transformation, and consciousness expansion through distinctive color therapy interactions.`;
   };
 
   const getSpiritualInfluence = (color: string): string => {
@@ -401,7 +464,7 @@ export default function ObjectAnalysis() {
       "Gold": "Enhances spiritual mastery and connection to divine wisdom while promoting enlightenment experiences. Supports advanced spiritual practices, spiritual teaching abilities, and transmission of cosmic spiritual knowledge while connecting to divine intelligence.",
       "Silver": "Enhances psychic spiritual abilities and connection to lunar spiritual wisdom. Supports dream spiritual work, psychic spiritual development, and feminine spiritual practices while connecting to lunar spiritual consciousness."
     };
-    return spiritualEffects[color] || spiritualEffects["Purple"];
+    return spiritualEffects[color] || `${color} energy facilitates unique spiritual experiences through specific vibrational frequencies, opening portals to higher consciousness and enhancing spiritual development through distinctive metaphysical pathways and divine connections.`;
   };
 
   const getOptimalPlacement = (color: string): string[] => {
