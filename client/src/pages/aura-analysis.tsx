@@ -2953,36 +2953,36 @@ export default function AuraAnalysis() {
         startX: centerX, 
         startY: centerY - personHeight * 0.3, 
         direction: { x: 0, y: -1 },
-        spread: width * 1.2,
+        spread: width * 0.9,
         name: 'crown',
-        density: 65 // Significantly increased for denser coverage
+        density: 40 // Increased density for better visibility
       },
       { 
         color: colors.receivingRGB, 
         startX: centerX + personWidth * 0.3, 
         startY: centerY, 
         direction: { x: 1, y: 0 },
-        spread: height * 1.2,
+        spread: height * 0.9,
         name: 'right',
-        density: 65
+        density: 40
       },
       { 
         color: colors.givingRGB, 
         startX: centerX - personWidth * 0.3, 
         startY: centerY, 
         direction: { x: -1, y: 0 },
-        spread: height * 1.2,
+        spread: height * 0.9,
         name: 'left',
-        density: 65
+        density: 40
       },
       { 
         color: colors.personalityRGB, 
         startX: centerX, 
         startY: centerY + personHeight * 0.3, 
         direction: { x: 0, y: 1 },
-        spread: width * 1.2,
+        spread: width * 0.9,
         name: 'base',
-        density: 55
+        density: 30
       }
     ];
 
@@ -2993,35 +2993,32 @@ export default function AuraAnalysis() {
         // Create flowing smoke trail that extends to image edges
         const trailPoints = [];
         const maxDistance = Math.max(width, height);
-        const segments = 50 + Math.floor(seededRandom() * 30); // More segments for smoother flow
+        const segments = 35 + Math.floor(seededRandom() * 20);
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
-          const distance = maxDistance * progress * 1.4; // Extended further for edge coverage
+          const distance = maxDistance * progress * 1.2; // Extended distance beyond image bounds
           
-          // Enhanced turbulence for more natural smoke movement
-          const turbulenceX = Math.sin(progress * Math.PI * 12 + zoneIndex + wisp) * 120 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 9 + zoneIndex + wisp) * 90 * progress;
+          // Add natural turbulence and wind effects
+          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 80 * progress;
+          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 60 * progress;
           
-          // Add swirling motion for more realistic smoke
-          const swirl = Math.sin(progress * Math.PI * 4 + wisp) * 40 * progress;
-          
-          // Calculate spread with increased coverage
-          const spread = (seededRandom() - 0.5) * zone.spread * (1.0 + progress * 1.2);
+          // Calculate spread based on zone to fill entire image including edges
+          const spread = (seededRandom() - 0.5) * zone.spread * (0.8 + progress * 0.8);
           
           const smokeX = zone.startX + 
                         zone.direction.x * distance + 
-                        (zone.direction.y !== 0 ? spread + swirl : turbulenceX);
+                        (zone.direction.y !== 0 ? spread : turbulenceX);
           const smokeY = zone.startY + 
                         zone.direction.y * distance + 
-                        (zone.direction.x !== 0 ? spread + swirl : turbulenceY);
+                        (zone.direction.x !== 0 ? spread : turbulenceY);
           
-          // Extended bounds for better edge coverage
-          const clampedX = Math.max(-80, Math.min(width + 80, smokeX));
-          const clampedY = Math.max(-80, Math.min(height + 80, smokeY));
+          // Allow smoke to extend to and beyond image edges - clamp to bounds
+          const clampedX = Math.max(-50, Math.min(width + 50, smokeX));
+          const clampedY = Math.max(-50, Math.min(height + 50, smokeY));
           
-          // More lenient face area protection
-          if (clampedX >= -40 && clampedX <= width + 40 && clampedY >= -40 && clampedY <= height + 40) {
+          // Check if point is within extended bounds and not in face area
+          if (clampedX >= -20 && clampedX <= width + 20 && clampedY >= -20 && clampedY <= height + 20) {
             const inFaceArea = clampedX >= faceX && clampedX <= faceX + faceWidth &&
                               clampedY >= faceY && clampedY <= faceY + faceHeight;
             
@@ -3225,34 +3222,27 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 800 + Math.floor(energyLevel * 80); // Doubled for denser coverage
+    const baseSmokeDensity = 400 + Math.floor(energyLevel * 40); // Reduced density
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Create multiple layers of smoke for depth and density
-    for (let layer = 0; layer < 3; layer++) {
-      for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
-        const colorDensity = Math.floor(baseSmokeDensity / 4);
-        const smokeColor = allColors[colorIndex];
+    // Create equal distribution for each of the 4 colors with proper transparency
+    for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
+      const colorDensity = Math.floor(baseSmokeDensity / 4);
+      const smokeColor = allColors[colorIndex];
+      
+      for (let i = 0; i < colorDensity; i++) {
+        const smokeX = seededRandom() * width;
+        const smokeY = seededRandom() * height;
         
-        for (let i = 0; i < colorDensity; i++) {
-          const smokeX = seededRandom() * width;
-          const smokeY = seededRandom() * height;
+        // Avoid face area
+        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                          smokeY >= faceY && smokeY <= faceY + faceHeight;
+        
+        if (!inFaceArea) {
+          const smokeSize = 20 + seededRandom() * 60; // Smaller particles
+          const smokeOpacity = 0.06 + seededRandom() * 0.096; // Increased by 20% from 0.05 and 0.08
           
-          // Avoid face area
-          const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                            smokeY >= faceY && smokeY <= faceY + faceHeight;
-          
-          if (!inFaceArea) {
-            // Larger particles for denser effect
-            const smokeSize = 40 + seededRandom() * 100 + layer * 20;
-            const smokeOpacity = (0.08 + seededRandom() * 0.12) * (1 - layer * 0.3);
-            
-            // Add slight offset for each layer to create depth
-            const offsetX = smokeX + (seededRandom() - 0.5) * 30;
-            const offsetY = smokeY + (seededRandom() - 0.5) * 30;
-            
-            drawNaturalSmoke(ctx, offsetX, offsetY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.8);
-          }
+          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
         }
       }
     }
@@ -3406,51 +3396,40 @@ export default function AuraAnalysis() {
     opacity: number,
     progress: number
   ) => {
-    // Use soft-light blend mode for better color mixing
-    ctx.globalCompositeOperation = 'soft-light';
+    // Create organic, wispy smoke gradient with increased opacity for better visibility
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
     
-    // Create multiple overlapping particles for density
-    for (let layer = 0; layer < 2; layer++) {
-      const layerSize = size * (1 - layer * 0.2);
-      const layerOpacity = opacity * (1 - layer * 0.4);
-      
-      // Create organic, wispy smoke gradient with enhanced opacity
-      const gradient = ctx.createRadialGradient(
-        x + (Math.random() - 0.5) * 20, 
-        y + (Math.random() - 0.5) * 20, 
-        0, 
-        x, y, layerSize
-      );
-      
-      // Enhanced opacity for better visibility
-      const baseOpacity = Math.min(0.25, layerOpacity * 0.5);
-      gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity})`);
-      gradient.addColorStop(0.2, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity * 0.9})`);
-      gradient.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity * 0.6})`);
-      gradient.addColorStop(0.8, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    // Use original colors with enhanced visibility
+    const smokeR = rgb.r;
+    const smokeG = rgb.g;
+    const smokeB = rgb.b;
     
-    // Add wispy tendrils for enhanced realism
-    if (progress < 0.9 && size > 40) {
-      const tendrilCount = 3 + Math.floor(size / 50);
+    // Create natural smoke density gradient with 20% increased opacity
+    const baseOpacity = Math.min(0.18, opacity * 0.36); // Increased by 20% from 0.15 and 0.3
+    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity})`);
+    gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.7})`);
+    gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.3})`);
+    gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add subtle wispy tendrils for realism with increased opacity
+    if (progress < 0.8 && size > 30) {
+      const tendrilCount = 2 + Math.floor(size / 60);
       for (let t = 0; t < tendrilCount; t++) {
-        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.3;
-        const tendrilLength = size * 0.8;
+        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.5;
+        const tendrilLength = size * 0.6;
         const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
         const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
-        const tendrilSize = size * 0.4;
+        const tendrilSize = size * 0.3;
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        const tendrilOpacity = opacity * 0.6;
-        tendrilGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${tendrilOpacity})`);
-        tendrilGradient.addColorStop(0.6, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${tendrilOpacity * 0.3})`);
-        tendrilGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+        const tendrilOpacity = baseOpacity * 0.48; // Increased by 20% from 0.4
+        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
+        tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
         
         ctx.fillStyle = tendrilGradient;
         ctx.beginPath();
@@ -3458,59 +3437,37 @@ export default function AuraAnalysis() {
         ctx.fill();
       }
     }
-    
-    // Reset blend mode
-    ctx.globalCompositeOperation = 'source-over';
   };
 
-  // Function to draw enhanced smoke trails with larger, denser particles
+  // Function to draw smooth smoke trails with enhanced visibility
   const drawSmokeTrail = (
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
     color: { r: number, g: number, b: number },
     seededRandom: () => number
   ) => {
-    // Use multiply blend mode for better color mixing
-    ctx.globalCompositeOperation = 'multiply';
-    
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      // Significantly larger particles for denser effect
-      const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
-      const baseOpacity = 0.18 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.3);
+      const smokeSize = 30 + seededRandom() * 45 * (1 - point.progress * 0.4);
+      const baseOpacity = 0.096 * (1 - point.progress * 0.7) * (0.6 + seededRandom() * 0.4); // Increased by 20% from 0.08
       
-      // Create multiple overlapping particles for density
-      for (let layer = 0; layer < 3; layer++) {
-        const layerOffset = layer * 15;
-        const layerOpacity = baseOpacity * (1 - layer * 0.3);
-        const layerSize = smokeSize - layerOffset;
-        
-        if (layerSize > 0) {
-          // Create smooth gradient with better color blending
-          const gradient = ctx.createRadialGradient(
-            point.x + (seededRandom() - 0.5) * 10, 
-            point.y + (seededRandom() - 0.5) * 10, 
-            0,
-            point.x, point.y, layerSize
-          );
-          
-          // Enhanced color stops for smoother transitions
-          gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
-          gradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.8})`);
-          gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.4})`);
-          gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-          
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, layerSize, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      // Create natural smoke gradient with enhanced opacity
+      const gradient = ctx.createRadialGradient(
+        point.x, point.y, 0,
+        point.x, point.y, smokeSize
+      );
+      
+      // Use original colors with enhanced visibility
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
+      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.6})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, smokeSize, 0, Math.PI * 2);
+      ctx.fill();
     });
-    
-    // Reset blend mode
-    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to create subtle atmospheric haze
