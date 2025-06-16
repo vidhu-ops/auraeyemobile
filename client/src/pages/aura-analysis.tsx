@@ -2924,6 +2924,42 @@ export default function AuraAnalysis() {
     createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
   };
 
+  // Function to create clear face area ensuring complete visibility of facial features
+  const createFaceClearanceZone = (
+    ctx: CanvasRenderingContext2D,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number
+  ) => {
+    // Define comprehensive face clearance area
+    const faceClearanceX = centerX - personWidth * 0.6;
+    const faceClearanceY = centerY - personHeight * 0.8;
+    const faceClearanceWidth = personWidth * 1.2;
+    const faceClearanceHeight = personHeight * 1.0;
+    
+    // Use destination-over to ensure original image shows through in face area
+    ctx.globalCompositeOperation = 'destination-over';
+    
+    // Create a subtle gradient that fades smoke away from face area
+    const clearanceGradient = ctx.createRadialGradient(
+      centerX, centerY - personHeight * 0.2, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.2, // Inner clear radius
+      centerX, centerY - personHeight * 0.2, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8 // Outer fade radius
+    );
+    
+    clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
+    clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)'); // Light fade
+    clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
+    
+    ctx.fillStyle = clearanceGradient;
+    ctx.fillRect(faceClearanceX, faceClearanceY, faceClearanceWidth, faceClearanceHeight);
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
   // Function to create natural smoke wisps that flow around the person
   const createNaturalSmokeWisps = (
     ctx: CanvasRenderingContext2D,
@@ -3049,9 +3085,6 @@ export default function AuraAnalysis() {
     
     // Add dense atmospheric haze that fills the entire field for mystical effect
     createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Create clear face area to ensure complete visibility of facial features
-    createFaceClearanceZone(ctx, centerX, centerY, personWidth, personHeight);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
