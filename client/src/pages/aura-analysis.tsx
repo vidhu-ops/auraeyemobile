@@ -2739,11 +2739,11 @@ export default function AuraAnalysis() {
           const givingRGB = hexToRGB(detectedColors.giving);
           const personalityRGB = hexToRGB(detectedColors.personality);
           
-          // Person detection boundaries (estimate human silhouette)
+          // Person detection boundaries (estimate human silhouette with face protection)
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const personWidth = canvas.width * 0.4;
-          const personHeight = canvas.height * 0.6;
+          const personWidth = canvas.width * 0.3; // Reduced to better protect central face area
+          const personHeight = canvas.height * 0.5; // Reduced to focus protection on upper body/face
           
           // Create smokey particle aura around the person
           createSmokeyAuraParticles(ctx, canvas.width, canvas.height, {
@@ -2937,11 +2937,11 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Define face protection area - smaller to allow more smoke coverage
-    const faceX = centerX - personWidth * 0.4;
-    const faceY = centerY - personHeight * 0.5;
-    const faceWidth = personWidth * 0.8;
-    const faceHeight = personHeight * 0.6;
+    // Define comprehensive face protection area to ensure complete face visibility
+    const faceX = centerX - personWidth * 0.6;
+    const faceY = centerY - personHeight * 0.7;
+    const faceWidth = personWidth * 1.2;
+    const faceHeight = personHeight * 1.0;
 
     // Create full-image background smoke base with enhanced density
     createFullImageSmokeBase(ctx, width, height, colors, energyLevel * 1.5, seededRandom, faceX, faceY, faceWidth, faceHeight);
@@ -3049,6 +3049,9 @@ export default function AuraAnalysis() {
     
     // Add dense atmospheric haze that fills the entire field for mystical effect
     createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Create clear face area to ensure complete visibility of facial features
+    createFaceClearanceZone(ctx, centerX, centerY, personWidth, personHeight);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
@@ -3566,6 +3569,8 @@ export default function AuraAnalysis() {
       }
     });
   };
+
+
 
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
     if (!originalImageBase64) return;
