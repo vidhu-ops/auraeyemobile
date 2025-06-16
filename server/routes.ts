@@ -610,16 +610,16 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
 function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
   
-  // Add time-based and random variation for object analysis
-  const uploadTime = Date.now();
-  const timeVariation = uploadTime % 100000;
-  const randomComponent = Math.floor(Math.random() * 50000);
+  // For object analysis, we want consistency for same image but diversity across different images
+  // Use only image-based entropy without time/random components for consistency
   
-  // Extract multiple seeds from different hash segments
+  // Extract multiple seeds from different hash segments for image-specific diversity
   const seed1 = parseInt(hash.substring(0, 8), 16);
   const seed2 = parseInt(hash.substring(8, 16), 16);
   const seed3 = parseInt(hash.substring(16, 24), 16);
   const seed4 = parseInt(hash.substring(24, 32), 16);
+  const seed5 = parseInt(hash.substring(32, 40), 16);
+  const seed6 = parseInt(hash.substring(40, 48), 16);
   
   // Enhanced object types with more variety
   const objectTypes = [
@@ -655,14 +655,15 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     ["Illuminating", "Enlightening", "Wise"]
   ];
   
-  // Enhanced selection logic with multiple entropy sources
+  // Enhanced selection logic using only image-based entropy for consistency
   const imageSize = imageBuffer.length;
   const sizeVariation = imageSize % 10000;
   
-  // Create diverse seeds using all available entropy
-  const complexSeed1 = (seed1 ^ seed2 ^ timeVariation ^ randomComponent) + sizeVariation;
-  const complexSeed2 = (seed2 ^ seed3 ^ (timeVariation << 2) ^ (randomComponent >>> 3)) + (imageSize % 7919);
-  const complexSeed3 = (seed3 ^ seed4 ^ (timeVariation >>> 1) ^ (randomComponent << 1)) + (uploadTime % 5003);
+  // Create diverse seeds using image-based entropy only (no time/random for consistency)
+  const complexSeed1 = (seed1 ^ seed2 ^ seed3) + sizeVariation;
+  const complexSeed2 = (seed2 ^ seed3 ^ seed4) + (imageSize % 7919);
+  const complexSeed3 = (seed3 ^ seed4 ^ seed5) + (seed6 % 5003);
+  const complexSeed4 = (seed4 ^ seed5 ^ seed6) + (imageSize % 3001);
   
   // Avoid purple/violet family colors for diversity (indices 35-41 in the array)
   const avoidIndices = [35, 36, 37, 38, 39, 40]; // Amethyst, Lavender, Plum, Mauve, Periwinkle, Lilac
@@ -673,11 +674,11 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   
   // Force diversity by avoiding overused purple/violet colors
   if (avoidIndices.includes(auraColorIndex)) {
-    // Map to different color families
+    // Map to different color families using image-based seeds only
     const alternativeSeeds = [
       Math.abs(complexSeed1 + complexSeed2) % auraColors.length,
       Math.abs(complexSeed2 + complexSeed3) % auraColors.length,
-      Math.abs(complexSeed3 + timeVariation) % auraColors.length
+      Math.abs(complexSeed3 + complexSeed4) % auraColors.length
     ];
     
     // Find first non-purple alternative
@@ -889,6 +890,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Image hash cache for consistent results
   const imageHashCache = new Map<string, any>();
 
+  // Helper function to detect if image contains room/area/distant objects
+  function detectRoomOrAreaImage(imageBuffer: Buffer): boolean {
+    // Basic heuristics to detect room/area images:
+    // 1. Large file size (rooms tend to have more detail)
+    // 2. Complex color distribution (multiple objects/furniture)
+    // 3. Edge complexity (architectural features)
+    
+    const imageSize = imageBuffer.length;
+    const isLargeImage = imageSize > 500000; // 500KB threshold
+    
+    // Analyze color distribution complexity
+    let colorVariation = 0;
+    for (let i = 0; i < Math.min(1000, imageBuffer.length); i += 10) {
+      colorVariation += Math.abs(imageBuffer[i] - imageBuffer[Math.min(i + 5, imageBuffer.length - 1)]);
+    }
+    const hasHighColorVariation = colorVariation > 50000;
+    
+    // Analyze edge complexity (many edges suggest room/architecture)
+    let edgeComplexity = 0;
+    for (let i = 0; i < Math.min(500, imageBuffer.length); i += 20) {
+      edgeComplexity += Math.abs(imageBuffer[i] - imageBuffer[Math.min(i + 10, imageBuffer.length - 1)]);
+    }
+    const hasHighEdgeComplexity = edgeComplexity > 25000;
+    
+    // Room/area detection: large size + high color variation + high edge complexity
+    return isLargeImage && hasHighColorVariation && hasHighEdgeComplexity;
+  }
+
   // Aura Analysis API endpoint
   app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
     try {
@@ -897,6 +926,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let imgBuffer: Buffer;
       
       if (req.file) {
+        // Check if this is a room/area image that should be redirected to object analysis
+        if (detectRoomOrAreaImage(req.file.buffer)) {
+          return res.status(400).json({ 
+            message: "Room and area images should be analyzed using Object Aura Analysis instead. Please use the Object Analysis feature for images containing rooms, distant objects, or architectural spaces.",
+            redirectTo: "object-analysis"
+          });
+        }
         // If image was uploaded as file
         imageData = req.file.buffer.toString("base64");
         imgBuffer = req.file.buffer;
