@@ -512,7 +512,13 @@ export default function ObjectAnalysis() {
         "Keep in areas dedicated to spiritual study or wisdom sharing"
       ]
     };
-    return placementTips[color] || placementTips["Purple"];
+    return placementTips[color] || [
+      `Place ${color.toLowerCase()} objects in meditation spaces for enhanced spiritual connection`,
+      `Position near windows to amplify ${color.toLowerCase()} energy with natural light`,
+      `Keep in bedrooms for nighttime ${color.toLowerCase()} energy influence`,
+      `Display in study areas to enhance ${color.toLowerCase()} consciousness frequencies`,
+      `Place on altars or sacred spaces for ${color.toLowerCase()} spiritual activation`
+    ];
   };
 
   // Helper to get CSS color class from aura color
