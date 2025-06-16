@@ -2987,7 +2987,7 @@ export default function AuraAnalysis() {
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = zone.density + Math.floor(energyLevel * 4);
+      const smokeWisps = zone.density * 3 + Math.floor(energyLevel * 12); // Triple density for mystical effect
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
         // Create flowing smoke trail that extends to image edges
@@ -3200,10 +3200,10 @@ export default function AuraAnalysis() {
                           coords.y >= faceY && coords.y <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 35 + seededRandom() * 80;
-          const smokeOpacity = 0.12 + seededRandom() * 0.15; // Higher opacity for clear visibility
+          const smokeSize = 60 + seededRandom() * 120; // Much larger smoke particles
+          const smokeOpacity = 0.18 + seededRandom() * 0.25; // Higher opacity for mystical density
           
-          drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.7);
+          drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
         }
       }
     });
@@ -3222,30 +3222,40 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const baseSmokeDensity = 400 + Math.floor(energyLevel * 40); // Reduced density
+    // Dramatically increased density for much thicker mystical smoke
+    const baseSmokeDensity = 1200 + Math.floor(energyLevel * 120);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Create equal distribution for each of the 4 colors with proper transparency
-    for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
-      const colorDensity = Math.floor(baseSmokeDensity / 4);
-      const smokeColor = allColors[colorIndex];
-      
-      for (let i = 0; i < colorDensity; i++) {
-        const smokeX = seededRandom() * width;
-        const smokeY = seededRandom() * height;
+    // Create multiple layers of smoke for depth and mystical appearance
+    const smokeLayers = [
+      { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.12, 0.24] }, // Large background layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [50, 120], opacity: [0.15, 0.28] }, // Medium layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [25, 80], opacity: [0.18, 0.32] }   // Detail layer
+    ];
+    
+    smokeLayers.forEach(layer => {
+      // Create equal distribution for each of the 4 colors
+      for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
+        const colorDensity = Math.floor(layer.density / 4);
+        const smokeColor = allColors[colorIndex];
         
-        // Avoid face area
-        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                          smokeY >= faceY && smokeY <= faceY + faceHeight;
-        
-        if (!inFaceArea) {
-          const smokeSize = 20 + seededRandom() * 60; // Smaller particles
-          const smokeOpacity = 0.06 + seededRandom() * 0.096; // Increased by 20% from 0.05 and 0.08
+        for (let i = 0; i < colorDensity; i++) {
+          const smokeX = seededRandom() * width;
+          const smokeY = seededRandom() * height;
           
-          drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.5);
+          // Avoid face area
+          const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                            smokeY >= faceY && smokeY <= faceY + faceHeight;
+          
+          if (!inFaceArea) {
+            const smokeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
+            const smokeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
+            
+            drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.8);
+          }
         }
       }
-    }
+    });
   };
 
   // Function to create dense perimeter smoke with color-specific zones
@@ -3261,7 +3271,7 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const perimeterDensity = 60 + Math.floor(energyLevel * 20); // Much lower density
+    const perimeterDensity = 180 + Math.floor(energyLevel * 60); // Dramatically increased density
     
     // Assign specific colors to specific zones for better visibility
     const colorZones = [
@@ -3396,39 +3406,57 @@ export default function AuraAnalysis() {
     opacity: number,
     progress: number
   ) => {
-    // Create organic, wispy smoke gradient with increased opacity for better visibility
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+    // Create multiple layered smoke effects for dense, mystical appearance
+    const smokeLayers = [
+      { sizeMultiplier: 1.2, opacityMultiplier: 0.8, blur: 0 },     // Main dense layer
+      { sizeMultiplier: 0.8, opacityMultiplier: 1.0, blur: 2 },     // Core bright layer
+      { sizeMultiplier: 1.5, opacityMultiplier: 0.5, blur: 4 }      // Outer haze layer
+    ];
     
-    // Use original colors with enhanced visibility
     const smokeR = rgb.r;
     const smokeG = rgb.g;
     const smokeB = rgb.b;
     
-    // Create natural smoke density gradient with 20% increased opacity
-    const baseOpacity = Math.min(0.18, opacity * 0.36); // Increased by 20% from 0.15 and 0.3
-    gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity})`);
-    gradient.addColorStop(0.4, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.7})`);
-    gradient.addColorStop(0.8, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${baseOpacity * 0.3})`);
-    gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+    smokeLayers.forEach(layer => {
+      const layerSize = size * layer.sizeMultiplier;
+      const layerOpacity = Math.min(0.35, opacity * 0.7 * layer.opacityMultiplier); // Much higher opacity
+      
+      // Apply blur for atmospheric effect
+      if (layer.blur > 0) {
+        ctx.filter = `blur(${layer.blur}px)`;
+      }
+      
+      // Create dense smoke gradient
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+      gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity})`);
+      gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.85})`);
+      gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
+      gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
+      gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Reset filter
+      ctx.filter = 'none';
+    });
     
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Add subtle wispy tendrils for realism with increased opacity
-    if (progress < 0.8 && size > 30) {
-      const tendrilCount = 2 + Math.floor(size / 60);
+    // Add dense wispy tendrils for mystical billowing effect
+    if (size > 25) {
+      const tendrilCount = 3 + Math.floor(size / 40);
       for (let t = 0; t < tendrilCount; t++) {
-        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.5;
-        const tendrilLength = size * 0.6;
+        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.3;
+        const tendrilLength = size * (0.8 + Math.sin(progress * Math.PI * 4) * 0.3);
         const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
         const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
-        const tendrilSize = size * 0.3;
+        const tendrilSize = size * (0.4 + Math.sin(progress * Math.PI * 6) * 0.2);
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        const tendrilOpacity = baseOpacity * 0.48; // Increased by 20% from 0.4
+        const tendrilOpacity = Math.min(0.25, opacity * 0.6); // Higher tendril opacity
         tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
+        tendrilGradient.addColorStop(0.7, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity * 0.3})`);
         tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
         
         ctx.fillStyle = tendrilGradient;
