@@ -1450,72 +1450,76 @@ export default function AuraAnalysis() {
   // Comprehensive aura placement interpretations for four-zone system
   const getGivingEnergyInterpretation = (color: string): string => {
     const givingInterpretations: Record<string, string> = {
-      'Red': 'Giving Zone Red - You give passionate life force energy, offering protective strength, physical vitality, and survival wisdom to others through direct action and courageous service.',
-      'Orange': 'Giving Zone Orange - You give creative joy and emotional warmth, sharing artistic inspiration, sexual vitality, and creative solutions that uplift others through expressive generosity.',
-      'Yellow': 'Giving Zone Yellow - You give mental clarity and confident wisdom, offering intellectual guidance, personal empowerment, and solar plexus strength that illuminates others\' paths.',
-      'Green': 'Giving Zone Green - You give unconditional love and healing energy, providing heart-centered compassion, natural healing abilities, and nurturing support that restores others.',
-      'Blue': 'Giving Zone Blue - You give truthful communication and peaceful wisdom, offering authentic voice, clear guidance, and throat chakra truth that helps others express honestly.',
-      'Indigo': 'Giving Zone Indigo - You give psychic insights and intuitive guidance, sharing third eye wisdom, spiritual perception, and mystical understanding that awakens others\' inner knowing.',
-      'Violet': 'Giving Zone Violet - You give spiritual connection and divine wisdom, offering crown chakra enlightenment, cosmic consciousness, and spiritual guidance that elevates others.',
-      'Purple': 'Giving Zone Purple - You give mystical transformation and ancient wisdom, sharing magical insights, spiritual alchemy, and transformative power that initiates others into higher mysteries.',
-      'Pink': 'Giving Zone Pink - You give unconditional love and emotional healing, offering heart chakra compassion, nurturing care, and pure love that heals others\' emotional wounds.',
-      'White': 'Giving Zone White - You give pure divine energy and spiritual protection, offering blessed light, angelic guidance, and sacred purification that sanctifies others\' spiritual journey.',
-      'Gold': 'Giving Zone Gold - You give enlightened wisdom and spiritual mastery, offering ancient knowledge, divine teaching, and master-level guidance that empowers others\' spiritual evolution.',
-      'Silver': 'Giving Zone Silver - You give lunar intuition and psychic protection, offering moon wisdom, emotional clarity, and psychic shielding that guides others through emotional depths.'
+      'Red': 'Giving Zone Red - Goal-oriented, passionate, strong, energized and grounded in goals. You give dynamic life force energy through decisive action, bringing movement into life while staying rooted and grounding spiritual gifts with practical living.',
+      'Orange': 'Giving Zone Orange - Creative, joyful, playful, sexually alive, loves experimenting, pleasure and life. You give creative vitality through expressive generosity, channeling creativity in consistent and meaningful ways while balancing drive with emotional regulation.',
+      'Yellow': 'Giving Zone Yellow - Focused on achieving, leading, or being best at capable. You give confident mental clarity and personal empowerment, taking leadership action and pushing forward with confidence while maintaining radiant, confident energy.',
+      'Green': 'Giving Zone Green - Compassionate, healer energy, emotionally balanced and nurturing. You give heart-centered healing and compassionate wisdom, setting boundaries while nurturing others and balancing love with self-worth and independence.',
+      'Pink': 'Giving Zone Pink - Loving, emotionally open, sweet but grounded in truth. You give unconditional love and emotional healing through heart chakra compassion, offering nurturing care and pure love that heals emotional wounds.',
+      'Blue': 'Giving Zone Blue - Focused on communicating, inspirational and focus. You give truthful communication and peaceful wisdom through authentic voice, offering clear guidance and throat chakra truth that helps others express honestly.',
+      'Indigo': 'Giving Zone Indigo - Focused on intuitive abilities, psychic gifts, bringing visionary focus. You give psychic insights and intuitive guidance, sharing third eye wisdom and mystical understanding that awakens others\' inner knowing.',
+      'Violet': 'Giving Zone Violet - Highly spiritual, visionary, deeply connected to purpose and divine calling. You give spiritual connection and divine wisdom, offering crown chakra enlightenment and cosmic consciousness that elevates others.',
+      'Brown': 'Giving Zone Brown - Humble, grounded, connected to nature and body, down-to-earth wisdom. You give practical earthly wisdom and grounding stability, helping others stay connected to practical living while maintaining spiritual presence.',
+      'Silver': 'Giving Zone Silver - Psychic, increasing divine wisdom and learning. You give lunar intuition and psychic protection, offering moon wisdom and emotional clarity that guides others through emotional depths.',
+      'Gold': 'Giving Zone Gold - Learning, connecting new abilities and clarity. You give enlightened wisdom and spiritual mastery, offering ancient knowledge and divine teaching that empowers others\' spiritual evolution.',
+      'White': 'Giving Zone White - Spiritually pure, transcendent, deeply sensitive, universal connection. You give pure divine energy and spiritual protection, offering blessed light and sacred purification that sanctifies others\' spiritual journey.',
+      'Purple': 'Giving Zone Purple - You give mystical transformation and ancient wisdom, sharing magical insights and spiritual alchemy that initiates others into higher mysteries.'
     };
     return givingInterpretations[color] || `Giving Zone ${color} - You give unique ${color.toLowerCase()} energy that flows outward to support and uplift others through your natural spiritual gifts and energetic offerings.`;
   };
 
   const getReceivingEnergyInterpretation = (color: string): string => {
     const receivingInterpretations: Record<string, string> = {
-      'Red': 'Receiving Zone Red - You receive grounding earth energy and physical vitality, attracting survival support, protective strength, and life force energy that stabilizes your foundation.',
-      'Orange': 'Receiving Zone Orange - You receive creative inspiration and emotional joy, attracting artistic opportunities, sexual vitality, and creative collaborations that fuel your expressive nature.',
-      'Yellow': 'Receiving Zone Yellow - You receive mental stimulation and confidence boosters, attracting intellectual opportunities, leadership chances, and solar plexus empowerment that enhances your personal power.',
-      'Green': 'Receiving Zone Green - You receive healing energy and heart-centered love, attracting therapeutic opportunities, compassionate relationships, and natural healing that restores your emotional balance.',
-      'Blue': 'Receiving Zone Blue - You receive truthful communication and peaceful energy, attracting honest relationships, clear guidance, and throat chakra support that enhances your authentic expression.',
-      'Indigo': 'Receiving Zone Indigo - You receive psychic insights and spiritual guidance, attracting intuitive messages, mystical experiences, and third eye activation that develops your spiritual perception.',
-      'Violet': 'Receiving Zone Violet - You receive divine guidance and cosmic consciousness, attracting spiritual teachers, crown chakra activation, and enlightenment experiences that elevate your awareness.',
-      'Purple': 'Receiving Zone Purple - You receive mystical wisdom and transformative energy, attracting magical experiences, ancient knowledge, and alchemical transformation that initiates spiritual evolution.',
-      'Pink': 'Receiving Zone Pink - You receive unconditional love and emotional nurturing, attracting heart-healing relationships, compassionate support, and pure love that fills your emotional needs.',
-      'White': 'Receiving Zone White - You receive divine protection and pure spiritual energy, attracting angelic guidance, sacred blessings, and divine intervention that sanctifies your spiritual path.',
-      'Gold': 'Receiving Zone Gold - You receive enlightened wisdom and spiritual mastery, attracting master teachers, ancient knowledge, and divine wisdom that accelerates your spiritual development.',
-      'Silver': 'Receiving Zone Silver - You receive lunar wisdom and psychic sensitivity, attracting moon energy, emotional insights, and psychic protection that enhances your intuitive abilities.'
+      'Red': 'Receiving Zone Red - Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness, fragmentation, lack of ambition, heaviness, resistance to change. You receive grounding support to transform reactive energy into purposeful action.',
+      'Orange': 'Receiving Zone Orange - Restlessness, overindulgence, scattered energy, addicted to stimulation. You receive creative inspiration and emotional balance, attracting artistic opportunities that help channel scattered energy into focused creativity.',
+      'Yellow': 'Receiving Zone Yellow - Increasing arrogance, impatience, being challenged to lead or perform, inflexibility, taking on too many challenges, overwhelm. You receive mental clarity and confidence support, attracting leadership opportunities that enhance personal empowerment.',
+      'Green': 'Receiving Zone Green - Overgiving, energy depletion, putting others before self to a harmful degree, codependency, dependency, fear of rejection or abandonment. You receive healing energy and heart-centered love, attracting therapeutic relationships that restore emotional balance.',
+      'Pink': 'Receiving Zone Pink - Over-sensitivity, neediness, fear of not being loved, desperate to be liked, difficulty setting boundaries. You receive unconditional love and emotional nurturing, attracting heart-healing relationships that fill emotional needs.',
+      'Blue': 'Receiving Zone Blue - Resistance to speaking up, not communicating, difficulty being in the body, loneliness, reserved, lack of self-expression, being ignored. You receive truthful communication support, attracting honest relationships that enhance authentic expression.',
+      'Indigo': 'Receiving Zone Indigo - Surrounded by spiritually activated or highly sensitive people, recognized by others as powerful or spiritually influential. You receive psychic insights and spiritual guidance, attracting intuitive experiences that develop spiritual perception.',
+      'Violet': 'Receiving Zone Violet - Attracting spiritual guidance, being divinely supported by environment, connected to cosmic wisdom, receiving divine love and intuition. You receive divine guidance and cosmic consciousness, attracting spiritual teachers that elevate awareness.',
+      'Brown': 'Receiving Zone Brown - Receiving grounding or responsibilities from others, feeling pressure to succeed, being challenged to lead or perform. You receive practical earthly wisdom and stability support from your environment.',
+      'Silver': 'Receiving Zone Silver - Receiving higher guidance, sensitive to unseen messages, having psychic abilities or dreams. You receive lunar wisdom and psychic sensitivity, attracting intuitive insights that enhance psychic abilities.',
+      'Gold': 'Receiving Zone Gold - Absorbing emotions, energy of others, or angelic frequencies, receiving spiritual wisdom and divine guidance. You receive enlightened wisdom and spiritual mastery from master teachers and divine sources.',
+      'White': 'Receiving Zone White - Energetically vulnerable, exigent tendencies, difficulty being grounded, absorbing others\' energy easily. You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
+      'Purple': 'Receiving Zone Purple - You receive mystical wisdom and transformative energy, attracting magical experiences and ancient knowledge that initiate spiritual evolution.'
     };
     return receivingInterpretations[color] || `Receiving Zone ${color} - You receive unique ${color.toLowerCase()} energy from your environment that nourishes and supports your spiritual growth through cosmic alignment.`;
   };
 
   const getThinkingEnergyInterpretation = (color: string): string => {
     const thinkingInterpretations: Record<string, string> = {
-      'Red': 'Thinking Zone Red - Your mental processes are driven by passionate conviction and survival instinct, creating thoughts focused on action, protection, and physical manifestation of ideas.',
-      'Orange': 'Thinking Zone Orange - Your mental patterns flow with creative enthusiasm and emotional intelligence, generating thoughts that blend artistic vision with practical creative solutions.',
-      'Yellow': 'Thinking Zone Yellow - Your thought processes shine with mental clarity and confident logic, creating ideas that illuminate truth and empower personal authority through intellectual mastery.',
-      'Green': 'Thinking Zone Green - Your mental energy flows through heart-centered wisdom and healing insight, generating thoughts that balance logic with compassion and practical healing solutions.',
-      'Blue': 'Thinking Zone Blue - Your thinking patterns resonate with truthful clarity and peaceful wisdom, creating thoughts that communicate authentically and express inner truth clearly.',
-      'Indigo': 'Thinking Zone Indigo - Your mental processes operate through intuitive knowing and psychic perception, generating thoughts that blend logic with mystical insight and spiritual understanding.',
-      'Violet': 'Thinking Zone Violet - Your thought patterns connect to divine wisdom and cosmic consciousness, creating ideas that transcend ordinary thinking and access spiritual enlightenment.',
-      'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating thoughts that transform reality through magical thinking and spiritual alchemy.',
-      'Pink': 'Thinking Zone Pink - Your thinking patterns flow through love-centered wisdom and emotional intelligence, creating thoughts that heal hearts and generate compassionate solutions.',
-      'White': 'Thinking Zone White - Your mental processes channel pure divine wisdom and sacred understanding, generating thoughts blessed with spiritual clarity and divine inspiration.',
-      'Gold': 'Thinking Zone Gold - Your thought patterns access enlightened wisdom and master-level understanding, creating ideas that carry ancient knowledge and spiritual authority.',
-      'Silver': 'Thinking Zone Silver - Your mental energy flows through lunar wisdom and psychic intelligence, generating thoughts that blend rational analysis with intuitive knowing.'
+      'Red': 'Thinking Zone Red - Taking action with purpose, guiding or mentoring others, acting from innocence, vulnerability or spiritual ideals. Your mental processes focus on purposeful action and spiritual guidance through direct engagement.',
+      'Orange': 'Thinking Zone Orange - Channeling energy, guiding others, or practicing intuition, thinking about creativity, sexuality, relationships or passion. Your thought patterns flow with creative energy and relationship wisdom, generating passionate solutions.',
+      'Yellow': 'Thinking Zone Yellow - Taking leadership action, pushing forward with confidence, actively processing problems, taking charge or being assertive. Your mental processes shine with leadership clarity and confident problem-solving through assertive thinking.',
+      'Green': 'Thinking Zone Green - Giving healing, nurturing others, or working in service roles, thinking about how to help others, nurturing, guiding or teaching. Your mental energy flows through healing wisdom and nurturing insight, generating compassionate service solutions.',
+      'Pink': 'Thinking Zone Pink - Experiencing gratitude, thinking about love, emotional healing, relationships, compassion or spiritual healing. Your thinking patterns flow through love-centered wisdom, creating heart-healing thoughts and emotional solutions.',
+      'Blue': 'Thinking Zone Blue - Taking practical steps, helping others or organizing life, organizing energy, guiding others, or practicing intuition. Your mental processes focus on practical organization and intuitive guidance through structured thinking.',
+      'Indigo': 'Thinking Zone Indigo - Taking practical steps, helping others or organizing life, organizing energy, guiding others, or practicing intuition. Your mental processes operate through psychic organization and spiritual guidance, blending intuition with practical wisdom.',
+      'Violet': 'Thinking Zone Violet - Spiritual downloads, deep inner wisdom, connection to divine truth, deep meditation or receiving cosmic information. Your thought patterns connect to divine downloads and cosmic consciousness, accessing spiritual enlightenment through meditation.',
+      'Brown': 'Thinking Zone Brown - Grounded mindset, focused on stability, and practical matters, receiving higher guidance, sensitive to unseen messages. Your mental energy channels practical grounding and earthly wisdom through stable, focused thinking.',
+      'Silver': 'Thinking Zone Silver - Receiving higher guidance, sensitive to unseen messages, tuning into spiritual information or higher dimensional wisdom. Your mental processes flow through higher guidance and psychic sensitivity, receiving dimensional wisdom.',
+      'Gold': 'Thinking Zone Gold - Divine thoughts, wisdom, teaching, spiritual mastery, receiving higher information or angelic frequencies. Your thought patterns access divine wisdom and spiritual mastery, channeling higher information and angelic guidance.',
+      'White': 'Thinking Zone White - Spiritual purity, thinking of higher dimensions of purity, learning to protect energy and feel safe in the physical world. Your mental processes channel pure spiritual wisdom, focusing on energetic protection and dimensional purity.',
+      'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating transformative thoughts through magical thinking and spiritual alchemy.'
     };
     return thinkingInterpretations[color] || `Thinking Zone ${color} - Your mental processes channel unique ${color.toLowerCase()} energy that creates distinctive thought patterns and cognitive approaches to life.`;
   };
 
   const getOverallEnergyInterpretation = (color: string): string => {
     const overallInterpretations: Record<string, string> = {
-      'Red': 'Overall Red Energy - Your fundamental life force emanates passionate vitality and survival strength, creating a powerful presence that attracts action-oriented experiences and protective relationships.',
-      'Orange': 'Overall Orange Energy - Your core essence radiates creative joy and emotional warmth, manifesting artistic opportunities, expressive relationships, and creative abundance in your life path.',
-      'Yellow': 'Overall Yellow Energy - Your essential nature shines with confident wisdom and mental clarity, attracting leadership opportunities, intellectual growth, and empowering life experiences.',
-      'Green': 'Overall Green Energy - Your foundational energy flows with unconditional love and healing wisdom, manifesting therapeutic relationships, natural abundance, and heart-centered life purpose.',
-      'Blue': 'Overall Blue Energy - Your core vibration resonates with truthful communication and peaceful wisdom, attracting authentic relationships, clear guidance, and honest life experiences.',
-      'Indigo': 'Overall Indigo Energy - Your essential frequency operates through psychic sensitivity and intuitive wisdom, manifesting mystical experiences, spiritual insights, and psychically guided life path.',
-      'Violet': 'Overall Violet Energy - Your fundamental essence connects to divine consciousness and spiritual enlightenment, attracting spiritual teachers, cosmic experiences, and enlightened life purpose.',
-      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences, spiritual alchemy, and transformative life initiations.',
-      'Pink': 'Overall Pink Energy - Your essential nature radiates unconditional love and emotional healing, attracting heart-centered relationships, nurturing experiences, and love-guided life path.',
-      'White': 'Overall White Energy - Your foundational frequency emanates pure divine light and spiritual protection, manifesting blessed experiences, angelic guidance, and sacred life purpose.',
-      'Gold': 'Overall Gold Energy - Your core essence channels enlightened wisdom and spiritual mastery, attracting master teachers, ancient wisdom, and spiritually authoritative life experiences.',
-      'Silver': 'Overall Silver Energy - Your essential vibration flows with lunar wisdom and psychic sensitivity, manifesting intuitive experiences, emotional depth, and psychically guided life journey.'
+      'Red': 'Overall Red Energy - Highly spiritual phase, embodying divine purpose and deeper alignment. Currently learning the integration of true emotional power while enhancing with new layers of confidence. This phase brings movement into life while staying rooted.',
+      'Orange': 'Overall Orange Energy - Healer presence with calm and heart-centered frequency, living boldly and with self-worth and independence. Channeling creativity in consistent and meaningful ways, balancing drive with emotional regulation.',
+      'Yellow': 'Overall Yellow Energy - Radiant, confident, strong-willed individual in active growth, joyful and magnetic energy with enthusiasm for life. Maintaining confident energy while processing personal empowerment and leadership development.',
+      'Green': 'Overall Green Energy - Healer presence with calm and heart-centered frequency, setting boundaries while nurturing others, balancing love with self-worth and independence. Living with authentic heart-centered wisdom and compassionate service.',
+      'Pink': 'Overall Pink Energy - Sweet and loving with emotional stability, currently progressing through new layers of intimacy and emotional confidence. Embodying heart-centered love while developing emotional resilience and authentic expression.',
+      'Blue': 'Overall Blue Energy - Mystic presence, sensitive and light-filled energy field, white presence combining with active life transformation. Currently developing authentic voice and truthful communication while maintaining spiritual sensitivity.',
+      'Indigo': 'Overall Indigo Energy - Deeply rooted energy, wise, nurturing and structured, being sensitive with light-filled energy field. Living with enhanced psychic abilities and spiritual perception while maintaining practical grounding.',
+      'Violet': 'Overall Violet Energy - Difficulty balancing spiritual connection with everyday life, trusting one\'s psychic abilities and living from intuition. Currently integrating divine consciousness with practical living while developing spiritual confidence.',
+      'Brown': 'Overall Brown Energy - Bringing movement into life while staying rooted, grounding spiritual gifts with practical living. Maintaining earth connection while developing spiritual presence and practical wisdom integration.',
+      'Silver': 'Overall Silver Energy - Learning to protect energy and feel safe in the physical world, enhanced intuitive abilities with emotional wisdom. Developing psychic protection while maintaining lunar sensitivity and emotional clarity.',
+      'Gold': 'Overall Gold Energy - Spiritually elevated being, sensitive and light-filled energy field, master teacher energy with ancient wisdom. Living with enlightened consciousness while maintaining spiritual authority and divine wisdom integration.',
+      'White': 'Overall White Energy - Learning to protect energy and feel safe in the physical world, spiritually elevated being with pure divine connection. Developing energetic boundaries while maintaining spiritual purity and divine alignment.',
+      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.'
     };
     return overallInterpretations[color] || `Overall ${color} Energy - Your fundamental life force carries unique ${color.toLowerCase()} vibration that shapes your spiritual path and life experiences through distinctive energetic resonance.`;
   };
@@ -5088,19 +5092,12 @@ export default function AuraAnalysis() {
                                           <p className="text-sm text-purple-600">Crown Energy - How You Think</p>
                                         </div>
                                       </div>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        This energy above your head shows your thinking patterns and mental approach to life. 
-                                        {getPositiveDescription(result.dominantColor)}
-                                      </p>
                                       <div className="mt-3 p-2 bg-purple-50 rounded border-l-4 border-purple-300">
                                         <p className="text-sm font-medium text-purple-800">
-                                          '{(() => {
+                                          {getThinkingEnergyInterpretation((() => {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.thinking);
-                                          })()}': '{getThinkingEnergyMeaning((() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.thinking);
-                                          })())}'
+                                          })())}
                                         </p>
                                       </div>
                                     </div>
