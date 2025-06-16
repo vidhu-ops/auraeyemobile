@@ -259,6 +259,11 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const seed4 = parseInt(hash.substring(24, 32), 16);
   const seed5 = parseInt(hash.substring(32, 40), 16);
   
+  // Add timestamp-based variation and random component to ensure different results for different uploads
+  const uploadTime = Date.now();
+  const timeVariation = uploadTime % 100000; // Use last 5 digits for variation
+  const randomComponent = Math.floor(Math.random() * 50000); // Add pure randomness for image differentiation
+  
   // Enhanced image characteristics for maximum differentiation
   const imageSize = imageBuffer.length;
   const sizeVariation = imageSize % 10000; // Size-based variation
@@ -267,6 +272,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   let dataEntropy = 0;
   let pixelVariation = 0;
   let colorDistribution = 0;
+  let imagePattern = 0;
   
   // Sample different regions of the image for enhanced entropy
   const samplePoints = Math.min(2000, imageBuffer.length);
@@ -275,6 +281,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     dataEntropy ^= byte << (i % 8);
     pixelVariation += byte * (i % 7);
     colorDistribution ^= (byte >>> 2) * (i % 11);
+    imagePattern += (byte ^ timeVariation) * (i % 23); // Include time in pattern analysis
   }
   
   // Extract edge pattern entropy (different compression affects edges differently)
@@ -283,10 +290,10 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     edgeEntropy ^= imageBuffer[i] * (i % 13);
   }
   
-  // Combine all entropy sources for maximum image differentiation
-  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation;
-  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy) % 999983;
-  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13) % 1000003;
+  // Combine all entropy sources including time and random variation for maximum image differentiation
+  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent;
+  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41) % 999983;
+  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43) % 1000003;
   
   // Use image color analysis to influence aura color selection
   const colorInfluence = {
@@ -373,7 +380,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     const signatureFactor = (imageSignature * (i + 1)) % 1009;
     
     const combinedSeed = baseSeed + imageSizeFactor + entropyFactor + pixelFactor + 
-                        colorFactor + edgeFactor + uniqueFactor + signatureFactor + (i * 12289);
+                        colorFactor + edgeFactor + uniqueFactor + signatureFactor + timeVariation + randomComponent + (i * 12289);
     
     let colorIndex = Math.abs(combinedSeed) % enhancedColors.length;
     
