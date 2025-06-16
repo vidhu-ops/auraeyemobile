@@ -98,7 +98,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <ServiceCard
               icon={<Upload className="h-6 w-6 text-primary" />}
-              title="AI Aura Analysis"
+              title="Aura Analysis"
               description="Upload your photo and receive an AI-powered analysis of your aura colors and energy patterns with personalized insights."
               link="/aura-analysis"
               linkText="Try Now"

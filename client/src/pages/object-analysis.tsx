@@ -755,7 +755,7 @@ export default function ObjectAnalysis() {
 
                             
                             <div>
-                              <h4 className="text-sm text-gray-500 mb-1">Object Purpose</h4>
+                              <h4 className="text-sm text-gray-500 mb-1">Tis object radiates</h4>
                               <p className="text-sm">{result.objectPurpose}</p>
                             </div>
                             
