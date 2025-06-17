@@ -36,9 +36,123 @@ export default function ObjectAnalysis() {
   const [analysisStage, setAnalysisStage] = useState("Initializing object scanning...");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
 
   const handlePremiumUpgrade = () => {
     showPremiumModal("general");
+  };
+
+  // Function to convert hex to RGB for smokey aura effects
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 128, g: 128, b: 128 };
+  };
+
+  // Using existing getAccurateColorCode function defined later in the file
+
+  // Function to create smokey aura effects around objects
+  const createObjectAuraVisualization = (originalImageBase64: string, auraColor: string, energyLevel: number) => {
+    const img = new Image();
+    img.src = originalImageBase64;
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw original image
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      
+      // Get aura color in RGB (use color map lookup)
+      const colorMap: Record<string, string> = {
+        'Red': '#FF0000', 'Orange': '#FFA500', 'Yellow': '#FFFF00', 'Green': '#008000',
+        'Blue': '#0000FF', 'Indigo': '#4B0082', 'Violet': '#8A2BE2', 'Purple': '#800080',
+        'Pink': '#FFC0CB', 'White': '#FFFFFF', 'Gold': '#FFD700', 'Silver': '#C0C0C0'
+      };
+      const auraHex = colorMap[auraColor] || '#9370DB';
+      const auraRgb = hexToRgb(auraHex);
+      
+      // Create smokey aura around object
+      createObjectSmokeyAura(ctx, img.width, img.height, auraRgb, energyLevel);
+      
+      // Convert back to base64
+      const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
+      setEnhancedAuraImage(enhancedImageBase64);
+    };
+  };
+
+  // Function to create smokey aura particles around objects
+  const createObjectSmokeyAura = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    auraColor: { r: number, g: number, b: number },
+    energyLevel: number
+  ) => {
+    // Seeded random for consistent effects
+    let seed = 54321;
+    const seededRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+
+    // Object detection (assume object is in center area)
+    const objectX = width * 0.2;
+    const objectY = height * 0.2;
+    const objectWidth = width * 0.6;
+    const objectHeight = height * 0.6;
+
+    // Create multiple layers of smoke around the object
+    const particleCount = 200 + energyLevel * 20;
+    
+    for (let i = 0; i < particleCount; i++) {
+      // Create particles around object perimeter
+      const angle = seededRandom() * Math.PI * 2;
+      const distance = 20 + seededRandom() * 150;
+      const centerX = objectX + objectWidth / 2;
+      const centerY = objectY + objectHeight / 2;
+      
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
+      
+      // Don't place particles on the object itself
+      const onObject = x >= objectX && x <= objectX + objectWidth &&
+                      y >= objectY && y <= objectY + objectHeight;
+      
+      if (!onObject && x >= 0 && x <= width && y >= 0 && y <= height) {
+        const smokeSize = 30 + seededRandom() * 80;
+        const smokeOpacity = 0.1 + seededRandom() * 0.2;
+        
+        drawObjectSmoke(ctx, x, y, smokeSize, auraColor, smokeOpacity);
+      }
+    }
+  };
+
+  // Function to draw individual smoke particles for objects
+  const drawObjectSmoke = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    color: { r: number, g: number, b: number },
+    opacity: number
+  ) => {
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+    gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
+    gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`);
+    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
   };
 
   // Function to get CSS filter for aura color overlay
