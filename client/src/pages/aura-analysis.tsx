@@ -2871,14 +2871,80 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Define comprehensive face protection area to ensure complete face visibility
-    const faceX = centerX - personWidth * 1.2;
-    const faceY = centerY - personHeight * 1.5;
-    const faceWidth = personWidth * 2.4;
-    const faceHeight = personHeight * 3.0;
+    // Define comprehensive face protection area to ensure complete face visibility like the reference image
+    const faceX = centerX - personWidth * 2.0;
+    const faceY = centerY - personHeight * 2.5;
+    const faceWidth = personWidth * 4.0;
+    const faceHeight = personHeight * 5.0;
 
-    // Create full-image background smoke base with enhanced density
-    createFullImageSmokeBase(ctx, width, height, colors, energyLevel * 1.5, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Create softer aura effect that preserves face visibility like reference image
+    // Create a softer, more translucent aura effect around the edges
+    const gradient = ctx.createRadialGradient(
+      centerX, centerY, Math.min(width, height) * 0.1, // Small inner radius
+      centerX, centerY, Math.min(width, height) * 0.7  // Large outer radius
+    );
+    
+    // Use primary aura colors for the gradient
+    const primaryColor = colors.personalityRGB;
+    const secondaryColor = colors.thinkingRGB;
+    
+    gradient.addColorStop(0, `rgba(${primaryColor.r}, ${primaryColor.g}, ${primaryColor.b}, 0)`); // Transparent center
+    gradient.addColorStop(0.3, `rgba(${primaryColor.r}, ${primaryColor.g}, ${primaryColor.b}, 0.1)`); // Very light
+    gradient.addColorStop(0.6, `rgba(${secondaryColor.r}, ${secondaryColor.g}, ${secondaryColor.b}, 0.3)`); // Medium
+    gradient.addColorStop(1, `rgba(${secondaryColor.r}, ${secondaryColor.g}, ${secondaryColor.b}, 0.6)`); // Strong at edges
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Add subtle particle effects around the perimeter only
+    const perimeterParticles = 80 + energyLevel * 8;
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < perimeterParticles; i++) {
+      const color = allColors[Math.floor(seededRandom() * 4)];
+      
+      // Place particles only around edges, never in center face area
+      let x, y;
+      const edge = Math.floor(seededRandom() * 4);
+      const margin = Math.min(width, height) * 0.15;
+      
+      switch(edge) {
+        case 0: // Top edge
+          x = seededRandom() * width;
+          y = seededRandom() * margin;
+          break;
+        case 1: // Right edge  
+          x = width - (seededRandom() * margin);
+          y = seededRandom() * height;
+          break;
+        case 2: // Bottom edge
+          x = seededRandom() * width;
+          y = height - (seededRandom() * margin);
+          break;
+        default: // Left edge
+          x = seededRandom() * margin;
+          y = seededRandom() * height;
+          break;
+      }
+      
+      // Don't place particles in face area
+      const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
+                        y >= faceY && y <= faceY + faceHeight;
+      
+      if (!inFaceArea) {
+        const particleSize = 20 + seededRandom() * 40;
+        const particleOpacity = 0.1 + seededRandom() * 0.2;
+        
+        const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+        particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = particleGradient;
+        ctx.beginPath();
+        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
     // Create natural smoke flows from different body zones extending to image edges
     const smokeZones = [
@@ -3145,6 +3211,8 @@ export default function AuraAnalysis() {
       }
     });
   };
+
+
 
   // Function to create full-image smoke base coverage with proper transparency
   const createFullImageSmokeBase = (
