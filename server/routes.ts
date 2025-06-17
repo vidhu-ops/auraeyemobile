@@ -14,6 +14,8 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
+
+
 // Optimized fast aura analysis function for sub-1000ms performance with varied results
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
   const enhancedColors = [
@@ -39,8 +41,12 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     { name: "Silver", hex: "#C0C0C0" }
   ];
   
-  // Use image-specific seed for varied but consistent results per image
-  let seed = imageBuffer ? imageBuffer.length * Date.now() : Date.now();
+  // Use deterministic seed based on image content for consistent results
+  const generateHash = (buffer: Buffer): number => {
+    const hash = crypto.createHash('md5').update(buffer).digest('hex');
+    return parseInt(hash.substring(0, 8), 16);
+  };
+  let seed = imageBuffer ? generateHash(imageBuffer) : 12345;
   const seededRandom = () => {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
@@ -350,6 +356,18 @@ function findClosestEnhancedColor(detectedHex: string, enhancedColors: any[]) {
 
 // Function to generate completely random aura analysis for maximum variety
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
+  // Create deterministic seed from image content
+  const generateHash = (buffer: Buffer): number => {
+    const hash = crypto.createHash('md5').update(buffer).digest('hex');
+    return parseInt(hash.substring(0, 8), 16);
+  };
+  
+  let seed = generateHash(imageBuffer);
+  const seededRandom = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+
   // Simplified color palette for fast processing
   const enhancedColors = [
     { name: "Red", hex: "#FF4444" },
@@ -374,14 +392,14 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "Cream", hex: "#FFFFCC" }
   ];
   
-  // Ultra fast color selection
+  // Deterministic color selection using seeded random
   const auraColors = [
-    enhancedColors[Math.floor(Math.random() * 20)],
-    enhancedColors[Math.floor(Math.random() * 20)],
-    enhancedColors[Math.floor(Math.random() * 20)],
-    enhancedColors[Math.floor(Math.random() * 20)],
-    enhancedColors[Math.floor(Math.random() * 20)],
-    enhancedColors[Math.floor(Math.random() * 20)]
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)]
   ];
   
   const dominantColor = auraColors[0];
