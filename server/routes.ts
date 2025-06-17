@@ -300,81 +300,45 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   
   const auraColorSpectrum = auraColors.map(color => color.name);
   
-  // Generate comprehensive spiritual guidance based on color combinations
-  const spiritualGuidanceMessages: Record<string, string> = {
-    red: "Your root chakra energy manifests as primal life force, grounding you in physical reality while empowering leadership qualities. This fundamental frequency channels courage and manifestation power.",
-    orange: "Sacral chakra creative fire ignites passionate expression and emotional flow. This vibrant frequency awakens artistic gifts and the ability to manifest through inspired action.",
-    yellow: "Solar plexus radiance illuminates personal power and intellectual brilliance. This golden frequency activates confidence and transforms knowledge into wisdom.",
-    green: "Heart chakra emerald light radiates unconditional love and natural healing abilities. This nurturing frequency opens compassionate service and emotional balance.",
-    blue: "Throat chakra sapphire truth activates authentic communication and peaceful wisdom. This calming frequency enables honest expression and trustworthy leadership.",
-    indigo: "Third eye indigo flame awakens psychic abilities and intuitive wisdom. This mystical frequency opens spiritual sight and enhances dream work.",
-    violet: "Crown chakra violet ray connects to cosmic consciousness and divine guidance. This transcendent frequency opens spiritual channels.",
-    purple: "Higher crown chakra transformation integrates spiritual wisdom with earthly experience. This royal frequency balances mystical insight with practical application.",
-    pink: "Higher heart chakra divine love energy channels unconditional compassion and soul-level healing. This gentle frequency opens cosmic love consciousness.",
-    gold: "Soul star chakra divine wisdom channels Christ consciousness and enlightened understanding. This luminous frequency connects to divine intelligence.",
-    silver: "Lunar energy center feminine wisdom channels intuitive gifts and psychic sensitivity. This reflective frequency enhances inner sight.",
-    turquoise: "Higher throat chakra healing communication channels divine truth through compassionate expression. This bridge frequency connects heart and mind.",
-    magenta: "Universal love frequency channels divine transformation and cosmic consciousness. This transcendent color bridges earthly and celestial energies.",
-    coral: "Creative heart center gentle passion channels artistic expression through loving action. This warm frequency balances creativity with compassion.",
-    crimson: "Earth star chakra vital passion channels grounded strength and courageous action. This intense frequency connects survival wisdom with spiritual power.",
-    amber: "Ancient wisdom keeper protective energy channels timeless knowledge and earthly grounding. This stabilizing frequency connects to ancestral wisdom.",
-    emerald: "Heart healing chakra abundant love channels prosperity consciousness and emotional renewal. This rich frequency manifests through heart-centered action.",
-    sapphire: "Divine truth center spiritual insight channels higher wisdom and ethical clarity. This noble frequency guides righteous action.",
-    lavender: "Gentle spirituality higher crown energy channels peaceful awakening and cosmic grace. This serene frequency opens divine connection without overwhelming.",
-    mint: "Fresh healing energy renewal chakra channels emotional cleansing and energetic refreshment. This revitalizing frequency clears stagnant patterns.",
-    navy: "Deep wisdom center authority chakra channels profound understanding and stable leadership. This grounding frequency combines wisdom with practical power.",
-    teal: "Emotional balance heart-throat bridge channels clear feeling communication and healing dialogue. This balancing frequency harmonizes emotion and expression.",
-    maroon: "Grounded passion earth star energy channels mature strength and embodied wisdom. This stable frequency manifests spiritual insights through practical action.",
-    lime: "Vibrant growth heart healing chakra channels accelerated spiritual development and energetic renewal. This dynamic frequency catalyzes positive transformation.",
-    black: "Root chakra shadow integration channels deep transformation and protective grounding. This powerful frequency absorbs negative energy while providing stability and mystery.",
-    grey: "Neutral balance center channels practical wisdom and emotional equilibrium. This stabilizing frequency provides clarity during transitions and balanced perspective.",
-    charcoal: "Deep earth connection shadow work channels profound transformation and ancient wisdom. This grounding frequency connects to primordial knowledge and protective strength.",
-    slate: "Mental clarity shadow integration channels intellectual depth and emotional stability. This balancing frequency provides steady foundation during spiritual growth.",
-    smoke: "Ethereal transition energy channels spiritual cleansing and dimensional awareness. This flowing frequency clears energy blockages and facilitates spiritual travel.",
-    obsidian: "Protective shield earth star energy channels psychic protection and shadow integration. This powerful frequency absorbs negativity while maintaining spiritual strength.",
-    pewter: "Balanced wisdom neutral center channels practical spirituality and grounded insight. This stabilizing frequency harmonizes material and spiritual worlds.",
-    ash: "Transformation completion energy channels rebirth wisdom and renewal cycles. This cleansing frequency represents endings that create new beginnings.",
-    onyx: "Deep protection root energy channels strength through adversity and spiritual fortitude. This powerful frequency provides unshakeable foundation and inner strength.",
-    graphite: "Creative shadow integration channels artistic depth and intellectual prowess. This flowing frequency transforms difficult experiences into creative expression."
-  };
 
-  // Enhanced personality integration analysis
-  const personalityIntegrationAnalysis = `Your ${dominantColor.name.toLowerCase()} aura energy creates a foundation of ${dominantColor.meaning.toLowerCase()}, while your ${secondaryColor.name.toLowerCase()} secondary frequency adds ${secondaryColor.meaning.toLowerCase()}. This unique combination manifests as ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities that support your spiritual evolution. The ${auraColorSpectrum.length}-color spectrum reveals a complex energetic signature indicating advanced soul development through ${selectedTraits.slice(2).join(', ').toLowerCase()} characteristics.`;
 
-  // Create 4-Zone Energy Map based on actual detected colors from image zones
-  const zoneNames = ["Crown Chakra", "Heart Chakra", "Solar Plexus", "Root Chakra"];
-  const zoneKeys = ["crown", "heart", "solar", "aura"];
-  const energyMap = [];
+  // Random challenges
+  const allChallenges = [
+    "Learning to trust intuition",
+    "Expressing creativity authentically", 
+    "Setting healthy boundaries",
+    "Embracing personal power",
+    "Finding inner peace",
+    "Channeling energy constructively",
+    "Protecting sensitive nature",
+    "Navigating major life changes"
+  ];
   
-  for (let i = 0; i < 4; i++) {
-    // Get actual detected colors from specific image zones
-    const detectedZoneColor = colorInfluence.zoneColors[zoneKeys[i]] || colorInfluence.dominantHue;
-    
-    // Map detected color to closest enhanced color for consistency
-    const closestEnhancedColor = findClosestEnhancedColor(detectedZoneColor, enhancedColors);
-    
-    // Apply image-specific variation while maintaining color family
-    const zoneVariationSeed = (seed1 + seed2 + (i * 1997)) % 1000;
-    const baseIntensity = colorInfluence.energyLevel || 50;
-    const intensityFromImage = Math.abs((baseIntensity * 1.5 + zoneVariationSeed) % 80) + 40;
-    
-    // Enhanced description based on image type
-    const imageTypeContext = colorInfluence.imageType === 'full_body' ? 
-      'full body energy field analysis' : 'concentrated aura focus';
-    
-    energyMap.push({
-      zone: zoneNames[i],
-      color: closestEnhancedColor.hex,
-      intensity: intensityFromImage,
-      description: `${closestEnhancedColor.meaning} - Detected through ${imageTypeContext} of your energy patterns`
-    });
-  }
+  const selectedChallenges = allChallenges
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 2 + Math.floor(Math.random() * 2));
+  
+  // Random recommendations
+  const allRecommendations = [
+    "Meditation and mindfulness practices",
+    "Creative expression through art or music",
+    "Heart-opening practices",
+    "Public speaking or teaching",
+    "Yoga and breathwork",
+    "Physical exercise and movement",
+    "Grounding and protection techniques",
+    "Embracing change and uncertainty"
+  ];
+  
+  const selectedRecommendations = allRecommendations
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3 + Math.floor(Math.random() * 2));
 
-  // Energy aspects based on color spectrum
-  const energyAspects = auraColors.slice(0, 5).map((color, index) => {
-    const aspectTypes = ['Life Force', 'Creative Expression', 'Emotional Flow', 'Mental Clarity', 'Spiritual Connection'];
-    return `${aspectTypes[index]}: ${color.meaning}`;
-  });
+  // Zone colors for 4-Zone Energy Map
+  const giveZoneColors = auraColors.slice(0, 2);
+  const receiveZoneColors = auraColors.slice(1, 3);
+  const thinkZoneColors = auraColors.slice(2, 4);
+  const overallZoneColors = [dominantColor, secondaryColor];
 
   return {
     dominantColor: dominantColor.name,
@@ -384,17 +348,41 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     auraLayerColors,
     personalityTraits: selectedTraits,
     energyLevel,
-    energyMap: energyMap, // Include the 4-Zone Energy Map based on actual detected colors
-    actualDetectedColors: colorInfluence.zoneColors, // Include raw detected colors for verification
-    imageAnalysisType: colorInfluence.imageType, // Show if full body or portrait
-    spiritualGuidance: spiritualGuidanceMessages[dominantColor.name.toLowerCase() as keyof typeof spiritualGuidanceMessages] || `Your ${dominantColor.name} aura energy channels ${dominantColor.meaning.toLowerCase()}, creating a powerful foundation for spiritual growth and personal transformation.`,
-    detailedAnalysis: `Your multidimensional aura displays ${dominantColor.name} as the primary frequency (${dominantColor.meaning}), supported by ${secondaryColor.name} energy (${secondaryColor.meaning}). The ${auraColorSpectrum.length}-color spectrum reveals complex spiritual evolution with ${selectedTraits.join(', ').toLowerCase()} characteristics manifesting through your energy field. Actual aura photography analysis detected ${colorInfluence.colorVariety} distinct color frequencies across different energy zones: Crown, Heart, Solar, and Overall Aura areas.`,
-    personalityIntegration: personalityIntegrationAnalysis,
-    energyAspects: energyAspects,
-    chakraActivity,
-    colorMeanings,
-    energyCycle: seed1 % 2 === 0 ? "Expanding" : "Integrating",
-    recommendations: `Focus on developing your ${selectedTraits[0].toLowerCase()} abilities while maintaining your ${selectedTraits[1].toLowerCase()} nature. Work with ${dominantColor.name.toLowerCase()} energy meditation and ${secondaryColor.name.toLowerCase()} visualization to strengthen your energetic foundation. The detected energy patterns show ${colorInfluence.colorVariety} distinct color frequencies, indicating advanced spiritual development requiring conscious integration.`
+    zones: {
+      giving: {
+        colors: giveZoneColors.map(c => c.name),
+        interpretation: `Energy of ${giveZoneColors.map(c => c.name).join(' and ')}`
+      },
+      receiving: {
+        colors: receiveZoneColors.map(c => c.name),
+        interpretation: `Receptive energy of ${receiveZoneColors.map(c => c.name).join(' and ')}`
+      },
+      thinking: {
+        colors: thinkZoneColors.map(c => c.name),
+        interpretation: `Mental energy of ${thinkZoneColors.map(c => c.name).join(' and ')}`
+      },
+      overall: {
+        colors: overallZoneColors.map(c => c.name),
+        interpretation: `Overall energy of ${overallZoneColors.map(c => c.name).join(' and ')}`
+      }
+    },
+    spiritualGifts: selectedTraits.slice(0, 3),
+    currentChallenges: selectedChallenges,
+    recommendations: selectedRecommendations,
+    balanceState: "Harmonious",
+    detailedAnalysis: `Your aura shows ${dominantColor.name} and ${secondaryColor.name} energies with ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities.`,
+    colorMeanings: {
+      [dominantColor.name]: `${dominantColor.name} energy`,
+      [secondaryColor.name]: `${secondaryColor.name} energy`
+    },
+    chakraAlignment: `Strong ${dominantColor.name} frequency alignment`,
+    elementalConnection: `${dominantColor.name} elemental resonance`,
+    auricLayers: auraColors.slice(0, 7).map((color, index) => ({
+      layer: index + 1,
+      color: color.name,
+      meaning: `${color.name} layer energy`,
+      strength: Math.floor(Math.random() * 40) + 60
+    }))
   };
 }
 
@@ -775,14 +763,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const imageSize = imgBuffer.length;
       const isLargeImage = imageSize > 500000; // 500KB+ likely indicates full body or high resolution
       
-      // Create hash for this specific image to ensure consistency
-      const imageHash = crypto.createHash('sha256').update(imgBuffer).digest('hex');
-      
-      // Check if we've analyzed this exact image before
-      if (imageHashCache.has(imageHash)) {
-        console.log("Returning cached result for identical image");
-        return res.json(imageHashCache.get(imageHash));
-      }
+      // Remove caching to ensure different results for each upload
       
       // Log image characteristics for full body detection
       console.log(`Processing image: ${imageSize} bytes, ${isLargeImage ? 'likely full body' : 'likely portrait'}`);
@@ -831,19 +812,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Always use deterministic analysis for 100% consistent results
-      // Same image will always produce identical results
+      // Use random analysis for different results on each upload
       const auraAnalysis = generateDeterministicAuraAnalysis(imgBuffer);
-
-      // Cache the result for this specific image hash
-      imageHashCache.set(imageHash, auraAnalysis);
 
       // Save the analysis to storage for review functionality
       let savedReading = null;
       try {
         savedReading = await storage.saveAuraReading({
-          userId: userId || 0, // Use 0 for anonymous users
-          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100), // Store a truncated version or reference
+          userId: userId || 0,
+          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100),
           dominantColor: auraAnalysis.dominantColor,
           secondaryColor: auraAnalysis.secondaryColor || auraAnalysis.dominantColor,
           energyLevel: auraAnalysis.energyLevel || 5,
