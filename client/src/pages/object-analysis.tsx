@@ -374,6 +374,15 @@ export default function ObjectAnalysis() {
       // Set processed image immediately with aura overlay effect
       setProcessedImage(imageUrl);
 
+      // Create smokey aura visualization for the object
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          createObjectAuraVisualization(e.target.result as string, data.auraColor, data.energyLevel);
+        }
+      };
+      reader.readAsDataURL(file);
+
       toast({
         title: "Analysis Complete",
         description: `Successfully analyzed the object: ${data.objectName}`,
@@ -812,15 +821,21 @@ export default function ObjectAnalysis() {
                                     </div>
                                   </div>
                                   
-                                  {/* Processed Image with Aura Gradient */}
+                                  {/* Processed Image with Smokey Aura Effect */}
                                   <div className="space-y-3">
                                     <div className="text-center">
                                       <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center justify-center gap-2">
                                         <Sparkles className="h-4 w-4 text-purple-600" />
-                                        Aura Enhanced View
+                                        With Smokey Aura
                                       </h5>
                                       <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-purple-200">
-                                        {processedImage ? (
+                                        {enhancedAuraImage ? (
+                                          <img 
+                                            src={enhancedAuraImage} 
+                                            alt="Object with smokey aura effect"
+                                            className="w-full h-full object-cover"
+                                          />
+                                        ) : processedImage ? (
                                           <div className="relative">
                                             <img 
                                               src={processedImage} 
@@ -843,11 +858,16 @@ export default function ObjectAnalysis() {
                                           <div className="w-full h-64 flex items-center justify-center">
                                             <div className="text-center">
                                               <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-2" />
-                                              <p className="text-sm text-gray-500">Processing aura visualization...</p>
+                                              <p className="text-sm text-gray-500">Creating smokey aura visualization...</p>
                                             </div>
                                           </div>
                                         )}
                                       </div>
+                                      {enhancedAuraImage && (
+                                        <p className="text-xs text-gray-600 mt-2">
+                                          Smokey aura color: {result.auraColor}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                 </div>

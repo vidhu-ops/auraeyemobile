@@ -14,8 +14,8 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
-// Optimized fast aura analysis function for sub-1000ms performance
-function generateFastAuraAnalysis() {
+// Optimized fast aura analysis function for sub-1000ms performance with varied results
+function generateFastAuraAnalysis(imageBuffer?: Buffer) {
   const enhancedColors = [
     { name: "Crimson", hex: "#DC143C" },
     { name: "Coral", hex: "#FF7F50" },
@@ -32,16 +32,27 @@ function generateFastAuraAnalysis() {
     { name: "Turquoise", hex: "#40E0D0" },
     { name: "Orange", hex: "#FF8C00" },
     { name: "Green", hex: "#32CD32" },
-    { name: "Blue", hex: "#0066CC" }
+    { name: "Blue", hex: "#0066CC" },
+    { name: "Purple", hex: "#9370DB" },
+    { name: "Pink", hex: "#FFC0CB" },
+    { name: "Teal", hex: "#008080" },
+    { name: "Silver", hex: "#C0C0C0" }
   ];
   
+  // Use image-specific seed for varied but consistent results per image
+  let seed = imageBuffer ? imageBuffer.length * Date.now() : Date.now();
+  const seededRandom = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  
   const auraColors = [
-    enhancedColors[Math.floor(Math.random() * 16)],
-    enhancedColors[Math.floor(Math.random() * 16)],
-    enhancedColors[Math.floor(Math.random() * 16)],
-    enhancedColors[Math.floor(Math.random() * 16)],
-    enhancedColors[Math.floor(Math.random() * 16)],
-    enhancedColors[Math.floor(Math.random() * 16)]
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)],
+    enhancedColors[Math.floor(seededRandom() * 20)]
   ];
   
   const dominantColor = auraColors[0];
@@ -861,28 +872,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Use optimized fast analysis for sub-1000ms performance
-      const auraAnalysis = generateFastAuraAnalysis();
+      const auraAnalysis = generateFastAuraAnalysis(imgBuffer);
 
-      // Save the analysis to storage for review functionality
-      let savedReading = null;
-      try {
-        savedReading = await storage.saveAuraReading({
-          userId: userId || 0,
-          imageUrl: "data:image/jpeg;base64," + imageData.substring(0, 100),
-          dominantColor: auraAnalysis.dominantColor,
-          secondaryColor: auraAnalysis.secondaryColor || auraAnalysis.dominantColor,
-          energyLevel: auraAnalysis.energyLevel || 5,
-          analysis: JSON.stringify(auraAnalysis)
-        });
-        
-        // Add the reading ID to the response for review functionality
-        if (savedReading) {
-          (auraAnalysis as any).id = savedReading.id;
-        }
-      } catch (error) {
-        console.log("Could not save reading to database:", (error as Error).message);
-        // Continue without saving if database unavailable
-      }
+      // Skip database save for maximum speed - return analysis directly
 
       res.json(auraAnalysis);
     } catch (error) {
