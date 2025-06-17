@@ -738,12 +738,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Object Analysis API endpoint
   app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
     try {
-      if (!req.file) {
+      // Get image data either from file or base64 string
+      let imgBuffer: Buffer;
+      
+      if (req.file) {
+        // If image was uploaded as file
+        imgBuffer = req.file.buffer;
+      } else if (req.body.image) {
+        // If image was sent as base64 string
+        imgBuffer = Buffer.from(req.body.image, 'base64');
+      } else {
         return res.status(400).json({ message: "No image file provided" });
       }
 
+      // Check if image contains a human - object analysis should reject human images
+      const hasHuman = detectHumanInImage(imgBuffer);
+      if (hasHuman) {
+        return res.status(400).json({ 
+          message: "Human detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
+        });
+      }
+
       // Use deterministic analysis based on image hash for consistent results
-      const deterministicResult = generateDeterministicObjectAnalysis(req.file.buffer);
+      const deterministicResult = generateDeterministicObjectAnalysis(imgBuffer);
       res.json(deterministicResult);
     } catch (error) {
       console.error("Error processing object analysis:", error);
@@ -755,67 +772,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const imageHashCache = new Map<string, any>();
 
   // Enhanced function to detect human presence vs room/area images
-  function detectRoomOrAreaImage(imageBuffer: Buffer): boolean {
-    const imageSize = imageBuffer.length;
-    
-    // Analyze human indicators vs room indicators
-    let skinTonePixels = 0;
-    let clothingPixels = 0;
-    let furniturePixels = 0;
-    let architecturalPixels = 0;
-    let sampledPixels = 0;
-    
-    // Sample pixels throughout the image for analysis
-    const sampleSize = Math.min(2000, imageBuffer.length);
-    for (let i = 0; i < sampleSize; i += 4) {
-      if (i + 2 < imageBuffer.length) {
-        const r = imageBuffer[i];
-        const g = imageBuffer[i + 1]; 
-        const b = imageBuffer[i + 2];
-        sampledPixels++;
-        
-        // Enhanced skin tone detection for all ethnicities
-        const isSkinTone = (r > 70 && g > 50 && b > 40 && r > g && r > b) ||
-                          (r > 150 && g > 120 && b > 90 && r - g < 60) ||
-                          (r > 40 && r < 100 && g > 30 && g < 80 && b > 20 && b < 70);
-        
-        // Common clothing colors
-        const isClothing = (r < 60 && g < 60 && b < 60) || // Dark clothing
-                          (r > 200 && g > 200 && b > 200) || // Light clothing
-                          (b > r + 20 && b > g + 15 && b > 60); // Blue clothing
-        
-        // Furniture/room indicators (browns, grays, beiges)
-        const isFurniture = (r > 80 && r < 160 && g > 60 && g < 140 && b > 40 && b < 120 && 
-                           Math.abs(r - g) < 40 && Math.abs(g - b) < 40) ||
-                          (r > 150 && g > 140 && b > 120 && r - b < 50); // Wood/beige tones
-        
-        // Architectural elements (whites, grays, concrete colors)
-        const isArchitectural = (r > 180 && g > 180 && b > 180) || // White walls
-                               (Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && r > 100 && r < 160); // Gray tones
-        
-        if (isSkinTone) skinTonePixels++;
-        if (isClothing) clothingPixels++;
-        if (isFurniture) furniturePixels++;
-        if (isArchitectural) architecturalPixels++;
-      }
+  // Enhanced human detection function for proper image validation
+function detectHumanInImage(imageBuffer: Buffer): boolean {
+  let skinTonePixels = 0;
+  let faceIndicators = 0;
+  let clothingPixels = 0;
+  let sampledPixels = 0;
+  
+  // Sample pixels throughout the image for comprehensive analysis
+  const sampleSize = Math.min(3000, imageBuffer.length);
+  for (let i = 0; i < sampleSize; i += 4) {
+    if (i + 2 < imageBuffer.length) {
+      const r = imageBuffer[i] || 0;
+      const g = imageBuffer[i + 1] || 0; 
+      const b = imageBuffer[i + 2] || 0;
+      sampledPixels++;
+      
+      // Enhanced skin tone detection covering all ethnicities
+      const isSkinTone = 
+        // Light skin tones
+        (r > 150 && g > 120 && b > 90 && r - g < 60 && g - b < 50) ||
+        // Medium skin tones
+        (r > 120 && r < 200 && g > 90 && g < 160 && b > 60 && b < 130 && r > g && g > b) ||
+        // Darker skin tones
+        (r > 70 && r < 140 && g > 50 && g < 110 && b > 30 && b < 90 && r > g && g >= b) ||
+        // Additional skin tone patterns
+        (r > 180 && g > 140 && b > 100 && r - b < 100 && r - g < 80);
+      
+      // Face-specific color patterns (lip colors, eye areas)
+      const isFaceFeature = 
+        // Lip colors (pinks, reds)
+        (r > 140 && g < r - 20 && b < r - 10 && r > 120) ||
+        // Eye colors and shadows
+        (r < 80 && g < 80 && b < 80 && (r + g + b) > 60);
+      
+      // Human clothing indicators
+      const isClothing = 
+        // Dark clothing (blacks, navy, dark colors)
+        (r < 70 && g < 70 && b < 70) ||
+        // Light clothing (whites, light colors)
+        (r > 200 && g > 200 && b > 200) ||
+        // Colored clothing (blues, greens, reds)
+        (Math.max(r, g, b) - Math.min(r, g, b) > 50 && Math.max(r, g, b) > 80);
+      
+      if (isSkinTone) skinTonePixels++;
+      if (isFaceFeature) faceIndicators++;
+      if (isClothing) clothingPixels++;
     }
-    
-    // Calculate ratios
-    const skinRatio = skinTonePixels / sampledPixels;
-    const clothingRatio = clothingPixels / sampledPixels;
-    const furnitureRatio = furniturePixels / sampledPixels;
-    const architecturalRatio = architecturalPixels / sampledPixels;
-    
-    // Human presence indicators
-    const hasHumanPresence = skinRatio > 0.01 && (clothingRatio > 0.05 || skinRatio > 0.03);
-    
-    // Room/area indicators
-    const hasRoomElements = (furnitureRatio > 0.15 || architecturalRatio > 0.20) && 
-                           furnitureRatio + architecturalRatio > 0.25;
-    
-    // Return true if it's clearly a room/area (not human-focused)
-    return hasRoomElements && !hasHumanPresence;
   }
+  
+  // Calculate ratios for human detection
+  const skinRatio = skinTonePixels / sampledPixels;
+  const faceRatio = faceIndicators / sampledPixels;
+  const clothingRatio = clothingPixels / sampledPixels;
+  
+  // Strong human indicators
+  const hasSignificantSkin = skinRatio > 0.02; // At least 2% skin tone pixels
+  const hasFaceFeatures = faceRatio > 0.005; // Face-specific features
+  const hasClothing = clothingRatio > 0.1; // Clothing patterns
+  
+  // Combined human presence score
+  const humanScore = skinRatio * 3 + faceRatio * 5 + (hasClothing ? 0.1 : 0);
+  
+  // Return true if human is detected
+  return hasSignificantSkin && (hasFaceFeatures || humanScore > 0.08);
+}
 
   // Aura Analysis API endpoint
   app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
@@ -836,11 +857,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image provided" });
       }
 
+      // Check if image contains a human - aura analysis requires human images
+      const hasHuman = detectHumanInImage(imgBuffer);
+      if (!hasHuman) {
+        return res.status(400).json({ 
+          message: "No human detected in image. Aura analysis requires images containing people. Please use the Object Analysis section for non-human images." 
+        });
+      }
+
       // Enhanced validation for full body images and different formats
       const imageSize = imgBuffer.length;
       const isLargeImage = imageSize > 500000; // 500KB+ likely indicates full body or high resolution
-      
-      // Remove caching to ensure different results for each upload
       
       // Log image characteristics for full body detection
       console.log(`Processing image: ${imageSize} bytes, ${isLargeImage ? 'likely full body' : 'likely portrait'}`);
