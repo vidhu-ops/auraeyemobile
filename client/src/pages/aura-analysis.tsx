@@ -2858,8 +2858,6 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-
-
   // Function to create natural smoke wisps that flow around the person
   const createNaturalSmokeWisps = (
     ctx: CanvasRenderingContext2D,
@@ -2874,14 +2872,13 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Define comprehensive person protection area to ensure complete person visibility like the reference image
-    const personProtectionRadius = Math.max(personWidth, personHeight) * 0.65; // Larger circular protection for facial features
-    const faceX = centerX - personProtectionRadius;
-    const faceY = centerY - personProtectionRadius;
-    const faceWidth = personProtectionRadius * 2;
-    const faceHeight = personProtectionRadius * 2;
+    const faceX = centerX - personWidth * 0.6;
+    const faceY = centerY - personHeight * 0.8;
+    const faceWidth = personWidth * 1.2;
+    const faceHeight = personHeight * 1.6;
     
-    // Use consistent protection radius for all functions
-    const personRadius = personProtectionRadius;
+    // Define person protection radius for smokey field effect
+    const personRadius = Math.min(personWidth, personHeight) * 0.4;
 
     // Create complete smokey field that fills entire background like reference image
     // Step 1: Fill entire image with subtle primary aura color base
@@ -2900,14 +2897,14 @@ export default function AuraAnalysis() {
       const x = seededRandom() * width;
       const y = seededRandom() * height;
       
-      // Define person protection area - larger circular bounds for full body visibility
-      const personCenterX = centerX;
-      const personCenterY = centerY;
-      const personProtectionRadius = Math.max(personWidth, personHeight) * 0.65; // Larger circular protection
-      const distanceFromPerson = Math.sqrt((x - personCenterX) ** 2 + (y - personCenterY) ** 2);
+      // Define person protection area - rectangular for full body visibility
+      const personLeft = centerX - personWidth * 0.55;
+      const personRight = centerX + personWidth * 0.55;
+      const personTop = centerY - personHeight * 0.75;
+      const personBottom = centerY + personHeight * 0.75;
       
       // Check if particle is outside person area
-      const outsidePersonArea = distanceFromPerson > personProtectionRadius;
+      const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
       
       if (outsidePersonArea) {
         const particleSize = 25 + seededRandom() * 60;
@@ -3027,7 +3024,7 @@ export default function AuraAnalysis() {
           // Avoid person protection area for all zones
           const personCenterX = centerX;
           const personCenterY = centerY;
-          const personProtectionRadius = Math.max(personWidth, personHeight) * 0.65; // Larger circular protection for facial features
+          const personProtectionRadius = Math.min(personWidth, personHeight) * 0.35; // Smaller radius for better visibility
           const distanceFromPerson = Math.sqrt((smokeX - personCenterX) ** 2 + (smokeY - personCenterY) ** 2);
           
           // Skip if too close to person
@@ -3060,20 +3057,23 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add final clearance pass to ensure person remains visible
-    ctx.globalCompositeOperation = 'destination-out';
-    const clearanceGradient = ctx.createRadialGradient(
-      centerX, centerY, personProtectionRadius * 0.6,
-      centerX, centerY, personProtectionRadius
-    );
-    clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
-    clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.3)');
-    clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = clearanceGradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, personProtectionRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
+    // Add dense perimeter smoke around all edges with increased visibility
+    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 1.8, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add extra right-side coverage for receiving energy zone
+    createRightSideCoverage(ctx, width, height, colors.receivingRGB, energyLevel, seededRandom, centerX, centerY, personWidth, personHeight, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add dedicated edge coverage to ensure smoke reaches image borders  
+    createEdgeCoverage(ctx, width, height, colors, energyLevel * 1.6, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add concentrated color zones for maximum visibility of all 4 Energy Map colors
+    createConcentratedColorDisplay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add enhanced personality color perimeter halo effect
+    createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add dense atmospheric haze that fills the entire field for mystical effect
+    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
@@ -3144,9 +3144,10 @@ export default function AuraAnalysis() {
     colors: any,
     energyLevel: number,
     seededRandom: () => number,
-    centerX: number,
-    centerY: number,
-    personProtectionRadius: number
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
   ) => {
     const colorZones = [
       { 
@@ -3222,10 +3223,11 @@ export default function AuraAnalysis() {
       for (let i = 0; i < totalParticles; i++) {
         const coords = zone.getCoords();
         
-        // Avoid person area using circular bounds
-        const distanceFromPerson = Math.sqrt((coords.x - centerX) ** 2 + (coords.y - centerY) ** 2);
+        // Avoid face area
+        const inFaceArea = coords.x >= faceX && coords.x <= faceX + faceWidth &&
+                          coords.y >= faceY && coords.y <= faceY + faceHeight;
         
-        if (distanceFromPerson > personProtectionRadius) {
+        if (!inFaceArea) {
           const smokeSize = 60 + seededRandom() * 120; // Much larger smoke particles
           const smokeOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for person visibility
           
@@ -3294,9 +3296,10 @@ export default function AuraAnalysis() {
     colors: any,
     energyLevel: number,
     seededRandom: () => number,
-    centerX: number,
-    centerY: number,
-    personProtectionRadius: number
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
   ) => {
     const perimeterDensity = 180 + Math.floor(energyLevel * 60); // Dramatically increased density
     
@@ -3332,10 +3335,11 @@ export default function AuraAnalysis() {
         const smokeX = coords.x;
         const smokeY = coords.y;
         
-        // Avoid person area using circular bounds
-        const distanceFromPerson = Math.sqrt((smokeX - centerX) ** 2 + (smokeY - centerY) ** 2);
+        // Avoid face area
+        const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                          smokeY >= faceY && smokeY <= faceY + faceHeight;
         
-        if (distanceFromPerson > personProtectionRadius) {
+        if (!inFaceArea) {
           const smokeSize = 25 + seededRandom() * 60; // Smaller particles
           const smokeOpacity = 0.048 + seededRandom() * 0.096; // Increased by 20% from 0.04 and 0.08
           
