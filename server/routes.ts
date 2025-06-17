@@ -270,25 +270,23 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "Cream", hex: "#FFFFCC" }
   ];
   
-  // Pure random color selection - no deterministic elements
-  const shuffledColors = [...enhancedColors].sort(() => Math.random() - 0.5);
-  const colorCount = 6 + Math.floor(Math.random() * 3);
-  const auraColors = shuffledColors.slice(0, colorCount);
+  // Fast random color selection
+  const colorCount = 6;
+  const auraColors = [];
+  for (let i = 0; i < colorCount; i++) {
+    const randomIndex = Math.floor(Math.random() * enhancedColors.length);
+    auraColors.push(enhancedColors[randomIndex]);
+  }
   
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1] || auraColors[0];
   
-  // Random traits selection
-  const allTraits = [
-    "Intuitive", "Creative", "Healing", "Wise", "Balanced", 
-    "Energetic", "Protective", "Transformative", "Visionary", 
-    "Artistic", "Nurturing", "Analytical", "Harmonious", 
-    "Dynamic", "Strong", "Evolving", "Mystical", "Expressive"
-  ];
-  
-  const selectedTraits = allTraits
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4 + Math.floor(Math.random() * 3));
+  // Fast trait selection
+  const allTraits = ["Intuitive", "Creative", "Healing", "Wise", "Balanced", "Energetic"];
+  const selectedTraits = [];
+  for (let i = 0; i < 4; i++) {
+    selectedTraits.push(allTraits[Math.floor(Math.random() * allTraits.length)]);
+  }
   
   const energyLevel = Math.floor(Math.random() * 10) + 1;
   
@@ -302,37 +300,12 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   
 
 
-  // Random challenges
-  const allChallenges = [
-    "Learning to trust intuition",
-    "Expressing creativity authentically", 
-    "Setting healthy boundaries",
-    "Embracing personal power",
-    "Finding inner peace",
-    "Channeling energy constructively",
-    "Protecting sensitive nature",
-    "Navigating major life changes"
-  ];
+  // Fast challenge and recommendation selection
+  const challenges = ["Learning to trust intuition", "Setting healthy boundaries", "Finding inner peace"];
+  const recommendations = ["Meditation practices", "Creative expression", "Heart-opening practices"];
   
-  const selectedChallenges = allChallenges
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 2 + Math.floor(Math.random() * 2));
-  
-  // Random recommendations
-  const allRecommendations = [
-    "Meditation and mindfulness practices",
-    "Creative expression through art or music",
-    "Heart-opening practices",
-    "Public speaking or teaching",
-    "Yoga and breathwork",
-    "Physical exercise and movement",
-    "Grounding and protection techniques",
-    "Embracing change and uncertainty"
-  ];
-  
-  const selectedRecommendations = allRecommendations
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3 + Math.floor(Math.random() * 2));
+  const selectedChallenges = [challenges[Math.floor(Math.random() * challenges.length)]];
+  const selectedRecommendations = [recommendations[Math.floor(Math.random() * recommendations.length)]];
 
   // Zone colors for 4-Zone Energy Map
   const giveZoneColors = auraColors.slice(0, 2);

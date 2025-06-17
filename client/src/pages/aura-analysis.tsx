@@ -4138,7 +4138,7 @@ export default function AuraAnalysis() {
             setAnalysisProgress(100);
             setAnalysisStage("Analysis complete!");
             clearInterval(progressInterval);
-            setTimeout(() => { setIsAnalyzing(false); }, 800);
+            setTimeout(() => { setIsAnalyzing(false); }, 200);
           }
         }
       };
