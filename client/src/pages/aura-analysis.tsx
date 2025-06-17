@@ -2614,8 +2614,8 @@ export default function AuraAnalysis() {
           // Person detection boundaries (estimate human silhouette with face protection)
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const personWidth = canvas.width * 0.3; // Reduced to better protect central face area
-          const personHeight = canvas.height * 0.5; // Reduced to focus protection on upper body/face
+          const personWidth = canvas.width * 0.2; // Significantly reduced to protect face area
+          const personHeight = canvas.height * 0.3; // Focus protection on face and upper torso
           
           // Create smokey particle aura around the person
           createSmokeyAuraParticles(ctx, canvas.width, canvas.height, {
@@ -2872,10 +2872,10 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Define comprehensive face protection area to ensure complete face visibility
-    const faceX = centerX - personWidth * 0.8;
-    const faceY = centerY - personHeight * 0.9;
-    const faceWidth = personWidth * 1.0;
-    const faceHeight = personHeight * 2.0;
+    const faceX = centerX - personWidth * 1.2;
+    const faceY = centerY - personHeight * 1.5;
+    const faceWidth = personWidth * 2.4;
+    const faceHeight = personHeight * 3.0;
 
     // Create full-image background smoke base with enhanced density
     createFullImageSmokeBase(ctx, width, height, colors, energyLevel * 1.5, seededRandom, faceX, faceY, faceWidth, faceHeight);
