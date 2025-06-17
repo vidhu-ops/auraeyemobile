@@ -244,204 +244,60 @@ function findClosestEnhancedColor(detectedHex: string, enhancedColors: any[]) {
   return closestColor;
 }
 
-// Function to generate deterministic aura analysis based on actual image color analysis
+// Function to generate completely random aura analysis for maximum variety
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
-  // Create SHA-256 hash for strong consistency - identical images get identical results
-  const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
-  
-  // Analyze actual colors in the image buffer for enhanced differentiation
-  const imageColorData = analyzeImageBufferColors(imageBuffer);
-  
-  // Extract multiple seeds from different hash segments for enhanced variability
-  const seed1 = parseInt(hash.substring(0, 8), 16);
-  const seed2 = parseInt(hash.substring(8, 16), 16);
-  const seed3 = parseInt(hash.substring(16, 24), 16);
-  const seed4 = parseInt(hash.substring(24, 32), 16);
-  const seed5 = parseInt(hash.substring(32, 40), 16);
-  
-  // Add enhanced variation factors to ensure different results for different uploads
-  const uploadTime = Date.now();
-  const timeVariation = (uploadTime % 100000) + Math.floor(Math.random() * 10000);
-  const randomComponent = Math.floor(Math.random() * 99999); // Strong randomness for image differentiation
-  const sessionVariation = Math.floor(Math.random() * 99999); // Strong session-based variation
-  const uploadVariation = Math.floor(Math.random() * 99999); // Per-upload variation
-  
-  // Enhanced image characteristics for maximum differentiation
-  const imageSize = imageBuffer.length;
-  const sizeVariation = imageSize % 10000; // Size-based variation
-  
-  // Extract comprehensive entropy from image data patterns for maximum differentiation
-  let dataEntropy = 0;
-  let pixelVariation = 0;
-  let colorDistribution = 0;
-  let imagePattern = 0;
-  
-  // Sample different regions of the image for enhanced entropy
-  const samplePoints = Math.min(2000, imageBuffer.length);
-  for (let i = 0; i < samplePoints; i += 50) {
-    const byte = imageBuffer[i];
-    dataEntropy ^= byte << (i % 8);
-    pixelVariation += byte * (i % 7);
-    colorDistribution ^= (byte >>> 2) * (i % 11);
-    imagePattern += (byte ^ timeVariation) * (i % 23); // Include time in pattern analysis
-  }
-  
-  // Extract edge pattern entropy (different compression affects edges differently)
-  let edgeEntropy = 0;
-  for (let i = 0; i < Math.min(500, imageBuffer.length); i += 73) {
-    edgeEntropy ^= imageBuffer[i] * (i % 13);
-  }
-  
-  // Combine all entropy sources including time and random variation for maximum image differentiation
-  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent + sessionVariation + uploadVariation;
-  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41 + sessionVariation * 53 + uploadVariation * 67) % 999983;
-  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43 + sessionVariation * 47 + uploadVariation * 59) % 1000003;
-  
-  // Use image color analysis to influence aura color selection
-  const colorInfluence = {
-    dominantHue: imageColorData.overallDominant,
-    secondaryHue: imageColorData.overallSecondary,
-    energyLevel: imageColorData.energyIntensity,
-    colorVariety: imageColorData.colorVariety,
-    zoneColors: imageColorData.zones,
-    imageType: imageColorData.imageType || 'portrait'
-  };
-  
-  // Enhanced color palette matching the frontend color mapping
+  // Simplified color palette for fast processing
   const enhancedColors = [
-    { name: "red", hex: "#FF4444", meaning: "Passion, vitality, grounding energy" },
-    { name: "orange", hex: "#FF8800", meaning: "Creativity, enthusiasm, emotional balance" }, 
-    { name: "yellow", hex: "#FFD700", meaning: "Intelligence, optimism, personal power" },
-    { name: "green", hex: "#32CD32", meaning: "Healing, love, growth, heart-centered energy" },
-    { name: "blue", hex: "#4169E1", meaning: "Communication, truth, peace, intuition" },
-    { name: "indigo", hex: "#4B0082", meaning: "Psychic ability, deep intuition, wisdom" },
-    { name: "violet", hex: "#8A2BE2", meaning: "Spiritual connection, transformation, mysticism" },
-    { name: "purple", hex: "#9932CC", meaning: "Spiritual awareness, nobility, magic" },
-    { name: "pink", hex: "#FF69B4", meaning: "Unconditional love, compassion, nurturing" },
-    { name: "gold", hex: "#FFD700", meaning: "Divine wisdom, enlightenment, abundance" },
-    { name: "silver", hex: "#C0C0C0", meaning: "Intuitive gifts, feminine energy, reflection" },
-    { name: "turquoise", hex: "#40E0D0", meaning: "Healing communication, emotional clarity" },
-    { name: "magenta", hex: "#FF00FF", meaning: "Higher consciousness, transformation" },
-    { name: "coral", hex: "#FF7F50", meaning: "Gentle passion, warmth, social energy" },
-    { name: "crimson", hex: "#DC143C", meaning: "Intense passion, courage, strength" },
-    { name: "amber", hex: "#FFBF00", meaning: "Ancient wisdom, protection, grounding" },
-    { name: "emerald", hex: "#50C878", meaning: "Heart healing, abundance, growth" },
-    { name: "sapphire", hex: "#0F52BA", meaning: "Divine truth, spiritual insight" },
-    { name: "lavender", hex: "#E6E6FA", meaning: "Gentle spirituality, peace, calm" },
-    { name: "mint", hex: "#98FB98", meaning: "Fresh healing energy, renewal" },
-    { name: "navy", hex: "#000080", meaning: "Deep wisdom, authority, stability" },
-    { name: "teal", hex: "#008080", meaning: "Emotional balance, clarity" },
-    { name: "maroon", hex: "#800000", meaning: "Grounded passion, earthly wisdom" },
-    { name: "lime", hex: "#32CD32", meaning: "Vibrant growth, renewal energy" },
-    { name: "black", hex: "#000000", meaning: "Shadow integration, protection, mystery" },
-    { name: "grey", hex: "#808080", meaning: "Neutral balance, practical wisdom" },
-    { name: "charcoal", hex: "#36454F", meaning: "Deep transformation, ancient wisdom" },
-    { name: "slate", hex: "#708090", meaning: "Mental clarity, emotional stability" },
-    { name: "smoke", hex: "#738276", meaning: "Ethereal transition, spiritual cleansing" },
-    { name: "obsidian", hex: "#0B1426", meaning: "Psychic protection, shadow work" },
-    { name: "pewter", hex: "#96A8A1", meaning: "Balanced wisdom, grounded insight" },
-    { name: "ash", hex: "#B2BEB5", meaning: "Transformation completion, renewal cycles" },
-    { name: "onyx", hex: "#353839", meaning: "Deep protection, spiritual fortitude" },
-    { name: "graphite", hex: "#41424C", meaning: "Creative shadow integration, artistic depth" }
+    { name: "Red", hex: "#FF4444" },
+    { name: "Orange", hex: "#FF8844" },
+    { name: "Yellow", hex: "#FFDD44" },
+    { name: "Green", hex: "#44DD44" },
+    { name: "Blue", hex: "#4488FF" },
+    { name: "Pink", hex: "#FF88CC" },
+    { name: "Violet", hex: "#AA44FF" },
+    { name: "Indigo", hex: "#6644FF" },
+    { name: "Turquoise", hex: "#44DDDD" },
+    { name: "Coral", hex: "#FF6B6B" },
+    { name: "Gold", hex: "#FFD700" },
+    { name: "Silver", hex: "#C0C0C0" },
+    { name: "Lavender", hex: "#CC88FF" },
+    { name: "Mint", hex: "#88FFAA" },
+    { name: "Peach", hex: "#FFAA88" },
+    { name: "Aqua", hex: "#66FFFF" },
+    { name: "Rose", hex: "#FF6699" },
+    { name: "Amber", hex: "#FFBB33" },
+    { name: "Sage", hex: "#99AA88" },
+    { name: "Cream", hex: "#FFFFCC" }
   ];
   
-  // Fast color generation with maximum variety
-  const colorCount = 6 + (Math.floor(Math.random() * 3)); // 6-8 colors with true randomness
-  const auraColors = [];
-  const usedIndices = new Set();
+  // Pure random color selection - no deterministic elements
+  const shuffledColors = [...enhancedColors].sort(() => Math.random() - 0.5);
+  const colorCount = 6 + Math.floor(Math.random() * 3);
+  const auraColors = shuffledColors.slice(0, colorCount);
   
-  // Bright diverse colors (exclude dark repetitive ones like indigo, violet, purple)
-  const brightColors = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-  
-  for (let i = 0; i < colorCount; i++) {
-    let colorIndex;
-    
-    // For first 4 colors, use bright diverse colors only
-    if (i < 4) {
-      colorIndex = brightColors[Math.floor(Math.random() * brightColors.length)];
-    } else {
-      // For remaining colors, use full palette
-      colorIndex = Math.floor(Math.random() * enhancedColors.length);
-    }
-    
-    // Ensure uniqueness with simple check
-    let attempts = 0;
-    while (usedIndices.has(colorIndex) && attempts < 20) {
-      if (i < 4) {
-        colorIndex = brightColors[Math.floor(Math.random() * brightColors.length)];
-      } else {
-        colorIndex = Math.floor(Math.random() * enhancedColors.length);
-      }
-      attempts++;
-    }
-    
-    usedIndices.add(colorIndex);
-    auraColors.push(enhancedColors[colorIndex]);
-  }
-  
-  // Primary colors from the array
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1] || auraColors[0];
   
-  // Enhanced personality traits
-  const spiritualTraits = [
-    ["Intuitive", "Visionary", "Mystical", "Psychic"],
-    ["Creative", "Artistic", "Expressive", "Innovative"],
-    ["Healing", "Nurturing", "Compassionate", "Empathetic"],
-    ["Wise", "Analytical", "Thoughtful", "Insightful"],
-    ["Balanced", "Harmonious", "Peaceful", "Grounded"],
-    ["Energetic", "Dynamic", "Inspiring", "Motivating"],
-    ["Protective", "Strong", "Confident", "Courageous"],
-    ["Transformative", "Evolving", "Adaptable", "Progressive"]
+  // Random traits selection
+  const allTraits = [
+    "Intuitive", "Creative", "Healing", "Wise", "Balanced", 
+    "Energetic", "Protective", "Transformative", "Visionary", 
+    "Artistic", "Nurturing", "Analytical", "Harmonious", 
+    "Dynamic", "Strong", "Evolving", "Mystical", "Expressive"
   ];
   
-  // Select traits deterministically
-  const traitCount = 4 + (seed2 % 3); // 4-6 traits
-  const selectedTraits = [];
-  const traitSetIndex = (seed2 >> 8) % spiritualTraits.length;
-  const baseTraits = spiritualTraits[traitSetIndex];
+  const selectedTraits = allTraits
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4 + Math.floor(Math.random() * 3));
   
-  // Add base traits
-  selectedTraits.push(...baseTraits.slice(0, Math.min(traitCount, baseTraits.length)));
+  const energyLevel = Math.floor(Math.random() * 10) + 1;
   
-  // Add additional traits if needed
-  while (selectedTraits.length < traitCount) {
-    const additionalTraitSet: string[] = spiritualTraits[(traitSetIndex + selectedTraits.length) % spiritualTraits.length];
-    const newTrait: string = additionalTraitSet[0];
-    if (!selectedTraits.includes(newTrait)) {
-      selectedTraits.push(newTrait);
-    }
-  }
-  
-  // Energy level based on hash - ensure consistent range 1-10
-  const energyLevel = 1 + (seed1 % 10); // 1-10 range
-  
-  // Chakra activities with deterministic values
-  const chakraActivity = {
-    root: 4 + ((seed1 >> 4) % 5),
-    sacral: 4 + ((seed1 >> 8) % 5), 
-    solarPlexus: 4 + ((seed1 >> 12) % 5),
-    heart: 4 + ((seed2 >> 4) % 5),
-    throat: 4 + ((seed2 >> 8) % 5),
-    thirdEye: 4 + ((seed2 >> 12) % 5),
-    crown: 4 + ((seed3 >> 4) % 5)
-  };
-  
-  // Aura layer colors from the versatile array
   const auraLayerColors = {
     inner: auraColors[0]?.name || dominantColor.name,
     middle: auraColors[2]?.name || secondaryColor.name,
     outer: auraColors[4]?.name || dominantColor.name
   };
   
-  // Create color meanings (hex values handled on frontend)
-  const colorMeanings: Record<string, string> = {};
-  
-  auraColors.forEach(color => {
-    colorMeanings[color.name] = color.meaning;
-  });
-  
-  // Extract just the color names for the spectrum
   const auraColorSpectrum = auraColors.map(color => color.name);
   
   // Generate comprehensive spiritual guidance based on color combinations

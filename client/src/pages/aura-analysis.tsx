@@ -2874,8 +2874,8 @@ export default function AuraAnalysis() {
     // Define comprehensive face protection area to ensure complete face visibility
     const faceX = centerX - personWidth * 0.8;
     const faceY = centerY - personHeight * 0.9;
-    const faceWidth = personWidth * 2.0;
-    const faceHeight = personHeight * 1.0;
+    const faceWidth = personWidth * 1.0;
+    const faceHeight = personHeight * 2.0;
 
     // Create full-image background smoke base with enhanced density
     createFullImageSmokeBase(ctx, width, height, colors, energyLevel * 1.5, seededRandom, faceX, faceY, faceWidth, faceHeight);
@@ -2887,7 +2887,7 @@ export default function AuraAnalysis() {
         startX: centerX, 
         startY: centerY - personHeight * 0.3, 
         direction: { x: 0, y: -1 },
-        spread: width * 0.9,
+        spread: width * 2,
         name: 'crown',
         density: 40 // Increased density for better visibility
       },
