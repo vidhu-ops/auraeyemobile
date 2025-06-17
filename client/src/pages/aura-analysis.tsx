@@ -4299,21 +4299,36 @@ export default function AuraAnalysis() {
             }, 200);
           } catch (error) {
             console.error("Error in aura analysis:", error);
-            // Use fallback analysis if API has issues
-            setAnalysisProgress(100);
-            setAnalysisStage("Analysis complete!");
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error("Error details:", errorMessage);
+            
+            // Show error to user
+            toast({
+              title: "Analysis Failed",
+              description: errorMessage.includes("human detected") ? 
+                "Please upload an image containing a person for aura analysis." :
+                "Unable to analyze your aura. Please try again with a different image.",
+              variant: "destructive",
+            });
+            
             clearInterval(progressInterval);
-            setTimeout(() => { setIsAnalyzing(false); }, 200);
+            setIsAnalyzing(false);
           }
         }
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("Error analyzing image:", errorMessage);
+      
       toast({
         title: "Analysis Failed",
-        description: "Unable to analyze your aura. Please try again.",
+        description: errorMessage.includes("human detected") ? 
+          "Please upload an image containing a person for aura analysis." :
+          errorMessage.includes("too large") ?
+          "Image file is too large. Please use a smaller image." :
+          "Unable to analyze your aura. Please try again with a different image.",
         variant: "destructive",
       });
-      console.error("Error analyzing image:", error);
       setIsAnalyzing(false);
     }
   };

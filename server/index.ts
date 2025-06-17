@@ -4,9 +4,9 @@ import { setupVite, serveStatic, log } from "./vite";
 import { serveProductionStatic } from "./production-static";
 
 const app = express();
-// Configure body parsers with increased limits
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: false, limit: '5mb' }));
+// Configure body parsers with increased limits for image uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
