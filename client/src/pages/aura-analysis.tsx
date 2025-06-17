@@ -2617,13 +2617,25 @@ export default function AuraAnalysis() {
           const personWidth = canvas.width * 0.2; // Significantly reduced to protect face area
           const personHeight = canvas.height * 0.3; // Focus protection on face and upper torso
           
-          // Create smokey particle aura around the person
+          // Create deterministic seed from aura analysis result for consistent visualization
+          const generateSeedFromAura = (data: any): number => {
+            const seedString = `${data.dominantColor}-${data.secondaryColor}-${data.auraColors?.join('-') || ''}`;
+            let hash = 0;
+            for (let i = 0; i < seedString.length; i++) {
+              const char = seedString.charCodeAt(i);
+              hash = ((hash << 5) - hash) + char;
+              hash = hash & hash; // Convert to 32-bit integer
+            }
+            return Math.abs(hash);
+          };
+
+          // Create smokey particle aura around the person with consistent seeding
           createSmokeyAuraParticles(ctx, canvas.width, canvas.height, {
             thinkingRGB,
             receivingRGB,
             givingRGB,
             personalityRGB
-          }, auraData.energyLevel);
+          }, auraData.energyLevel, generateSeedFromAura(auraData));
         }
         
         resolve(canvas.toDataURL());
@@ -2801,19 +2813,20 @@ export default function AuraAnalysis() {
       givingRGB: { r: number, g: number, b: number },
       personalityRGB: { r: number, g: number, b: number }
     },
-    energyLevel: number
+    energyLevel: number,
+    seed?: number
   ) => {
+    // Create deterministic seeded random function
+    let currentSeed = seed || 12345;
+    const seededRandom = () => {
+      currentSeed = (currentSeed * 9301 + 49297) % 233280;
+      return currentSeed / 233280;
+    };
+
     const centerX = width / 1.5;
     const centerY = height / 1.2;
     const personWidth = width * 0.3;
     const personHeight = height * 0.2;
-    
-    // Seeded random for consistent effects
-    let seed = 12345;
-    const seededRandom = () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
 
     // Use normal blend mode for transparent smoke particles
     ctx.globalCompositeOperation = 'source-over';

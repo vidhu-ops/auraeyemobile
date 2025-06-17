@@ -465,7 +465,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
       layer: index + 1,
       color: color.name,
       meaning: `${color.name} layer energy`,
-      strength: Math.floor(Math.random() * 40) + 60
+      strength: Math.floor(seededRandom() * 40) + 60
     }))
   };
 }
