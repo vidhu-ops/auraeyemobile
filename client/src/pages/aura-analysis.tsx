@@ -2965,7 +2965,7 @@ export default function AuraAnalysis() {
         direction: { x: 1, y: 0 },
         spread: height * 1.2,
         name: 'receiving_right',
-        density: 50,
+        density: 70, // Increased density for better right-side coverage
         zone: 'right' // Receiving energy on right side
       },
       { 
@@ -3010,8 +3010,12 @@ export default function AuraAnalysis() {
               break;
               
             case 'right': // Receiving energy - right side of person
-              smokeX = (centerX + personWidth * 0.6) + (progress * width * 0.3);
-              smokeY = centerY + (seededRandom() - 0.5) * height * 0.6;
+              smokeX = (centerX + personWidth * 0.3) + (progress * width * 0.5);
+              smokeY = centerY + (seededRandom() - 0.5) * height * 0.8;
+              // Ensure coverage extends to right edge
+              if (progress > 0.5) {
+                smokeX = Math.max(smokeX, width * 0.7 + (progress - 0.5) * width * 0.6);
+              }
               break;
               
             case 'left': // Giving energy - left side of person  
@@ -3058,6 +3062,9 @@ export default function AuraAnalysis() {
 
     // Add dense perimeter smoke around all edges with increased visibility
     createPerimeterSmoke(ctx, width, height, colors, energyLevel * 1.8, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Add extra right-side coverage for receiving energy zone
+    createRightSideCoverage(ctx, width, height, colors.receivingRGB, energyLevel, seededRandom, centerX, centerY, personWidth, personHeight, faceX, faceY, faceWidth, faceHeight);
     
     // Add dedicated edge coverage to ensure smoke reaches image borders  
     createEdgeCoverage(ctx, width, height, colors, energyLevel * 1.6, seededRandom, faceX, faceY, faceWidth, faceHeight);
@@ -3535,6 +3542,65 @@ export default function AuraAnalysis() {
         ctx.fill();
       });
     });
+  };
+
+  // Function to create extra right-side coverage for receiving energy zone
+  const createRightSideCoverage = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    receivingColor: { r: number, g: number, b: number },
+    energyLevel: number,
+    seededRandom: () => number,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    // Create dense coverage on the right side of the image
+    const rightSideParticles = 150 + energyLevel * 20;
+    
+    for (let i = 0; i < rightSideParticles; i++) {
+      // Focus particles on right half of image
+      const x = (width * 0.5) + (seededRandom() * width * 0.5);
+      const y = seededRandom() * height;
+      
+      // Avoid face area
+      const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
+                        y >= faceY && y <= faceY + faceHeight;
+      
+      if (!inFaceArea) {
+        const particleSize = 50 + seededRandom() * 90;
+        const particleOpacity = 0.3 + seededRandom() * 0.4;
+        
+        // Create multiple layers for dense coverage
+        const layers = [
+          { sizeMultiplier: 1.0, opacityMultiplier: 1.0 },
+          { sizeMultiplier: 0.7, opacityMultiplier: 1.2 },
+          { sizeMultiplier: 1.3, opacityMultiplier: 0.8 }
+        ];
+        
+        layers.forEach(layer => {
+          const layerSize = particleSize * layer.sizeMultiplier;
+          const layerOpacity = particleOpacity * layer.opacityMultiplier;
+          
+          const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+          gradient.addColorStop(0, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity})`);
+          gradient.addColorStop(0.4, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.7})`);
+          gradient.addColorStop(0.8, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.3})`);
+          gradient.addColorStop(1, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, 0)`);
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    }
   };
 
   // Function to create dense atmospheric haze that fills the entire field
