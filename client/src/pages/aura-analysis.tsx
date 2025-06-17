@@ -4053,7 +4053,7 @@ export default function AuraAnalysis() {
           
           return prev + Math.random() * 8 + 3; // Faster progress increments
         });
-      }, 300); // Much faster interval
+      }, 100); // Ultra fast interval
 
       // Convert the image to base64
       const reader = new FileReader();
@@ -4131,7 +4131,7 @@ export default function AuraAnalysis() {
               setIsAnalyzing(false);
               // Set active tab to analysis to show results including visualization
               setActiveTab("analysis");
-            }, 800);
+            }, 200);
           } catch (error) {
             console.error("Error in aura analysis:", error);
             // Use fallback analysis if API has issues
@@ -4784,7 +4784,7 @@ export default function AuraAnalysis() {
                                   <div className="md:col-span-2">
                                     <h4 className="font-medium text-sm mb-3">Primary Chakras</h4>
                                     <div className="space-y-3">
-                                      {Object.entries(result.chakraActivity).map(([chakra, value]) => (
+                                      {Object.entries(result.chakraActivity || {}).map(([chakra, value]) => (
                                         <div key={chakra} className="flex items-center space-x-3">
                                           <div className="w-20 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
                                           <div className="flex-1">
