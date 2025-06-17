@@ -2876,75 +2876,79 @@ export default function AuraAnalysis() {
     const faceY = centerY - personHeight * 2.5;
     const faceWidth = personWidth * 4.0;
     const faceHeight = personHeight * 5.0;
+    
+    // Define person protection radius for smokey field effect
+    const personRadius = Math.min(personWidth, personHeight) * 0.4;
 
-    // Create softer aura effect that preserves face visibility like reference image
-    // Create a softer, more translucent aura effect around the edges
-    const gradient = ctx.createRadialGradient(
-      centerX, centerY, Math.min(width, height) * 0.1, // Small inner radius
-      centerX, centerY, Math.min(width, height) * 0.7  // Large outer radius
-    );
-    
-    // Use primary aura colors for the gradient
-    const primaryColor = colors.personalityRGB;
-    const secondaryColor = colors.thinkingRGB;
-    
-    gradient.addColorStop(0, `rgba(${primaryColor.r}, ${primaryColor.g}, ${primaryColor.b}, 0)`); // Transparent center
-    gradient.addColorStop(0.3, `rgba(${primaryColor.r}, ${primaryColor.g}, ${primaryColor.b}, 0.1)`); // Very light
-    gradient.addColorStop(0.6, `rgba(${secondaryColor.r}, ${secondaryColor.g}, ${secondaryColor.b}, 0.3)`); // Medium
-    gradient.addColorStop(1, `rgba(${secondaryColor.r}, ${secondaryColor.g}, ${secondaryColor.b}, 0.6)`); // Strong at edges
-    
-    ctx.fillStyle = gradient;
+    // Create complete smokey field that fills entire background like reference image
+    // Step 1: Fill entire image with primary aura color base
+    const baseColor = colors.personalityRGB;
+    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.7)`;
     ctx.fillRect(0, 0, width, height);
     
-    // Add subtle particle effects around the perimeter only
-    const perimeterParticles = 80 + energyLevel * 8;
+    // Step 2: Create dense smokey particle field covering entire image
+    const totalParticles = 800 + energyLevel * 100; // Much higher density
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    for (let i = 0; i < perimeterParticles; i++) {
+    for (let i = 0; i < totalParticles; i++) {
       const color = allColors[Math.floor(seededRandom() * 4)];
       
-      // Place particles only around edges, never in center face area
-      let x, y;
-      const edge = Math.floor(seededRandom() * 4);
-      const margin = Math.min(width, height) * 0.15;
+      // Place particles everywhere except person protection area
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
       
-      switch(edge) {
-        case 0: // Top edge
-          x = seededRandom() * width;
-          y = seededRandom() * margin;
-          break;
-        case 1: // Right edge  
-          x = width - (seededRandom() * margin);
-          y = seededRandom() * height;
-          break;
-        case 2: // Bottom edge
-          x = seededRandom() * width;
-          y = height - (seededRandom() * margin);
-          break;
-        default: // Left edge
-          x = seededRandom() * margin;
-          y = seededRandom() * height;
-          break;
-      }
+      // Define person protection area (larger than just face)
+      const personCenterX = centerX;
+      const personCenterY = centerY;
+      const distanceFromCenter = Math.sqrt((x - personCenterX) ** 2 + (y - personCenterY) ** 2);
       
-      // Don't place particles in face area
-      const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
-                        y >= faceY && y <= faceY + faceHeight;
-      
-      if (!inFaceArea) {
-        const particleSize = 20 + seededRandom() * 40;
-        const particleOpacity = 0.1 + seededRandom() * 0.2;
+      // Only create particles outside the person area
+      if (distanceFromCenter > personRadius) {
+        const particleSize = 30 + seededRandom() * 80;
+        const particleOpacity = 0.4 + seededRandom() * 0.6; // Much higher opacity
         
-        const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-        particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
-        particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        // Create multiple layers for dense smokey effect
+        const layers = [
+          { sizeMultiplier: 1.0, opacityMultiplier: 1.0, blur: 0 },
+          { sizeMultiplier: 1.5, opacityMultiplier: 0.7, blur: 3 },
+          { sizeMultiplier: 0.7, opacityMultiplier: 1.2, blur: 1 }
+        ];
         
-        ctx.fillStyle = particleGradient;
-        ctx.beginPath();
-        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-        ctx.fill();
+        layers.forEach(layer => {
+          const layerSize = particleSize * layer.sizeMultiplier;
+          const layerOpacity = Math.min(0.8, particleOpacity * layer.opacityMultiplier);
+          
+          if (layer.blur > 0) {
+            ctx.filter = `blur(${layer.blur}px)`;
+          }
+          
+          const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+          particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
+          particleGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.6})`);
+          particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+          
+          ctx.fillStyle = particleGradient;
+          ctx.beginPath();
+          ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.filter = 'none';
+        });
       }
     }
+    
+    // Step 3: Create gradient overlay from edges to center for depth
+    const depthGradient = ctx.createRadialGradient(
+      centerX, centerY, personRadius,
+      centerX, centerY, Math.max(width, height) * 0.8
+    );
+    
+    depthGradient.addColorStop(0, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`);
+    depthGradient.addColorStop(0.7, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.3)`);
+    depthGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.6)`);
+    
+    ctx.fillStyle = depthGradient;
+    ctx.fillRect(0, 0, width, height);
 
     // Create 4-Zone Energy Map with proper positioning around the person
     const smokeZones = [
@@ -3002,37 +3006,43 @@ export default function AuraAnalysis() {
           const progress = segment / segments;
           let smokeX, smokeY;
           
-          // Position smoke particles based on specific energy zones
+          // Position smoke particles to fill entire zones like reference image
           switch(zone.zone) {
-            case 'top': // Thinking/Mental energy - above head area
-              smokeX = centerX + (seededRandom() - 0.5) * width * 0.8;
-              smokeY = (centerY - personHeight * 0.8) - (progress * height * 0.4);
+            case 'top': // Thinking/Mental energy - entire top area
+              smokeX = seededRandom() * width;
+              smokeY = seededRandom() * (height * 0.4);
               break;
               
-            case 'right': // Receiving energy - right side of person
-              smokeX = (centerX + personWidth * 0.3) + (progress * width * 0.5);
-              smokeY = centerY + (seededRandom() - 0.5) * height * 0.8;
-              // Ensure coverage extends to right edge
-              if (progress > 0.5) {
-                smokeX = Math.max(smokeX, width * 0.7 + (progress - 0.5) * width * 0.6);
-              }
+            case 'right': // Receiving energy - entire right side
+              smokeX = (width * 0.5) + (seededRandom() * width * 0.5);
+              smokeY = seededRandom() * height;
               break;
               
-            case 'left': // Giving energy - left side of person  
-              smokeX = (centerX - personWidth * 0.6) - (progress * width * 0.3);
-              smokeY = centerY + (seededRandom() - 0.5) * height * 0.6;
+            case 'left': // Giving energy - entire left side
+              smokeX = seededRandom() * (width * 0.5);
+              smokeY = seededRandom() * height;
               break;
               
             case 'center': // Personality energy - around person center
               const angle = seededRandom() * Math.PI * 2;
-              const radius = Math.min(personWidth, personHeight) * (0.8 + progress * 0.4);
+              const radius = Math.min(personWidth, personHeight) * (0.5 + progress * 0.8);
               smokeX = centerX + Math.cos(angle) * radius;
               smokeY = centerY + Math.sin(angle) * radius;
               break;
               
             default:
-              smokeX = zone.startX;
-              smokeY = zone.startY;
+              smokeX = seededRandom() * width;
+              smokeY = seededRandom() * height;
+          }
+          
+          // Avoid person protection area for all zones
+          const personCenterX = centerX;
+          const personCenterY = centerY;
+          const distanceFromPerson = Math.sqrt((smokeX - personCenterX) ** 2 + (smokeY - personCenterY) ** 2);
+          
+          // Skip if too close to person
+          if (distanceFromPerson <= personRadius) {
+            continue;
           }
           
           // Add subtle natural movement
