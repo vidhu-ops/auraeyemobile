@@ -4035,7 +4035,7 @@ export default function AuraAnalysis() {
       setAnalysisProgress(20);
       setAnalysisStage("Initializing aura scanning...");
 
-      // Simulate progress for UX
+      // Fast progress simulation for better UX
       const progressInterval = setInterval(() => {
         setAnalysisProgress(prev => {
           if (prev >= 95) {
@@ -4044,21 +4044,17 @@ export default function AuraAnalysis() {
           }
           
           // Update stage text based on progress
-          if (prev < 30) {
-            setAnalysisStage("Preparing image for analysis...");
-          } else if (prev < 50) {
-            setAnalysisStage("Detecting energy patterns in your aura...");
+          if (prev < 40) {
+            setAnalysisStage("Analyzing energy patterns...");
           } else if (prev < 70) {
-            setAnalysisStage("Analyzing color vibrations and frequencies...");
-          } else if (prev < 85) {
-            setAnalysisStage("Connecting with your chakra energy centers...");
+            setAnalysisStage("Detecting aura colors...");
           } else {
-            setAnalysisStage("Finalizing your personalized aura reading...");
+            setAnalysisStage("Generating your reading...");
           }
           
-          return prev + Math.random() * 5 + 1;
+          return prev + Math.random() * 8 + 3; // Faster progress increments
         });
-      }, 800);
+      }, 300); // Much faster interval
 
       // Convert the image to base64
       const reader = new FileReader();

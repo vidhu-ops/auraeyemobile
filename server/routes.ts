@@ -261,9 +261,10 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   
   // Add enhanced variation factors to ensure different results for different uploads
   const uploadTime = Date.now();
-  const timeVariation = uploadTime % 100000; // Use last 5 digits for variation
-  const randomComponent = Math.floor(Math.random() * 50000); // Add pure randomness for image differentiation
-  const sessionVariation = Math.floor(Math.random() * 25000); // Additional session-based variation
+  const timeVariation = (uploadTime % 100000) + Math.floor(Math.random() * 10000);
+  const randomComponent = Math.floor(Math.random() * 99999); // Strong randomness for image differentiation
+  const sessionVariation = Math.floor(Math.random() * 99999); // Strong session-based variation
+  const uploadVariation = Math.floor(Math.random() * 99999); // Per-upload variation
   
   // Enhanced image characteristics for maximum differentiation
   const imageSize = imageBuffer.length;
@@ -292,9 +293,9 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   }
   
   // Combine all entropy sources including time and random variation for maximum image differentiation
-  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent + sessionVariation;
-  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41 + sessionVariation * 53) % 999983;
-  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43 + sessionVariation * 47) % 1000003;
+  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent + sessionVariation + uploadVariation;
+  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41 + sessionVariation * 53 + uploadVariation * 67) % 999983;
+  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43 + sessionVariation * 47 + uploadVariation * 59) % 1000003;
   
   // Use image color analysis to influence aura color selection
   const colorInfluence = {
@@ -344,99 +345,33 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "graphite", hex: "#41424C", meaning: "Creative shadow integration, artistic depth" }
   ];
   
-  // Generate 6-8 diverse colors ensuring vivid results
-  const colorCount = 6 + (seed1 % 3); // Always 6, 7, or 8 colors
+  // Fast color generation with maximum variety
+  const colorCount = 6 + (Math.floor(Math.random() * 3)); // 6-8 colors with true randomness
   const auraColors = [];
   const usedIndices = new Set();
   
-  // Enhanced distribution algorithm with stronger anti-repetition controls
-  const avoidRepetitiveIndices = [5, 6, 7]; // Avoid indigo, violet, and purple indices for primary colors
-  const preferredPrimaryIndices = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16]; // Prefer diverse colors for primaries
-  
-  // Define color family groups for diversity enforcement
-  const colorFamilyGroups = [
-    [0, 14], // red family
-    [1, 13], // orange family  
-    [2, 9, 15], // yellow/gold family
-    [3, 16, 19, 23], // green family
-    [4, 11, 17, 21], // blue family
-    [8], // pink family
-    [10], // silver family
-    [12, 18, 20, 22] // other diverse colors
-  ];
-  
-  // Track which color families have been used across all iterations
-  const globalUsedGroupIndices = new Set();
+  // Bright diverse colors (exclude dark repetitive ones like indigo, violet, purple)
+  const brightColors = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
   
   for (let i = 0; i < colorCount; i++) {
-    // Create maximally varied seeds using comprehensive entropy sources
-    const baseSeed = (seed1 * (i + 1)) ^ (seed2 << (i + 2)) ^ (seed3 >>> (i + 1)) ^ 
-                    (seed4 * (i + 3)) ^ (seed5 << (i + 4)) ^ (complexitySeed * (i * i + 1));
-    const imageSizeFactor = (imageSize % 997) * (i + 1);
-    const entropyFactor = (dataEntropy >>> (i % 4)) * (i + 7);
-    const pixelFactor = (pixelVariation * (i + 1)) % 2003;
-    const colorFactor = (colorDistribution << (i % 3)) * (i + 5);
-    const edgeFactor = (edgeEntropy * (i + 2)) % 3001;
-    const uniqueFactor = (uniquenessFactor * (i + 1)) % 5003;
-    const signatureFactor = (imageSignature * (i + 1)) % 1009;
+    let colorIndex;
     
-    const combinedSeed = baseSeed + imageSizeFactor + entropyFactor + pixelFactor + 
-                        colorFactor + edgeFactor + uniqueFactor + signatureFactor + timeVariation + randomComponent + (i * 12289);
-    
-    let colorIndex = Math.abs(combinedSeed) % enhancedColors.length;
-    
-    // For primary colors (first 4), enforce strong diversity and avoid repetitive colors
+    // For first 4 colors, use bright diverse colors only
     if (i < 4) {
-      // Force selection from preferred primary colors for first 4 positions with enhanced mapping
-      if (avoidRepetitiveIndices.includes(colorIndex) || !preferredPrimaryIndices.includes(colorIndex)) {
-        // Use multiple entropy factors to map to preferred primary colors
-        const mappingSeed = combinedSeed + pixelFactor + edgeFactor + (i * 1337);
-        const preferredIndex = Math.abs(mappingSeed) % preferredPrimaryIndices.length;
-        colorIndex = preferredPrimaryIndices[preferredIndex];
-      }
-      
-      // Find which color family the current selection belongs to
-      let currentGroupIdx = -1;
-      for (let groupIdx = 0; groupIdx < colorFamilyGroups.length; groupIdx++) {
-        if (colorFamilyGroups[groupIdx].includes(colorIndex)) {
-          currentGroupIdx = groupIdx;
-          break;
-        }
-      }
-      
-      // If this family has already been used or it's indigo/violet family, find a new one
-      if (currentGroupIdx !== -1 && globalUsedGroupIndices.has(currentGroupIdx)) {
-        // Find an unused family group
-        let newGroupIdx = -1;
-        for (let groupIdx = 0; groupIdx < colorFamilyGroups.length; groupIdx++) {
-          if (!globalUsedGroupIndices.has(groupIdx)) {
-            newGroupIdx = groupIdx;
-            break;
-          }
-        }
-        
-        // If no unused families, pick using maximum entropy for differentiation
-        if (newGroupIdx === -1) {
-          const familySelector = (currentGroupIdx + 3 + (pixelFactor % 4) + (edgeFactor % 3)) % colorFamilyGroups.length;
-          newGroupIdx = familySelector;
-        }
-        
-        // Select a color from the new family using all entropy sources
-        const newGroup = colorFamilyGroups[newGroupIdx];
-        const familySeed = combinedSeed + pixelFactor + colorFactor + (i * 2003);
-        const newColorIdx = Math.abs(familySeed) % newGroup.length;
-        colorIndex = newGroup[newColorIdx];
-        globalUsedGroupIndices.add(newGroupIdx);
-      } else if (currentGroupIdx !== -1) {
-        globalUsedGroupIndices.add(currentGroupIdx);
-      }
+      colorIndex = brightColors[Math.floor(Math.random() * brightColors.length)];
+    } else {
+      // For remaining colors, use full palette
+      colorIndex = Math.floor(Math.random() * enhancedColors.length);
     }
     
-    // Ensure uniqueness with enhanced spacing
+    // Ensure uniqueness with simple check
     let attempts = 0;
-    while (usedIndices.has(colorIndex) && attempts < enhancedColors.length) {
-      const spacing = 11 + (combinedSeed % 7) + (attempts * 3);
-      colorIndex = (colorIndex + spacing) % enhancedColors.length;
+    while (usedIndices.has(colorIndex) && attempts < 20) {
+      if (i < 4) {
+        colorIndex = brightColors[Math.floor(Math.random() * brightColors.length)];
+      } else {
+        colorIndex = Math.floor(Math.random() * enhancedColors.length);
+      }
       attempts++;
     }
     
