@@ -2946,43 +2946,47 @@ export default function AuraAnalysis() {
       }
     }
 
-    // Create natural smoke flows from different body zones extending to image edges
+    // Create 4-Zone Energy Map with proper positioning around the person
     const smokeZones = [
       { 
         color: colors.thinkingRGB, 
         startX: centerX, 
-        startY: centerY - personHeight * 0.3, 
+        startY: centerY - personHeight * 0.8, 
         direction: { x: 0, y: -1 },
-        spread: width * 2,
-        name: 'crown',
-        density: 40 // Increased density for better visibility
+        spread: width * 1.5,
+        name: 'thinking_top',
+        density: 60,
+        zone: 'top' // Mental/spiritual energy above head
       },
       { 
         color: colors.receivingRGB, 
-        startX: centerX + personWidth * 0.3, 
+        startX: centerX + personWidth * 0.6, 
         startY: centerY, 
         direction: { x: 1, y: 0 },
-        spread: height * 0.9,
-        name: 'right',
-        density: 40
+        spread: height * 1.2,
+        name: 'receiving_right',
+        density: 50,
+        zone: 'right' // Receiving energy on right side
       },
       { 
         color: colors.givingRGB, 
-        startX: centerX - personWidth * 0.3, 
+        startX: centerX - personWidth * 0.6, 
         startY: centerY, 
         direction: { x: -1, y: 0 },
-        spread: height * 0.9,
-        name: 'left',
-        density: 40
+        spread: height * 1.2,
+        name: 'giving_left',
+        density: 50,
+        zone: 'left' // Giving energy on left side
       },
       { 
         color: colors.personalityRGB, 
         startX: centerX, 
-        startY: centerY + personHeight * 0.3, 
-        direction: { x: 0, y: 1 },
-        spread: width * 0.9,
-        name: 'base',
-        density: 30
+        startY: centerY, 
+        direction: { x: 0, y: 0 },
+        spread: Math.min(width, height) * 0.8,
+        name: 'personality_center',
+        density: 40,
+        zone: 'center' // Core personality energy around center
       }
     ];
 
@@ -2990,41 +2994,58 @@ export default function AuraAnalysis() {
       const smokeWisps = zone.density * 3 + Math.floor(energyLevel * 12); // Triple density for mystical effect
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
-        // Create flowing smoke trail that extends to image edges
+        // Create zone-specific smoke positioning based on 4-Zone Energy Map
         const trailPoints = [];
-        const maxDistance = Math.max(width, height);
-        const segments = 35 + Math.floor(seededRandom() * 20);
+        const segments = 25 + Math.floor(seededRandom() * 15);
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
-          const distance = maxDistance * progress * 1.2; // Extended distance beyond image bounds
+          let smokeX, smokeY;
           
-          // Add natural turbulence and wind effects
-          const turbulenceX = Math.sin(progress * Math.PI * 8 + zoneIndex + wisp) * 80 * progress;
-          const turbulenceY = Math.cos(progress * Math.PI * 6 + zoneIndex + wisp) * 60 * progress;
+          // Position smoke particles based on specific energy zones
+          switch(zone.zone) {
+            case 'top': // Thinking/Mental energy - above head area
+              smokeX = centerX + (seededRandom() - 0.5) * width * 0.8;
+              smokeY = (centerY - personHeight * 0.8) - (progress * height * 0.4);
+              break;
+              
+            case 'right': // Receiving energy - right side of person
+              smokeX = (centerX + personWidth * 0.6) + (progress * width * 0.3);
+              smokeY = centerY + (seededRandom() - 0.5) * height * 0.6;
+              break;
+              
+            case 'left': // Giving energy - left side of person  
+              smokeX = (centerX - personWidth * 0.6) - (progress * width * 0.3);
+              smokeY = centerY + (seededRandom() - 0.5) * height * 0.6;
+              break;
+              
+            case 'center': // Personality energy - around person center
+              const angle = seededRandom() * Math.PI * 2;
+              const radius = Math.min(personWidth, personHeight) * (0.8 + progress * 0.4);
+              smokeX = centerX + Math.cos(angle) * radius;
+              smokeY = centerY + Math.sin(angle) * radius;
+              break;
+              
+            default:
+              smokeX = zone.startX;
+              smokeY = zone.startY;
+          }
           
-          // Calculate spread based on zone to fill entire image including edges
-          const spread = (seededRandom() - 0.5) * zone.spread * (0.8 + progress * 0.8);
+          // Add subtle natural movement
+          const turbulence = 20 + progress * 30;
+          smokeX += Math.sin(progress * Math.PI * 4 + wisp) * turbulence;
+          smokeY += Math.cos(progress * Math.PI * 3 + wisp) * turbulence;
           
-          const smokeX = zone.startX + 
-                        zone.direction.x * distance + 
-                        (zone.direction.y !== 0 ? spread : turbulenceX);
-          const smokeY = zone.startY + 
-                        zone.direction.y * distance + 
-                        (zone.direction.x !== 0 ? spread : turbulenceY);
+          // Keep within image bounds
+          smokeX = Math.max(0, Math.min(width, smokeX));
+          smokeY = Math.max(0, Math.min(height, smokeY));
           
-          // Allow smoke to extend to and beyond image edges - clamp to bounds
-          const clampedX = Math.max(-50, Math.min(width + 50, smokeX));
-          const clampedY = Math.max(-50, Math.min(height + 50, smokeY));
+          // Check if not in face protection area
+          const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                            smokeY >= faceY && smokeY <= faceY + faceHeight;
           
-          // Check if point is within extended bounds and not in face area
-          if (clampedX >= -20 && clampedX <= width + 20 && clampedY >= -20 && clampedY <= height + 20) {
-            const inFaceArea = clampedX >= faceX && clampedX <= faceX + faceWidth &&
-                              clampedY >= faceY && clampedY <= faceY + faceHeight;
-            
-            if (!inFaceArea) {
-              trailPoints.push({ x: clampedX, y: clampedY, progress });
-            }
+          if (!inFaceArea) {
+            trailPoints.push({ x: smokeX, y: smokeY, progress });
           }
         }
         
