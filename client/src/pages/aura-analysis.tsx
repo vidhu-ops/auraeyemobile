@@ -2854,10 +2854,10 @@ export default function AuraAnalysis() {
     
     // Create a subtle gradient that fades smoke away from face area
     const clearanceGradient = ctx.createRadialGradient(
-      centerX, centerY - personHeight * 0.2, // Face center
-      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.2, // Inner clear radius
-      centerX, centerY - personHeight * 0.2, // Face center
-      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8 // Outer fade radius
+      centerX, centerY - personHeight * 0.5, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.4, // Inner clear radius
+      centerX, centerY - personHeight * 0.5, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.9 // Outer fade radius
     );
     
     clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
@@ -2911,16 +2911,16 @@ export default function AuraAnalysis() {
       const y = seededRandom() * height;
       
       // Define person protection area - rectangular for full body visibility
-      const personLeft = centerX - personWidth * 0.55;
-      const personRight = centerX + personWidth * 0.55;
-      const personTop = centerY - personHeight * 0.75;
+      const personLeft = centerX - personWidth * 0.42;
+      const personRight = centerX + personWidth * 0.42;
+      const personTop = centerY - personHeight * 0.6;
       const personBottom = centerY + personHeight * 0.75;
       
       // Check if particle is outside person area
       const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
       
       if (outsidePersonArea) {
-        const particleSize = 25 + seededRandom() * 60;
+        const particleSize = 3 + seededRandom() * 60;
         const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for better visibility
         
         // Create single optimized layer for performance and clarity
@@ -3086,7 +3086,7 @@ export default function AuraAnalysis() {
     createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
     
     // Add dense atmospheric haze that fills the entire field for mystical effect
-    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth * 1.2, faceHeight * 2);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
