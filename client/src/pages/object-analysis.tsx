@@ -997,45 +997,7 @@ export default function ObjectAnalysis() {
                               </div>
                             )}
                             
-                            {/* Historical Significance Section */}
-                            {result.historicalSignificance && (
-                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-                                <h4 className="font-medium text-sm mb-2">Historical Significance</h4>
-                                <p className="text-sm text-gray-700">
-                                  {result.historicalSignificance}
-                                </p>
-                              </div>
-                            )}
-                            
-                            {/* Energy Recommendations Section */}
-                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-4 border border-emerald-100">
-                              <h4 className="font-medium text-sm mb-3">Usage Recommendations</h4>
-                              <p className="text-sm text-gray-700 mb-3">
-                                {result.auraColor} consciousness signature activates specific chakra frequencies and enhances spiritual development through authentic color vibration energy fields.
-                              </p>
-                              
-                              <h5 className="font-medium text-xs mb-2">Recommendations for Use:</h5>
-                              <ul className="text-xs list-disc list-inside space-y-1 text-gray-700">
-                                <li>Sacred placement for {result.auraColor.toLowerCase()} energy activation - position where divine consciousness can flow freely through your spiritual practice space</li>
-                                <li>Consider combining with {
-                                  result.auraColor.toLowerCase() === 'red' ? 'black tourmaline for grounding excess energy' :
-                                  result.auraColor.toLowerCase() === 'blue' ? 'clear quartz to amplify communication properties' :
-                                  result.auraColor.toLowerCase() === 'green' ? 'rose quartz to enhance heart-centered healing' :
-                                  result.auraColor.toLowerCase() === 'purple' ? 'amethyst to deepen spiritual awareness' :
-                                  result.auraColor.toLowerCase() === 'yellow' ? 'citrine to boost positive mental energy' :
-                                  `sacred ${result.auraColor.toLowerCase()} frequency crystals to amplify chakra activation and spiritual consciousness`
-                                }</li>
-                                <li>Sacred activation through {result.auraColor.toLowerCase()} consciousness meditation and daily spiritual practice with divine intention and authentic soul connection</li>
-                                <li>Sacred cleansing with {
-                                  result.auraColor.toLowerCase().includes('water') || 
-                                  result.auraColor.toLowerCase() === 'blue' ? 'moonlight or sound' :
-                                  result.auraColor.toLowerCase().includes('fire') || 
-                                  result.auraColor.toLowerCase() === 'red' || 
-                                  result.auraColor.toLowerCase() === 'orange' ? 'sunlight or smoke' :
-                                  `${result.auraColor.toLowerCase()} frequency energy clearing through meditation and spiritual intention`
-                                } to maintain divine vibration and spiritual purity</li>
-                              </ul>
-                            </div>
+
                           </div>
                         </TabsContent>
                         
