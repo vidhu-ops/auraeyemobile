@@ -2858,6 +2858,8 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
   };
 
+
+
   // Function to create natural smoke wisps that flow around the person
   const createNaturalSmokeWisps = (
     ctx: CanvasRenderingContext2D,
@@ -3058,23 +3060,8 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add dense perimeter smoke around all edges with increased visibility
-    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 1.8, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add extra right-side coverage for receiving energy zone
-    createRightSideCoverage(ctx, width, height, colors.receivingRGB, energyLevel, seededRandom, centerX, centerY, personWidth, personHeight, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add dedicated edge coverage to ensure smoke reaches image borders  
-    createEdgeCoverage(ctx, width, height, colors, energyLevel * 1.6, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add concentrated color zones for maximum visibility of all 4 Energy Map colors
-    createConcentratedColorDisplay(ctx, width, height, colors, energyLevel, seededRandom, centerX, centerY, personProtectionRadius);
-    
-    // Add enhanced personality color perimeter halo effect
-    createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add dense atmospheric haze that fills the entire field for mystical effect
-    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add final clearance pass to ensure person remains visible
+    createPersonClearanceEffect(ctx, centerX, centerY, personProtectionRadius);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
