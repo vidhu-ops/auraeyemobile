@@ -1506,9 +1506,9 @@ export default function AuraAnalysis() {
 
   const getOverallEnergyInterpretation = (color: string): string => {
     const overallInterpretations: Record<string, string> = {
-      'Red': 'Overall Red Energy - Highly spiritual phase, embodying divine purpose and deeper alignment. Currently learning the integration of true emotional power while enhancing with new layers of confidence. This phase brings movement into life while staying rooted.',
-      'Orange': 'Overall Orange Energy - Healer presence with calm and heart-centered frequency, living boldly and with self-worth and independence. Channeling creativity in consistent and meaningful ways, balancing drive with emotional regulation.',
-      'Yellow': 'Overall Yellow Energy - Radiant, confident, strong-willed individual in active growth, joyful and magnetic energy with enthusiasm for life. Maintaining confident energy while processing personal empowerment and leadership development.',
+      'Red': 'Master healer energy, a teacher and guide on a mission. Spiritually elevated being, sensitive and light-filled energy field.',
+      'Orange': 'Mystic presence, sensitive and responsive, grounded guidance. Deeply rooted energy, wise, nurturing and structured.',
+      'Yellow': 'Radiant, confident, strong-willed individual in active growth. Joyful and magnetic energy, radiating enthusiasm for life.',
       'Green': 'Healer presence with calm and heart-centered frequency, giving others presence and attention, generously open and genuine presence.',
       'Pink': 'Radiant, confident, strong-willed individual in active growth. Joyful and magnetic energy, radiating enthusiasm for life.',
       'Blue': 'Healer presence with calm and heart-centered frequency, giving others openness, presence and generous attention. Learning to protect energy and feel safe in the physical world.',
