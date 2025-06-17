@@ -3061,7 +3061,19 @@ export default function AuraAnalysis() {
     });
 
     // Add final clearance pass to ensure person remains visible
-    createPersonClearanceEffect(ctx, centerX, centerY, personProtectionRadius);
+    ctx.globalCompositeOperation = 'destination-out';
+    const clearanceGradient = ctx.createRadialGradient(
+      centerX, centerY, personProtectionRadius * 0.6,
+      centerX, centerY, personProtectionRadius
+    );
+    clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+    clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.3)');
+    clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = clearanceGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, personProtectionRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
