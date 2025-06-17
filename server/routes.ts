@@ -259,10 +259,11 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const seed4 = parseInt(hash.substring(24, 32), 16);
   const seed5 = parseInt(hash.substring(32, 40), 16);
   
-  // Add timestamp-based variation and random component to ensure different results for different uploads
+  // Add enhanced variation factors to ensure different results for different uploads
   const uploadTime = Date.now();
   const timeVariation = uploadTime % 100000; // Use last 5 digits for variation
   const randomComponent = Math.floor(Math.random() * 50000); // Add pure randomness for image differentiation
+  const sessionVariation = Math.floor(Math.random() * 25000); // Additional session-based variation
   
   // Enhanced image characteristics for maximum differentiation
   const imageSize = imageBuffer.length;
@@ -291,9 +292,9 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   }
   
   // Combine all entropy sources including time and random variation for maximum image differentiation
-  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent;
-  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41) % 999983;
-  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43) % 1000003;
+  const complexitySeed = (seed1 ^ seed2 ^ seed3 ^ seed4 ^ seed5) + sizeVariation + dataEntropy + pixelVariation + timeVariation + imagePattern + randomComponent + sessionVariation;
+  const imageSignature = (seed1 + seed2 * 31 + seed3 * 97 + seed4 * 137 + seed5 * 211 + colorDistribution + edgeEntropy + timeVariation * 17 + imagePattern * 29 + randomComponent * 41 + sessionVariation * 53) % 999983;
+  const uniquenessFactor = (dataEntropy * 7 + pixelVariation * 11 + edgeEntropy * 13 + timeVariation * 19 + imagePattern * 37 + randomComponent * 43 + sessionVariation * 47) % 1000003;
   
   // Use image color analysis to influence aura color selection
   const colorInfluence = {
@@ -890,32 +891,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Image hash cache for consistent results
   const imageHashCache = new Map<string, any>();
 
-  // Helper function to detect if image contains room/area/distant objects
+  // Enhanced function to detect human presence vs room/area images
   function detectRoomOrAreaImage(imageBuffer: Buffer): boolean {
-    // Basic heuristics to detect room/area images:
-    // 1. Large file size (rooms tend to have more detail)
-    // 2. Complex color distribution (multiple objects/furniture)
-    // 3. Edge complexity (architectural features)
-    
     const imageSize = imageBuffer.length;
-    const isLargeImage = imageSize > 500000; // 500KB threshold
     
-    // Analyze color distribution complexity
-    let colorVariation = 0;
-    for (let i = 0; i < Math.min(1000, imageBuffer.length); i += 10) {
-      colorVariation += Math.abs(imageBuffer[i] - imageBuffer[Math.min(i + 5, imageBuffer.length - 1)]);
+    // Analyze human indicators vs room indicators
+    let skinTonePixels = 0;
+    let clothingPixels = 0;
+    let furniturePixels = 0;
+    let architecturalPixels = 0;
+    let sampledPixels = 0;
+    
+    // Sample pixels throughout the image for analysis
+    const sampleSize = Math.min(2000, imageBuffer.length);
+    for (let i = 0; i < sampleSize; i += 4) {
+      if (i + 2 < imageBuffer.length) {
+        const r = imageBuffer[i];
+        const g = imageBuffer[i + 1]; 
+        const b = imageBuffer[i + 2];
+        sampledPixels++;
+        
+        // Enhanced skin tone detection for all ethnicities
+        const isSkinTone = (r > 70 && g > 50 && b > 40 && r > g && r > b) ||
+                          (r > 150 && g > 120 && b > 90 && r - g < 60) ||
+                          (r > 40 && r < 100 && g > 30 && g < 80 && b > 20 && b < 70);
+        
+        // Common clothing colors
+        const isClothing = (r < 60 && g < 60 && b < 60) || // Dark clothing
+                          (r > 200 && g > 200 && b > 200) || // Light clothing
+                          (b > r + 20 && b > g + 15 && b > 60); // Blue clothing
+        
+        // Furniture/room indicators (browns, grays, beiges)
+        const isFurniture = (r > 80 && r < 160 && g > 60 && g < 140 && b > 40 && b < 120 && 
+                           Math.abs(r - g) < 40 && Math.abs(g - b) < 40) ||
+                          (r > 150 && g > 140 && b > 120 && r - b < 50); // Wood/beige tones
+        
+        // Architectural elements (whites, grays, concrete colors)
+        const isArchitectural = (r > 180 && g > 180 && b > 180) || // White walls
+                               (Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && r > 100 && r < 160); // Gray tones
+        
+        if (isSkinTone) skinTonePixels++;
+        if (isClothing) clothingPixels++;
+        if (isFurniture) furniturePixels++;
+        if (isArchitectural) architecturalPixels++;
+      }
     }
-    const hasHighColorVariation = colorVariation > 50000;
     
-    // Analyze edge complexity (many edges suggest room/architecture)
-    let edgeComplexity = 0;
-    for (let i = 0; i < Math.min(500, imageBuffer.length); i += 20) {
-      edgeComplexity += Math.abs(imageBuffer[i] - imageBuffer[Math.min(i + 10, imageBuffer.length - 1)]);
-    }
-    const hasHighEdgeComplexity = edgeComplexity > 25000;
+    // Calculate ratios
+    const skinRatio = skinTonePixels / sampledPixels;
+    const clothingRatio = clothingPixels / sampledPixels;
+    const furnitureRatio = furniturePixels / sampledPixels;
+    const architecturalRatio = architecturalPixels / sampledPixels;
     
-    // Room/area detection: large size + high color variation + high edge complexity
-    return isLargeImage && hasHighColorVariation && hasHighEdgeComplexity;
+    // Human presence indicators
+    const hasHumanPresence = skinRatio > 0.01 && (clothingRatio > 0.05 || skinRatio > 0.03);
+    
+    // Room/area indicators
+    const hasRoomElements = (furnitureRatio > 0.15 || architecturalRatio > 0.20) && 
+                           furnitureRatio + architecturalRatio > 0.25;
+    
+    // Return true if it's clearly a room/area (not human-focused)
+    return hasRoomElements && !hasHumanPresence;
   }
 
   // Aura Analysis API endpoint

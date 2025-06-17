@@ -4016,17 +4016,17 @@ export default function AuraAnalysis() {
     setCurrentAnalysisId(null);
 
     try {
-      // Check for human face first
+      // Check for human presence (face or full body)
       setAnalysisProgress(10);
-      setAnalysisStage("Scanning for human face...");
+      setAnalysisStage("Scanning for human presence...");
       
-      const hasFace = await detectHumanFace(file);
+      const hasHuman = await detectHumanFace(file);
       
-      if (!hasFace) {
+      if (!hasHuman) {
         setIsAnalyzing(false);
         toast({
-          title: "No Human Face Detected",
-          description: "Aura analysis requires an image with a human face. Please upload a photo of yourself or another person.",
+          title: "No Human Detected",
+          description: "Aura analysis requires an image with a human being. Please upload a photo of yourself or another person (face or full body).",
           variant: "destructive",
         });
         return;
