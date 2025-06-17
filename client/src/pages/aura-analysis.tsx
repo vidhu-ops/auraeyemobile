@@ -2871,11 +2871,11 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Define comprehensive face protection area to ensure complete face visibility like the reference image
-    const faceX = centerX - personWidth * 2.0;
-    const faceY = centerY - personHeight * 2.5;
-    const faceWidth = personWidth * 4.0;
-    const faceHeight = personHeight * 5.0;
+    // Define comprehensive person protection area to ensure complete person visibility like the reference image
+    const faceX = centerX - personWidth * 0.6;
+    const faceY = centerY - personHeight * 0.8;
+    const faceWidth = personWidth * 1.2;
+    const faceHeight = personHeight * 1.6;
     
     // Define person protection radius for smokey field effect
     const personRadius = Math.min(personWidth, personHeight) * 0.4;
@@ -2883,7 +2883,7 @@ export default function AuraAnalysis() {
     // Create complete smokey field that fills entire background like reference image
     // Step 1: Fill entire image with primary aura color base
     const baseColor = colors.personalityRGB;
-    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.7)`;
+    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.25)`;
     ctx.fillRect(0, 0, width, height);
     
     // Step 2: Create dense smokey particle field covering entire image
@@ -2905,7 +2905,7 @@ export default function AuraAnalysis() {
       // Only create particles outside the person area
       if (distanceFromCenter > personRadius) {
         const particleSize = 30 + seededRandom() * 80;
-        const particleOpacity = 0.4 + seededRandom() * 0.6; // Much higher opacity
+        const particleOpacity = 0.15 + seededRandom() * 0.25; // Reduced opacity for person visibility
         
         // Create multiple layers for dense smokey effect
         const layers = [
@@ -2944,8 +2944,8 @@ export default function AuraAnalysis() {
     );
     
     depthGradient.addColorStop(0, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`);
-    depthGradient.addColorStop(0.7, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.3)`);
-    depthGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.6)`);
+    depthGradient.addColorStop(0.7, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.1)`);
+    depthGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.25)`);
     
     ctx.fillStyle = depthGradient;
     ctx.fillRect(0, 0, width, height);
@@ -3038,10 +3038,11 @@ export default function AuraAnalysis() {
           // Avoid person protection area for all zones
           const personCenterX = centerX;
           const personCenterY = centerY;
+          const personProtectionRadius = Math.min(personWidth, personHeight) * 0.35; // Smaller radius for better visibility
           const distanceFromPerson = Math.sqrt((smokeX - personCenterX) ** 2 + (smokeY - personCenterY) ** 2);
           
           // Skip if too close to person
-          if (distanceFromPerson <= personRadius) {
+          if (distanceFromPerson <= personProtectionRadius) {
             continue;
           }
           
@@ -3242,7 +3243,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 60 + seededRandom() * 120; // Much larger smoke particles
-          const smokeOpacity = 0.18 + seededRandom() * 0.25; // Higher opacity for mystical density
+          const smokeOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for person visibility
           
           drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
         }
@@ -3271,9 +3272,9 @@ export default function AuraAnalysis() {
     
     // Create multiple layers of smoke for depth and mystical appearance
     const smokeLayers = [
-      { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.12, 0.24] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [50, 120], opacity: [0.15, 0.28] }, // Medium layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [25, 80], opacity: [0.18, 0.32] }   // Detail layer
+      { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.06, 0.12] }, // Large background layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [50, 120], opacity: [0.08, 0.15] }, // Medium layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [25, 80], opacity: [0.10, 0.18] }   // Detail layer
     ];
     
     smokeLayers.forEach(layer => {
