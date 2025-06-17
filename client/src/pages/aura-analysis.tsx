@@ -2881,13 +2881,13 @@ export default function AuraAnalysis() {
     const personRadius = Math.min(personWidth, personHeight) * 0.4;
 
     // Create complete smokey field that fills entire background like reference image
-    // Step 1: Fill entire image with primary aura color base
+    // Step 1: Fill entire image with subtle primary aura color base
     const baseColor = colors.personalityRGB;
-    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.25)`;
+    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.12)`;
     ctx.fillRect(0, 0, width, height);
     
-    // Step 2: Create dense smokey particle field covering entire image
-    const totalParticles = 800 + energyLevel * 100; // Much higher density
+    // Step 2: Create smokey particle field covering entire image while preserving person visibility
+    const totalParticles = 600 + energyLevel * 80; // Optimized density for visibility
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < totalParticles; i++) {
@@ -2897,55 +2897,41 @@ export default function AuraAnalysis() {
       const x = seededRandom() * width;
       const y = seededRandom() * height;
       
-      // Define person protection area (larger than just face)
-      const personCenterX = centerX;
-      const personCenterY = centerY;
-      const distanceFromCenter = Math.sqrt((x - personCenterX) ** 2 + (y - personCenterY) ** 2);
+      // Define person protection area - rectangular for full body visibility
+      const personLeft = centerX - personWidth * 0.55;
+      const personRight = centerX + personWidth * 0.55;
+      const personTop = centerY - personHeight * 0.75;
+      const personBottom = centerY + personHeight * 0.75;
       
-      // Only create particles outside the person area
-      if (distanceFromCenter > personRadius) {
-        const particleSize = 30 + seededRandom() * 80;
-        const particleOpacity = 0.15 + seededRandom() * 0.25; // Reduced opacity for person visibility
+      // Check if particle is outside person area
+      const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
+      
+      if (outsidePersonArea) {
+        const particleSize = 25 + seededRandom() * 60;
+        const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for better visibility
         
-        // Create multiple layers for dense smokey effect
-        const layers = [
-          { sizeMultiplier: 1.0, opacityMultiplier: 1.0, blur: 0 },
-          { sizeMultiplier: 1.5, opacityMultiplier: 0.7, blur: 3 },
-          { sizeMultiplier: 0.7, opacityMultiplier: 1.2, blur: 1 }
-        ];
+        // Create single optimized layer for performance and clarity
+        const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+        particleGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.5})`);
+        particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
         
-        layers.forEach(layer => {
-          const layerSize = particleSize * layer.sizeMultiplier;
-          const layerOpacity = Math.min(0.8, particleOpacity * layer.opacityMultiplier);
-          
-          if (layer.blur > 0) {
-            ctx.filter = `blur(${layer.blur}px)`;
-          }
-          
-          const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
-          particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
-          particleGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.6})`);
-          particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-          
-          ctx.fillStyle = particleGradient;
-          ctx.beginPath();
-          ctx.arc(x, y, layerSize, 0, Math.PI * 2);
-          ctx.fill();
-          
-          ctx.filter = 'none';
-        });
+        ctx.fillStyle = particleGradient;
+        ctx.beginPath();
+        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
     
-    // Step 3: Create gradient overlay from edges to center for depth
+    // Step 3: Create subtle gradient overlay that preserves person visibility
     const depthGradient = ctx.createRadialGradient(
-      centerX, centerY, personRadius,
-      centerX, centerY, Math.max(width, height) * 0.8
+      centerX, centerY, Math.min(personWidth, personHeight) * 0.6,
+      centerX, centerY, Math.max(width, height) * 0.7
     );
     
     depthGradient.addColorStop(0, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`);
-    depthGradient.addColorStop(0.7, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.1)`);
-    depthGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.25)`);
+    depthGradient.addColorStop(0.6, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.05)`);
+    depthGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.15)`);
     
     ctx.fillStyle = depthGradient;
     ctx.fillRect(0, 0, width, height);
@@ -3055,11 +3041,11 @@ export default function AuraAnalysis() {
           smokeX = Math.max(0, Math.min(width, smokeX));
           smokeY = Math.max(0, Math.min(height, smokeY));
           
-          // Check if not in face protection area
-          const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                            smokeY >= faceY && smokeY <= faceY + faceHeight;
+          // Check if not in person protection area
+          const inPersonArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                               smokeY >= faceY && smokeY <= faceY + faceHeight;
           
-          if (!inFaceArea) {
+          if (!inPersonArea) {
             trailPoints.push({ x: smokeX, y: smokeY, progress });
           }
         }
@@ -3523,7 +3509,7 @@ export default function AuraAnalysis() {
       
       // Much larger smoke particles for dense mystical trails
       const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
-      const baseOpacity = 0.2 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Dramatically increased opacity
+      const baseOpacity = 0.08 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Reduced for person visibility
       
       // Create multiple layers for dense trail effect
       const trailLayers = [
