@@ -104,33 +104,65 @@ export default function ObjectAnalysis() {
     };
 
     // Object detection (assume object is in center area)
-    const objectX = width * 0.2;
-    const objectY = height * 0.2;
-    const objectWidth = width * 0.6;
-    const objectHeight = height * 0.6;
+    const objectX = width * 0.15;
+    const objectY = height * 0.15;
+    const objectWidth = width * 0.7;
+    const objectHeight = height * 0.7;
 
-    // Create multiple layers of smoke around the object
-    const particleCount = 200 + energyLevel * 20;
+    // Create vibrant aura glow around object perimeter first
+    const centerX = objectX + objectWidth / 2;
+    const centerY = objectY + objectHeight / 2;
+    const maxRadius = Math.min(objectWidth, objectHeight) * 0.8;
+    
+    // Create radial gradient for strong aura glow
+    const auraGradient = ctx.createRadialGradient(
+      centerX, centerY, maxRadius * 0.3,
+      centerX, centerY, maxRadius * 1.2
+    );
+    auraGradient.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.6)`);
+    auraGradient.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.4)`);
+    auraGradient.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.2)`);
+    auraGradient.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    
+    ctx.fillStyle = auraGradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Create multiple layers of dense smoke around the object
+    const particleCount = 300 + energyLevel * 40;
     
     for (let i = 0; i < particleCount; i++) {
-      // Create particles around object perimeter
+      // Create particles around object perimeter with varying distances
       const angle = seededRandom() * Math.PI * 2;
-      const distance = 20 + seededRandom() * 150;
-      const centerX = objectX + objectWidth / 2;
-      const centerY = objectY + objectHeight / 2;
+      const distance = 10 + seededRandom() * 200;
       
       const x = centerX + Math.cos(angle) * distance;
       const y = centerY + Math.sin(angle) * distance;
       
-      // Don't place particles on the object itself
-      const onObject = x >= objectX && x <= objectX + objectWidth &&
-                      y >= objectY && y <= objectY + objectHeight;
+      // Only create particles outside the object core area
+      const coreDistance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      const minDistance = Math.min(objectWidth, objectHeight) * 0.25;
       
-      if (!onObject && x >= 0 && x <= width && y >= 0 && y <= height) {
-        const smokeSize = 30 + seededRandom() * 80;
-        const smokeOpacity = 0.1 + seededRandom() * 0.2;
+      if (coreDistance > minDistance && x >= 0 && x <= width && y >= 0 && y <= height) {
+        const smokeSize = 40 + seededRandom() * 100;
+        const smokeOpacity = 0.3 + seededRandom() * 0.4; // Much higher opacity
         
         drawObjectSmoke(ctx, x, y, smokeSize, auraColor, smokeOpacity);
+      }
+    }
+    
+    // Add intense energy bursts around object edges
+    const energyBursts = 20 + energyLevel * 3;
+    for (let i = 0; i < energyBursts; i++) {
+      const angle = (i / energyBursts) * Math.PI * 2;
+      const burstDistance = maxRadius * 1.1;
+      const burstX = centerX + Math.cos(angle) * burstDistance;
+      const burstY = centerY + Math.sin(angle) * burstDistance;
+      
+      if (burstX >= 0 && burstX <= width && burstY >= 0 && burstY <= height) {
+        const burstSize = 60 + seededRandom() * 80;
+        const burstOpacity = 0.5 + seededRandom() * 0.3;
+        
+        drawObjectSmoke(ctx, burstX, burstY, burstSize, auraColor, burstOpacity);
       }
     }
   };
@@ -144,15 +176,38 @@ export default function ObjectAnalysis() {
     color: { r: number, g: number, b: number },
     opacity: number
   ) => {
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-    gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
-    gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`);
-    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    // Create multiple layered smoke effects for dense, mystical appearance
+    const smokeLayers = [
+      { sizeMultiplier: 1.2, opacityMultiplier: 0.9, blur: 2 },     // Main dense layer
+      { sizeMultiplier: 0.8, opacityMultiplier: 1.2, blur: 0 },     // Core bright layer
+      { sizeMultiplier: 1.6, opacityMultiplier: 0.7, blur: 4 }      // Outer haze layer
+    ];
     
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
+    smokeLayers.forEach(layer => {
+      const layerSize = size * layer.sizeMultiplier;
+      const layerOpacity = Math.min(0.8, opacity * layer.opacityMultiplier); // Higher max opacity
+      
+      // Apply blur for atmospheric effect
+      if (layer.blur > 0) {
+        ctx.filter = `blur(${layer.blur}px)`;
+      }
+      
+      // Create dense smoke gradient with vibrant colors
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
+      gradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.8})`);
+      gradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.5})`);
+      gradient.addColorStop(0.9, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.2})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Reset filter
+      ctx.filter = 'none';
+    });
   };
 
   // Function to get CSS filter for aura color overlay
