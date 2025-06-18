@@ -671,7 +671,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
   const lifePathNumber = calculateLifePath(birthDate);
   const destinyNumber = calculateDestiny(name);
   const soulUrgeNumber = calculateSoulUrge(name);
-  const personalityNumber = calculatePersonality(name);
+  const personalityNumber = calculatePersonality(birthDate);
   const soulChakraNumber = calculateDominantSoulChakra(birthDate);
   
   // Generate interpretation based on calculated numbers
