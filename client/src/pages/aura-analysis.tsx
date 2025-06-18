@@ -3105,14 +3105,13 @@ export default function AuraAnalysis() {
       const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
       
       if (outsidePersonArea) {
-        // Select color based on position - thinking color only in top 20% of image
+        // Select color based on position - thinking color ONLY in top 20% of image
         let color;
         if (y < height * 0.2) {
-          // Top 20% - use thinking color more frequently
-          const topColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-          color = topColors[Math.floor(seededRandom() * 4)];
+          // Top 20% - use ONLY thinking color for proper zone positioning
+          color = colors.thinkingRGB;
         } else {
-          // Below top 20% - exclude thinking color
+          // Below top 20% - exclude thinking color completely
           const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
           color = bottomColors[Math.floor(seededRandom() * 3)];
         }
@@ -3483,8 +3482,8 @@ export default function AuraAnalysis() {
           const smokeX = seededRandom() * width;
           const smokeY = seededRandom() * height;
           
-          // Skip thinking color if not in top 20% of image
-          if (colorIndex === 0 && smokeY > height * 0.2) {
+          // Skip thinking color if not in top 20% of image - CRITICAL FIX
+          if (colorIndex === 0 && smokeY >= height * 0.2) {
             continue;
           }
           
@@ -3851,13 +3850,13 @@ export default function AuraAnalysis() {
         if (!inFaceArea) {
           const hazeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
           
-          // Select color based on position - thinking color only in top 20% of image
+          // Select color based on position - thinking color ONLY in top 20% of image
           let hazeColor;
           if (hazeY < height * 0.2) {
-            // Top 20% - can use thinking color
-            hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+            // Top 20% - use ONLY thinking color for proper zone positioning
+            hazeColor = colors.thinkingRGB;
           } else {
-            // Below top 20% - exclude thinking color
+            // Below top 20% - exclude thinking color completely
             const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
             hazeColor = bottomColors[Math.floor(seededRandom() * bottomColors.length)];
           }
