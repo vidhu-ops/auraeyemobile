@@ -3366,7 +3366,7 @@ export default function AuraAnalysis() {
         density: 40,
         getCoords: () => ({
           x: width * 0.15 + seededRandom() * (width * 0.7),
-          y: seededRandom() * (height * 0.3)
+          y: seededRandom() * (height * 0.2)
         })
       },
       { 
@@ -3483,6 +3483,11 @@ export default function AuraAnalysis() {
           const smokeX = seededRandom() * width;
           const smokeY = seededRandom() * height;
           
+          // Skip thinking color if not in top 20% of image
+          if (colorIndex === 0 && smokeY > height * 0.2) {
+            continue;
+          }
+          
           // Avoid face area
           const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
                             smokeY >= faceY && smokeY <= faceY + faceHeight;
@@ -3518,7 +3523,7 @@ export default function AuraAnalysis() {
       { 
         name: 'top', 
         color: colors.thinkingRGB,
-        coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.3 }) 
+        coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.2 }) 
       },
       { 
         name: 'right', 
@@ -3845,7 +3850,18 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const hazeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
-          const hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+          
+          // Select color based on position - thinking color only in top 20% of image
+          let hazeColor;
+          if (hazeY < height * 0.2) {
+            // Top 20% - can use thinking color
+            hazeColor = allColors[Math.floor(seededRandom() * allColors.length)];
+          } else {
+            // Below top 20% - exclude thinking color
+            const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+            hazeColor = bottomColors[Math.floor(seededRandom() * bottomColors.length)];
+          }
+          
           const hazeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
           
           const hazeGradient = ctx.createRadialGradient(hazeX, hazeY, 0, hazeX, hazeY, hazeSize);
