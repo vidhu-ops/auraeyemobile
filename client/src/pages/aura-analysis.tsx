@@ -2681,8 +2681,8 @@ export default function AuraAnalysis() {
               {
                 name: 'thinking',
                 color: thinkingRGB,
-                area: { x: canvas.width * 0.3, y: 0, width: canvas.width * 0.4, height: canvas.height * 0.2 },
-                density: 100
+                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.25 },
+                density: 80
               },
               {
                 name: 'receiving',
@@ -3141,12 +3141,12 @@ export default function AuraAnalysis() {
       { 
         color: colors.thinkingRGB, 
         startX: centerX, 
-        startY: centerY - personHeight * 0.15, 
+        startY: centerY - personHeight * 0.4, 
         direction: { x: 0, y: -1 },
-        spread: width * 0.4,
-        name: 'thinking_forehead',
-        density: 80,
-        zone: 'forehead' // Mental/spiritual energy at forehead level
+        spread: width * 0.8,
+        name: 'thinking_top',
+        density: 60,
+        zone: 'top' // Mental/spiritual energy above head
       },
       { 
         color: colors.receivingRGB, 
@@ -3352,11 +3352,11 @@ export default function AuraAnalysis() {
     const colorZones = [
       { 
         color: colors.thinkingRGB, 
-        zone: 'forehead',
-        density: 60,
+        zone: 'top',
+        density: 40,
         getCoords: () => ({
-          x: width * 0.35 + seededRandom() * (width * 0.3),
-          y: seededRandom() * (height * 0.15)
+          x: width * 0.15 + seededRandom() * (width * 0.7),
+          y: seededRandom() * (height * 0.3)
         })
       },
       { 
@@ -3647,27 +3647,21 @@ export default function AuraAnalysis() {
     const smokeG = rgb.g;
     const smokeB = rgb.b;
     
-    // Set blending mode for better color merging
-    const originalOperation = ctx.globalCompositeOperation;
-    ctx.globalCompositeOperation = 'multiply';
-    
     smokeLayers.forEach(layer => {
       const layerSize = size * layer.sizeMultiplier;
-      const layerOpacity = Math.min(0.4, opacity * 0.25 * layer.opacityMultiplier); // Enhanced opacity
+      const layerOpacity = Math.min(0.35, opacity * 0.2 * layer.opacityMultiplier); // Much higher opacity
       
-      // Apply progressive blur for smooth transitions
+      // Apply blur for atmospheric effect
       if (layer.blur > 0) {
         ctx.filter = `blur(${layer.blur}px)`;
       }
       
-      // Create enhanced gradient with more color stops for smoother blending
+      // Create dense smoke gradient
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
       gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity})`);
-      gradient.addColorStop(0.15, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.9})`);
-      gradient.addColorStop(0.35, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.75})`);
-      gradient.addColorStop(0.55, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
-      gradient.addColorStop(0.75, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.25})`);
-      gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.1})`);
+      gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.85})`);
+      gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
+      gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
       gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -3678,9 +3672,6 @@ export default function AuraAnalysis() {
       // Reset filter
       ctx.filter = 'none';
     });
-    
-    // Reset composite operation
-    ctx.globalCompositeOperation = originalOperation;
     
     // Add dense wispy tendrils for mystical billowing effect
     if (size > 25) {
