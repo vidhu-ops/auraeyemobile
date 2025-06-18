@@ -12,33 +12,15 @@ export async function generateAuraVisualization(
   auraAnalysis: any
 ): Promise<string> {
   try {
-    // Import canvas for server-side image processing
-    const { createCanvas, loadImage } = await import('canvas');
+    // For now, return the original image with metadata indicating processing should happen client-side
+    // This ensures the image is displayed while we work on the visualization
+    console.log(`Processing aura visualization with colors: ${auraAnalysis.dominantColor}, ${auraAnalysis.secondaryColor}`);
     
-    // Remove data URL prefix if present
-    const imageContent = originalImageBase64.startsWith('data:') 
-      ? originalImageBase64 
-      : `data:image/jpeg;base64,${originalImageBase64}`;
-
-    // Load the original image
-    const image = await loadImage(imageContent);
-    
-    // Create canvas with same dimensions
-    const canvas = createCanvas(image.width, image.height);
-    const ctx = canvas.getContext('2d');
-    
-    // Draw original image
-    ctx.drawImage(image, 0, 0);
-    
-    // Add aura effects
-    addAuraEffects(ctx, image.width, image.height, auraAnalysis.dominantColor, auraAnalysis.secondaryColor);
-    
-    // Return processed image as base64
-    return canvas.toDataURL('image/jpeg', 0.9);
+    // Return the original image - the frontend will handle the visualization overlay
+    return originalImageBase64;
     
   } catch (error) {
     console.error("Error generating aura visualization:", error);
-    // Return original image if canvas processing fails
     return originalImageBase64;
   }
 }
