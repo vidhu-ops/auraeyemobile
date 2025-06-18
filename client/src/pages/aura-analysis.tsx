@@ -2592,53 +2592,134 @@ export default function AuraAnalysis() {
         canvas.height = img.height;
         
         // Draw original image
-        ctx?.drawImage(img, 0, 0);
-        
         if (ctx) {
-          // Extract the exact same 4 unique colors used in the Energy Map
-          const detectedColors = extractAllAuraColors(auraData);
+          ctx.drawImage(img, 0, 0);
           
-          // Convert hex colors to RGB for particle effects
-          const hexToRGB = (hex: string) => {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return { r, g, b };
-          };
-          
-          const thinkingRGB = hexToRGB(detectedColors.thinking);
-          const receivingRGB = hexToRGB(detectedColors.receiving);
-          const givingRGB = hexToRGB(detectedColors.giving);
-          const personalityRGB = hexToRGB(detectedColors.personality);
-          
-          // Person detection boundaries (estimate human silhouette with face protection)
+          // Create simple but visible aura effects around the person
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
-          const personWidth = canvas.width * 0.2; // Significantly reduced to protect face area
-          const personHeight = canvas.height * 0.3; // Focus protection on face and upper torso
           
-          // Create deterministic seed from aura analysis result for consistent visualization
-          const generateSeedFromAura = (data: any): number => {
-            const seedString = `${data.dominantColor}-${data.secondaryColor}-${data.auraColors?.join('-') || ''}`;
-            let hash = 0;
-            for (let i = 0; i < seedString.length; i++) {
-              const char = seedString.charCodeAt(i);
-              hash = ((hash << 5) - hash) + char;
-              hash = hash & hash; // Convert to 32-bit integer
-            }
-            return Math.abs(hash);
+          // Get dominant and secondary colors
+          const dominantColor = auraData.dominantColor || 'Blue';
+          const secondaryColor = auraData.secondaryColor || 'Purple';
+          
+          // Convert color names to RGB
+          const getColorRGB = (colorName: string) => {
+            const colorMap: Record<string, [number, number, number]> = {
+              'Red': [255, 0, 0],
+              'Orange': [255, 165, 0],
+              'Yellow': [255, 255, 0],
+              'Green': [0, 255, 0],
+              'Blue': [0, 100, 255],
+              'Purple': [128, 0, 128],
+              'Violet': [148, 0, 211],
+              'Indigo': [75, 0, 130],
+              'Pink': [255, 192, 203],
+              'Gold': [255, 215, 0],
+              'Silver': [192, 192, 192],
+              'White': [255, 255, 255]
+            };
+            return colorMap[colorName] || [0, 100, 255]; // Default to blue
           };
-
-          // Create smokey particle aura around the person with consistent seeding
-          createSmokeyAuraParticles(ctx, canvas.width, canvas.height, {
-            thinkingRGB,
-            receivingRGB,
-            givingRGB,
-            personalityRGB
-          }, auraData.energyLevel, generateSeedFromAura(auraData));
+          
+          const [dr, dg, db] = getColorRGB(dominantColor);
+          const [sr, sg, sb] = getColorRGB(secondaryColor);
+          
+          // Create visible aura glow around the entire image edges
+          const createAuraGlow = () => {
+            // Create multiple layers of glow
+            for (let layer = 0; layer < 8; layer++) {
+              const radius = 30 + (layer * 20);
+              const opacity = 0.15 - (layer * 0.015);
+              
+              // Use dominant color for most layers
+              const useSecondary = layer % 3 === 0;
+              const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
+              
+              // Create radial gradient from center outward
+              const gradient = ctx.createRadialGradient(
+                centerX, centerY, canvas.width * 0.15, // Inner radius - protect person
+                centerX, centerY, canvas.width * 0.6 + radius // Outer radius
+              );
+              
+              gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+              gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.5})`);
+              
+              ctx.fillStyle = gradient;
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+          };
+          
+          // Create particle effects around the edges
+          const createAuraParticles = () => {
+            const particleCount = 150;
+            
+            for (let i = 0; i < particleCount; i++) {
+              // Place particles around the edges, avoiding center
+              let x, y;
+              const edge = Math.floor(Math.random() * 4);
+              
+              switch (edge) {
+                case 0: // Top edge
+                  x = Math.random() * canvas.width;
+                  y = Math.random() * (canvas.height * 0.3);
+                  break;
+                case 1: // Right edge
+                  x = canvas.width * 0.7 + Math.random() * (canvas.width * 0.3);
+                  y = Math.random() * canvas.height;
+                  break;
+                case 2: // Bottom edge
+                  x = Math.random() * canvas.width;
+                  y = canvas.height * 0.7 + Math.random() * (canvas.height * 0.3);
+                  break;
+                case 3: // Left edge
+                  x = Math.random() * (canvas.width * 0.3);
+                  y = Math.random() * canvas.height;
+                  break;
+                default:
+                  x = Math.random() * canvas.width;
+                  y = Math.random() * canvas.height;
+              }
+              
+              // Avoid center area where person is
+              const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+              if (distFromCenter < canvas.width * 0.2) {
+                continue;
+              }
+              
+              const size = 5 + Math.random() * 25;
+              const [r, g, b] = Math.random() > 0.5 ? [dr, dg, db] : [sr, sg, sb];
+              const opacity = 0.3 + Math.random() * 0.4;
+              
+              const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+              particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+              particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+              
+              ctx.fillStyle = particleGradient;
+              ctx.beginPath();
+              ctx.arc(x, y, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          };
+          
+          // Apply aura effects
+          createAuraGlow();
+          createAuraParticles();
+          
+          // Add a subtle overall color tint
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.1)`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
         }
         
         resolve(canvas.toDataURL());
+      };
+      
+      img.onerror = () => {
+        console.error('Failed to load image for aura processing');
+        resolve(imageBase64); // Return original if processing fails
       };
       
       img.src = imageBase64;
@@ -4274,12 +4355,13 @@ export default function AuraAnalysis() {
               setCurrentAnalysisId(analysisResult.id);
             }
             
-            // Use AI-generated aura visualization from backend if available
-            if (analysisResult.processedAuraImage) {
-              setProcessedAuraImage(analysisResult.processedAuraImage);
-              setAnalysisStage("AI aura visualization complete!");
+            // Generate aura visualization using canvas overlay
+            if (base64String) {
+              setAnalysisStage("Creating your aura visualization...");
+              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
+              setProcessedAuraImage(auraProcessedImage);
+              setAnalysisStage("Aura visualization complete!");
             } else {
-              // Use original image if AI generation not available
               setProcessedAuraImage(base64String || '');
               setAnalysisStage("Analysis complete!");
             }
