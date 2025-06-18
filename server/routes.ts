@@ -8,7 +8,6 @@ import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
 import { analyzeImageWithGemini } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
 import { analyzeImageColors } from "./api/image-color-analysis";
-import { enhanceImageWithAura } from "./gemini-image-enhancer";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
@@ -932,46 +931,6 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       };
       
       res.json(fallbackResult);
-    }
-  });
-
-  // New endpoint to enhance images with Gemini using detected aura colors
-  app.post("/api/enhance-aura-image", upload.single("image"), async (req, res) => {
-    try {
-      let imageData: string;
-      let imgBuffer: Buffer;
-      
-      if (req.file) {
-        imageData = req.file.buffer.toString("base64");
-        imgBuffer = req.file.buffer;
-      } else if (req.body.image) {
-        imageData = req.body.image;
-        imgBuffer = Buffer.from(imageData, 'base64');
-      } else {
-        return res.status(400).json({ message: "No image provided" });
-      }
-
-      // First analyze the aura to get the colors
-      const auraAnalysis = generateFastAuraAnalysis(imgBuffer);
-      
-      // Extract aura colors for Gemini enhancement
-      const auraColors = {
-        dominantColor: auraAnalysis.dominantColor,
-        secondaryColor: auraAnalysis.secondaryColor,
-        auraColors: auraAnalysis.auraColors || []
-      };
-
-      // Enhance the image with Gemini using detected aura colors
-      const enhancedImageData = await enhanceImageWithAura(imageData, auraColors);
-      
-      res.json({
-        originalAnalysis: auraAnalysis,
-        enhancedImage: enhancedImageData,
-        auraColors: auraColors
-      });
-    } catch (error) {
-      console.error("Error enhancing image with Gemini:", error);
-      res.status(500).json({ message: "Failed to enhance image" });
     }
   });
 
