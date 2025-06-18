@@ -3105,15 +3105,20 @@ export default function AuraAnalysis() {
       const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
       
       if (outsidePersonArea) {
-        // Select color based on position - thinking color ONLY in top 20% of image
+        // Select color based on strict position - thinking color ONLY in top 20% of image
         let color;
-        if (y < height * 0.2) {
-          // Top 20% - use ONLY thinking color for proper zone positioning
+        if (y <= height * 0.2) {
+          // Top 20% ONLY - thinking color exclusively
           color = colors.thinkingRGB;
+        } else if (x < width * 0.4) {
+          // Left side below top 20% - giving energy
+          color = colors.givingRGB;
+        } else if (x > width * 0.6) {
+          // Right side below top 20% - receiving energy
+          color = colors.receivingRGB;
         } else {
-          // Below top 20% - exclude thinking color completely
-          const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-          color = bottomColors[Math.floor(seededRandom() * 3)];
+          // Center area below top 20% - personality energy
+          color = colors.personalityRGB;
         }
         
         const particleSize = 3 + seededRandom() * 60;
@@ -4966,7 +4971,10 @@ export default function AuraAnalysis() {
                   
                   <div>
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
-                      <h3 className="font-medium text-gray-800 mb-2">Tips for the best aura reading:</h3>
+                      <h3 className="font-medium text-gray-800 mb-2">
+                        YOUR AURA READING MIGHT TAKE UPTO 60-90 SECONDS </h3>
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Tips for the best aura reading: </h3>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
