@@ -2799,7 +2799,7 @@ export default function AuraAnalysis() {
       return 'Silver';
     }
     
-    return 'Purple'; // Default fallback
+    return 'none'; // Default fallback
   };
 
   // Function to create natural smoke effect like real smoke around person
@@ -2854,9 +2854,9 @@ export default function AuraAnalysis() {
     
     // Create a subtle gradient that fades smoke away from face area
     const clearanceGradient = ctx.createRadialGradient(
-      centerX, centerY - personHeight * 0.5, // Face center
+      centerX, centerY - personHeight * 0.9, // Face center
       Math.min(faceClearanceWidth, faceClearanceHeight) * 0.4, // Inner clear radius
-      centerX, centerY - personHeight * 0.5, // Face center
+      centerX, centerY - personHeight * 0.9, // Face center
       Math.min(faceClearanceWidth, faceClearanceHeight) * 0.9 // Outer fade radius
     );
     
@@ -2885,13 +2885,12 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Define comprehensive person protection area to ensure complete person visibility like the reference image
-    const faceX = centerX - personWidth * 0.6;
+    const faceX = centerX - personWidth * 0.9;
     const faceY = centerY - personHeight * 0.8;
     const faceWidth = personWidth * 1.2;
-    const faceHeight = personHeight * 1.6;
+    const faceHeight = personHeight * 2.2;
     
-    // Define person protection radius for smokey field effect
-    const personRadius = Math.min(personWidth, personHeight) * 0.4;
+    // Person protection area will be defined as rectangular bounds for full body visibility
 
     // Create complete smokey field that fills entire background like reference image
     // Step 1: Fill entire image with subtle primary aura color base
