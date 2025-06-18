@@ -2977,13 +2977,27 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Create base atmospheric haze
+    // Create dense base atmospheric haze with multiple layers
     const baseColor = colors.personalityRGB;
-    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.08)`;
+    
+    // Layer 1: Full background coverage
+    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.12)`;
     ctx.fillRect(0, 0, width, height);
     
-    // Generate particles around face contour with precise mapping
-    const particleCount = 800 + energyLevel * 100;
+    // Layer 2: Gradient overlay for depth
+    const backgroundGradient = ctx.createRadialGradient(
+      width / 2, height / 2, 0,
+      width / 2, height / 2, Math.max(width, height) * 0.8
+    );
+    backgroundGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
+    backgroundGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
+    backgroundGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.10)`);
+    
+    ctx.fillStyle = backgroundGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Generate particles around face contour with much higher density for fuller appearance
+    const particleCount = 2000 + energyLevel * 200; // Significantly increased particle count
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < particleCount; i++) {
@@ -2998,8 +3012,8 @@ export default function AuraAnalysis() {
       
       // Only place particles outside face protection zone
       if (distanceFromFace > 20) {
-        const particleSize = 8 + seededRandom() * 45;
-        const particleOpacity = 0.12 + seededRandom() * 0.18;
+        const particleSize = 15 + seededRandom() * 75; // Increased base size and range
+        const particleOpacity = 0.18 + seededRandom() * 0.25; // Increased opacity for fuller look
         
         // Create gradient particle
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
@@ -3035,7 +3049,7 @@ export default function AuraAnalysis() {
     return Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
   };
 
-  // Create aura streams that follow facial contours
+  // Create aura streams that follow facial contours with much higher density
   const createContourFollowingStreams = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3045,7 +3059,7 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    const streamCount = 24 + energyLevel * 4;
+    const streamCount = 60 + energyLevel * 12; // Significantly increased stream count
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < streamCount; i++) {
@@ -3054,28 +3068,29 @@ export default function AuraAnalysis() {
       
       // Create stream flowing away from face
       const angle = Math.atan2(startPoint.y - faceContour.center.y, startPoint.x - faceContour.center.x);
-      const streamLength = 60 + seededRandom() * 120;
+      const streamLength = 80 + seededRandom() * 180; // Increased stream length
       
-      // Generate stream points
+      // Generate stream points with higher density
       const streamPoints = [];
-      for (let j = 0; j < 15; j++) {
-        const progress = j / 15;
+      for (let j = 0; j < 25; j++) { // Increased points per stream
+        const progress = j / 25;
         const distance = progress * streamLength;
-        const turbulence = Math.sin(progress * Math.PI * 3) * 25;
+        const turbulence = Math.sin(progress * Math.PI * 3) * 35; // Increased turbulence
         
         const x = startPoint.x + Math.cos(angle) * distance + turbulence * Math.cos(angle + Math.PI / 2);
         const y = startPoint.y + Math.sin(angle) * distance + turbulence * Math.sin(angle + Math.PI / 2);
         
         if (x >= 0 && x <= width && y >= 0 && y <= height) {
-          streamPoints.push({ x, y, opacity: (1 - progress) * 0.15 });
+          streamPoints.push({ x, y, opacity: (1 - progress) * 0.22 }); // Increased opacity
         }
       }
       
-      // Draw stream
+      // Draw stream with larger particles
       streamPoints.forEach(point => {
-        const size = 12 + seededRandom() * 20;
+        const size = 18 + seededRandom() * 35; // Increased particle size
         const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size);
         gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${point.opacity})`);
+        gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${point.opacity * 0.6})`);
         gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
         
         ctx.fillStyle = gradient;
@@ -3083,6 +3098,46 @@ export default function AuraAnalysis() {
         ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
         ctx.fill();
       });
+    }
+    
+    // Add additional dense background particles for fuller coverage
+    createDenseBackgroundParticles(ctx, width, height, faceContour, colors, energyLevel, seededRandom);
+  };
+
+  // Create dense background particles for maximum fullness
+  const createDenseBackgroundParticles = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    faceContour: any,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    const backgroundParticles = 1500 + energyLevel * 150; // Additional background particles
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < backgroundParticles; i++) {
+      const color = allColors[Math.floor(seededRandom() * 4)];
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Check distance from face
+      const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
+      
+      if (distanceFromFace > 15) { // Slightly smaller protection zone for more coverage
+        const particleSize = 5 + seededRandom() * 25; // Smaller background particles
+        const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for layering
+        
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   };
 
