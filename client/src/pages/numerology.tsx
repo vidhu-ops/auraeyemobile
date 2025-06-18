@@ -524,7 +524,7 @@ export default function NumerologyPage() {
                       <span className="text-2xl font-bold text-white">{numerology.personalityNumber}</span>
                     </div>
                     <div className="flex-grow">
-                      <h3 className="font-semibold text-green-800 mb-1">Decision-Making Chakra</h3>
+                      <h3 className="font-semibold text-green-800 mb-1">Decision-Making Chakra :Personality Number</h3>
                       <p className="text-sm text-green-600 mb-1">Most of your decisions will be based on the qualities of this chakra</p>
                       <p className="text-xs text-green-500">Influences your decision-making patterns</p>
                     </div>

@@ -666,8 +666,19 @@ function getColorForNumber(num: number): string {
 }
 
 function letterToNumber(letter: string): number {
-  const value = letter.toLowerCase().charCodeAt(0) - 96;
-  return value >= 1 && value <= 26 ? value : 0;
+  // Based on the numerology chart provided
+  const letterMap: Record<string, number> = {
+    'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+    'B': 2, 'K': 2, 'R': 2,
+    'C': 3, 'G': 3, 'L': 3, 'S': 3,
+    'D': 4, 'M': 4, 'T': 4,
+    'E': 5, 'H': 5, 'N': 5, 'X': 5,
+    'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+    'Z': 7,
+    'P': 8
+  };
+  
+  return letterMap[letter.toUpperCase()] || 0;
 }
 
 function reduceNumber(num: number): number {
