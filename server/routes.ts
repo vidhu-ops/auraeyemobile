@@ -693,18 +693,17 @@ function reduceNumber(num: number): number {
 }
 
 function calculateLifePath(date: string): number {
-  // Format should be YYYY-MM-DD
-  const parts = date.split('-');
-  if (parts.length !== 3) return 5; // Default fallback
-  
-  const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-  const month = parseInt(parts[1]);
-  const day = parseInt(parts[2]);
-  
-  return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
+  // Sum all digits from the birth date (e.g., 1996-08-23 = 1+9+9+6+0+8+2+3 = 38 = 3+8 = 11)
+  const digits = date.replace(/\D/g, '');
+  let sum = 0;
+  for (const digit of digits) {
+    sum += parseInt(digit);
+  }
+  return reduceNumber(sum);
 }
 
 function calculateDestiny(fullName: string): number {
+  // Sum all letters in the full name using the numerology chart
   let sum = 0;
   for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
     sum += letterToNumber(char);
@@ -713,10 +712,11 @@ function calculateDestiny(fullName: string): number {
 }
 
 function calculateSoulUrge(fullName: string): number {
+  // Sum only vowels (A, E, I, O, U, Y) using the numerology chart
   let sum = 0;
-  const vowels = 'aeiouAEIOU';
+  const vowels = 'AEIOUY';
   for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
-    if (vowels.includes(char)) {
+    if (vowels.includes(char.toUpperCase())) {
       sum += letterToNumber(char);
     }
   }
@@ -1271,18 +1271,17 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
   
 // Helper functions for fallback numerology calculations
 function calculateLifePath(date: string): number {
-  // Format should be YYYY-MM-DD
-  const parts = date.split('-');
-  if (parts.length !== 3) return 5; // Default fallback
-  
-  const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-  const month = parseInt(parts[1]);
-  const day = parseInt(parts[2]);
-  
-  return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
+  // Sum all digits from the birth date (e.g., 1996-08-23 = 1+9+9+6+0+8+2+3 = 38 = 3+8 = 11)
+  const digits = date.replace(/\D/g, '');
+  let sum = 0;
+  for (const digit of digits) {
+    sum += parseInt(digit);
+  }
+  return reduceNumber(sum);
 }
 
 function calculateDestiny(fullName: string): number {
+  // Sum all letters in the full name using the numerology chart
   let sum = 0;
   for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
     sum += letterToNumber(char);
@@ -1291,9 +1290,11 @@ function calculateDestiny(fullName: string): number {
 }
 
 function calculateSoulUrge(fullName: string): number {
+  // Sum only vowels (A, E, I, O, U, Y) using the numerology chart
   let sum = 0;
-  for (const char of fullName.toLowerCase()) {
-    if ('aeiou'.includes(char)) {
+  const vowels = 'AEIOUY';
+  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+    if (vowels.includes(char.toUpperCase())) {
       sum += letterToNumber(char);
     }
   }
@@ -1522,20 +1523,35 @@ function calculateDominantSoulChakra(birthDate: string): number {
       };
 
       const letterToNumber = (letter: string): number => {
-        const value = letter.toLowerCase().charCodeAt(0) - 96;
-        return value >= 1 && value <= 26 ? value : 0;
+        // Based on the numerology chart provided
+        const letterMap: Record<string, number> = {
+          'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+          'B': 2, 'K': 2, 'R': 2,
+          'C': 3, 'G': 3, 'L': 3, 'S': 3,
+          'D': 4, 'M': 4, 'T': 4,
+          'E': 5, 'H': 5, 'N': 5, 'X': 5,
+          'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+          'Z': 7,
+          'P': 8
+        };
+        
+        return letterMap[letter.toUpperCase()] || 0;
       };
 
       // Calculate Life Path Number
       const calculateLifePath = (date: string): number => {
-        const [year, month, day] = date.split('-').map(part => 
-          part.split('').reduce((sum, digit) => sum + parseInt(digit), 0)
-        );
-        return reduceNumber(reduceNumber(year) + reduceNumber(month) + reduceNumber(day));
+        // Sum all digits from the birth date (e.g., 1996-08-23 = 1+9+9+6+0+8+2+3 = 38 = 3+8 = 11)
+        const digits = date.replace(/\D/g, '');
+        let sum = 0;
+        for (const digit of digits) {
+          sum += parseInt(digit);
+        }
+        return reduceNumber(sum);
       };
 
       // Calculate Destiny Number
       const calculateDestiny = (fullName: string): number => {
+        // Sum all letters in the full name using the numerology chart
         let sum = 0;
         for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
           sum += letterToNumber(char);
@@ -1545,9 +1561,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       // Calculate Soul Urge Number
       const calculateSoulUrge = (fullName: string): number => {
+        // Sum only vowels (A, E, I, O, U, Y) using the numerology chart
         let sum = 0;
-        for (const char of fullName.toLowerCase()) {
-          if ('aeiou'.includes(char)) {
+        const vowels = 'AEIOUY';
+        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+          if (vowels.includes(char.toUpperCase())) {
             sum += letterToNumber(char);
           }
         }
