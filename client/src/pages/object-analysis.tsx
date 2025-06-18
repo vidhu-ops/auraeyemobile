@@ -137,8 +137,6 @@ export default function ObjectAnalysis() {
     // Create multiple layers of natural smoke wisps around object
     const smokeLayers = [
       { density: 200 + energyLevel * 30, sizeRange: [20, 80], opacity: [0.15, 0.25], distance: [30, 120] },
-      { density: 150 + energyLevel * 20, sizeRange: [30, 100], opacity: [0.12, 0.20], distance: [50, 160] },
-      { density: 100 + energyLevel * 15, sizeRange: [40, 120], opacity: [0.08, 0.15], distance: [80, 200] }
     ];
 
     smokeLayers.forEach(layer => {
@@ -164,7 +162,7 @@ export default function ObjectAnalysis() {
     });
 
     // Add concentrated energy wisps around object edges
-    const wispCount = 80 + energyLevel * 10;
+    const wispCount = 50 + energyLevel * 10;
     for (let i = 0; i < wispCount; i++) {
       const angle = seededRandom() * Math.PI * 2;
       const baseDistance = Math.min(objectWidth, objectHeight) * 0.4;
@@ -175,7 +173,7 @@ export default function ObjectAnalysis() {
       
       if (x >= 0 && x <= width && y >= 0 && y <= height) {
         const wispSize = 15 + seededRandom() * 40;
-        const wispOpacity = 0.2 + seededRandom() * 0.3;
+        const wispOpacity = 0.1                   + seededRandom() * 0.3;
         
         drawEnergyWisp(ctx, x, y, wispSize, auraColor, wispOpacity, seededRandom);
       }
@@ -194,9 +192,7 @@ export default function ObjectAnalysis() {
   ) => {
     // Create organic, flowing smoke with multiple layers
     const smokeLayers = [
-      { sizeMultiplier: 1.4, opacityMultiplier: 0.7, blur: 3 },
-      { sizeMultiplier: 1.0, opacityMultiplier: 1.0, blur: 1 },
-      { sizeMultiplier: 0.6, opacityMultiplier: 1.3, blur: 0 }
+      { sizeMultiplier: 0.3, opacityMultiplier: 0.2, blur: 3 },
     ];
     
     smokeLayers.forEach(layer => {
