@@ -2848,19 +2848,19 @@ export default function AuraAnalysis() {
     };
   };
 
-  // Detect person boundaries for full body protection
+  // Detect person boundaries - now only used for reference, not protection
   const detectPersonBoundaries = (data: Uint8ClampedArray, width: number, height: number, faceRegion: any) => {
     // Use face region as reference point for person detection
     const personCenterX = faceRegion.centerX || width / 2;
     const personCenterY = faceRegion.centerY || height / 2;
     
-    // Estimate person boundaries based on typical human proportions
-    const personWidth = Math.max(faceRegion.width * 2.5, width * 0.25);
-    const personHeight = Math.max(faceRegion.height * 6, height * 0.6);
+    // Estimate full body boundaries to understand person area (not for protection)
+    const personWidth = Math.max(faceRegion.width * 3, width * 0.4);
+    const personHeight = Math.max(faceRegion.height * 8, height * 0.8);
     
     return {
       x: Math.max(0, personCenterX - personWidth / 2),
-      y: Math.max(0, personCenterY - personHeight * 0.3),
+      y: Math.max(0, personCenterY - personHeight * 0.4),
       width: Math.min(width, personWidth),
       height: Math.min(height, personHeight),
       centerX: personCenterX,
@@ -3010,8 +3010,8 @@ export default function AuraAnalysis() {
       // Check distance from face contour
       const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
       
-      // Only place particles outside face protection zone
-      if (distanceFromFace > 20) {
+      // Only avoid the face area - fill everything else including close to body
+      if (distanceFromFace > 8) { // Much smaller distance - particles very close to body
         const particleSize = 15 + seededRandom() * 75; // Increased base size and range
         const particleOpacity = 0.18 + seededRandom() * 0.25; // Increased opacity for fuller look
         
@@ -3030,19 +3030,22 @@ export default function AuraAnalysis() {
     
     // Add contour-following aura streams
     createContourFollowingStreams(ctx, width, height, faceContour, colors, energyLevel, seededRandom);
+    
+    // Add concentrated body outline particles for maximum density around person
+    createBodyOutlineParticles(ctx, width, height, faceContour, colors, energyLevel, seededRandom);
   };
 
-  // Calculate distance from face contour for precise placement
+  // Calculate distance from face contour for precise placement - only protect face area
   const calculateDistanceFromFaceContour = (x: number, y: number, faceContour: any): number => {
     const centerX = faceContour.center.x;
     const centerY = faceContour.center.y;
     const bounds = faceContour.bounds;
     
-    // Check if point is inside face bounding box with margin
-    const margin = 15;
-    if (x >= bounds.x - margin && x <= bounds.x + bounds.width + margin &&
-        y >= bounds.y - margin && y <= bounds.y + bounds.height + margin) {
-      return 0; // Inside protected area
+    // Only protect the face area - much smaller margin to bring particles closer
+    const faceMargin = 8; // Reduced from 15 to bring particles very close
+    if (x >= bounds.x - faceMargin && x <= bounds.x + bounds.width + faceMargin &&
+        y >= bounds.y - faceMargin && y <= bounds.y + bounds.height + faceMargin) {
+      return 0; // Inside face protection area only
     }
     
     // Calculate minimum distance to face center
@@ -3125,7 +3128,7 @@ export default function AuraAnalysis() {
       // Check distance from face
       const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
       
-      if (distanceFromFace > 15) { // Slightly smaller protection zone for more coverage
+      if (distanceFromFace > 8) { // Same small protection zone - particles very close to body
         const particleSize = 5 + seededRandom() * 25; // Smaller background particles
         const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for layering
         
@@ -3137,6 +3140,57 @@ export default function AuraAnalysis() {
         ctx.beginPath();
         ctx.arc(x, y, particleSize, 0, Math.PI * 2);
         ctx.fill();
+      }
+    }
+  };
+
+  // Create concentrated particles around body outline for maximum density
+  const createBodyOutlineParticles = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    faceContour: any,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    const centerX = faceContour.center.x;
+    const centerY = faceContour.center.y;
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    // Create dense particle ring around estimated body outline
+    const bodyOutlineParticles = 800 + energyLevel * 100;
+    
+    for (let i = 0; i < bodyOutlineParticles; i++) {
+      const color = allColors[Math.floor(seededRandom() * 4)];
+      
+      // Create particles in rings around the person at various distances
+      const angle = seededRandom() * Math.PI * 2;
+      const baseRadius = Math.min(width, height) * 0.15; // Start close to person
+      const radiusVariation = seededRandom() * Math.min(width, height) * 0.25;
+      const radius = baseRadius + radiusVariation;
+      
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
+      
+      // Ensure particles are within image bounds and not on face
+      if (x >= 0 && x <= width && y >= 0 && y <= height) {
+        const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
+        
+        if (distanceFromFace > 8) {
+          const particleSize = 12 + seededRandom() * 40;
+          const particleOpacity = 0.15 + seededRandom() * 0.20;
+          
+          const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+          gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+          gradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.7})`);
+          gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
     }
   };
