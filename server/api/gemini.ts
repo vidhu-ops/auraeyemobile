@@ -1,8 +1,8 @@
 import { AuraAnalysisResult } from "../../client/src/lib/openai";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from "axios";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+// Remove unused imports since we're using canvas-based processing
+// const { GoogleGenerativeAI } = require("@google/generative-ai");
+// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 /**
  * Generates aura visualization using external AI image generation service
@@ -12,27 +12,119 @@ export async function generateAuraVisualization(
   auraAnalysis: any
 ): Promise<string> {
   try {
-    // Use Google's Gemini API to generate aura description and visualization prompt
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Import canvas for server-side image processing
+    const { createCanvas, loadImage } = await import('canvas');
     
-    const prompt = `Generate a detailed visual description for an aura visualization around a person in a photo. The aura should have ${auraAnalysis.dominantColor} and ${auraAnalysis.secondaryColor} colors. Describe ethereal, smokey energy wisps and glowing fields while keeping the person's face clearly visible. Make it mystical and spiritual but photorealistic.`;
+    // Remove data URL prefix if present
+    const imageContent = originalImageBase64.startsWith('data:') 
+      ? originalImageBase64 
+      : `data:image/jpeg;base64,${originalImageBase64}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const description = response.text();
-
-    // For now, return the original image with a processed indicator
-    // In production, this would interface with an image generation service
-    console.log("Generated aura description:", description);
+    // Load the original image
+    const image = await loadImage(imageContent);
     
-    // Return original image as we don't have a direct image generation API
-    // This maintains functionality while providing the infrastructure for future enhancement
-    return originalImageBase64;
+    // Create canvas with same dimensions
+    const canvas = createCanvas(image.width, image.height);
+    const ctx = canvas.getContext('2d');
+    
+    // Draw original image
+    ctx.drawImage(image, 0, 0);
+    
+    // Add aura effects
+    addAuraEffects(ctx, image.width, image.height, auraAnalysis.dominantColor, auraAnalysis.secondaryColor);
+    
+    // Return processed image as base64
+    return canvas.toDataURL('image/jpeg', 0.9);
     
   } catch (error) {
     console.error("Error generating aura visualization:", error);
+    // Return original image if canvas processing fails
     return originalImageBase64;
   }
+}
+
+function addAuraEffects(ctx: any, width: number, height: number, dominantColor: string, secondaryColor: string) {
+  // Get color values for aura rendering
+  const primaryRGB = getColorRGB(dominantColor);
+  const secondaryRGB = getColorRGB(secondaryColor);
+  
+  // Create multiple aura layers for depth
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const maxRadius = Math.min(width, height) * 0.6;
+  
+  // Outer aura layer (more transparent)
+  const outerGradient = ctx.createRadialGradient(centerX, centerY, maxRadius * 0.3, centerX, centerY, maxRadius);
+  outerGradient.addColorStop(0, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0)`);
+  outerGradient.addColorStop(0.7, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0.15)`);
+  outerGradient.addColorStop(1, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0.05)`);
+  
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = outerGradient;
+  ctx.fillRect(0, 0, width, height);
+  
+  // Inner aura layer (more visible)
+  const innerGradient = ctx.createRadialGradient(centerX, centerY, maxRadius * 0.2, centerX, centerY, maxRadius * 0.8);
+  innerGradient.addColorStop(0, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0)`);
+  innerGradient.addColorStop(0.5, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0.2)`);
+  innerGradient.addColorStop(1, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0.1)`);
+  
+  ctx.fillStyle = innerGradient;
+  ctx.fillRect(0, 0, width, height);
+  
+  // Add energy wisps/particles
+  addEnergyWisps(ctx, width, height, primaryRGB, secondaryRGB);
+  
+  // Reset composite operation
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+function addEnergyWisps(ctx: any, width: number, height: number, primaryRGB: any, secondaryRGB: any) {
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const numWisps = 12;
+  
+  ctx.globalCompositeOperation = 'screen';
+  
+  for (let i = 0; i < numWisps; i++) {
+    const angle = (i / numWisps) * Math.PI * 2;
+    const distance = Math.min(width, height) * (0.3 + Math.random() * 0.2);
+    const x = centerX + Math.cos(angle) * distance;
+    const y = centerY + Math.sin(angle) * distance;
+    
+    const wispGradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
+    const color = i % 2 === 0 ? primaryRGB : secondaryRGB;
+    
+    wispGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
+    wispGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = wispGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, 15, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function getColorRGB(colorName: string): { r: number, g: number, b: number } {
+  const colorMap: { [key: string]: { r: number, g: number, b: number } } = {
+    'Red': { r: 255, g: 100, b: 100 },
+    'Orange': { r: 255, g: 165, b: 0 },
+    'Yellow': { r: 255, g: 255, b: 100 },
+    'Green': { r: 100, g: 255, b: 100 },
+    'Blue': { r: 100, g: 150, b: 255 },
+    'Indigo': { r: 75, g: 0, b: 130 },
+    'Violet': { r: 238, g: 130, b: 238 },
+    'Pink': { r: 255, g: 192, b: 203 },
+    'White': { r: 255, g: 255, b: 255 },
+    'Black': { r: 50, g: 50, b: 50 },
+    'Gold': { r: 255, g: 215, b: 0 },
+    'Silver': { r: 192, g: 192, b: 192 },
+    'Purple': { r: 128, g: 0, b: 128 },
+    'Turquoise': { r: 64, g: 224, b: 208 },
+    'Magenta': { r: 255, g: 0, b: 255 }
+  };
+  
+  return colorMap[colorName] || colorMap['Blue'];
 }
 
 /**
