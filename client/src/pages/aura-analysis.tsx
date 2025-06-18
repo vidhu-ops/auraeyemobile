@@ -3540,8 +3540,8 @@ export default function AuraAnalysis() {
                           smokeY >= faceY && smokeY <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 25 + seededRandom() * 60; // Smaller particles
-          const smokeOpacity = 0.032 + seededRandom() * 0.096; // Increased by 20% from 0.04 and 0.08
+          const smokeSize = 15 + seededRandom() * 60; // Smaller particles
+          const smokeOpacity = 0.022 + seededRandom() * 0.065; // Increased by 20% from 0.04 and 0.08
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
         }
