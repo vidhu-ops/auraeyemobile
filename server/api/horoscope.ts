@@ -633,14 +633,19 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     return reduceNumber(sum);
   };
   
-  // Calculate Personality Number from consonants in the name
-  const calculatePersonality = (fullName: string): number => {
+  // Calculate Personality Number (Decision-Making Chakra) from day digits in birth date
+  const calculatePersonality = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5; // Default fallback
+    
+    const day = parts[2]; // Get the day part (DD)
     let sum = 0;
-    for (const char of fullName.toLowerCase().replace(/[^a-zA-Z]/g, '')) {
-      if (!'aeiou'.includes(char)) {
-        sum += letterToNumber(char);
-      }
+    
+    // Sum all digits in the day
+    for (const digit of day) {
+      sum += parseInt(digit);
     }
+    
     return reduceNumber(sum);
   };
   
