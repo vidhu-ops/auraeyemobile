@@ -4476,8 +4476,7 @@ export default function AuraAnalysis() {
             setAnalysisProgress(100);
             setAnalysisStage("Analysis complete! Preparing your results...");
             
-            // Clear interval if it's still running
-            clearInterval(progressInterval);
+            // Analysis complete
             
             // Small delay to show the 100% state before removing loading
             setTimeout(() => {
@@ -4499,7 +4498,6 @@ export default function AuraAnalysis() {
               variant: "destructive",
             });
             
-            clearInterval(progressInterval);
             setIsAnalyzing(false);
           }
         }
