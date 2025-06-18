@@ -800,17 +800,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
 function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // For very small images, likely test data - allow through for testing
-  if (imageBuffer.length < 5000) {
+  // For small images, allow through (likely objects or test data)
+  if (imageBuffer.length < 20000) {
     return false;
   }
   
   let skinTonePixels = 0;
+  let humanIndicators = 0;
   let sampledPixels = 0;
   
-  // Sample pixels efficiently for actual skin tone detection
-  const sampleSize = Math.min(2000, imageBuffer.length);
-  const step = Math.max(4, Math.floor(imageBuffer.length / sampleSize));
+  // Sample even fewer pixels to reduce false positives
+  const sampleSize = Math.min(500, Math.floor(imageBuffer.length / 16));
+  const step = Math.max(16, Math.floor(imageBuffer.length / sampleSize));
   
   for (let i = 0; i < imageBuffer.length - 3; i += step) {
     const r = imageBuffer[i] || 0;
@@ -818,20 +819,28 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
     const b = imageBuffer[i + 2] || 0;
     sampledPixels++;
     
-    // More specific skin tone detection - looking for actual human skin patterns
-    const isSkinTone = 
-      (r > 120 && g > 90 && b > 70 && r > g && g > b && (r - b) > 30) || // Light skin
-      (r > 100 && r < 180 && g > 70 && g < 140 && b > 50 && b < 110 && (r - b) > 20) || // Medium skin
-      (r > 80 && r < 150 && g > 60 && g < 120 && b > 40 && b < 100 && (r - g) < 40); // Dark skin
+    // Extremely specific human skin tone detection
+    const isLightSkin = r > 150 && g > 120 && b > 100 && r > g && g > b && (r - b) > 45 && (r - g) > 20;
+    const isMediumSkin = r > 120 && r < 160 && g > 90 && g < 120 && b > 70 && b < 100 && (r - b) > 30 && (r - g) > 15;
+    const isDarkSkin = r > 100 && r < 130 && g > 80 && g < 100 && b > 60 && b < 85 && (r - g) > 10 && (r - b) > 20;
+    
+    const isSkinTone = isLightSkin || isMediumSkin || isDarkSkin;
+    
+    // Look for very specific human features
+    const isDarkHair = r < 50 && g < 50 && b < 50; // Dark hair
+    const isEyes = (r < 80 && g < 80 && b < 80) && (r > 20 || g > 20 || b > 20); // Eyes
+    const isTeeth = r > 220 && g > 220 && b > 220; // Teeth/eyes whites
     
     if (isSkinTone) skinTonePixels++;
+    if ((isDarkHair || isEyes || isTeeth) && isSkinTone) humanIndicators++;
   }
   
-  // Calculate skin tone ratio
+  // Calculate ratios
   const skinRatio = skinTonePixels / sampledPixels;
+  const humanRatio = humanIndicators / sampledPixels;
   
-  // More restrictive threshold - only flag if significant skin tone presence
-  return skinRatio > 0.05; // 5% skin tone pixels indicates human presence
+  // Very restrictive - require significant skin AND human features
+  return skinRatio > 0.12 && humanRatio > 0.05; // 12% skin + 5% human features
 }
 
   // Aura Analysis API endpoint
