@@ -2627,28 +2627,35 @@ export default function AuraAnalysis() {
           
           // Create visible aura glow around the entire image edges
           const createAuraGlow = () => {
+            // Apply subtle blur for softer glow effect
+            ctx.filter = 'blur(4px)';
+            
             // Create multiple layers of glow
-            for (let layer = 0; layer < 8; layer++) {
-              const radius = 30 + (layer * 20);
-              const opacity = 0.15 - (layer * 0.015);
+            for (let layer = 0; layer < 12; layer++) {
+              const radius = 40 + (layer * 25);
+              const opacity = 0.12 - (layer * 0.008);
               
               // Use dominant color for most layers
-              const useSecondary = layer % 3 === 0;
+              const useSecondary = layer % 4 === 0;
               const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
               
               // Create radial gradient from center outward
               const gradient = ctx.createRadialGradient(
-                centerX, centerY, canvas.width * 0.15, // Inner radius - protect person
-                centerX, centerY, canvas.width * 0.6 + radius // Outer radius
+                centerX, centerY, canvas.width * 0.12, // Inner radius - protect person
+                centerX, centerY, canvas.width * 0.8 + radius // Outer radius
               );
               
               gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+              gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
               gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.5})`);
+              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
               
               ctx.fillStyle = gradient;
               ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
+            
+            // Reset filter
+            ctx.filter = 'none';
           };
           
           // Create smokey aura effects with specific energy zone colors
@@ -2709,29 +2716,34 @@ export default function AuraAnalysis() {
                   continue;
                 }
                 
-                // Create smokey wisp effect
-                const wispSize = 15 + Math.random() * 40;
-                const opacity = 0.15 + Math.random() * 0.25;
+                // Create natural smokey wisp effect with heavy blur
+                const wispSize = 25 + Math.random() * 60;
+                const opacity = 0.08 + Math.random() * 0.12;
                 const [r, g, b] = zone.color;
                 
-                // Create multiple overlapping circles for smokey effect
-                const smokeLayers = 3 + Math.floor(Math.random() * 3);
+                // Apply blur filter for smokey effect
+                ctx.filter = 'blur(8px)';
+                
+                // Create multiple overlapping layers for natural smoke density
+                const smokeLayers = 8 + Math.floor(Math.random() * 6);
                 
                 for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (Math.random() - 0.5) * wispSize * 0.6;
+                  const layerOffset = (Math.random() - 0.5) * wispSize * 1.2;
                   const layerX = x + layerOffset;
                   const layerY = y + layerOffset;
-                  const layerSize = wispSize * (0.7 + Math.random() * 0.6);
-                  const layerOpacity = opacity * (0.3 + Math.random() * 0.4);
+                  const layerSize = wispSize * (0.4 + Math.random() * 1.4);
+                  const layerOpacity = opacity * (0.2 + Math.random() * 0.6);
                   
                   const smokeGradient = ctx.createRadialGradient(
                     layerX, layerY, 0,
                     layerX, layerY, layerSize
                   );
                   
+                  // Create very soft gradient for natural smoke
                   smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`);
-                  smokeGradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.7})`);
-                  smokeGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.3})`);
+                  smokeGradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.8})`);
+                  smokeGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.4})`);
+                  smokeGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.1})`);
                   smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                   
                   ctx.fillStyle = smokeGradient;
@@ -2740,25 +2752,31 @@ export default function AuraAnalysis() {
                   ctx.fill();
                 }
                 
-                // Add flowing smoke trails
-                if (Math.random() > 0.7) {
-                  const trailLength = 20 + Math.random() * 30;
+                // Reset filter
+                ctx.filter = 'none';
+                
+                // Add flowing smoke trails with blur
+                if (Math.random() > 0.6) {
+                  ctx.filter = 'blur(12px)';
+                  const trailLength = 30 + Math.random() * 40;
                   const angle = Math.random() * Math.PI * 2;
                   
                   for (let trail = 0; trail < trailLength; trail++) {
                     const trailProgress = trail / trailLength;
-                    const trailX = x + Math.cos(angle) * trail * 2;
-                    const trailY = y + Math.sin(angle) * trail * 2 + Math.sin(trailProgress * Math.PI * 4) * 5;
-                    const trailSize = wispSize * (1 - trailProgress * 0.8);
-                    const trailOpacity = opacity * (1 - trailProgress) * 0.6;
+                    const trailX = x + Math.cos(angle) * trail * 3;
+                    const trailY = y + Math.sin(angle) * trail * 3 + Math.sin(trailProgress * Math.PI * 6) * 8;
+                    const trailSize = wispSize * (1 - trailProgress * 0.7);
+                    const trailOpacity = opacity * (1 - trailProgress) * 0.4;
                     
-                    if (trailSize > 2) {
+                    if (trailSize > 8) {
                       const trailGradient = ctx.createRadialGradient(
                         trailX, trailY, 0,
                         trailX, trailY, trailSize
                       );
                       
                       trailGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${trailOpacity})`);
+                      trailGradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.7})`);
+                      trailGradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.3})`);
                       trailGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                       
                       ctx.fillStyle = trailGradient;
@@ -2767,6 +2785,7 @@ export default function AuraAnalysis() {
                       ctx.fill();
                     }
                   }
+                  ctx.filter = 'none';
                 }
               }
             });
@@ -3392,7 +3411,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 60 + seededRandom() * 120; // Much larger smoke particles
-          const smokeOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for person visibility
+          const smokeOpacity = 0.08 + seededRandom() * 0.1; // Lower opacity for person visibility
           
           drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
         }
@@ -3422,8 +3441,8 @@ export default function AuraAnalysis() {
     // Create multiple layers of smoke for depth and mystical appearance
     const smokeLayers = [
       { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.06, 0.12] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [50, 120], opacity: [0.08, 0.15] }, // Medium layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [25, 80], opacity: [0.10, 0.18] }   // Detail layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [80, 120], opacity: [0.08, 0.15] }, // Medium layer
+      { density: baseSmokeDensity * 0.5, sizeRange: [75, 80], opacity: [0.10, 0.18] }   // Detail layer
     ];
     
     smokeLayers.forEach(layer => {
@@ -3504,7 +3523,7 @@ export default function AuraAnalysis() {
         
         if (!inFaceArea) {
           const smokeSize = 25 + seededRandom() * 60; // Smaller particles
-          const smokeOpacity = 0.048 + seededRandom() * 0.096; // Increased by 20% from 0.04 and 0.08
+          const smokeOpacity = 0.032 + seededRandom() * 0.096; // Increased by 20% from 0.04 and 0.08
           
           drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
         }
@@ -3601,9 +3620,9 @@ export default function AuraAnalysis() {
   ) => {
     // Create multiple layered smoke effects for dense, mystical appearance
     const smokeLayers = [
-      { sizeMultiplier: 1.2, opacityMultiplier: 0.8, blur: 3 },     // Main dense layer
-      { sizeMultiplier: 0.8, opacityMultiplier: 1.0, blur: 5 },     // Core bright layer
-      { sizeMultiplier: 1.5, opacityMultiplier: 0.5, blur: 8 }      // Outer haze layer
+      { sizeMultiplier: 1.2, opacityMultiplier: 0.8, blur: 100 },     // Main dense layer
+      { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 100 },     // Core bright layer
+      { sizeMultiplier: 1.1, opacityMultiplier: 0.5, blur: 80 }      // Outer haze layer
     ];
     
     const smokeR = rgb.r;
@@ -3612,7 +3631,7 @@ export default function AuraAnalysis() {
     
     smokeLayers.forEach(layer => {
       const layerSize = size * layer.sizeMultiplier;
-      const layerOpacity = Math.min(0.35, opacity * 0.5 * layer.opacityMultiplier); // Much higher opacity
+      const layerOpacity = Math.min(0.35, opacity * 0.2 * layer.opacityMultiplier); // Much higher opacity
       
       // Apply blur for atmospheric effect
       if (layer.blur > 0) {
@@ -3647,7 +3666,7 @@ export default function AuraAnalysis() {
         const tendrilSize = size * (0.4 + Math.sin(progress * Math.PI * 6) * 0.2);
         
         const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        const tendrilOpacity = Math.min(0.25, opacity * 0.6); // Higher tendril opacity
+        const tendrilOpacity = Math.min(0.25, opacity * 0.4); // Higher tendril opacity
         tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
         tendrilGradient.addColorStop(0.7, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity * 0.3})`);
         tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
@@ -3672,12 +3691,12 @@ export default function AuraAnalysis() {
       
       // Much larger smoke particles for dense mystical trails
       const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
-      const baseOpacity = 0.08 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Reduced for person visibility
+      const baseOpacity = 0.06 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Reduced for person visibility
       
       // Create multiple layers for dense trail effect
       const trailLayers = [
         { sizeMultiplier: 1.0, opacityMultiplier: 1.0 },
-        { sizeMultiplier: 0.7, opacityMultiplier: 1.3 },
+        { sizeMultiplier: 0.7, opacityMultiplier: 1.1 },
         { sizeMultiplier: 1.4, opacityMultiplier: 0.6 }
       ];
       
@@ -3782,9 +3801,9 @@ export default function AuraAnalysis() {
     
     // Create multiple haze layers for maximum mystical density
     const hazeLayers = [
-      { density: hazeZones * 0.4, sizeRange: [120, 200], opacity: [0.08, 0.15] }, // Large background haze
-      { density: hazeZones * 0.3, sizeRange: [80, 140], opacity: [0.12, 0.20] },  // Medium haze
-      { density: hazeZones * 0.3, sizeRange: [50, 100], opacity: [0.15, 0.25] }   // Dense detail haze
+      { density: hazeZones * 0.4, sizeRange: [100, 180], opacity: [0.08, 0.15] }, // Large background haze
+      { density: hazeZones * 0.3, sizeRange: [30, 140], opacity: [0.12, 0.20] },  // Medium haze
+      { density: hazeZones * 0.3, sizeRange: [30, 100], opacity: [0.15, 0.25] }   // Dense detail haze
     ];
     
     hazeLayers.forEach(layer => {
