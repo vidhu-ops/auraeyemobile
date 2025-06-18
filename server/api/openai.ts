@@ -788,9 +788,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
       sum += parseInt(digit);
     }
     
-    const result = reduceNumber(sum);
-    console.log(`OpenAI calculatePersonality debug: birthDate=${birthDate}, day=${day}, sum=${sum}, result=${result}`);
-    return result;
+    return reduceNumber(sum);
   };
 
   // Calculate all numbers
