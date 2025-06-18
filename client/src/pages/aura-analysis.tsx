@@ -2710,40 +2710,51 @@ export default function AuraAnalysis() {
                 const x = zone.area.x + Math.random() * zone.area.width;
                 const y = zone.area.y + Math.random() * zone.area.height;
                 
-                // Avoid center area where person is
+                // Enhanced person protection - larger area to keep face completely visible
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                if (distFromCenter < canvas.width * 0.15) {
+                if (distFromCenter < canvas.width * 0.22) {
                   continue;
                 }
                 
-                // Create natural smokey wisp effect with heavy blur
-                const wispSize = 25 + Math.random() * 60;
-                const opacity = 0.08 + Math.random() * 0.12;
+                // Additional rectangular protection for face and upper body
+                const faceLeft = centerX - canvas.width * 0.15;
+                const faceRight = centerX + canvas.width * 0.15;
+                const faceTop = centerY - canvas.height * 0.25;
+                const faceBottom = centerY + canvas.height * 0.2;
+                
+                if (x >= faceLeft && x <= faceRight && y >= faceTop && y <= faceBottom) {
+                  continue;
+                }
+                
+                // Create extremely blurred, natural smokey wisp effect
+                const wispSize = 40 + Math.random() * 80;
+                const opacity = 0.04 + Math.random() * 0.08;
                 const [r, g, b] = zone.color;
                 
-                // Apply blur filter for smokey effect
-                ctx.filter = 'blur(8px)';
+                // Apply heavy blur filter for ultra-soft smokey effect
+                ctx.filter = 'blur(20px)';
                 
-                // Create multiple overlapping layers for natural smoke density
-                const smokeLayers = 8 + Math.floor(Math.random() * 6);
+                // Create many overlapping layers for dense, natural smoke
+                const smokeLayers = 12 + Math.floor(Math.random() * 8);
                 
                 for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (Math.random() - 0.5) * wispSize * 1.2;
+                  const layerOffset = (Math.random() - 0.5) * wispSize * 1.8;
                   const layerX = x + layerOffset;
                   const layerY = y + layerOffset;
-                  const layerSize = wispSize * (0.4 + Math.random() * 1.4);
-                  const layerOpacity = opacity * (0.2 + Math.random() * 0.6);
+                  const layerSize = wispSize * (0.6 + Math.random() * 2.0);
+                  const layerOpacity = opacity * (0.3 + Math.random() * 0.7);
                   
                   const smokeGradient = ctx.createRadialGradient(
                     layerX, layerY, 0,
                     layerX, layerY, layerSize
                   );
                   
-                  // Create very soft gradient for natural smoke
+                  // Create extremely soft gradient for natural smoke flow
                   smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`);
-                  smokeGradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.8})`);
-                  smokeGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.4})`);
-                  smokeGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.1})`);
+                  smokeGradient.addColorStop(0.15, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.9})`);
+                  smokeGradient.addColorStop(0.35, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.6})`);
+                  smokeGradient.addColorStop(0.65, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.3})`);
+                  smokeGradient.addColorStop(0.85, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.1})`);
                   smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                   
                   ctx.fillStyle = smokeGradient;
@@ -2755,28 +2766,35 @@ export default function AuraAnalysis() {
                 // Reset filter
                 ctx.filter = 'none';
                 
-                // Add flowing smoke trails with blur
-                if (Math.random() > 0.6) {
-                  ctx.filter = 'blur(12px)';
-                  const trailLength = 30 + Math.random() * 40;
+                // Add flowing smoke trails with heavy blur for natural movement
+                if (Math.random() > 0.5) {
+                  ctx.filter = 'blur(25px)';
+                  const trailLength = 40 + Math.random() * 60;
                   const angle = Math.random() * Math.PI * 2;
                   
                   for (let trail = 0; trail < trailLength; trail++) {
                     const trailProgress = trail / trailLength;
-                    const trailX = x + Math.cos(angle) * trail * 3;
-                    const trailY = y + Math.sin(angle) * trail * 3 + Math.sin(trailProgress * Math.PI * 6) * 8;
-                    const trailSize = wispSize * (1 - trailProgress * 0.7);
-                    const trailOpacity = opacity * (1 - trailProgress) * 0.4;
+                    const trailX = x + Math.cos(angle) * trail * 4;
+                    const trailY = y + Math.sin(angle) * trail * 4 + Math.sin(trailProgress * Math.PI * 8) * 12;
+                    const trailSize = wispSize * (1 - trailProgress * 0.6);
+                    const trailOpacity = opacity * (1 - trailProgress) * 0.3;
                     
-                    if (trailSize > 8) {
+                    // Ensure trail doesn't overlap with person's face
+                    const trailDistFromCenter = Math.sqrt((trailX - centerX) ** 2 + (trailY - centerY) ** 2);
+                    if (trailDistFromCenter < canvas.width * 0.18) {
+                      continue;
+                    }
+                    
+                    if (trailSize > 15) {
                       const trailGradient = ctx.createRadialGradient(
                         trailX, trailY, 0,
                         trailX, trailY, trailSize
                       );
                       
                       trailGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${trailOpacity})`);
-                      trailGradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.7})`);
-                      trailGradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.3})`);
+                      trailGradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.8})`);
+                      trailGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.5})`);
+                      trailGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.2})`);
                       trailGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                       
                       ctx.fillStyle = trailGradient;
