@@ -27,6 +27,7 @@ export interface AuraAnalysisResult {
     crown: number;
   };
   detailedAnalysis: string;
+  processedAuraImage?: string; // AI-generated aura visualization
 }
 
 /**
