@@ -2681,7 +2681,7 @@ export default function AuraAnalysis() {
               {
                 name: 'thinking',
                 color: thinkingRGB,
-                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.25 },
+                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.15 },
                 density: 80
               },
               {
@@ -3141,9 +3141,9 @@ export default function AuraAnalysis() {
       { 
         color: colors.thinkingRGB, 
         startX: centerX, 
-        startY: centerY - personHeight * 0.4, 
+        startY: centerY - personHeight * 0.15, 
         direction: { x: 0, y: -1 },
-        spread: width * 0.8,
+        spread: width * 0.5,
         name: 'thinking_top',
         density: 60,
         zone: 'top' // Mental/spiritual energy above head
