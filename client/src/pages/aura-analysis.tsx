@@ -2835,13 +2835,13 @@ export default function AuraAnalysis() {
     const faceCenterY = minY + faceHeight / 2;
     
     // Add protective margins around detected face
-    const margin = Math.max(faceWidth, faceHeight) * 0.3;
+    const margin = Math.max(faceWidth, faceHeight) * 0.1;
     
     return {
       x: Math.max(0, minX - margin),
       y: Math.max(0, minY - margin),
-      width: Math.min(width, faceWidth + margin * 2),
-      height: Math.min(height, faceHeight + margin * 2),
+      width: Math.min(width, faceWidth + margin * 1.2),
+      height: Math.min(height, faceHeight + margin * 1.2),
       centerX: faceCenterX,
       centerY: faceCenterY,
       detected: facePixelCount > 100
@@ -2996,8 +2996,8 @@ export default function AuraAnalysis() {
     ctx.fillStyle = backgroundGradient;
     ctx.fillRect(0, 0, width, height);
     
-    // Generate particles around face contour with much higher density for fuller appearance
-    const particleCount = 2000 + energyLevel * 200; // Significantly increased particle count
+    // Generate maximum density particles to fill entire area around face
+    const particleCount = 3500 + energyLevel * 300; // Maximum particle density
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < particleCount; i++) {
@@ -3012,8 +3012,8 @@ export default function AuraAnalysis() {
       
       // Only avoid the face area - fill everything else including close to body
       if (distanceFromFace > 3) { // Extremely close to face - particles almost touching
-        const particleSize = 15 + seededRandom() * 75; // Increased base size and range
-        const particleOpacity = 0.18 + seededRandom() * 0.25; // Increased opacity for fuller look
+        const particleSize = 20 + seededRandom() * 90; // Maximum particle size for full coverage
+        const particleOpacity = 0.25 + seededRandom() * 0.35; // Maximum opacity for dense appearance
         
         // Create gradient particle
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
@@ -3117,7 +3117,7 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    const backgroundParticles = 1500 + energyLevel * 150; // Additional background particles
+    const backgroundParticles = 2500 + energyLevel * 250; // Maximum background coverage
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < backgroundParticles; i++) {
@@ -3159,7 +3159,7 @@ export default function AuraAnalysis() {
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Create dense particle ring around estimated body outline
-    const bodyOutlineParticles = 800 + energyLevel * 100;
+    const bodyOutlineParticles = 1200 + energyLevel * 150;
     
     for (let i = 0; i < bodyOutlineParticles; i++) {
       const color = allColors[Math.floor(seededRandom() * 4)];
