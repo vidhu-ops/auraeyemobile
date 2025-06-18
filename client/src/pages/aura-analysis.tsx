@@ -3252,7 +3252,7 @@ export default function AuraAnalysis() {
         
         // Draw smooth smoke trail
         if (trailPoints.length > 1) {
-          drawSmokeTrail(ctx, trailPoints, zone.color, seededRandom);
+          drawSmokeTrail(ctx, trailPoints, zone.color, seededRandom, zone.zone);
         }
       }
     });
@@ -3702,13 +3702,22 @@ export default function AuraAnalysis() {
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
     color: { r: number, g: number, b: number },
-    seededRandom: () => number
+    seededRandom: () => number,
+    zone?: string
   ) => {
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      // Much larger smoke particles for dense mystical trails
-      const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
+      // Drastically smaller particles for thinking zone, normal size for others
+      let smokeSize;
+      if (zone === 'top') {
+        // Thinking zone - very small particles (2-10 pixels)
+        smokeSize = 2 + seededRandom() * 8 * (1 - point.progress * 0.3);
+      } else {
+        // Other zones - normal size
+        smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
+      }
+      
       const baseOpacity = 0.06 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Reduced for person visibility
       
       // Create multiple layers for dense trail effect
