@@ -1212,7 +1212,7 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
-          personalityNumber: calculateDecisionMakingChakra(birthDate),
+          personalityNumber: calculatePersonality(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
