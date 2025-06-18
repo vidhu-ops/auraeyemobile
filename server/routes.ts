@@ -41,11 +41,15 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     { name: "Silver", hex: "#C0C0C0" }
   ];
   
-  // Ultra-fast seed generation without crypto
-  let seed = imageBuffer ? imageBuffer.length * 137 + (imageBuffer[0] || 1) : 12345;
+  // Use deterministic seed based on image content for consistent results
+  const generateHash = (buffer: Buffer): number => {
+    const hash = crypto.createHash('md5').update(buffer).digest('hex');
+    return parseInt(hash.substring(0, 8), 16);
+  };
+  let seed = imageBuffer ? generateHash(imageBuffer) : 12345;
   const seededRandom = () => {
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    return seed / 0x7fffffff;
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
   };
   
   const auraColors = [
@@ -103,19 +107,19 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     chakraAlignment: `Strong ${dominantColor.name} frequency alignment`,
     elementalConnection: `${dominantColor.name} elemental resonance`,
     chakraActivity: {
-      root: Math.floor(seededRandom() * 5) + 5,
-      sacral: Math.floor(seededRandom() * 5) + 5,
-      solarPlexus: Math.floor(seededRandom() * 5) + 5,
-      heart: Math.floor(seededRandom() * 5) + 5,
-      throat: Math.floor(seededRandom() * 5) + 5,
-      thirdEye: Math.floor(seededRandom() * 5) + 5,
-      crown: Math.floor(seededRandom() * 5) + 5
+      root: Math.floor(Math.random() * 5) + 5,
+      sacral: Math.floor(Math.random() * 5) + 5,
+      solarPlexus: Math.floor(Math.random() * 5) + 5,
+      heart: Math.floor(Math.random() * 5) + 5,
+      throat: Math.floor(Math.random() * 5) + 5,
+      thirdEye: Math.floor(Math.random() * 5) + 5,
+      crown: Math.floor(Math.random() * 5) + 5
     },
     auricLayers: auraColors.slice(0, 7).map((color, index) => ({
       layer: index + 1,
       color: color.name,
       meaning: `${color.name} layer energy`,
-      strength: Math.floor(seededRandom() * 40) + 60
+      strength: Math.floor(Math.random() * 40) + 60
     }))
   };
 }
@@ -857,10 +861,13 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
         return res.status(400).json({ message: "No image provided" });
       }
 
-      // Fast human detection - only block obvious non-human content
-      if (imgBuffer.length < 1000) {
+      // Check if image contains a human - aura analysis requires human images
+      const hasHuman = detectHumanInImage(imgBuffer);
+      // For now, allow analysis to proceed - user education will guide proper usage
+      if (!hasHuman && imgBuffer.length < 5000) {
+        // Only block very small test images
         return res.status(400).json({ 
-          message: "Please upload a photo containing a person for aura analysis." 
+          message: "Please upload a photo containing a person for aura analysis. Use Object Analysis for items or objects." 
         });
       }
 
@@ -891,12 +898,45 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
         Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
       }
 
-      // Skip database lookups for maximum speed - focus on immediate analysis
+      // Get user's previous numerology data for enhanced analysis
+      let userNumerology = null;
+      let previousReadings = null;
+      
+      if (userId) {
+        try {
+          const numerologyReadings = await storage.getNumerologyReadingsByUser(userId);
+          if (numerologyReadings.length > 0) {
+            const latestReading = numerologyReadings[numerologyReadings.length - 1];
+            userNumerology = {
+              lifePathNumber: latestReading.lifePathNumber,
+              destinyNumber: latestReading.destinyNumber,
+              soulUrgeNumber: latestReading.soulUrgeNumber,
+              personalityNumber: latestReading.personalityNumber
+            };
+          }
+          
+          // Get previous aura readings for pattern analysis
+          previousReadings = await storage.getAuraReadingsByUser(userId) || [];
+        } catch (error) {
+          console.log("Could not retrieve user data for enhanced analysis");
+        }
+      }
 
       // Use optimized fast analysis for sub-1000ms performance
       const auraAnalysis = generateFastAuraAnalysis(imgBuffer) as any;
 
-      // Skip AI visualization for maximum speed - client handles visualization
+      // Generate AI-powered aura visualization with detected colors
+      try {
+        const basicAura = { 
+          dominantColor: auraAnalysis.dominantColor, 
+          secondaryColor: auraAnalysis.secondaryColor 
+        };
+        const auraVisualization = await generateAuraVisualization(imageData, basicAura as any);
+        (auraAnalysis as any).processedAuraImage = auraVisualization;
+      } catch (error) {
+        console.log("AI visualization generation failed, continuing with analysis only");
+        // Continue without visualization if AI generation fails
+      }
 
       // Skip database save for maximum speed - return analysis directly
       res.json(auraAnalysis);
