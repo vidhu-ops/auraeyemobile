@@ -3011,7 +3011,7 @@ export default function AuraAnalysis() {
       const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
       
       // Only avoid the face area - fill everything else including close to body
-      if (distanceFromFace > 8) { // Much smaller distance - particles very close to body
+      if (distanceFromFace > 3) { // Extremely close to face - particles almost touching
         const particleSize = 15 + seededRandom() * 75; // Increased base size and range
         const particleOpacity = 0.18 + seededRandom() * 0.25; // Increased opacity for fuller look
         
@@ -3041,11 +3041,11 @@ export default function AuraAnalysis() {
     const centerY = faceContour.center.y;
     const bounds = faceContour.bounds;
     
-    // Only protect the face area - much smaller margin to bring particles closer
-    const faceMargin = 8; // Reduced from 15 to bring particles very close
+    // Minimal face protection - bring particles extremely close (50px closer than before)
+    const faceMargin = 3; // Reduced to 3px for maximum proximity to face
     if (x >= bounds.x - faceMargin && x <= bounds.x + bounds.width + faceMargin &&
         y >= bounds.y - faceMargin && y <= bounds.y + bounds.height + faceMargin) {
-      return 0; // Inside face protection area only
+      return 0; // Minimal face protection area
     }
     
     // Calculate minimum distance to face center
@@ -3128,7 +3128,7 @@ export default function AuraAnalysis() {
       // Check distance from face
       const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
       
-      if (distanceFromFace > 8) { // Same small protection zone - particles very close to body
+      if (distanceFromFace > 3) { // Extremely close to face - particles almost touching
         const particleSize = 5 + seededRandom() * 25; // Smaller background particles
         const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for layering
         
@@ -3177,7 +3177,7 @@ export default function AuraAnalysis() {
       if (x >= 0 && x <= width && y >= 0 && y <= height) {
         const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
         
-        if (distanceFromFace > 8) {
+        if (distanceFromFace > 3) {
           const particleSize = 12 + seededRandom() * 40;
           const particleOpacity = 0.15 + seededRandom() * 0.20;
           
