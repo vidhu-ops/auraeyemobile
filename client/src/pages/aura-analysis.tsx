@@ -4411,26 +4411,9 @@ export default function AuraAnalysis() {
       setAnalysisProgress(20);
       setAnalysisStage("Initializing aura scanning...");
 
-      // Fast progress simulation for better UX
-      const progressInterval = setInterval(() => {
-        setAnalysisProgress(prev => {
-          if (prev >= 95) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          
-          // Update stage text based on progress
-          if (prev < 40) {
-            setAnalysisStage("Analyzing energy patterns...");
-          } else if (prev < 70) {
-            setAnalysisStage("Detecting aura colors...");
-          } else {
-            setAnalysisStage("Generating your reading...");
-          }
-          
-          return prev + Math.random() * 8 + 3; // Faster progress increments
-        });
-      }, 100); // Ultra fast interval
+      // Minimal progress for maximum speed
+      setAnalysisProgress(50);
+      setAnalysisStage("Processing aura analysis...");
 
       // Convert the image to base64
       const reader = new FileReader();
@@ -4467,7 +4450,6 @@ export default function AuraAnalysis() {
                 if (apiError.message && apiError.message.startsWith("ROOM_IMAGE:")) {
                   const message = apiError.message.replace("ROOM_IMAGE:", "");
                   setIsAnalyzing(false);
-                  clearInterval(progressInterval);
                   toast({
                     title: "Use Object Analysis Instead",
                     description: message + " Please go to the home page and click 'Object Aura Analysis' instead.",
@@ -4486,16 +4468,9 @@ export default function AuraAnalysis() {
               setCurrentAnalysisId(analysisResult.id);
             }
             
-            // Generate aura visualization using canvas overlay
-            if (base64String) {
-              setAnalysisStage("Creating your aura visualization...");
-              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
-              setProcessedAuraImage(auraProcessedImage);
-              setAnalysisStage("Aura visualization complete!");
-            } else {
-              setProcessedAuraImage(base64String || '');
-              setAnalysisStage("Analysis complete!");
-            }
+            // Skip visualization generation for maximum speed
+            setProcessedAuraImage(base64String || '');
+            setAnalysisStage("Analysis complete!");
             
             // Ensure progress shows 100% at the end
             setAnalysisProgress(100);
