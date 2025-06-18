@@ -2802,7 +2802,100 @@ export default function AuraAnalysis() {
     return 'Purple'; // Default fallback
   };
 
-  // Function to create natural smoke effect like real smoke around person
+
+
+  // Detect facial features using advanced pixel analysis
+  const detectFacialFeatures = (data: Uint8ClampedArray, width: number, height: number) => {
+    let minX = width, maxX = 0, minY = height, maxY = 0;
+    let facePixelCount = 0;
+    
+    // Scan for skin-tone pixels and facial features
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const index = (y * width + x) * 4;
+        const r = data[index];
+        const g = data[index + 1];
+        const b = data[index + 2];
+        
+        // Enhanced skin tone detection
+        if (isSkinTone(r, g, b) || isFacialFeature(r, g, b)) {
+          facePixelCount++;
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    
+    // Calculate face center and dimensions with safety margins
+    const faceWidth = maxX - minX;
+    const faceHeight = maxY - minY;
+    const faceCenterX = minX + faceWidth / 2;
+    const faceCenterY = minY + faceHeight / 2;
+    
+    // Add protective margins around detected face
+    const margin = Math.max(faceWidth, faceHeight) * 0.3;
+    
+    return {
+      x: Math.max(0, minX - margin),
+      y: Math.max(0, minY - margin),
+      width: Math.min(width, faceWidth + margin * 2),
+      height: Math.min(height, faceHeight + margin * 2),
+      centerX: faceCenterX,
+      centerY: faceCenterY,
+      detected: facePixelCount > 100
+    };
+  };
+
+  // Detect person boundaries for full body protection
+  const detectPersonBoundaries = (data: Uint8ClampedArray, width: number, height: number, faceRegion: any) => {
+    // Use face region as reference point for person detection
+    const personCenterX = faceRegion.centerX || width / 2;
+    const personCenterY = faceRegion.centerY || height / 2;
+    
+    // Estimate person boundaries based on typical human proportions
+    const personWidth = Math.max(faceRegion.width * 2.5, width * 0.25);
+    const personHeight = Math.max(faceRegion.height * 6, height * 0.6);
+    
+    return {
+      x: Math.max(0, personCenterX - personWidth / 2),
+      y: Math.max(0, personCenterY - personHeight * 0.3),
+      width: Math.min(width, personWidth),
+      height: Math.min(height, personHeight),
+      centerX: personCenterX,
+      centerY: personCenterY
+    };
+  };
+
+  // Enhanced skin tone detection
+  const isSkinTone = (r: number, g: number, b: number): boolean => {
+    // Multiple skin tone ranges for diverse ethnicities
+    const skinTones = [
+      { minR: 95, maxR: 255, minG: 40, maxG: 200, minB: 20, maxB: 165 },
+      { minR: 80, maxR: 220, minG: 50, maxG: 180, minB: 30, maxB: 140 },
+      { minR: 60, maxR: 200, minG: 35, maxG: 150, minB: 15, maxB: 120 },
+      { minR: 45, maxR: 180, minG: 25, maxG: 130, minB: 10, maxB: 100 }
+    ];
+    
+    return skinTones.some(tone => 
+      r >= tone.minR && r <= tone.maxR &&
+      g >= tone.minG && g <= tone.maxG &&
+      b >= tone.minB && b <= tone.maxB
+    );
+  };
+
+  // Detect facial features like eyes, nose, mouth
+  const isFacialFeature = (r: number, g: number, b: number): boolean => {
+    // Dark features (eyes, eyebrows, nostrils)
+    const isDark = r < 80 && g < 80 && b < 80;
+    // Lip colors
+    const isLip = r > 100 && r > g && r > b && (r - g) > 20;
+    
+    return isDark || isLip;
+  };
+
+  // Enhanced facial mapping and aura generation system
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2823,16 +2916,198 @@ export default function AuraAnalysis() {
       return currentSeed / 233280;
     };
 
-    const centerX = width / 1.5;
-    const centerY = height / 1.2;
-    const personWidth = width * 0.3;
-    const personHeight = height * 0.2;
-
+    // Get image data for face detection
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    
+    // Enhanced face detection using brightness and skin tone analysis
+    const faceRegion = detectFacialFeatures(data, width, height);
+    const personBounds = detectPersonBoundaries(data, width, height, faceRegion);
+    
     // Use normal blend mode for transparent smoke particles
     ctx.globalCompositeOperation = 'source-over';
 
-    // Create natural flowing smoke wisps with proper transparency
-    createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
+    // Create facial contour mapping for precise aura placement
+    const faceContour = generateFaceContour(faceRegion, personBounds);
+    
+    // Generate dense smokey field around person while preserving facial clarity
+    createContourMappedAura(ctx, width, height, faceContour, colors, energyLevel, seededRandom);
+    
+    // Add facial feature protection overlay
+    protectFacialFeatures(ctx, faceRegion, personBounds);
+  };
+
+
+
+  // Generate precise face contour for aura mapping
+  const generateFaceContour = (faceRegion: any, personBounds: any) => {
+    const contourPoints = [];
+    const faceX = faceRegion.x;
+    const faceY = faceRegion.y;
+    const faceWidth = faceRegion.width;
+    const faceHeight = faceRegion.height;
+    
+    // Create elliptical face contour with proper proportions
+    const centerX = faceRegion.centerX;
+    const centerY = faceRegion.centerY;
+    const radiusX = faceWidth / 2;
+    const radiusY = faceHeight / 2;
+    
+    // Generate contour points around face
+    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 20) {
+      const x = centerX + Math.cos(angle) * radiusX;
+      const y = centerY + Math.sin(angle) * radiusY;
+      contourPoints.push({ x, y, angle });
+    }
+    
+    return {
+      points: contourPoints,
+      center: { x: centerX, y: centerY },
+      bounds: { x: faceX, y: faceY, width: faceWidth, height: faceHeight }
+    };
+  };
+
+  // Create contour-mapped aura with facial awareness
+  const createContourMappedAura = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    faceContour: any,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    // Create base atmospheric haze
+    const baseColor = colors.personalityRGB;
+    ctx.fillStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.08)`;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Generate particles around face contour with precise mapping
+    const particleCount = 800 + energyLevel * 100;
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < particleCount; i++) {
+      const color = allColors[Math.floor(seededRandom() * 4)];
+      
+      // Generate particle position based on face contour mapping
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Check distance from face contour
+      const distanceFromFace = calculateDistanceFromFaceContour(x, y, faceContour);
+      
+      // Only place particles outside face protection zone
+      if (distanceFromFace > 20) {
+        const particleSize = 8 + seededRandom() * 45;
+        const particleOpacity = 0.12 + seededRandom() * 0.18;
+        
+        // Create gradient particle
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+        gradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Add contour-following aura streams
+    createContourFollowingStreams(ctx, width, height, faceContour, colors, energyLevel, seededRandom);
+  };
+
+  // Calculate distance from face contour for precise placement
+  const calculateDistanceFromFaceContour = (x: number, y: number, faceContour: any): number => {
+    const centerX = faceContour.center.x;
+    const centerY = faceContour.center.y;
+    const bounds = faceContour.bounds;
+    
+    // Check if point is inside face bounding box with margin
+    const margin = 15;
+    if (x >= bounds.x - margin && x <= bounds.x + bounds.width + margin &&
+        y >= bounds.y - margin && y <= bounds.y + bounds.height + margin) {
+      return 0; // Inside protected area
+    }
+    
+    // Calculate minimum distance to face center
+    return Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+  };
+
+  // Create aura streams that follow facial contours
+  const createContourFollowingStreams = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    faceContour: any,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    const streamCount = 24 + energyLevel * 4;
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < streamCount; i++) {
+      const color = allColors[i % 4];
+      const startPoint = faceContour.points[Math.floor(seededRandom() * faceContour.points.length)];
+      
+      // Create stream flowing away from face
+      const angle = Math.atan2(startPoint.y - faceContour.center.y, startPoint.x - faceContour.center.x);
+      const streamLength = 60 + seededRandom() * 120;
+      
+      // Generate stream points
+      const streamPoints = [];
+      for (let j = 0; j < 15; j++) {
+        const progress = j / 15;
+        const distance = progress * streamLength;
+        const turbulence = Math.sin(progress * Math.PI * 3) * 25;
+        
+        const x = startPoint.x + Math.cos(angle) * distance + turbulence * Math.cos(angle + Math.PI / 2);
+        const y = startPoint.y + Math.sin(angle) * distance + turbulence * Math.sin(angle + Math.PI / 2);
+        
+        if (x >= 0 && x <= width && y >= 0 && y <= height) {
+          streamPoints.push({ x, y, opacity: (1 - progress) * 0.15 });
+        }
+      }
+      
+      // Draw stream
+      streamPoints.forEach(point => {
+        const size = 12 + seededRandom() * 20;
+        const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size);
+        gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${point.opacity})`);
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  };
+
+  // Protect facial features with clear overlay
+  const protectFacialFeatures = (ctx: CanvasRenderingContext2D, faceRegion: any, personBounds: any) => {
+    if (!faceRegion.detected) return;
+    
+    // Create subtle face protection without visible boundaries
+    const gradient = ctx.createRadialGradient(
+      faceRegion.centerX, faceRegion.centerY, 0,
+      faceRegion.centerX, faceRegion.centerY, Math.max(faceRegion.width, faceRegion.height) / 2
+    );
+    
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.02)');
+    gradient.addColorStop(0.8, 'rgba(255, 255, 255, 0.01)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.ellipse(
+      faceRegion.centerX, faceRegion.centerY,
+      faceRegion.width / 2, faceRegion.height / 2,
+      0, 0, Math.PI * 2
+    );
+    ctx.fill();
   };
 
   // Function to create clear face area ensuring complete visibility of facial features
