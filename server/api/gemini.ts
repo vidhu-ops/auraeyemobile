@@ -1,5 +1,57 @@
 import { AuraAnalysisResult } from "../../client/src/lib/openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+
+/**
+ * Generates aura visualization using external AI image generation service
+ */
+export async function generateAuraVisualization(
+  originalImageBase64: string, 
+  auraAnalysis: AuraAnalysisResult
+): Promise<string> {
+  try {
+    // Use Hugging Face's free image-to-image generation API
+    const apiUrl = "https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix";
+    
+    // Create detailed prompt for aura visualization
+    const prompt = `Add mystical ${auraAnalysis.dominantColor} and ${auraAnalysis.secondaryColor} smokey aura energy field around this person, keep face clear and visible, ethereal glowing wisps, spiritual energy visualization, preserve original photo quality`;
+
+    const imageContent = originalImageBase64.startsWith('data:') 
+      ? originalImageBase64.split(',')[1] 
+      : originalImageBase64;
+
+    // Convert base64 to buffer for API
+    const imageBuffer = Buffer.from(imageContent, 'base64');
+
+    const response = await axios.post(apiUrl, {
+      inputs: prompt,
+      parameters: {
+        image: imageBuffer.toString('base64')
+      }
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      responseType: 'arraybuffer'
+    });
+
+    if (response.data) {
+      // Convert response to base64
+      const generatedImageBase64 = Buffer.from(response.data).toString('base64');
+      return `data:image/jpeg;base64,${generatedImageBase64}`;
+    }
+
+    return originalImageBase64;
+    
+  } catch (error) {
+    console.error("Error generating aura visualization:", error);
+    // Fallback to original image if generation fails
+    return originalImageBase64;
+  }
+}
 
 /**
  * Analyzes an image using Google's Gemini API as a backup for aura analysis

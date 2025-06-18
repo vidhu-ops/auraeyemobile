@@ -2823,8 +2823,8 @@ export default function AuraAnalysis() {
       return currentSeed / 233280;
     };
 
-    const centerX = width / 1.1;
-    const centerY = height / 1.5;
+    const centerX = width / 1;
+    const centerY = height / 1;
     const personWidth = width * 0.5;
     const personHeight = height * 0.5;
 
@@ -2835,7 +2835,41 @@ export default function AuraAnalysis() {
     createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
   };
 
-
+  // Function to create clear face area ensuring complete visibility of facial features
+  const createFaceClearanceZone = (
+    ctx: CanvasRenderingContext2D,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number
+  ) => {
+    // Define comprehensive face clearance area
+    const faceClearanceX = centerX - personWidth * 0.8;
+    const faceClearanceY = centerY - personHeight * 0.5;
+    const faceClearanceWidth = personWidth * 1.0;
+    const faceClearanceHeight = personHeight * 1.2;
+    
+    // Use destination-over to ensure original image shows through in face area
+    ctx.globalCompositeOperation = 'destination-over';
+    
+    // Create a subtle gradient that fades smoke away from face area
+    const clearanceGradient = ctx.createRadialGradient(
+      centerX, centerY - personHeight * 1.4, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8, // Inner clear radius
+      centerX, centerY - personHeight * 0.5, // Face center
+      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.5 // Outer fade radius
+    );
+    
+    clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
+    clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)'); // Light fade
+    clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
+    
+    ctx.fillStyle = clearanceGradient;
+    ctx.fillRect(faceClearanceX, faceClearanceY, faceClearanceWidth, faceClearanceHeight);
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+  };
 
   // Function to create natural smoke wisps that flow around the person
   const createNaturalSmokeWisps = (
@@ -4240,10 +4274,14 @@ export default function AuraAnalysis() {
               setCurrentAnalysisId(analysisResult.id);
             }
             
-            // Generate enhanced aura image with aura clouds
-            if (base64String) {
-              setAnalysisStage("Creating your aura visualization...");
-              generateAuraVisualization(base64String, analysisResult);
+            // Use AI-generated aura visualization from backend if available
+            if (analysisResult.processedAuraImage) {
+              setProcessedAuraImage(analysisResult.processedAuraImage);
+              setAnalysisStage("AI aura visualization complete!");
+            } else if (base64String) {
+              // Fallback to original image if AI generation not available
+              setProcessedAuraImage(base64String);
+              setAnalysisStage("Analysis complete!");
               
               // Process the uploaded image with aura colors
               const auraProcessedImage = await processImageWithAura(base64String, analysisResult);

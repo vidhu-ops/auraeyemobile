@@ -5,7 +5,7 @@ import crypto from "crypto";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
-import { analyzeImageWithGemini } from "./api/gemini";
+import { analyzeImageWithGemini, generateAuraVisualization } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
 import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
@@ -905,8 +905,16 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       // Use optimized fast analysis for sub-1000ms performance
       const auraAnalysis = generateFastAuraAnalysis(imgBuffer);
 
-      // Skip database save for maximum speed - return analysis directly
+      // Generate AI-powered aura visualization with detected colors
+      try {
+        const auraVisualization = await generateAuraVisualization(imageData, auraAnalysis);
+        auraAnalysis.processedAuraImage = auraVisualization;
+      } catch (error) {
+        console.log("AI visualization generation failed, continuing with analysis only");
+        // Continue without visualization if AI generation fails
+      }
 
+      // Skip database save for maximum speed - return analysis directly
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
