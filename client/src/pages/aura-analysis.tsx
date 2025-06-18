@@ -6067,7 +6067,13 @@ export default function AuraAnalysis() {
                                     
                                     <Button 
                                       className="w-full"
-                                      onClick={() => calculateNumerologyData(numerologyName, numerologyBirthDate)}
+                                      onClick={() => {
+                                        if (!user) {
+                                          window.location.href = '/login';
+                                          return;
+                                        }
+                                        calculateNumerologyData(numerologyName, numerologyBirthDate);
+                                      }}
                                       disabled={isCalculatingNumerology}
                                     >
                                       {isCalculatingNumerology ? (
@@ -6075,7 +6081,7 @@ export default function AuraAnalysis() {
                                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                           Creating Combined Analysis...
                                         </>
-                                      ) : "Create Combined Spiritual Analysis"}
+                                      ) : user ? "Create Combined Spiritual Analysis" : "Login to Access Combined Analysis"}
                                     </Button>
                                   </div>
                                 </div>
