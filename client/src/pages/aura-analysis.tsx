@@ -4278,14 +4278,10 @@ export default function AuraAnalysis() {
             if (analysisResult.processedAuraImage) {
               setProcessedAuraImage(analysisResult.processedAuraImage);
               setAnalysisStage("AI aura visualization complete!");
-            } else if (base64String) {
-              // Fallback to original image if AI generation not available
-              setProcessedAuraImage(base64String);
+            } else {
+              // Use original image if AI generation not available
+              setProcessedAuraImage(base64String || '');
               setAnalysisStage("Analysis complete!");
-              
-              // Process the uploaded image with aura colors
-              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
-              setProcessedAuraImage(auraProcessedImage);
             }
             
             // Ensure progress shows 100% at the end

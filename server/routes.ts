@@ -432,6 +432,17 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     auraLayerColors,
     personalityTraits: selectedTraits,
     energyLevel,
+    spiritualGuidance: `Your aura reveals ${dominantColor.name} energy representing spiritual wisdom and ${secondaryColor.name} energy indicating creative transformation. This combination suggests a period of spiritual growth where you're developing both inner wisdom and creative expression.`,
+    chakraActivity: {
+      root: Math.floor(seededRandom() * 3) + 6,
+      sacral: Math.floor(seededRandom() * 3) + 7,
+      solarPlexus: Math.floor(seededRandom() * 3) + 6,
+      heart: Math.floor(seededRandom() * 3) + 8,
+      throat: Math.floor(seededRandom() * 3) + 6,
+      thirdEye: Math.floor(seededRandom() * 3) + 7,
+      crown: Math.floor(seededRandom() * 3) + 7
+    },
+    detailedAnalysis: `Your aura shows ${dominantColor.name} and ${secondaryColor.name} energies with ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities. The ${dominantColor.name} energy indicates a strong connection to spiritual wisdom and intuitive insights, while the ${secondaryColor.name} energy represents creative transformation and emotional healing. This combination suggests you're in a powerful phase of spiritual development where your intuitive abilities are expanding alongside your creative expression.`,
     zones: {
       giving: {
         colors: giveZoneColors.map(c => c.name),
@@ -454,7 +465,6 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     currentChallenges: selectedChallenges,
     recommendations: selectedRecommendations,
     balanceState: "Harmonious",
-    detailedAnalysis: `Your aura shows ${dominantColor.name} and ${secondaryColor.name} energies with ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities.`,
     colorMeanings: {
       [dominantColor.name]: `${dominantColor.name} energy`,
       [secondaryColor.name]: `${secondaryColor.name} energy`
@@ -903,12 +913,16 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       }
 
       // Use optimized fast analysis for sub-1000ms performance
-      const auraAnalysis = generateFastAuraAnalysis(imgBuffer);
+      const auraAnalysis = generateFastAuraAnalysis(imgBuffer) as any;
 
       // Generate AI-powered aura visualization with detected colors
       try {
-        const auraVisualization = await generateAuraVisualization(imageData, auraAnalysis);
-        auraAnalysis.processedAuraImage = auraVisualization;
+        const basicAura = { 
+          dominantColor: auraAnalysis.dominantColor, 
+          secondaryColor: auraAnalysis.secondaryColor 
+        };
+        const auraVisualization = await generateAuraVisualization(imageData, basicAura as any);
+        (auraAnalysis as any).processedAuraImage = auraVisualization;
       } catch (error) {
         console.log("AI visualization generation failed, continuing with analysis only");
         // Continue without visualization if AI generation fails
