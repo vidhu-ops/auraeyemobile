@@ -3087,7 +3087,7 @@ export default function AuraAnalysis() {
     ctx.fillRect(0, 0, width, height);
     
     // Step 2: Create smokey particle field covering entire image while preserving person visibility
-    const totalParticles = 600 + energyLevel * 80; // Optimized density for visibility
+    const totalParticles = 200 + energyLevel * 30; // Reduced particle count for faster rendering
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < totalParticles; i++) {
@@ -3195,12 +3195,12 @@ export default function AuraAnalysis() {
     ];
 
     smokeZones.forEach((zone, zoneIndex) => {
-      const smokeWisps = zone.density * 3 + Math.floor(energyLevel * 12); // Triple density for mystical effect
+      const smokeWisps = zone.density + Math.floor(energyLevel * 4); // Optimized density for faster rendering
       
       for (let wisp = 0; wisp < smokeWisps; wisp++) {
         // Create zone-specific smoke positioning based on 4-Zone Energy Map
         const trailPoints = [];
-        const segments = 25 + Math.floor(seededRandom() * 15);
+        const segments = 8 + Math.floor(seededRandom() * 6); // Reduced segments for faster rendering
         
         for (let segment = 0; segment < segments; segment++) {
           const progress = segment / segments;
@@ -3208,9 +3208,9 @@ export default function AuraAnalysis() {
           
           // Position smoke particles to fill entire zones like reference image
           switch(zone.zone) {
-            case 'top': // Thinking/Mental energy - only top 20% of image
+            case 'top': // Thinking/Mental energy - STRICTLY top 20% of image only
               smokeX = seededRandom() * width;
-              smokeY = seededRandom() * (height * 0.2);
+              smokeY = seededRandom() * (height * 0.2); // Ensure never below 20%
               break;
               
             case 'right': // Receiving energy - entire right side
@@ -3271,23 +3271,8 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add dense perimeter smoke around all edges with increased visibility
-    createPerimeterSmoke(ctx, width, height, colors, energyLevel * 1.8, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add extra right-side coverage for receiving energy zone
-    createRightSideCoverage(ctx, width, height, colors.receivingRGB, energyLevel, seededRandom, centerX, centerY, personWidth, personHeight, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add dedicated edge coverage to ensure smoke reaches image borders  
-    createEdgeCoverage(ctx, width, height, colors, energyLevel * 1.6, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add concentrated color zones for maximum visibility of all 4 Energy Map colors
-    createConcentratedColorDisplay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add enhanced personality color perimeter halo effect
-    createPersonalityHaloEffect(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
-    
-    // Add dense atmospheric haze that fills the entire field for mystical effect
-    createAtmosphericHaze(ctx, width, height, colors, energyLevel * 1.4, seededRandom, faceX, faceY, faceWidth * 1.2, faceHeight * 2);
+    // Simplified final effects for optimal performance
+    createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
