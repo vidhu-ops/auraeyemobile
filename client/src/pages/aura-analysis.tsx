@@ -2651,61 +2651,130 @@ export default function AuraAnalysis() {
             }
           };
           
-          // Create particle effects around the edges
-          const createAuraParticles = () => {
-            const particleCount = 150;
+          // Create smokey aura effects with specific energy zone colors
+          const createSmokeyAuraEffects = () => {
+            // Get the 4-zone energy colors
+            const allColors = extractAllAuraColors(auraData);
             
-            for (let i = 0; i < particleCount; i++) {
-              // Place particles around the edges, avoiding center
-              let x, y;
-              const edge = Math.floor(Math.random() * 4);
-              
-              switch (edge) {
-                case 0: // Top edge
-                  x = Math.random() * canvas.width;
-                  y = Math.random() * (canvas.height * 0.3);
-                  break;
-                case 1: // Right edge
-                  x = canvas.width * 0.7 + Math.random() * (canvas.width * 0.3);
-                  y = Math.random() * canvas.height;
-                  break;
-                case 2: // Bottom edge
-                  x = Math.random() * canvas.width;
-                  y = canvas.height * 0.7 + Math.random() * (canvas.height * 0.3);
-                  break;
-                case 3: // Left edge
-                  x = Math.random() * (canvas.width * 0.3);
-                  y = Math.random() * canvas.height;
-                  break;
-                default:
-                  x = Math.random() * canvas.width;
-                  y = Math.random() * canvas.height;
+            // Convert hex colors to RGB
+            const hexToRGB = (hex: string) => {
+              const r = parseInt(hex.slice(1, 3), 16);
+              const g = parseInt(hex.slice(3, 5), 16);
+              const b = parseInt(hex.slice(5, 7), 16);
+              return [r, g, b];
+            };
+            
+            const thinkingRGB = hexToRGB(allColors.thinking);
+            const receivingRGB = hexToRGB(allColors.receiving);
+            const givingRGB = hexToRGB(allColors.giving);
+            const personalityRGB = hexToRGB(allColors.personality);
+            
+            // Create zone-specific smokey effects
+            const zones = [
+              {
+                name: 'thinking',
+                color: thinkingRGB,
+                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.4 },
+                density: 80
+              },
+              {
+                name: 'receiving',
+                color: receivingRGB,
+                area: { x: canvas.width * 0.6, y: 0, width: canvas.width * 0.4, height: canvas.height },
+                density: 90
+              },
+              {
+                name: 'giving',
+                color: givingRGB,
+                area: { x: 0, y: 0, width: canvas.width * 0.4, height: canvas.height },
+                density: 70
+              },
+              {
+                name: 'personality',
+                color: personalityRGB,
+                area: { x: canvas.width * 0.2, y: canvas.height * 0.2, width: canvas.width * 0.6, height: canvas.height * 0.6 },
+                density: 60
               }
-              
-              // Avoid center area where person is
-              const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-              if (distFromCenter < canvas.width * 0.2) {
-                continue;
+            ];
+            
+            zones.forEach(zone => {
+              for (let i = 0; i < zone.density; i++) {
+                // Generate smokey particle position within zone
+                const x = zone.area.x + Math.random() * zone.area.width;
+                const y = zone.area.y + Math.random() * zone.area.height;
+                
+                // Avoid center area where person is
+                const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                if (distFromCenter < canvas.width * 0.15) {
+                  continue;
+                }
+                
+                // Create smokey wisp effect
+                const wispSize = 15 + Math.random() * 40;
+                const opacity = 0.15 + Math.random() * 0.25;
+                const [r, g, b] = zone.color;
+                
+                // Create multiple overlapping circles for smokey effect
+                const smokeLayers = 3 + Math.floor(Math.random() * 3);
+                
+                for (let layer = 0; layer < smokeLayers; layer++) {
+                  const layerOffset = (Math.random() - 0.5) * wispSize * 0.6;
+                  const layerX = x + layerOffset;
+                  const layerY = y + layerOffset;
+                  const layerSize = wispSize * (0.7 + Math.random() * 0.6);
+                  const layerOpacity = opacity * (0.3 + Math.random() * 0.4);
+                  
+                  const smokeGradient = ctx.createRadialGradient(
+                    layerX, layerY, 0,
+                    layerX, layerY, layerSize
+                  );
+                  
+                  smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`);
+                  smokeGradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.7})`);
+                  smokeGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.3})`);
+                  smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                  
+                  ctx.fillStyle = smokeGradient;
+                  ctx.beginPath();
+                  ctx.arc(layerX, layerY, layerSize, 0, Math.PI * 2);
+                  ctx.fill();
+                }
+                
+                // Add flowing smoke trails
+                if (Math.random() > 0.7) {
+                  const trailLength = 20 + Math.random() * 30;
+                  const angle = Math.random() * Math.PI * 2;
+                  
+                  for (let trail = 0; trail < trailLength; trail++) {
+                    const trailProgress = trail / trailLength;
+                    const trailX = x + Math.cos(angle) * trail * 2;
+                    const trailY = y + Math.sin(angle) * trail * 2 + Math.sin(trailProgress * Math.PI * 4) * 5;
+                    const trailSize = wispSize * (1 - trailProgress * 0.8);
+                    const trailOpacity = opacity * (1 - trailProgress) * 0.6;
+                    
+                    if (trailSize > 2) {
+                      const trailGradient = ctx.createRadialGradient(
+                        trailX, trailY, 0,
+                        trailX, trailY, trailSize
+                      );
+                      
+                      trailGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${trailOpacity})`);
+                      trailGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                      
+                      ctx.fillStyle = trailGradient;
+                      ctx.beginPath();
+                      ctx.arc(trailX, trailY, trailSize, 0, Math.PI * 2);
+                      ctx.fill();
+                    }
+                  }
+                }
               }
-              
-              const size = 5 + Math.random() * 25;
-              const [r, g, b] = Math.random() > 0.5 ? [dr, dg, db] : [sr, sg, sb];
-              const opacity = 0.3 + Math.random() * 0.4;
-              
-              const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-              particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-              
-              ctx.fillStyle = particleGradient;
-              ctx.beginPath();
-              ctx.arc(x, y, size, 0, Math.PI * 2);
-              ctx.fill();
-            }
+            });
           };
           
           // Apply aura effects
           createAuraGlow();
-          createAuraParticles();
+          createSmokeyAuraEffects();
           
           // Add a subtle overall color tint
           ctx.globalCompositeOperation = 'overlay';
@@ -6395,8 +6464,8 @@ export default function AuraAnalysis() {
                                               return (
                                                 <div className="space-y-2">
                                                   <div className="text-xs text-gray-600">
-                                                    <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                    <span className="font-medium ml-2">Positive:</span> {colorInfo.number}
+                                                    <span className="font-medium">POSITIVE</span> {colorInfo.chakra} | 
+                                                    <span className="font-medium ml-2"> Meaning: </span> {colorInfo.number}
                                                   </div>
                                                   <div className="text-xs text-gray-700 leading-relaxed">
                                                     {colorInfo.shadowMeaning}
@@ -6420,7 +6489,7 @@ export default function AuraAnalysis() {
                                             ></div>
                                             <div className="flex-1">
                                               <div className="flex items-center gap-2 mb-2">
-                                                <div className="text-xs text-gray-500">Secondary Aura</div>
+                                                <div className="text-xs text-gray-500">Overall Energy</div>
                                                 <div className="text-base font-bold">{result.secondaryColor}</div>
                                               </div>
                                               {(() => {
@@ -6428,8 +6497,8 @@ export default function AuraAnalysis() {
                                                 return (
                                                   <div className="space-y-2">
                                                     <div className="text-xs text-gray-600">
-                                                      <span className="font-medium">Chakra:</span> {colorInfo.chakra} | 
-                                                      <span className="font-medium ml-2">Number:</span> {colorInfo.number}
+                                                      <span className="font-medium">POSITIVE </span> {colorInfo.chakra} | 
+                                                      <span className="font-medium ml-2">Meaning: </span> {colorInfo.number}
                                                     </div>
                                                     <div className="text-xs text-gray-700 leading-relaxed">
                                                       {colorInfo.shadowMeaning}
