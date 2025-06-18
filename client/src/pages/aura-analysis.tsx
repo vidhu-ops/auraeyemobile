@@ -2823,10 +2823,10 @@ export default function AuraAnalysis() {
       return currentSeed / 233280;
     };
 
-    const centerX = width / 1.5;
-    const centerY = height / 1.2;
-    const personWidth = width * 0.3;
-    const personHeight = height * 0.2;
+    const centerX = width / 1.1;
+    const centerY = height / 1.5;
+    const personWidth = width * 0.5;
+    const personHeight = height * 0.5;
 
     // Use normal blend mode for transparent smoke particles
     ctx.globalCompositeOperation = 'source-over';
@@ -2835,41 +2835,7 @@ export default function AuraAnalysis() {
     createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
   };
 
-  // Function to create clear face area ensuring complete visibility of facial features
-  const createFaceClearanceZone = (
-    ctx: CanvasRenderingContext2D,
-    centerX: number,
-    centerY: number,
-    personWidth: number,
-    personHeight: number
-  ) => {
-    // Define comprehensive face clearance area
-    const faceClearanceX = centerX - personWidth * 0.8;
-    const faceClearanceY = centerY - personHeight * 0.8;
-    const faceClearanceWidth = personWidth * 2.0;
-    const faceClearanceHeight = personHeight * 1.0;
-    
-    // Use destination-over to ensure original image shows through in face area
-    ctx.globalCompositeOperation = 'destination-over';
-    
-    // Create a subtle gradient that fades smoke away from face area
-    const clearanceGradient = ctx.createRadialGradient(
-      centerX, centerY - personHeight * 0.9, // Face center
-      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.4, // Inner clear radius
-      centerX, centerY - personHeight * 0.9, // Face center
-      Math.min(faceClearanceWidth, faceClearanceHeight) * 0.9 // Outer fade radius
-    );
-    
-    clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
-    clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)'); // Light fade
-    clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
-    
-    ctx.fillStyle = clearanceGradient;
-    ctx.fillRect(faceClearanceX, faceClearanceY, faceClearanceWidth, faceClearanceHeight);
-    
-    // Reset composite operation
-    ctx.globalCompositeOperation = 'source-over';
-  };
+
 
   // Function to create natural smoke wisps that flow around the person
   const createNaturalSmokeWisps = (
@@ -2890,7 +2856,8 @@ export default function AuraAnalysis() {
     const faceWidth = personWidth * 1.2;
     const faceHeight = personHeight * 2.2;
     
-    // Person protection area will be defined as rectangular bounds for full body visibility
+    // Define person protection radius for smokey field effect
+    const personRadius = Math.min(personWidth, personHeight) * 0.4;
 
     // Create complete smokey field that fills entire background like reference image
     // Step 1: Fill entire image with subtle primary aura color base
