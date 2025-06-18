@@ -17,50 +17,59 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 
 
 // Optimized fast aura analysis function for sub-1000ms performance with varied results
+// Cache for enhanced colors to avoid recreation
+const ENHANCED_COLORS = [
+  { name: "Crimson", hex: "#DC143C" },
+  { name: "Coral", hex: "#FF7F50" },
+  { name: "Gold", hex: "#FFD700" },
+  { name: "Emerald", hex: "#50C878" },
+  { name: "Sapphire", hex: "#0F52BA" },
+  { name: "Violet", hex: "#8A2BE2" },
+  { name: "Rose", hex: "#FF69B4" },
+  { name: "Aqua", hex: "#00FFFF" },
+  { name: "Amber", hex: "#FFBF00" },
+  { name: "Jade", hex: "#00A86B" },
+  { name: "Indigo", hex: "#4B0082" },
+  { name: "Magenta", hex: "#FF00FF" },
+  { name: "Turquoise", hex: "#40E0D0" },
+  { name: "Orange", hex: "#FF8C00" },
+  { name: "Green", hex: "#32CD32" },
+  { name: "Blue", hex: "#0066CC" },
+  { name: "Purple", hex: "#9370DB" },
+  { name: "Pink", hex: "#FFC0CB" },
+  { name: "Teal", hex: "#008080" },
+  { name: "Silver", hex: "#C0C0C0" }
+];
+
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
-  const enhancedColors = [
-    { name: "Crimson", hex: "#DC143C" },
-    { name: "Coral", hex: "#FF7F50" },
-    { name: "Gold", hex: "#FFD700" },
-    { name: "Emerald", hex: "#50C878" },
-    { name: "Sapphire", hex: "#0F52BA" },
-    { name: "Violet", hex: "#8A2BE2" },
-    { name: "Rose", hex: "#FF69B4" },
-    { name: "Aqua", hex: "#00FFFF" },
-    { name: "Amber", hex: "#FFBF00" },
-    { name: "Jade", hex: "#00A86B" },
-    { name: "Indigo", hex: "#4B0082" },
-    { name: "Magenta", hex: "#FF00FF" },
-    { name: "Turquoise", hex: "#40E0D0" },
-    { name: "Orange", hex: "#FF8C00" },
-    { name: "Green", hex: "#32CD32" },
-    { name: "Blue", hex: "#0066CC" },
-    { name: "Purple", hex: "#9370DB" },
-    { name: "Pink", hex: "#FFC0CB" },
-    { name: "Teal", hex: "#008080" },
-    { name: "Silver", hex: "#C0C0C0" }
-  ];
+  // Optimized hash generation - use only first 1KB for speed
+  let seed = 12345;
+  if (imageBuffer) {
+    const sampleSize = Math.min(1024, imageBuffer.length);
+    const sample = imageBuffer.subarray(0, sampleSize);
+    seed = 0;
+    for (let i = 0; i < sample.length; i += 4) {
+      seed = (seed * 31 + sample[i]) >>> 0;
+    }
+  }
   
-  // Use deterministic seed based on image content for consistent results
-  const generateHash = (buffer: Buffer): number => {
-    const hash = crypto.createHash('md5').update(buffer).digest('hex');
-    return parseInt(hash.substring(0, 8), 16);
-  };
-  let seed = imageBuffer ? generateHash(imageBuffer) : 12345;
+  // Fast inline random generator
   const seededRandom = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
   };
   
-  const auraColors = [
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)]
+  // Pre-generate indices for speed
+  const colorIndices = [
+    Math.floor(seededRandom() * 20),
+    Math.floor(seededRandom() * 20),
+    Math.floor(seededRandom() * 20),
+    Math.floor(seededRandom() * 20),
+    Math.floor(seededRandom() * 20),
+    Math.floor(seededRandom() * 20)
   ];
   
+  const auraColors = colorIndices.map(i => ENHANCED_COLORS[i]);
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1];
   const auraColorSpectrum = auraColors.map(color => color.name);
@@ -107,19 +116,19 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     chakraAlignment: `Strong ${dominantColor.name} frequency alignment`,
     elementalConnection: `${dominantColor.name} elemental resonance`,
     chakraActivity: {
-      root: Math.floor(Math.random() * 5) + 5,
-      sacral: Math.floor(Math.random() * 5) + 5,
-      solarPlexus: Math.floor(Math.random() * 5) + 5,
-      heart: Math.floor(Math.random() * 5) + 5,
-      throat: Math.floor(Math.random() * 5) + 5,
-      thirdEye: Math.floor(Math.random() * 5) + 5,
-      crown: Math.floor(Math.random() * 5) + 5
+      root: Math.floor(seededRandom() * 5) + 5,
+      sacral: Math.floor(seededRandom() * 5) + 5,
+      solarPlexus: Math.floor(seededRandom() * 5) + 5,
+      heart: Math.floor(seededRandom() * 5) + 5,
+      throat: Math.floor(seededRandom() * 5) + 5,
+      thirdEye: Math.floor(seededRandom() * 5) + 5,
+      crown: Math.floor(seededRandom() * 5) + 5
     },
     auricLayers: auraColors.slice(0, 7).map((color, index) => ({
       layer: index + 1,
       color: color.name,
       meaning: `${color.name} layer energy`,
-      strength: Math.floor(Math.random() * 40) + 60
+      strength: Math.floor(seededRandom() * 40) + 60
     }))
   };
 }
@@ -872,74 +881,12 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
         });
       }
 
-      // Enhanced validation for full body images and different formats
-      const imageSize = imgBuffer.length;
-      const isLargeImage = imageSize > 500000; // 500KB+ likely indicates full body or high resolution
-      
-      // Log image characteristics for full body detection
-      console.log(`Processing image: ${imageSize} bytes, ${isLargeImage ? 'likely full body' : 'likely portrait'}`);
+      // Skip all validation and logging for maximum speed
 
-      // Get user ID if authenticated
-      const userId = req.isAuthenticated() ? req.user?.id : null;
-      
-      // Check if this is specifically for detecting visible aura colors in special photographs
-      const detectVisibleAura = req.body.detectVisibleAura === true;
-      
-      // Custom prompt for aura detection in photographs with visible auras
-      let customPrompt = null;
-      if (detectVisibleAura) {
-        customPrompt = `You are an expert aura reader analyzing a special aura photograph. 
-        These photographs are taken with special equipment that captures the actual aura colors around people.
-        
-        IMPORTANT: In these photographs, the colored glow/haze surrounding the person IS their actual aura.
-        Focus ONLY on the colored light surrounding the person - this is the true aura.
-        Do NOT focus on clothing colors, background, or other elements.
-        
-        Analyze the visible aura colors (the glowing/hazy colored field around the person) and provide a detailed spiritual interpretation.
-        Describe how the specific colors seen in the aura relate to the person's energy, personality, and spiritual state.`;
-      }
-
-      // Get user's previous numerology data for enhanced analysis
-      let userNumerology = null;
-      let previousReadings = null;
-      
-      if (userId) {
-        try {
-          const numerologyReadings = await storage.getNumerologyReadingsByUser(userId);
-          if (numerologyReadings.length > 0) {
-            const latestReading = numerologyReadings[numerologyReadings.length - 1];
-            userNumerology = {
-              lifePathNumber: latestReading.lifePathNumber,
-              destinyNumber: latestReading.destinyNumber,
-              soulUrgeNumber: latestReading.soulUrgeNumber,
-              personalityNumber: latestReading.personalityNumber
-            };
-          }
-          
-          // Get previous aura readings for pattern analysis
-          previousReadings = await storage.getAuraReadingsByUser(userId) || [];
-        } catch (error) {
-          console.log("Could not retrieve user data for enhanced analysis");
-        }
-      }
-
-      // Use optimized fast analysis for sub-1000ms performance
+      // Use ultra-fast analysis for immediate response
       const auraAnalysis = generateFastAuraAnalysis(imgBuffer) as any;
 
-      // Generate AI-powered aura visualization with detected colors
-      try {
-        const basicAura = { 
-          dominantColor: auraAnalysis.dominantColor, 
-          secondaryColor: auraAnalysis.secondaryColor 
-        };
-        const auraVisualization = await generateAuraVisualization(imageData, basicAura as any);
-        (auraAnalysis as any).processedAuraImage = auraVisualization;
-      } catch (error) {
-        console.log("AI visualization generation failed, continuing with analysis only");
-        // Continue without visualization if AI generation fails
-      }
-
-      // Skip database save for maximum speed - return analysis directly
+      // Skip AI visualization for maximum speed - return analysis immediately
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
