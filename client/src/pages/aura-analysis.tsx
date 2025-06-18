@@ -2681,7 +2681,7 @@ export default function AuraAnalysis() {
               {
                 name: 'thinking',
                 color: thinkingRGB,
-                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.15 },
+                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.2 },
                 density: 80
               },
               {
@@ -3091,8 +3091,6 @@ export default function AuraAnalysis() {
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     for (let i = 0; i < totalParticles; i++) {
-      const color = allColors[Math.floor(seededRandom() * 4)];
-      
       // Place particles everywhere except person protection area
       const x = seededRandom() * width;
       const y = seededRandom() * height;
@@ -3107,6 +3105,18 @@ export default function AuraAnalysis() {
       const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
       
       if (outsidePersonArea) {
+        // Select color based on position - thinking color only in top 20% of image
+        let color;
+        if (y < height * 0.2) {
+          // Top 20% - use thinking color more frequently
+          const topColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+          color = topColors[Math.floor(seededRandom() * 4)];
+        } else {
+          // Below top 20% - exclude thinking color
+          const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+          color = bottomColors[Math.floor(seededRandom() * 3)];
+        }
+        
         const particleSize = 3 + seededRandom() * 60;
         const particleOpacity = 0.08 + seededRandom() * 0.15; // Lower opacity for better visibility
         
@@ -3194,9 +3204,9 @@ export default function AuraAnalysis() {
           
           // Position smoke particles to fill entire zones like reference image
           switch(zone.zone) {
-            case 'top': // Thinking/Mental energy - entire top area
+            case 'top': // Thinking/Mental energy - only top 20% of image
               smokeX = seededRandom() * width;
-              smokeY = seededRandom() * (height * 0.4);
+              smokeY = seededRandom() * (height * 0.2);
               break;
               
             case 'right': // Receiving energy - entire right side
@@ -3252,7 +3262,7 @@ export default function AuraAnalysis() {
         
         // Draw smooth smoke trail
         if (trailPoints.length > 1) {
-          drawSmokeTrail(ctx, trailPoints, zone.color, seededRandom, zone.zone);
+          drawSmokeTrail(ctx, trailPoints, zone.color, seededRandom);
         }
       }
     });
@@ -3702,22 +3712,13 @@ export default function AuraAnalysis() {
     ctx: CanvasRenderingContext2D,
     points: Array<{ x: number, y: number, progress: number }>,
     color: { r: number, g: number, b: number },
-    seededRandom: () => number,
-    zone?: string
+    seededRandom: () => number
   ) => {
     points.forEach((point, index) => {
       if (index === 0) return;
       
-      // Drastically smaller particles for thinking zone, normal size for others
-      let smokeSize;
-      if (zone === 'top') {
-        // Thinking zone - very small particles (2-10 pixels)
-        smokeSize = 2 + seededRandom() * 8 * (1 - point.progress * 0.3);
-      } else {
-        // Other zones - normal size
-        smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
-      }
-      
+      // Much larger smoke particles for dense mystical trails
+      const smokeSize = 60 + seededRandom() * 80 * (1 - point.progress * 0.3);
       const baseOpacity = 0.06 * (1 - point.progress * 0.6) * (0.7 + seededRandom() * 0.5); // Reduced for person visibility
       
       // Create multiple layers for dense trail effect
