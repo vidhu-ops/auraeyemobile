@@ -10,7 +10,7 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import ClientDashboard from "@/pages/client-dashboard";
 import HealerDashboard from "@/pages/healer-dashboard";
-import AuraAnalysis from "@/pages/aura-analysis-optimized";
+import AuraAnalysis from "@/pages/aura-analysis";
 import ObjectAnalysis from "@/pages/object-analysis";
 import DailyHoroscope from "@/pages/daily-horoscope";
 import PersonalizedHoroscope from "@/pages/personalized-horoscope";
