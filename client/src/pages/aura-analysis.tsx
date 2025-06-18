@@ -2682,7 +2682,7 @@ export default function AuraAnalysis() {
                 name: 'thinking',
                 color: thinkingRGB,
                 area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.15 },
-                density: 80
+                density: 40
               },
               {
                 name: 'receiving',
@@ -2699,7 +2699,7 @@ export default function AuraAnalysis() {
               {
                 name: 'personality',
                 color: personalityRGB,
-                area: { x: canvas.width * 0.2, y: canvas.height * 0.2, width: canvas.width * 0.6, height: canvas.height * 0.6 },
+                area: { x: canvas.width * 0.2, y: canvas.height * 0.2, width: canvas.width * 0.6, height: canvas.height * 0.4 },
                 density: 60
               }
             ];
@@ -3100,7 +3100,7 @@ export default function AuraAnalysis() {
       // Define person protection area - rectangular for full body visibility
       const personLeft = centerX - personWidth * 0.42;
       const personRight = centerX + personWidth * 0.42;
-      const personTop = centerY - personHeight * 0.6;
+      const personTop = centerY - personHeight * 0.3;
       const personBottom = centerY + personHeight * 0.75;
       
       // Check if particle is outside person area
@@ -3142,7 +3142,7 @@ export default function AuraAnalysis() {
         color: colors.thinkingRGB, 
         startX: centerX, 
         startY: centerY - personHeight * 0.15, 
-        direction: { x: 0, y: -1 },
+        direction: { x: 0, y: 0 },
         spread: width * 0.5,
         name: 'thinking_top',
         density: 60,
@@ -3173,7 +3173,7 @@ export default function AuraAnalysis() {
         startX: centerX, 
         startY: centerY, 
         direction: { x: 0, y: 0 },
-        spread: Math.min(width, height) * 0.8,
+        spread: Math.min(width, height) * 0.3,
         name: 'personality_center',
         density: 40,
         zone: 'center' // Core personality energy around center
@@ -3196,7 +3196,7 @@ export default function AuraAnalysis() {
           switch(zone.zone) {
             case 'top': // Thinking/Mental energy - entire top area
               smokeX = seededRandom() * width;
-              smokeY = seededRandom() * (height * 0.4);
+              smokeY = seededRandom() * (height * 0.2);
               break;
               
             case 'right': // Receiving energy - entire right side
@@ -3211,7 +3211,7 @@ export default function AuraAnalysis() {
               
             case 'center': // Personality energy - around person center
               const angle = seededRandom() * Math.PI * 2;
-              const radius = Math.min(personWidth, personHeight) * (0.5 + progress * 0.8);
+              const radius = Math.min(personWidth, personHeight) * (0.2 + progress * 0.4);
               smokeX = centerX + Math.cos(angle) * radius;
               smokeY = centerY + Math.sin(angle) * radius;
               break;
@@ -3380,7 +3380,7 @@ export default function AuraAnalysis() {
       { 
         color: colors.personalityRGB, 
         zone: 'perimeter_halo',
-        density: 50,
+        density: 30,
         getCoords: () => {
           // Create halo effect around entire image perimeter
           const side = Math.floor(seededRandom() * 4); // 0=top, 1=right, 2=bottom, 3=left
@@ -3830,7 +3830,7 @@ export default function AuraAnalysis() {
     const hazeLayers = [
       { density: hazeZones * 0.4, sizeRange: [100, 180], opacity: [0.08, 0.15] }, // Large background haze
       { density: hazeZones * 0.3, sizeRange: [30, 140], opacity: [0.12, 0.20] },  // Medium haze
-      { density: hazeZones * 0.3, sizeRange: [30, 100], opacity: [0.15, 0.25] }   // Dense detail haze
+      { density: hazeZones * 0.3, sizeRange: [30, 70], opacity: [0.15, 0.25] }   // Dense detail haze
     ];
     
     hazeLayers.forEach(layer => {
@@ -3944,7 +3944,8 @@ export default function AuraAnalysis() {
       crimson: { r: 220, g: 20, b: 60 },
       emerald: { r: 80, g: 200, b: 120 },
       sapphire: { r: 15, g: 82, b: 186 },
-      amber: { r: 255, g: 191, b: 0 }
+      amber: { r: 255, g: 191, b: 0},
+      rose: { r: 255, g: 0, b: 255 }
     };
 
     // Get color values
@@ -3982,8 +3983,8 @@ export default function AuraAnalysis() {
 
       // Skip particles that would be inside the person area
       const distanceFromCenter = Math.sqrt(
-        Math.pow((particleX - centerX) / (personWidth * 0.4), 2) + 
-        Math.pow((particleY - centerY) / (personHeight * 0.4), 2)
+        Math.pow((particleX - centerX) / (personWidth * 0.5), 2) + 
+        Math.pow((particleY - centerY) / (personHeight * 0.5), 2)
       );
       
       if (distanceFromCenter < 1) continue;
