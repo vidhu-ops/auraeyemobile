@@ -70,13 +70,24 @@ export default function ObjectAnalysis() {
       // Draw original image
       ctx.drawImage(img, 0, 0, img.width, img.height);
       
-      // Get aura color in RGB (use color map lookup)
-      const colorMap: Record<string, string> = {
-        'Red': '#FF0000', 'Orange': '#FFA500', 'Yellow': '#FFFF00', 'Green': '#008000',
-        'Blue': '#0000FF', 'Indigo': '#4B0082', 'Violet': '#8A2BE2', 'Purple': '#800080',
-        'Pink': '#FFC0CB', 'White': '#FFFFFF', 'Gold': '#FFD700', 'Silver': '#C0C0C0'
+      // Enhanced color mapping for object auras with comprehensive color palette
+      const objectColorMap: Record<string, string> = {
+        'Crimson': '#DC143C', 'Scarlet': '#FF2400', 'Ruby': '#E0115F', 'Coral': '#FF7F50',
+        'Salmon': '#FA8072', 'Rose': '#FF007F', 'Orange': '#FFA500', 'Amber': '#FFBF00',
+        'Copper': '#B87333', 'Bronze': '#CD7F32', 'Apricot': '#FBCEB1', 'Peach': '#FFCBA4',
+        'Yellow': '#FFFF00', 'Gold': '#FFD700', 'Citrine': '#E4D00A', 'Lemon': '#FFF700',
+        'Cream': '#FFFDD0', 'Ivory': '#FFFFF0', 'Emerald': '#50C878', 'Jade': '#00A86B',
+        'Forest': '#228B22', 'Lime': '#32CD32', 'Mint': '#98FB98', 'Sage': '#9CAF88',
+        'Azure': '#007FFF', 'Sapphire': '#0F52BA', 'Cobalt': '#0047AB', 'Navy': '#000080',
+        'Teal': '#008080', 'Aqua': '#00FFFF', 'Amethyst': '#9966CC', 'Lavender': '#E6E6FA',
+        'Plum': '#DDA0DD', 'Mauve': '#E0B0FF', 'Periwinkle': '#CCCCFF', 'Lilac': '#C8A2C8',
+        'Magenta': '#FF00FF', 'Fuchsia': '#FF77FF', 'Pink': '#FFC0CB', 'Blush': '#DE5D83',
+        'Cherry': '#DE3163', 'Wine': '#722F37', 'Silver': '#C0C0C0', 'Platinum': '#E5E4E2',
+        'Pearl': '#F0EAD6', 'Opal': '#A8C3BC', 'Moonstone': '#3AA8C1', 'Crystal': '#A7D8DE',
+        'Red': '#FF0000', 'Green': '#008000', 'Blue': '#0000FF', 'Purple': '#800080',
+        'White': '#FFFFFF', 'Black': '#000000', 'Gray': '#808080', 'Brown': '#A52A2A'
       };
-      const auraHex = colorMap[auraColor] || '#9370DB';
+      const auraHex = objectColorMap[auraColor] || '#9370DB';
       const auraRgb = hexToRgb(auraHex);
       
       // Create smokey aura around object
@@ -88,7 +99,7 @@ export default function ObjectAnalysis() {
     };
   };
 
-  // Function to create smokey aura particles around objects
+  // Function to create realistic smokey aura particles around objects
   const createObjectSmokeyAura = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -103,101 +114,104 @@ export default function ObjectAnalysis() {
       return seed / 233280;
     };
 
-    // Object detection (assume object is in center area)
-    const objectX = width * 0.15;
-    const objectY = height * 0.15;
-    const objectWidth = width * 0.7;
-    const objectHeight = height * 0.7;
-
-    // Create vibrant aura glow around object perimeter first
+    // Detect object area (assume object is in center 60% of image)
+    const objectX = width * 0.2;
+    const objectY = height * 0.2;
+    const objectWidth = width * 0.6;
+    const objectHeight = height * 0.6;
     const centerX = objectX + objectWidth / 2;
     const centerY = objectY + objectHeight / 2;
-    const maxRadius = Math.min(objectWidth, objectHeight) * 0.8;
-    
-    // Create radial gradient for strong aura glow
-    const auraGradient = ctx.createRadialGradient(
-      centerX, centerY, maxRadius * 0.3,
-      centerX, centerY, maxRadius * 1.2
+
+    // Create subtle background haze first
+    const backgroundHaze = ctx.createRadialGradient(
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.3,
+      centerX, centerY, Math.max(width, height) * 0.8
     );
-    auraGradient.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.6)`);
-    auraGradient.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.4)`);
-    auraGradient.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.2)`);
-    auraGradient.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    backgroundHaze.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.08)`);
+    backgroundHaze.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.04)`);
+    backgroundHaze.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
     
-    ctx.fillStyle = auraGradient;
+    ctx.fillStyle = backgroundHaze;
     ctx.fillRect(0, 0, width, height);
 
-    // Create multiple layers of dense smoke around the object
-    const particleCount = 300 + energyLevel * 40;
-    
-    for (let i = 0; i < particleCount; i++) {
-      // Create particles around object perimeter with varying distances
-      const angle = seededRandom() * Math.PI * 2;
-      const distance = 10 + seededRandom() * 200;
-      
-      const x = centerX + Math.cos(angle) * distance;
-      const y = centerY + Math.sin(angle) * distance;
-      
-      // Only create particles outside the object core area
-      const coreDistance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      const minDistance = Math.min(objectWidth, objectHeight) * 0.25;
-      
-      if (coreDistance > minDistance && x >= 0 && x <= width && y >= 0 && y <= height) {
-        const smokeSize = 40 + seededRandom() * 100;
-        const smokeOpacity = 0.3 + seededRandom() * 0.4; // Much higher opacity
+    // Create multiple layers of natural smoke wisps around object
+    const smokeLayers = [
+      { density: 200 + energyLevel * 30, sizeRange: [20, 80], opacity: [0.15, 0.25], distance: [30, 120] },
+      { density: 150 + energyLevel * 20, sizeRange: [30, 100], opacity: [0.12, 0.20], distance: [50, 160] },
+      { density: 100 + energyLevel * 15, sizeRange: [40, 120], opacity: [0.08, 0.15], distance: [80, 200] }
+    ];
+
+    smokeLayers.forEach(layer => {
+      for (let i = 0; i < layer.density; i++) {
+        // Create smoke particles around object perimeter
+        const angle = seededRandom() * Math.PI * 2;
+        const distance = layer.distance[0] + seededRandom() * (layer.distance[1] - layer.distance[0]);
         
-        drawObjectSmoke(ctx, x, y, smokeSize, auraColor, smokeOpacity);
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        // Skip particles inside object core area
+        const coreDistance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        const minCoreDistance = Math.min(objectWidth, objectHeight) * 0.25;
+        
+        if (coreDistance > minCoreDistance && x >= 0 && x <= width && y >= 0 && y <= height) {
+          const smokeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
+          const smokeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
+          
+          drawAdvancedObjectSmoke(ctx, x, y, smokeSize, auraColor, smokeOpacity, seededRandom);
+        }
       }
-    }
-    
-    // Add intense energy bursts around object edges
-    const energyBursts = 20 + energyLevel * 3;
-    for (let i = 0; i < energyBursts; i++) {
-      const angle = (i / energyBursts) * Math.PI * 2;
-      const burstDistance = maxRadius * 1.1;
-      const burstX = centerX + Math.cos(angle) * burstDistance;
-      const burstY = centerY + Math.sin(angle) * burstDistance;
+    });
+
+    // Add concentrated energy wisps around object edges
+    const wispCount = 80 + energyLevel * 10;
+    for (let i = 0; i < wispCount; i++) {
+      const angle = seededRandom() * Math.PI * 2;
+      const baseDistance = Math.min(objectWidth, objectHeight) * 0.4;
+      const wispDistance = baseDistance + seededRandom() * 60;
       
-      if (burstX >= 0 && burstX <= width && burstY >= 0 && burstY <= height) {
-        const burstSize = 60 + seededRandom() * 80;
-        const burstOpacity = 0.5 + seededRandom() * 0.3;
+      const x = centerX + Math.cos(angle) * wispDistance;
+      const y = centerY + Math.sin(angle) * wispDistance;
+      
+      if (x >= 0 && x <= width && y >= 0 && y <= height) {
+        const wispSize = 15 + seededRandom() * 40;
+        const wispOpacity = 0.2 + seededRandom() * 0.3;
         
-        drawObjectSmoke(ctx, burstX, burstY, burstSize, auraColor, burstOpacity);
+        drawEnergyWisp(ctx, x, y, wispSize, auraColor, wispOpacity, seededRandom);
       }
     }
   };
 
-  // Function to draw individual smoke particles for objects
-  const drawObjectSmoke = (
+  // Function to draw advanced smoke particles with natural flow
+  const drawAdvancedObjectSmoke = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
     size: number,
     color: { r: number, g: number, b: number },
-    opacity: number
+    opacity: number,
+    seededRandom: () => number
   ) => {
-    // Create multiple layered smoke effects for dense, mystical appearance
+    // Create organic, flowing smoke with multiple layers
     const smokeLayers = [
-      { sizeMultiplier: 1.2, opacityMultiplier: 0.9, blur: 2 },     // Main dense layer
-      { sizeMultiplier: 0.8, opacityMultiplier: 1.2, blur: 0 },     // Core bright layer
-      { sizeMultiplier: 1.6, opacityMultiplier: 0.7, blur: 4 }      // Outer haze layer
+      { sizeMultiplier: 1.4, opacityMultiplier: 0.7, blur: 3 },
+      { sizeMultiplier: 1.0, opacityMultiplier: 1.0, blur: 1 },
+      { sizeMultiplier: 0.6, opacityMultiplier: 1.3, blur: 0 }
     ];
     
     smokeLayers.forEach(layer => {
       const layerSize = size * layer.sizeMultiplier;
-      const layerOpacity = Math.min(0.8, opacity * layer.opacityMultiplier); // Higher max opacity
+      const layerOpacity = Math.min(0.6, opacity * layer.opacityMultiplier);
       
-      // Apply blur for atmospheric effect
       if (layer.blur > 0) {
         ctx.filter = `blur(${layer.blur}px)`;
       }
       
-      // Create dense smoke gradient with vibrant colors
+      // Create natural smoke gradient
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
       gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
-      gradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.8})`);
-      gradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.5})`);
-      gradient.addColorStop(0.9, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.2})`);
+      gradient.addColorStop(0.4, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.7})`);
+      gradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -205,10 +219,33 @@ export default function ObjectAnalysis() {
       ctx.arc(x, y, layerSize, 0, Math.PI * 2);
       ctx.fill();
       
-      // Reset filter
       ctx.filter = 'none';
     });
   };
+
+  // Function to draw energy wisps around object
+  const drawEnergyWisp = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    color: { r: number, g: number, b: number },
+    opacity: number,
+    seededRandom: () => number
+  ) => {
+    // Create flowing wisp effect
+    const wispGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+    wispGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
+    wispGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.6})`);
+    wispGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = wispGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+  };
+
+
 
   // Function to get CSS filter for aura color overlay
   const getAuraFilter = (auraColor: string): string => {
