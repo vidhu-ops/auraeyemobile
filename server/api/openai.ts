@@ -1,8 +1,31 @@
 import OpenAI from "openai";
-import { AuraAnalysisResult } from "../../client/src/lib/openai";
 
-// Re-export the type for use in other server files
-export { AuraAnalysisResult };
+// Define the AuraAnalysisResult interface directly in server
+export interface AuraAnalysisResult {
+  id?: number;
+  dominantColor: string;
+  secondaryColor: string;
+  auraColorSpectrum?: string[];
+  auraLayerColors?: {
+    inner?: string;
+    middle?: string;
+    outer?: string;
+  };
+  energyLevel: number;
+  personalityTraits: string[];
+  spiritualGuidance: string;
+  chakraActivity: {
+    root: number;
+    sacral: number;
+    solarPlexus: number;
+    heart: number;
+    throat: number;
+    thirdEye: number;
+    crown: number;
+  };
+  detailedAnalysis: string;
+  processedAuraImage?: string;
+}
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL = "gpt-4o";
