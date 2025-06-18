@@ -4,7 +4,7 @@ import multer from "multer";
 import crypto from "crypto";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { analyzeAuraImage, generateNumerologyReading } from "./api/openai";
+import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
 import { analyzeImageWithGemini, generateAuraVisualization } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
 import { analyzeImageColors } from "./api/image-color-analysis";
