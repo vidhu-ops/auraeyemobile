@@ -724,12 +724,18 @@ function calculateSoulUrge(fullName: string): number {
 }
 
 function calculatePersonality(birthDate: string): number {
-  // Decision-Making Chakra: Sum of all digits from the birth date
-  const digits = birthDate.replace(/\D/g, '');
+  // Decision-Making Chakra: Sum of digits from the day only (e.g., 02 = 0+2 = 2)
+  const parts = birthDate.split('-');
+  if (parts.length !== 3) return 5; // Default fallback
+  
+  const day = parts[2]; // Get the day part (DD)
   let sum = 0;
-  for (const digit of digits) {
+  
+  // Sum all digits in the day
+  for (const digit of day) {
     sum += parseInt(digit);
   }
+  
   return reduceNumber(sum);
 }
 
@@ -1301,30 +1307,36 @@ function calculateSoulUrge(fullName: string): number {
 }
 
 function calculatePersonality(birthDate: string): number {
-  // Decision-Making Chakra: Sum of all digits from the birth date
-  const digits = birthDate.replace(/\D/g, '');
+  // Decision-Making Chakra: Sum of digits from the day only (e.g., 02 = 0+2 = 2)
+  const parts = birthDate.split('-');
+  if (parts.length !== 3) return 5; // Default fallback
+  
+  const day = parts[2]; // Get the day part (DD)
   let sum = 0;
-  for (const digit of digits) {
+  
+  // Sum all digits in the day
+  for (const digit of day) {
     sum += parseInt(digit);
   }
+  
   return reduceNumber(sum);
 }
 
 // Decision-making chakra (Personality) number - sum of the two digits of birth date
 function calculateDecisionMakingChakra(birthDate: string): number {
+  // Decision-Making Chakra: Sum of digits from the day only (e.g., 02 = 0+2 = 2)
   const parts = birthDate.split('-');
   if (parts.length !== 3) return 5; // Default fallback
   
-  const day = parseInt(parts[2]);
-  const dayString = day.toString();
+  const day = parts[2]; // Get the day part (DD)
+  let sum = 0;
   
-  if (dayString.length === 1) {
-    return day;
-  } else {
-    const firstDigit = parseInt(dayString[0]);
-    const secondDigit = parseInt(dayString[1]);
-    return reduceNumber(firstDigit + secondDigit);
+  // Sum all digits in the day
+  for (const digit of day) {
+    sum += parseInt(digit);
   }
+  
+  return reduceNumber(sum);
 }
 
 // Removed duplicate - using the calculateDominantSoulChakra function defined later
