@@ -723,13 +723,12 @@ function calculateSoulUrge(fullName: string): number {
   return reduceNumber(sum);
 }
 
-function calculatePersonality(fullName: string): number {
+function calculatePersonality(birthDate: string): number {
+  // Decision-Making Chakra: Sum of all digits from the birth date
+  const digits = birthDate.replace(/\D/g, '');
   let sum = 0;
-  const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
-  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
-    if (consonants.includes(char)) {
-      sum += letterToNumber(char);
-    }
+  for (const digit of digits) {
+    sum += parseInt(digit);
   }
   return reduceNumber(sum);
 }
@@ -1090,14 +1089,14 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
-          personalityNumber: calculatePersonality(name),
+          personalityNumber: calculatePersonality(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
-          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(name)} represents how others see you. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
           colorAssociations: {
             lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
             destinyColor: getColorForNumber(calculateDestiny(name)),
             soulUrgeColor: getColorForNumber(calculateSoulUrge(name)),
-            personalityColor: getColorForNumber(calculatePersonality(name)),
+            personalityColor: getColorForNumber(calculatePersonality(birthDate)),
             soulChakraColor: getColorForNumber(calculateDominantSoulChakra(birthDate))
           },
           strengths: [
@@ -1301,13 +1300,12 @@ function calculateSoulUrge(fullName: string): number {
   return reduceNumber(sum);
 }
 
-function calculatePersonality(fullName: string): number {
+function calculatePersonality(birthDate: string): number {
+  // Decision-Making Chakra: Sum of all digits from the birth date
+  const digits = birthDate.replace(/\D/g, '');
   let sum = 0;
-  const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
-  for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
-    if (consonants.includes(char)) {
-      sum += letterToNumber(char);
-    }
+  for (const digit of digits) {
+    sum += parseInt(digit);
   }
   return reduceNumber(sum);
 }
