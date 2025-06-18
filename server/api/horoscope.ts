@@ -646,7 +646,9 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
       sum += parseInt(digit);
     }
     
-    return reduceNumber(sum);
+    const result = reduceNumber(sum);
+    console.log(`calculatePersonality debug: birthDate=${birthDate}, day=${day}, sum=${sum}, result=${result}`);
+    return result;
   };
   
   // Calculate Dominant Soul Chakra Number from birth date

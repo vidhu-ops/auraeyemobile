@@ -1577,16 +1577,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return reduceNumber(sum);
       };
 
-      // Calculate Personality Number - based on month and day digits
+      // Calculate Personality Number - based on day digits only
       const calculatePersonality = (date: string): number => {
         const dateParts = date.split('-');
         if (dateParts.length !== 3) return 5;
         
-        const month = dateParts[1]; // MM
-        const day = dateParts[2]; // DD
+        const day = dateParts[2]; // DD - only use day digits
         
-        // Get all digits from month and day
-        const digits = (month + day).split('').map(Number);
+        // Get all digits from day only
+        const digits = day.split('').map(Number);
         let sum = digits.reduce((a, b) => a + b, 0);
         
         // Keep reducing until we get a single digit (1-9)
