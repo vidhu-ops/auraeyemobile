@@ -7097,25 +7097,89 @@ export default function AuraAnalysis() {
                                     <div>
                                       <p className="text-xs font-medium text-amber-700 mb-1">Meditation Focus</p>
                                       <p className="text-xs text-amber-600">
-                                        {getColorMeditationFocus(result.dominantColor)}
+                                        {(() => {
+                                          const focuses: Record<string, string> = {
+                                            'Red': 'Focus on root chakra grounding meditations and earth connection practices',
+                                            'Orange': 'Practice creative visualization and emotional flow meditations',
+                                            'Yellow': 'Concentrate on solar plexus strengthening and confidence-building meditations',
+                                            'Green': 'Engage in heart-opening meditations and loving-kindness practices',
+                                            'Blue': 'Focus on throat chakra activation and truth expression meditations',
+                                            'Indigo': 'Practice third eye opening and intuitive development meditations',
+                                            'Violet': 'Engage in crown chakra connection and divine consciousness meditations',
+                                            'Purple': 'Focus on spiritual wisdom and mystical awareness practices',
+                                            'Pink': 'Practice unconditional love and emotional healing meditations',
+                                            'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
+                                            'White': 'Focus on pure light meditation and spiritual protection practices',
+                                            'Silver': 'Practice lunar energy and psychic sensitivity meditations'
+                                          };
+                                          return focuses[result.dominantColor] || 'Focus on connecting with your unique aura color energy during meditation';
+                                        })()}
                                       </p>
                                     </div>
                                     <div>
                                       <p className="text-xs font-medium text-amber-700 mb-1">Energy Work</p>
                                       <p className="text-xs text-amber-600">
-                                        {getColorEnergyWork(result.dominantColor)}
+                                        {(() => {
+                                          const practices: Record<string, string> = {
+                                            'Red': 'Practice grounding exercises, work with earth elements, and strengthen physical vitality',
+                                            'Orange': 'Engage in creative expression, emotional release work, and sacral chakra healing',
+                                            'Yellow': 'Work on personal power development, mental clarity exercises, and confidence building',
+                                            'Green': 'Practice healing touch, heart chakra work, and compassionate service',
+                                            'Blue': 'Focus on authentic communication, throat chakra clearing, and truth expression',
+                                            'Indigo': 'Develop psychic abilities, third eye activation, and intuitive practices',
+                                            'Violet': 'Work on spiritual connection, crown chakra opening, and divine consciousness',
+                                            'Purple': 'Practice mystical awareness, spiritual wisdom development, and ancient knowledge study',
+                                            'Pink': 'Focus on unconditional love practices, emotional healing, and nurturing energy',
+                                            'Gold': 'Work on divine wisdom integration, spiritual mastery, and enlightened service',
+                                            'White': 'Practice light work, spiritual protection, and angelic connection',
+                                            'Silver': 'Develop lunar sensitivity, psychic protection, and emotional attunement'
+                                          };
+                                          return practices[result.dominantColor] || 'Work with your unique aura energy through specialized spiritual practices';
+                                        })()}
                                       </p>
                                     </div>
                                     <div>
                                       <p className="text-xs font-medium text-amber-700 mb-1">Chakra Alignment</p>
                                       <p className="text-xs text-amber-600">
-                                        {getColorChakraGuidance(result.dominantColor)}
+                                        {(() => {
+                                          const guidance: Record<string, string> = {
+                                            'Red': 'Strengthen root chakra through grounding, stability practices, and earth connection',
+                                            'Orange': 'Balance sacral chakra through creativity, emotional flow, and healthy boundaries',
+                                            'Yellow': 'Energize solar plexus through confidence building, personal power, and mental clarity',
+                                            'Green': 'Open heart chakra through love practices, compassion, and emotional healing',
+                                            'Blue': 'Clear throat chakra through authentic expression, truth telling, and communication',
+                                            'Indigo': 'Activate third eye through intuition development, inner wisdom, and perception',
+                                            'Violet': 'Connect crown chakra through spiritual practices, divine connection, and meditation',
+                                            'Purple': 'Balance all chakras through spiritual wisdom and mystical awareness practices',
+                                            'Pink': 'Heal heart chakra through unconditional love, emotional nurturing, and compassion',
+                                            'Gold': 'Illuminate all chakras through divine wisdom and spiritual enlightenment',
+                                            'White': 'Purify all chakras through light work and spiritual protection practices',
+                                            'Silver': 'Sensitize all chakras through lunar energy and psychic development'
+                                          };
+                                          return guidance[result.dominantColor] || 'Work with your corresponding chakra system for optimal energy alignment';
+                                        })()}
                                       </p>
                                     </div>
                                     <div>
                                       <p className="text-xs font-medium text-amber-700 mb-1">Daily Practice</p>
                                       <p className="text-xs text-amber-600">
-                                        {getColorDailyPractice(result.dominantColor)}
+                                        {(() => {
+                                          const practices: Record<string, string> = {
+                                            'Red': 'Morning grounding visualization, wear red colors, practice physical exercise',
+                                            'Orange': 'Creative expression time, emotional check-ins, wear orange accents',
+                                            'Yellow': 'Confidence affirmations, mental clarity exercises, wear yellow accessories',
+                                            'Green': 'Heart-opening gratitude practice, nature connection, wear green clothing',
+                                            'Blue': 'Truth-telling practice, clear communication, wear blue jewelry',
+                                            'Indigo': 'Intuitive journaling, third eye meditation, wear indigo or dark blue',
+                                            'Violet': 'Spiritual study, divine connection prayer, wear violet or purple',
+                                            'Purple': 'Mystical awareness practice, spiritual wisdom study, wear purple accessories',
+                                            'Pink': 'Loving-kindness meditation, emotional nurturing, wear pink or rose colors',
+                                            'Gold': 'Divine wisdom contemplation, enlightened service, wear gold jewelry',
+                                            'White': 'Light protection visualization, spiritual cleansing, wear white clothing',
+                                            'Silver': 'Psychic sensitivity practice, lunar awareness, wear silver accessories'
+                                          };
+                                          return practices[result.dominantColor] || 'Incorporate your aura color into daily spiritual practices and clothing choices';
+                                        })()}
                                       </p>
                                     </div>
                                   </div>
