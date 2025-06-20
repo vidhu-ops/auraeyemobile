@@ -124,7 +124,7 @@ export default function AuraAnalysis() {
       'Olive': 'Natural mental harmony - thinks in alignment with earth wisdom and natural cycles',
       'Teal': 'Healing communication thoughts - processes ideas that bring peace and understanding'
     };
-    return meanings[color] || 'Unique mental processing pattern - develops individual thinking approach';
+    return meanings[color]  || 'Unique mental processing pattern - develops individual thinking approach';
   };
 
   const getReceivingEnergyMeaning = (color: string): string => {
@@ -5904,12 +5904,7 @@ export default function AuraAnalysis() {
                                       {getBalancingRecommendations(result.dominantColor, result.secondaryColor)}
                                     </p>
                                   </div>
-                                  <div>
-                                    <h5 className="font-medium text-sm mb-2">Optimal Energy Times</h5>
-                                    <p className="text-sm text-gray-700">
-                                      {getOptimalEnergyTimes(result.dominantColor)}
-                                    </p>
-                                  </div>
+                                 
                                   <div>
                                     <h5 className="font-medium text-sm mb-2">Compatible Energies</h5>
                                     <p className="text-sm text-gray-700">
