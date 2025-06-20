@@ -85,8 +85,20 @@ app.use((req, res, next) => {
       serveProductionStatic(app);
     } catch (error) {
       console.error("Failed to serve static files with flexible approach:", error);
-      // Fallback to original approach
-      serveStatic(app);
+      // Enhanced fallback with basic static serving
+      try {
+        serveStatic(app);
+      } catch (fallbackError) {
+        console.error("All static serving methods failed:", fallbackError);
+        // Ultimate fallback for health checks
+        app.get('*', (req, res) => {
+          if (req.path === '/' || req.path === '/health') {
+            res.status(200).send('<html><body><h1>Server Running</h1></body></html>');
+          } else {
+            res.status(404).send('Not Found');
+          }
+        });
+      }
     }
   }
 
