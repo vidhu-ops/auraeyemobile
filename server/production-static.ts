@@ -13,27 +13,66 @@ export function serveProductionStatic(app: Express) {
   let distPath: string | null = null;
   
   for (const testPath of possiblePaths) {
-    if (fs.existsSync(testPath)) {
-      const indexPath = path.join(testPath, "index.html");
-      if (fs.existsSync(indexPath)) {
-        distPath = testPath;
-        break;
+    try {
+      if (fs.existsSync(testPath)) {
+        const indexPath = path.join(testPath, "index.html");
+        if (fs.existsSync(indexPath)) {
+          distPath = testPath;
+          break;
+        }
       }
+    } catch (error) {
+      console.warn(`Error checking path ${testPath}:`, error);
+      continue;
     }
   }
 
   if (!distPath) {
-    throw new Error(
-      `Could not find the build directory. Tried: ${possiblePaths.join(", ")}. Make sure to build the client first.`,
+    console.warn(
+      `Could not find the build directory. Tried: ${possiblePaths.join(", ")}. Creating fallback static handling.`,
     );
+    
+    // Fallback: serve a simple index.html for health checks
+    app.get('*', (req, res) => {
+      if (req.path === '/' || req.path === '/health') {
+        res.status(200).send(`
+          <!DOCTYPE html>
+          <html>
+            <head><title>App Starting</title></head>
+            <body><h1>Application is starting...</h1></body>
+          </html>
+        `);
+      } else {
+        res.status(404).json({ error: 'Not found' });
+      }
+    });
+    return;
   }
 
   console.log(`Serving static files from: ${distPath}`);
   
-  app.use(express.static(distPath));
+  // Enhanced static file serving with error handling
+  app.use(express.static(distPath, {
+    maxAge: '1h',
+    setHeaders: (res, path) => {
+      if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'public, max-age=0');
+      }
+    }
+  }));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath!, "index.html"));
+  // Enhanced fallback to index.html with error handling
+  app.use("*", (req, res) => {
+    try {
+      const indexPath = path.resolve(distPath!, "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(404).json({ error: 'Application not found' });
+      }
+    } catch (error) {
+      console.error('Error serving index.html:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   });
 }

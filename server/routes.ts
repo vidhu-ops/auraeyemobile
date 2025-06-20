@@ -759,15 +759,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
   
-  // Seed initial healer data
-  try {
-    await seedHealers();
-  } catch (error) {
-    console.error("Failed to seed healers, continuing without seeding:", error);
-  }
-
-  // Configure file upload
+  // Configure file upload first (lightweight operation)
   const upload = configureFileUpload();
+  
+  // Seed initial healer data asynchronously (don't block server startup)
+  setImmediate(async () => {
+    try {
+      await seedHealers();
+      console.log("Healer data seeded successfully");
+    } catch (error) {
+      console.error("Failed to seed healers, continuing without seeding:", error);
+    }
+  });
 
   // API routes
   // Object Analysis API endpoint
@@ -1658,6 +1661,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
+  
+  // Set server timeouts to prevent health check failures
+  httpServer.keepAliveTimeout = 65000;
+  httpServer.headersTimeout = 66000;
+  
   return httpServer;
 }
