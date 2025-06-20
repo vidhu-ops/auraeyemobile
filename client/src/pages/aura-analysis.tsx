@@ -4101,6 +4101,44 @@ export default function AuraAnalysis() {
     }
   };
 
+  // Helper functions for combined numerology and aura analysis
+  const calculateDominantSoulChakra = (lifePathNumber: number): number => {
+    const chakraMapping: Record<number, number> = {
+      1: 3, 2: 4, 3: 5, 4: 1, 5: 5, 6: 4, 7: 6, 8: 1, 9: 7, 11: 6, 22: 1, 33: 4
+    };
+    return chakraMapping[lifePathNumber] || 7;
+  };
+
+  const getDominantSoulChakraName = (chakraNumber: number): string => {
+    const chakraNames: Record<number, string> = {
+      1: 'Root Chakra (Grounding & Stability)', 2: 'Sacral Chakra (Creativity & Emotion)',
+      3: 'Solar Plexus Chakra (Personal Power)', 4: 'Heart Chakra (Love & Compassion)',
+      5: 'Throat Chakra (Truth & Expression)', 6: 'Third Eye Chakra (Intuition & Wisdom)',
+      7: 'Crown Chakra (Spiritual Connection)'
+    };
+    return chakraNames[chakraNumber] || 'Crown Chakra (Spiritual Connection)';
+  };
+
+  const getColorForNumber = (number: number): string => {
+    const numberColorMapping: Record<number, string> = {
+      1: 'Red', 2: 'Orange', 3: 'Yellow', 4: 'Green', 5: 'Blue', 6: 'Indigo', 7: 'Violet',
+      8: 'Gold', 9: 'White', 11: 'Silver', 22: 'Platinum', 33: 'Rainbow'
+    };
+    return numberColorMapping[number] || 'Purple';
+  };
+
+  const getPersonalityTraits = (personalityNumber: number): string => {
+    const traits: Record<number, string> = {
+      1: 'leadership qualities and pioneering spirit', 2: 'diplomatic nature and cooperative energy',
+      3: 'creative expression and inspiring communication', 4: 'practical wisdom and foundational strength',
+      5: 'adventurous spirit and dynamic communication', 6: 'nurturing care and healing presence',
+      7: 'mystical insight and spiritual depth', 8: 'executive ability and material mastery',
+      9: 'humanitarian service and universal compassion', 11: 'intuitive guidance and inspirational vision',
+      22: 'master building and transformational leadership', 33: 'master teaching and unconditional love'
+    };
+    return traits[personalityNumber] || 'unique spiritual gifts and authentic expression';
+  };
+
   // Function to generate combined insights from aura and numerology
   const getCombinedInsights = (aura: AuraAnalysisResult, numerology: NumerologyResult) => {
     // Enhanced color-to-chakra-number mapping based on remedies data
@@ -4236,52 +4274,6 @@ export default function AuraAnalysis() {
       healingCrystals: dominantColorMapping.crystal,
       recommendedPractices
     };
-  };
-
-  const calculateDominantSoulChakra = (lifePathNumber: number): number => {
-    // Soul chakra calculation based on life path number
-    const chakraMappings: Record<number, number> = {
-      1: 3, 2: 4, 3: 5, 4: 1, 5: 2, 6: 6, 7: 7, 8: 8, 9: 9
-    };
-    return chakraMappings[lifePathNumber] || 7;
-  };
-
-  const getDominantSoulChakraName = (chakraNumber: number): string => {
-    const chakraNames: Record<number, string> = {
-      1: 'Earth Star (Grounding & Stability)',
-      2: 'Sacral (Creativity & Emotions)', 
-      3: 'Solar Plexus (Leadership & Confidence)',
-      4: 'Heart (Love & Relationships)',
-      5: 'Throat (Communication & Truth)',
-      6: 'Third Eye (Intuition & Vision)',
-      7: 'Crown (Spiritual Connection)',
-      8: 'Soul Star (Wisdom & Transcendence)',
-      9: 'Root (Physical Energy & Survival)'
-    };
-    return chakraNames[chakraNumber] || 'Balanced Multi-Chakra';
-  };
-
-  const getPersonalityTraits = (personalityNumber: number): string => {
-    const traits: Record<number, string> = {
-      1: 'leadership and pioneering abilities',
-      2: 'diplomatic and cooperative nature', 
-      3: 'creative and communicative talents',
-      4: 'organized and practical wisdom',
-      5: 'adventurous and adaptable spirit',
-      6: 'nurturing and healing capabilities',
-      7: 'intuitive and spiritual insights',
-      8: 'executive and manifestation skills',
-      9: 'compassionate and humanitarian service'
-    };
-    return traits[personalityNumber] || 'balanced multi-dimensional qualities';
-  };
-
-  const getColorForNumber = (number: number): string => {
-    const numberColors: Record<number, string> = {
-      1: 'Yellow', 2: 'Green', 3: 'Violet', 4: 'Brown', 5: 'Blue',
-      6: 'Orange', 7: 'White', 8: 'Indigo', 9: 'Red'
-    };
-    return numberColors[number] || 'White';
   };
   
   // Function to detect human presence for aura analysis (faces or full body)
@@ -4976,6 +4968,10 @@ export default function AuraAnalysis() {
                         <li className="flex items-start">
                           <span className="text-primary mr-2">•</span>
                           A relaxed, natural expression reveals your true energy
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary mr-2">•</span>
+                          The reccomendations provided in the analysis are generic. Please connect to a healer for personalized recommendations
                         </li>
                       </ul>
                     </div>
@@ -5918,7 +5914,7 @@ export default function AuraAnalysis() {
                                       style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
                                     ></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-white font-bold text-sm">Core</span>
+                                      <span className="text-white font-bold text-sm">Dominant</span>
                                     </div>
                                   </div>
                                   
@@ -5929,7 +5925,7 @@ export default function AuraAnalysis() {
                                       style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.secondaryColor)} 0%, ${getAccurateColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
                                     ></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-white font-medium text-xs">Flow</span>
+                                      <span className="text-white font-medium text-xs">Overall</span>
                                     </div>
                                   </div>
 
@@ -6897,21 +6893,21 @@ export default function AuraAnalysis() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-purple-600 mb-1">
-                                      {Math.round(((result.chakraActivity?.crown || 5) + (result.chakraActivity?.thirdEye || 5) + (calculateSoulStarChakra(result)/10)) / 3 * 10)}%
+                                      {Math.round((result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Higher Chakras</div>
                                     <div className="text-xs text-gray-500">Spiritual Connection</div>
                                   </div>
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-green-600 mb-1">
-                                      {Math.round(((result.chakraActivity?.throat || 5) + (result.chakraActivity?.heart || 5) + (result.chakraActivity?.solarPlexus || 5)) / 3 * 10)}%
+                                      {Math.round((result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Middle Chakras</div>
                                     <div className="text-xs text-gray-500">Emotional Balance</div>
                                   </div>
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-red-600 mb-1">
-                                      {Math.round(((result.chakraActivity?.sacral || 5) + (result.chakraActivity?.root || 5) + (calculateEarthStarChakra(result)/10)) / 3 * 10)}%
+                                      {Math.round((result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Lower Chakras</div>
                                     <div className="text-xs text-gray-500">Physical Grounding</div>
