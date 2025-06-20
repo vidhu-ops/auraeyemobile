@@ -29,6 +29,68 @@ const numerologySchema = z.object({
 
 type NumerologyFormData = z.infer<typeof numerologySchema>;
 
+// Monthly remedies based on numerological numbers (from Fortune Reader remedies PDF)
+const getMonthlyRemedy = (number: number) => {
+  const remedies = {
+    1: {
+      color: "Yellow (Solar Plexus)",
+      mantra: "RAM (45 times/day)",
+      crystal: "Citrine, Tiger's Eye",
+      sacredCode: "451 (45 times/day)"
+    },
+    2: {
+      color: "Green/Pink (Heart)",
+      mantra: "YAM (45 times/day)",
+      crystal: "Rose Quartz, Green Aventurine",
+      sacredCode: "741 (45 times/day)"
+    },
+    3: {
+      color: "Violet/White (Crown)",
+      mantra: "AUM (45 times/day)",
+      crystal: "Clear Quartz, Selenite",
+      sacredCode: "204 (45 times/day)"
+    },
+    4: {
+      color: "Brown/Black (Earth Star)",
+      mantra: "LAM (45 times/day)",
+      crystal: "Smoky Quartz, Hematite",
+      sacredCode: "264 (45 times/day)"
+    },
+    5: {
+      color: "Blue (Throat)",
+      mantra: "HAM (45 times/day)",
+      crystal: "Blue Lace Agate, Lapis Lazuli",
+      sacredCode: "986 (45 times/day)"
+    },
+    6: {
+      color: "Orange (Sacral)",
+      mantra: "VAM (45 times/day)",
+      crystal: "Carnelian, Moonstone",
+      sacredCode: "760 (45 times/day)"
+    },
+    7: {
+      color: "Gold/White (Soul Star)",
+      mantra: "OM SO HUM (45 times/day)",
+      crystal: "Selenite, Angelite",
+      sacredCode: "56 (45 times/day)"
+    },
+    8: {
+      color: "Indigo (Third Eye)",
+      mantra: "OM (45 times/day)",
+      crystal: "Amethyst, Fluorite",
+      sacredCode: "505 (45 times/day)"
+    },
+    9: {
+      color: "Red (Root)",
+      mantra: "LAM (45 times/day)",
+      crystal: "Red Jasper, Black Tourmaline",
+      sacredCode: "996 (45 times/day)"
+    }
+  };
+  
+  return remedies[number as keyof typeof remedies] || remedies[1];
+};
+
 export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
@@ -1041,8 +1103,27 @@ export default function NumerologyPage() {
                                     </div>
                                     
                                     <div className="mt-3 pt-2 border-t border-blue-100">
-                                      <div className="text-xs text-blue-600">
+                                      <div className="text-xs text-blue-600 mb-2">
                                         Personal Year {personalYear} + Month {month.number} = {personalMonth}
+                                      </div>
+                                      
+                                      {/* Monthly Remedy */}
+                                      <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-3 border border-amber-100">
+                                        <h6 className="text-xs font-semibold text-amber-800 mb-2">Monthly Remedy</h6>
+                                        <div className="space-y-1">
+                                          <div className="text-xs text-amber-700">
+                                            <span className="font-medium">Color:</span> {getMonthlyRemedy(personalMonth).color}
+                                          </div>
+                                          <div className="text-xs text-amber-700">
+                                            <span className="font-medium">Mantra:</span> {getMonthlyRemedy(personalMonth).mantra}
+                                          </div>
+                                          <div className="text-xs text-amber-700">
+                                            <span className="font-medium">Crystal:</span> {getMonthlyRemedy(personalMonth).crystal}
+                                          </div>
+                                          <div className="text-xs text-amber-700">
+                                            <span className="font-medium">Sacred Code:</span> {getMonthlyRemedy(personalMonth).sacredCode}
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
