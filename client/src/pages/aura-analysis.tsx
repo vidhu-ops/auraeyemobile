@@ -62,6 +62,10 @@ const getAccurateColorCode = (colorName: string): string => {
     'Indigo': '#4B0082',
     'violet': '#8A2BE2',
     'Violet': '#8A2BE2',
+    'cyan': '#00FFFF',
+    'sapphire': '#0F52BA',
+    'emerald': '#50C878',
+    'rose': '#FF69B4',
   };
   
   return colorCodes[colorName] || '#FFFFFF'; // Default to white if color not found
@@ -81,7 +85,11 @@ const getColorSpiritalMeaning = (color: string): string => {
     'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.'
+    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
+    'black': 'Shadow work and transformative energy. This deep frequency represents deep spiritual integration and shadow healing.',
+    'grey': 'Neutral balance and adaptable wisdom. This balanced frequency indicates wise neutrality and peaceful resolution.',
+    'brown': 'Earth connection and grounding stability. This practical frequency represents natural wisdom and earth-based spiritual growth.',
+    
   };
   return meanings[color] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
 };
@@ -197,22 +205,11 @@ export default function AuraAnalysis() {
       'Silver': 'Reflective intelligence - mirrors wisdom from higher dimensional thinking',
       'Turquoise': 'Healing mental energy - transforms negative thought patterns into positive ones',
       'Lavender': 'Gentle mental processing - approaches problems with calm spiritual insight',
-      'Coral': 'Warm intellectual energy - combines heart wisdom with mental understanding',
-      'Mint': 'Refreshing mental clarity - cleanses confused thinking with renewed perspective',
       'Peach': 'Nurturing thought patterns - develops ideas with patient loving attention',
-      'Sky Blue': 'Expansive mental vision - thinks beyond limitations with unlimited perspective',
-      'Rose': 'Love-centered intelligence - makes all decisions from a foundation of divine love',
-      'Amber': 'Ancient mental wisdom - accesses timeless knowledge from collective consciousness',
       'Gray': 'Neutral analytical mind - processes information without emotional bias',
       'Black': 'Deep transformative thinking - penetrates mysteries and embraces shadow wisdom',
-      'Crimson': 'Passionate mental fire - thinks with intense focus and unwavering determination',
-      'Magenta': 'Revolutionary thought patterns - breaks conventional thinking with creative rebellion',
       'Brown': 'Grounded practical thinking - approaches problems with earth-based common sense',
       'Cyan': 'Clear emotional intelligence - thinks with perfect balance of heart and mind',
-      'Lime': 'Fresh mental energy - generates new ideas with vibrant intellectual vitality',
-      'Maroon': 'Mature mental strength - thinks with depth and sustained intellectual power',
-      'Navy': 'Profound wisdom thinking - accesses deep universal knowledge and cosmic understanding',
-      'Olive': 'Natural mental harmony - thinks in alignment with earth wisdom and natural cycles',
       'Teal': 'Healing communication thoughts - processes ideas that bring peace and understanding'
     };
     return meanings[color] || 'Unique mental processing pattern - develops individual thinking approach';
@@ -234,22 +231,12 @@ export default function AuraAnalysis() {
       'Silver': 'Receives lunar vibrations - attracts feminine intuitive energy from moon cycles',
       'Turquoise': 'Absorbs healing frequencies - draws therapeutic energy from natural sources',
       'Lavender': 'Receives gentle spiritual energy - attracts peaceful cosmic vibrations',
-      'Coral': 'Absorbs warm emotional energy - draws nurturing vibrations from loving connections',
-      'Mint': 'Receives refreshing energy - attracts cleansing vibrations that restore balance',
       'Peach': 'Absorbs nurturing frequencies - draws supportive energy from caring relationships',
       'Sky Blue': 'Receives unlimited cosmic energy - attracts boundless universal vibrations',
-      'Rose': 'Absorbs unconditional love - draws pure heart energy from divine sources',
-      'Amber': 'Receives ancient wisdom energy - attracts knowledge from ancestral connections',
       'Gray': 'Absorbs neutral balance - draws stabilizing energy that maintains equilibrium',
       'Black': 'Receives transformative power - attracts deep change energy from shadow work',
-      'Crimson': 'Absorbs warrior energy - draws strength from challenging life experiences',
-      'Magenta': 'Receives rebellious frequency - attracts independent energy that breaks conformity',
       'Brown': 'Absorbs earth stability - draws grounding energy from natural environments',
       'Cyan': 'Receives emotional clarity - attracts pure feeling energy that heals emotional wounds',
-      'Lime': 'Absorbs growth energy - draws fresh vitality from new opportunities',
-      'Maroon': 'Receives mature strength - attracts seasoned wisdom from life experiences',
-      'Navy': 'Absorbs cosmic depth - draws profound universal energy from mystical sources',
-      'Olive': 'Receives natural harmony - attracts balanced energy from earth connections',
       'Teal': 'Absorbs communication healing - draws energy that repairs relationship wounds'
     };
     return meanings[color] || 'Receives unique energy signature - attracts special vibrations suited to your soul';
@@ -271,22 +258,11 @@ export default function AuraAnalysis() {
       'Silver': 'Emanates reflective wisdom - helps others see their true spiritual nature',
       'Turquoise': 'Radiates healing communication - brings therapeutic words and understanding',
       'Lavender': 'Projects gentle awakening - gradually opens spiritual awareness in others',
-      'Coral': 'Emanates warm support - provides emotional comfort and encouragement',
-      'Mint': 'Radiates refreshing clarity - cleanses negative energy from people and spaces',
       'Peach': 'Projects nurturing care - offers gentle healing and emotional support',
-      'Sky Blue': 'Emanates limitless possibility - inspires others to expand beyond boundaries',
-      'Rose': 'Radiates unconditional love - creates safe spaces for authentic expression',
-      'Amber': 'Projects ancient wisdom - shares timeless knowledge that guides decisions',
       'Gray': 'Emanates balanced perspective - helps others find neutral ground in conflicts',
       'Black': 'Radiates transformative power - catalyzes deep change and shadow integration',
-      'Crimson': 'Projects warrior strength - empowers others to overcome challenges',
-      'Magenta': 'Emanates creative rebellion - inspires unique individual expression',
       'Brown': 'Radiates grounding stability - provides practical support and earth wisdom',
       'Cyan': 'Projects emotional healing - clears emotional blockages with pure compassion',
-      'Lime': 'Emanates fresh vitality - energizes others with renewed life force',
-      'Maroon': 'Radiates mature wisdom - offers guidance from deep life experience',
-      'Navy': 'Projects cosmic understanding - shares profound universal truths',
-      'Olive': 'Emanates natural harmony - brings peace through earth-based wisdom',
       'Teal': 'Radiates healing words - communicates in ways that repair and restore'
     };
     return meanings[color] || 'Projects unique energy signature - shares special gifts that only you can offer';
@@ -308,22 +284,11 @@ export default function AuraAnalysis() {
       'Silver': 'Reflective core nature - your soul mirrors cosmic truth and lunar wisdom',
       'Turquoise': 'Healing soul essence - your core purpose involves therapeutic transformation',
       'Lavender': 'Gentle spirit foundation - your essence brings peaceful spiritual awakening',
-      'Coral': 'Warm soul nature - your core radiates emotional support and creative nurturing',
-      'Mint': 'Refreshing essence - your soul naturally cleanses and renews energy patterns',
       'Peach': 'Nurturing core foundation - your essence provides gentle care and emotional healing',
-      'Sky Blue': 'Boundless soul nature - your core operates without limitations or restrictions',
-      'Rose': 'Divine love essence - your soul foundation is pure unconditional compassion',
-      'Amber': 'Ancient soul wisdom - your core carries timeless knowledge from past lifetimes',
       'Gray': 'Balanced core nature - your essence maintains spiritual equilibrium in all situations',
       'Black': 'Transformative soul foundation - your core purpose involves deep shadow integration',
-      'Crimson': 'Warrior soul essence - your core nature embodies spiritual strength and determination',
-      'Magenta': 'Revolutionary spirit foundation - your essence breaks conventional spiritual patterns',
       'Brown': 'Earth-connected soul - your core nature is grounded in practical spiritual wisdom',
       'Cyan': 'Emotionally clear essence - your soul foundation operates through pure feeling',
-      'Lime': 'Vitality soul core - your essence naturally generates fresh life force energy',
-      'Maroon': 'Mature soul foundation - your core operates with deep spiritual experience',
-      'Navy': 'Cosmic soul depth - your essence connects to profound universal mysteries',
-      'Olive': 'Naturally wise soul - your core operates in harmony with earth and cosmic cycles',
       'Teal': 'Communication soul essence - your foundation involves healing through authentic expression'
     };
     return meanings[color] || 'Unique soul signature - your core essence carries special spiritual gifts';
@@ -373,7 +338,7 @@ export default function AuraAnalysis() {
       'Red': { 
         chakra: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence',  
         number: 'Healing & Vitality',
-        shadowMeaning: 'POSITIVE: Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.',
+        shadowMeaning: 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.',
         positiveMeaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.',
         colorMeaning: 'Healing & Vitality - Root chakra energy, survival instinct, life force, physical vitality, grounding power'
       },
@@ -468,13 +433,6 @@ export default function AuraAnalysis() {
         positiveMeaning: 'Heart-throat bridge chakra flowing with emotional communication and healing truth expression. This balanced frequency channels compassionate communication and heart-centered wisdom.',
         colorMeaning: 'Emotional Communication - Heart-throat energy, emotional truth, compassionate expression, healing communication'
       },
-      'Mint': { 
-        chakra: 'Healing Heart Impatience', 
-        number: '4', 
-        shadowMeaning: 'Healing heart impatience creating rushed recovery and superficial healing while manifesting emotional volatility and healing addiction. This accelerated frequency prevents deep integration and authentic transformation.',
-        positiveMeaning: 'Healing heart chakra flowing with renewal energy and gentle restoration. This refreshing frequency channels emotional cleansing and natural healing.',
-        colorMeaning: 'Renewal Energy - Healing heart energy, emotional cleansing, natural restoration, gentle healing'
-      },
       'Peach': { 
         chakra: 'Nurturing Heart Depletion', 
         number: '4', 
@@ -551,13 +509,13 @@ export default function AuraAnalysis() {
       'Silver': 'Lunar Energy Center',
       'Turquoise': 'Higher Throat Chakra',
       'White': 'Divine Light Center',
-      'Lime': 'Heart Healing Chakra',
       'Teal': 'Heart-Throat Bridge',
-      'Maroon': 'Earth Star Chakra',
-      'Navy': 'Deep Wisdom Center',
-      'Coral': 'Creative Heart Center',
-      'Mint': 'Renewal Energy Center',
-      'Peach': 'Nurturing Heart Center'
+      'Peach': 'Nurturing Heart Center',
+      'Black': 'Shadow Integration Center',
+      'Gray': 'Neutral Balance Center',
+      'Brown': 'Earth Connection Center',
+      'Cyan': 'Emotional Clarity Center',
+      'Lavender': 'Spiritual Awakening Center',
     };
 
     const colorMeanings: Record<string, string> = {
@@ -574,9 +532,11 @@ export default function AuraAnalysis() {
       'Silver': 'lunar intuition, feminine wisdom',
       'Turquoise': 'healing communication, divine truth',
       'White': 'pure light, spiritual protection',
-      'Mint': 'healing renewal, emotional cleansing',
       'Peach': 'nurturing love, gentle care',
       'Grey': 'balanced wisdom, neutral authority',
+      'Black': 'shadow integration, transformative power',
+      'Brown': 'earth connection, practical wisdom',
+      'Cyan': 'emotional clarity, healing communication',
     };
 
     const totalColors = spectrum ? spectrum.length : 2;
@@ -1174,32 +1134,15 @@ export default function AuraAnalysis() {
       'Turquoise': 'Higher throat turquoise wave enabling healing communication and soul expression. This flowing frequency combines heart wisdom with authentic voice, enabling the ability to speak healing truth.',
       'White': 'Pure divine light encompassing all frequencies in perfect spiritual protection. This transcendent frequency provides angelic connection, enables spiritual purification, and develops the ability to channel pure divine energy.',
       'Lavender': 'Spiritual Peace - Gentle awakening, cosmic consciousness, divine grace, serene wisdom',
-      'Mint': 'Renewal & Healing - Healing heart energy, renewal power, fresh growth, emotional cleansing',
       'Peach': 'Nurturing Love - Nurturing heart energy, gentle love, emotional healing, caring vibration',
     };
     const additionalMeanings: Record<string, string> = {
-      'Crimson': 'Deep passion chakra - intense life force, powerful manifestation, warrior spirit',
-      'Magenta': 'Soul love chakra - divine feminine power, cosmic love, spiritual creativity',
-      'Aqua': 'Higher communication - divine truth speaking, soul voice, mystical expression',
-      'Navy': 'Deep wisdom chakra - profound spiritual knowledge, cosmic intelligence, soul memory',
-      'Lime': 'Heart healing chakra - renewal energy, fresh growth, emotional cleansing',
-      'Maroon': 'Grounded passion - earthly wisdom, stable life force, enduring strength',
-      'Chocolate': 'Earth wisdom - practical spirituality, grounding energy, natural healing',
-      'Beige': 'Gentle earth energy - subtle healing, quiet wisdom, peaceful grounding',
-      'Tan': 'Natural balance - earth connection, practical wisdom, gentle strength',
       'Teal': 'Heart-throat bridge - healing communication, emotional truth, compassionate expression',
-      'Coral': 'Creative heart energy - artistic passion, gentle warmth, nurturing creativity',
-      'Mint': 'Renewal chakra - fresh healing energy, emotional cleansing, spiritual rebirth',
       'Peach': 'Nurturing heart - gentle love energy, emotional healing, compassionate care',
-      'Sky Blue': 'Higher throat chakra - unlimited expression, cosmic truth, divine communication',
-      'Rose': 'Divine love frequency - soul mate connection, romantic heart healing, pure love',
-      'Amber': 'Ancient earth wisdom - protection energy, timeless knowledge, golden healing',
       'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality, divine equilibrium',
       'Black': 'Shadow integration - transformation power, deep inner work, void consciousness',
       'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
       'Cyan': 'Emotional clarity - healing communication, pure emotion, crystal clear truth',
-      'Bronze': 'Ancient strength - enduring wisdom, protective power, timeless resilience',
-      'Cobalt': 'Deep cosmic wisdom - mystical knowledge, universal truth, profound insight'
     };
     
     return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || meaningMap['getColourMenaing'];
@@ -1296,27 +1239,36 @@ export default function AuraAnalysis() {
       number: '7',
       meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.'
     };
-    
-    const limeMeaning = {
-      color: 'Lime',
-      chakra: 'Heart Chakra Renewal',
-      number: '4',
-      meaning: 'Heart healing chakra activation bringing powerful renewal energy that stimulates fresh emotional growth and deep spiritual cleansing. This vibrant frequency accelerates vitality restoration while catalyzing transformative new beginnings in your spiritual journey.'
-    };
-    
-    const navyMeaning = {
-      color: 'Navy',
-      chakra: 'Third Eye Deep Wisdom',
-      number: '6',
-      meaning: 'Deep wisdom chakra activation accessing profound spiritual knowledge and cosmic intelligence stored in your soul memory. This mystical frequency brings divine authority through connection to ancient wisdom and universal understanding.'
-    };
-    
+
+  
     const tealMeaning = {
       color: 'Teal',
       chakra: 'Heart-Throat Bridge Chakra',
       number: '4.5',
       meaning: 'Heart-throat bridge chakra activation combining emotional healing wisdom with authentic communication. This balanced frequency enables healing words, compassionate truth-telling, and the ability to speak from the heart with clarity and love.'
     };
+
+    const blackMeaning = {
+      color: 'Black',
+      chakra: 'Shadow Integration Center',
+      number: '0',
+      meaning: 'Shadow integration power activating deep inner work and transformative healing through void consciousness. This transformative frequency enables the ability to embrace darkness and manifest spiritual rebirth through shadow work and purification.'
+    };
+
+    const grayMeaning = {
+      color: 'Gray',
+      chakra: 'Neutral Balance Center',
+      number: '0',
+      meaning: 'Neutral balance frequency providing spiritual equilibrium and wise neutrality through cosmic neutrality. This balanced frequency channels diplomatic wisdom and peaceful resolution through adaptable spiritual insight and emotional intelligence.'
+    };
+
+    const lavenderMeaning = {
+        color: 'Lavender',
+        chakra: 'Crown Chakra Higher Octave',
+        number: '7',
+    };
+
+    
     
     const colorMeanings: Record<string, string> = {
       'Red': redMeaning.meaning,
@@ -1332,9 +1284,10 @@ export default function AuraAnalysis() {
       'Silver': silverMeaning.meaning,
       'Turquoise': turquoiseMeaning.meaning,
       'White': whiteMeaning.meaning,
-      'Lime': limeMeaning.meaning,
-      'Navy': navyMeaning.meaning,
-      'Teal': tealMeaning.meaning
+      'Teal': tealMeaning.meaning,
+      'black': blackMeaning.meaning,
+      'gray': grayMeaning.meaning,
+      'lavender': lavenderMeaning.meaning
     };
     
     return colorMeanings[colorName] || colorMeanings['Purple'];
@@ -1434,25 +1387,31 @@ export default function AuraAnalysis() {
       meaning: 'Because they are so in tune with the spiritual realm, white auras might be detached from the material world and ungrounded. They are trusting and discerning but may give people the benefit of the doubt even when they don’t deserve it. Because they are good-natured and see the best in everyone, young and inexperienced white auras can fall prey to trickery and manipulation.'
     };
     
-    const limeShadow = {
-      color: 'Lime',
-      chakra: 'Heart Impatience',
-      number: '4',
-      meaning: 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.'
-    };
-    
-    const navyShadow = {
-      color: 'Navy',
-      chakra: 'Mental Rigidity',
-      number: '6',
-      meaning: 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.'
-    };
-    
     const tealShadow = {
       color: 'Teal',
       chakra: 'Communication Overwhelm',
       number: '4.5',
       meaning: 'Heart-throat communication overwhelm creating emotional flooding and healer burnout while causing severe throat chakra strain. This overwhelmed frequency prevents sustainable healing work and authentic guidance expression.'
+    };
+
+    const blackShadow = {
+      color: 'Black',
+      chakra: 'Shadow Obsession',
+      number: '0',
+      meaning: 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation patterns from others. This dark frequency prevents healthy shadow integration through darkness addiction and social withdrawal.'
+    };
+
+    const grayShadow = {
+      color: 'Gray',
+      chakra: 'Emotional Detachment',
+      number: '0',
+    };
+
+    const lavenderShadow = {
+      color: 'Lavender',
+      chakra: 'Spiritual Sensitivity Overload',
+      number: '6',
+      meaning: 'Spiritual sensitivity overload creating psychic overwhelm and nervous system stress while manifesting anxiety disorders and spiritual confusion. This oversensitive frequency prevents grounded psychic development and clear spiritual discernment.'
     };
     
     const negativeMeanings: Record<string, string> = {
@@ -1469,26 +1428,14 @@ export default function AuraAnalysis() {
       'Silver': silverShadow.meaning,
       'Turquoise': turquoiseShadow.meaning,
       'White': whiteShadow.meaning,
-      'Lime': limeShadow.meaning,
-      'Navy': navyShadow.meaning,
-      'Teal': tealShadow.meaning
+      'Teal': tealShadow.meaning,
+      'black': blackShadow.meaning,
+      'gray': grayShadow.meaning,
+      'lavender': lavenderShadow.meaning
+      
     };
     const additionalNegativeMeanings: Record<string, string> = {
-      'Crimson': 'Destructive anger patterns manifesting through violent tendencies and overwhelming emotional intensity that creates uncontrolled passion and dangerous impulse expression. This explosive frequency can lead to physical aggression and complete loss of spiritual self-control.',
-      'Magenta': 'Emotional overwhelm creating unrealistic spiritual expectations and delusional thinking while fostering excessive attachment to outcomes. This ungrounded frequency prevents authentic spiritual development through fantasy and spiritual materialism.',
-      'Aqua': 'Communication confusion creating spiritual bypassing tendencies and emotional detachment while distorting truth for personal agenda. This disconnected frequency prevents authentic spiritual teaching and genuine emotional expression.',
-      'Navy': 'Mental rigidity creating spiritual arrogance and intellectual superiority while hoarding wisdom for personal power. This closed frequency prevents humble learning and authentic spiritual authority through knowledge accumulation.',
-      'Lime': 'Impatience with natural healing processes creating forced spiritual growth that leads to emotional instability and restless energy patterns. This overstimulated frequency can cause spiritual burnout when growth is rushed without proper integration time.',
-      'Maroon': 'Stubborn resistance creating earthly attachment and paralyzing fear of necessary change while fostering spiritual stagnation. This rigid frequency prevents growth through excessive attachment to material security and comfort zones.',
-      'Chocolate': 'Material obsession creating earthly heaviness and complete resistance to higher spiritual wisdom while imposing practical limitations on soul expansion. This dense frequency prevents spiritual transcendence through material fixation.',
-      'Beige': 'Spiritual apathy creating energy depletion and complete lack of life passion while fostering disconnection from soul purpose. This lifeless frequency prevents authentic spiritual engagement through emotional numbness and spiritual laziness.',
-      'Tan': 'Bland existence patterns creating avoidance of spiritual growth and fear of emotional intensity while accepting mediocrity as life standard. This dull frequency prevents authentic living through comfort zone addiction and spiritual complacency.',
-      'Coral': 'Overwhelming emotional expression creating codependent creativity patterns and exhausting social energy that leads to complete burnout from excessive giving. This depleted frequency prevents sustainable creative expression and healthy boundaries.',
-      'Mint': 'Superficial healing approaches creating avoidance of necessary deep inner work while fostering spiritual impatience that bypasses essential integration processes. This rushed frequency prevents authentic transformation through spiritual shortcuts.',
       'Peach': 'Emotional dependency patterns creating excessive nurturing that leads to self-neglect through compulsive caring and complete boundary dissolution. This codependent frequency prevents healthy relationships through martyrdom and emotional manipulation.',
-      'Sky Blue': 'Communication overwhelm creating truth expression without wisdom while fostering scattered mental expression and emotional instability. This chaotic frequency prevents clear spiritual communication through mental hyperactivity and lack of focus.',
-      'Rose': 'Romantic delusion creating love addiction patterns and unrealistic idealistic expectations while enabling heart manipulation and emotional fantasy. This deluded frequency prevents authentic love through projection and emotional dependency.',
-      'Amber': 'Living trapped in past patterns creating resistance to necessary change while fostering spiritual stagnation and overwhelming ancestral burden. This stuck frequency prevents forward progress through historical attachment and fear of the unknown.',
       'Gray': 'Emotional numbness creating spiritual detachment and complete avoidance of life engagement while fostering depression tendencies. This void frequency prevents authentic feeling and spiritual connection through emotional disconnection.',
       'Black': 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation patterns from others. This dark frequency prevents healthy shadow integration through darkness addiction and social withdrawal.',
       'Brown': 'Material attachment creating earthly limitation and spiritual heaviness while fostering excessive grounding that prevents transcendence. This heavy frequency prevents spiritual elevation through material world fixation.',
@@ -1515,7 +1462,11 @@ export default function AuraAnalysis() {
       'Turquoise': 'Communication breakdown creating healer burnout and throat chakra strain while fostering emotional flooding and teaching exhaustion.',
       'Purple': 'Spiritual bypassing creating reality disconnection and ego inflation while fostering mystical delusion and mental health struggles.',
       'Indigo': 'Psychic confusion creating intuitive blocks and third eye cloudiness while fostering spiritual overwhelm and vision problems.',
-      'Teal': 'Emotional suppression creating authentic voice loss and heart-throat disconnection while fostering communication fears and feeling blockages.'
+      'Teal': 'Emotional suppression creating authentic voice loss and heart-throat disconnection while fostering communication fears and feeling blockages.',
+      'Peach': 'Emotional dependency creating excessive nurturing and boundary dissolution while fostering self-neglect and compulsive caring.',
+      'Gray': 'Emotional numbness creating spiritual detachment and life avoidance while fostering depression and complete disconnection from emotions.',
+      'Black': 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation and darkness addiction.',
+      'Brown': 'Material attachment creating earthly limitation and spiritual heaviness while fostering excessive grounding and transcendence blocks.',
     };
     
     return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || shadowMeanings['Purple'];
@@ -1533,6 +1484,7 @@ export default function AuraAnalysis() {
       'Throat': 'Express truth: blue lace agate crystal, neck stretches, singing, journaling, truthful communication, visualize blue light at throat, chant HAM mantra',
       'Third Eye': 'Enhance intuition: amethyst crystal, forward folds, meditation, purple foods, third eye massage, visualize indigo light between brows, chant OM mantra',
       'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra'
+    
     };
     
     return remedies[chakraName] || 'Balance through meditation, crystals, yoga, proper nutrition, and energy healing practices';
@@ -1552,7 +1504,12 @@ export default function AuraAnalysis() {
       'Brown': 'Humble, grounded, connected to nature and body, possessing down-to-earth wisdom. When balanced, you receive grounding and responsibilities. When imbalanced, you may experience stagnation, lack of ambition, heaviness, or resistance to change.',
       'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul. When balanced, you are surrounded by spiritually activated people. When imbalanced, you may feel energetically overloaded, ungrounded, or have difficulty being in the body.',
       'Gold': 'Divine connection, enlightened, awakened soul, cosmic consciousness, spiritual mastery. When balanced, you are recognized as powerful or influential. When imbalanced, you may be over-idealistic, have difficulty with material world, or feel energetically scattered.',
-      'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. When balanced, you absorb emotions and energy of others. When imbalanced, you may be energetically vulnerable, have escapist tendencies, or difficulty being grounded.'
+      'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. When balanced, you absorb emotions and energy of others. When imbalanced, you may be energetically vulnerable, have escapist tendencies, or difficulty being grounded.',
+      'teal': 'Heart-throat bridge - healing communication, emotional truth, compassionate expression',
+      'Peach': 'Nurturing heart - gentle love energy, emotional healing, compassionate care',
+      'Grey': 'Neutral wisdom - spiritual balance, cosmic neutrality, divine equilibrium',
+      'Black': 'Shadow integration - transformation power, deep inner work, void consciousness',
+      'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
     };
     return givingInterpretations[color] || `Giving Zone ${color} - You give unique ${color.toLowerCase()} energy that flows outward to support and uplift others through your natural spiritual gifts and energetic offerings.`;
   };
@@ -1571,7 +1528,13 @@ export default function AuraAnalysis() {
       'Silver': 'Receiving Zone Silver - Receiving higher guidance, sensitive to unseen messages, having psychic abilities or dreams. You receive lunar wisdom and psychic sensitivity, attracting intuitive insights that enhance psychic abilities.',
       'Gold': 'Receiving Zone Gold - Absorbing emotions, energy of others, or angelic frequencies, receiving spiritual wisdom and divine guidance. You receive enlightened wisdom and spiritual mastery from master teachers and divine sources.',
       'White': 'Receiving Zone White - Energetically vulnerable, exigent tendencies, difficulty being grounded, absorbing others\' energy easily. You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
-      'Purple': 'Receiving Zone Purple - You receive mystical wisdom and transformative energy, attracting magical experiences and ancient knowledge that initiate spiritual evolution.'
+      'Purple': 'Receiving Zone Purple - You receive mystical wisdom and transformative energy, attracting magical experiences and ancient knowledge that initiate spiritual evolution.',
+      'Teal': 'Receiving Zone Teal - You receive healing communication and emotional truth, attracting compassionate guidance and heart-centered wisdom.',
+      'Peach': 'Receiving Zone Peach - You receive gentle care and emotional support, attracting nurturing love and compassionate healing.',
+      'Grey': 'Receiving Zone Grey - You receive spiritual balance and wise neutrality, attracting peaceful resolution and adaptable wisdom.',
+      'Black': 'Receiving Zone Black - You receive transformative power and deep inner work, attracting shadow integration and spiritual rebirth.',
+      'Brown': 'Receiving Zone Brown - You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
+      'Cyan': 'Receiving Zone Cyan - You receive emotional clarity and healing communication, attracting pure feeling energy that heals emotional wounds.',
     };
     return receivingInterpretations[color] || `Receiving Zone ${color} - You receive unique ${color.toLowerCase()} energy from your environment that nourishes and supports your spiritual growth through cosmic alignment.`;
   };
@@ -1590,7 +1553,13 @@ export default function AuraAnalysis() {
       'Silver': 'Thinking Zone Silver - Receiving higher guidance, sensitive to unseen messages, tuning into spiritual information or higher dimensional wisdom. Your mental processes flow through higher guidance and psychic sensitivity, receiving dimensional wisdom.',
       'Gold': 'Thinking Zone Gold - Divine thoughts, wisdom, teaching, spiritual mastery, receiving higher information or angelic frequencies. Your thought patterns access divine wisdom and spiritual mastery, channeling higher information and angelic guidance.',
       'White': 'Thinking Zone White - Spiritual purity, thinking of higher dimensions of purity, learning to protect energy and feel safe in the physical world. Your mental processes channel pure spiritual wisdom, focusing on energetic protection and dimensional purity.',
-      'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating transformative thoughts through magical thinking and spiritual alchemy.'
+      'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating transformative thoughts through magical thinking and spiritual alchemy.',
+      'Teal': 'Thinking Zone Teal - Your mental processes channel emotional clarity and healing communication, generating heart-centered wisdom through compassionate thinking.',
+      'Peach': 'Thinking Zone Peach - Your mental energy channels nurturing love and emotional support, generating compassionate healing through gentle thinking.',
+      'Grey': 'Thinking Zone Grey - Your mental processes channel balanced wisdom and neutral authority, generating peaceful resolution through adaptable thinking.',
+      'Black': 'Thinking Zone Black - Your mental energy channels transformative power and deep inner work, generating spiritual rebirth through shadow integration.',
+      'Cyan': 'Thinking Zone Cyan - Your mental processes channel emotional clarity and healing communication, generating pure feeling energy that heals emotional wounds through compassionate thinking.'
+      
     };
     return thinkingInterpretations[color] || `Thinking Zone ${color} - Your mental processes channel unique ${color.toLowerCase()} energy that creates distinctive thought patterns and cognitive approaches to life.`;
   };
@@ -1609,7 +1578,13 @@ export default function AuraAnalysis() {
       'Silver': 'Overall Silver Energy - Learning to protect energy and feel safe in the physical world, enhanced intuitive abilities with emotional wisdom. Developing psychic protection while maintaining lunar sensitivity and emotional clarity.',
       'Gold': 'Overall Gold Energy - Spiritually elevated being, sensitive and light-filled energy field, master teacher energy with ancient wisdom. Living with enlightened consciousness while maintaining spiritual authority and divine wisdom integration.',
       'White': 'Overall White Energy - Learning to protect energy and feel safe in the physical world, spiritually elevated being with pure divine connection. Developing energetic boundaries while maintaining spiritual purity and divine alignment.',
-      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.'
+      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.',
+      'Teal': 'Overall Teal Energy - Your core energy channels emotional clarity and healing communication, manifesting compassionate guidance and heart-centered wisdom through authentic expression.',
+      'Peach': 'Overall Peach Energy - Your core energy channels nurturing love and emotional support, manifesting compassionate healing and gentle care through emotional connection.',
+      'Grey': 'Overall Grey Energy - Your core energy channels balanced wisdom and neutral authority, manifesting peaceful resolution and adaptable wisdom through spiritual equilibrium.',
+      'Black': 'Overall Black Energy - Your core energy channels transformative power and deep inner work, manifesting spiritual rebirth and shadow integration through transformative life experiences.',
+      'Cyan': 'Overall Cyan Energy - Your core energy channels emotional clarity and healing communication, manifesting pure feeling energy that heals emotional wounds through compassionate expression.'
+      
     };
     return overallInterpretations[color] || `Overall ${color} Energy - Your fundamental life force carries unique ${color.toLowerCase()} vibration that shapes your spiritual path and life experiences through distinctive energetic resonance.`;
   };
@@ -1687,7 +1662,7 @@ export default function AuraAnalysis() {
     const givingEnergyMap: Record<string, number> = {
       'Red': 78, 'Orange': 82, 'Yellow': 75, 'Green': 71,
       'Blue': 68, 'Indigo': 64, 'Violet': 61, 'Purple': 67,
-      'Pink': 74, 'White': 85, 'Gold': 88, 'Silver': 66, 'Turquoise': 73, 'Cyan': 69, 'Emerald': 76, 'Sapphire': 80, 'Topaz': 77, 'Jade': 72, 'Bronze': 70
+      'Pink': 74, 'White': 85, 'Gold': 88, 'Silver': 66, 'Turquoise': 73
     };
     const base = givingEnergyMap[aura.dominantColor] || 72;
     const variation = Math.sin(aura.energyLevel * 0.1) * 8; // Creates natural variation
@@ -1699,7 +1674,7 @@ export default function AuraAnalysis() {
     const receivingEnergyMap: Record<string, number> = {
       'Red': 42, 'Orange': 58, 'Yellow': 54, 'Green': 83,
       'Blue': 79, 'Indigo': 86, 'Violet': 88, 'Purple': 81,
-      'Pink': 77, 'White': 85, 'Gold': 65, 'Silver': 87, 'Turquoise': 71, 'Cyan': 73, 'Emerald': 78, 'Sapphire': 82, 'Topaz': 68, 'Jade': 74, 'Bronze': 63
+      'Pink': 77, 'White': 85, 'Gold': 65, 'Silver': 87, 'Turquoise': 71, 'Cyan': 73
     };
     const base = receivingEnergyMap[aura.dominantColor] || 70;
     const variation = Math.cos(aura.energyLevel * 0.15) * 6; // Different variation pattern than giving
@@ -1755,7 +1730,7 @@ export default function AuraAnalysis() {
   };
 
   const calculateVulnerability = (aura: AuraAnalysisResult): number => {
-    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo', 'lavender', 'mint', 'peach', 'sky blue', 'rose', 'amber', 'gray', 'black', 'crimson', 'magenta', 'ocher', 'beige', 'cyan', 'lime', 'maroon', 'navy', 'olive', 'teal', 'bronze', 'cobalt', 'emerald', 'jade', 'sapphire',];
+    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo', 'lavender', 'peach', 'gray', 'black', 'cyan', 'teal', 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'purple', 'pink', 'gold', 'silver', 'turquoise', 'white', 'teal',];
     const isSensitive = sensitiveColors.includes(aura.dominantColor);
     const base = isSensitive ? 60 : 40;
     return Math.max(50, base - aura.energyLevel * 20);
@@ -1811,7 +1786,15 @@ export default function AuraAnalysis() {
       'Pink': 'Pink energy radiates love and emotional healing throughout your morning.',
       'White': 'White energy purifies your morning with divine protection and clarity.',
       'Gold': 'Gold energy empowers your morning with wisdom and spiritual authority.',
-      'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.'
+      'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.',
+      'Turquoise': 'Turquoise energy combines healing communication with emotional clarity.',
+        'Peach': 'Peach energy nurtures your morning with gentle care and emotional support.',
+        'Grey': 'Grey energy brings balanced wisdom and adaptable thinking to your mornings.',
+        'Black': 'Black energy initiates transformative work and deep inner healing.',
+        'Brown': 'Brown energy grounds you with practical wisdom and earth connection.',
+        'Cyan': 'Cyan energy heals emotional wounds with pure feeling energy.',
+
+      
     };
     return morningInfluences[dominant] || `${dominant} energy brings unique morning vibrations that awaken your spiritual essence and prepare your consciousness for the day's divine purpose.`;
   };
@@ -1829,7 +1812,13 @@ export default function AuraAnalysis() {
       'Pink': 'Heart energy maintains steady flow with peaks during mid-afternoon (1-3pm).',
       'White': 'Divine energy flows consistently with peaks during dawn and dusk prayers.',
       'Gold': 'Wisdom energy peaks during afternoon (3-5pm) for important decisions.',
-      'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.'
+      'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.',
+      'Turquoise': 'Healing communication peaks during mid-morning (10am-12pm) and late evening (7-9pm).',
+      'Peach': 'Nurturing energy peaks during late morning (11am-1pm) and early evening (5-7pm).',
+      'Grey': 'Balanced energy maintains consistency throughout the day with gentle peaks at sunrise and sunset.',
+      'Black': 'Shadow energy peaks during late evening (8-10pm) for transformative work.',
+      'Brown': 'Grounding energy peaks during mid-morning (9-11am) and late evening (6-8pm).',
+      
     };
     return peakHours[dominant] || `${dominant} energy reaches its highest vibration during specific hours when cosmic frequencies align with your personal spiritual resonance.`;
   };
@@ -1847,7 +1836,14 @@ export default function AuraAnalysis() {
       'Pink': 'Pink energy wraps evening in love meditation and emotional healing rituals.',
       'White': 'White energy purifies evening with prayer, blessing, and divine connection.',
       'Gold': 'Gold energy illuminates evening with wisdom sharing and spiritual teaching.',
-      'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.'
+      'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.',
+      'Turquoise': 'Turquoise energy combines healing communication with emotional clarity in evening hours.',
+      'Peach': 'Peach energy nurtures evening with gentle care and emotional support practices.',
+      'Grey': 'Grey energy brings balanced wisdom and adaptable thinking to evening hours.',
+      'Black': 'Black energy initiates evening transformative work and deep inner healing.',
+      'Brown': 'Brown energy grounds evening with practical wisdom and earth connection practices.'
+      
+      
     };
     return eveningGuidance[dominant] || `${dominant} energy transforms evening hours into sacred time for spiritual practices that align with your unique vibrational frequency.`;
   };
@@ -1874,8 +1870,6 @@ export default function AuraAnalysis() {
       'Silver': 'Lunar energy - intuitive wisdom, feminine power, psychic protection',
       'Turquoise': 'Higher throat chakra - healing communication, divine truth',
       'Lavender': 'Spiritual peace - gentle awakening, cosmic consciousness',
-      'Coral': 'Creative heart energy - artistic expression, gentle passion',
-      'Mint': 'Healing heart energy - renewal power, emotional cleansing',
       'Peach': 'Nurturing heart energy - gentle love, emotional healing',
       'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality',
       'Black': 'Shadow integration - transformation power, deep inner work',     
@@ -1909,7 +1903,11 @@ export default function AuraAnalysis() {
       'White': 'Full spectrum frequency - Contains all colors, representing complete spiritual integration.',
       'Gold': 'Divine frequency (550-570 THz) - Wisdom vibration connecting to cosmic consciousness.',
       'Silver': 'Soul star chakra. Lunar frequency (480-520 THz) - Reflective vibration enhancing intuitive abilities.',
-      'Crimson': 'Earth star chakra. Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
+      'Turquoise': 'Healing frequency (500-540 THz) - Balanced vibration combining heart and throat energies.',
+      'Lavender': 'Spiritual frequency (540-580 THz) - Gentle vibration promoting peace and harmony.',
+      'Peach': 'Nurturing frequency (520-560 THz) - Soft vibration that opens emotional healing.',
+      'Gray': 'Neutral frequency (540-580 THz) - Balanced vibration promoting spiritual equilibrium.',
+      'Black': 'Shadow frequency (430-480 THz) - Transformative vibration enhancing inner work.',
       
     };
     return frequencies[color] || frequencies['Purple'];
@@ -1947,7 +1945,11 @@ export default function AuraAnalysis() {
         'Purple': 'Passion combined with spiritual connection creates natural healing and teaching abilities.',
         'White': 'Passion combined with purity creates natural healing and spiritual guidance abilities.',
         'Gold': 'Passion combined with wisdom creates natural healing and spiritual guidance abilities.',
-        'Indigo': 'Passion combined with intuition creates natural healing and spiritual guidance abilities.'
+        'Indigo': 'Passion combined with intuition creates natural healing and spiritual guidance abilities.',
+        'Pink': 'Passion combined with love creates natural healing and spiritual guidance abilities.',
+        'Silver': 'Passion combined with intuition creates natural healing and spiritual guidance abilities.',
+        'Turquoise': 'Passion combined with communication creates natural healing and spiritual guidance abilities.',
+        'Lavender': 'Passion combined with intuition creates natural healing and love guidance abilities.'
       },
       'Blue': {
         'Orange': 'Communication balanced with creativity enhances artistic and teaching abilities.',
@@ -1960,7 +1962,10 @@ export default function AuraAnalysis() {
         'Indigo': 'Communication combined with intuition creates natural counseling and teaching abilities.',
         'Pink': 'Communication combined with love creates natural counseling and teaching abilities.',
         'Silver': 'Communication combined with intuition creates natural counseling and teaching abilities.',
-        'Turquoise': 'Communication combined with communication creates natural counseling and teaching abilities.'
+        'Turquoise': 'Communication combined with communication creates natural counseling and teaching abilities.',
+        'Lavender': 'Communication combined with intuition creates natural counseling and love guidance abilities.',
+        'Peach': 'Communication combined with love creates natural counseling and teaching abilities.',
+        'Gray': 'Communication combined with balance creates natural counseling and teaching abilities.',
       },
       'Green': {
         'Purple': 'Healing energy enhanced by spiritual power creates natural healer capabilities.',
@@ -1975,6 +1980,9 @@ export default function AuraAnalysis() {
         'Silver': 'Healing energy combined with intuition creates natural healing and spiritual guidance abilities.',
         'Turquoise': 'Healing energy combined with communication creates natural healing and spiritual guidance abilities.',
         'Lavender': 'Healing energy combined with intuition creates natural healing and love guidance abilities.',
+          'Peach': 'Healing energy combined with love creates natural healing and teaching abilities.',
+          'Gray': 'Healing energy combined with balance creates natural healing and teaching abilities.',
+          'Black': 'Healing energy combined with transformation creates natural healing and teaching abilities.',
       }
     };
     return balances[primary]?.[secondary] || balances[secondary]?.[primary] || 
@@ -2011,8 +2019,6 @@ export default function AuraAnalysis() {
       'turquoise': 'Emotional Healing & Expression',
       'Lavender': 'Peaceful Awakening & Serenity',
       'lavender': 'Peaceful Awakening & Serenity',
-      'Mint': 'Renewal Energy & Fresh Growth',
-      'mint': 'Renewal Energy & Fresh Growth',
       'Peach': 'Gentle Comfort & Emotional Support',
       'peach': 'Gentle Comfort & Emotional Support',
       'Gray': 'Neutral Balance & Wisdom',
@@ -2058,8 +2064,6 @@ export default function AuraAnalysis() {
         'Silver': 'Your emotional core radiates protection of the divine and of spiritual connection',
         'Turquoise': 'Your emotional core center radiates communication and purity and visionary insights.',
         'Lavender': 'Your emotional intuition center radiates softness and a quite intutive connection.',
-        'Coral': 'Your emotional core center radiates passion and warmth and social energy.',
-        'Mint': 'Your emotional core center radiates fresh healing energy, renewal, growth.',
         'Peach': 'Your emotional core center radiates gentle love, caring, emotional warmth.',
         'Gray': 'Your emotional core center radiates balance, neutrality, adaptability.',
         'Black': 'Your emotional core center radiates power, protection, transformation.',
@@ -2081,7 +2085,6 @@ export default function AuraAnalysis() {
         'Silver': 'Your outer core radiates protection of the divine and of spiritual connection',
         'Turquoise': 'Your outer core center radiates communication and purity and visionary insights.',
         'Lavender': 'Your outer intuition center radiates softness and a quite intutive connection.',
-        'Mint': 'Your outer core center radiates fresh healing energy, renewal, growth.',
         'Peach': 'Your outer core center radiates gentle love, caring, emotional warmth.',
         'Gray': 'Your outer core center radiates balance, neutrality, adaptability.',
         'Black': 'Your outer core center radiates power, protection, transformation.',
@@ -2103,35 +2106,57 @@ export default function AuraAnalysis() {
         'Green': 'Fire-earth pattern - vital force channeled through healing, creating natural healer energy',
         'Yellow': 'Fire-air pattern - physical power merged with mental clarity, creating strong manifestation energy',
         'Purple': 'Fire-spirit pattern - earthly passion elevated to spiritual service, creating warrior-mystic energy',
-        'Orange': 'Double fire pattern - life force amplified through creativity, creating dynamic artistic energy'
+        'Orange': 'Double fire pattern - life force amplified through creativity, creating dynamic artistic energy',
+        'Pink': 'Fire-heart pattern - passionate action softened by love, creating inspiring teacher energy',
+        'White': 'Fire-light pattern - earthly passion channeled through purity, creating enlightened warrior energy',
       },
       'Blue': {
         'Red': 'Water-fire pattern - truthful communication empowered by passion, creating inspiring teacher energy',
         'Green': 'Water-earth pattern - peaceful wisdom flowing through healing love, creating gentle counselor energy',
         'Yellow': 'Water-air pattern - clear truth merged with bright intellect, creating wise communicator energy',
         'Purple': 'Water-spirit pattern - authentic voice channeling divine wisdom, creating spiritual messenger energy',
-        'Pink': 'Water-heart pattern - truthful expression softened by compassion, creating loving guide energy'
+        'Pink': 'Water-heart pattern - truthful expression softened by compassion, creating loving guide energy',
+        'White': 'Water-light pattern - truthful communication channeled through purity, creating enlightened teacher energy',
+        'Gold': 'Water-gold pattern - truthful communication channeled through wisdom, creating enlightened teacher energy',
+        'Indigo': 'Water-indigo pattern - truthful communication channeled through intuition, creating enlightened teacher energy',
+        'Silver': 'Water-silver pattern - truthful communication channeled through intuition, creating enlightened teacher energy',
+          
       },
       'Green': {
         'Red': 'Earth-fire pattern - healing love energized by passion, creating dynamic healer energy',
         'Blue': 'Earth-water pattern - heart wisdom expressed through clear truth, creating compassionate teacher energy',
         'Yellow': 'Earth-air pattern - healing heart illuminated by wisdom, creating enlightened healer energy',
         'Purple': 'Earth-spirit pattern - healing love elevated to divine service, creating sacred healer energy',
-        'Pink': 'Double heart pattern - healing love amplified by divine compassion, creating pure love energy'
+        'Pink': 'Double heart pattern - healing love amplified by divine compassion, creating pure love energy',
+        'White': 'Earth-light pattern - healing love channeled through purity, creating enlightened healer energy',
+        'Orange': 'Earth-fire pattern - healing love energized by creativity, creating dynamic healer energy',
+        'Gold': 'Earth-gold pattern - healing love channeled through wisdom, creating enlightened healer energy',
+        'Indigo': 'Earth-indigo pattern - healing love channeled through intuition, creating enlightened healer energy',
+        'Silver': 'Earth-silver pattern - healing love channeled through intuition, creating enlightened healer energy'
       },
       'Yellow': {
         'Red': 'Air-fire pattern - brilliant mind empowered by passionate will, creating visionary leader energy',
         'Blue': 'Air-water pattern - clear wisdom expressed through peaceful truth, creating wise teacher energy',
         'Green': 'Air-earth pattern - mental clarity grounded in healing love, creating balanced teacher energy',
         'Purple': 'Air-spirit pattern - intellectual wisdom elevated to divine understanding, creating enlightened sage energy',
-        'Orange': 'Air-fire pattern - mental brightness enhanced by creative joy, creating inspired teacher energy'
+        'Orange': 'Air-fire pattern - mental brightness enhanced by creative joy, creating inspired teacher energy',
+          'Pink': 'Air-heart pattern - intellectual wisdom softened by compassion, creating loving teacher energy',
+          'White': 'Air-light pattern - mental clarity channeled through purity, creating enlightened teacher energy',
+          'Gold': 'Air-gold pattern - mental clarity channeled through wisdom, creating enlightened teacher energy',
+          'Indigo': 'Air-indigo pattern - mental clarity channeled through intuition, creating enlightened teacher energy',
       },
       'Purple': {
         'Red': 'Spirit-fire pattern - divine wisdom empowered by earthly passion, creating spiritual warrior energy',
         'Blue': 'Spirit-water pattern - mystical knowledge expressed through truthful communication, creating prophet energy',
         'Green': 'Spirit-earth pattern - divine love channeled through healing service, creating saint energy',
-        'Yellow': 'Spirit-air pattern - cosmic wisdom merged with brilliant intellect, creating master teacher energy',
-        'White': 'Double spirit pattern - divine consciousness amplified by pure light, creating avatar energy'
+       'Yellow': 'Spirit-air pattern - cosmic wisdom merged with brilliant intellect, creating master teacher energy',
+        'White': 'Double spirit pattern - divine consciousness amplified by pure light, creating avatar energy',
+        'Orange': 'Spirit-fire pattern - divine wisdom empowered by creativity, creating spiritual artist energy',
+        'Pink': 'Spirit-heart pattern - divine love amplified by compassion, creating divine healer energy',
+        'Gold': 'Spirit-gold pattern - divine wisdom channeled through wisdom, creating enlightened teacher energy',
+        'Indigo': 'Spirit-indigo pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
+        'Silver': 'Spirit-silver pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
+        'Turquoise': 'Spirit-turquoise pattern - divine wisdom channeled through communication, creating enlightened teacher energy',
       }
     };
     
@@ -2224,7 +2249,7 @@ export default function AuraAnalysis() {
       },
       'Gold': {
         'Silver': 'Master intuition - Ancient enlightened wisdom unified with lunar psychic abilities'
-      }
+      },
     };
 
     return specificPatterns[primary]?.[secondary] || specificPatterns[secondary]?.[primary] || 
@@ -2245,25 +2270,13 @@ export default function AuraAnalysis() {
       'Silver': 'Visualize silver light at your soul star chakra. Breathe in intuition and psychic abilities.',
       'Turquoise': 'Visualize turquoise light at your throat. Breathe in healing communication and emotional clarity.',
       'Lavender': 'Visualize lavender light at your third eye. Breathe in gentle spirituality, peace, calm.',
-      'Coral': 'Visualize coral light at your root chakra. Breathe in gentle passion, warmth, social energy.',
-      'Mint': 'Visualize mint light at your heart center. Breathe in fresh healing energy, renewal, growth.',
-      'Peach': 'Visualize peach light at your heart center. Breathe in gentle love, caring, emotional warmth.',
-      'Sky Blue': 'Visualize sky blue light at your throat. Breathe in clear communication, freedom, openness.',
-      'Rose': 'Visualize rose light at your heart center. Breathe in deep love, emotional healing, romance.',
-      'Amber': 'Visualize amber light at your root chakra. Breathe in ancient wisdom, protection, grounding.',
       'Gray': 'Visualize gray light at your root chakra. Breathe in balance, neutrality, adaptability.',
       'Black': 'Visualize black light at your root chakra. Breathe in power, protection, transformation.',
-      'Crimson': 'Visualize crimson light at your root chakra. Breathe in deep passion, intensity, vitality.',
-      'Magenta': 'Visualize magenta light at your heart center. Breathe in deep love, intensity, passion.',
-      'ocher': 'Visualize ocher light at your root chakra. Breathe in ancient wisdom, protection, grounding.',
       'Brown': 'Visualize brown light at your root chakra. Breathe in stability, grounding, practicality.',
-      'Beige': 'Visualize beige light at your root chakra. Breathe in neutrality, balance, adaptability.',
       'Cyan': 'Visualize cyan light at your throat. Breathe in healing communication, emotional clarity.',
-      'Lime': 'Visualize lime light at your heart center. Breathe in fresh healing energy, renewal, growth.',
       'Maroon': 'Visualize maroon light at your root chakra. Breathe in deep passion, intensity, vitality.',
       'Navy': 'Visualize navy light at your root chakra. Breathe in deep intuition, wisdom, grounding.',
       'Teal': 'Visualize teal light at your throat. Breathe in healing communication, emotional clarity, purity, connections.',
-      'Bronze': 'Visualize bronze light at your root chakra. Breathe in ancient wisdom, protection, grounding.',
     };
     return meditations[color] || meditations['Purple'];
   };
@@ -2285,9 +2298,10 @@ export default function AuraAnalysis() {
       'Silver': 'Protection of the divine and of spiritual connection.',
       'Turquoise': 'Communication and purity and visionary insights.',
       'Lavender': 'Softness and a quite intutive connection.',
-      'Coral': 'Passion and warmth and social energy.',
-      'Mint': 'Fresh healing energy, renewal, growth.',
       'Peach': 'Gentle love, caring, emotional warmth.',
+      'Gray': 'Balance, neutrality, adaptability.',
+      'Black': 'Power, protection, transformation.',
+      'Cyan': 'Healing communication, emotional clarity.',
       
     };
     return traits[color] || traits['Purple'];
@@ -2307,16 +2321,9 @@ export default function AuraAnalysis() {
       'Silver': 'Your soul star chakra radiates protection of the divine and of spiritual connection.',
       'Turquoise': 'Your throat chakra radiates communication and purity and visionary insights.',
       'Lavender': 'Your third eye chakra radiates softness and a quite intutive connection.',
-      'Coral': 'Your root chakra radiates passion and warmth and social energy.',
-      'Mint': 'Your heart chakra radiates fresh healing energy, renewal, growth.',
       'Peach': 'Your heart chakra radiates gentle love, caring, emotional warmth.',
-      'Sky Blue': 'Your throat chakra radiates clear communication, freedom, openness.',
-      'Rose': 'Your heart chakra radiates deep love, emotional healing, romance.',
-      'AMBER': 'Your root chakra radiates ancient wisdom, protection, grounding.',
       'Gray': 'Your root chakra radiates balance, neutrality, adaptability.',
       'Black': 'Your root chakra radiates power, protection, transformation.',
-      'Crimson': 'Your root chakra radiates deep passion, intensity, vitality.',
-      'Magenta': 'Your heart chakra radiates deep love, intensity, passion.'
       
     };
     return descriptions[color] || 'Your unique energy signature carries powerful positive qualities.';
@@ -2336,12 +2343,7 @@ export default function AuraAnalysis() {
       'Silver': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Turquoise': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Lavender': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
-      'Coral': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
-      'Mint': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Peach': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
-      'Sky Blue': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
-      'Rose': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
-      'AMBER': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Gray': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
       'Black': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality'
     };
@@ -2362,7 +2364,6 @@ export default function AuraAnalysis() {
       'Silver': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
       'Turquoise': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
       'Lavender': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
-      'Coral': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
     };
     return descriptions[color] || descriptions['Purple'];
   };
@@ -2381,15 +2382,10 @@ export default function AuraAnalysis() {
       'Silver': 'Soul star chakra above the crown, cosmic connection',
       'Turquoise': 'Throat chakra higher octave, emotional and spiritual love center',
       'Lavender': 'Third eye chakra higher octave, emotional and spiritual love center',
-      'Mint': 'Heart chakra higher octave, emotional and communication center',
       'Peach': 'Heart chakra chest, emotional and love center',
-      'Coral': 'Root chakra lower octave, emotional and love center',
-      'Maroon': 'Root chakra higher octave, emotional and love center',
-      'Navy': 'around the body octave, emotional and love center',
-      'Teal': 'Throat chakra higher octave, emotional and love center',
-      'Bronze': 'Root chakra higher octave, emotional and love center',
-      'Cobalt': 'head chakra higher octave, understandinf and higher connection',
-      
+      'Gray': 'Root chakra base of spine, grounding and stability',
+      'Black': 'Root chakra base of spine, grounding and stability',
+      'Cyan': 'Throat chakra throat, communication and clarity',
     };
     return placements[color] || placements['Purple'];
   };
@@ -2410,8 +2406,6 @@ export default function AuraAnalysis() {
       'Silver': 'Protection of the divine and of spiritual connection.',
         'Turquoise': 'Communication and purity and visionary insights.',
         'Lavender': 'Softness and a quite intutive connection.',
-        'Coral': 'Passion and warmth and social energy.',
-        'Mint': 'Fresh healing energy, renewal, growth.',
         'Peach': 'Gentle love, caring, emotional warmth.',
     };
     return details[color] || details['Purple'];
@@ -2523,7 +2517,11 @@ export default function AuraAnalysis() {
       'Gold': 'Christ consciousness support - illuminates your purpose with divine wisdom, spiritual mastery, and soul mission',
       'Silver': 'Lunar energy support - activates your intuition with feminine wisdom, psychic protection, and mystical insight',
       'White': 'Pure light support - purifies your energy with spiritual protection, angelic connection, and divine grace',
-      'Turquoise': 'Higher throat support - elevates your expression with healing communication, divine truth, and soul voice'
+      'Turquoise': 'Higher throat support - elevates your expression with healing communication, divine truth, and soul voice',
+      'Lavender': 'Spiritual peace support - brings gentle awakening with cosmic consciousness, intuitive wisdom, and spiritual harmony',
+      'Peach': 'Nurturing heart support - nurtures your emotional well-being with gentle love, emotional healing, and compassionate care',
+      'Gray': 'Neutral wisdom support - brings balance with spiritual equilibrium, adaptable wisdom, and cosmic neutrality',
+      'Black': 'Shadow integration support - initiates transformation with deep inner work, shadow healing, and spiritual rebirth',
     };
     
     return supportingDescriptions[color] || supportingDescriptions['Purple'];
@@ -2565,7 +2563,44 @@ export default function AuraAnalysis() {
         'Green': 'Spiritual love flows into healing service - divine compassion channeled through heart-centered action',
         'Yellow': 'Cosmic consciousness flows into mental clarity - spiritual wisdom channeled through brilliant understanding',
         'White': 'Divine knowing flows into pure light - mystical consciousness channeled through spiritual illumination'
+      },
+      'White': {
+        'Red': 'Pure light flows into earthly vitality - divine energy channeled through grounding strength',
+        'Blue': 'Pure truth flows into peaceful wisdom - divine light channeled through calm communication',
+        'Green': 'Pure love flows into healing compassion - divine light channeled through heart wisdom',
+        'Yellow': 'Pure wisdom flows into mental clarity - divine light channeled through intellectual understanding',
+      },
+      'Orange': {
+        'Red': 'Creative joy flows into passionate action - artistic expression channeled through determined service',
+        'Blue': 'Creative truth flows into peaceful wisdom - artistic expression channeled through calm communication',
+        'Green': 'Creative love flows into healing service - artistic expression channeled through heart-centered action',
+        'Yellow': 'Creative clarity flows into mental brilliance - artistic expression channeled through intellectual understanding',
+      },
+      'Pink': {
+        'Red': 'Gentle love flows into passionate service - compassionate care channeled through determined action',
+        'Blue': 'Gentle truth flows into peaceful wisdom - compassionate expression channeled through calm communication',
+        'Green': 'Gentle healing flows into heart wisdom - compassionate care channeled through heart-centered action',
+        'Yellow': 'Gentle clarity flows into mental brilliance - compassionate expression channeled through intellectual understanding',
+        'Purple': 'Gentle love flows into spiritual service - compassionate care channeled through divine wisdom',
+        'White': 'Gentle love flows into pure light - compassionate care channeled through spiritual illumination',
+        'Gold': 'Gentle love flows into divine wisdom - compassionate care channeled through enlightened understanding',
+        'Indigo': 'Gentle love flows into intuitive wisdom - compassionate care channeled through psychic insight',
+        'Silver': 'Gentle love flows into lunar wisdom - compassionate care channeled through intuitive understanding',
+        'Turquoise': 'Gentle love flows into healing communication - compassionate care channeled through clear expression',
+        'Lavender': 'Gentle love flows into spiritual peace - compassionate care channeled through gentle awakening',
+        'Peach': 'Gentle love flows into nurturing care - compassionate care channeled through emotional support',
+        'Gray': 'Gentle love flows into balanced wisdom - compassionate care channeled through adaptable understanding',
+      },
+      'Gold': {
+        'Red': 'Divine wisdom flows into earthly service - spiritual knowing channeled through passionate action',
+        'Blue': 'Divine truth flows into peaceful wisdom - enlightened understanding channeled through calm communication',
+        'Green': 'Divine love flows into healing service - enlightened compassion channeled through heart-centered action',
+        'Yellow': 'Divine clarity flows into mental brilliance - enlightened wisdom channeled through intellectual understanding',
+        'Purple': 'Divine knowing flows into mystical understanding - enlightened consciousness channeled through spiritual insight',
+        'White': 'Divine light flows into pure energy - enlightened wisdom channeled through spiritual illumination',
+        'Pink': 'Divine love flows into gentle care - enlightened compassion channeled through compassionate care',
       }
+        
     };
     
     return flowPatterns[primary]?.[secondary] || flowPatterns[secondary]?.[primary] || 
@@ -2706,7 +2741,17 @@ export default function AuraAnalysis() {
               'Pink': [255, 192, 203],
               'Gold': [255, 215, 0],
               'Silver': [192, 192, 192],
-              'White': [255, 255, 255]
+              'White': [255, 255, 255],
+              'Turquoise': [64, 224, 208],
+              'Lavender': [230, 230, 250],
+              'Peach': [255, 218, 185],
+              'Gray': [128, 128, 128],
+              'Black': [0, 0, 0],
+              'Brown': [165, 42, 42],
+              'Cyan': [0, 255, 255],
+              'Teal': [0, 128, 128],
+              
+              
             };
             return colorMap[colorName] || [0, 100, 255]; // Default to blue
           };
@@ -4692,27 +4737,11 @@ export default function AuraAnalysis() {
         magenta: 78,
         brown: 15,
         black: 5,
-        ocher: 20, 
         lavender: 82,
-        coral: 30,
-        mint: 50,
         peach: 45,
-        skyblue: 68,
-        rose: 72,
-        amber: 28,
         gray: 58,
         cyan: 62,
-        lime: 48,
-        maroon: 12,
-        navy: 73,
-        olive: 52,
-        teal: 63,
-        bronze: 18,
-        cobalt: 76,
-        emerald: 53,
-        jade: 57,
-        sapphire: 74,
-        topaz: 32
+        teal: 63
       };
       
       const lowerColor = color.toLowerCase();
@@ -4736,15 +4765,13 @@ export default function AuraAnalysis() {
         "White": "Black",
         "Black": "White",
         "Turquoise": "Pink",
-        "Magenta": "Silver",
         "Brown": "Blue",
         "Cyan": "Red",
-        "Lime": "Purple",
-        "Maroon": "Green",
-        "Navy": "Yellow",
-        "Olive": "Blue",
         "Teal": "Orange",
-        "Bronze": "Green",
+        "Lavender": "Green",
+        "Peach": "Indigo",
+        "Gray": "Cyan",
+        
         
       };
       
@@ -4758,11 +4785,11 @@ export default function AuraAnalysis() {
       
       const colorLower = color.toLowerCase();
       
-      if (["red", "orange", "yellow", "ocher", "coral", "maroon" ].includes(colorLower)) {
+      if (["red", "orange", "yellow" ].includes(colorLower)) {
         return highEnergy ? "rapid and intense" : mediumEnergy ? "steady and consistent" : "slow-building";
-      } else if (["green", "blue", "turquoise", "cyan", "emerald", "jade", "sapphire"].includes(colorLower)) {
+      } else if (["green", "blue", "turquoise", "cyan" ].includes(colorLower)) {
         return highEnergy ? "flowing and wave-like" : mediumEnergy ? "rhythmic and balanced" : "gentle and steady";
-      } else if (["purple", "violet", "indigo", "pink", "lavender", "magenta", "shapphire", "topaz", "bronze"].includes(colorLower)) {
+      } else if (["purple", "violet", "indigo", "pink", "lavender" ].includes(colorLower)) {
         return highEnergy ? "pulsating and dynamic" : mediumEnergy ? "cyclical and intuitive" : "subtle and intermittent";
       } else {
         return mediumEnergy ? "moderate and balanced" : "variable";
@@ -4785,9 +4812,9 @@ export default function AuraAnalysis() {
       if (level >= 8) {
         return ` Your energy appears intensely vibrant in your aura photograph. Consider grounding practices to balance this powerful energy.`;
       } else if (level >= 6) {
-        if (["purple", "blue", "indigo", "violet", "lavender", "magenta", "sapphire", "topaz"].includes(colorLower)) {
+        if (["purple", "blue", "indigo", "violet", "lavender" ].includes(colorLower)) {
           return ` This high spiritual energy visible in your aura field suggests focusing on channeling your intuitive gifts.`;
-        } else if (["red", "orange", "yellow", "ocher", "maroon"].includes(colorLower)) {
+        } else if (["red", "orange", "yellow" ].includes(colorLower)) {
           return ` The high physical/emotional energy visible in your aura suggests finding healthy outlets for expression.`;
         } else {
           return ` Your aura shows vibrant energy flow that could benefit from regular creative or spiritual practices.`;
@@ -4906,6 +4933,11 @@ export default function AuraAnalysis() {
       "Energetic": "Your energy field is vibrant and dynamic, radiating vitality and enthusiasm.",
       "Transformative": "Your energy field carries the power to shift and transform reality.",
       "Protective": "Your energy field is a barrier against negative influences and energies.",
+      "Receptive": "Your energy field is open and receptive to new ideas and experiences.",
+      "Projective": "Your energy field is focused and directed outward, projecting your intentions into reality.",
+      "Reflective": "Your energy field is introspective and self-aware, allowing for deep self-reflection.",
+      "Integrative": "Your energy field is holistic, integrating physical, emotional, mental, and spiritual aspects.",
+      "Divine": "Your energy field is aligned with divine consciousness, connecting you to the source of all creation.",
     };
     
     return traitExplanations[trait] || "";
@@ -4924,7 +4956,16 @@ export default function AuraAnalysis() {
       "Pink": "unconditional love, emotional healing, and compassionate service that nurtures heart connections.",
       "White": "pure consciousness, spiritual protection, and divine clarity that maintains energetic boundaries.",
       "Gold": "divine wisdom, spiritual achievement, and enlightened mastery that guides others toward truth.",
-      "Silver": "psychic sensitivity, lunar wisdom, and reflective insight that enhances intuitive abilities."
+      "Silver": "psychic sensitivity, lunar wisdom, and reflective insight that enhances intuitive abilities.",
+      "Turquoise": "healing communication, clear expression, and balanced energy that supports throat chakra health.",
+      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
+      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
+      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "teal": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+        "gray": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "brown": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      
     };
     return influences[color] || "unique spiritual qualities that shape your energetic expression.";
   };
@@ -4942,7 +4983,16 @@ export default function AuraAnalysis() {
       "Pink": "Unconditional love, emotional intelligence, and the natural ability to heal hearts and nurture growth.",
       "White": "Spiritual purity, energetic protection, and the gift of maintaining clarity in chaotic situations.",
       "Gold": "Divine wisdom, spiritual authority, and the ability to guide others toward enlightenment and truth.",
-      "Silver": "Psychic abilities, intuitive guidance, and the gift of reflecting wisdom and insight to others."
+      "Silver": "Psychic abilities, intuitive guidance, and the gift of reflecting wisdom and insight to others.",
+      "Turquoise": "Healing communication, clear expression, and balanced energy that supports throat chakra health.",
+      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
+      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
+      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "teal": "balanced & clear communication, and harmonious energy that supports throat chakra health.", 
+      "black": "balanced & clear communication, and harmonious energy that supports throat chakra health.",
+        "gray": "balanced & clear communication, and harmonious energy that supports throat chakra health.",
+        "brown": "balanced & clear communication, and harmonious energy that supports throat chakra health.",
+      
     };
     return strengths[color] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
   };
@@ -4960,7 +5010,13 @@ export default function AuraAnalysis() {
       "Pink": "Setting emotional boundaries, practicing self-love, and avoiding codependent patterns in relationships.",
       "White": "Integrating shadow aspects, accepting human imperfection, and balancing purity with compassion.",
       "Gold": "Remaining humble while expressing wisdom, accepting others' paths, and avoiding spiritual superiority.",
-      "Silver": "Trusting psychic impressions, maintaining energetic boundaries, and grounding intuitive gifts practically."
+      "Silver": "Trusting psychic impressions, maintaining energetic boundaries, and grounding intuitive gifts practically.",
+      "Turquoise": "Healing communication, clear expression, and balanced energy that supports throat chakra health.",
+      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
+      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
+      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "brown": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
     };
     return growthAreas[color] || "Focus on integrating all aspects of your personality for balanced growth and authentic expression.";
   };
@@ -4978,7 +5034,13 @@ export default function AuraAnalysis() {
       "Pink": "You embody unconditional love but need to maintain identity and avoid losing yourself in others' needs.",
       "White": "You offer pure, honest connection but may need to embrace human messiness and emotional complexity.",
       "Gold": "You provide wisdom and guidance but must remember to be a partner, not just a teacher or advisor.",
-      "Silver": "You reflect others' truth back to them but need to share your own feelings and desires openly."
+      "Silver": "You reflect others' truth back to them but need to share your own feelings and desires openly.",
+      "Turquoise": "You offer healing communication and clear expression but may need to balance these with emotional support.",
+      "peach" : "You bring warmth and love to life but may need to balance sensuality with practicality.",
+      "lavender": "You promote relaxation and stress relief but may need to balance these with assertiveness and action.",
+      "cyan": "You offer balanced healing and clear communication but may need to balance these with emotional support.",
+      "black": "You offer balanced healing and clear communication but may need to balance these with emotional support.",
+      "brown": "You offer balanced healing and clear communication but may need to balance these with emotional support."
     };
     return dynamics[primary] || "Your unique energy signature creates distinctive patterns in how you connect with others.";
   };
@@ -4996,7 +5058,13 @@ export default function AuraAnalysis() {
       "Pink": "Caregiving, social work, nursing, childcare, or any field focused on emotional healing and support.",
       "White": "Spiritual guidance, energy healing, purification work, or roles requiring clarity and energetic sensitivity.",
       "Gold": "Teaching, mentoring, spiritual leadership, or positions requiring wisdom, authority, and guidance of others.",
-      "Silver": "Intuitive services, psychic work, counseling, or careers utilizing reflective and empathetic abilities."
+      "Silver": "Intuitive services, psychic work, counseling, or careers utilizing reflective and empathetic abilities.",
+      "Turquoise": "Healing communication, clear expression, and balanced energy that supports throat chakra health.",
+      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
+      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
+      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
+      
     };
     return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
