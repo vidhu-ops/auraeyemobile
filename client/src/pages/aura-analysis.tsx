@@ -311,7 +311,7 @@ export default function AuraAnalysis() {
         chakra: 'Throat chakra divine communication flowing through your voice expressing higher truth and authentic wisdom. This clear frequency channels spiritual guidance and honest self-expression.', 
         number: 'Communication & Truth', 
         shadowMeaning: 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.',
-       positiveMeaning: 'Throat chakra divine communication flowing through your voice expressing higher truth and authentic wisdom. This clear frequency channels spiritual guidance and honest self-expression.',
+        positiveMeaning: 'Throat chakra divine communication flowing through your voice expressing higher truth and authentic wisdom. This clear frequency channels spiritual guidance and honest self-expression.',
         colorMeaning: 'Communication & Truth - Throat chakra energy, authentic expression, spiritual communication, truth speaking, divine guidance'
       },
       'Indigo': { 
@@ -346,7 +346,7 @@ export default function AuraAnalysis() {
         chakra: 'Soul star chakra divine wisdom flowing through your being expressing spiritual mastery and enlightened consciousness. This luminous frequency channels cosmic intelligence and spiritual authority.', 
         number: 'Divine Wisdom & Mastery', 
         shadowMeaning: 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.',
-       positiveMeaning: 'Soul star chakra divine wisdom flowing through your being expressing spiritual mastery and enlightened consciousness. This luminous frequency channels cosmic intelligence and spiritual authority.',
+        positiveMeaning: 'Soul star chakra divine wisdom flowing through your being expressing spiritual mastery and enlightened consciousness. This luminous frequency channels cosmic intelligence and spiritual authority.',
         colorMeaning: 'Divine Wisdom & Mastery - Soul star energy, spiritual mastery, cosmic intelligence, divine authority, enlightened consciousness'
       },
       'Silver': { 
@@ -489,7 +489,7 @@ export default function AuraAnalysis() {
     };
 
     const totalColors = spectrum ? spectrum.length : 2;
-    const dominantChakra = chakraConnections[dominant] || chakraConnections['Purple,pink,gold,silver,turquoise, white,teal,maroon,navy,coral,mint,peach,gray'];
+    const dominantChakra = chakraConnections[dominant] || chakraConnections['Purple'];
     const secondaryChakra = secondary ? chakraConnections[secondary] || chakraConnections['Purple'] : '';
     const dominantMeaning = colorMeanings[dominant] || colorMeanings['Purple'];
     const secondaryMeaning = secondary ? colorMeanings[secondary] || colorMeanings['Purple'] : '';
