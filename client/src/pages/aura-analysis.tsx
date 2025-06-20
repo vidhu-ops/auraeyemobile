@@ -759,8 +759,8 @@ export default function AuraAnalysis() {
       const spectrumColors = [
         result.dominantColor,
         result.secondaryColor,
-        result.auraColorSpectrum?.[2] ||
-        result.auraColorSpectrum?.[3] ||
+        result.auraColorSpectrum?.[2] || '#FF6B6B',
+        result.auraColorSpectrum?.[3] || '#4ECDC4'
       ];
 
       spectrumColors.forEach((color, index) => {
