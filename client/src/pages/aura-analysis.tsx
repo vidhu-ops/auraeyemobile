@@ -64,7 +64,98 @@ const getAccurateColorCode = (colorName: string): string => {
     'Violet': '#8A2BE2',
   };
   
-  return colorCodes[colorName] || '#FFFFFF'; // Default to purple if color not found
+  return colorCodes[colorName] || '#FFFFFF'; // Default to white if color not found
+};
+
+// Helper functions for enhanced spiritual guidance
+const getColorSpiritalMeaning = (color: string): string => {
+  const meanings: Record<string, string> = {
+    'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
+    'Orange': 'Sacral chakra energy embodying creativity, sexuality, and emotional flow. This vibrant frequency enhances artistic expression and emotional healing.',
+    'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
+    'Green': 'Heart chakra energy emanating love, healing, and compassion. This healing frequency promotes emotional balance and natural healing abilities.',
+    'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
+    'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
+    'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
+    'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
+    'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
+    'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
+    'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
+    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.'
+  };
+  return meanings[color] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
+};
+
+const getColorMeditationFocus = (color: string): string => {
+  const focuses: Record<string, string> = {
+    'Red': 'Focus on root chakra grounding meditations and earth connection practices',
+    'Orange': 'Practice creative visualization and emotional flow meditations',
+    'Yellow': 'Concentrate on solar plexus strengthening and confidence-building meditations',
+    'Green': 'Engage in heart-opening meditations and loving-kindness practices',
+    'Blue': 'Focus on throat chakra activation and truth expression meditations',
+    'Indigo': 'Practice third eye opening and intuitive development meditations',
+    'Violet': 'Engage in crown chakra connection and divine consciousness meditations',
+    'Purple': 'Focus on spiritual wisdom and mystical awareness practices',
+    'Pink': 'Practice unconditional love and emotional healing meditations',
+    'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
+    'White': 'Focus on pure light meditation and spiritual protection practices',
+    'Silver': 'Practice lunar energy and psychic sensitivity meditations'
+  };
+  return focuses[color] || 'Focus on connecting with your unique aura color energy during meditation';
+};
+
+const getColorEnergyWork = (color: string): string => {
+  const practices: Record<string, string> = {
+    'Red': 'Practice grounding exercises, work with earth elements, and strengthen physical vitality',
+    'Orange': 'Engage in creative expression, emotional release work, and sacral chakra healing',
+    'Yellow': 'Work on personal power development, mental clarity exercises, and confidence building',
+    'Green': 'Practice healing touch, heart chakra work, and compassionate service',
+    'Blue': 'Focus on authentic communication, throat chakra clearing, and truth expression',
+    'Indigo': 'Develop psychic abilities, third eye activation, and intuitive practices',
+    'Violet': 'Work on spiritual connection, crown chakra opening, and divine consciousness',
+    'Purple': 'Practice mystical awareness, spiritual wisdom development, and ancient knowledge study',
+    'Pink': 'Focus on unconditional love practices, emotional healing, and nurturing energy',
+    'Gold': 'Work on divine wisdom integration, spiritual mastery, and enlightened service',
+    'White': 'Practice light work, spiritual protection, and angelic connection',
+    'Silver': 'Develop lunar sensitivity, psychic protection, and emotional attunement'
+  };
+  return practices[color] || 'Work with your unique aura energy through specialized spiritual practices';
+};
+
+const getColorChakraGuidance = (color: string): string => {
+  const guidance: Record<string, string> = {
+    'Red': 'Strengthen root chakra through grounding, stability practices, and earth connection',
+    'Orange': 'Balance sacral chakra through creativity, emotional flow, and healthy boundaries',
+    'Yellow': 'Energize solar plexus through confidence building, personal power, and mental clarity',
+    'Green': 'Open heart chakra through love practices, compassion, and emotional healing',
+    'Blue': 'Clear throat chakra through authentic expression, truth telling, and communication',
+    'Indigo': 'Activate third eye through intuition development, inner wisdom, and perception',
+    'Violet': 'Connect crown chakra through spiritual practices, divine connection, and meditation',
+    'Purple': 'Balance all chakras through spiritual wisdom and mystical awareness practices',
+    'Pink': 'Heal heart chakra through unconditional love, emotional nurturing, and compassion',
+    'Gold': 'Illuminate all chakras through divine wisdom and spiritual enlightenment',
+    'White': 'Purify all chakras through light work and spiritual protection practices',
+    'Silver': 'Sensitize all chakras through lunar energy and psychic development'
+  };
+  return guidance[color] || 'Work with your corresponding chakra system for optimal energy alignment';
+};
+
+const getColorDailyPractice = (color: string): string => {
+  const practices: Record<string, string> = {
+    'Red': 'Morning grounding visualization, wear red colors, practice physical exercise',
+    'Orange': 'Creative expression time, emotional check-ins, wear orange accents',
+    'Yellow': 'Confidence affirmations, mental clarity exercises, wear yellow accessories',
+    'Green': 'Heart-opening gratitude practice, nature connection, wear green clothing',
+    'Blue': 'Truth-telling practice, clear communication, wear blue jewelry',
+    'Indigo': 'Intuitive journaling, third eye meditation, wear indigo or dark blue',
+    'Violet': 'Spiritual study, divine connection prayer, wear violet or purple',
+    'Purple': 'Mystical awareness practice, spiritual wisdom study, wear purple accessories',
+    'Pink': 'Loving-kindness meditation, emotional nurturing, wear pink or rose colors',
+    'Gold': 'Divine wisdom contemplation, enlightened service, wear gold jewelry',
+    'White': 'Light protection visualization, spiritual cleansing, wear white clothing',
+    'Silver': 'Psychic sensitivity practice, lunar awareness, wear silver accessories'
+  };
+  return practices[color] || 'Incorporate your aura color into daily spiritual practices and clothing choices';
 };
 
 export default function AuraAnalysis() {
@@ -6918,9 +7009,118 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="guidance" data-tab="guidance">
-                            <div>
-                              <h3 className="font-medium mb-3">Spiritual Guidance</h3>
-                              <p className="text-gray-700 whitespace-pre-line">{result.spiritualGuidance}</p>
+                            <div className="space-y-6">
+                              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
+                                <h3 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                                  <Sparkles className="h-5 w-5" />
+                                  Spiritual Guidance
+                                </h3>
+                                
+                                {/* Main spiritual guidance */}
+                                <div className="mb-4">
+                                  <p className="text-sm text-purple-700 leading-relaxed">
+                                    {result.spiritualGuidance || `Your ${result.dominantColor} aura carries deep spiritual significance, representing a unique energy signature that connects you to higher realms. This color frequency resonates with transformation, healing, and spiritual awakening. Your aura reflects your soul's journey toward enlightenment and your natural ability to channel divine energy for healing and guidance.`}
+                                  </p>
+                                </div>
+
+                                {/* Enhanced guidance based on colors */}
+                                <div className="bg-white rounded-lg p-4 border border-purple-200 mb-4">
+                                  <h4 className="font-medium text-purple-800 mb-3">Aura Color Meanings</h4>
+                                  
+                                  <div className="space-y-3">
+                                    <div className="flex items-start gap-3">
+                                      <div 
+                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                      ></div>
+                                      <div>
+                                        <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Dominant)</p>
+                                        <p className="text-xs text-gray-600 leading-relaxed">
+                                          {(() => {
+                                            const meanings: Record<string, string> = {
+                                              'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
+                                              'Orange': 'Sacral chakra energy embodying creativity, sexuality, and emotional flow. This vibrant frequency enhances artistic expression and emotional healing.',
+                                              'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
+                                              'Green': 'Heart chakra energy emanating love, healing, and compassion. This healing frequency promotes emotional balance and natural healing abilities.',
+                                              'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
+                                              'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
+                                              'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
+                                              'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
+                                              'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
+                                              'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
+                                              'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
+                                              'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.'
+                                            };
+                                            return meanings[result.dominantColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
+                                          })()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    
+                                    {result.secondaryColor && (
+                                      <div className="flex items-start gap-3">
+                                        <div 
+                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                        ></div>
+                                        <div>
+                                          <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Secondary)</p>
+                                          <p className="text-xs text-gray-600 leading-relaxed">
+                                            {(() => {
+                                              const meanings: Record<string, string> = {
+                                                'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
+                                                'Orange': 'Sacral chakra energy embodying creativity, sexuality, and emotional flow. This vibrant frequency enhances artistic expression and emotional healing.',
+                                                'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
+                                                'Green': 'Heart chakra energy emanating love, healing, and compassion. This healing frequency promotes emotional balance and natural healing abilities.',
+                                                'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
+                                                'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
+                                                'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
+                                                'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
+                                                'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
+                                                'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
+                                                'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
+                                                'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.'
+                                              };
+                                              return meanings[result.secondaryColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
+                                            })()}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Spiritual practices and recommendations */}
+                                <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                                  <h4 className="font-medium text-amber-800 mb-3">Recommended Spiritual Practices</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <p className="text-xs font-medium text-amber-700 mb-1">Meditation Focus</p>
+                                      <p className="text-xs text-amber-600">
+                                        {getColorMeditationFocus(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-medium text-amber-700 mb-1">Energy Work</p>
+                                      <p className="text-xs text-amber-600">
+                                        {getColorEnergyWork(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-medium text-amber-700 mb-1">Chakra Alignment</p>
+                                      <p className="text-xs text-amber-600">
+                                        {getColorChakraGuidance(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-medium text-amber-700 mb-1">Daily Practice</p>
+                                      <p className="text-xs text-amber-600">
+                                        {getColorDailyPractice(result.dominantColor)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </TabsContent>
                           
