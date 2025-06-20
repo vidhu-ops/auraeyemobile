@@ -14,6 +14,7 @@ import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 
 interface ObjectAnalysisResult {
+  id?: number;
   objectName: string;
   objectDescription: string;
   objectPurpose: string;
@@ -500,6 +501,12 @@ export default function ObjectAnalysis() {
       setResult(data);
       setAnalysisProgress(100);
       setActiveTab("basic");
+      
+      // Reset review system for new analysis and set current analysis ID
+      setReviewSubmitted(false);
+      setRating(0);
+      setReviewText("");
+      setCurrentAnalysisId(data.id || null);
 
       // Set processed image immediately with aura overlay effect
       setProcessedImage(imageUrl);
@@ -1139,6 +1146,82 @@ export default function ObjectAnalysis() {
                       </Tabs>
                     </CardContent>
                   </Card>
+
+                  {/* 5-Star Review System */}
+                  {user && currentAnalysisId && (
+                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 mt-8">
+                      {reviewSubmitted ? (
+                        <div className="text-center py-4">
+                          <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                            <CheckCircle2 className="w-8 h-8 text-green-600" />
+                          </div>
+                          <h4 className="font-semibold text-lg text-green-800 mb-2">Review Submitted!</h4>
+                          <p className="text-green-700">Thank you for your feedback. Your review helps us improve our object analysis experience.</p>
+                        </div>
+                      ) : (
+                        <>
+                          <h4 className="font-semibold text-lg mb-4 flex items-center">
+                            <Star className="w-5 h-5 mr-2 text-amber-500" />
+                            Rate Your Object Analysis Experience
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-gray-700 mb-3">How accurate and helpful was your object reading?</p>
+                              <div className="flex space-x-2">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    onClick={() => setRating(star)}
+                                    className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                                      star <= rating 
+                                        ? 'text-amber-500 scale-110' 
+                                        : 'text-gray-300 hover:text-amber-400'
+                                    }`}
+                                  >
+                                    <Star className="w-full h-full fill-current" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                Share your thoughts (optional)
+                              </label>
+                              <Textarea
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                placeholder="Tell us about your experience with the object analysis..."
+                                className="resize-none"
+                                rows={3}
+                              />
+                            </div>
+                            
+                            <div className="flex justify-end">
+                              <Button 
+                                onClick={submitReview}
+                                disabled={rating === 0 || isSubmittingReview}
+                                className="bg-amber-600 hover:bg-amber-700 text-white"
+                              >
+                                {isSubmittingReview ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Submitting...
+                                  </>
+                                ) : (
+                                  <>
+                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                    Submit Review
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                   
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 text-center">
                     <h3 className="font-medium text-lg mb-2">Discover More Object Secrets</h3>
