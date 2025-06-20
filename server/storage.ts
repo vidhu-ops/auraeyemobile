@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking } from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -43,6 +43,12 @@ export interface IStorage {
   saveNumerologyReading(reading: InsertNumerologyReading): Promise<NumerologyReading>;
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
+  
+  // Object analyses
+  saveObjectAnalysis(analysis: InsertObjectAnalysis): Promise<ObjectAnalysis>;
+  getObjectAnalysesByUser(userId: number): Promise<ObjectAnalysis[]>;
+  getObjectAnalysis(id: number): Promise<ObjectAnalysis | undefined>;
+  updateObjectAnalysisReview(id: number, rating: number, reviewText?: string): Promise<ObjectAnalysis | undefined>;
   
   // Healer management
   getAllHealers(): Promise<Healer[]>;
@@ -151,6 +157,33 @@ export class DatabaseStorage implements IStorage {
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {
     const [reading] = await db.select().from(numerologyReadings).where(eq(numerologyReadings.id, id));
     return reading || undefined;
+  }
+
+  // Object analyses
+  async saveObjectAnalysis(analysis: InsertObjectAnalysis): Promise<ObjectAnalysis> {
+    const [objectAnalysis] = await db
+      .insert(objectAnalyses)
+      .values(analysis)
+      .returning();
+    return objectAnalysis;
+  }
+
+  async getObjectAnalysesByUser(userId: number): Promise<ObjectAnalysis[]> {
+    return await db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, userId));
+  }
+
+  async getObjectAnalysis(id: number): Promise<ObjectAnalysis | undefined> {
+    const [analysis] = await db.select().from(objectAnalyses).where(eq(objectAnalyses.id, id));
+    return analysis || undefined;
+  }
+
+  async updateObjectAnalysisReview(id: number, rating: number, reviewText?: string): Promise<ObjectAnalysis | undefined> {
+    const [updatedAnalysis] = await db
+      .update(objectAnalyses)
+      .set({ rating, reviewText })
+      .where(eq(objectAnalyses.id, id))
+      .returning();
+    return updatedAnalysis || undefined;
   }
 
   // Healer management
