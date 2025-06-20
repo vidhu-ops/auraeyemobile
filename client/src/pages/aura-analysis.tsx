@@ -6786,10 +6786,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Crown Chakra</span>
-                                      <span className="text-violet-600">{result.chakraActivity?.crown || 5 || 5}/10 ({(result.chakraActivity?.crown || 5 || 5) * 10}%)</span>
+                                      <span className="text-violet-600">{result.chakraActivity?.crown || 5}/10 ({(result.chakraActivity?.crown || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.crown || 5 || 5) * 10} className="h-3 bg-violet-100" />
+                                  <Progress value={(result.chakraActivity?.crown || 5) * 10} className="h-3 bg-violet-100" />
                                 </div>
                                 
                                 {/* Third Eye Chakra - Number 8 */}
@@ -6800,10 +6800,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Third Eye Chakra</span>
-                                      <span className="text-indigo-600">{result.chakraActivity?.thirdEye || 5 || 5}/10 ({(result.chakraActivity?.thirdEye || 5 || 5) * 10}%)</span>
+                                      <span className="text-indigo-600">{result.chakraActivity?.thirdEye || 5}/10 ({(result.chakraActivity?.thirdEye || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.thirdEye || 5 || 5) * 10} className="h-3 bg-indigo-100" />
+                                  <Progress value={(result.chakraActivity?.thirdEye || 5) * 10} className="h-3 bg-indigo-100" />
                                 </div>
                                 
                                 {/* Throat Chakra - Number 5 */}
@@ -6814,10 +6814,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Throat Chakra</span>
-                                      <span className="text-blue-600">{result.chakraActivity?.throat || 5}/10 ({result.chakraActivity?.throat || 5 * 10}%)</span>
+                                      <span className="text-blue-600">{result.chakraActivity?.throat || 5}/10 ({(result.chakraActivity?.throat || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={result.chakraActivity?.throat || 5 * 10} className="h-3 bg-blue-100" />
+                                  <Progress value={(result.chakraActivity?.throat || 5) * 10} className="h-3 bg-blue-100" />
                                 </div>
                                 
                                 {/* Heart Chakra - Number 2 */}
@@ -6828,10 +6828,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Heart Chakra</span>
-                                      <span className="text-green-600">{result.chakraActivity?.heart || 5}/10 ({result.chakraActivity?.heart || 5 * 10}%)</span>
+                                      <span className="text-green-600">{result.chakraActivity?.heart || 5}/10 ({(result.chakraActivity?.heart || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={result.chakraActivity?.heart || 5 * 10} className="h-3 bg-green-100" />
+                                  <Progress value={(result.chakraActivity?.heart || 5) * 10} className="h-3 bg-green-100" />
                                 </div>
                                 
                                 {/* Solar Plexus Chakra - Number 1 */}
@@ -6842,10 +6842,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Solar Plexus Chakra</span>
-                                      <span className="text-yellow-600">{result.chakraActivity?.solarPlexus || 5}/10 ({result.chakraActivity?.solarPlexus || 5 * 10}%)</span>
+                                      <span className="text-yellow-600">{result.chakraActivity?.solarPlexus || 5}/10 ({(result.chakraActivity?.solarPlexus || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={result.chakraActivity?.solarPlexus || 5 * 10} className="h-3 bg-yellow-100" />
+                                  <Progress value={(result.chakraActivity?.solarPlexus || 5) * 10} className="h-3 bg-yellow-100" />
                                 </div>
                                 
                                 {/* Sacral Chakra - Number 6 */}
@@ -6856,10 +6856,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Sacral Chakra</span>
-                                      <span className="text-orange-600">{result.chakraActivity?.sacral || 5}/10 ({result.chakraActivity?.sacral || 5 * 10}%)</span>
+                                      <span className="text-orange-600">{result.chakraActivity?.sacral || 5}/10 ({(result.chakraActivity?.sacral || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={result.chakraActivity?.sacral || 5 * 10} className="h-3 bg-orange-100" />
+                                  <Progress value={(result.chakraActivity?.sacral || 5) * 10} className="h-3 bg-orange-100" />
                                 </div>
                                 
                                 {/* Root Chakra - Number 9 */}
