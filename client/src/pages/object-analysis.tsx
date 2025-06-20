@@ -575,7 +575,9 @@ export default function ObjectAnalysis() {
       "White": "White aura represents pure divine energy, spiritual protection, and cosmic consciousness. Objects carrying white energy provide spiritual cleansing, divine connection, and energetic purification. This vibration indicates highest spiritual attunement.",
       "Black": "Black aura signifies protective energy, mystery, and deep transformation. Objects with black energy provide psychic protection, absorb negative energies, and facilitate shadow work. This color indicates powerful grounding and protective properties.",
       "Gold": "Gold aura embodies divine wisdom, spiritual mastery, and enlightened consciousness. Objects with gold energy enhance spiritual teaching, divine connection, and wisdom transmission. This vibration indicates advanced spiritual development.",
-      "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom."
+      "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom.",
+      "Turquoise": "Turquoise aura signifies emotional healing, spiritual purification, and heart-centered living. Objects with turquoise energy promote emotional balance, heart chakra opening, and spiritual healing. This color indicates divine feminine energy and heart healing.",
+        
     };
     return colorMeanings[color] || `${color} aura embodies unique spiritual frequencies and metaphysical properties. Objects carrying ${color.toLowerCase()} energy provide specialized vibrational healing and consciousness expansion through distinctive color therapy principles.`;
   };
