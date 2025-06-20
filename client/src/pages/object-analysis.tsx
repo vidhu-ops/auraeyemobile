@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
-import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/forms/image-upload";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
@@ -37,9 +38,50 @@ export default function ObjectAnalysis() {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
+  
+  // Review system state
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const handlePremiumUpgrade = () => {
     showPremiumModal("general");
+  };
+
+  // Submit review for object analysis
+  const submitReview = async () => {
+    if (!currentAnalysisId || rating === 0) return;
+
+    setIsSubmittingReview(true);
+    try {
+      await fetch(`/api/object-analyses/${currentAnalysisId}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rating, reviewText })
+      });
+
+      toast({
+        title: "Review submitted",
+        description: "Thank you for your feedback!",
+      });
+
+      setReviewSubmitted(true);
+      setRating(0);
+      setReviewText("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit review. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   // Function to convert hex to RGB for smokey aura effects

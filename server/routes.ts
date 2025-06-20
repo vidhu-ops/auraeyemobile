@@ -799,7 +799,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Use deterministic analysis based on image hash for consistent results
       const deterministicResult = generateDeterministicObjectAnalysis(imgBuffer);
-      res.json(deterministicResult);
+      
+      // Save the object analysis to database if user is authenticated
+      let savedAnalysis = null;
+      if (req.isAuthenticated() && req.user) {
+        try {
+          // Create a temporary image URL (in production, you'd upload to cloud storage)
+          const imageUrl = `data:image/jpeg;base64,${imgBuffer.toString('base64')}`;
+          
+          savedAnalysis = await storage.saveObjectAnalysis({
+            userId: req.user.id,
+            imageUrl,
+            objectName: deterministicResult.objectName,
+            objectDescription: deterministicResult.objectDescription,
+            objectPurpose: deterministicResult.objectPurpose,
+            auraColor: deterministicResult.auraColor,
+            auraDescription: deterministicResult.auraDescription,
+            energyLevel: deterministicResult.energyLevel,
+            energyQualities: JSON.stringify(deterministicResult.energyQualities),
+            historicalSignificance: deterministicResult.historicalSignificance,
+            spiritualSignificance: deterministicResult.spiritualSignificance,
+            detailedAnalysis: deterministicResult.detailedAnalysis
+          });
+        } catch (saveError) {
+          console.error("Error saving object analysis:", saveError);
+          // Continue even if saving fails
+        }
+      }
+      
+      // Include the analysis ID in the response for the review system
+      const responseData = {
+        ...deterministicResult,
+        id: savedAnalysis?.id || null
+      };
+      
+      res.json(responseData);
     } catch (error) {
       console.error("Error processing object analysis:", error);
       res.status(500).json({ message: "An error occurred during analysis" });
