@@ -504,7 +504,73 @@ export default function NumerologyPage() {
                     <div className="flex-grow">
                       <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
                       <p className="text-sm text-purple-600 mb-1">Your life's journey and core purpose</p>
-                      <p className="text-xs text-purple-500">{getLifePathMeaning(numerology.lifePathNumber)}</p>
+                      <div className="text-xs text-purple-500 space-y-2">
+                        {getLifePathMeaning(numerology.lifePathNumber).split('.').filter(sentence => sentence.trim()).map((sentence, index) => {
+                          const trimmed = sentence.trim();
+                          if (!trimmed) return null;
+                          
+                          // Format different sections
+                          if (trimmed.includes('COLOUR:') || trimmed.includes('Colour:')) {
+                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('CHAKRA:') || trimmed.includes('Chakra:')) {
+                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Planet:')) {
+                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('PPI:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Angel/Archangel:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Karmic Lesson:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Healing Method:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Remedies:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Color Therapy:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Mantra Chanting:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Crystal Therapy:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Aroma Therapy:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Affirmations:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Sacred Code:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Bach Flower Remedies:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Prayer to Archangel')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Deity Connection:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Self-Healing Technique:')) {
+                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                          }
+                          if (trimmed.includes('Rudraksha Remedy:')) {
+                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                          }
+                          
+                          return <div key={index} className="text-purple-500">{trimmed}.</div>;
+                        })}
+                      </div>
                     </div>
                   </div>
                   

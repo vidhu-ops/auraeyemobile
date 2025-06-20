@@ -1827,23 +1827,21 @@ export default function AuraAnalysis() {
   const getChakraConnection = (color: string): string => {
     // Standardized chakra mappings consistent with remedies data
     const chakras: Record<string, string> = {
-      'Red': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Practice: Forgiveness meditation and grounding exercises.',
-      'Orange': 'Number:6. Planet:Venus. Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Practice: Creative expression and emotional healing.',
-      'Yellow': 'Number:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Practice: Goal setting and leadership development.',
-      'Green': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Love, compassion, and emotional healing. Practice: Gratitude and relationship harmony.',
-      'Blue': 'Number:5. Planet:Mercury. Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Practice: Authentic communication and acts of kindness.',
-      'Indigo': 'Number:8. Planet:Saturn. Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Practice: Meditation and intuition development.',
-      'Violet': 'Number:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Expressive writing and spiritual connection.',
-      'Purple': 'Number:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Mystical exploration and spiritual study.',
-      'White': 'Number:7. Planet:Ketu. Soul Star Chakra - Complete chakra alignment and spiritual integration. Practice: Self-compassion and transcendence.',
-      'Gold': 'Number:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Divine wisdom and spiritual achievement. Practice: Leadership and confidence building.',
-      'Silver': 'Number:7. Planet:Ketu. Soul Star Chakra - Lunar energy and psychic abilities. Practice: Intuitive development and spiritual wisdom.',
-      'Brown': 'Number:4. Planet:Rahu. Earth Star Chakra - Grounding, stability, and deep earth connection. Practice: Mindfulness and grounding meditation.',
-      'Black': 'Number:4. Planet:Rahu. Earth Star Chakra - Protection, transformation, and grounding. Practice: Stability building and earth connection.',
-      'Pink': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Emotional love, compassion, and gentle healing. Practice: Self-love and emotional healing.',
-      'Turquoise': 'Number:5. Planet:Mercury. Throat Chakra (Vishuddha) - Healing communication and emotional clarity. Practice: Truth expression and clear communication.',
-      'Magenta': 'Number:2. Planet:Moon. Heart Chakra (Anahata) - Deep love, intensity, and emotional passion. Practice: Emotional flow and relationship harmony.',
-      'Crimson': 'Number:9. Planet:Mars. Root Chakra (Muladhara) - Deep passion, intensity, and physical vitality. Practice: Physical grounding and courage building.'
+      'Red': 'Numerologically connected to:9. Planet:Mars. Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Practice: Forgiveness meditation and grounding exercises.',
+      'Orange': 'Numerologically connected to:6. Planet:Venus. Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Practice: Creative expression and emotional healing.',
+      'Yellow': 'Numerologically connected to:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Practice: Goal setting and leadership development.',
+      'Green': 'Numerologically connected to:2. Planet:Moon. Heart Chakra (Anahata) - Love, compassion, and emotional healing. Practice: Gratitude and relationship harmony.',
+      'Blue': 'Numerologically connected to:5. Planet:Mercury. Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Practice: Authentic communication and acts of kindness.',
+      'Indigo': 'Numerologically connected to:8. Planet:Saturn. Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Practice: Meditation and intuition development.',
+      'Violet': 'Numerologically connected to:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Expressive writing and spiritual connection.',
+      'Purple': 'Numerologically connected to:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Mystical exploration and spiritual study.',
+      'White': 'Numerologically connected to:7. Planet:Ketu. Soul Star Chakra - Complete chakra alignment and spiritual integration. Practice: Self-compassion and transcendence.',
+      'Gold': 'Numerologically connected to:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Divine wisdom and spiritual achievement. Practice: Leadership and confidence building.',
+      'Silver': 'Numerologically connected to:7. Planet:Ketu. Soul Star Chakra - Lunar energy and psychic abilities. Practice: Intuitive development and spiritual wisdom.',
+      'Brown': 'Numerologically connected to:4. Planet:Rahu. Earth Star Chakra - Grounding, stability, and deep earth connection. Practice: Mindfulness and grounding meditation.',
+      'Black': 'Numerologically connected to:4. Planet:Rahu. Earth Star Chakra - Protection, transformation, and grounding. Practice: Stability building and earth connection.',
+      'Pink': 'Numerologically connected to:2. Planet:Moon. Heart Chakra (Anahata) - Emotional love, compassion, and gentle healing. Practice: Self-love and emotional healing.',
+      'Turquoise': 'Numerologically connected to:5. Planet:Mercury. Throat Chakra (Vishuddha) - Healing communication and emotional clarity. Practice: Truth expression and clear communication.'
     };
     return chakras[color] || chakras['Purple'] || 'Number:7. Planet:Neptune. Crown Chakra (Sahasrara) - Spiritual mastery, divine connection, and cosmic consciousness. Practice: Meditation and spiritual contemplation.';
   };
@@ -5284,7 +5282,7 @@ export default function AuraAnalysis() {
                               <div className="space-y-4">
                                 <h4 className="font-semibold text-lg flex items-center">
                                   <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}></div>
-                                  Primary Aura Color: {result.dominantColor}
+                                  Dominant Aura Color: {result.dominantColor}
                                 </h4>
                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5308,12 +5306,12 @@ export default function AuraAnalysis() {
                               <div className="space-y-4">
                                 <h4 className="font-semibold text-lg flex items-center">
                                   <div className={`w-4 h-4 rounded-full mr-2`} style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}></div>
-                                  Secondary Aura Color: {result.secondaryColor}
+                                  Overall Aura Color: {result.secondaryColor}
                                 </h4>
                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                      <h5 className="font-medium text-sm mb-2">Complementary Energy</h5>
+                                      <h5 className="font-medium text-sm mb-2">How this energy makes you feel</h5>
                                       <p className="text-sm text-gray-700">{getColorMeaningForEnergyTab(result.secondaryColor)}</p>
                                     </div>
                                     <div>
@@ -5459,37 +5457,6 @@ export default function AuraAnalysis() {
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
                                   <h4 className="font-semibold text-lg mb-4 text-center">Your 4-Zone Energy Map</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    
-                                    {/* Crown/Thinking Energy */}
-                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
-                                      <div className="flex items-center space-x-3 mb-3">
-                                        <div 
-                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                                          style={{backgroundColor: (() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return detectedColors.thinking;
-                                          })()}}
-                                        >
-                                          <span className="text-white font-bold">🧠</span>
-                                        </div>
-                                        <div>
-                                          <h5 className="font-bold text-purple-800">{(() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.thinking);
-                                          })()}</h5>
-                                          <p className="text-sm text-purple-600">Crown Energy - How You Think</p>
-                                        </div>
-                                      </div>
-                                      <div className="mt-3 p-2 bg-purple-50 rounded border-l-4 border-purple-300">
-                                        <p className="text-sm font-medium text-purple-800">
-                                          {getThinkingEnergyInterpretation((() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return getColorNameFromHex(detectedColors.thinking);
-                                          })())}
-                                        </p>
-                                      </div>
-                                    </div>
-
                                     {/* Receiving Energy */}
                                     <div className="bg-white border rounded-lg p-4 shadow-sm">
                                       <div className="flex items-center space-x-3 mb-3">
@@ -5507,7 +5474,7 @@ export default function AuraAnalysis() {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.receiving);
                                           })()}</h5>
-                                          <p className="text-sm text-blue-600">Receiving Energy (Dynamic)</p>
+                                          <p className="text-sm text-blue-600">Receiving Energy (Dynamic) - What you recieve from the enviornment</p>
                                         </div>
                                       </div>
                                       <div className="mt-3 p-2 bg-blue-50 rounded border-l-4 border-blue-300">
@@ -5520,6 +5487,37 @@ export default function AuraAnalysis() {
                                       </div>
                                     </div>
 
+                                    {/* Crown/Thinking Energy */}
+                                    <div className="bg-white border rounded-lg p-4 shadow-sm">
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div 
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          style={{backgroundColor: (() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return detectedColors.thinking;
+                                          })()}}
+                                        >
+                                          <span className="text-white font-bold">🧠</span>
+                                        </div>
+                                        <div>
+                                          <h5 className="font-bold text-purple-800">{(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.thinking);
+                                          })()}</h5>
+                                          <p className="text-sm text-purple-600">Crown Energy (Dynamic) - How You Think and process the world that you have recieved</p>
+                                        </div>
+                                      </div>
+                                      <div className="mt-3 p-2 bg-purple-50 rounded border-l-4 border-purple-300">
+                                        <p className="text-sm font-medium text-purple-800">
+                                          {getThinkingEnergyInterpretation((() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            return getColorNameFromHex(detectedColors.thinking);
+                                          })())}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                   
                                     {/* Giving Energy */}
                                     <div className="bg-white border rounded-lg p-4 shadow-sm">
                                       <div className="flex items-center space-x-3 mb-3">
@@ -5537,7 +5535,7 @@ export default function AuraAnalysis() {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.giving);
                                           })()}</h5>
-                                          <p className="text-sm text-orange-600">Giving Energy (Dynamic)</p>
+                                          <p className="text-sm text-orange-600">Giving Energy (Dynamic) - What you give to the enviornment</p>
                                         </div>
                                       </div>
                                       <div className="mt-3 p-2 bg-orange-50 rounded border-l-4 border-orange-300">
@@ -5567,7 +5565,7 @@ export default function AuraAnalysis() {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.personality);
                                           })()}</h5>
-                                          <p className="text-sm text-amber-600">Personality Color (Static)</p>
+                                          <p className="text-sm text-amber-600">Personality Color (Static) - Why you do what you do</p>
                                         </div>
                                       </div>
                                       <div className="mt-3 p-2 bg-amber-50 rounded border-l-4 border-amber-300">
@@ -5595,6 +5593,13 @@ export default function AuraAnalysis() {
                                       const detectedColors = extractAllAuraColors(result);
                                       return [
                                         { 
+                                          name: getColorNameFromHex(detectedColors.receiving), 
+                                          hex: detectedColors.receiving, 
+                                          type: 'Receiving Energy', 
+                                          icon: '➜',
+                                          meaning: getReceivingEnergyMeaning(getColorNameFromHex(detectedColors.receiving))
+                                        },
+                                        { 
                                           name: getColorNameFromHex(detectedColors.thinking), 
                                           hex: detectedColors.thinking, 
                                           type: 'Crown/Thinking', 
@@ -5602,26 +5607,21 @@ export default function AuraAnalysis() {
                                           meaning: getThinkingEnergyMeaning(getColorNameFromHex(detectedColors.thinking))
                                         },
                                         { 
-                                          name: getColorNameFromHex(detectedColors.receiving), 
-                                          hex: detectedColors.receiving, 
-                                          type: 'Receiving Energy', 
-                                          icon: '⬇️',
-                                          meaning: getReceivingEnergyMeaning(getColorNameFromHex(detectedColors.receiving))
-                                        },
-                                        { 
-                                          name: getColorNameFromHex(detectedColors.giving), 
-                                          hex: detectedColors.giving, 
-                                          type: 'Giving Energy', 
-                                          icon: '⬆️',
-                                          meaning: getGivingEnergyMeaning(getColorNameFromHex(detectedColors.giving))
-                                        },
-                                        { 
                                           name: getColorNameFromHex(detectedColors.personality), 
                                           hex: detectedColors.personality, 
                                           type: 'Personality Color', 
                                           icon: '🌟',
                                           meaning: getPersonalityEnergyMeaning(getColorNameFromHex(detectedColors.personality))
-                                        }
+                                        },
+                                        
+                                        { 
+                                          name: getColorNameFromHex(detectedColors.giving), 
+                                          hex: detectedColors.giving, 
+                                          type: 'Giving Energy', 
+                                          icon: '➜',
+                                          meaning: getGivingEnergyMeaning(getColorNameFromHex(detectedColors.giving))
+                                        },
+                                        
                                       ].map((colorData, index) => (
                                         <div key={index} className="border rounded-lg p-4 bg-gradient-to-br from-white to-gray-50">
                                           <div className="flex items-center space-x-3 mb-3">
@@ -5662,7 +5662,7 @@ export default function AuraAnalysis() {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
-                                        <p className="text-sm font-medium text-gray-700 mb-3">Primary Color Dominance:</p>
+                                        <p className="text-sm font-medium text-gray-700 mb-3">Color Dominance:</p>
                                         <div className="space-y-2">
                                           <div className="flex items-center justify-between">
                                             <span className="text-sm text-gray-600">Dominant Color</span>
@@ -5687,7 +5687,7 @@ export default function AuraAnalysis() {
                                               { zone: 'Crown/Thinking', percentage: 30 },
                                               { zone: 'Receiving Energy', percentage: 25 },
                                               { zone: 'Giving Energy', percentage: 25 },
-                                              { zone: 'Personality Base', percentage: 20 }
+                                              { zone: 'Soul Connection', percentage: 20 }
                                             ].map((item, index) => (
                                               <div key={index} className="flex items-center justify-between">
                                                 <span className="text-sm text-gray-600">{item.zone}</span>
