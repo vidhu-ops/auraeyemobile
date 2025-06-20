@@ -1661,6 +1661,52 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user's object analyses
+  app.get("/api/object-analyses", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const objectAnalyses = await storage.getObjectAnalysesByUser(req.user.id);
+      res.json(objectAnalyses);
+    } catch (error) {
+      console.error("Error retrieving object analyses:", error);
+      res.status(500).json({ message: "Failed to retrieve object analyses" });
+    }
+  });
+
+  // Update object analysis review
+  app.post("/api/object-analyses/:id/review", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const { id } = req.params;
+      const { rating, reviewText } = req.body;
+      
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      }
+
+      const updatedAnalysis = await storage.updateObjectAnalysisReview(
+        parseInt(id), 
+        rating, 
+        reviewText
+      );
+      
+      if (!updatedAnalysis) {
+        return res.status(404).json({ message: "Object analysis not found" });
+      }
+
+      res.json(updatedAnalysis);
+    } catch (error) {
+      console.error("Error updating object analysis review:", error);
+      res.status(500).json({ message: "Failed to update review" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   
