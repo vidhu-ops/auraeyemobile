@@ -2180,7 +2180,7 @@ export default function AuraAnalysis() {
   };
 
   const getColorHealing = (primary: string, secondary: string): string => {
-    return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} gemstone therapy and ${secondary.toLowerCase()} color breathing exercises.`;
+    return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} crystal therapy and ${secondary.toLowerCase()} color breathing exercises.`;
   };
   const getPositiveTraits = (color: string): string => {
     const traits: Record<string, string> = {
@@ -6870,10 +6870,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Root Chakra</span>
-                                      <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({(result.chakraActivity?.root || 5) * 10}%)</span>
+                                      <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({result.chakraActivity?.root || 5 * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
+                                  <Progress value={result.chakraActivity?.root || 5 * 10} className="h-3 bg-red-100" />
                                 </div>
 
                                 {/* Earth Star Chakra - Number 4 */}
@@ -6897,21 +6897,21 @@ export default function AuraAnalysis() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-purple-600 mb-1">
-                                      {Math.round((result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3 * 10)}%
+                                      {Math.round(((result.chakraActivity?.crown || 5) + (result.chakraActivity?.thirdEye || 5) + (calculateSoulStarChakra(result)/10)) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Higher Chakras</div>
                                     <div className="text-xs text-gray-500">Spiritual Connection</div>
                                   </div>
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-green-600 mb-1">
-                                      {Math.round((result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3 * 10)}%
+                                      {Math.round(((result.chakraActivity?.throat || 5) + (result.chakraActivity?.heart || 5) + (result.chakraActivity?.solarPlexus || 5)) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Middle Chakras</div>
                                     <div className="text-xs text-gray-500">Emotional Balance</div>
                                   </div>
                                   <div className="text-center">
                                     <div className="text-2xl font-bold text-red-600 mb-1">
-                                      {Math.round((result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3 * 10)}%
+                                      {Math.round(((result.chakraActivity?.sacral || 5) + (result.chakraActivity?.root || 5) + (calculateEarthStarChakra(result)/10)) / 3 * 10)}%
                                     </div>
                                     <div className="text-sm text-gray-600">Lower Chakras</div>
                                     <div className="text-xs text-gray-500">Physical Grounding</div>
