@@ -341,7 +341,7 @@ export default function ObjectAnalysis() {
       'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
       'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF'
     };
-    return colorMap[auraColor.toLowerCase()] || '';
+    return colorMap[auraColor.toLowerCase()] || '#800080';
   };
 
   // Function to detect faces in uploaded images
