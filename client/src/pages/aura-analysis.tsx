@@ -2770,25 +2770,25 @@ export default function AuraAnalysis() {
           const createVisibleAuraGlow = () => {
             console.log('Creating aura glow with colors:', [dr, dg, db], [sr, sg, sb]);
             
-            // Create multiple visible aura layers
-            for (let layer = 0; layer < 15; layer++) {
-              const radius = 60 + (layer * 30);
-              const opacity = 0.25 - (layer * 0.015);
+            // Create multiple visible aura layers with much higher opacity
+            for (let layer = 0; layer < 20; layer++) {
+              const radius = 40 + (layer * 25);
+              const opacity = 0.7 - (layer * 0.025); // Much higher base opacity
               
               // Alternate between dominant and secondary colors
               const useSecondary = layer % 3 === 0;
               const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
               
-              // Create radial gradient that's visible around edges
+              // Create radial gradient that's highly visible around edges
               const gradient = ctx.createRadialGradient(
-                centerX, centerY, personRadius, // Start from person edge
+                centerX, centerY, personRadius * 0.8, // Start closer to person
                 centerX, centerY, personRadius + radius // Extend outward
               );
               
               gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-              gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${opacity * 0.6})`);
-              gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.5})`);
+              gradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${opacity * 0.8})`);
+              gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.2})`);
               
               ctx.fillStyle = gradient;
               ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -2858,7 +2858,7 @@ export default function AuraAnalysis() {
                 // Create large, dramatic smoke particles
                 const smokeSize = 40 + Math.random() * 120; // Much larger smoke
                 const [r, g, b] = zone.color;
-                const smokeOpacity = 0.25 + Math.random() * 0.35; // More visible
+                const smokeOpacity = 0.6 + Math.random() * 0.4; // Much more visible
                 
                 // Apply blur for natural smoke effect
                 ctx.filter = 'blur(8px)';
@@ -2933,73 +2933,62 @@ export default function AuraAnalysis() {
             });
           };
           
-          // Apply visible aura effects with better blending
-          console.log('Applying aura effects...');
+          // Apply dramatic and visible aura effects
+          console.log('Applying highly visible aura effects...');
           createVisibleAuraGlow();
           createEnergyZoneSmoke();
           
-          // Add color blending between zones with soft mode
-          ctx.globalCompositeOperation = 'soft-light';
-          const blendOverlay = ctx.createRadialGradient(
+          // Add a strong color tint overlay to make effects more visible
+          ctx.globalCompositeOperation = 'overlay';
+          const strongTint = ctx.createRadialGradient(
             centerX, centerY, personRadius,
-            centerX, centerY, Math.max(canvas.width, canvas.height)
+            centerX, centerY, Math.max(canvas.width, canvas.height) * 0.8
           );
-          blendOverlay.addColorStop(0, `rgba(${dr}, ${dg}, ${db}, 0.1)`);
-          blendOverlay.addColorStop(0.5, `rgba(${sr}, ${sg}, ${sb}, 0.15)`);
-          blendOverlay.addColorStop(1, `rgba(${dr}, ${dg}, ${db}, 0.2)`);
+          strongTint.addColorStop(0, `rgba(${dr}, ${dg}, ${db}, 0.15)`);
+          strongTint.addColorStop(0.5, `rgba(${sr}, ${sg}, ${sb}, 0.45)`);
+          strongTint.addColorStop(1, `rgba(${dr}, ${dg}, ${db}, 0.55)`);
           
-          ctx.fillStyle = blendOverlay;
+          ctx.fillStyle = strongTint;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = 'source-over';
           
-          // Create soft fading protection around person with natural edges
-          const fadeRadius = personRadius * 1.8;
+          // Create simple but effective person protection with fade
+          const protectionRadius = personRadius * 1.5;
           
-          // Create a soft radial mask for the person area
-          const fadeGradient = ctx.createRadialGradient(
-            personCenterX, personCenterY, personRadius * 0.6, // Inner clear zone
-            personCenterX, personCenterY, fadeRadius // Outer fade zone
-          );
-          
-          // Gradient goes from fully preserving person to allowing aura effects
-          fadeGradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Full person visibility
-          fadeGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.9)'); // Strong person visibility
-          fadeGradient.addColorStop(0.75, 'rgba(255, 255, 255, 0.6)'); // Moderate blending
-          fadeGradient.addColorStop(0.9, 'rgba(255, 255, 255, 0.3)'); // More aura visible
-          fadeGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Full aura effect
-          
-          // Apply the fade by redrawing the original image with the gradient mask
+          // Save current state and prepare for person restoration
           ctx.save();
           
-          // First, create the fade mask
-          ctx.globalCompositeOperation = 'destination-out';
-          const inverseGradient = ctx.createRadialGradient(
-            personCenterX, personCenterY, personRadius * 0.6,
-            personCenterX, personCenterY, fadeRadius
+          // Create a radial gradient mask to restore person clarity
+          const personRestoration = ctx.createRadialGradient(
+            personCenterX, personCenterY, 0,
+            personCenterX, personCenterY, protectionRadius
           );
-          inverseGradient.addColorStop(0, 'rgba(0, 0, 0, 0)'); // Keep person
-          inverseGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.1)'); // Slight fade
-          inverseGradient.addColorStop(0.75, 'rgba(0, 0, 0, 0.4)'); // More fade
-          inverseGradient.addColorStop(0.9, 'rgba(0, 0, 0, 0.7)'); // Strong fade
-          inverseGradient.addColorStop(1, 'rgba(0, 0, 0, 1)'); // Remove aura
+          personRestoration.addColorStop(0, 'rgba(255, 255, 255, 1)');    // Full restoration at center
+          personRestoration.addColorStop(0.4, 'rgba(255, 255, 255, 0.9)'); // Strong restoration
+          personRestoration.addColorStop(0.7, 'rgba(255, 255, 255, 0.6)'); // Moderate restoration  
+          personRestoration.addColorStop(0.85, 'rgba(255, 255, 255, 0.3)'); // Light restoration
+          personRestoration.addColorStop(1, 'rgba(255, 255, 255, 0)');     // No restoration - full aura
           
-          ctx.fillStyle = inverseGradient;
+          // Use the gradient as an alpha mask
+          ctx.globalCompositeOperation = 'destination-in';
+          ctx.fillStyle = personRestoration;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Then overlay the original person image with soft blending
+          // Restore to normal blending and redraw original image in protected area
           ctx.globalCompositeOperation = 'source-over';
           
-          // Create a clipping mask for the person area with soft edges
+          // Draw original image back in the person area with alpha blending
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(personCenterX, personCenterY, fadeRadius, 0, Math.PI * 2);
+          ctx.arc(personCenterX, personCenterY, protectionRadius, 0, Math.PI * 2);
           ctx.clip();
-          
-          // Draw original image with slight opacity for natural blending
-          ctx.globalAlpha = 0.95;
+          ctx.globalAlpha = 0.9; // Slight transparency for natural blending
           ctx.drawImage(img, 0, 0);
-          ctx.globalAlpha = 1.0;
+          ctx.restore();
           
           ctx.restore();
+          
+          console.log('Aura effects applied with enhanced visibility');
           
           console.log('Aura visualization complete');
         }
