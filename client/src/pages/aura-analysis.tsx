@@ -2719,7 +2719,7 @@ export default function AuraAnalysis() {
         if (ctx) {
           ctx.drawImage(img, 0, 0);
           
-          console.log('Starting aura visualization for:', auraData.dominantColor, auraData.secondaryColor);
+          console.log('Starting SIMPLIFIED aura visualization for:', auraData.dominantColor, auraData.secondaryColor);
           
           // Create simple but visible aura effects around the person
           const centerX = canvas.width / 2;
@@ -2761,234 +2761,89 @@ export default function AuraAnalysis() {
           const [dr, dg, db] = getColorRGB(dominantColor);
           const [sr, sg, sb] = getColorRGB(secondaryColor);
           
-          // Simple person area protection (center area)
+          console.log('DIRECT METHOD: Creating visible aura with colors:', [dr, dg, db], [sr, sg, sb]);
+          
+          // Person protection area
           const personCenterX = centerX;
           const personCenterY = centerY;
-          const personRadius = Math.min(canvas.width, canvas.height) * 0.25;
+          const personRadius = Math.min(canvas.width, canvas.height) * 0.2;
           
-          // Create visible aura glow around entire image
-          const createVisibleAuraGlow = () => {
-            console.log('Creating aura glow with colors:', [dr, dg, db], [sr, sg, sb]);
-            
-            // Create multiple visible aura layers with much higher opacity
-            for (let layer = 0; layer < 20; layer++) {
-              const radius = 40 + (layer * 25);
-              const opacity = 0.7 - (layer * 0.025); // Much higher base opacity
-              
-              // Alternate between dominant and secondary colors
-              const useSecondary = layer % 3 === 0;
-              const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
-              
-              // Create radial gradient that's highly visible around edges
-              const gradient = ctx.createRadialGradient(
-                centerX, centerY, personRadius * 0.8, // Start closer to person
-                centerX, centerY, personRadius + radius // Extend outward
-              );
-              
-              gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-              gradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${opacity * 0.8})`);
-              gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.2})`);
-              
-              ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-          };
-          
-          // Create natural smoke effects in energy zones
-          const createEnergyZoneSmoke = () => {
-            console.log('Creating energy zone smoke effects');
-            
-            // Get 4-zone energy colors
-            const allColors = extractAllAuraColors(auraData);
-            const hexToRGB = (hex: string) => {
-              const r = parseInt(hex.slice(1, 3), 16);
-              const g = parseInt(hex.slice(3, 5), 16);
-              const b = parseInt(hex.slice(5, 7), 16);
-              return [r, g, b];
-            };
-            
-            const thinkingRGB = hexToRGB(allColors.thinking);
-            const receivingRGB = hexToRGB(allColors.receiving);
-            const givingRGB = hexToRGB(allColors.giving);
-            const personalityRGB = hexToRGB(allColors.personality);
-            
-            // Define energy zones with dramatic smoke coverage
-            const zones = [
-              {
-                name: 'thinking',
-                color: thinkingRGB,
-                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.35 },
-                smokeCount: 60
-              },
-              {
-                name: 'receiving',
-                color: receivingRGB,
-                area: { x: canvas.width * 0.65, y: 0, width: canvas.width * 0.35, height: canvas.height },
-                smokeCount: 80
-              },
-              {
-                name: 'giving',
-                color: givingRGB,
-                area: { x: 0, y: 0, width: canvas.width * 0.35, height: canvas.height },
-                smokeCount: 80
-              },
-              {
-                name: 'personality',
-                color: personalityRGB,
-                area: { x: canvas.width * 0.25, y: canvas.height * 0.35, width: canvas.width * 0.5, height: canvas.height * 0.65 },
-                smokeCount: 70
-              }
-            ];
-            
-            zones.forEach(zone => {
-              console.log(`Creating ${zone.name} zone smoke with`, zone.color);
-              
-              for (let i = 0; i < zone.smokeCount; i++) {
-                // Generate random position within zone
-                const smokeX = zone.area.x + Math.random() * zone.area.width;
-                const smokeY = zone.area.y + Math.random() * zone.area.height;
-                
-                // Skip if too close to person center (protect person)
-                const distFromPerson = Math.sqrt((smokeX - personCenterX) ** 2 + (smokeY - personCenterY) ** 2);
-                if (distFromPerson < personRadius) {
-                  continue;
-                }
-                
-                // Create large, dramatic smoke particles
-                const smokeSize = 40 + Math.random() * 120; // Much larger smoke
-                const [r, g, b] = zone.color;
-                const smokeOpacity = 0.6 + Math.random() * 0.4; // Much more visible
-                
-                // Apply blur for natural smoke effect
-                ctx.filter = 'blur(8px)';
-                
-                // Create multiple overlapping layers for natural smoke density
-                const smokeLayers = 8 + Math.floor(Math.random() * 6);
-                
-                for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (Math.random() - 0.5) * smokeSize * 0.8;
-                  const layerX = smokeX + layerOffset;
-                  const layerY = smokeY + layerOffset;
-                  const layerSize = smokeSize * (0.7 + Math.random() * 1.3);
-                  const layerOpacity = smokeOpacity * (0.4 + Math.random() * 0.6);
-                  
-                  const smokeGradient = ctx.createRadialGradient(
-                    layerX, layerY, 0,
-                    layerX, layerY, layerSize
-                  );
-                  
-                  // Create natural smoke gradient
-                  smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`);
-                  smokeGradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.8})`);
-                  smokeGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.5})`);
-                  smokeGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.2})`);
-                  smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  
-                  ctx.fillStyle = smokeGradient;
-                  ctx.beginPath();
-                  ctx.arc(layerX, layerY, layerSize, 0, Math.PI * 2);
-                  ctx.fill();
-                }
-                
-                // Add flowing smoke trails for natural movement
-                if (Math.random() > 0.4) {
-                  const trailLength = 30 + Math.random() * 50;
-                  const angle = Math.random() * Math.PI * 2;
-                  
-                  for (let trail = 0; trail < trailLength; trail++) {
-                    const trailProgress = trail / trailLength;
-                    const trailX = smokeX + Math.cos(angle) * trail * 3;
-                    const trailY = smokeY + Math.sin(angle) * trail * 3 + Math.sin(trailProgress * Math.PI * 6) * 10;
-                    const trailSize = smokeSize * (1 - trailProgress * 0.7);
-                    const trailOpacity = smokeOpacity * (1 - trailProgress) * 0.4;
-                    
-                    // Skip trails that would overlap person
-                    const trailDistFromPerson = Math.sqrt((trailX - personCenterX) ** 2 + (trailY - personCenterY) ** 2);
-                    if (trailDistFromPerson < personRadius) {
-                      continue;
-                    }
-                    
-                    if (trailSize > 20) {
-                      const trailGradient = ctx.createRadialGradient(
-                        trailX, trailY, 0,
-                        trailX, trailY, trailSize
-                      );
-                      
-                      trailGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${trailOpacity})`);
-                      trailGradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.4})`);
-                      trailGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                      
-                      ctx.fillStyle = trailGradient;
-                      ctx.beginPath();
-                      ctx.arc(trailX, trailY, trailSize, 0, Math.PI * 2);
-                      ctx.fill();
-                    }
-                  }
-                }
-                
-                // Reset filter
-                ctx.filter = 'none';
-              }
-            });
-          };
-          
-          // Apply dramatic and visible aura effects
-          console.log('Applying highly visible aura effects...');
-          createVisibleAuraGlow();
-          createEnergyZoneSmoke();
-          
-          // Add a strong color tint overlay to make effects more visible
-          ctx.globalCompositeOperation = 'overlay';
-          const strongTint = ctx.createRadialGradient(
+          // STEP 1: Add strong color background
+          const bgGradient = ctx.createRadialGradient(
             centerX, centerY, personRadius,
-            centerX, centerY, Math.max(canvas.width, canvas.height) * 0.8
+            centerX, centerY, Math.max(canvas.width, canvas.height)
           );
-          strongTint.addColorStop(0, `rgba(${dr}, ${dg}, ${db}, 0.15)`);
-          strongTint.addColorStop(0.5, `rgba(${sr}, ${sg}, ${sb}, 0.45)`);
-          strongTint.addColorStop(1, `rgba(${dr}, ${dg}, ${db}, 0.55)`);
+          bgGradient.addColorStop(0, `rgba(${dr}, ${dg}, ${db}, 0.2)`);
+          bgGradient.addColorStop(0.6, `rgba(${sr}, ${sg}, ${sb}, 0.4)`);
+          bgGradient.addColorStop(1, `rgba(${dr}, ${dg}, ${db}, 0.5)`);
           
-          ctx.fillStyle = strongTint;
+          ctx.fillStyle = bgGradient;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.globalCompositeOperation = 'source-over';
           
-          // Create simple but effective person protection with fade
-          const protectionRadius = personRadius * 1.5;
+          // STEP 2: Add multiple energy zones with visible colors
+          const zones = [
+            { x: 0, y: 0, w: canvas.width, h: canvas.height * 0.35, color: [dr, dg, db], name: 'thinking' },
+            { x: canvas.width * 0.65, y: 0, w: canvas.width * 0.35, h: canvas.height, color: [255, 255, 255], name: 'receiving' },
+            { x: 0, y: 0, w: canvas.width * 0.35, h: canvas.height, color: [sr, sg, sb], name: 'giving' },
+            { x: canvas.width * 0.25, y: canvas.height * 0.35, w: canvas.width * 0.5, h: canvas.height * 0.65, color: [75, 0, 130], name: 'personality' }
+          ];
           
-          // Save current state and prepare for person restoration
-          ctx.save();
+          zones.forEach(zone => {
+            const [r, g, b] = zone.color;
+            console.log(`Adding ${zone.name} zone with color:`, [r, g, b]);
+            
+            // Create visible colored overlay for each zone
+            const zoneGradient = ctx.createLinearGradient(zone.x, zone.y, zone.x + zone.w, zone.y + zone.h);
+            zoneGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.3)`);
+            zoneGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+            zoneGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.1)`);
+            
+            ctx.fillStyle = zoneGradient;
+            ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+            
+            // Add smoke particles in each zone
+            for (let i = 0; i < 15; i++) {
+              const smokeX = zone.x + Math.random() * zone.w;
+              const smokeY = zone.y + Math.random() * zone.h;
+              
+              // Skip if too close to person
+              const distFromPerson = Math.sqrt((smokeX - personCenterX) ** 2 + (smokeY - personCenterY) ** 2);
+              if (distFromPerson < personRadius) continue;
+              
+              const smokeSize = 30 + Math.random() * 60;
+              const smokeGradient = ctx.createRadialGradient(smokeX, smokeY, 0, smokeX, smokeY, smokeSize);
+              smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.6)`);
+              smokeGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.3)`);
+              smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+              
+              ctx.fillStyle = smokeGradient;
+              ctx.beginPath();
+              ctx.arc(smokeX, smokeY, smokeSize, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
           
-          // Create a radial gradient mask to restore person clarity
-          const personRestoration = ctx.createRadialGradient(
+          // STEP 3: Restore person area with soft edges
+          const restoreGradient = ctx.createRadialGradient(
             personCenterX, personCenterY, 0,
-            personCenterX, personCenterY, protectionRadius
+            personCenterX, personCenterY, personRadius * 1.5
           );
-          personRestoration.addColorStop(0, 'rgba(255, 255, 255, 1)');    // Full restoration at center
-          personRestoration.addColorStop(0.4, 'rgba(255, 255, 255, 0.9)'); // Strong restoration
-          personRestoration.addColorStop(0.7, 'rgba(255, 255, 255, 0.6)'); // Moderate restoration  
-          personRestoration.addColorStop(0.85, 'rgba(255, 255, 255, 0.3)'); // Light restoration
-          personRestoration.addColorStop(1, 'rgba(255, 255, 255, 0)');     // No restoration - full aura
+          restoreGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');    // Transparent center
+          restoreGradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.2)'); // Slight fade
+          restoreGradient.addColorStop(0.8, 'rgba(0, 0, 0, 0.6)'); // More fade
+          restoreGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');     // Full restore
           
-          // Use the gradient as an alpha mask
-          ctx.globalCompositeOperation = 'destination-in';
-          ctx.fillStyle = personRestoration;
+          // Use destination-out to create transparent area around person
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillStyle = restoreGradient;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Restore to normal blending and redraw original image in protected area
+          // Redraw original image in person area
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.drawImage(img, 0, 0);
           ctx.globalCompositeOperation = 'source-over';
           
-          // Draw original image back in the person area with alpha blending
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(personCenterX, personCenterY, protectionRadius, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.globalAlpha = 0.9; // Slight transparency for natural blending
-          ctx.drawImage(img, 0, 0);
-          ctx.restore();
-          
-          ctx.restore();
-          
-          console.log('Aura effects applied with enhanced visibility');
+          console.log('DIRECT METHOD: Aura visualization complete with visible colors');
           
           console.log('Aura visualization complete');
         }
