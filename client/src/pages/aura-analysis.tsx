@@ -2933,17 +2933,72 @@ export default function AuraAnalysis() {
             });
           };
           
-          // Apply visible aura effects
+          // Apply visible aura effects with better blending
           console.log('Applying aura effects...');
           createVisibleAuraGlow();
           createEnergyZoneSmoke();
           
-          // Re-draw person area to ensure they remain clear
+          // Add color blending between zones with soft mode
+          ctx.globalCompositeOperation = 'soft-light';
+          const blendOverlay = ctx.createRadialGradient(
+            centerX, centerY, personRadius,
+            centerX, centerY, Math.max(canvas.width, canvas.height)
+          );
+          blendOverlay.addColorStop(0, `rgba(${dr}, ${dg}, ${db}, 0.1)`);
+          blendOverlay.addColorStop(0.5, `rgba(${sr}, ${sg}, ${sb}, 0.15)`);
+          blendOverlay.addColorStop(1, `rgba(${dr}, ${dg}, ${db}, 0.2)`);
+          
+          ctx.fillStyle = blendOverlay;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
+          
+          // Create soft fading protection around person with natural edges
+          const fadeRadius = personRadius * 1.8;
+          
+          // Create a soft radial mask for the person area
+          const fadeGradient = ctx.createRadialGradient(
+            personCenterX, personCenterY, personRadius * 0.6, // Inner clear zone
+            personCenterX, personCenterY, fadeRadius // Outer fade zone
+          );
+          
+          // Gradient goes from fully preserving person to allowing aura effects
+          fadeGradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Full person visibility
+          fadeGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.9)'); // Strong person visibility
+          fadeGradient.addColorStop(0.75, 'rgba(255, 255, 255, 0.6)'); // Moderate blending
+          fadeGradient.addColorStop(0.9, 'rgba(255, 255, 255, 0.3)'); // More aura visible
+          fadeGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Full aura effect
+          
+          // Apply the fade by redrawing the original image with the gradient mask
           ctx.save();
+          
+          // First, create the fade mask
+          ctx.globalCompositeOperation = 'destination-out';
+          const inverseGradient = ctx.createRadialGradient(
+            personCenterX, personCenterY, personRadius * 0.6,
+            personCenterX, personCenterY, fadeRadius
+          );
+          inverseGradient.addColorStop(0, 'rgba(0, 0, 0, 0)'); // Keep person
+          inverseGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.1)'); // Slight fade
+          inverseGradient.addColorStop(0.75, 'rgba(0, 0, 0, 0.4)'); // More fade
+          inverseGradient.addColorStop(0.9, 'rgba(0, 0, 0, 0.7)'); // Strong fade
+          inverseGradient.addColorStop(1, 'rgba(0, 0, 0, 1)'); // Remove aura
+          
+          ctx.fillStyle = inverseGradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Then overlay the original person image with soft blending
+          ctx.globalCompositeOperation = 'source-over';
+          
+          // Create a clipping mask for the person area with soft edges
           ctx.beginPath();
-          ctx.arc(personCenterX, personCenterY, personRadius, 0, Math.PI * 2);
+          ctx.arc(personCenterX, personCenterY, fadeRadius, 0, Math.PI * 2);
           ctx.clip();
+          
+          // Draw original image with slight opacity for natural blending
+          ctx.globalAlpha = 0.95;
           ctx.drawImage(img, 0, 0);
+          ctx.globalAlpha = 1.0;
+          
           ctx.restore();
           
           console.log('Aura visualization complete');
