@@ -119,6 +119,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Fixed thinking color visualization in aura analysis: removed all thinking color particles from top zone, keeping only single glowing ball above person's head as requested, eliminated duplicate thinking color visualizations
 - June 25, 2025. Enhanced thinking color visibility: made thinking energy particle larger, brighter, and more prominent above person's head with enhanced glow effects and sparkles for better visibility
 - June 25, 2025. Improved personality color blending: enhanced personality color distribution throughout entire image with radial wash effect and increased opacity for better overall presence and blending
+- June 25, 2025. Enhanced aura gradient smoothness: replaced patchy particle effects with smooth linear and radial gradients for seamless color blending while maintaining thinking color orb above person's head
 
 ## User Preferences
 
