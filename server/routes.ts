@@ -56,20 +56,53 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     return seed / 2147483647;
   };
   
-  // Pre-generate indices for speed - only 16 approved colors
-  const colorIndices = [
-    Math.floor(seededRandom() * 16),
-    Math.floor(seededRandom() * 16),
-    Math.floor(seededRandom() * 16),
-    Math.floor(seededRandom() * 16),
-    Math.floor(seededRandom() * 16),
-    Math.floor(seededRandom() * 16)
+  // Prioritize spiritual colors - exclude black from main selections
+  const spiritualColors = [
+    { name: "Purple", hex: "#800080" },
+    { name: "Blue", hex: "#0000FF" },
+    { name: "Green", hex: "#00FF00" },
+    { name: "Gold", hex: "#FFD700" },
+    { name: "White", hex: "#FFFFFF" },
+    { name: "Indigo", hex: "#4B0082" },
+    { name: "Violet", hex: "#8A2BE2" },
+    { name: "Silver", hex: "#C0C0C0" },
+    { name: "Turquoise", hex: "#40E0D0" },
+    { name: "Pink", hex: "#FFC0CB" },
+    { name: "Orange", hex: "#FFA500" },
+    { name: "Yellow", hex: "#FFFF00" },
+    { name: "Red", hex: "#FF0000" },
+    { name: "Brown", hex: "#A52A2A" },
+    { name: "Gray", hex: "#808080" }
   ];
   
-  const auraColors = colorIndices.map(i => ENHANCED_COLORS[i]);
-  const dominantColor = auraColors[0];
-  const secondaryColor = auraColors[1];
-  const auraColorSpectrum = auraColors.map(color => color.name);
+  // Use spiritual colors 80% of the time for dominant/secondary
+  const getDominantColor = () => {
+    return seededRandom() < 0.8 
+      ? spiritualColors[Math.floor(seededRandom() * 9)] // First 9 are most spiritual
+      : spiritualColors[Math.floor(seededRandom() * spiritualColors.length)];
+  };
+  
+  const getSecondaryColor = (avoid: string) => {
+    const availableColors = spiritualColors.filter(c => c.name !== avoid);
+    return seededRandom() < 0.7
+      ? availableColors[Math.floor(seededRandom() * Math.min(9, availableColors.length))]
+      : availableColors[Math.floor(seededRandom() * availableColors.length)];
+  };
+  
+  // Generate unique colors
+  const dominantColor = getDominantColor();
+  const secondaryColor = getSecondaryColor(dominantColor.name);
+  
+  // Spectrum includes variety but still avoids black in main positions
+  const spectrumColors = [
+    dominantColor,
+    secondaryColor,
+    spiritualColors[Math.floor(seededRandom() * spiritualColors.length)],
+    spiritualColors[Math.floor(seededRandom() * spiritualColors.length)]
+  ];
+  
+  const auraColorSpectrum = spectrumColors.map(color => color.name);
+  const energyLevel = 5 + Math.floor(seededRandom() * 6);
   
   return {
     dominantColor: dominantColor.name,
@@ -77,24 +110,25 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     auraColors: auraColorSpectrum,
     auraColorSpectrum: auraColorSpectrum,
     auraLayerColors: {
-      inner: auraColors[0].name,
-      middle: auraColors[2].name,
-      outer: auraColors[4].name
+      inner: dominantColor.name,
+      middle: spectrumColors[2].name,
+      outer: spectrumColors[3].name
     },
     personalityTraits: ["Intuitive", "Creative", "Healing", "Wise"],
-    energyLevel: 7,
-    zoneColors: {
+    energyLevel: energyLevel,
+    spiritualGuidance: `Your aura reveals ${dominantColor.name} energy representing spiritual wisdom and ${secondaryColor.name} energy indicating creative transformation.`,
+    zones: {
       giving: {
-        colors: [auraColors[0].name, auraColors[1].name],
-        interpretation: `Giving energy of ${auraColors[0].name} and ${auraColors[1].name}`
+        colors: [dominantColor.name],
+        interpretation: `Giving energy of ${dominantColor.name}`
       },
       receiving: {
-        colors: [auraColors[1].name, auraColors[2].name],
-        interpretation: `Receptive energy of ${auraColors[1].name} and ${auraColors[2].name}`
+        colors: [secondaryColor.name],
+        interpretation: `Receptive energy of ${secondaryColor.name}`
       },
       thinking: {
-        colors: [auraColors[2].name, auraColors[3].name],
-        interpretation: `Mental energy of ${auraColors[2].name} and ${auraColors[3].name}`
+        colors: [spectrumColors[2].name],
+        interpretation: `Mental energy of ${spectrumColors[2].name}`
       },
       overall: {
         colors: [dominantColor.name, secondaryColor.name],
@@ -113,15 +147,15 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     chakraAlignment: `Strong ${dominantColor.name} frequency alignment`,
     elementalConnection: `${dominantColor.name} elemental resonance`,
     chakraActivity: {
-      root: Math.floor(seededRandom() * 5) + 5,
-      sacral: Math.floor(seededRandom() * 5) + 5,
-      solarPlexus: Math.floor(seededRandom() * 5) + 5,
-      heart: Math.floor(seededRandom() * 5) + 5,
-      throat: Math.floor(seededRandom() * 5) + 5,
-      thirdEye: Math.floor(seededRandom() * 5) + 5,
-      crown: Math.floor(seededRandom() * 5) + 5
+      root: Math.floor(seededRandom() * 4) + 6,
+      sacral: Math.floor(seededRandom() * 4) + 6,
+      solarPlexus: Math.floor(seededRandom() * 4) + 6,
+      heart: Math.floor(seededRandom() * 4) + 7,
+      throat: Math.floor(seededRandom() * 4) + 6,
+      thirdEye: Math.floor(seededRandom() * 4) + 7,
+      crown: Math.floor(seededRandom() * 4) + 7
     },
-    auricLayers: auraColors.slice(0, 7).map((color, index) => ({
+    auricLayers: spectrumColors.slice(0, 4).map((color, index) => ({
       layer: index + 1,
       color: color.name,
       meaning: `${color.name} layer energy`,
@@ -518,13 +552,15 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const complexSeed4 = (seed4 ^ seed5 ^ seed6) + (imageSize % 3001);
   
   let objectTypeIndex = Math.abs(complexSeed1) % objectTypes.length;
-  let auraColorIndex = Math.abs(complexSeed2) % auraColors.length;
+  // Exclude black from object analysis unless specifically detected
+  const nonBlackColors = auraColors.filter(color => color !== "Black");
+  let auraColorIndex = Math.abs(complexSeed2) % nonBlackColors.length;
   let energyIndex = Math.abs(complexSeed3) % energyQualities.length;
   
   const energyLevel = 3 + (Math.abs(complexSeed1 + complexSeed2) % 8); // Energy level between 3-10
   
   const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
-  const selectedAuraColor = auraColors[auraColorIndex] || "Amber";
+  const selectedAuraColor = nonBlackColors[auraColorIndex] || "Purple";
   const selectedQualities = energyQualities[energyIndex] || ["Calming", "Protective", "Grounding"];
   
   // Ensure we have valid qualities
