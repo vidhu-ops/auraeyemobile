@@ -117,6 +117,8 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Switched to Gemini free vision API for human detection: replaced OpenAI with Google's Gemini 2.0 Flash for accurate human detection in object analysis, maintaining the exact same prompt "Detect if there is any human in this image, yes or no"
 - June 25, 2025. Modified Enhanced Numerology Analysis button on services page to redirect unauthenticated users to login page instead of the numerology page directly
 - June 25, 2025. Fixed thinking color visualization in aura analysis: removed all thinking color particles from top zone, keeping only single glowing ball above person's head as requested, eliminated duplicate thinking color visualizations
+- June 25, 2025. Enhanced thinking color visibility: made thinking energy particle larger, brighter, and more prominent above person's head with enhanced glow effects and sparkles for better visibility
+- June 25, 2025. Improved personality color blending: enhanced personality color distribution throughout entire image with radial wash effect and increased opacity for better overall presence and blending
 
 ## User Preferences
 
