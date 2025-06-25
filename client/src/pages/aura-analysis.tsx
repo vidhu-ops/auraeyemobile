@@ -52,6 +52,8 @@ const getAccurateColorCode = (colorName: string): string => {
     'Orange': '#FFA500',
     'pink': '#FFC0CB',
     'Pink': '#FFC0CB',
+    'gray': '#808080',
+    'Gray': '#808080',
   };
   
   return colorCodes[colorName] || '#FFFFFF'; // Default to white if color not found
