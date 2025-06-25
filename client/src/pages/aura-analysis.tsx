@@ -1450,13 +1450,15 @@ export default function AuraAnalysis() {
       'Blue': 'Gold',       // Communication receives divine guidance
       'Indigo': 'Silver',   // Intuition receives cosmic wisdom
       'Violet': 'White',    // Spiritual crown receives pure light
-      'Purple': 'Blue', // Mystic energy receives through clarity
-      'Pink': 'Green',      // Love receives through healing
       'Gold': 'Blue',       // Divine wisdom receives through truth
       'Silver': 'Indigo',   // Soul connection receives through intuition
       'White': 'Violet',    // Pure energy receives through spirituality
-      'Blue': 'Pink',  // Healing communication receives through compassion
-      'Red': 'Yellow'   // Transformative energy receives through mental clarity
+      'Red': 'Yellow',      // Transformative energy receives through mental clarity
+      'Orange': 'Green',    // Creative energy receives through healing
+      'Yellow': 'Blue',     // Mental energy receives through truth
+      'Green': 'Orange',    // Healing receives through creativity
+      'Brown': 'Yellow',    // Earth energy receives through mental clarity
+      'Black': 'White'      // Shadow receives through light
     };
     return receivingEnergyMap[auraData.dominantColor] || auraData.secondaryColor || 'Blue';
   }
@@ -1468,17 +1470,15 @@ export default function AuraAnalysis() {
       'Red': 'Orange',      // Passionate energy gives through creativity
       'Orange': 'Yellow',   // Creative energy gives through mental stimulation
       'Yellow': 'Green',    // Mental energy gives through healing wisdom
-      'Green': 'Pink',      // Healing energy gives through unconditional love
-      'Blue': 'Green',  // Truth gives through clear communication
-      'Indigo': 'Purple',   // Intuition gives through spiritual insight
+      'Green': 'Blue',      // Healing energy gives through truth
+      'Blue': 'Violet',     // Truth gives through spiritual insight
+      'Indigo': 'Blue',     // Intuition gives through clear communication
       'Violet': 'Gold',     // Spiritual energy gives through divine wisdom
-      'Purple': 'Magenta',  // Mystic energy gives through transformation
-      'Pink': 'Rose',       // Love gives through deeper emotional connection
-      'Gold': 'Yellow',      // Divine wisdom gives through grounded spirituality
+      'Gold': 'Yellow',     // Divine wisdom gives through grounded spirituality
       'Silver': 'White',    // Soul energy gives through pure light
       'White': 'Silver',    // Pure light gives through soul connection
-      'Blue': 'Violet',  // Clear communication gives through emotional clarity
-      'Magenta': 'Crimson'  // Transformation gives through passionate intensity
+      'Brown': 'Orange',    // Earth energy gives through creativity
+      'Black': 'Red'        // Shadow gives through passion
     };
     return givingEnergyMap[auraData.dominantColor] || auraData.dominantColor;
   }
@@ -3135,7 +3135,7 @@ export default function AuraAnalysis() {
     createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel);
   };
 
-  // Function to create smooth gradient aura without patches
+  // Function to create ultra-smooth gradient aura without any patches
   const createDirectionalGradientZones = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3146,62 +3146,63 @@ export default function AuraAnalysis() {
     personHeight: number,
     colors: any
   ) => {
-    // Create ultra-smooth gradient layers with perfect blending
-    const personRadius = Math.min(personWidth, personHeight) * 0.8;
-    const fullRadius = Math.max(width, height) * 1.2;
+    // Reset to normal blending for clean gradient application
+    ctx.globalCompositeOperation = 'source-over';
     
-    // Use soft-light blend mode for natural color mixing
-    ctx.globalCompositeOperation = 'soft-light';
+    // Create seamless multi-layer gradient system
+    const personRadius = Math.min(personWidth, personHeight) * 0.6;
+    const auraRadius = Math.max(width, height) * 0.8;
     
-    // Primary personality color base - covers entire image
-    const personalityBase = ctx.createRadialGradient(
+    // Layer 1: Full personality color wash across entire image
+    const personalityWash = ctx.createRadialGradient(
+      centerX, centerY, personRadius * 0.3,
+      centerX, centerY, auraRadius
+    );
+    personalityWash.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.02)`);
+    personalityWash.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    personalityWash.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`);
+    personalityWash.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+    personalityWash.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    
+    ctx.fillStyle = personalityWash;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Layer 2: Smooth left-side giving energy blend
+    ctx.globalCompositeOperation = 'color-dodge';
+    const leftGradient = ctx.createLinearGradient(0, centerY, width * 0.7, centerY);
+    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
+    leftGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
+    leftGradient.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.03)`);
+    leftGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    
+    ctx.fillStyle = leftGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Layer 3: Smooth right-side receiving energy blend
+    const rightGradient = ctx.createLinearGradient(width, centerY, width * 0.3, centerY);
+    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
+    rightGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
+    rightGradient.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.03)`);
+    rightGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+    
+    ctx.fillStyle = rightGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Layer 4: Central radial enhancement for seamless blending
+    ctx.globalCompositeOperation = 'overlay';
+    const centralBlend = ctx.createRadialGradient(
       centerX, centerY, personRadius * 0.2,
-      centerX, centerY, fullRadius
+      centerX, centerY, auraRadius * 0.6
     );
-    personalityBase.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    personalityBase.addColorStop(0.2, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    personalityBase.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`);
-    personalityBase.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    personalityBase.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    centralBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    centralBlend.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    centralBlend.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    centralBlend.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
     
-    ctx.fillStyle = personalityBase;
+    ctx.fillStyle = centralBlend;
     ctx.fillRect(0, 0, width, height);
     
-    // Smooth left side giving energy gradient
-    const givingGradient = ctx.createLinearGradient(0, 0, width * 0.6, 0);
-    givingGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.12)`);
-    givingGradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
-    givingGradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.04)`);
-    givingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
-    
-    ctx.fillStyle = givingGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Smooth right side receiving energy gradient
-    const receivingGradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
-    receivingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
-    receivingGradient.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
-    receivingGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.04)`);
-    receivingGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
-    
-    ctx.fillStyle = receivingGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Additional radial blending for center personality enhancement
-    ctx.globalCompositeOperation = 'multiply';
-    const centerBlend = ctx.createRadialGradient(
-      centerX, centerY, 0,
-      centerX, centerY, Math.min(width, height) * 0.7
-    );
-    centerBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    centerBlend.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.05)`);
-    centerBlend.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.10)`);
-    centerBlend.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    
-    ctx.fillStyle = centerBlend;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Reset blend mode
+    // Reset blend mode for normal rendering
     ctx.globalCompositeOperation = 'source-over';
   };
 
@@ -4708,9 +4709,8 @@ export default function AuraAnalysis() {
         "Yellow": "Purple",
         "Green": "Red",
         "Blue": "Orange",
-        "Indigo": "Yellow",
+        "Indigo": "Yellow", 
         "Violet": "Gold",
-        "Purple": "Yellow",
         "Gold": "Violet",
         "Silver": "Blue",
         "White": "Black",
