@@ -1965,7 +1965,6 @@ export default function AuraAnalysis() {
         'Gold': 'Spirit-gold pattern - divine wisdom channeled through wisdom, creating enlightened teacher energy',
         'Indigo': 'Spirit-indigo pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
         'Silver': 'Spirit-silver pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
-        'Turquoise': 'Spirit-turquoise pattern - divine wisdom channeled through communication, creating enlightened teacher energy',
       }
     };
     
@@ -2849,8 +2848,6 @@ export default function AuraAnalysis() {
       '#32CD32': 'Green',
       '#FFD700': 'Gold',
       '#FF6600': 'Orange',
-      '#FF0000': 'Bright Red',
-      '#FFA500': 'Bright Orange',
       '#FFFF00': 'Yellow',
       '#0000FF': 'Blue',
       '#800080': 'Purple',
@@ -3132,7 +3129,7 @@ export default function AuraAnalysis() {
     createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel, width, height);
   };
 
-  // Function to create ultra-smooth gradient aura with consistent personality color coverage
+  // Function to create proper layered aura system with specific order
   const createDirectionalGradientZones = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3149,109 +3146,92 @@ export default function AuraAnalysis() {
     // Calculate natural aura dimensions around the person
     const auraRadius = Math.max(personWidth, personHeight) * 2.2;
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
+    const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // Step 1: Create enhanced personality color layer as expansive outer layer covering entire image
-    const extendedAuraRadius = Math.max(width, height) * 0.8; // Much larger coverage area
-    const personalityLayer = ctx.createRadialGradient(
-      centerX, centerY, innerRadius * 0.3,
-      centerX, centerY, extendedAuraRadius
+    // LAYER 1 (BASE): Personality color gradient from person to image edge
+    const personalityBaseLayer = ctx.createRadialGradient(
+      centerX, centerY, innerRadius * 0.4, // Start from person center
+      centerX, centerY, extendedRadius // Extend to image edges
     );
-    personalityLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`); // Stronger center
-    personalityLayer.addColorStop(0.15, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.32)`); // Enhanced mid-range
-    personalityLayer.addColorStop(0.35, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.28)`); // Sustained intensity
-    personalityLayer.addColorStop(0.55, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`); // Extended reach
-    personalityLayer.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`); // Broader coverage
-    personalityLayer.addColorStop(0.9, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`); // Extended fade
-    personalityLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.03)`); // Gentle edge
+    personalityBaseLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.35)`); // Strong at person
+    personalityBaseLayer.addColorStop(0.2, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.32)`); 
+    personalityBaseLayer.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.28)`); 
+    personalityBaseLayer.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`); 
+    personalityBaseLayer.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`); 
+    personalityBaseLayer.addColorStop(0.95, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`); 
+    personalityBaseLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.03)`); // Fade at edges
     
-    ctx.fillStyle = personalityLayer;
+    ctx.fillStyle = personalityBaseLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // Additional personality layer for enhanced outer coverage
-    const outerPersonalityLayer = ctx.createLinearGradient(0, 0, width, height);
-    outerPersonalityLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
-    outerPersonalityLayer.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    outerPersonalityLayer.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    outerPersonalityLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    
-    ctx.fillStyle = outerPersonalityLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Step 2: Add giving energy with natural smoky fade from left side
+    // LAYER 2: Giving energy layer (on top of personality base)
     ctx.globalCompositeOperation = 'multiply';
-    const givingSmoke = ctx.createRadialGradient(
-      centerX - personWidth * 1.1, centerY, 0,
-      centerX - personWidth * 1.1, centerY, auraRadius * 1.3
+    const givingLayer = ctx.createRadialGradient(
+      centerX - personWidth * 0.8, centerY, 0, // Left side origin
+      centerX - personWidth * 0.8, centerY, auraRadius * 1.4
     );
-    givingSmoke.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.45)`);
-    givingSmoke.addColorStop(0.15, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.32)`);
-    givingSmoke.addColorStop(0.35, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.22)`);
-    givingSmoke.addColorStop(0.55, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.12)`);
-    givingSmoke.addColorStop(0.75, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.05)`);
-    givingSmoke.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
+    givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
+    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
+    givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
+    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
+    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
     
-    ctx.fillStyle = givingSmoke;
+    ctx.fillStyle = givingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // Step 3: Add receiving energy with natural smoky fade from right side  
-    const receivingSmoke = ctx.createRadialGradient(
-      centerX + personWidth * 1.1, centerY, 0,
-      centerX + personWidth * 1.1, centerY, auraRadius * 1.3
+    // LAYER 3: Receiving energy layer (on top of giving layer)
+    const receivingLayer = ctx.createRadialGradient(
+      centerX + personWidth * 0.8, centerY, 0, // Right side origin
+      centerX + personWidth * 0.8, centerY, auraRadius * 1.4
     );
-    receivingSmoke.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.45)`);
-    receivingSmoke.addColorStop(0.15, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.32)`);
-    receivingSmoke.addColorStop(0.35, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.22)`);
-    receivingSmoke.addColorStop(0.55, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
-    receivingSmoke.addColorStop(0.75, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.05)`);
-    receivingSmoke.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+    receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.55)`);
+    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
+    receivingLayer.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.28)`);
+    receivingLayer.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
+    receivingLayer.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
+    receivingLayer.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
     
-    ctx.fillStyle = receivingSmoke;
+    ctx.fillStyle = receivingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // Step 4: Create enhanced personality outer layer with seamless merging 
-    ctx.globalCompositeOperation = 'overlay';
-    const outerMergingLayer = ctx.createRadialGradient(
-      centerX, centerY, innerRadius * 0.1,
-      centerX, centerY, extendedAuraRadius * 1.2
-    );
-    
-    // Calculate enhanced blend colors for natural color transitions
-    const blend1R = Math.floor((colors.personalityRGB.r * 0.7 + colors.givingRGB.r * 0.3));
-    const blend1G = Math.floor((colors.personalityRGB.g * 0.7 + colors.givingRGB.g * 0.3));
-    const blend1B = Math.floor((colors.personalityRGB.b * 0.7 + colors.givingRGB.b * 0.3));
-    
-    const blend2R = Math.floor((colors.personalityRGB.r * 0.7 + colors.receivingRGB.r * 0.3));
-    const blend2G = Math.floor((colors.personalityRGB.g * 0.7 + colors.receivingRGB.g * 0.3));
-    const blend2B = Math.floor((colors.personalityRGB.b * 0.7 + colors.receivingRGB.b * 0.3));
-    
-    const allBlendR = Math.floor((colors.personalityRGB.r * 0.5 + colors.givingRGB.r * 0.25 + colors.receivingRGB.r * 0.25));
-    const allBlendG = Math.floor((colors.personalityRGB.g * 0.5 + colors.givingRGB.g * 0.25 + colors.receivingRGB.g * 0.25));
-    const allBlendB = Math.floor((colors.personalityRGB.b * 0.5 + colors.givingRGB.b * 0.25 + colors.receivingRGB.b * 0.25));
-    
-    // Enhanced personality-dominant blending with extended reach
-    outerMergingLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.28)`); // Strong center
-    outerMergingLayer.addColorStop(0.15, `rgba(${allBlendR}, ${allBlendG}, ${allBlendB}, 0.25)`); // Three-color blend
-    outerMergingLayer.addColorStop(0.3, `rgba(${blend1R}, ${blend1G}, ${blend1B}, 0.22)`); // Personality-giving blend
-    outerMergingLayer.addColorStop(0.45, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.20)`); // Pure personality
-    outerMergingLayer.addColorStop(0.6, `rgba(${blend2R}, ${blend2G}, ${blend2B}, 0.18)`); // Personality-receiving blend
-    outerMergingLayer.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`); // Extended personality
-    outerMergingLayer.addColorStop(0.9, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.10)`); // Outer personality layer
-    outerMergingLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.05)`); // Gentle fade
-    
-    ctx.fillStyle = outerMergingLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Additional diagonal blending layer for enhanced outer personality coverage
+    // LAYER 4: Enhanced color merging for better visibility and blending
     ctx.globalCompositeOperation = 'soft-light';
-    const diagonalPersonalityLayer = ctx.createLinearGradient(0, 0, width, height);
-    diagonalPersonalityLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    diagonalPersonalityLayer.addColorStop(0.25, `rgba(${blend1R}, ${blend1G}, ${blend1B}, 0.12)`);
-    diagonalPersonalityLayer.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    diagonalPersonalityLayer.addColorStop(0.75, `rgba(${blend2R}, ${blend2G}, ${blend2B}, 0.14)`);
-    diagonalPersonalityLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.10)`);
+    const mergingLayer = ctx.createRadialGradient(
+      centerX, centerY, innerRadius * 0.2,
+      centerX, centerY, auraRadius * 1.6
+    );
     
-    ctx.fillStyle = diagonalPersonalityLayer;
+    // Create blended colors for smooth transitions
+    const personalityGivingBlend = {
+      r: Math.floor((colors.personalityRGB.r * 0.6 + colors.givingRGB.r * 0.4)),
+      g: Math.floor((colors.personalityRGB.g * 0.6 + colors.givingRGB.g * 0.4)),
+      b: Math.floor((colors.personalityRGB.b * 0.6 + colors.givingRGB.b * 0.4))
+    };
+    
+    const personalityReceivingBlend = {
+      r: Math.floor((colors.personalityRGB.r * 0.6 + colors.receivingRGB.r * 0.4)),
+      g: Math.floor((colors.personalityRGB.g * 0.6 + colors.receivingRGB.g * 0.4)),
+      b: Math.floor((colors.personalityRGB.b * 0.6 + colors.receivingRGB.b * 0.4))
+    };
+    
+    const allColorsBlend = {
+      r: Math.floor((colors.personalityRGB.r * 0.5 + colors.givingRGB.r * 0.25 + colors.receivingRGB.r * 0.25)),
+      g: Math.floor((colors.personalityRGB.g * 0.5 + colors.givingRGB.g * 0.25 + colors.receivingRGB.g * 0.25)),
+      b: Math.floor((colors.personalityRGB.b * 0.5 + colors.givingRGB.b * 0.25 + colors.receivingRGB.b * 0.25))
+    };
+    
+    mergingLayer.addColorStop(0, `rgba(${allColorsBlend.r}, ${allColorsBlend.g}, ${allColorsBlend.b}, 0.25)`);
+    mergingLayer.addColorStop(0.25, `rgba(${personalityGivingBlend.r}, ${personalityGivingBlend.g}, ${personalityGivingBlend.b}, 0.20)`);
+    mergingLayer.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+    mergingLayer.addColorStop(0.75, `rgba(${personalityReceivingBlend.r}, ${personalityReceivingBlend.g}, ${personalityReceivingBlend.b}, 0.15)`);
+    mergingLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    
+    ctx.fillStyle = mergingLayer;
     ctx.fillRect(0, 0, width, height);
+    
+    // Reset blend mode for thinking layer
+    ctx.globalCompositeOperation = 'source-over';
     
     // Reset blend mode
     ctx.globalCompositeOperation = 'source-over';
@@ -4363,7 +4343,7 @@ export default function AuraAnalysis() {
     const getClosestColorMapping = (color: string) => {
       const colorMap: Record<string, string> = {
         'Purple': 'Violet', 'Pink': 'Red', 'Turquoise': 'Blue', 'Cyan': 'Blue',
-        'Teal': 'Blue', 'Navy': 'Blue', 'Emerald': 'Green', 'Jade': 'Green', 
+        'Blue': 'Blue', 'Navy': 'Blue', 'Emerald': 'Green', 'Jade': 'Green', 
         'Sapphire': 'Blue', 'Topaz': 'Yellow', 'Amber': 'Yellow', 'Coral': 'Orange',
         'Lavender': 'Violet', 'Mint': 'Green', 'Peach': 'Orange', 'Rose': 'Red',
         'Sky Blue': 'Blue', 'Maroon': 'Red', 'Dark Pink': 'Red', 'Gray': 'Silver'
