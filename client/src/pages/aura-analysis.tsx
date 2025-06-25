@@ -3097,18 +3097,8 @@ export default function AuraAnalysis() {
     // Step 3: Create final blending overlay for seamless transitions
     createSeamlessBlendingOverlay(ctx, width, height, centerX, centerY, personWidth, personHeight, colors);
 
-    // Create 4-Zone Energy Map with proper positioning around the person
+    // Create 3-Zone Energy Map (excluding thinking zone - it will be handled separately as a single glowing ball)
     const smokeZones = [
-      { 
-        color: colors.thinkingRGB, 
-        startX: centerX, 
-        startY: centerY - personHeight * 0.15, 
-        direction: { x: 0, y: -1 },
-        spread: width * 0.5,
-        name: 'thinking_top',
-        density: 30,
-        zone: 'top' // Mental/spiritual energy above head
-      },
       { 
         color: colors.receivingRGB, 
         startX: centerX + personWidth * 0.6, 
@@ -3155,11 +3145,6 @@ export default function AuraAnalysis() {
           
           // Position smoke particles to fill entire zones like reference image
           switch(zone.zone) {
-            case 'top': // Thinking/Mental energy - STRICTLY top 20% of image only
-              smokeX = seededRandom() * width;
-              smokeY = seededRandom() * (height * 0.2); // Ensure never below 20%
-              break;
-              
             case 'right': // Receiving energy - entire right side
               smokeX = (width * 0.5) + (seededRandom() * width * 0.5);
               smokeY = seededRandom() * height;
@@ -5096,14 +5081,10 @@ export default function AuraAnalysis() {
       "White": "You offer pure, honest connection but may need to embrace human messiness and emotional complexity.",
       "Gold": "You provide wisdom and guidance but must remember to be a partner, not just a teacher or advisor.",
       "Silver": "You reflect others' truth back to them but need to share your own feelings and desires openly.",
-      "Turquoise": "You offer healing communication and clear expression but may need to balance these with emotional support.",
-      "peach" : "You bring warmth and love to life but may need to balance sensuality with practicality.",
-      "lavender": "You promote relaxation and stress relief but may need to balance these with assertiveness and action.",
-      "cyan": "You offer balanced healing and clear communication but may need to balance these with emotional support.",
       "black": "You offer balanced healing and clear communication but may need to balance these with emotional support.",
       "brown": "You offer balanced healing and clear communication but may need to balance these with emotional support."
     };
-    return dynamics[primary] || "Your unique energy signature creates distinctive patterns in how you connect with others.";
+    return dynamics[primary] || dynamics[secondary] ||"Your unique energy signature creates distinctive patterns in how you connect with others.";
   };
 
   const getCareerAlignment = (color: string, traits: string[]): string => {
@@ -5120,14 +5101,10 @@ export default function AuraAnalysis() {
       "White": "Spiritual guidance, energy healing, purification work, or roles requiring clarity and energetic sensitivity.",
       "Gold": "Teaching, mentoring, spiritual leadership, or positions requiring wisdom, authority, and guidance of others.",
       "Silver": "Intuitive services, psychic work, counseling, or careers utilizing reflective and empathetic abilities.",
-      "Turquoise": "Healing communication, clear expression, and balanced energy that supports throat chakra health.",
-      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
-      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
-      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
+    return careers[color] || careers[traits] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
 
   return (
@@ -5259,7 +5236,6 @@ export default function AuraAnalysis() {
                           <div>
                             <div className="flex justify-between text-sm mb-1">
                               <span>Scanning energy field</span>
-                              <span className="text-primary">{Math.round(analysisProgress)}%</span>
                             </div>
                             <div className="h-10 w-full bg-gray-200 rounded-full overflow-hidden">
                               <div 
