@@ -42,8 +42,6 @@ const getAccurateColorCode = (colorName: string): string => {
     'Violet': '#8A2BE2',
     'indigo': '#4B0082',
     'Indigo': '#4B0082',
-    'purple': '#800080',
-    'Purple': '#800080',
     'gold': '#FFD700',
     'Gold': '#FFD700',
     'silver': '#C0C0C0',
@@ -69,7 +67,6 @@ const getColorSpiritalMeaning = (color: string): string => {
     'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
     'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
     'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
-    'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
     'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
@@ -91,11 +88,12 @@ const getColorMeditationFocus = (color: string): string => {
     'Blue': 'Focus on throat chakra activation and truth expression meditations',
     'Indigo': 'Practice third eye opening and intuitive development meditations',
     'Violet': 'Engage in crown chakra connection and divine consciousness meditations',
-    'Purple': 'Focus on spiritual wisdom and mystical awareness practices',
     'Pink': 'Practice unconditional love and emotional healing meditations',
     'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
     'White': 'Focus on pure light meditation and spiritual protection practices',
-    'Silver': 'Practice lunar energy and psychic sensitivity meditations'
+    'Silver': 'Practice lunar energy and psychic sensitivity meditations',
+    'Black': 'Engage in shadow work and transformative healing meditations',
+    'gray': 'Focus on neutral balance and adaptable wisdom meditations'
   };
   return focuses[color] || 'Focus on connecting with your unique aura color energy during meditation';
 };
@@ -127,7 +125,6 @@ const getColorChakraGuidance = (color: string): string => {
     'Blue': 'Clear throat chakra through authentic expression, truth telling, and communication',
     'Indigo': 'Activate third eye through intuition development, inner wisdom, and perception',
     'Violet': 'Connect crown chakra through spiritual practices, divine connection, and meditation',
-    'Purple': 'Balance all chakras through spiritual wisdom and mystical awareness practices',
     'Pink': 'Heal heart chakra through unconditional love, emotional nurturing, and compassion',
     'Gold': 'Illuminate all chakras through divine wisdom and spiritual enlightenment',
     'White': 'Purify all chakras through light work and spiritual protection practices',
@@ -179,83 +176,80 @@ export default function AuraAnalysis() {
   // Zone-specific color meanings for 4-Zone Energy Map
   const getThinkingEnergyMeaning = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Direct analytical thinking - cuts through mental confusion with laser focus',
-      'Orange': 'Creative problem-solving mind - generates innovative solutions through imagination',
-      'Yellow': 'Logical reasoning power - processes information with brilliant mental clarity',
-      'Green': 'Balanced decision-making - weighs all options with harmonious judgment',
-      'Blue': 'Deep contemplative thinking - accesses profound wisdom through quiet reflection',
-      'Indigo': 'Intuitive mental processes - receives insights beyond conventional reasoning',
-      'Violet': 'Visionary thought patterns - conceives breakthrough ideas and spiritual concepts',
-      'Purple': 'Mystical intelligence - understands hidden connections and cosmic principles',
-      'Pink': 'Compassionate reasoning - makes decisions guided by love and emotional intelligence',
-      'White': 'Pure mental clarity - thinks with crystal-clear perception and divine guidance',
-      'Gold': 'Illuminated consciousness - processes thoughts with enlightened understanding',
-      'Silver': 'Reflective intelligence - mirrors wisdom from higher dimensional thinking',
+      'Red': 'Thinking about taking action, reacting to pressure, or inner drive.',
+      'Orange': 'Creative ideas, desires, inspiration or sensual exploration.',
+      'Yellow': 'Focused on achieving, leading, or being seen as capable.',
+      'Green': 'Healing thoughts, compassion, desire to help others.',
+      'Blue': 'Thinking about how to express, speak truth, or find inner peace.',
+      'Indigo': 'Focused on intuition, psychic insights, inner knowing.',
+      'Violet': 'Spiritual downloads, deep inner wisdom, connection to divine truth.',
+      'Pink': 'Emotionally open, thinking about love, relationships, or self-worth.',
+      'White': 'Spiritual sensitivity, thinking of higher dimensions or purity.',
+      'Gold': 'Divine thoughts, wisdom, teaching, spiritual mastery.',
+      'Silver': 'Receiving higher guidance, sensitive to unseen messages.',
       'Gray': 'Neutral analytical mind - processes information without emotional bias',
       'Black': 'Deep transformative thinking - penetrates mysteries and embraces shadow wisdom',
-      'Brown': 'Grounded practical thinking - approaches problems with earth-based common sense'
+      'Brown': 'Grounded mindset, focused on stability, home or practical matters.'
     };
     return meanings[color] || 'Unique mental processing pattern - develops individual thinking approach';
   };
 
   const getReceivingEnergyMeaning = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Absorbs intense life force - draws vital energy from passionate encounters',
-      'Orange': 'Receives creative inspiration - attracts artistic energy from surroundings',
-      'Yellow': 'Attracts mental stimulation - draws intellectual energy from conversations',
-      'Green': 'Absorbs healing energy - receives natural restoration from environment',
-      'Blue': 'Receives calming vibrations - attracts peaceful energy that soothes the soul',
-      'Indigo': 'Attracts psychic impressions - receives intuitive messages from other dimensions',
+      'Red': 'Receiving urgent energy, competition or stress from environment.',
+      'Orange': 'Attracting joy, creative people or stimulating situations.',
+      'Yellow': 'Feeling pressure to succeed, being challenged to lead or perform.',
+      'Green': 'Receiving kindness, appreciation or emotional requests from others.',
+      'Blue': 'Receiving calming, nurturing energy or silence from others.',
+      'Indigo': 'Receiving intuitive nudges, environmental clues from the unseen.',
       'Violet': 'Absorbs spiritual transmissions - draws divine energy from higher realms',
-      'Purple': 'Receives mystical frequencies - attracts magical energy from cosmic sources',
-      'Pink': 'Absorbs love vibrations - draws compassionate energy from all relationships',
-      'White': 'Receives pure light energy - attracts divine protection and angelic guidance',
-      'Gold': 'Absorbs wisdom transmissions - draws enlightened energy from spiritual teachers',
-      'Silver': 'Receives lunar vibrations - attracts feminine intuitive energy from moon cycles',
+      'Pink': 'Absorbing emotional energy, feeling others’ affection or needs.',
+      'White': 'Absorbing emotions, energy of others, or angelic frequencies.',
+      'Gold': 'Recognized by others as powerful or spiritually influential.',
+      'Silver': 'Surrounded by spiritually activated or highly sensitive people.',
       'Black': 'Receives transformative power - attracts deep change energy from shadow work',
-      'Brown': 'Absorbs earth stability - draws grounding energy from natural environments'
+      'Brown': 'Receiving grounding or responsibilities from others.',
+      'Purple': 'Receives mystical energy - attracts ancient wisdom and divine guidance'
     };
-    return meanings[color] || 'Receives unique energy signature - attracts special vibrations suited to your soul';
+    return meanings[color] ||'Receives unique energy signature - attracts special vibrations suited to your soul';
   };
 
   const getGivingEnergyMeaning = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Radiates passionate life force - energizes others with intense vitality',
-      'Orange': 'Projects creative inspiration - ignites artistic expression in others',
-      'Yellow': 'Emanates mental brilliance - illuminates minds with intellectual clarity',
-      'Green': 'Radiates healing vibrations - restores balance in people and environments',
-      'Blue': 'Projects peaceful energy - calms chaos and brings tranquility to situations',
-      'Indigo': 'Emanates psychic awareness - awakens intuitive abilities in others',
-      'Violet': 'Radiates spiritual light - elevates consciousness in all encounters',
-      'Purple': 'Projects mystical power - creates magical transformations in reality',
-      'Pink': 'Emanates love frequency - heals hearts and opens emotional connections',
-      'White': 'Radiates pure divine light - offers spiritual protection and guidance',
-      'Gold': 'Projects wisdom energy - shares enlightened knowledge that transforms lives',
-      'Silver': 'Emanates reflective wisdom - helps others see their true spiritual nature',
+      'Red': 'Actively working hard, expressing passion or dealing with anger.',
+      'Orange': 'Actively expressing creativity, pleasure, or passion.',
+      'Yellow': 'Taking leadership action, pushing forward with confidence.',
+      'Green': 'Giving healing, nurturing others, or working in service roles.',
+      'Blue': 'Speaking up, setting boundaries, or seeking emotional resolution.',
+      'Indigo': 'Taking intuitive action, trusting gut feelings and visions.',
+      'Violet': 'Channeling divine energy into actions, using intuition to lead.',
+      'Pink': 'Expressing love, being vulnerable, or emotionally reaching out.',
+      'White': 'Acting from innocence, vulnerability or spiritual ideals.',
+      'Gold': 'Taking action with purpose, guiding or mentoring others.',
+      'Silver': 'Channeling energy, guiding others, or practicing intuition.',
       'Gray': 'Emanates balanced perspective - helps others find neutral ground in conflicts',
       'Black': 'Radiates transformative power - catalyzes deep change and shadow integration',
-      'Brown': 'Radiates grounding stability - provides practical support and earth wisdom'
+      'Brown': 'Taking practical steps, helping others or organizing life.'
     };
     return meanings[color] || 'Projects unique energy signature - shares special gifts that only you can offer';
   };
 
   const getPersonalityEnergyMeaning = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Core passionate nature - your essence burns with fierce determination and courage',
-      'Orange': 'Creative soul foundation - your spirit naturally expresses through artistic innovation',
-      'Yellow': 'Intellectual core being - your essence thrives on mental exploration and learning',
-      'Green': 'Harmonious soul nature - your core seeks balance and natural healing connections',
-      'Blue': 'Peaceful inner foundation - your essence naturally creates calm and stability',
+      'Red': 'Highly energized, action-focused, experiencing dynamic transformation.',
+      'Orange': 'Joyful and magnetic energy, radiating enthusiasm for life.',
+      'Yellow': 'Radiant, confident, strong-willed individual in active growth.',
+      'Green': 'Healer presence with calm and heart-centered frequency.',
+      'Blue': 'Balanced communicator with peaceful, harmonious energy field.',
       'Indigo': 'Psychic soul structure - your core nature operates through intuitive awareness',
-      'Violet': 'Spiritual essence - your soul naturally connects to higher dimensional wisdom',
-      'Purple': 'Mystical core nature - your essence embraces mystery and magical transformation',
-      'Pink': 'Love-centered foundation - your soul core operates through heart-based compassion',
-      'White': 'Pure spirit essence - your core nature channels divine light and protection',
-      'Gold': 'Enlightened soul foundation - your essence naturally embodies spiritual wisdom',
-      'Silver': 'Reflective core nature - your soul mirrors cosmic truth and lunar wisdom',
+      'Violet': 'Highly spiritual phase, embodying divine purpose and deep alignment.',
+      'Pink': 'Loving and gentle presence with a sensitive, empathetic core.',
+      'White': 'Spiritually elevated being, sensitive and light-filled energy field.',
+      'Gold': 'Masterful healer energy, a teacher and guide on a mission.',
+      'Silver': 'Mystic presence, sensitive soul with energetic wisdom.',
       'Gray': 'Balanced core nature - your essence maintains spiritual equilibrium in all situations',
       'Black': 'Transformative soul foundation - your core purpose involves deep shadow integration',
-      'Brown': 'Earth-connected soul - your core nature is grounded in practical spiritual wisdom'
+      'Brown': 'Deeply rooted energy, wise, nurturing and structured.'
     };
     return meanings[color] || 'Unique soul signature - your core essence carries special spiritual gifts';
   };
@@ -453,7 +447,6 @@ export default function AuraAnalysis() {
       'Blue': 'truth, peace, authentic communication',
       'Indigo': 'intuition, psychic sight, inner knowing',
       'Violet': 'spiritual connection, divine consciousness',
-      'Purple': 'mystical wisdom, spiritual mastery',
       'Pink': 'unconditional love, divine compassion',
       'Gold': 'divine wisdom, Christ consciousness',
       'Silver': 'lunar intuition, feminine wisdom',
@@ -1180,7 +1173,6 @@ export default function AuraAnalysis() {
       'Gold': goldMeaning.meaning,
       'Silver': silverMeaning.meaning,
       'White': whiteMeaning.meaning,
-      'Teal': tealMeaning.meaning,
       'black': blackMeaning.meaning,
       'gray': grayMeaning.meaning,
     };
@@ -1386,7 +1378,6 @@ export default function AuraAnalysis() {
       'Black': 'Receiving Zone Black - You receive transformative power and deep inner work, attracting shadow integration and spiritual rebirth.',
       'White': 'Receiving Zone White - You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
       'Brown': 'Receiving Zone Brown - You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
-      'Turquoise': 'Receiving Zone Turquoise - You receive healing communication and emotional truth, attracting compassionate guidance and heart-centered wisdom.',
       'Red': 'Taking action with purpose, guiding or mentoring others. You master healer energy, a teacher and guide on a mission. Acting from innocence, vulnerability, or spiritual ideals.',
       'Yellow': 'Actively exploring creativity, finding your voice and authentic expression. You manifest consistent change and meaningful creative self-transformation.',
       'Blue': 'Receiving kindness, appreciation or emotional requests from others. You have healer presence with calm and heart-centered frequency, giving others openness and genuine presence, generous attention.',
@@ -2110,6 +2101,7 @@ export default function AuraAnalysis() {
       'Silver': 'Protection of the divine and of spiritual connection.',
       'Gray': 'Balance, neutrality, adaptability.',
       'Black': 'Power, protection, transformation.',
+      'violet': 'Divine connection, spiritual awareness, mystical abilities, intuitive wisdom',
     };
     return traits[color] || traits['Purple'];
   };
@@ -2130,7 +2122,7 @@ export default function AuraAnalysis() {
       'Black': 'Your root chakra radiates power, protection, transformation.',
       
     };
-    return descriptions[color] || 'Your unique energy signature carries powerful positive qualities.';
+    return descriptions[color] || descriptions[getPositiveDescription] || 'Your unique energy signature carries powerful positive qualities.';
   };
 
   const getShadowTraits = (color: string): string => {
@@ -2228,9 +2220,7 @@ export default function AuraAnalysis() {
       'Gold': 'Soul Star',
       'White': 'Soul Star',
       'Pink': 'Higher Heart',
-      'Silver': 'Soul Star',
-      'Turquoise': 'Higher Throat',
-      'Lavender': 'Higher Crown'
+      'Silver': 'Soul Star'
     };
 
     const primaryChakra = chakraColorMapping[primaryColor] || 'Crown';
@@ -2793,13 +2783,11 @@ export default function AuraAnalysis() {
     // Start with available spectrum colors
     const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor];
     
-    // Define a diverse color palette to ensure uniqueness
+    // Define restricted 12-color palette only
     const colorPalette = [
-      '#4B0082', '#FF4444', '#32CD32', '#FFD700', // Indigo, Red, Green, Gold
-      '#FF6600', '#00FFFF', '#8A2BE2', '#FF69B4', // Orange, Cyan, Blue Violet, Hot Pink
-      '#40E0D0', '#DC143C', '#00FF7F', '#FF1493', // Turquoise, Crimson, Spring Green, Deep Pink
-      '#9370DB', '#FF8C00', '#00CED1', '#DA70D6', // Medium Purple, Dark Orange, Dark Turquoise, Orchid
-      '#87CEEB', '#F4A460', '#98FB98', '#DDA0DD'  // Sky Blue, Sandy Brown, Pale Green, Plum
+      '#8A2BE2', '#4B0082', '#0000FF', '#008000', // Violet, Indigo, Blue, Green
+      '#FFFF00', '#FFA500', '#FF0000', '#FFFFFF', // Yellow, Orange, Red, White
+      '#000000', '#FFD700', '#C0C0C0', '#8B4513'  // Black, Gold, Silver, Brown
     ];
     
     // Collect available colors from spectrum
@@ -4317,17 +4305,14 @@ export default function AuraAnalysis() {
       }
     };
 
-    // Get mapping for dominant aura color (fallback to closest match)
+    // Get mapping for dominant aura color (fallback to closest match) - restricted to 12 colors
     const getClosestColorMapping = (color: string) => {
       const colorMap: Record<string, string> = {
-        'Gold': 'Yellow', 'Silver': 'White', 'Purple': 'Violet', 
-        'Pink': 'Green', 'Turquoise': 'Blue', 'Cyan': 'Blue',
-        'Red': 'Red', 'Dark Pink': 'Red', 'Maroon': 'Red',
-        'Navy': 'Blue', 'Teal': 'Blue', 'Green': 'Green',
-        'Emerald': 'Green', 'Jade': 'Green', 'Sapphire': 'Blue',
-        'Topaz': 'Yellow', 'Amber': 'Yellow', 'Coral': 'Orange',
-        'Lavender': 'Violet', 'Mint': 'Green', 'Peach': 'Orange',
-        'Rose': 'Green', 'Sky Blue': 'Blue'
+        'Purple': 'Violet', 'Pink': 'Red', 'Turquoise': 'Blue', 'Cyan': 'Blue',
+        'Teal': 'Blue', 'Navy': 'Blue', 'Emerald': 'Green', 'Jade': 'Green', 
+        'Sapphire': 'Blue', 'Topaz': 'Yellow', 'Amber': 'Yellow', 'Coral': 'Orange',
+        'Lavender': 'Violet', 'Mint': 'Green', 'Peach': 'Orange', 'Rose': 'Red',
+        'Sky Blue': 'Blue', 'Maroon': 'Red', 'Dark Pink': 'Red', 'Gray': 'Silver'
       };
       return colorMap[color] || color;
     };
@@ -4707,15 +4692,8 @@ export default function AuraAnalysis() {
         white: 95,
         gold: 35,
         silver: 60,
-        turquoise: 65,
-        darkpink: 78,
         brown: 15,
-        black: 5,
-        lavender: 82,
-        peach: 45,
-        gray: 58,
-        cyan: 62,
-        teal: 63
+        black: 5
       };
       
       const lowerColor = color.toLowerCase();
@@ -4733,18 +4711,11 @@ export default function AuraAnalysis() {
         "Indigo": "Yellow",
         "Violet": "Gold",
         "Purple": "Yellow",
-        "Pink": "Turquoise",
         "Gold": "Violet",
-        "Silver": "Magenta",
+        "Silver": "Blue",
         "White": "Black",
         "Black": "White",
-        "Turquoise": "Pink",
-        "Brown": "Blue",
-        "Cyan": "Red",
-        "Teal": "Orange",
-        "Lavender": "Green",
-        "Peach": "Indigo",
-        "Gray": "Cyan",
+        "Brown": "Blue"
         
         
       };

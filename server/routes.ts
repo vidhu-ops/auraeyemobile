@@ -20,22 +20,18 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 // Optimized fast aura analysis function for sub-1000ms performance with varied results
 // Only approved aura colors - restricted to 17 colors (added Gray, reduced Black frequency)
 const ENHANCED_COLORS = [
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Brown", hex: "#A52A2A" },
-  { name: "Turquoise", hex: "#40E0D0" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Yellow", hex: "#FFFF00" },
-  { name: "Blue", hex: "#0000FF" },
-  { name: "Green", hex: "#00FF00" },
   { name: "Violet", hex: "#8A2BE2" },
   { name: "Indigo", hex: "#4B0082" },
-  { name: "Purple", hex: "#800080" },
+  { name: "Blue", hex: "#0000FF" },
+  { name: "Green", hex: "#00FF00" },
+  { name: "Yellow", hex: "#FFFF00" },
+  { name: "Orange", hex: "#FFA500" },
+  { name: "Red", hex: "#FF0000" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Black", hex: "#000000" },
   { name: "Gold", hex: "#FFD700" },
   { name: "Silver", hex: "#C0C0C0" },
-  { name: "Orange", hex: "#FFA500" },
-  { name: "Pink", hex: "#FFC0CB" },
-  { name: "Gray", hex: "#808080" },
-  { name: "Black", hex: "#000000" } // Only appears when truly detected, not as default
+  { name: "Brown", hex: "#8B4513" }
 ];
 
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
@@ -323,8 +319,8 @@ function groupSimilarColors(hex: string): string {
   // Indigo spectrum (dark blue-purple)
   if (b > 80 && r > 50 && r < b && g < r) return '#4B0082';
   
-  // Purple spectrum (balanced red-blue)
-  if (r > 80 && b > 80 && Math.abs(r - b) < 50 && g < r) return '#800080';
+  // Purple spectrum maps to violet (restricted colors only)
+  if (r > 80 && b > 80 && Math.abs(r - b) < 50 && g < r) return '#8A2BE2'; // Purple -> Violet
   
   // Gold spectrum
   if (r > 200 && g > 180 && b < 50) return '#FFD700';
