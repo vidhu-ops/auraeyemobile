@@ -2919,51 +2919,66 @@ export default function AuraAnalysis() {
     thinkingColor: { r: number, g: number, b: number },
     energyLevel: number
   ) => {
-    // Position the thinking energy particle above the person's head
+    // Position the thinking energy particle above the person's head - more prominent
     const particleX = centerX;
-    const particleY = centerY - personHeight * 0.7; // Above head
-    const baseRadius = Math.max(15, energyLevel * 3); // Size based on energy level
+    const particleY = centerY - personHeight * 0.6; // Closer to head for better visibility
+    const baseRadius = Math.max(25, energyLevel * 5); // Larger size for better visibility
     
-    // Create multiple glowing layers for the particle
+    // Create multiple glowing layers for the particle with enhanced visibility
     ctx.globalCompositeOperation = 'screen'; // Bright additive blending
     
-    // Outer glow layer
+    // Extra outer glow for enhanced visibility
+    const extraGlow = ctx.createRadialGradient(
+      particleX, particleY, 0,
+      particleX, particleY, baseRadius * 4
+    );
+    extraGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    extraGlow.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
+    extraGlow.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+    extraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    
+    ctx.fillStyle = extraGlow;
+    ctx.beginPath();
+    ctx.arc(particleX, particleY, baseRadius * 4, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Outer glow layer - enhanced
     const outerGlow = ctx.createRadialGradient(
       particleX, particleY, 0,
-      particleX, particleY, baseRadius * 3
+      particleX, particleY, baseRadius * 2.5
     );
-    outerGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
-    outerGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
-    outerGlow.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+    outerGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+    outerGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.7)`);
+    outerGlow.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
     outerGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = outerGlow;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 3, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 2.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Middle glow layer
+    // Middle glow layer - enhanced
     const middleGlow = ctx.createRadialGradient(
       particleX, particleY, 0,
-      particleX, particleY, baseRadius * 1.8
+      particleX, particleY, baseRadius * 1.5
     );
-    middleGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
-    middleGlow.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    middleGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    middleGlow.addColorStop(0.4, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
     middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = middleGlow;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 1.8, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Inner bright core
+    // Inner bright core - enhanced
     const innerCore = ctx.createRadialGradient(
       particleX, particleY, 0,
       particleX, particleY, baseRadius
     );
     innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
-    innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-    innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    innerCore.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    innerCore.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
     innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = innerCore;
@@ -2971,19 +2986,19 @@ export default function AuraAnalysis() {
     ctx.arc(particleX, particleY, baseRadius, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add sparkle effects around the particle
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      const sparkleX = particleX + Math.cos(angle) * (baseRadius * 2.5);
-      const sparkleY = particleY + Math.sin(angle) * (baseRadius * 2.5);
-      const sparkleRadius = 2 + (energyLevel * 0.5);
+    // Enhanced sparkle effects around the particle - more visible
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const sparkleX = particleX + Math.cos(angle) * (baseRadius * 2.8);
+      const sparkleY = particleY + Math.sin(angle) * (baseRadius * 2.8);
+      const sparkleRadius = 4 + (energyLevel * 0.8);
       
       const sparkle = ctx.createRadialGradient(
         sparkleX, sparkleY, 0,
         sparkleX, sparkleY, sparkleRadius
       );
-      sparkle.addColorStop(0, `rgba(255, 255, 255, 0.9)`);
-      sparkle.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.7)`);
+      sparkle.addColorStop(0, `rgba(255, 255, 255, 1)`);
+      sparkle.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
       sparkle.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
       
       ctx.fillStyle = sparkle;
@@ -3232,15 +3247,32 @@ export default function AuraAnalysis() {
       centerX, centerY, fullRadius
     );
     
-    // Create smooth color transitions without abrupt changes
+    // Create smooth color transitions with enhanced personality color presence
     baseGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    baseGradient.addColorStop(0.15, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    baseGradient.addColorStop(0.35, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.3, 0.06));
-    baseGradient.addColorStop(0.55, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.4, 0.05));
-    baseGradient.addColorStop(0.75, createBlendedColor(colors.givingRGB, colors.receivingRGB, 0.6, 0.04));
-    baseGradient.addColorStop(1, createBlendedColor(colors.receivingRGB, colors.personalityRGB, 0.8, 0.02));
+    baseGradient.addColorStop(0.1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    baseGradient.addColorStop(0.25, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    baseGradient.addColorStop(0.45, createBlendedColor(colors.personalityRGB, colors.givingRGB, 0.3, 0.12));
+    baseGradient.addColorStop(0.65, createBlendedColor(colors.personalityRGB, colors.receivingRGB, 0.4, 0.10));
+    baseGradient.addColorStop(0.85, createBlendedColor(colors.personalityRGB, colors.givingRGB, 0.6, 0.08));
+    baseGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
     
     ctx.fillStyle = baseGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Enhanced personality color layer for better distribution
+    ctx.globalCompositeOperation = 'multiply';
+    
+    // Full-image personality color wash for consistent presence
+    const personalityWash = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, Math.max(width, height) * 0.9
+    );
+    personalityWash.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    personalityWash.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    personalityWash.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    personalityWash.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    
+    ctx.fillStyle = personalityWash;
     ctx.fillRect(0, 0, width, height);
     
     // Subtle enhancement layer with very low opacity to avoid patches
@@ -3997,7 +4029,7 @@ export default function AuraAnalysis() {
     faceHeight: number
   ) => {
     // Dramatically increased haze coverage for mystical density
-    const hazeZones = 60 + Math.floor(energyLevel * 15);
+    const hazeZones = 90 + Math.floor(energyLevel * 15);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Create multiple haze layers for maximum mystical density
