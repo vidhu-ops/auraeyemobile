@@ -82,76 +82,7 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Services Section */}
-      <section id="services" className="py-16 bg-light">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="font-heading font-bold text-3xl md:text-4xl text-dark mb-4">Our Spiritual Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mb-4">Explore our range of metaphysical wellness services designed to help you connect with your inner self and enhance your spiritual journey.</p>
-            <Button asChild variant="outline" className="mt-2">
-              <Link href="/services">
-                View All Services <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <ServiceCard
-              icon={<Upload className="h-6 w-6 text-primary" />}
-              title="Aura Analysis"
-              description="Upload your photo and receive an AI-powered analysis of your aura colors and energy patterns with personalized insights."
-              link="/aura-analysis"
-              linkText="Try Now"
-              color="primary"
-            />
-            
-            <ServiceCard
-              icon={<Star className="h-6 w-6 text-secondary" />}
-              title="Daily Horoscope"
-              description="Get personalized daily astrological insights for your zodiac sign, helping you navigate life's challenges with cosmic guidance."
-              link="/daily-horoscope"
-              linkText="View Horoscope"
-              color="secondary"
-            />
-            
-            <ServiceCard
-              icon={<Box className="h-6 w-6 text-purple-500" />}
-              title="Object Analysis"
-              description="Uncover the hidden energies and spiritual properties of objects in your environment through our advanced AI analysis."
-              link="/object-analysis"
-              linkText="Analyze Objects"
-              color="secondary"
-            />
-            
-            <ServiceCard
-              icon={<HandHelping className="h-6 w-6 text-accent" />}
-              title="Energy Healing"
-              description="Connect with certified healers who can help balance your chakras and restore harmony to your energy field through virtual sessions."
-              link={user ? (user.userType === "healer" ? "/healer-dashboard" : "/client-dashboard") : "/auth"}
-              linkText="Book a Session"
-              color="accent"
-            />
-            
-            <ServiceCard
-              icon={<Book className="h-6 w-6 text-primary" />}
-              title="Spiritual Journaling"
-              description="Track your spiritual growth with our guided journaling tools that help you document your insights, dreams, and energy shifts."
-              link="/journal"
-              linkText="Start Journal"
-              color="primary"
-            />
-            
-            <ServiceCard
-              icon={<Calculator className="h-6 w-6 text-secondary" />}
-              title="Numerology Reading"
-              description="Discover the hidden meanings in your birth date and name with our comprehensive numerology analysis and life path guidance."
-              link={user ? "/numerology" : "/auth"}
-              linkText="Calculate Numbers"
-              color="secondary"
-            />
-          </div>
-        </div>
-      </section>
+     
       
       {/* Aura Upload Preview */}
       <section id="upload-preview" className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
