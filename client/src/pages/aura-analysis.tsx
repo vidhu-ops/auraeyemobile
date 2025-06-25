@@ -3148,30 +3148,11 @@ export default function AuraAnalysis() {
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // LAYER 1 (BASE): Consistent personality color gradient from person to image edges
-    // Use standardized sizing based on image dimensions for consistency across all uploads
+    // Standardized sizing references for consistent visualization
     const standardPersonRadius = Math.min(width, height) * 0.15; // Consistent person size reference
     const standardExtendedRadius = Math.max(width, height) * 0.85; // Consistent reach to edges
     
-    const personalityBaseLayer = ctx.createRadialGradient(
-      centerX, centerY, standardPersonRadius, // Standardized inner radius
-      centerX, centerY, standardExtendedRadius // Standardized outer radius to edges
-    );
-    
-    // Consistent opacity progression for uniform appearance across all images
-    personalityBaseLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.38)`); // Strong at person center
-    personalityBaseLayer.addColorStop(0.15, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.35)`); 
-    personalityBaseLayer.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.30)`); 
-    personalityBaseLayer.addColorStop(0.45, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`); 
-    personalityBaseLayer.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`); 
-    personalityBaseLayer.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`); 
-    personalityBaseLayer.addColorStop(0.9, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`); 
-    personalityBaseLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.02)`); // Gentle fade at edges
-    
-    ctx.fillStyle = personalityBaseLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // LAYER 2: Giving energy layer with standardized sizing (on top of personality base)
+    // LAYER 1: Giving energy layer with standardized sizing (base layer)
     ctx.globalCompositeOperation = 'multiply';
     const standardGivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
     const givingLayer = ctx.createRadialGradient(
@@ -3188,7 +3169,7 @@ export default function AuraAnalysis() {
     ctx.fillStyle = givingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 3: Receiving energy layer with standardized sizing (on top of giving layer)
+    // LAYER 2: Receiving energy layer with standardized sizing (on top of giving layer)
     const standardReceivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
     const receivingLayer = ctx.createRadialGradient(
       centerX + standardPersonRadius * 0.8, centerY, 0, // Right side origin with standard offset
@@ -3204,7 +3185,7 @@ export default function AuraAnalysis() {
     ctx.fillStyle = receivingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 4: Enhanced color merging with standardized sizing for better visibility and blending
+    // LAYER 3: Enhanced color merging between giving and receiving energies only
     ctx.globalCompositeOperation = 'soft-light';
     const standardMergingRadius = Math.min(width, height) * 0.75; // Consistent merging radius
     const mergingLayer = ctx.createRadialGradient(
@@ -3212,30 +3193,30 @@ export default function AuraAnalysis() {
       centerX, centerY, standardMergingRadius
     );
     
-    // Create blended colors for smooth transitions
-    const personalityGivingBlend = {
-      r: Math.floor((colors.personalityRGB.r * 0.6 + colors.givingRGB.r * 0.4)),
-      g: Math.floor((colors.personalityRGB.g * 0.6 + colors.givingRGB.g * 0.4)),
-      b: Math.floor((colors.personalityRGB.b * 0.6 + colors.givingRGB.b * 0.4))
+    // Create blended colors for smooth transitions between giving and receiving only
+    const givingReceivingBlend = {
+      r: Math.floor((colors.givingRGB.r * 0.5 + colors.receivingRGB.r * 0.5)),
+      g: Math.floor((colors.givingRGB.g * 0.5 + colors.receivingRGB.g * 0.5)),
+      b: Math.floor((colors.givingRGB.b * 0.5 + colors.receivingRGB.b * 0.5))
     };
     
-    const personalityReceivingBlend = {
-      r: Math.floor((colors.personalityRGB.r * 0.6 + colors.receivingRGB.r * 0.4)),
-      g: Math.floor((colors.personalityRGB.g * 0.6 + colors.receivingRGB.g * 0.4)),
-      b: Math.floor((colors.personalityRGB.b * 0.6 + colors.receivingRGB.b * 0.4))
+    const givingDominantBlend = {
+      r: Math.floor((colors.givingRGB.r * 0.7 + colors.receivingRGB.r * 0.3)),
+      g: Math.floor((colors.givingRGB.g * 0.7 + colors.receivingRGB.g * 0.3)),
+      b: Math.floor((colors.givingRGB.b * 0.7 + colors.receivingRGB.b * 0.3))
     };
     
-    const allColorsBlend = {
-      r: Math.floor((colors.personalityRGB.r * 0.5 + colors.givingRGB.r * 0.25 + colors.receivingRGB.r * 0.25)),
-      g: Math.floor((colors.personalityRGB.g * 0.5 + colors.givingRGB.g * 0.25 + colors.receivingRGB.g * 0.25)),
-      b: Math.floor((colors.personalityRGB.b * 0.5 + colors.givingRGB.b * 0.25 + colors.receivingRGB.b * 0.25))
+    const receivingDominantBlend = {
+      r: Math.floor((colors.receivingRGB.r * 0.7 + colors.givingRGB.r * 0.3)),
+      g: Math.floor((colors.receivingRGB.g * 0.7 + colors.givingRGB.g * 0.3)),
+      b: Math.floor((colors.receivingRGB.b * 0.7 + colors.givingRGB.b * 0.3))
     };
     
-    mergingLayer.addColorStop(0, `rgba(${allColorsBlend.r}, ${allColorsBlend.g}, ${allColorsBlend.b}, 0.25)`);
-    mergingLayer.addColorStop(0.25, `rgba(${personalityGivingBlend.r}, ${personalityGivingBlend.g}, ${personalityGivingBlend.b}, 0.20)`);
-    mergingLayer.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    mergingLayer.addColorStop(0.75, `rgba(${personalityReceivingBlend.r}, ${personalityReceivingBlend.g}, ${personalityReceivingBlend.b}, 0.15)`);
-    mergingLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    mergingLayer.addColorStop(0, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.25)`);
+    mergingLayer.addColorStop(0.25, `rgba(${givingDominantBlend.r}, ${givingDominantBlend.g}, ${givingDominantBlend.b}, 0.20)`);
+    mergingLayer.addColorStop(0.5, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.18)`);
+    mergingLayer.addColorStop(0.75, `rgba(${receivingDominantBlend.r}, ${receivingDominantBlend.g}, ${receivingDominantBlend.b}, 0.15)`);
+    mergingLayer.addColorStop(1, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.08)`);
     
     ctx.fillStyle = mergingLayer;
     ctx.fillRect(0, 0, width, height);
@@ -3483,44 +3464,7 @@ export default function AuraAnalysis() {
           y: height * 0.15 + seededRandom() * (height * 0.7)
         })
       },
-      { 
-        color: colors.personalityRGB, 
-        zone: 'perimeter_halo',
-        density: 30,
-        getCoords: () => {
-          // Create halo effect around entire image perimeter
-          const side = Math.floor(seededRandom() * 4); // 0=top, 1=right, 2=bottom, 3=left
-          const edgeThickness = width * 0.12; // How far from edge to place particles
-          
-          switch(side) {
-            case 0: // Top edge
-              return {
-                x: seededRandom() * width,
-                y: seededRandom() * edgeThickness
-              };
-            case 1: // Right edge
-              return {
-                x: width - (seededRandom() * edgeThickness),
-                y: seededRandom() * height
-              };
-            case 2: // Bottom edge
-              return {
-                x: seededRandom() * width,
-                y: height - (seededRandom() * edgeThickness)
-              };
-            case 3: // Left edge
-              return {
-                x: seededRandom() * edgeThickness,
-                y: seededRandom() * height
-              };
-            default:
-              return {
-                x: seededRandom() * width,
-                y: seededRandom() * height
-              };
-          }
-        }
-      }
+
     ];
 
     colorZones.forEach(zone => {
