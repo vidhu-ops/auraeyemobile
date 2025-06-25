@@ -2772,13 +2772,6 @@ export default function AuraAnalysis() {
             ctx.filter = 'none';
           };
           
-          // Create deterministic seeded random function for this visualization
-          let smokeSeed = currentSeed + 1000; // Offset seed for smoke effects
-          const smokeSeededRandom = () => {
-            smokeSeed = (smokeSeed * 9301 + 49297) % 233280;
-            return smokeSeed / 233280;
-          };
-
           // Create smokey aura effects with specific energy zone colors
           const createSmokeyAuraEffects = () => {
             // Get the 4-zone energy colors
@@ -2827,9 +2820,9 @@ export default function AuraAnalysis() {
             
             zones.forEach(zone => {
               for (let i = 0; i < zone.density; i++) {
-                // Generate smokey particle position within zone (deterministic)
-                const x = zone.area.x + smokeSeededRandom() * zone.area.width;
-                const y = zone.area.y + smokeSeededRandom() * zone.area.height;
+                // Generate smokey particle position within zone
+                const x = zone.area.x + Math.random() * zone.area.width;
+                const y = zone.area.y + Math.random() * zone.area.height;
                 
                 // Enhanced person protection - larger area to keep face completely visible
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
@@ -2847,23 +2840,23 @@ export default function AuraAnalysis() {
                   continue;
                 }
                 
-                // Create extremely blurred, natural smokey wisp effect with deterministic sizing
-                const wispSize = 40 + smokeSeededRandom() * 80;
-                const opacity = 0.04 + smokeSeededRandom() * 0.08;
+                // Create extremely blurred, natural smokey wisp effect
+                const wispSize = 40 + Math.random() * 80;
+                const opacity = 0.04 + Math.random() * 0.08;
                 const [r, g, b] = zone.color;
                 
                 // Apply heavy blur filter for ultra-soft smokey effect
                 ctx.filter = 'blur(20px)';
                 
-                // Create many overlapping layers for dense, natural smoke with deterministic count
-                const smokeLayers = 12 + Math.floor(smokeSeededRandom() * 8);
+                // Create many overlapping layers for dense, natural smoke
+                const smokeLayers = 12 + Math.floor(Math.random() * 8);
                 
                 for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (smokeSeededRandom() - 0.5) * wispSize * 1.8;
+                  const layerOffset = (Math.random() - 0.5) * wispSize * 1.8;
                   const layerX = x + layerOffset;
                   const layerY = y + layerOffset;
-                  const layerSize = wispSize * (0.6 + smokeSeededRandom() * 2.0);
-                  const layerOpacity = opacity * (0.3 + smokeSeededRandom() * 0.7);
+                  const layerSize = wispSize * (0.6 + Math.random() * 2.0);
+                  const layerOpacity = opacity * (0.3 + Math.random() * 0.7);
                   
                   const smokeGradient = ctx.createRadialGradient(
                     layerX, layerY, 0,
@@ -2887,11 +2880,11 @@ export default function AuraAnalysis() {
                 // Reset filter
                 ctx.filter = 'none';
                 
-                // Add flowing smoke trails with heavy blur for natural movement (deterministic)
-                if (smokeSeededRandom() > 0.5) {
+                // Add flowing smoke trails with heavy blur for natural movement
+                if (Math.random() > 0.5) {
                   ctx.filter = 'blur(25px)';
-                  const trailLength = 40 + smokeSeededRandom() * 60;
-                  const angle = smokeSeededRandom() * Math.PI * 2;
+                  const trailLength = 40 + Math.random() * 60;
+                  const angle = Math.random() * Math.PI * 2;
                   
                   for (let trail = 0; trail < trailLength; trail++) {
                     const trailProgress = trail / trailLength;
@@ -3122,19 +3115,10 @@ export default function AuraAnalysis() {
       personalityRGB: { r: number, g: number, b: number }
     },
     energyLevel: number,
-    imageUrl?: string
+    seed?: number
   ) => {
-    // Create deterministic seed from image URL for consistent smoke appearance
-    let currentSeed = 12345;
-    if (imageUrl) {
-      // Generate deterministic seed from image URL
-      let urlHash = 0;
-      for (let i = 0; i < imageUrl.length; i++) {
-        urlHash = ((urlHash << 5) - urlHash + imageUrl.charCodeAt(i)) & 0xffffffff;
-      }
-      currentSeed = Math.abs(urlHash);
-    }
-    
+    // Create deterministic seeded random function
+    let currentSeed = seed || 12345;
     const seededRandom = () => {
       currentSeed = (currentSeed * 9301 + 49297) % 233280;
       return currentSeed / 233280;
@@ -3587,8 +3571,8 @@ export default function AuraAnalysis() {
     
     // Create multiple layers of smoke for depth and mystical appearance
     const smokeLayers = [
-      { density: baseSmokeDensity * 0.4, sizeRange: [130, 131], opacity: [0.06, 0.12] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [90, 100], opacity: [0.08, 0.15] }, // Medium layer
+      { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.06, 0.12] }, // Large background layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [80, 120], opacity: [0.08, 0.15] }, // Medium layer
       { density: baseSmokeDensity * 0.5, sizeRange: [75, 80], opacity: [0.10, 0.18] }   // Detail layer
     ];
     
@@ -4034,7 +4018,7 @@ export default function AuraAnalysis() {
         personalityRGB: hexToRgb(detectedColors.personality)
       };
       
-      createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel, originalImageBase64);
+      createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
       
       // Convert back to base64
       const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
