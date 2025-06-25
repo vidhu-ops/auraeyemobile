@@ -99,6 +99,8 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Restricted aura analysis to only 17 approved colors: white, brown, turquoise, red, yellow, blue, green, violet, indigo, purple, gold, silver, orange, pink, gray, black (black appears rarely, prioritizes spiritual colors like purple, blue, gold)
 - June 25, 2025. Implemented proportional image processing: images maintain aspect ratio with minimum dimensions (1200px width for landscape, 900px height for portrait) and adaptive particle sizing for proper aura visualizations
 - June 25, 2025. Fixed object detection: improved human detection algorithm to prevent electronic devices and objects from being misidentified as humans, added object-like pixel detection for better accuracy
+- June 25, 2025. Enhanced aura visualization with smooth gradient effects and natural color blending between all 4 aura colors using multiple blend modes (multiply, soft-light, overlay, color-dodge)
+- June 25, 2025. Implemented ultra-conservative human detection for object analysis: prevents busy images and complex textures from being falsely detected as human faces, ensures all objects including electronics are accepted
 
 ## User Preferences
 

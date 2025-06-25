@@ -230,7 +230,7 @@ export default function ObjectAnalysis() {
     });
 
     // Add concentrated energy wisps around object edges
-    const wispCount = 50 + energyLevel * 10;
+    const wispCount = 150 + energyLevel * 10;
     for (let i = 0; i < wispCount; i++) {
       const angle = seededRandom() * Math.PI * 2;
       const baseDistance = Math.min(objectWidth, objectHeight) * 0.4;
@@ -260,7 +260,7 @@ export default function ObjectAnalysis() {
   ) => {
     // Create organic, flowing smoke with multiple layers
     const smokeLayers = [
-      { sizeMultiplier: 0.3, opacityMultiplier: 0.2, blur: 3 },
+      { sizeMultiplier: 0.6, opacityMultiplier: 0.5, blur: 3 },
     ];
     
     smokeLayers.forEach(layer => {
