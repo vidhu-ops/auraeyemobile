@@ -3541,7 +3541,7 @@ export default function AuraAnalysis() {
                           coords.y >= faceY && coords.y <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 60 + seededRandom() * 120; // Much larger smoke particles
+          const smokeSize = 80 + seededRandom() * 100; // Standardized particle size for 1600x900 canvas
           const smokeOpacity = 0.08 + seededRandom() * 0.1; // Lower opacity for person visibility
           
           drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
@@ -3565,15 +3565,15 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    // Dramatically increased density for much thicker mystical smoke
-    const baseSmokeDensity = 1200 + Math.floor(energyLevel * 120);
+    // Standardized density for 1600x900 canvas dimensions
+    const baseSmokeDensity = 1800 + Math.floor(energyLevel * 150);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Create multiple layers of smoke for depth and mystical appearance
+    // Standardized smoke layers for consistent appearance on 1600x900 canvas
     const smokeLayers = [
-      { density: baseSmokeDensity * 0.4, sizeRange: [80, 160], opacity: [0.06, 0.12] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [80, 120], opacity: [0.08, 0.15] }, // Medium layer
-      { density: baseSmokeDensity * 0.5, sizeRange: [75, 80], opacity: [0.10, 0.18] }   // Detail layer
+      { density: baseSmokeDensity * 0.4, sizeRange: [100, 180], opacity: [0.06, 0.12] }, // Large background layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [90, 140], opacity: [0.08, 0.15] }, // Medium layer
+      { density: baseSmokeDensity * 0.5, sizeRange: [80, 110], opacity: [0.10, 0.18] }   // Detail layer
     ];
     
     smokeLayers.forEach(layer => {
@@ -4113,8 +4113,8 @@ export default function AuraAnalysis() {
       const useSecondary = colorBlend > 0.7;
       const rgb = useSecondary ? secondaryRGB : dominantRGB;
       
-      // Particle size and opacity based on distance from person
-      const particleSize = (4 + seededRandom() * 8) * (energyLevel / 10);
+      // Standardized particle size for 1600x900 canvas
+      const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10);
       const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
       const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
 
@@ -4165,7 +4165,7 @@ export default function AuraAnalysis() {
       streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
       
       ctx.strokeStyle = streamGradient;
-      ctx.lineWidth = 3 + seededRandom() * 5;
+      ctx.lineWidth = 4 + seededRandom() * 6; // Standardized line width for 1600x900
       ctx.lineCap = 'round';
       
       ctx.beginPath();
