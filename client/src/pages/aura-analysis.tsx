@@ -3813,7 +3813,7 @@ export default function AuraAnalysis() {
     const smokeLayers = [
       { sizeMultiplier: 1.2, opacityMultiplier: 0.3, blur: 100 },     // Main dense layer
       { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 100 },     // Core bright layer
-      { sizeMultiplier: 1.1, opacityMultiplier: 0.5, blur: 80 }      // Outer haze layer
+      { sizeMultiplier: 1.1, opacityMultiplier: 0.5, blur: 100 }      // Outer haze layer
     ];
     
     const smokeR = rgb.r;
@@ -3891,7 +3891,7 @@ export default function AuraAnalysis() {
       // Multiple smoke layers for realistic depth and merging
       const smokeLayers = [
         { sizeMultiplier: 1.2, opacityMultiplier: 0.8 }, // Outer wispy layer
-        { sizeMultiplier: 0.8, opacityMultiplier: 1.0 }, // Core color layer
+        { sizeMultiplier: 0.8, opacityMultiplier: 0.8 }, // Core color layer
         { sizeMultiplier: 0.5, opacityMultiplier: 0.6 }  // Inner concentrated layer
       ];
       
@@ -3977,8 +3977,7 @@ export default function AuraAnalysis() {
         // Create multiple layers for dense coverage
         const layers = [
           { sizeMultiplier: 1.0, opacityMultiplier: 1.0 },
-          { sizeMultiplier: 0.7, opacityMultiplier: 1.2 },
-          { sizeMultiplier: 1.3, opacityMultiplier: 0.8 }
+          { sizeMultiplier: 0.7, opacityMultiplier: 1.2 }
         ];
         
         layers.forEach(layer => {
@@ -3989,7 +3988,6 @@ export default function AuraAnalysis() {
           gradient.addColorStop(0, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity})`);
           gradient.addColorStop(0.4, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.7})`);
           gradient.addColorStop(0.8, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.3})`);
-          gradient.addColorStop(1, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, 0)`);
           
           ctx.fillStyle = gradient;
           ctx.beginPath();

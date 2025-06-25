@@ -569,6 +569,16 @@ export default function ObjectAnalysis() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        if (errorData.error === "HUMAN_DETECTED") {
+          setIsAnalyzing(false);
+          setAnalysisProgress(0);
+          toast({
+            title: "Human Detected", 
+            description: errorData.message,
+            variant: "destructive"
+          });
+          return;
+        }
         throw new Error(errorData.message || `Error: ${response.status}`);
       }
 
