@@ -126,6 +126,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Perfected smoky gradient aura visualization: created seamless color blending system with natural radial gradients that merge all three colors (personality, giving, receiving) around the person without patches, using multiply and soft-light blend modes for authentic smoky appearance
 - June 25, 2025. Enhanced thinking energy visibility: created ultra-bright glowing ball above person's head with bright white center, enhanced sizing (6% of image dimension), higher positioning (75% above head), and prominent sparkle effects for maximum visibility as single glowing orb
 - June 25, 2025. Enhanced personality color particles: created bigger particles with larger coverage area (80% of image dimension), expanded to form outer layer that merges seamlessly with other three colors using overlay and soft-light blending modes for enhanced color integration
+- June 25, 2025. Restructured aura layering system with proper order: personality color as base gradient from person to image edge, giving and receiving layers on top using multiply blending, thinking layer at the very top, all layers well-merged and visible with enhanced color blending
 
 ## User Preferences
 
