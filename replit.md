@@ -114,6 +114,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Enhanced OpenAI human detection with conservative error handling: when API fails or is rate-limited, system blocks images to ensure no humans pass through, improved prompts for better accuracy, and enhanced error messages for users
 - June 25, 2025. Fixed OpenAI human detection logic: simplified prompt to "Detect if there is any human in this image, yes or no" as requested, corrected fallback behavior to allow objects when API fails (since we cannot detect humans), and enhanced client-side error handling for human detection messages
 - June 25, 2025. Added backup human detection system: when OpenAI API fails or is rate-limited, system uses aggressive local detection with ultra-low thresholds (3% eyes, 8% skin, 5% face patterns) to ensure humans are still blocked when AI service is unavailable
+- June 25, 2025. Switched to Gemini free vision API for human detection: replaced OpenAI with Google's Gemini 2.0 Flash for accurate human detection in object analysis, maintaining the exact same prompt "Detect if there is any human in this image, yes or no"
 
 ## User Preferences
 
