@@ -3147,49 +3147,52 @@ export default function AuraAnalysis() {
     personHeight: number,
     colors: any
   ) => {
-    // Create large flowing gradients that blend naturally
+    // Create seamless gradient blend using multiply blend mode for natural color merging
+    ctx.globalCompositeOperation = 'multiply';
     
-    // 1. Left-side giving energy gradient (vertical flow)
-    const leftGradient = ctx.createLinearGradient(0, 0, width * 0.5, height);
-    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`);
-    leftGradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-    leftGradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    leftGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.12)`);
+    // 1. Diagonal gradient from top-left (thinking) to bottom-right (receiving)
+    const diagonalGradient1 = ctx.createLinearGradient(0, 0, width, height);
+    diagonalGradient1.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.4)`);
+    diagonalGradient1.addColorStop(0.3, createBlendedColor(colors.thinkingRGB, colors.personalityRGB, 0.5, 0.3));
+    diagonalGradient1.addColorStop(0.7, createBlendedColor(colors.personalityRGB, colors.receivingRGB, 0.5, 0.3));
+    diagonalGradient1.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.4)`);
     
-    ctx.fillStyle = leftGradient;
-    ctx.fillRect(0, 0, width * 0.6, height);
-    
-    // 2. Right-side receiving energy gradient (diagonal flow)
-    const rightGradient = ctx.createLinearGradient(width * 0.4, 0, width, height);
-    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
-    rightGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.18)`);
-    rightGradient.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
-    rightGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.22)`);
-    
-    ctx.fillStyle = rightGradient;
-    ctx.fillRect(width * 0.4, 0, width * 0.6, height);
-    
-    // 3. Top thinking energy gradient (horizontal flow)
-    const topGradient = ctx.createLinearGradient(0, 0, width, height * 0.3);
-    topGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.20)`);
-    topGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.15)`);
-    topGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    
-    ctx.fillStyle = topGradient;
-    ctx.fillRect(0, 0, width, height * 0.25);
-    
-    // 4. Central personality radial gradient
-    const personalityGradient = ctx.createRadialGradient(
-      centerX, centerY, Math.min(personWidth, personHeight) * 0.8,
-      centerX, centerY, Math.max(width, height) * 0.6
-    );
-    personalityGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    personalityGradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    personalityGradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
-    personalityGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
-    
-    ctx.fillStyle = personalityGradient;
+    ctx.fillStyle = diagonalGradient1;
     ctx.fillRect(0, 0, width, height);
+    
+    // 2. Diagonal gradient from top-right (thinking) to bottom-left (giving) 
+    const diagonalGradient2 = ctx.createLinearGradient(width, 0, 0, height);
+    diagonalGradient2.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.3)`);
+    diagonalGradient2.addColorStop(0.3, createBlendedColor(colors.thinkingRGB, colors.personalityRGB, 0.6, 0.25));
+    diagonalGradient2.addColorStop(0.7, createBlendedColor(colors.personalityRGB, colors.givingRGB, 0.6, 0.25));
+    diagonalGradient2.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.3)`);
+    
+    ctx.fillStyle = diagonalGradient2;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Reset blend mode for normal layering
+    ctx.globalCompositeOperation = 'source-over';
+    
+    // 3. Add radial gradient for center personality energy
+    const centerGradient = ctx.createRadialGradient(
+      centerX, centerY, Math.min(personWidth, personHeight) * 0.5,
+      centerX, centerY, Math.max(width, height) * 0.8
+    );
+    centerGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    centerGradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    centerGradient.addColorStop(0.6, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.7, 0.1));
+    centerGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.05)`);
+    
+    ctx.fillStyle = centerGradient;
+    ctx.fillRect(0, 0, width, height);
+  };
+
+  // Helper function to create blended colors for smooth transitions
+  const createBlendedColor = (color1: any, color2: any, blend: number, opacity: number): string => {
+    const r = Math.round(color1.r * (1 - blend) + color2.r * blend);
+    const g = Math.round(color1.g * (1 - blend) + color2.g * blend);
+    const b = Math.round(color1.b * (1 - blend) + color2.b * blend);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
   // Function to create smooth texture overlay for depth
