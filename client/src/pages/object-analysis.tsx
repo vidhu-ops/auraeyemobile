@@ -240,7 +240,7 @@ export default function ObjectAnalysis() {
       const y = centerY + Math.sin(angle) * wispDistance;
       
       if (x >= 0 && x <= width && y >= 0 && y <= height) {
-        const wispSize = 15 + seededRandom() * 40;
+        const wispSize = 25 + seededRandom() * 40;
         const wispOpacity = 0.1                   + seededRandom() * 0.3;
         
         drawEnergyWisp(ctx, x, y, wispSize, auraColor, wispOpacity, seededRandom);

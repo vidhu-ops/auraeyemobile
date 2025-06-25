@@ -2898,7 +2898,7 @@ export default function AuraAnalysis() {
     return 'none'; // Default fallback
   };
 
-  // Function to create prominent thinking energy particle above person's head with standardized sizing
+  // Function to create prominent thinking energy particle above person's head as single glowing ball
   const createThinkingEnergyParticle = (
     ctx: CanvasRenderingContext2D,
     centerX: number,
@@ -2909,89 +2909,81 @@ export default function AuraAnalysis() {
     imageWidth: number = 800,
     imageHeight: number = 600
   ) => {
-    // Position the thinking energy particle above the person's head - standardized positioning
+    // Position thinking energy ONLY above person's head - single location only
     const particleX = centerX;
-    const particleY = centerY - personHeight * 0.6; // Consistent relative positioning
+    const particleY = centerY - personHeight * 0.75; // Higher above head for better visibility
     
-    // Standardized particle sizing based on image dimensions - consistent across all images
-    const standardSize = Math.min(imageWidth, imageHeight) * 0.04; // 4% of minimum image dimension
-    const baseRadius = Math.max(20, standardSize); // Minimum 20px, scales with image size
+    // Enhanced particle sizing for clear visibility
+    const standardSize = Math.min(imageWidth, imageHeight) * 0.06; // Increased to 6% for better visibility
+    const baseRadius = Math.max(25, standardSize); // Minimum 25px, larger for prominence
     
-    // Create multiple glowing layers for the particle with enhanced visibility
-    ctx.globalCompositeOperation = 'screen'; // Bright additive blending
+    // Use additive blending for bright glowing effect
+    ctx.globalCompositeOperation = 'screen';
     
-    // Extra outer glow for enhanced visibility
-    const extraGlow = ctx.createRadialGradient(
+    // Create ultra-bright outer glow halo for maximum visibility
+    const ultraGlow = ctx.createRadialGradient(
       particleX, particleY, 0,
-      particleX, particleY, baseRadius * 4
+      particleX, particleY, baseRadius * 6
     );
-    extraGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
-    extraGlow.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
-    extraGlow.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
-    extraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    ultraGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center for maximum visibility
+    ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.3)`);
+    ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
-    ctx.fillStyle = extraGlow;
+    ctx.fillStyle = ultraGlow;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 4, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 6, 0, Math.PI * 2);
     ctx.fill();
     
-    // Outer glow layer - enhanced
-    const outerGlow = ctx.createRadialGradient(
-      particleX, particleY, 0,
-      particleX, particleY, baseRadius * 2.5
-    );
-    outerGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
-    outerGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.7)`);
-    outerGlow.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
-    outerGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
-    
-    ctx.fillStyle = outerGlow;
-    ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Middle glow layer - enhanced
+    // Bright middle glow layer for enhanced visibility
     const middleGlow = ctx.createRadialGradient(
       particleX, particleY, 0,
-      particleX, particleY, baseRadius * 1.5
+      particleX, particleY, baseRadius * 3
     );
-    middleGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-    middleGlow.addColorStop(0.4, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    middleGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
+    middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+    middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
     middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = middleGlow;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 1.5, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Inner bright core - enhanced
+    // Ultra-bright inner core - maximum visibility
     const innerCore = ctx.createRadialGradient(
       particleX, particleY, 0,
-      particleX, particleY, baseRadius
+      particleX, particleY, baseRadius * 1.5
     );
-    innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
-    innerCore.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-    innerCore.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+    innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Pure white center
+    innerCore.addColorStop(0.1, `rgba(255, 255, 255, 1)`); // Extended white core
+    innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
     innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = innerCore;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Enhanced sparkle effects around the particle - more visible
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
-      const sparkleX = particleX + Math.cos(angle) * (baseRadius * 2.8);
-      const sparkleY = particleY + Math.sin(angle) * (baseRadius * 2.8);
-      const sparkleRadius = 4 + (energyLevel * 0.8);
+    // Prominent sparkle effects for enhanced visibility
+    for (let i = 0; i < 16; i++) {
+      const angle = (i / 16) * Math.PI * 2;
+      const sparkleDistance = baseRadius * (3.2 + Math.sin(angle * 4) * 0.5);
+      const sparkleX = particleX + Math.cos(angle) * sparkleDistance;
+      const sparkleY = particleY + Math.sin(angle) * sparkleDistance;
+      const sparkleRadius = 6 + (energyLevel * 1.2);
       
       const sparkle = ctx.createRadialGradient(
         sparkleX, sparkleY, 0,
         sparkleX, sparkleY, sparkleRadius
       );
       sparkle.addColorStop(0, `rgba(255, 255, 255, 1)`);
-      sparkle.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+      sparkle.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+      sparkle.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
       sparkle.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
       
       ctx.fillStyle = sparkle;
