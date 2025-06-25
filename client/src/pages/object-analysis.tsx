@@ -204,7 +204,7 @@ export default function ObjectAnalysis() {
 
     // Create multiple layers of natural smoke wisps around object
     const smokeLayers = [
-      { density: 200 + energyLevel * 30, sizeRange: [20, 80], opacity: [0.15, 0.25], distance: [30, 120] },
+      { density: 300 + energyLevel * 30, sizeRange: [20, 100], opacity: [0.15, 0.25], distance: [30, 120] },
     ];
 
     smokeLayers.forEach(layer => {
@@ -260,7 +260,7 @@ export default function ObjectAnalysis() {
   ) => {
     // Create organic, flowing smoke with multiple layers
     const smokeLayers = [
-      { sizeMultiplier: 0.6, opacityMultiplier: 0.5, blur: 3 },
+      { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 8 },
     ];
     
     smokeLayers.forEach(layer => {
@@ -373,7 +373,7 @@ export default function ObjectAnalysis() {
             // Stricter skin tone detection - must meet multiple criteria
             const skinTone1 = r > 120 && g > 80 && b > 60 && r > g && r > b && 
                              Math.abs(r - g) > 20 && Math.abs(r - b) > 30;
-            const skinTone2 = r > 240 && g > 220 && b > 180 && r - g < 30 && r - b < 80; // Very light skin
+            const skinTone2 = r > 200 && g > 170 && b > 130 && r - g < 30 && r - b < 80; // Very light skin
             const skinTone3 = r > 110 && r < 140 && g > 80 && g < 110 && b > 60 && b < 90 && 
                              r > g && r > b; // Medium skin with strict bounds
             
@@ -466,8 +466,8 @@ export default function ObjectAnalysis() {
       if (hasFaces) {
         setIsAnalyzing(false);
         toast({
-          title: "Human Face Detected",
-          description: "Object analysis is designed for inanimate objects only. Please upload an image without human faces.",
+          title: "Error Detected",
+          description: "Please Upload another image",
           variant: "destructive",
         });
         return;
@@ -519,10 +519,12 @@ export default function ObjectAnalysis() {
       clearInterval(progressInterval);
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
       }
 
       const data: ObjectAnalysisResult = await response.json();
+      console.log('Object analysis result:', data);
       setResult(data);
       setAnalysisProgress(100);
       setActiveTab("basic");
@@ -551,11 +553,21 @@ export default function ObjectAnalysis() {
       });
     } catch (error) {
       console.error("Error analyzing object:", error);
-      toast({
-        title: "Analysis Failed",
-        description: error instanceof Error ? error.message : "An error occurred during analysis",
-        variant: "destructive",
-      });
+      
+      // Check if it's a human detection error
+      if (error instanceof Error && error.message.includes("Error: 400")) {
+        toast({
+          title: "Human Face Detected",
+          description: "Please use the Aura Analysis section for images containing people, or upload an image of an object only.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Analysis Failed",
+          description: error instanceof Error ? error.message : "An error occurred during analysis",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsAnalyzing(false);
     }
