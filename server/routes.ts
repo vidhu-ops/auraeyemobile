@@ -687,6 +687,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to resize images to standard dimensions
+  const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
+    try {
+      // Resize image to 1600x900px with proper aspect ratio handling
+      const resizedBuffer = await sharp(inputBuffer)
+        .resize(1600, 900, {
+          fit: 'cover', // Cover the entire canvas, cropping if necessary
+          position: 'centre' // Center the crop
+        })
+        .jpeg({ quality: 85 }) // Good quality while keeping file size reasonable
+        .toBuffer();
+      
+      return resizedBuffer;
+    } catch (error) {
+      console.error("Error resizing image:", error);
+      // Return original buffer if resize fails
+      return inputBuffer;
+    }
+  };
+
   // API routes
   // Object Analysis API endpoint
   app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
@@ -703,6 +723,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         return res.status(400).json({ message: "No image file provided" });
       }
+
+      // Resize image to standard dimensions (1600x900px)
+      imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // Check if image contains a human - object analysis should reject human images
       const hasHuman = detectHumanInImage(imgBuffer);
@@ -813,15 +836,17 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       
       if (req.file) {
         // If image was uploaded as file
-        imageData = req.file.buffer.toString("base64");
         imgBuffer = req.file.buffer;
       } else if (req.body.image) {
         // If image was sent as base64 string
-        imageData = req.body.image;
-        imgBuffer = Buffer.from(imageData, 'base64');
+        imgBuffer = Buffer.from(req.body.image, 'base64');
       } else {
         return res.status(400).json({ message: "No image provided" });
       }
+
+      // Resize image to standard dimensions (1600x900px)
+      imgBuffer = await resizeImageToStandard(imgBuffer);
+      imageData = imgBuffer.toString("base64");
 
       // Check if image contains a human - aura analysis requires human images
       const hasHuman = detectHumanInImage(imgBuffer);
