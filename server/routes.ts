@@ -838,96 +838,177 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
 function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // Ultra-restrictive detection using edge patterns and geometric shapes only
-  // NO skin color detection - focus on structural patterns like face geometry
+  // Advanced facial structure detection using geometric patterns
+  // Detects human faces by identifying facial feature arrangements
   
-  if (imageBuffer.length < 100000) {
+  if (imageBuffer.length < 50000) {
     return false; // Small images are likely objects
   }
   
-  // Look for geometric patterns that suggest human face structure
-  let circularPatterns = 0;
-  let symmetricalPatterns = 0;
-  let verticalLinePatterns = 0;
-  let horizontalLinePatterns = 0;
+  let faceStructureScore = 0;
+  let eyeRegionPatterns = 0;
+  let noseRegionPatterns = 0;
+  let mouthRegionPatterns = 0;
+  let facialSymmetryPatterns = 0;
+  let manufacturedPatterns = 0;
   let sampledPixels = 0;
   
-  // Sample very conservatively to detect only obvious face structures
-  const sampleSize = Math.min(30, Math.floor(imageBuffer.length / 1000));
-  const step = Math.max(1000, Math.floor(imageBuffer.length / sampleSize));
+  // Sample for facial structure detection
+  const sampleSize = Math.min(100, Math.floor(imageBuffer.length / 500));
+  const step = Math.max(500, Math.floor(imageBuffer.length / sampleSize));
   
-  for (let i = 0; i < imageBuffer.length - 12; i += step) {
-    const r1 = imageBuffer[i] || 0;
-    const g1 = imageBuffer[i + 1] || 0;
-    const b1 = imageBuffer[i + 2] || 0;
+  for (let i = 0; i < imageBuffer.length - 20; i += step) {
+    const pixels = [];
+    for (let j = 0; j < 20; j += 3) {
+      if (i + j + 2 < imageBuffer.length) {
+        pixels.push({
+          r: imageBuffer[i + j] || 0,
+          g: imageBuffer[i + j + 1] || 0,
+          b: imageBuffer[i + j + 2] || 0
+        });
+      }
+    }
     
-    const r2 = imageBuffer[i + 3] || 0;
-    const g2 = imageBuffer[i + 4] || 0;
-    const b2 = imageBuffer[i + 5] || 0;
-    
-    const r3 = imageBuffer[i + 6] || 0;
-    const g3 = imageBuffer[i + 7] || 0;
-    const b3 = imageBuffer[i + 8] || 0;
-    
-    const r4 = imageBuffer[i + 9] || 0;
-    const g4 = imageBuffer[i + 10] || 0;
-    const b4 = imageBuffer[i + 11] || 0;
-    
+    if (pixels.length < 6) continue;
     sampledPixels++;
     
-    // Look for smooth gradient transitions (face contours)
-    const grad1 = Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
-    const grad2 = Math.abs(r2 - r3) + Math.abs(g2 - g3) + Math.abs(b2 - b3);
-    const grad3 = Math.abs(r3 - r4) + Math.abs(g3 - g4) + Math.abs(b3 - b4);
+    // Check for manufactured object patterns first (reject immediately)
+    let hasHighContrast = false;
+    let hasGeometricPattern = false;
+    let hasTextPattern = false;
     
-    // Detect very smooth gradients that might indicate face shading
-    if (grad1 < 5 && grad2 < 5 && grad3 < 5) {
-      circularPatterns++;
+    for (let p = 0; p < pixels.length - 1; p++) {
+      const grad = Math.abs(pixels[p].r - pixels[p + 1].r) + 
+                   Math.abs(pixels[p].g - pixels[p + 1].g) + 
+                   Math.abs(pixels[p].b - pixels[p + 1].b);
+      
+      // High contrast edges (electronic displays, text)
+      if (grad > 150) {
+        hasHighContrast = true;
+      }
+      
+      // Perfect geometric patterns (UI elements)
+      if (pixels[p].r === pixels[p + 1].r && 
+          pixels[p].g === pixels[p + 1].g && 
+          pixels[p].b === pixels[p + 1].b) {
+        hasGeometricPattern = true;
+      }
+      
+      // Text-like patterns (black on white or white on black)
+      if ((pixels[p].r + pixels[p].g + pixels[p].b < 30 && 
+           pixels[p + 1].r + pixels[p + 1].g + pixels[p + 1].b > 200) ||
+          (pixels[p].r + pixels[p].g + pixels[p].b > 200 && 
+           pixels[p + 1].r + pixels[p + 1].g + pixels[p + 1].b < 30)) {
+        hasTextPattern = true;
+      }
     }
     
-    // Look for high contrast patterns (sharp edges like electronics)
-    const highContrast = grad1 > 100 || grad2 > 100 || grad3 > 100;
-    if (highContrast) {
-      // High contrast suggests non-human objects (electronics, text, etc.)
-      return false;
+    // If any manufactured patterns detected, reject as object
+    if (hasHighContrast || hasGeometricPattern || hasTextPattern) {
+      manufacturedPatterns++;
+      continue;
     }
     
-    // Look for repetitive patterns (text, buttons, interfaces)
-    const isRepetitive = (
-      Math.abs(r1 - r3) < 10 && Math.abs(g1 - g3) < 10 && Math.abs(b1 - b3) < 10 &&
-      Math.abs(r2 - r4) < 10 && Math.abs(g2 - g4) < 10 && Math.abs(b2 - b4) < 10
-    );
+    // Look for facial structure patterns only if no manufactured patterns
+    // Eye region detection: small dark areas with surrounding lighter areas
+    let darkSpotCount = 0;
+    let lightSurroundCount = 0;
     
-    if (isRepetitive) {
-      // Repetitive patterns suggest manufactured objects
-      return false;
+    for (const pixel of pixels) {
+      const brightness = pixel.r + pixel.g + pixel.b;
+      
+      // Dark spots (potential eyes/nostrils)
+      if (brightness < 100) {
+        darkSpotCount++;
+      }
+      
+      // Light surrounding areas
+      if (brightness > 150 && brightness < 250) {
+        lightSurroundCount++;
+      }
     }
     
-    // Check for perfect geometric shapes (rectangles, perfect circles)
-    const isGeometric = (
-      (r1 === r2 && r2 === r3 && r3 === r4) ||
-      (g1 === g2 && g2 === g3 && g3 === g4) ||
-      (b1 === b2 && b2 === b3 && b3 === b4)
-    );
+    // Eye region pattern: dark spots with light surroundings
+    if (darkSpotCount >= 2 && lightSurroundCount >= 3) {
+      eyeRegionPatterns++;
+    }
     
-    if (isGeometric) {
-      // Perfect geometric patterns suggest manufactured objects
-      return false;
+    // Nose region detection: central lighter area with gradual transitions
+    let centerBrightness = 0;
+    let edgeBrightness = 0;
+    const centerPixels = pixels.slice(2, 4);
+    const edgePixels = pixels.slice(0, 2).concat(pixels.slice(4, 6));
+    
+    centerPixels.forEach(p => centerBrightness += (p.r + p.g + p.b));
+    edgePixels.forEach(p => edgeBrightness += (p.r + p.g + p.b));
+    
+    if (centerPixels.length > 0 && edgePixels.length > 0) {
+      centerBrightness /= centerPixels.length;
+      edgeBrightness /= edgePixels.length;
+      
+      // Nose pattern: center slightly brighter than edges
+      if (centerBrightness > edgeBrightness + 20 && centerBrightness < edgeBrightness + 80) {
+        noseRegionPatterns++;
+      }
+    }
+    
+    // Mouth region detection: horizontal line with varying brightness
+    let horizontalVariation = 0;
+    for (let p = 0; p < pixels.length - 2; p += 2) {
+      const brightness1 = pixels[p].r + pixels[p].g + pixels[p].b;
+      const brightness2 = pixels[p + 2].r + pixels[p + 2].g + pixels[p + 2].b;
+      horizontalVariation += Math.abs(brightness1 - brightness2);
+    }
+    
+    // Mouth pattern: moderate horizontal brightness variation
+    if (horizontalVariation > 100 && horizontalVariation < 300) {
+      mouthRegionPatterns++;
+    }
+    
+    // Facial symmetry detection: similar patterns on both sides
+    const leftSide = pixels.slice(0, Math.floor(pixels.length / 2));
+    const rightSide = pixels.slice(Math.floor(pixels.length / 2));
+    
+    if (leftSide.length === rightSide.length) {
+      let symmetryScore = 0;
+      for (let s = 0; s < leftSide.length; s++) {
+        const leftBrightness = leftSide[s].r + leftSide[s].g + leftSide[s].b;
+        const rightBrightness = rightSide[s].r + rightSide[s].g + rightSide[s].b;
+        
+        if (Math.abs(leftBrightness - rightBrightness) < 50) {
+          symmetryScore++;
+        }
+      }
+      
+      if (symmetryScore >= leftSide.length * 0.7) {
+        facialSymmetryPatterns++;
+      }
     }
   }
   
-  // Only flag as human if we find very specific organic gradient patterns
-  // AND no electronic/manufactured patterns
-  const organicGradientRatio = circularPatterns / sampledPixels;
+  // Calculate ratios
+  const manufacturedRatio = manufacturedPatterns / sampledPixels;
+  const eyeRatio = eyeRegionPatterns / sampledPixels;
+  const noseRatio = noseRegionPatterns / sampledPixels;
+  const mouthRatio = mouthRegionPatterns / sampledPixels;
+  const symmetryRatio = facialSymmetryPatterns / sampledPixels;
   
-  // Extremely high threshold - need overwhelming evidence of human face
-  const hasDefiniteHumanFace = (
-    organicGradientRatio > 0.8 && // 80% of patterns must be organic gradients
-    sampledPixels > 20 &&
-    imageBuffer.length > 500000 // Large image size typical of portraits
+  // Reject if significant manufactured patterns detected
+  if (manufacturedRatio > 0.3) {
+    return false;
+  }
+  
+  // Detect human face: need multiple facial features + symmetry + no manufactured patterns
+  const hasFacialStructure = (
+    eyeRatio > 0.15 &&           // Clear eye regions
+    noseRatio > 0.10 &&          // Nose structure
+    mouthRatio > 0.10 &&         // Mouth region
+    symmetryRatio > 0.20 &&      // Facial symmetry
+    manufacturedRatio < 0.1 &&   // Minimal manufactured patterns
+    sampledPixels > 30           // Sufficient sampling
   );
   
-  return hasDefiniteHumanFace;
+  return hasFacialStructure;
 }
 
   // Aura Analysis API endpoint
