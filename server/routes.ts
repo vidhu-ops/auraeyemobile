@@ -838,22 +838,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
 function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // Ultra-conservative for object analysis - only detect extremely clear human faces
-  // Default to treating everything as objects unless absolutely certain it's a human face
+  // Extremely restrictive for object analysis - almost never detect humans
+  // Bias heavily toward accepting all images as objects
   
-  if (imageBuffer.length < 100000) {
-    return false; // Small/medium images are likely objects
+  if (imageBuffer.length < 200000) {
+    return false; // Larger threshold - most images are objects
   }
   
-  let definiteHumanSkinPixels = 0;
-  let definiteHumanFeaturePixels = 0;
+  let absoluteHumanSkinPixels = 0;
+  let absoluteHumanFeaturePixels = 0;
   let sampledPixels = 0;
-  let connectedFaceRegionPixels = 0;
-  let busyImagePixels = 0;
+  let verifiedFaceRegionPixels = 0;
+  let complexPatternPixels = 0;
   
-  // Sample even fewer pixels to minimize false positives from complex textures
-  const sampleSize = Math.min(75, Math.floor(imageBuffer.length / 100));
-  const step = Math.max(100, Math.floor(imageBuffer.length / sampleSize));
+  // Sample very few pixels to avoid pattern misinterpretation
+  const sampleSize = Math.min(50, Math.floor(imageBuffer.length / 200));
+  const step = Math.max(200, Math.floor(imageBuffer.length / sampleSize));
   
   for (let i = 0; i < imageBuffer.length - 3; i += step) {
     const r = imageBuffer[i] || 0;
@@ -861,63 +861,65 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
     const b = imageBuffer[i + 2] || 0;
     sampledPixels++;
     
-    // Detect busy/complex image patterns that suggest objects/scenes
+    // Detect any complex patterns that suggest non-human content
     const colorVariation = Math.abs(r - g) + Math.abs(g - b) + Math.abs(r - b);
-    if (colorVariation > 100) {
-      busyImagePixels++;
+    const brightness = r + g + b;
+    
+    if (colorVariation > 80 || brightness > 600 || brightness < 150) {
+      complexPatternPixels++;
     }
     
-    // Ultra-specific human skin detection - exclude all possible object colors
-    const isUnmistakablyHumanSkin = (
-      // Only the most typical human skin tones with very strict requirements
-      (r > 210 && r < 225 && g > 170 && g < 180 && b > 150 && b < 160 && 
-       (r - g) > 40 && (r - b) > 60 && (g - b) > 20) || // Light skin - very narrow range
-      (r > 170 && r < 180 && g > 125 && g < 130 && b > 105 && b < 110 && 
-       (r - g) > 35 && (r - b) > 50 && (g - b) > 20) // Medium skin - very narrow range
+    // Extremely narrow human skin detection - only perfect skin tone matches
+    const isPerfectHumanSkin = (
+      // Only one very specific light skin tone range
+      (r >= 215 && r <= 220 && g >= 175 && g <= 178 && b >= 155 && b <= 158 && 
+       (r - g) >= 42 && (r - g) <= 45 && (r - b) >= 62 && (r - b) <= 65 && 
+       (g - b) >= 22 && (g - b) <= 25)
     );
     
-    // Only count unmistakable human facial features
-    const isUnmistakablyHair = r < 20 && g < 20 && b < 20 && (r + g + b) < 50;
-    const isUnmistakablyEyeRegion = (r < 40 && g < 40 && b < 40) && (Math.abs(r - g) < 5) && (Math.abs(g - b) < 5);
-    const isUnmistakablyTeeth = r > 250 && g > 250 && b > 250 && (r + g + b) > 750;
+    // Only count perfect facial features with exact color ranges
+    const isPerfectHair = r <= 15 && g <= 15 && b <= 15 && (r + g + b) <= 40;
+    const isPerfectEyeRegion = (r <= 35 && g <= 35 && b <= 35) && 
+                               (Math.abs(r - g) <= 3) && (Math.abs(g - b) <= 3) && 
+                               (Math.abs(r - b) <= 3);
+    const isPerfectTeeth = r >= 252 && g >= 252 && b >= 252 && (r + g + b) >= 756;
     
-    if (isUnmistakablyHumanSkin) {
-      definiteHumanSkinPixels++;
+    if (isPerfectHumanSkin) {
+      absoluteHumanSkinPixels++;
       
-      // Only count as connected face region if we have multiple human features
-      if ((isUnmistakablyHair && isUnmistakablyEyeRegion) || 
-          (isUnmistakablyEyeRegion && isUnmistakablyTeeth) ||
-          (isUnmistakablyHair && isUnmistakablyTeeth)) {
-        connectedFaceRegionPixels++;
+      // Require ALL three facial features to be present together
+      if (isPerfectHair && isPerfectEyeRegion && isPerfectTeeth) {
+        verifiedFaceRegionPixels++;
       }
     }
     
-    if (isUnmistakablyHair || isUnmistakablyEyeRegion || isUnmistakablyTeeth) {
-      definiteHumanFeaturePixels++;
+    if (isPerfectHair || isPerfectEyeRegion || isPerfectTeeth) {
+      absoluteHumanFeaturePixels++;
     }
   }
   
   // Calculate ratios
-  const definiteHumanSkinRatio = definiteHumanSkinPixels / sampledPixels;
-  const connectedFaceRatio = connectedFaceRegionPixels / sampledPixels;
-  const definiteFeatureRatio = definiteHumanFeaturePixels / sampledPixels;
-  const busyImageRatio = busyImagePixels / sampledPixels;
+  const perfectSkinRatio = absoluteHumanSkinPixels / sampledPixels;
+  const verifiedFaceRatio = verifiedFaceRegionPixels / sampledPixels;
+  const perfectFeatureRatio = absoluteHumanFeaturePixels / sampledPixels;
+  const complexPatternRatio = complexPatternPixels / sampledPixels;
   
-  // If image is too busy/complex, likely not a clean human face photo
-  if (busyImageRatio > 0.6) {
+  // Reject if any complexity detected
+  if (complexPatternRatio > 0.3) {
     return false;
   }
   
-  // Ultra-restrictive requirements - need ALL conditions to be very strongly met
-  const hasStrongHumanIndicators = (
-    definiteHumanSkinRatio > 0.35 && 
-    connectedFaceRatio > 0.20 && 
-    definiteFeatureRatio > 0.25 &&
-    busyImageRatio < 0.4
+  // Extremely high thresholds - need overwhelming evidence
+  const hasAbsoluteHumanEvidence = (
+    perfectSkinRatio > 0.50 && 
+    verifiedFaceRatio > 0.30 && 
+    perfectFeatureRatio > 0.40 &&
+    complexPatternRatio < 0.2 &&
+    sampledPixels > 30
   );
   
-  // Only return true if we have overwhelming evidence of a clear human face
-  return hasStrongHumanIndicators;
+  // Only return true with perfect human face evidence
+  return hasAbsoluteHumanEvidence;
 }
 
   // Aura Analysis API endpoint
