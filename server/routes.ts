@@ -485,16 +485,10 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     "Mirror", "Vessel", "Sphere", "Pyramid", "Wand", "Bracelet"
   ];
   
-  // Expanded aura colors with much more diversity
+  // Only approved aura colors - restricted to 16 colors
   const auraColors = [
-    "Crimson", "Scarlet", "Ruby", "Coral", "Salmon", "Rose",
-    "Orange", "Amber", "Copper", "Bronze", "Apricot", "Peach",
-    "Yellow", "Gold", "Citrine", "Lemon", "Cream", "Ivory",
-    "Emerald", "Jade", "Forest", "Lime", "Mint", "Sage",
-    "Azure", "Sapphire", "Cobalt", "Navy", "Teal", "Aqua",
-    "Amethyst", "Lavender", "Plum", "Mauve", "Periwinkle", "Lilac",
-    "Magenta", "Fuchsia", "Pink", "Blush", "Cherry", "Wine",
-    "Silver", "Platinum", "Pearl", "Opal", "Moonstone", "Crystal"
+    "Black", "White", "Brown", "Turquoise", "Red", "Yellow", "Blue", "Green", 
+    "Violet", "Indigo", "Purple", "Gold", "Silver", "Orange", "Pink"
   ];
   
   // Enhanced energy qualities with more variety
@@ -521,36 +515,9 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const complexSeed3 = (seed3 ^ seed4 ^ seed5) + (seed6 % 5003);
   const complexSeed4 = (seed4 ^ seed5 ^ seed6) + (imageSize % 3001);
   
-  // Avoid purple/violet family colors for diversity (indices 35-41 in the array)
-  const avoidIndices = [35, 36, 37, 38, 39, 40]; // Amethyst, Lavender, Plum, Mauve, Periwinkle, Lilac
-  
   let objectTypeIndex = Math.abs(complexSeed1) % objectTypes.length;
   let auraColorIndex = Math.abs(complexSeed2) % auraColors.length;
   let energyIndex = Math.abs(complexSeed3) % energyQualities.length;
-  
-  // Force diversity by avoiding overused purple/violet colors
-  if (avoidIndices.includes(auraColorIndex)) {
-    // Map to different color families using image-based seeds only
-    const alternativeSeeds = [
-      Math.abs(complexSeed1 + complexSeed2) % auraColors.length,
-      Math.abs(complexSeed2 + complexSeed3) % auraColors.length,
-      Math.abs(complexSeed3 + complexSeed4) % auraColors.length
-    ];
-    
-    // Find first non-purple alternative
-    for (const altSeed of alternativeSeeds) {
-      if (!avoidIndices.includes(altSeed)) {
-        auraColorIndex = altSeed;
-        break;
-      }
-    }
-    
-    // If still in purple range, force to earth tones or metals
-    if (avoidIndices.includes(auraColorIndex)) {
-      const earthTones = [1, 7, 8, 9, 16, 17, 43, 44, 45, 46, 47]; // Scarlet, Amber, Copper, Bronze, Cream, Ivory, Silver, Platinum, Pearl, Opal, etc.
-      auraColorIndex = earthTones[Math.abs(complexSeed1) % earthTones.length];
-    }
-  }
   
   const energyLevel = 3 + (Math.abs(complexSeed1 + complexSeed2) % 8); // Energy level between 3-10
   
@@ -580,14 +547,8 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
     'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
 
-    'Magenta': 'Divine rebellion - unconventional wisdom, breakthrough energy, revolutionary spirit, paradigm shifting',
-    'Fuchsia': 'Electric passion - intense creativity, vibrant expression, dynamic energy, powerful manifestation',
-    'Pink': 'Universal love - all-encompassing compassion, divine feminine, nurturing strength, heart opening',
-    'Blush': 'Innocent awakening - gentle emergence, soft power, tender strength, delicate wisdom',
-    'Cherry': 'Sweet vitality - joyful energy, celebratory spirit, life appreciation, happiness manifestation',
-    'Wine': 'Mature wisdom - aged knowledge, refined understanding, sophisticated insight, cultured awareness',
-    'Silver': 'Lunar reflection - feminine intuition, moon energy, psychic mirroring, ethereal wisdom',
-    'Platinum': 'Rare excellence - precious energy, refined power, elite consciousness, exceptional awareness',
+
+
     'Pearl': 'Ocean treasure - hidden wisdom, deep mysteries, lunar magic, feminine power',
     'Opal': 'Rainbow consciousness - multi-dimensional awareness, spectrum energy, prismatic wisdom, colorful insight',
     'Moonstone': 'Cyclical wisdom - natural rhythms, feminine cycles, intuitive timing, lunar connection',
