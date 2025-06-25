@@ -781,9 +781,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
-      // Check if image contains a human using OpenAI vision API - object analysis should reject human images
+      // Check if image contains a human using Gemini vision API - object analysis should reject human images
       const hasHuman = await detectHumanInImage(imgBuffer);
-      console.log('Object analysis - OpenAI human detection result:', hasHuman);
+      console.log('Object analysis - Gemini human detection result:', hasHuman);
       if (hasHuman) {
         return res.status(400).json({ 
           error: "HUMAN_DETECTED",
@@ -949,53 +949,51 @@ function performBackupHumanDetection(imageBuffer: Buffer): boolean {
 }
 
 async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
-  // Use OpenAI's vision API to accurately detect humans in images
+  // Use Gemini's vision API to accurately detect humans in images
   try {
     const base64Image = imageBuffer.toString('base64');
     
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + process.env.GEMINI_API_KEY, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
+        contents: [
           {
-            role: "user",
-            content: [
+            parts: [
               {
-                type: "text",
                 text: "Detect if there is any human in this image, yes or no"
               },
               {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${base64Image}`
+                inlineData: {
+                  mimeType: "image/jpeg",
+                  data: base64Image
                 }
               }
             ]
           }
         ],
-        max_tokens: 5,
-        temperature: 0
+        generationConfig: {
+          maxOutputTokens: 10,
+          temperature: 0
+        }
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, response.statusText, errorText);
+      console.error('Gemini API error:', response.status, response.statusText, errorText);
       
       // If API fails, use backup human detection
-      console.log('API failed - using backup human detection');
+      console.log('Gemini API failed - using backup human detection');
       return performBackupHumanDetection(imageBuffer);
     }
 
     const result = await response.json();
-    const answer = result.choices[0]?.message?.content?.trim().toLowerCase();
+    const answer = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase() || '';
     
-    console.log('OpenAI human detection result:', answer);
+    console.log('Gemini human detection result:', answer);
     
     // Return true if human detected (yes), false if no human (no)
     const hasHuman = answer.includes('yes');
@@ -1006,9 +1004,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     return hasHuman;
     
   } catch (error) {
-    console.error('Error calling OpenAI for human detection:', error);
+    console.error('Error calling Gemini for human detection:', error);
     // If API fails, use backup human detection
-    console.log('API error - using backup human detection');
+    console.log('Gemini API error - using backup human detection');
     return performBackupHumanDetection(imageBuffer);
   }
 }
