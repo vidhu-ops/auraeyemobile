@@ -34,7 +34,7 @@ const ENHANCED_COLORS = [
   { name: "Silver", hex: "#C0C0C0" },
   { name: "Orange", hex: "#FFA500" },
   { name: "Pink", hex: "#FFC0CB" },
-  { name: "Red", hex: "#FF0000" } // Duplicate for better distribution
+  { name: "Turquoise", hex: "#40E0D0" } // Second instance for better distribution
 ];
 
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
@@ -254,76 +254,57 @@ function groupSimilarColors(hex: string): string {
   const g = parseInt(hex.substring(3, 5), 16);
   const b = parseInt(hex.substring(5, 7), 16);
   
-  const threshold = 30; // Tighter grouping for aura colors
+  const threshold = 30;
   
-  // Enhanced aura color detection - preserve actual visible colors
-  // Red spectrum (passion, vitality)
-  if (r > g + threshold && r > b + threshold) {
-    if (r > 200) return '#FF4444'; // Bright red
-    if (r > 150) return '#CC3333'; // Medium red
-    return '#AA2222'; // Deep red
-  }
+  // Map detected colors to only the 16 approved aura colors
   
-  // Blue spectrum (communication, truth)
-  if (b > r + threshold && b > g + threshold) {
-    if (b > 200) return '#4444FF'; // Bright blue
-    if (b > 150) return '#3333CC'; // Medium blue
-    return '#2222AA'; // Deep blue
-  }
+  // Black spectrum
+  if (r < 50 && g < 50 && b < 50) return '#000000';
   
-  // Green spectrum (healing, heart)
-  if (g > r + threshold && g > b + threshold) {
-    if (g > 200) return '#44FF44'; // Bright green
-    if (g > 150) return '#33CC33'; // Medium green
-    return '#22AA22'; // Deep green
-  }
-  
-  // Purple/Violet spectrum (spirituality, intuition)
-  if (r > threshold && b > threshold && Math.abs(r - b) < 50) {
-    if (r > 180 && b > 180) return '#AA44FF'; // Violet
-    if (r > 120 && b > 120) return '#8833CC'; // Purple
-    return '#663399'; // Deep purple
-  }
-  
-  // Yellow spectrum (wisdom, mental clarity)
-  if (r > threshold && g > threshold && b < r - threshold) {
-    if (r > 200 && g > 200) return '#FFFF44'; // Bright yellow
-    return '#DDDD33'; // Medium yellow
-  }
-  
-  // Orange spectrum (creativity, emotion)
-  if (r > g && g > b && r - g < threshold && g > 100) {
-    return '#FF8844'; // Orange
-  }
-  
-  // Cyan/Turquoise spectrum (communication, healing)
-  if (g > threshold && b > threshold && r < g - 30) {
-    return '#44FFFF'; // Cyan/Turquoise
-  }
-  
-  // Pink spectrum (love, compassion)
-  if (r > 150 && g > 100 && b > 150 && r > g) {
-    return '#FF88CC'; // Pink
-  }
-  
-  // Gold spectrum (divine wisdom)
-  if (r > 180 && g > 150 && b < 100) {
-    return '#FFD700'; // Gold
-  }
-  
-  // Silver spectrum (intuition, lunar energy)
-  if (Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && r > 150) {
-    return '#C0C0C0'; // Silver
-  }
-  
-  // White/Light spectrum
+  // White spectrum
   if (r > 220 && g > 220 && b > 220) return '#FFFFFF';
   
-  // Dark/Black spectrum
-  if (r < 50 && g < 50 && b < 50) return '#333333';
+  // Brown spectrum (earth tones)
+  if (r > 100 && g > 50 && b < 80 && r > g && g > b) return '#A52A2A';
   
-  // Return original color if no clear category
-  return hex;
+  // Turquoise spectrum (blue-green)
+  if (g > 150 && b > 150 && r < 100) return '#40E0D0';
+  
+  // Red spectrum
+  if (r > g + threshold && r > b + threshold) return '#FF0000';
+  
+  // Yellow spectrum
+  if (r > 150 && g > 150 && b < 100) return '#FFFF00';
+  
+  // Blue spectrum
+  if (b > r + threshold && b > g + threshold) return '#0000FF';
+  
+  // Green spectrum
+  if (g > r + threshold && g > b + threshold) return '#00FF00';
+  
+  // Violet spectrum (high red and blue)
+  if (r > 130 && b > 130 && g < 80) return '#8A2BE2';
+  
+  // Indigo spectrum (dark blue-purple)
+  if (b > 80 && r > 50 && r < b && g < r) return '#4B0082';
+  
+  // Purple spectrum (balanced red-blue)
+  if (r > 80 && b > 80 && Math.abs(r - b) < 50 && g < r) return '#800080';
+  
+  // Gold spectrum
+  if (r > 200 && g > 180 && b < 50) return '#FFD700';
+  
+  // Silver spectrum (balanced grays)
+  if (Math.abs(r - g) < 30 && Math.abs(g - b) < 30 && r > 150) return '#C0C0C0';
+  
+  // Orange spectrum
+  if (r > 200 && g > 100 && g < r && b < 100) return '#FFA500';
+  
+  // Pink spectrum
+  if (r > 200 && g > 150 && b > 150 && r > b) return '#FFC0CB';
+  
+  // Default to red if no clear match
+  return '#FF0000';
 }
 
 function findClosestEnhancedColor(detectedHex: string, enhancedColors: any[]) {
@@ -373,38 +354,34 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     return seed / 233280;
   };
 
-  // Simplified color palette for fast processing
+  // Only approved aura colors - restricted to 16 colors
   const enhancedColors = [
-    { name: "Red", hex: "#FF4444" },
-    { name: "Orange", hex: "#FF8844" },
-    { name: "Yellow", hex: "#FFDD44" },
-    { name: "Green", hex: "#44DD44" },
-    { name: "Blue", hex: "#4488FF" },
-    { name: "Pink", hex: "#FF88CC" },
-    { name: "Violet", hex: "#AA44FF" },
-    { name: "Indigo", hex: "#6644FF" },
-    { name: "Turquoise", hex: "#44DDDD" },
-    { name: "Coral", hex: "#FF6B6B" },
+    { name: "Black", hex: "#000000" },
+    { name: "White", hex: "#FFFFFF" },
+    { name: "Brown", hex: "#A52A2A" },
+    { name: "Turquoise", hex: "#40E0D0" },
+    { name: "Red", hex: "#FF0000" },
+    { name: "Yellow", hex: "#FFFF00" },
+    { name: "Blue", hex: "#0000FF" },
+    { name: "Green", hex: "#00FF00" },
+    { name: "Violet", hex: "#8A2BE2" },
+    { name: "Indigo", hex: "#4B0082" },
+    { name: "Purple", hex: "#800080" },
     { name: "Gold", hex: "#FFD700" },
     { name: "Silver", hex: "#C0C0C0" },
-    { name: "Lavender", hex: "#CC88FF" },
-    { name: "Mint", hex: "#88FFAA" },
-    { name: "Peach", hex: "#FFAA88" },
-    { name: "Aqua", hex: "#66FFFF" },
-    { name: "Rose", hex: "#FF6699" },
-    { name: "Amber", hex: "#FFBB33" },
-    { name: "Sage", hex: "#99AA88" },
-    { name: "Cream", hex: "#FFFFCC" }
+    { name: "Orange", hex: "#FFA500" },
+    { name: "Pink", hex: "#FFC0CB" },
+    { name: "Red", hex: "#FF0000" }
   ];
   
-  // Deterministic color selection using seeded random
+  // Deterministic color selection using seeded random - only 16 approved colors
   const auraColors = [
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)],
-    enhancedColors[Math.floor(seededRandom() * 20)]
+    enhancedColors[Math.floor(seededRandom() * 16)],
+    enhancedColors[Math.floor(seededRandom() * 16)],
+    enhancedColors[Math.floor(seededRandom() * 16)],
+    enhancedColors[Math.floor(seededRandom() * 16)],
+    enhancedColors[Math.floor(seededRandom() * 16)],
+    enhancedColors[Math.floor(seededRandom() * 16)]
   ];
   
   const dominantColor = auraColors[0];
@@ -585,44 +562,24 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
-  // Comprehensive color meanings for objects including all new colors
+  // Only approved object colors - restricted to 16 colors
   const objectColorMeanings: Record<string, string> = {
-    'Crimson': 'Passionate power - intense life force, warrior strength, primal energy, bold manifestation',
-    'Scarlet': 'Sacred fire - divine courage, spiritual passion, transformative energy, soul awakening',
-    'Ruby': 'Royal vitality - noble strength, regal power, commanding presence, leadership energy',
-    'Coral': 'Ocean wisdom - emotional healing, fluid adaptability, nurturing protection, gentle strength',
-    'Salmon': 'Life current - flowing vitality, reproductive energy, creative fertility, abundance manifestation',
-    'Rose': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
-    'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
-    'Amber': 'Ancient wisdom - preserved knowledge, timeless insight, protective energy, earth connection',
-    'Copper': 'Conductive energy - electrical awakening, neural activation, psychic enhancement, mental clarity',
-    'Bronze': 'Warrior shield - protective strength, battle wisdom, enduring courage, strategic power',
-    'Apricot': 'Gentle warmth - soft healing, nurturing comfort, peaceful energy, harmonious balance',
-    'Peach': 'Sweet harmony - loving kindness, gentle strength, emotional balance, heart healing',
+    'Black': 'Shadow mastery - transformation power, void consciousness, deep inner work, spiritual rebirth',
+    'White': 'Divine purity - spiritual protection, angelic presence, sacred innocence, light energy',
+    'Brown': 'Earth wisdom - grounding energy, material stability, natural healing, physical connection',
+    'Turquoise': 'Healing waters - emotional cleansing, heart-throat bridge, therapeutic communication, soul washing',
+    'Red': 'Life force - passionate power, primal energy, warrior strength, bold manifestation',
     'Yellow': 'Mental brilliance - intellectual power, solar energy, conscious awakening, wisdom activation',
+    'Blue': 'Truth crystal - divine wisdom, spiritual insight, celestial knowledge, sacred communication',
+    'Green': 'Heart mastery - unconditional love, emotional healing, compassionate wisdom, soul connection',
+    'Violet': 'Crown connection - divine consciousness, spiritual mastery, enlightened awareness, cosmic unity',
+    'Indigo': 'Third eye wisdom - psychic insight, inner knowing, intuitive mastery, mystical awareness',
+    'Purple': 'Royal mysticism - noble spirituality, regal intuition, aristocratic wisdom, refined consciousness',
     'Gold': 'Divine illumination - cosmic consciousness, spiritual mastery, sacred geometry, enlightened awareness',
-    'Citrine': 'Abundance flow - prosperity energy, wealth manifestation, success attraction, golden opportunities',
-    'Lemon': 'Purifying light - cleansing energy, mental clarity, detoxification power, fresh beginnings',
-    'Cream': 'Pure essence - spiritual purity, divine grace, angelic presence, sacred innocence',
-    'Ivory': 'Ancient knowledge - timeless wisdom, sacred teachings, preserved truth, eternal understanding',
-    'Emerald': 'Heart mastery - unconditional love, emotional healing, compassionate wisdom, soul connection',
-    'Jade': 'Protective harmony - balanced energy, peaceful strength, harmonious protection, stable growth',
-    'Forest': 'Nature wisdom - earth connection, grounding energy, natural healing, environmental harmony',
-    'Lime': 'Fresh energy - revitalizing power, new growth, spring awakening, renewal force',
-    'Mint': 'Cooling balance - soothing energy, mental freshness, emotional cooling, peaceful clarity',
-    'Sage': 'Elder wisdom - ancient knowledge, spiritual guidance, ceremonial power, sacred understanding',
-    'Azure': 'Sky consciousness - limitless awareness, infinite potential, heavenly connection, divine perspective',
-    'Sapphire': 'Truth crystal - divine wisdom, spiritual insight, celestial knowledge, sacred communication',
-    'Cobalt': 'Deep truth - profound understanding, oceanic wisdom, mysterious knowledge, hidden insights',
-    'Navy': 'Authority power - command presence, leadership strength, disciplined energy, structured wisdom',
-    'Teal': 'Healing waters - emotional cleansing, spiritual purification, therapeutic energy, soul washing',
-    'Aqua': 'Flow state - fluid consciousness, adaptable energy, emotional fluidity, psychic currents',
-    'Amethyst': 'Spiritual protection - psychic shielding, divine connection, mystical awareness, soul guarding',
-    'Lavender': 'Gentle spirituality - peaceful awakening, soft mysticism, calming presence, serene wisdom',
-    'Plum': 'Royal mysticism - noble spirituality, regal intuition, aristocratic wisdom, refined consciousness',
-    'Mauve': 'Subtle magic - gentle enchantment, soft power, understated strength, quiet wisdom',
-    'Periwinkle': 'Fairy energy - magical lightness, ethereal connection, whimsical power, enchanted awareness',
-    'Lilac': 'Spring awakening - new spiritual growth, fresh intuition, budding psychic abilities, emerging wisdom',
+    'Silver': 'Lunar wisdom - psychic sensitivity, reflective power, intuitive enhancement, feminine energy',
+    'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
+    'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
+
     'Magenta': 'Divine rebellion - unconventional wisdom, breakthrough energy, revolutionary spirit, paradigm shifting',
     'Fuchsia': 'Electric passion - intense creativity, vibrant expression, dynamic energy, powerful manifestation',
     'Pink': 'Universal love - all-encompassing compassion, divine feminine, nurturing strength, heart opening',
