@@ -2910,6 +2910,92 @@ export default function AuraAnalysis() {
     return 'none'; // Default fallback
   };
 
+  // Function to create prominent thinking energy particle above person's head
+  const createThinkingEnergyParticle = (
+    ctx: CanvasRenderingContext2D,
+    centerX: number,
+    centerY: number,
+    personHeight: number,
+    thinkingColor: { r: number, g: number, b: number },
+    energyLevel: number
+  ) => {
+    // Position the thinking energy particle above the person's head
+    const particleX = centerX;
+    const particleY = centerY - personHeight * 0.7; // Above head
+    const baseRadius = Math.max(15, energyLevel * 3); // Size based on energy level
+    
+    // Create multiple glowing layers for the particle
+    ctx.globalCompositeOperation = 'screen'; // Bright additive blending
+    
+    // Outer glow layer
+    const outerGlow = ctx.createRadialGradient(
+      particleX, particleY, 0,
+      particleX, particleY, baseRadius * 3
+    );
+    outerGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    outerGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.4)`);
+    outerGlow.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+    outerGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    
+    ctx.fillStyle = outerGlow;
+    ctx.beginPath();
+    ctx.arc(particleX, particleY, baseRadius * 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Middle glow layer
+    const middleGlow = ctx.createRadialGradient(
+      particleX, particleY, 0,
+      particleX, particleY, baseRadius * 1.8
+    );
+    middleGlow.addColorStop(0, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+    middleGlow.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    
+    ctx.fillStyle = middleGlow;
+    ctx.beginPath();
+    ctx.arc(particleX, particleY, baseRadius * 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Inner bright core
+    const innerCore = ctx.createRadialGradient(
+      particleX, particleY, 0,
+      particleX, particleY, baseRadius
+    );
+    innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
+    innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+    innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    
+    ctx.fillStyle = innerCore;
+    ctx.beginPath();
+    ctx.arc(particleX, particleY, baseRadius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add sparkle effects around the particle
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      const sparkleX = particleX + Math.cos(angle) * (baseRadius * 2.5);
+      const sparkleY = particleY + Math.sin(angle) * (baseRadius * 2.5);
+      const sparkleRadius = 2 + (energyLevel * 0.5);
+      
+      const sparkle = ctx.createRadialGradient(
+        sparkleX, sparkleY, 0,
+        sparkleX, sparkleY, sparkleRadius
+      );
+      sparkle.addColorStop(0, `rgba(255, 255, 255, 0.9)`);
+      sparkle.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.7)`);
+      sparkle.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+      
+      ctx.fillStyle = sparkle;
+      ctx.beginPath();
+      ctx.arc(sparkleX, sparkleY, sparkleRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Reset blend mode
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
   // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
@@ -3134,6 +3220,9 @@ export default function AuraAnalysis() {
 
     // Add final color integration layer for seamless merging
     createColorIntegrationLayer(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    
+    // Create prominent thinking energy particle above person's head
+    createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel);
   };
 
   // Function to create directional gradient zones with seamless blending
