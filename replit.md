@@ -122,6 +122,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Enhanced aura gradient smoothness: replaced patchy particle effects with smooth linear and radial gradients for seamless color blending while maintaining thinking color orb above person's head
 - June 25, 2025. Restricted aura colors to 12 approved colors only: violet, indigo, blue, green, yellow, orange, red, white, black, gold, silver, brown - removed turquoise, teal, pink, purple and other extra colors, updated all color mappings and fallback systems
 - June 25, 2025. Fixed aura visualization patches by replacing particle-based system with ultra-smooth gradient layers using source-over, color-dodge, and overlay blend modes for seamless color merging without any patchy appearance
+- June 25, 2025. Enhanced personality color coverage with consistent full-image gradient wash, standardized particle sizing across all images based on image dimensions (4% of minimum dimension), and ensured thinking energy orb maintains consistent size relative to image proportions
 
 ## User Preferences
 
