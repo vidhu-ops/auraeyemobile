@@ -2691,13 +2691,27 @@ export default function AuraAnalysis() {
       const img = new Image();
       
       img.onload = () => {
-        // Set standardized canvas size (1600x900px)
-        canvas.width = 1600;
-        canvas.height = 900;
+        // Set proper proportional canvas size for better visualization
+        const aspectRatio = img.width / img.height;
+        let canvasWidth, canvasHeight;
         
-        // Draw original image to fill standardized canvas
+        // Maintain aspect ratio while ensuring adequate size
+        if (aspectRatio > 1) {
+          // Landscape image
+          canvasWidth = Math.max(1200, img.width);
+          canvasHeight = canvasWidth / aspectRatio;
+        } else {
+          // Portrait or square image
+          canvasHeight = Math.max(900, img.height);
+          canvasWidth = canvasHeight * aspectRatio;
+        }
+        
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        
+        // Draw original image to fill canvas with proper proportions
         if (ctx) {
-          ctx.drawImage(img, 0, 0, 1600, 900);
+          ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
           
           // Create simple but visible aura effects around the person
           const centerX = canvas.width / 2;
@@ -2755,8 +2769,8 @@ export default function AuraAnalysis() {
               
               // Create radial gradient from center outward
               const gradient = ctx.createRadialGradient(
-                centerX, centerY, canvas.width * 0.12, // Inner radius - protect person
-                centerX, centerY, canvas.width * 0.8 + radius // Outer radius
+                centerX, centerY, canvasWidth * 0.12, // Inner radius - protect person
+                centerX, centerY, canvasWidth * 0.8 + radius // Outer radius
               );
               
               gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
@@ -2765,7 +2779,7 @@ export default function AuraAnalysis() {
               gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
               
               ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.fillRect(0, 0, canvasWidth, canvasHeight);
             }
             
             // Reset filter
@@ -2795,25 +2809,25 @@ export default function AuraAnalysis() {
               {
                 name: 'thinking',
                 color: thinkingRGB,
-                area: { x: 0, y: 0, width: canvas.width, height: canvas.height * 0.2 },
+                area: { x: 0, y: 0, width: canvasWidth, height: canvasHeight * 0.2 },
                 density: 80
               },
               {
                 name: 'receiving',
                 color: receivingRGB,
-                area: { x: canvas.width * 0.6, y: 0, width: canvas.width * 0.4, height: canvas.height },
+                area: { x: canvasWidth * 0.6, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
                 density: 90
               },
               {
                 name: 'giving',
                 color: givingRGB,
-                area: { x: 0, y: 0, width: canvas.width * 0.4, height: canvas.height },
+                area: { x: 0, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
                 density: 70
               },
               {
                 name: 'personality',
                 color: personalityRGB,
-                area: { x: canvas.width * 0.2, y: canvas.height * 0.2, width: canvas.width * 0.6, height: canvas.height * 0.6 },
+                area: { x: canvasWidth * 0.2, y: canvasHeight * 0.2, width: canvasWidth * 0.6, height: canvasHeight * 0.6 },
                 density: 60
               }
             ];
@@ -2826,22 +2840,23 @@ export default function AuraAnalysis() {
                 
                 // Enhanced person protection - larger area to keep face completely visible
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                if (distFromCenter < canvas.width * 0.22) {
+                if (distFromCenter < canvasWidth * 0.22) {
                   continue;
                 }
                 
                 // Additional rectangular protection for face and upper body
-                const faceLeft = centerX - canvas.width * 0.15;
-                const faceRight = centerX + canvas.width * 0.15;
-                const faceTop = centerY - canvas.height * 0.25;
-                const faceBottom = centerY + canvas.height * 0.2;
+                const faceLeft = centerX - canvasWidth * 0.15;
+                const faceRight = centerX + canvasWidth * 0.15;
+                const faceTop = centerY - canvasHeight * 0.25;
+                const faceBottom = centerY + canvasHeight * 0.2;
                 
                 if (x >= faceLeft && x <= faceRight && y >= faceTop && y <= faceBottom) {
                   continue;
                 }
                 
                 // Create extremely blurred, natural smokey wisp effect
-                const wispSize = 40 + Math.random() * 80;
+                const sizeFactor = Math.min(canvasWidth, canvasHeight) / 900;
+                const wispSize = (40 + Math.random() * 80) * sizeFactor;
                 const opacity = 0.04 + Math.random() * 0.08;
                 const [r, g, b] = zone.color;
                 
@@ -2930,7 +2945,7 @@ export default function AuraAnalysis() {
           // Add a subtle overall color tint
           ctx.globalCompositeOperation = 'overlay';
           ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.1)`;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           ctx.globalCompositeOperation = 'source-over';
         }
         
@@ -3541,7 +3556,8 @@ export default function AuraAnalysis() {
                           coords.y >= faceY && coords.y <= faceY + faceHeight;
         
         if (!inFaceArea) {
-          const smokeSize = 80 + seededRandom() * 100; // Standardized particle size for 1600x900 canvas
+          const sizeFactor = Math.min(width, height) / 900; // Adaptive sizing
+          const smokeSize = (60 + seededRandom() * 80) * sizeFactor; // Proportional particle size
           const smokeOpacity = 0.08 + seededRandom() * 0.1; // Lower opacity for person visibility
           
           drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
@@ -3565,15 +3581,19 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    // Standardized density for 1600x900 canvas dimensions
-    const baseSmokeDensity = 1800 + Math.floor(energyLevel * 150);
+    // Adaptive density based on canvas size for proper visualization
+    const canvasArea = width * height;
+    const baseArea = 1440000; // 1200x1200 reference area
+    const densityMultiplier = Math.sqrt(canvasArea / baseArea);
+    const baseSmokeDensity = Math.floor((1800 + energyLevel * 150) * densityMultiplier);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Standardized smoke layers for consistent appearance on 1600x900 canvas
+    // Adaptive smoke layers that scale with canvas size
+    const sizeFactor = Math.min(width, height) / 900; // Scale factor based on smaller dimension
     const smokeLayers = [
-      { density: baseSmokeDensity * 0.4, sizeRange: [100, 180], opacity: [0.06, 0.12] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [90, 140], opacity: [0.08, 0.15] }, // Medium layer
-      { density: baseSmokeDensity * 0.5, sizeRange: [80, 110], opacity: [0.10, 0.18] }   // Detail layer
+      { density: baseSmokeDensity * 0.4, sizeRange: [80 * sizeFactor, 160 * sizeFactor], opacity: [0.06, 0.12] }, // Large background layer
+      { density: baseSmokeDensity * 0.3, sizeRange: [70 * sizeFactor, 120 * sizeFactor], opacity: [0.08, 0.15] }, // Medium layer
+      { density: baseSmokeDensity * 0.5, sizeRange: [60 * sizeFactor, 90 * sizeFactor], opacity: [0.10, 0.18] }   // Detail layer
     ];
     
     smokeLayers.forEach(layer => {
@@ -3997,12 +4017,26 @@ export default function AuraAnalysis() {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       
-      // Set standardized canvas dimensions (1600x900px)
-      canvas.width = 1600;
-      canvas.height = 900;
+      // Set proper proportional canvas dimensions for better visualization
+      const aspectRatio = img.width / img.height;
+      let canvasWidth, canvasHeight;
       
-      // Draw original image to fill the standardized canvas
-      ctx.drawImage(img, 0, 0, 1600, 900);
+      // Maintain aspect ratio while ensuring adequate size for visualization
+      if (aspectRatio > 1) {
+        // Landscape image
+        canvasWidth = Math.max(1200, img.width);
+        canvasHeight = canvasWidth / aspectRatio;
+      } else {
+        // Portrait or square image
+        canvasHeight = Math.max(900, img.height);
+        canvasWidth = canvasHeight * aspectRatio;
+      }
+      
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      
+      // Draw original image to fill the canvas with proper proportions
+      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
       
       // Get dominant and secondary colors
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
@@ -4018,7 +4052,7 @@ export default function AuraAnalysis() {
         personalityRGB: hexToRgb(detectedColors.personality)
       };
       
-      createSmokeyAuraParticles(ctx, 1600, 900, colors, auraData.energyLevel);
+      createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colors, auraData.energyLevel);
       
       // Convert back to base64
       const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
@@ -4113,8 +4147,9 @@ export default function AuraAnalysis() {
       const useSecondary = colorBlend > 0.7;
       const rgb = useSecondary ? secondaryRGB : dominantRGB;
       
-      // Standardized particle size for 1600x900 canvas
-      const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10);
+      // Adaptive particle size based on canvas dimensions
+      const sizeFactor = Math.min(width, height) / 900;
+      const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10) * sizeFactor;
       const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
       const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
 
@@ -4165,7 +4200,8 @@ export default function AuraAnalysis() {
       streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
       
       ctx.strokeStyle = streamGradient;
-      ctx.lineWidth = 4 + seededRandom() * 6; // Standardized line width for 1600x900
+      const sizeFactor = Math.min(width, height) / 900;
+      ctx.lineWidth = (4 + seededRandom() * 6) * sizeFactor; // Adaptive line width
       ctx.lineCap = 'round';
       
       ctx.beginPath();
@@ -6527,7 +6563,7 @@ export default function AuraAnalysis() {
                                           <img 
                                             src={processedAuraImage} 
                                             alt="Image with aura colors" 
-                                            className="w-full h-full object-cover rounded-lg"
+                                            className="w-full h-900 object-cover rounded-lg"
                                           />
                                         ) : (
                                           <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg">
