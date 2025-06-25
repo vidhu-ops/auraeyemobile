@@ -842,6 +842,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
+// Backup human detection when OpenAI API fails
+function performBackupHumanDetection(imageBuffer: Buffer): boolean {
+  // Ultra-aggressive backup detection to catch humans when OpenAI fails
+  let humanScore = 0;
+  let eyePatterns = 0;
+  let skinPatterns = 0;
+  let facePatterns = 0;
+  let totalSamples = 0;
+  
+  // More aggressive sampling for backup detection
+  const sampleStep = Math.max(150, Math.floor(imageBuffer.length / 1000));
+  
+  for (let i = 0; i < imageBuffer.length - 30; i += sampleStep) {
+    const pixels = [];
+    for (let j = 0; j < 30; j += 3) {
+      if (i + j + 2 < imageBuffer.length) {
+        pixels.push({
+          r: imageBuffer[i + j] || 0,
+          g: imageBuffer[i + j + 1] || 0,
+          b: imageBuffer[i + j + 2] || 0
+        });
+      }
+    }
+    
+    if (pixels.length < 8) continue;
+    totalSamples++;
+    
+    // Eye detection: look for dark spots with light surroundings
+    let darkSpots = 0;
+    let lightAreas = 0;
+    for (const pixel of pixels) {
+      const brightness = pixel.r + pixel.g + pixel.b;
+      if (brightness < 60) darkSpots++;
+      else if (brightness > 160) lightAreas++;
+    }
+    
+    if (darkSpots >= 2 && lightAreas >= 4) {
+      eyePatterns++;
+      humanScore += 3;
+    }
+    
+    // Skin tone detection - very broad range
+    let skinTones = 0;
+    for (const pixel of pixels) {
+      const r = pixel.r, g = pixel.g, b = pixel.b;
+      
+      // Detect any skin-like colors
+      const isPossibleSkin = (
+        (r > 80 && r < 255 && g > 60 && g < 200 && b > 40 && b < 180) &&
+        (r >= g && g >= b * 0.8) // Skin tone ratio
+      );
+      
+      if (isPossibleSkin) skinTones++;
+    }
+    
+    if (skinTones >= 4) {
+      skinPatterns++;
+      humanScore += 2;
+    }
+    
+    // Face pattern detection
+    let centerBrightness = 0;
+    let edgeBrightness = 0;
+    const center = pixels.slice(4, 8);
+    const edges = pixels.slice(0, 4).concat(pixels.slice(8, 12));
+    
+    center.forEach(p => centerBrightness += (p.r + p.g + p.b));
+    edges.forEach(p => edgeBrightness += (p.r + p.g + p.b));
+    
+    if (center.length > 0) centerBrightness /= center.length;
+    if (edges.length > 0) edgeBrightness /= edges.length;
+    
+    // Face-like brightness pattern
+    if (centerBrightness > edgeBrightness + 15 && centerBrightness < edgeBrightness + 100) {
+      facePatterns++;
+      humanScore += 1;
+    }
+  }
+  
+  // Calculate ratios
+  const eyeRatio = eyePatterns / totalSamples;
+  const skinRatio = skinPatterns / totalSamples;
+  const faceRatio = facePatterns / totalSamples;
+  const overallScore = humanScore / totalSamples;
+  
+  // Very aggressive detection thresholds
+  const hasHuman = (
+    eyeRatio > 0.03 ||           // Very low eye threshold
+    skinRatio > 0.08 ||          // Low skin threshold
+    faceRatio > 0.05 ||          // Low face pattern threshold
+    overallScore > 0.6 ||        // Overall score threshold
+    (eyeRatio > 0.01 && skinRatio > 0.04) // Combined low thresholds
+  );
+  
+  console.log('Backup human detection:', {
+    eyeRatio: eyeRatio.toFixed(3),
+    skinRatio: skinRatio.toFixed(3),
+    faceRatio: faceRatio.toFixed(3),
+    overallScore: overallScore.toFixed(3),
+    totalSamples,
+    isHuman: hasHuman
+  });
+  
+  return hasHuman;
+}
+
 async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
   // Use OpenAI's vision API to accurately detect humans in images
   try {
@@ -881,9 +987,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, response.statusText, errorText);
       
-      // If API fails, allow objects through since we can't detect humans
-      console.log('API failed - allowing image through (assuming object) since we cannot detect humans');
-      return false; // Allow image when API fails (assume it's an object)
+      // If API fails, use backup human detection
+      console.log('API failed - using backup human detection');
+      return performBackupHumanDetection(imageBuffer);
     }
 
     const result = await response.json();
@@ -901,9 +1007,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     
   } catch (error) {
     console.error('Error calling OpenAI for human detection:', error);
-    // If API fails, allow objects through since we can't detect humans
-    console.log('API error - allowing image through (assuming object) since we cannot detect humans');
-    return false; // Allow image when API fails (assume it's an object)
+    // If API fails, use backup human detection
+    console.log('API error - using backup human detection');
+    return performBackupHumanDetection(imageBuffer);
   }
 }
 
