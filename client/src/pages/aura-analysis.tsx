@@ -3149,12 +3149,12 @@ export default function AuraAnalysis() {
   ) => {
     // Create multiple soft layers with gradual fading using different blend modes
     
-    // Layer 1: Base atmospheric gradient with all colors fading naturally
+    // Layer 1: Enhanced base gradient with thinking color properly integrated
     const baseGradient = createMultiColorGradient(
       ctx,
-      [colors.thinkingRGB, colors.personalityRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB],
-      [0, 0.25, 0.5, 0.75, 1],
-      [0.15, 0.12, 0.15, 0.12, 0.08],
+      [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB],
+      [0, 0.2, 0.35, 0.5, 0.75, 1],
+      [0.18, 0.15, 0.12, 0.15, 0.12, 0.08],
       true,
       { x1: 0, y1: 0, x2: width, y2: height }
     );
@@ -3164,13 +3164,13 @@ export default function AuraAnalysis() {
       ctx.fillRect(0, 0, width, height);
     }
     
-    // Layer 2: Cross-gradient with soft blending
+    // Layer 2: Enhanced cross-gradient with thinking color integration
     ctx.globalCompositeOperation = 'multiply';
     const crossGradient = createMultiColorGradient(
       ctx,
-      [colors.givingRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
-      [0, 0.3, 0.7, 1],
-      [0.2, 0.15, 0.2, 0.1],
+      [colors.givingRGB, colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
+      [0, 0.25, 0.4, 0.55, 0.75, 1],
+      [0.2, 0.18, 0.12, 0.15, 0.2, 0.1],
       true,
       { x1: width, y1: 0, x2: 0, y2: height }
     );
@@ -3180,13 +3180,13 @@ export default function AuraAnalysis() {
       ctx.fillRect(0, 0, width, height);
     }
     
-    // Layer 3: Radial fade from center with personality energy
+    // Layer 3: Enhanced radial fade with thinking color properly blended
     ctx.globalCompositeOperation = 'soft-light';
     const centerFade = createMultiColorGradient(
       ctx,
-      [colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.givingRGB],
-      [0, 0.4, 0.7, 1],
-      [0, 0.08, 0.06, 0.04],
+      [colors.personalityRGB, colors.thinkingRGB, colors.personalityRGB, colors.receivingRGB, colors.givingRGB, colors.thinkingRGB],
+      [0, 0.25, 0.4, 0.6, 0.8, 1],
+      [0, 0.12, 0.08, 0.06, 0.04, 0.05],
       false,
       { 
         x1: centerX, y1: centerY, r1: Math.min(personWidth, personHeight) * 0.3,
@@ -3248,31 +3248,42 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    // Use color-dodge blend mode for intense color merging
+    // Use color-dodge blend mode for intense color merging with thinking color integration
     ctx.globalCompositeOperation = 'color-dodge';
     
-    // Create cross-hatching gradients for maximum color integration
+    // Create enhanced cross-hatching gradients with thinking color properly distributed
     const integrationGradients = [
-      // Diagonal cross-gradient 1
+      // Diagonal cross-gradient 1 with thinking color integration
       {
         gradient: createMultiColorGradient(
           ctx,
-          [colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB, colors.givingRGB],
-          [0, 0.33, 0.66, 1],
-          [0.08, 0.06, 0.05, 0.04],
+          [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB, colors.givingRGB],
+          [0, 0.2, 0.35, 0.5, 0.75, 1],
+          [0.1, 0.06, 0.08, 0.06, 0.05, 0.04],
           true,
           { x1: 0, y1: 0, x2: width, y2: height }
         )
       },
-      // Diagonal cross-gradient 2
+      // Diagonal cross-gradient 2 with thinking color blending
       {
         gradient: createMultiColorGradient(
           ctx,
-          [colors.givingRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
-          [0, 0.33, 0.66, 1],
-          [0.06, 0.05, 0.07, 0.04],
+          [colors.givingRGB, colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
+          [0, 0.25, 0.4, 0.55, 0.75, 1],
+          [0.06, 0.08, 0.05, 0.07, 0.07, 0.04],
           true,
           { x1: width, y1: 0, x2: 0, y2: height }
+        )
+      },
+      // Additional vertical gradient for thinking color integration
+      {
+        gradient: createMultiColorGradient(
+          ctx,
+          [colors.thinkingRGB, colors.personalityRGB, colors.givingRGB, colors.receivingRGB, colors.thinkingRGB],
+          [0, 0.3, 0.5, 0.7, 1],
+          [0.09, 0.06, 0.04, 0.05, 0.06],
+          true,
+          { x1: centerX, y1: 0, x2: centerX, y2: height }
         )
       }
     ];
@@ -3287,12 +3298,12 @@ export default function AuraAnalysis() {
     // Reset blend mode and add final soft overlay
     ctx.globalCompositeOperation = 'overlay';
     
-    // Create final unified gradient that merges all colors
+    // Create enhanced unified gradient with thinking color properly merged
     const unifiedGradient = createMultiColorGradient(
       ctx,
-      [colors.personalityRGB, colors.thinkingRGB, colors.givingRGB, colors.receivingRGB, colors.personalityRGB],
-      [0, 0.25, 0.5, 0.75, 1],
-      [0.03, 0.02, 0.025, 0.02, 0.015],
+      [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.givingRGB, colors.receivingRGB, colors.personalityRGB, colors.thinkingRGB],
+      [0, 0.15, 0.3, 0.45, 0.6, 0.8, 1],
+      [0.04, 0.03, 0.035, 0.025, 0.02, 0.015, 0.02],
       false,
       { 
         x1: centerX, y1: centerY, r1: Math.min(personWidth, personHeight) * 0.2,
@@ -3302,6 +3313,22 @@ export default function AuraAnalysis() {
     
     if (unifiedGradient) {
       ctx.fillStyle = unifiedGradient;
+      ctx.fillRect(0, 0, width, height);
+    }
+    
+    // Add final thinking color integration layer
+    ctx.globalCompositeOperation = 'soft-light';
+    const thinkingIntegration = createMultiColorGradient(
+      ctx,
+      [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB],
+      [0, 0.5, 1],
+      [0.06, 0.03, 0.04],
+      true,
+      { x1: 0, y1: 0, x2: width, y2: height * 0.4 }
+    );
+    
+    if (thinkingIntegration) {
+      ctx.fillStyle = thinkingIntegration;
       ctx.fillRect(0, 0, width, height);
     }
     
