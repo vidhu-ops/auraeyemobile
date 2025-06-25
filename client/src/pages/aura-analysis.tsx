@@ -2772,6 +2772,13 @@ export default function AuraAnalysis() {
             ctx.filter = 'none';
           };
           
+          // Create deterministic seeded random function for this visualization
+          let smokeSeed = currentSeed + 1000; // Offset seed for smoke effects
+          const smokeSeededRandom = () => {
+            smokeSeed = (smokeSeed * 9301 + 49297) % 233280;
+            return smokeSeed / 233280;
+          };
+
           // Create smokey aura effects with specific energy zone colors
           const createSmokeyAuraEffects = () => {
             // Get the 4-zone energy colors
@@ -2821,8 +2828,8 @@ export default function AuraAnalysis() {
             zones.forEach(zone => {
               for (let i = 0; i < zone.density; i++) {
                 // Generate smokey particle position within zone (deterministic)
-                const x = zone.area.x + seededRandom() * zone.area.width;
-                const y = zone.area.y + seededRandom() * zone.area.height;
+                const x = zone.area.x + smokeSeededRandom() * zone.area.width;
+                const y = zone.area.y + smokeSeededRandom() * zone.area.height;
                 
                 // Enhanced person protection - larger area to keep face completely visible
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
@@ -2841,22 +2848,22 @@ export default function AuraAnalysis() {
                 }
                 
                 // Create extremely blurred, natural smokey wisp effect with deterministic sizing
-                const wispSize = 40 + seededRandom() * 80;
-                const opacity = 0.04 + seededRandom() * 0.08;
+                const wispSize = 40 + smokeSeededRandom() * 80;
+                const opacity = 0.04 + smokeSeededRandom() * 0.08;
                 const [r, g, b] = zone.color;
                 
                 // Apply heavy blur filter for ultra-soft smokey effect
                 ctx.filter = 'blur(20px)';
                 
                 // Create many overlapping layers for dense, natural smoke with deterministic count
-                const smokeLayers = 12 + Math.floor(seededRandom() * 8);
+                const smokeLayers = 12 + Math.floor(smokeSeededRandom() * 8);
                 
                 for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (seededRandom() - 0.5) * wispSize * 1.8;
+                  const layerOffset = (smokeSeededRandom() - 0.5) * wispSize * 1.8;
                   const layerX = x + layerOffset;
                   const layerY = y + layerOffset;
-                  const layerSize = wispSize * (0.6 + seededRandom() * 2.0);
-                  const layerOpacity = opacity * (0.3 + seededRandom() * 0.7);
+                  const layerSize = wispSize * (0.6 + smokeSeededRandom() * 2.0);
+                  const layerOpacity = opacity * (0.3 + smokeSeededRandom() * 0.7);
                   
                   const smokeGradient = ctx.createRadialGradient(
                     layerX, layerY, 0,
@@ -2881,10 +2888,10 @@ export default function AuraAnalysis() {
                 ctx.filter = 'none';
                 
                 // Add flowing smoke trails with heavy blur for natural movement (deterministic)
-                if (seededRandom() > 0.5) {
+                if (smokeSeededRandom() > 0.5) {
                   ctx.filter = 'blur(25px)';
-                  const trailLength = 40 + seededRandom() * 60;
-                  const angle = seededRandom() * Math.PI * 2;
+                  const trailLength = 40 + smokeSeededRandom() * 60;
+                  const angle = smokeSeededRandom() * Math.PI * 2;
                   
                   for (let trail = 0; trail < trailLength; trail++) {
                     const trailProgress = trail / trailLength;
