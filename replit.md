@@ -101,6 +101,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Fixed object detection: improved human detection algorithm to prevent electronic devices and objects from being misidentified as humans, added object-like pixel detection for better accuracy
 - June 25, 2025. Enhanced aura visualization with smooth gradient effects and natural color blending between all 4 aura colors using multiple blend modes (multiply, soft-light, overlay, color-dodge)
 - June 25, 2025. Implemented ultra-conservative human detection for object analysis: prevents busy images and complex textures from being falsely detected as human faces, ensures all objects including electronics are accepted
+- June 25, 2025. Made human detection extremely restrictive with perfect skin tone matching and requirement for all facial features to be present simultaneously, biased heavily toward accepting all images as objects
 
 ## User Preferences
 
