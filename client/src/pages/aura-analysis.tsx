@@ -2714,8 +2714,8 @@ export default function AuraAnalysis() {
           ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
           
           // Create simple but visible aura effects around the person
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
+          const centerX = canvasWidth / 2;
+          const centerY = canvasHeight / 2;
           
           // Get dominant and secondary colors
           const dominantColor = auraData.dominantColor || 'Blue';

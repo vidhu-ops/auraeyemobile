@@ -690,13 +690,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to resize images to standard dimensions
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
-      // Resize image to 1600x900px with proper aspect ratio handling
+      // Get image metadata to determine aspect ratio
+      const metadata = await sharp(inputBuffer).metadata();
+      const aspectRatio = (metadata.width || 1) / (metadata.height || 1);
+      
+      let targetWidth, targetHeight;
+      if (aspectRatio > 1) {
+        // Landscape - ensure minimum width of 1200px
+        targetWidth = Math.max(1200, metadata.width || 1200);
+        targetHeight = Math.round(targetWidth / aspectRatio);
+      } else {
+        // Portrait or square - ensure minimum height of 900px
+        targetHeight = Math.max(900, metadata.height || 900);
+        targetWidth = Math.round(targetHeight * aspectRatio);
+      }
+      
       const resizedBuffer = await sharp(inputBuffer)
-        .resize(1600, 900, {
-          fit: 'cover', // Cover the entire canvas, cropping if necessary
-          position: 'centre' // Center the crop
+        .resize(targetWidth, targetHeight, {
+          fit: 'inside', // Maintain aspect ratio without cropping
+          withoutEnlargement: false // Allow enlargement for small images
         })
-        .jpeg({ quality: 85 }) // Good quality while keeping file size reasonable
+        .jpeg({ quality: 90 }) // Higher quality for better visualization
         .toBuffer();
       
       return resizedBuffer;
