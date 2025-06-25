@@ -2691,13 +2691,13 @@ export default function AuraAnalysis() {
       const img = new Image();
       
       img.onload = () => {
-        // Set canvas size to match image
-        canvas.width = img.width;
-        canvas.height = img.height;
+        // Set standardized canvas size (1600x900px)
+        canvas.width = 1600;
+        canvas.height = 900;
         
-        // Draw original image
+        // Draw original image to fill standardized canvas
         if (ctx) {
-          ctx.drawImage(img, 0, 0);
+          ctx.drawImage(img, 0, 0, 1600, 900);
           
           // Create simple but visible aura effects around the person
           const centerX = canvas.width / 2;
@@ -3997,12 +3997,12 @@ export default function AuraAnalysis() {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       
-      // Set canvas dimensions
-      canvas.width = img.width;
-      canvas.height = img.height;
+      // Set standardized canvas dimensions (1600x900px)
+      canvas.width = 1600;
+      canvas.height = 900;
       
-      // Draw original image
-      ctx.drawImage(img, 0, 0, img.width, img.height);
+      // Draw original image to fill the standardized canvas
+      ctx.drawImage(img, 0, 0, 1600, 900);
       
       // Get dominant and secondary colors
       const dominantColor = getAccurateColorCode(auraData.dominantColor);
@@ -4018,7 +4018,7 @@ export default function AuraAnalysis() {
         personalityRGB: hexToRgb(detectedColors.personality)
       };
       
-      createSmokeyAuraParticles(ctx, img.width, img.height, colors, auraData.energyLevel);
+      createSmokeyAuraParticles(ctx, 1600, 900, colors, auraData.energyLevel);
       
       // Convert back to base64
       const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
