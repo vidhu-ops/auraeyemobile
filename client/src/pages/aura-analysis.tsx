@@ -3147,57 +3147,80 @@ export default function AuraAnalysis() {
     personHeight: number,
     colors: any
   ) => {
-    // Create multiple soft layers with gradual fading using different blend modes
+    // Create concentric gradient layers radiating from the person outward
     
-    // Layer 1: Enhanced base gradient with thinking color properly integrated
-    const baseGradient = createMultiColorGradient(
-      ctx,
-      [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB],
-      [0, 0.2, 0.35, 0.5, 0.75, 1],
-      [0.18, 0.15, 0.12, 0.15, 0.12, 0.08],
-      true,
-      { x1: 0, y1: 0, x2: width, y2: height }
+    // Layer 1: Inner gradient ring around person
+    const innerPersonRadius = Math.min(personWidth, personHeight) * 0.6;
+    const middlePersonRadius = Math.min(personWidth, personHeight) * 1.2;
+    const outerPersonRadius = Math.max(width, height) * 0.8;
+    
+    const innerGradient = ctx.createRadialGradient(
+      centerX, centerY, innerPersonRadius,
+      centerX, centerY, middlePersonRadius
     );
+    innerGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    innerGradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    innerGradient.addColorStop(0.7, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.5, 0.12));
+    innerGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.08)`);
     
-    if (baseGradient) {
-      ctx.fillStyle = baseGradient;
-      ctx.fillRect(0, 0, width, height);
-    }
+    ctx.fillStyle = innerGradient;
+    ctx.fillRect(0, 0, width, height);
     
-    // Layer 2: Enhanced cross-gradient with thinking color integration
+    // Layer 2: Middle gradient ring with side colors
     ctx.globalCompositeOperation = 'multiply';
-    const crossGradient = createMultiColorGradient(
-      ctx,
-      [colors.givingRGB, colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
-      [0, 0.25, 0.4, 0.55, 0.75, 1],
-      [0.2, 0.18, 0.12, 0.15, 0.2, 0.1],
-      true,
-      { x1: width, y1: 0, x2: 0, y2: height }
+    const middleGradient = ctx.createRadialGradient(
+      centerX, centerY, middlePersonRadius,
+      centerX, centerY, outerPersonRadius
     );
+    middleGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.08)`);
+    middleGradient.addColorStop(0.25, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.3, 0.1));
+    middleGradient.addColorStop(0.5, createBlendedColor(colors.givingRGB, colors.receivingRGB, 0.5, 0.12));
+    middleGradient.addColorStop(0.75, createBlendedColor(colors.receivingRGB, colors.personalityRGB, 0.7, 0.1));
+    middleGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
     
-    if (crossGradient) {
-      ctx.fillStyle = crossGradient;
-      ctx.fillRect(0, 0, width, height);
-    }
+    ctx.fillStyle = middleGradient;
+    ctx.fillRect(0, 0, width, height);
     
-    // Layer 3: Enhanced radial fade with thinking color properly blended
+    // Layer 3: Outer gradient extending to edges with directional flow
     ctx.globalCompositeOperation = 'soft-light';
-    const centerFade = createMultiColorGradient(
-      ctx,
-      [colors.personalityRGB, colors.thinkingRGB, colors.personalityRGB, colors.receivingRGB, colors.givingRGB, colors.thinkingRGB],
-      [0, 0.25, 0.4, 0.6, 0.8, 1],
-      [0, 0.12, 0.08, 0.06, 0.04, 0.05],
-      false,
-      { 
-        x1: centerX, y1: centerY, r1: Math.min(personWidth, personHeight) * 0.3,
-        x2: centerX, y2: centerY, r2: Math.max(width, height) * 0.9
-      }
+    const outerGradient = ctx.createRadialGradient(
+      centerX, centerY, outerPersonRadius,
+      centerX, centerY, Math.max(width, height) * 1.2
     );
+    outerGradient.addColorStop(0, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.6, 0.06));
+    outerGradient.addColorStop(0.3, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.4, 0.05));
+    outerGradient.addColorStop(0.6, createBlendedColor(colors.givingRGB, colors.receivingRGB, 0.5, 0.04));
+    outerGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.02)`);
     
-    if (centerFade) {
-      ctx.fillStyle = centerFade;
-      ctx.fillRect(0, 0, width, height);
-    }
+    ctx.fillStyle = outerGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Layer 4: Directional gradients for specific energy zones
+    ctx.globalCompositeOperation = 'overlay';
+    
+    // Top thinking energy gradient
+    const thinkingGradient = ctx.createLinearGradient(centerX, centerY - personHeight * 0.3, centerX, 0);
+    thinkingGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    thinkingGradient.addColorStop(0.4, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.7, 0.08));
+    thinkingGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
+    ctx.fillStyle = thinkingGradient;
+    ctx.fillRect(0, 0, width, height * 0.6);
+    
+    // Left giving energy gradient
+    const givingGradient = ctx.createLinearGradient(centerX - personWidth * 0.3, centerY, 0, centerY);
+    givingGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    givingGradient.addColorStop(0.4, createBlendedColor(colors.personalityRGB, colors.givingRGB, 0.7, 0.08));
+    givingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.10)`);
+    ctx.fillStyle = givingGradient;
+    ctx.fillRect(0, 0, width * 0.6, height);
+    
+    // Right receiving energy gradient
+    const receivingGradient = ctx.createLinearGradient(centerX + personWidth * 0.3, centerY, width, centerY);
+    receivingGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    receivingGradient.addColorStop(0.4, createBlendedColor(colors.personalityRGB, colors.receivingRGB, 0.7, 0.08));
+    receivingGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.10)`);
+    ctx.fillStyle = receivingGradient;
+    ctx.fillRect(width * 0.4, 0, width * 0.6, height);
     
     // Reset blend mode
     ctx.globalCompositeOperation = 'source-over';
@@ -3316,21 +3339,33 @@ export default function AuraAnalysis() {
       ctx.fillRect(0, 0, width, height);
     }
     
-    // Add final thinking color integration layer
+    // Add final thinking color integration layer with person-centered gradient
     ctx.globalCompositeOperation = 'soft-light';
-    const thinkingIntegration = createMultiColorGradient(
-      ctx,
-      [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB],
-      [0, 0.5, 1],
-      [0.06, 0.03, 0.04],
-      true,
-      { x1: 0, y1: 0, x2: width, y2: height * 0.4 }
+    const thinkingIntegration = ctx.createRadialGradient(
+      centerX, centerY - personHeight * 0.2, Math.min(personWidth, personHeight) * 0.5,
+      centerX, centerY - personHeight * 0.2, Math.max(width, height) * 0.7
     );
+    thinkingIntegration.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    thinkingIntegration.addColorStop(0.3, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.5, 0.06));
+    thinkingIntegration.addColorStop(0.7, createBlendedColor(colors.thinkingRGB, colors.personalityRGB, 0.7, 0.04));
+    thinkingIntegration.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.02)`);
     
-    if (thinkingIntegration) {
-      ctx.fillStyle = thinkingIntegration;
-      ctx.fillRect(0, 0, width, height);
-    }
+    ctx.fillStyle = thinkingIntegration;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Add final seamless blending layer around person silhouette
+    ctx.globalCompositeOperation = 'multiply';
+    const silhouetteBlend = ctx.createRadialGradient(
+      centerX, centerY, Math.min(personWidth, personHeight) * 0.4,
+      centerX, centerY, Math.min(personWidth, personHeight) * 1.5
+    );
+    silhouetteBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    silhouetteBlend.addColorStop(0.5, createBlendedColor(colors.personalityRGB, colors.thinkingRGB, 0.3, 0.05));
+    silhouetteBlend.addColorStop(0.8, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.5, 0.04));
+    silhouetteBlend.addColorStop(1, createBlendedColor(colors.givingRGB, colors.receivingRGB, 0.7, 0.03));
+    
+    ctx.fillStyle = silhouetteBlend;
+    ctx.fillRect(0, 0, width, height);
     
     // Reset blend mode
     ctx.globalCompositeOperation = 'source-over';
