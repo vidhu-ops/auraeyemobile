@@ -344,7 +344,7 @@ export default function ObjectAnalysis() {
     return colorMap[auraColor.toLowerCase()] || '#800080';
   };
 
-  // Function to detect faces in uploaded images
+  // Function to detect faces in uploaded images using structural analysis only
   const detectFaces = (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -360,84 +360,75 @@ export default function ObjectAnalysis() {
         
         if (imageData) {
           const data = imageData.data;
-          let skinPixels = 0;
-          let facePatternPixels = 0;
+          let organicPatterns = 0;
+          let manufacturedPatterns = 0;
           let totalPixels = data.length / 4;
           
-          // More precise face detection focusing on typical face patterns
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
+          // Sample pixels to detect structural patterns (not color-based)
+          for (let i = 0; i < data.length - 16; i += 16) {
+            const r1 = data[i];
+            const g1 = data[i + 1];
+            const b1 = data[i + 2];
             
-            // Stricter skin tone detection - must meet multiple criteria
-            const skinTone1 = r > 120 && g > 80 && b > 60 && r > g && r > b && 
-                             Math.abs(r - g) > 20 && Math.abs(r - b) > 30;
-            const skinTone2 = r > 200 && g > 170 && b > 130 && r - g < 30 && r - b < 80; // Very light skin
-            const skinTone3 = r > 110 && r < 140 && g > 80 && g < 110 && b > 60 && b < 90 && 
-                             r > g && r > b; // Medium skin with strict bounds
+            const r2 = data[i + 4];
+            const g2 = data[i + 5];
+            const b2 = data[i + 6];
             
-            // Face pattern detection (areas with consistent skin tone clusters)
-            if (skinTone1 || skinTone2 || skinTone3) {
-              skinPixels++;
-              
-              // Check for face-like patterns (consecutive skin pixels in rows/columns)
-              const pixelIndex = Math.floor(i / 4);
-              const x = pixelIndex % canvas.width;
-              const y = Math.floor(pixelIndex / canvas.width);
-              
-              // Check for horizontal and vertical skin tone continuity (face feature pattern)
-              let horizontalSkin = 0;
-              let verticalSkin = 0;
-              
-              // Check 5 pixels horizontally
-              for (let dx = -2; dx <= 2; dx++) {
-                const checkX = x + dx;
-                if (checkX >= 0 && checkX < canvas.width) {
-                  const checkIndex = (y * canvas.width + checkX) * 4;
-                  const checkR = data[checkIndex];
-                  const checkG = data[checkIndex + 1];
-                  const checkB = data[checkIndex + 2];
-                  
-                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
-                      (checkR > 240 && checkG > 220 && checkB > 180) ||
-                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
-                    horizontalSkin++;
-                  }
-                }
-              }
-              
-              // Check 5 pixels vertically
-              for (let dy = -2; dy <= 2; dy++) {
-                const checkY = y + dy;
-                if (checkY >= 0 && checkY < canvas.height) {
-                  const checkIndex = (checkY * canvas.width + x) * 4;
-                  const checkR = data[checkIndex];
-                  const checkG = data[checkIndex + 1];
-                  const checkB = data[checkIndex + 2];
-                  
-                  if ((checkR > 120 && checkG > 80 && checkB > 60 && checkR > checkG && checkR > checkB) ||
-                      (checkR > 240 && checkG > 220 && checkB > 180) ||
-                      (checkR > 110 && checkR < 140 && checkG > 80 && checkG < 110 && checkB > 60 && checkB < 90)) {
-                    verticalSkin++;
-                  }
-                }
-              }
-              
-              // If we have significant skin continuity in both directions, it's likely a face region
-              if (horizontalSkin >= 3 && verticalSkin >= 3) {
-                facePatternPixels++;
-              }
+            const r3 = data[i + 8];
+            const g3 = data[i + 9];
+            const b3 = data[i + 10];
+            
+            const r4 = data[i + 12];
+            const g4 = data[i + 13];
+            const b4 = data[i + 14];
+            
+            // Calculate gradients between adjacent pixels
+            const grad1 = Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
+            const grad2 = Math.abs(r2 - r3) + Math.abs(g2 - g3) + Math.abs(b2 - b3);
+            const grad3 = Math.abs(r3 - r4) + Math.abs(g3 - g4) + Math.abs(b3 - b4);
+            
+            // Look for high contrast patterns (electronics, text, interfaces)
+            if (grad1 > 100 || grad2 > 100 || grad3 > 100) {
+              manufacturedPatterns++;
+            }
+            
+            // Look for perfect geometric patterns (UI elements, buttons)
+            const isGeometric = (
+              (r1 === r2 && r2 === r3) ||
+              (g1 === g2 && g2 === g3) ||
+              (b1 === b2 && b2 === b3)
+            );
+            
+            if (isGeometric) {
+              manufacturedPatterns++;
+            }
+            
+            // Look for repetitive patterns (text, labels, interfaces)
+            const isRepetitive = (
+              Math.abs(r1 - r3) < 5 && Math.abs(g1 - g3) < 5 && Math.abs(b1 - b3) < 5
+            );
+            
+            if (isRepetitive) {
+              manufacturedPatterns++;
+            }
+            
+            // Look for smooth organic gradients (natural curves, shadows)
+            if (grad1 < 10 && grad2 < 10 && grad3 < 10 && grad1 > 0) {
+              organicPatterns++;
             }
           }
           
-          // More restrictive thresholds - require both high skin percentage AND face patterns
-          const skinRatio = skinPixels / totalPixels;
-          const facePatternRatio = facePatternPixels / totalPixels;
+          const manufacturedRatio = manufacturedPatterns / (totalPixels / 4);
+          const organicRatio = organicPatterns / (totalPixels / 4);
           
-          // Only flag as face if we have significant skin area AND face-like patterns
-          const hasFace = skinRatio > 0.15 && facePatternRatio > 0.03;
-          resolve(hasFace);
+          // Only flag as human if overwhelming organic patterns and no manufactured patterns
+          const hasHumanFace = (
+            organicRatio > 0.7 && 
+            manufacturedRatio < 0.1 && 
+            file.size > 500000 // Large file size typical of portraits
+          );
+          
+          resolve(hasHumanFace);
         } else {
           resolve(false);
         }

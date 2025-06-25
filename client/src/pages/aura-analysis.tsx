@@ -2633,7 +2633,7 @@ export default function AuraAnalysis() {
                 name: 'receiving',
                 color: receivingRGB,
                 area: { x: canvasWidth * 0.6, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
-                density: 90
+                density: 60
               },
               {
                 name: 'giving',
@@ -3030,7 +3030,7 @@ export default function AuraAnalysis() {
         direction: { x: 1, y: 0 },
         spread: height * 1.2,
         name: 'receiving_right',
-        density: 70, // Increased density for better right-side coverage
+        density: 50, // Increased density for better right-side coverage
         zone: 'right' // Receiving energy on right side
       },
       { 
@@ -3504,7 +3504,7 @@ export default function AuraAnalysis() {
         if (!inFaceArea) {
           const sizeFactor = Math.min(width, height) / 900; // Adaptive sizing
           const smokeSize = (60 + seededRandom() * 80) * sizeFactor; // Proportional particle size
-          const smokeOpacity = 0.08 + seededRandom() * 0.1; // Lower opacity for person visibility
+          const smokeOpacity = 0.04 + seededRandom() * 0.1; // Lower opacity for person visibility
           
           drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
         }
@@ -3870,7 +3870,7 @@ export default function AuraAnalysis() {
     faceHeight: number
   ) => {
     // Create dense coverage on the right side of the image
-    const rightSideParticles = 150 + energyLevel * 20;
+    const rightSideParticles = 100 + energyLevel * 20;
     
     for (let i = 0; i < rightSideParticles; i++) {
       // Focus particles on right half of image
