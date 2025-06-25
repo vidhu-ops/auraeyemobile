@@ -786,7 +786,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Object analysis - OpenAI human detection result:', hasHuman);
       if (hasHuman) {
         return res.status(400).json({ 
-          message: "Human detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
+          error: "HUMAN_DETECTED",
+          message: "Human detected in image. Object analysis is for inanimate objects only. Please use the Aura Analysis section for images containing people, or upload an image of an object, item, or thing only.",
+          suggestion: "Try uploading: jewelry, crystals, artwork, furniture, electronics, tools, or any non-living object."
         });
       }
 
@@ -850,14 +852,18 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Using the free/cheaper vision model
+        model: "gpt-4o-mini",
         messages: [
+          {
+            role: "system",
+            content: "You are a precise image analyzer. You must respond with only 'YES' or 'NO' - nothing else."
+          },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Look at this image carefully. Does it contain any human being, human face, human body part, or person? Answer with only 'YES' if you see any human presence at all, or 'NO' if it's only objects, animals, landscapes, or non-human items. Be very precise."
+                text: "Does this image contain ANY human being, human face, human body parts, or person? Look very carefully for any human presence including partial faces, hands, arms, legs, or any part of a human body. Answer only 'YES' if ANY human element is visible, or 'NO' if the image contains only objects, animals, landscapes, or non-human items."
               },
               {
                 type: "image_url",
@@ -868,15 +874,23 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             ]
           }
         ],
-        max_tokens: 10,
+        max_tokens: 5,
         temperature: 0
       })
     });
 
     if (!response.ok) {
-      console.error('OpenAI API error:', response.status, response.statusText);
-      // Fallback to local detection if API fails
-      return false; // Default to allowing objects if API fails
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, response.statusText, errorText);
+      
+      // If rate limited or API error, be conservative and block the image
+      if (response.status === 429) {
+        console.log('Rate limited - conservatively blocking image to ensure no humans pass through');
+        return true; // Block image when rate limited to be safe
+      }
+      
+      // For other errors, also be conservative
+      return true; // Block image when API fails to be safe
     }
 
     const result = await response.json();
@@ -885,12 +899,18 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     console.log('OpenAI human detection result:', answer);
     
     // Return true if human detected (YES), false if no human (NO)
-    return answer === 'YES';
+    const hasHuman = answer === 'YES';
+    
+    // Log the decision for debugging
+    console.log(`Image ${hasHuman ? 'BLOCKED (human detected)' : 'ALLOWED (no human)'}`);
+    
+    return hasHuman;
     
   } catch (error) {
     console.error('Error calling OpenAI for human detection:', error);
-    // Fallback to local detection if API fails
-    return false; // Default to allowing objects if API fails
+    // Be conservative - block image when API fails
+    console.log('API error - conservatively blocking image to ensure no humans pass through');
+    return true; // Block image when API fails to be safe
   }
 }
 
