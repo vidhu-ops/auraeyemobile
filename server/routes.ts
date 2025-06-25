@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import crypto from "crypto";
+import sharp from "sharp";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
