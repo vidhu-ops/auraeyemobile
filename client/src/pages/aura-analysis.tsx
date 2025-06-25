@@ -3001,91 +3001,15 @@ export default function AuraAnalysis() {
     // Define person protection radius for smokey field effect
     const personRadius = Math.min(personWidth, personHeight) * 0.4;
 
-    // Create complete smokey field that fills entire background like reference image
-    // Step 1: Create gradient background that blends all aura colors smoothly
-    const backgroundGradient = ctx.createRadialGradient(
-      centerX, centerY, 0,
-      centerX, centerY, Math.max(width, height) * 0.8
-    );
+    // Create smooth gradient-based aura field like reference image
+    // Step 1: Create directional gradient zones for natural color flow
+    createDirectionalGradientZones(ctx, width, height, centerX, centerY, personWidth, personHeight, colors);
     
-    // Create smooth color transitions like real smoke
-    backgroundGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    backgroundGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
-    backgroundGradient.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.05)`);
-    backgroundGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.04)`);
+    // Step 2: Create flowing color blends with smooth transitions
+    createFlowingColorBlends(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, seededRandom);
     
-    ctx.fillStyle = backgroundGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Step 2: Create flowing smoke particles with natural color blending
-    const totalParticles = 300 + energyLevel * 40;
-    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-    
-    for (let i = 0; i < totalParticles; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      // Define person protection area
-      const personLeft = centerX - personWidth * 0.42;
-      const personRight = centerX + personWidth * 0.42;
-      const personTop = centerY - personHeight * 0.6;
-      const personBottom = centerY + personHeight * 0.75;
-      
-      const outsidePersonArea = x < personLeft || x > personRight || y < personTop || y > personBottom;
-      
-      if (outsidePersonArea) {
-        // Primary color selection based on position
-        let primaryColor;
-        if (y <= height * 0.2) {
-          primaryColor = colors.thinkingRGB;
-        } else if (x < width * 0.4) {
-          primaryColor = colors.givingRGB;
-        } else if (x > width * 0.6) {
-          primaryColor = colors.receivingRGB;
-        } else {
-          primaryColor = colors.personalityRGB;
-        }
-        
-        // Create blended color for natural smoke merging
-        const blendedColor = createColorBlend(primaryColor, colors, seededRandom() * 0.5, seededRandom);
-        
-        const particleSize = 20 + seededRandom() * 80;
-        const particleOpacity = 0.06 + seededRandom() * 0.12;
-        
-        // Create flowing smoke gradient with better blending
-        const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-        particleGradient.addColorStop(0, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${particleOpacity})`);
-        particleGradient.addColorStop(0.4, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${particleOpacity * 0.8})`);
-        particleGradient.addColorStop(0.7, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${particleOpacity * 0.4})`);
-        particleGradient.addColorStop(1, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, 0)`);
-        
-        ctx.fillStyle = particleGradient;
-        ctx.beginPath();
-        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    
-    // Step 3: Create flowing atmospheric depth with color transitions
-    const atmosphericGradient = ctx.createRadialGradient(
-      centerX, centerY, Math.min(personWidth, personHeight) * 0.5,
-      centerX, centerY, Math.max(width, height) * 0.9
-    );
-    
-    // Create smooth color transitions across the atmosphere
-    const baseColor = colors.personalityRGB;
-    const thinkingColor = colors.thinkingRGB;
-    const givingColor = colors.givingRGB;
-    const receivingColor = colors.receivingRGB;
-    
-    atmosphericGradient.addColorStop(0, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`);
-    atmosphericGradient.addColorStop(0.3, `rgba(${givingColor.r}, ${givingColor.g}, ${givingColor.b}, 0.03)`);
-    atmosphericGradient.addColorStop(0.6, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, 0.04)`);
-    atmosphericGradient.addColorStop(0.85, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.06)`);
-    atmosphericGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.08)`);
-    
-    ctx.fillStyle = atmosphericGradient;
-    ctx.fillRect(0, 0, width, height);
+    // Step 3: Create final blending overlay for seamless transitions
+    createSeamlessBlendingOverlay(ctx, width, height, centerX, centerY, personWidth, personHeight, colors);
 
     // Create 4-Zone Energy Map with proper positioning around the person
     const smokeZones = [
@@ -3208,8 +3132,118 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Simplified final effects for optimal performance
-    createPerimeterSmoke(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add subtle texture overlay for depth
+    createSmoothTextureOverlay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+  };
+
+  // Function to create directional gradient zones like reference image
+  const createDirectionalGradientZones = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number,
+    colors: any
+  ) => {
+    // Create large flowing gradients that blend naturally
+    
+    // 1. Left-side giving energy gradient (vertical flow)
+    const leftGradient = ctx.createLinearGradient(0, 0, width * 0.5, height);
+    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`);
+    leftGradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
+    leftGradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    leftGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.12)`);
+    
+    ctx.fillStyle = leftGradient;
+    ctx.fillRect(0, 0, width * 0.6, height);
+    
+    // 2. Right-side receiving energy gradient (diagonal flow)
+    const rightGradient = ctx.createLinearGradient(width * 0.4, 0, width, height);
+    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
+    rightGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.18)`);
+    rightGradient.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    rightGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.22)`);
+    
+    ctx.fillStyle = rightGradient;
+    ctx.fillRect(width * 0.4, 0, width * 0.6, height);
+    
+    // 3. Top thinking energy gradient (horizontal flow)
+    const topGradient = ctx.createLinearGradient(0, 0, width, height * 0.3);
+    topGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.20)`);
+    topGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.15)`);
+    topGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    
+    ctx.fillStyle = topGradient;
+    ctx.fillRect(0, 0, width, height * 0.25);
+    
+    // 4. Central personality radial gradient
+    const personalityGradient = ctx.createRadialGradient(
+      centerX, centerY, Math.min(personWidth, personHeight) * 0.8,
+      centerX, centerY, Math.max(width, height) * 0.6
+    );
+    personalityGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    personalityGradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    personalityGradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    personalityGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
+    
+    ctx.fillStyle = personalityGradient;
+    ctx.fillRect(0, 0, width, height);
+  };
+
+  // Function to create smooth texture overlay for depth
+  const createSmoothTextureOverlay = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number,
+    faceX: number,
+    faceY: number,
+    faceWidth: number,
+    faceHeight: number
+  ) => {
+    // Add subtle flowing texture particles for depth
+    const textureParticles = 80 + energyLevel * 15;
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < textureParticles; i++) {
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Avoid face area
+      const inFaceArea = x >= faceX && x <= faceX + faceWidth && y >= faceY && y <= faceY + faceHeight;
+      
+      if (!inFaceArea) {
+        // Select color based on position for zone consistency
+        let textureColor;
+        if (y <= height * 0.25) {
+          textureColor = colors.thinkingRGB;
+        } else if (x < width * 0.4) {
+          textureColor = colors.givingRGB;
+        } else if (x > width * 0.6) {
+          textureColor = colors.receivingRGB;
+        } else {
+          textureColor = colors.personalityRGB;
+        }
+        
+        const particleSize = 30 + seededRandom() * 60;
+        const particleOpacity = 0.03 + seededRandom() * 0.06;
+        
+        // Create very soft gradient for texture
+        const textureGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        textureGradient.addColorStop(0, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, ${particleOpacity})`);
+        textureGradient.addColorStop(0.6, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, ${particleOpacity * 0.3})`);
+        textureGradient.addColorStop(1, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, 0)`);
+        
+        ctx.fillStyle = textureGradient;
+        ctx.beginPath();
+        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
