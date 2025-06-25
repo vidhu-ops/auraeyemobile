@@ -781,11 +781,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
-      // Check if image contains a human - object analysis should reject human images
+      // Check if image contains a human face - object analysis should reject human images
       const hasHuman = detectHumanInImage(imgBuffer);
+      console.log('Object analysis - human detection result:', hasHuman);
       if (hasHuman) {
         return res.status(400).json({ 
-          message: "Human detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
+          message: "Human face detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
         });
       }
 
@@ -1000,13 +1001,23 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
   
   // Detect human face: need multiple facial features + symmetry + no manufactured patterns
   const hasFacialStructure = (
-    eyeRatio > 0.15 &&           // Clear eye regions
-    noseRatio > 0.10 &&          // Nose structure
-    mouthRatio > 0.10 &&         // Mouth region
-    symmetryRatio > 0.20 &&      // Facial symmetry
-    manufacturedRatio < 0.1 &&   // Minimal manufactured patterns
-    sampledPixels > 30           // Sufficient sampling
+    eyeRatio > 0.20 &&           // Strong eye regions
+    noseRatio > 0.15 &&          // Clear nose structure
+    mouthRatio > 0.15 &&         // Mouth region
+    symmetryRatio > 0.25 &&      // Strong facial symmetry
+    manufacturedRatio < 0.15 &&  // Minimal manufactured patterns
+    sampledPixels > 50           // Sufficient sampling
   );
+  
+  console.log('Facial detection ratios:', {
+    eyeRatio: eyeRatio.toFixed(3),
+    noseRatio: noseRatio.toFixed(3), 
+    mouthRatio: mouthRatio.toFixed(3),
+    symmetryRatio: symmetryRatio.toFixed(3),
+    manufacturedRatio: manufacturedRatio.toFixed(3),
+    sampledPixels,
+    hasFacialStructure
+  });
   
   return hasFacialStructure;
 }
