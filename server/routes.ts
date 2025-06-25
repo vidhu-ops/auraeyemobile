@@ -781,12 +781,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
-      // Check if image contains a human face - object analysis should reject human images
-      const hasHuman = detectHumanInImage(imgBuffer);
-      console.log('Object analysis - human detection result:', hasHuman);
+      // Check if image contains a human using OpenAI vision API - object analysis should reject human images
+      const hasHuman = await detectHumanInImage(imgBuffer);
+      console.log('Object analysis - OpenAI human detection result:', hasHuman);
       if (hasHuman) {
         return res.status(400).json({ 
-          message: "Human face detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
+          message: "Human detected in image. Please use the Aura Analysis section for images containing people, or upload an image of an object only." 
         });
       }
 
@@ -838,225 +838,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
-function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // Ultra-aggressive human face detection - designed to catch ALL human faces
-  // Uses multiple detection methods to ensure 100% human rejection rate
-  
-  let humanDetectionScore = 0;
-  let eyePatterns = 0;
-  let nosePatterns = 0;
-  let mouthPatterns = 0;
-  let faceSymmetry = 0;
-  let skinTonePatterns = 0;
-  let facialStructurePatterns = 0;
-  let organicPatterns = 0;
-  let totalSamples = 0;
-  
-  // Aggressive sampling for maximum detection coverage
-  const sampleStep = Math.max(200, Math.floor(imageBuffer.length / 800));
-  
-  for (let i = 0; i < imageBuffer.length - 30; i += sampleStep) {
-    const pixels = [];
-    for (let j = 0; j < 30; j += 3) {
-      if (i + j + 2 < imageBuffer.length) {
-        pixels.push({
-          r: imageBuffer[i + j] || 0,
-          g: imageBuffer[i + j + 1] || 0,
-          b: imageBuffer[i + j + 2] || 0
-        });
-      }
+async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
+  // Use OpenAI's vision API to accurately detect humans in images
+  try {
+    const base64Image = imageBuffer.toString('base64');
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini", // Using the free/cheaper vision model
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Look at this image carefully. Does it contain any human being, human face, human body part, or person? Answer with only 'YES' if you see any human presence at all, or 'NO' if it's only objects, animals, landscapes, or non-human items. Be very precise."
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 10,
+        temperature: 0
+      })
+    });
+
+    if (!response.ok) {
+      console.error('OpenAI API error:', response.status, response.statusText);
+      // Fallback to local detection if API fails
+      return false; // Default to allowing objects if API fails
     }
+
+    const result = await response.json();
+    const answer = result.choices[0]?.message?.content?.trim().toUpperCase();
     
-    if (pixels.length < 8) continue;
-    totalSamples++;
+    console.log('OpenAI human detection result:', answer);
     
-    // METHOD 1: Aggressive eye detection
-    let darkRegions = 0;
-    let mediumRegions = 0;
-    let lightRegions = 0;
+    // Return true if human detected (YES), false if no human (NO)
+    return answer === 'YES';
     
-    for (const pixel of pixels) {
-      const brightness = pixel.r + pixel.g + pixel.b;
-      if (brightness < 80) darkRegions++;          // Very dark (eyes, pupils)
-      else if (brightness < 180) mediumRegions++;  // Medium (iris, shadows)
-      else lightRegions++;                         // Light (skin, whites)
-    }
-    
-    // Eye pattern: dark centers with light surroundings
-    if (darkRegions >= 2 && lightRegions >= 3 && mediumRegions >= 2) {
-      eyePatterns++;
-      humanDetectionScore += 3;
-    }
-    
-    // METHOD 2: Aggressive nose detection
-    const centerPixels = pixels.slice(3, 6);
-    const edgePixels = pixels.slice(0, 3).concat(pixels.slice(6, 9));
-    
-    if (centerPixels.length >= 3 && edgePixels.length >= 3) {
-      let centerAvg = 0, edgeAvg = 0;
-      centerPixels.forEach(p => centerAvg += (p.r + p.g + p.b));
-      edgePixels.forEach(p => edgeAvg += (p.r + p.g + p.b));
-      centerAvg /= centerPixels.length;
-      edgeAvg /= edgePixels.length;
-      
-      // Nose pattern: center prominence
-      if (centerAvg > edgeAvg + 10 && centerAvg < edgeAvg + 100) {
-        nosePatterns++;
-        humanDetectionScore += 2;
-      }
-    }
-    
-    // METHOD 3: Aggressive mouth detection
-    let horizontalContrast = 0;
-    for (let p = 0; p < pixels.length - 3; p += 3) {
-      const b1 = pixels[p].r + pixels[p].g + pixels[p].b;
-      const b2 = pixels[p + 3].r + pixels[p + 3].g + pixels[p + 3].b;
-      horizontalContrast += Math.abs(b1 - b2);
-    }
-    
-    // Mouth pattern: horizontal variation
-    if (horizontalContrast > 50 && horizontalContrast < 400) {
-      mouthPatterns++;
-      humanDetectionScore += 2;
-    }
-    
-    // METHOD 4: Facial symmetry detection
-    const leftHalf = pixels.slice(0, Math.floor(pixels.length / 2));
-    const rightHalf = pixels.slice(Math.floor(pixels.length / 2));
-    
-    if (leftHalf.length === rightHalf.length && leftHalf.length >= 3) {
-      let symmetryMatches = 0;
-      for (let s = 0; s < leftHalf.length; s++) {
-        const leftB = leftHalf[s].r + leftHalf[s].g + leftHalf[s].b;
-        const rightB = rightHalf[s].r + rightHalf[s].g + rightHalf[s].b;
-        if (Math.abs(leftB - rightB) < 60) symmetryMatches++;
-      }
-      
-      if (symmetryMatches >= Math.floor(leftHalf.length * 0.6)) {
-        faceSymmetry++;
-        humanDetectionScore += 2;
-      }
-    }
-    
-    // METHOD 5: Skin tone detection (any human skin tone range)
-    let skinToneCount = 0;
-    for (const pixel of pixels) {
-      const r = pixel.r, g = pixel.g, b = pixel.b;
-      
-      // Expanded skin tone ranges - covers all ethnicities
-      const isLightSkin = (r > 180 && g > 140 && b > 120 && r > g && g > b);
-      const isMediumSkin = (r > 120 && r < 220 && g > 80 && g < 180 && b > 60 && b < 140);
-      const isDarkSkin = (r > 60 && r < 150 && g > 40 && g < 120 && b > 30 && b < 100);
-      const isAsianSkin = (r > 150 && r < 210 && g > 120 && g < 170 && b > 100 && b < 150);
-      
-      if (isLightSkin || isMediumSkin || isDarkSkin || isAsianSkin) {
-        skinToneCount++;
-      }
-    }
-    
-    if (skinToneCount >= 3) {
-      skinTonePatterns++;
-      humanDetectionScore += 3;
-    }
-    
-    // METHOD 6: Organic vs geometric pattern detection
-    let organicVariation = 0;
-    let geometricUniformity = 0;
-    
-    for (let p = 0; p < pixels.length - 1; p++) {
-      const variation = Math.abs(pixels[p].r - pixels[p + 1].r) + 
-                       Math.abs(pixels[p].g - pixels[p + 1].g) + 
-                       Math.abs(pixels[p].b - pixels[p + 1].b);
-      
-      if (variation > 5 && variation < 80) {
-        organicVariation++; // Natural variation
-      } else if (variation === 0) {
-        geometricUniformity++; // Perfect uniformity
-      }
-    }
-    
-    if (organicVariation > geometricUniformity && organicVariation >= 3) {
-      organicPatterns++;
-      humanDetectionScore += 1;
-    }
-    
-    // METHOD 7: Facial structure composition
-    const avgBrightness = pixels.reduce((sum, p) => sum + p.r + p.g + p.b, 0) / pixels.length;
-    const brightnessVariation = pixels.filter(p => 
-      Math.abs((p.r + p.g + p.b) - avgBrightness) > 20
-    ).length;
-    
-    if (brightnessVariation >= 4 && avgBrightness > 100 && avgBrightness < 600) {
-      facialStructurePatterns++;
-      humanDetectionScore += 1;
-    }
+  } catch (error) {
+    console.error('Error calling OpenAI for human detection:', error);
+    // Fallback to local detection if API fails
+    return false; // Default to allowing objects if API fails
   }
-  
-  // Calculate detection ratios
-  const eyeRatio = eyePatterns / totalSamples;
-  const noseRatio = nosePatterns / totalSamples;
-  const mouthRatio = mouthPatterns / totalSamples;
-  const symmetryRatio = faceSymmetry / totalSamples;
-  const skinRatio = skinTonePatterns / totalSamples;
-  const organicRatio = organicPatterns / totalSamples;
-  const structureRatio = facialStructurePatterns / totalSamples;
-  const overallScore = humanDetectionScore / totalSamples;
-  
-  // ULTRA-AGGRESSIVE DETECTION CRITERIA
-  // Multiple pathways to catch human faces - if ANY criteria is met, reject image
-  
-  const hasStrongFacialFeatures = (
-    eyeRatio > 0.05 &&        // Very low threshold for eyes
-    noseRatio > 0.03 &&       // Very low threshold for nose
-    mouthRatio > 0.03 &&      // Very low threshold for mouth
-    symmetryRatio > 0.08      // Very low threshold for symmetry
-  );
-  
-  const hasSkinAndStructure = (
-    skinRatio > 0.10 &&       // Skin tone detection
-    (eyeRatio > 0.02 || noseRatio > 0.02 || mouthRatio > 0.02)  // Any facial feature
-  );
-  
-  const hasOrganicFacialPattern = (
-    organicRatio > 0.15 &&    // Organic patterns
-    structureRatio > 0.12 &&  // Facial structure
-    symmetryRatio > 0.05      // Basic symmetry
-  );
-  
-  const hasHighDetectionScore = overallScore > 0.8;  // High overall detection score
-  
-  const hasCombinedFeatures = (
-    (eyeRatio + noseRatio + mouthRatio + symmetryRatio) > 0.25  // Combined feature threshold
-  );
-  
-  // FINAL DECISION: If ANY detection method triggers, classify as human
-  const isHuman = hasStrongFacialFeatures || 
-                  hasSkinAndStructure || 
-                  hasOrganicFacialPattern || 
-                  hasHighDetectionScore || 
-                  hasCombinedFeatures;
-  
-  console.log('Ultra-aggressive human detection:', {
-    eyeRatio: eyeRatio.toFixed(3),
-    noseRatio: noseRatio.toFixed(3),
-    mouthRatio: mouthRatio.toFixed(3),
-    symmetryRatio: symmetryRatio.toFixed(3),
-    skinRatio: skinRatio.toFixed(3),
-    organicRatio: organicRatio.toFixed(3),
-    structureRatio: structureRatio.toFixed(3),
-    overallScore: overallScore.toFixed(3),
-    totalSamples,
-    isHuman,
-    triggerReasons: {
-      strongFeatures: hasStrongFacialFeatures,
-      skinStructure: hasSkinAndStructure,
-      organicPattern: hasOrganicFacialPattern,
-      highScore: hasHighDetectionScore,
-      combinedFeatures: hasCombinedFeatures
-    }
-  });
-  
-  return isHuman;
 }
 
   // Aura Analysis API endpoint
@@ -1081,7 +916,7 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       imageData = imgBuffer.toString("base64");
 
       // Check if image contains a human - aura analysis requires human images
-      const hasHuman = detectHumanInImage(imgBuffer);
+      const hasHuman = await detectHumanInImage(imgBuffer);
       // For now, allow analysis to proceed - user education will guide proper usage
       if (!hasHuman && imgBuffer.length < 5000) {
         // Only block very small test images
