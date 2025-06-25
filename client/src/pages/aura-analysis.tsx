@@ -2898,19 +2898,24 @@ export default function AuraAnalysis() {
     return 'none'; // Default fallback
   };
 
-  // Function to create prominent thinking energy particle above person's head
+  // Function to create prominent thinking energy particle above person's head with standardized sizing
   const createThinkingEnergyParticle = (
     ctx: CanvasRenderingContext2D,
     centerX: number,
     centerY: number,
     personHeight: number,
     thinkingColor: { r: number, g: number, b: number },
-    energyLevel: number
+    energyLevel: number,
+    imageWidth: number = 800,
+    imageHeight: number = 600
   ) => {
-    // Position the thinking energy particle above the person's head - more prominent
+    // Position the thinking energy particle above the person's head - standardized positioning
     const particleX = centerX;
-    const particleY = centerY - personHeight * 0.6; // Closer to head for better visibility
-    const baseRadius = Math.max(25, energyLevel * 5); // Larger size for better visibility
+    const particleY = centerY - personHeight * 0.6; // Consistent relative positioning
+    
+    // Standardized particle sizing based on image dimensions - consistent across all images
+    const standardSize = Math.min(imageWidth, imageHeight) * 0.04; // 4% of minimum image dimension
+    const baseRadius = Math.max(20, standardSize); // Minimum 20px, scales with image size
     
     // Create multiple glowing layers for the particle with enhanced visibility
     ctx.globalCompositeOperation = 'screen'; // Bright additive blending
@@ -3131,11 +3136,11 @@ export default function AuraAnalysis() {
     // Skip particle-based smoke zones to avoid patchy appearance
     // All aura effects are now handled by smooth gradients above
     
-    // Create prominent thinking energy particle above person's head
-    createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel);
+    // Create prominent thinking energy particle above person's head with standardized sizing
+    createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel, width, height);
   };
 
-  // Function to create ultra-smooth gradient aura without any patches
+  // Function to create ultra-smooth gradient aura with consistent personality color coverage
   const createDirectionalGradientZones = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3149,57 +3154,55 @@ export default function AuraAnalysis() {
     // Reset to normal blending for clean gradient application
     ctx.globalCompositeOperation = 'source-over';
     
-    // Create seamless multi-layer gradient system
-    const personRadius = Math.min(personWidth, personHeight) * 0.6;
-    const auraRadius = Math.max(width, height) * 0.8;
+    // Use standardized dimensions for consistent particle sizing across all images
+    const standardRadius = Math.max(width, height) * 0.9; // Full coverage radius
+    const innerRadius = Math.min(width, height) * 0.1;    // Inner starting point
     
-    // Layer 1: Full personality color wash across entire image
-    const personalityWash = ctx.createRadialGradient(
-      centerX, centerY, personRadius * 0.3,
-      centerX, centerY, auraRadius
+    // Layer 1: Complete personality color wash covering entire image uniformly
+    const personalityBase = ctx.createRadialGradient(
+      centerX, centerY, innerRadius,
+      centerX, centerY, standardRadius
     );
-    personalityWash.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.02)`);
-    personalityWash.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    personalityWash.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`);
-    personalityWash.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    personalityWash.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    // Ensure consistent personality color coverage across all image sizes
+    personalityBase.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`);
+    personalityBase.addColorStop(0.2, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`);
+    personalityBase.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.20)`);
+    personalityBase.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+    personalityBase.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    personalityBase.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
     
-    ctx.fillStyle = personalityWash;
+    ctx.fillStyle = personalityBase;
     ctx.fillRect(0, 0, width, height);
     
-    // Layer 2: Smooth left-side giving energy blend
+    // Layer 2: Additional full-image personality wash for complete coverage
+    const personalityOverlay = ctx.createLinearGradient(0, 0, width, height);
+    personalityOverlay.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    personalityOverlay.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    personalityOverlay.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = personalityOverlay;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Layer 3: Smooth left-side giving energy blend
     ctx.globalCompositeOperation = 'color-dodge';
-    const leftGradient = ctx.createLinearGradient(0, centerY, width * 0.7, centerY);
-    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
-    leftGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
-    leftGradient.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.03)`);
+    const leftGradient = ctx.createLinearGradient(0, centerY, width * 0.65, centerY);
+    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.10)`);
+    leftGradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
+    leftGradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.03)`);
     leftGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
     
     ctx.fillStyle = leftGradient;
     ctx.fillRect(0, 0, width, height);
     
-    // Layer 3: Smooth right-side receiving energy blend
-    const rightGradient = ctx.createLinearGradient(width, centerY, width * 0.3, centerY);
-    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
-    rightGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
-    rightGradient.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.03)`);
+    // Layer 4: Smooth right-side receiving energy blend
+    const rightGradient = ctx.createLinearGradient(width, centerY, width * 0.35, centerY);
+    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.10)`);
+    rightGradient.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
+    rightGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.03)`);
     rightGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
     
     ctx.fillStyle = rightGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Layer 4: Central radial enhancement for seamless blending
-    ctx.globalCompositeOperation = 'overlay';
-    const centralBlend = ctx.createRadialGradient(
-      centerX, centerY, personRadius * 0.2,
-      centerX, centerY, auraRadius * 0.6
-    );
-    centralBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    centralBlend.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    centralBlend.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
-    centralBlend.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`);
-    
-    ctx.fillStyle = centralBlend;
     ctx.fillRect(0, 0, width, height);
     
     // Reset blend mode for normal rendering
