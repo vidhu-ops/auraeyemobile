@@ -18,9 +18,8 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 
 
 // Optimized fast aura analysis function for sub-1000ms performance with varied results
-// Only approved aura colors - restricted to 16 colors
+// Only approved aura colors - restricted to 17 colors (added Gray, reduced Black frequency)
 const ENHANCED_COLORS = [
-  { name: "Black", hex: "#000000" },
   { name: "White", hex: "#FFFFFF" },
   { name: "Brown", hex: "#A52A2A" },
   { name: "Turquoise", hex: "#40E0D0" },
@@ -35,7 +34,8 @@ const ENHANCED_COLORS = [
   { name: "Silver", hex: "#C0C0C0" },
   { name: "Orange", hex: "#FFA500" },
   { name: "Pink", hex: "#FFC0CB" },
-  { name: "Turquoise", hex: "#40E0D0" } // Second instance for better distribution
+  { name: "Gray", hex: "#808080" },
+  { name: "Black", hex: "#000000" } // Only appears when truly detected, not as default
 ];
 
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
@@ -355,9 +355,8 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     return seed / 233280;
   };
 
-  // Only approved aura colors - restricted to 16 colors
+  // Only approved aura colors - restricted to 17 colors (added Gray, reduced Black frequency)
   const enhancedColors = [
-    { name: "Black", hex: "#000000" },
     { name: "White", hex: "#FFFFFF" },
     { name: "Brown", hex: "#A52A2A" },
     { name: "Turquoise", hex: "#40E0D0" },
@@ -372,17 +371,19 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "Silver", hex: "#C0C0C0" },
     { name: "Orange", hex: "#FFA500" },
     { name: "Pink", hex: "#FFC0CB" },
-    { name: "Red", hex: "#FF0000" }
+    { name: "Gray", hex: "#808080" },
+    { name: "Black", hex: "#000000" } // Only when truly detected
   ];
   
-  // Deterministic color selection using seeded random - only 16 approved colors
+  // Deterministic color selection using seeded random - 17 approved colors, avoid black as default
+  const colorCount = enhancedColors.length;
   const auraColors = [
-    enhancedColors[Math.floor(seededRandom() * 16)],
-    enhancedColors[Math.floor(seededRandom() * 16)],
-    enhancedColors[Math.floor(seededRandom() * 16)],
-    enhancedColors[Math.floor(seededRandom() * 16)],
-    enhancedColors[Math.floor(seededRandom() * 16)],
-    enhancedColors[Math.floor(seededRandom() * 16)]
+    enhancedColors[Math.floor(seededRandom() * (colorCount - 1))], // Exclude black from primary selection
+    enhancedColors[Math.floor(seededRandom() * (colorCount - 1))], // Exclude black from secondary selection  
+    enhancedColors[Math.floor(seededRandom() * colorCount)], // Allow all colors for spectrum
+    enhancedColors[Math.floor(seededRandom() * colorCount)],
+    enhancedColors[Math.floor(seededRandom() * colorCount)],
+    enhancedColors[Math.floor(seededRandom() * colorCount)]
   ];
   
   const dominantColor = auraColors[0];
@@ -486,10 +487,10 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     "Mirror", "Vessel", "Sphere", "Pyramid", "Wand", "Bracelet"
   ];
   
-  // Only approved aura colors - restricted to 16 colors
+  // Only approved aura colors - restricted to 17 colors (added Gray)
   const auraColors = [
-    "Black", "White", "Brown", "Turquoise", "Red", "Yellow", "Blue", "Green", 
-    "Violet", "Indigo", "Purple", "Gold", "Silver", "Orange", "Pink"
+    "White", "Brown", "Turquoise", "Red", "Yellow", "Blue", "Green", 
+    "Violet", "Indigo", "Purple", "Gold", "Silver", "Orange", "Pink", "Gray", "Black"
   ];
   
   // Enhanced energy qualities with more variety
@@ -530,7 +531,7 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
-  // Only approved object colors - restricted to 16 colors
+  // Only approved object colors - restricted to 17 colors (added Gray)
   const objectColorMeanings: Record<string, string> = {
     'Black': 'Shadow mastery - transformation power, void consciousness, deep inner work, spiritual rebirth',
     'White': 'Divine purity - spiritual protection, angelic presence, sacred innocence, light energy',
@@ -547,6 +548,7 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     'Silver': 'Lunar wisdom - psychic sensitivity, reflective power, intuitive enhancement, feminine energy',
     'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
     'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
+    'Gray': 'Neutral balance - wisdom through experience, practical spirituality, balanced perspective, grounded insight',
 
 
 

@@ -2737,15 +2737,9 @@ export default function AuraAnalysis() {
               'Silver': [192, 192, 192],
               'White': [255, 255, 255],
               'Turquoise': [64, 224, 208],
-              'Lavender': [230, 230, 250],
-              'Peach': [255, 218, 185],
               'Gray': [128, 128, 128],
               'Black': [0, 0, 0],
-              'Brown': [165, 42, 42],
-              'Cyan': [0, 255, 255],
-              'Teal': [0, 128, 128],
-              
-              
+              'Brown': [165, 42, 42]
             };
             return colorMap[colorName] || [0, 100, 255]; // Default to blue
           };
