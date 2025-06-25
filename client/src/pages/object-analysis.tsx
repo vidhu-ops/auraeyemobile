@@ -475,13 +475,23 @@ export default function ObjectAnalysis() {
           
           // Detect human face: need clear facial features + symmetry + no manufactured patterns
           const hasHumanFace = (
-            eyeRatio > 0.20 &&        // Strong eye patterns
-            noseRatio > 0.15 &&       // Clear nose structure
-            mouthRatio > 0.15 &&      // Mouth region
-            symmetryRatio > 0.25 &&   // Facial symmetry
-            manufacturedRatio < 0.15 && // Minimal manufactured patterns
-            totalSamples > 50         // Sufficient data
+            eyeRatio > 0.25 &&        // Very strong eye patterns
+            noseRatio > 0.20 &&       // Clear nose structure
+            mouthRatio > 0.20 &&      // Strong mouth region
+            symmetryRatio > 0.30 &&   // Strong facial symmetry
+            manufacturedRatio < 0.10 && // Very minimal manufactured patterns
+            totalSamples > 100        // More data required
           );
+          
+          console.log('Client-side face detection:', {
+            eyeRatio: eyeRatio.toFixed(3),
+            noseRatio: noseRatio.toFixed(3),
+            mouthRatio: mouthRatio.toFixed(3),
+            symmetryRatio: symmetryRatio.toFixed(3),
+            manufacturedRatio: manufacturedRatio.toFixed(3),
+            totalSamples,
+            hasHumanFace
+          });
           
           resolve(hasHumanFace);
         } else {
@@ -601,7 +611,7 @@ export default function ObjectAnalysis() {
       console.error("Error analyzing object:", error);
       
       // Check if it's a human detection error
-      if (error instanceof Error && error.message.includes("Error: 400")) {
+      if (error instanceof Error && (error.message.includes("Human face detected") || error.message.includes("Error: 400"))) {
         toast({
           title: "Human Face Detected",
           description: "Please use the Aura Analysis section for images containing people, or upload an image of an object only.",

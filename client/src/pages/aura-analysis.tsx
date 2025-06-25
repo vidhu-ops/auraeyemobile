@@ -2665,7 +2665,7 @@ export default function AuraAnalysis() {
                 const faceLeft = centerX - canvasWidth * 0.15;
                 const faceRight = centerX + canvasWidth * 0.15;
                 const faceTop = centerY - canvasHeight * 0.25;
-                const faceBottom = centerY + canvasHeight * 0.2;
+                const faceBottom = centerY + canvasHeight * 0.25;
                 
                 if (x >= faceLeft && x <= faceRight && y >= faceTop && y <= faceBottom) {
                   continue;
