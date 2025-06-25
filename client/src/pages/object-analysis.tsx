@@ -473,24 +473,8 @@ export default function ObjectAnalysis() {
           const symmetryRatio = symmetryPatterns / totalSamples;
           const manufacturedRatio = manufacturedPatterns / totalSamples;
           
-          // Ultra-aggressive human face detection - multiple detection pathways
-          const hasStrongFacialFeatures = (
-            eyeRatio > 0.05 &&        // Very low threshold for eyes
-            noseRatio > 0.03 &&       // Very low threshold for nose
-            mouthRatio > 0.03 &&      // Very low threshold for mouth
-            symmetryRatio > 0.08      // Very low threshold for symmetry
-          );
-          
-          const hasCombinedFeatures = (
-            (eyeRatio + noseRatio + mouthRatio + symmetryRatio) > 0.25  // Combined feature threshold
-          );
-          
-          const hasAnyFacialStructure = (
-            eyeRatio > 0.02 || noseRatio > 0.02 || mouthRatio > 0.02 || symmetryRatio > 0.05
-          );
-          
-          // If ANY detection method triggers, classify as human
-          const hasHumanFace = hasStrongFacialFeatures || hasCombinedFeatures || hasAnyFacialStructure;
+          // Client-side detection is now only for logging - server uses OpenAI for accurate detection
+          const hasHumanFace = false; // Always allow on client side, server will handle with OpenAI
           
           console.log('Client-side face detection:', {
             eyeRatio: eyeRatio.toFixed(3),
