@@ -7071,18 +7071,21 @@ export default function AuraAnalysis() {
                                           <p className="text-xs text-gray-600 leading-relaxed">
                                             {(() => {
                                               const meanings: Record<string, string> = {
-                                                'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
-                                                'Orange': 'Sacral chakra energy embodying creativity, sexuality, and emotional flow. This vibrant frequency enhances artistic expression and emotional healing.',
-                                                'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
-                                                'Green': 'Heart chakra energy emanating love, healing, and compassion. This healing frequency promotes emotional balance and natural healing abilities.',
-                                                'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
-                                                'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
-                                                'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
-                                                'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
-                                                'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
-                                                'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
-                                                'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-                                                'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.'
+                                                'Black': 'Secondary shadow work support adding transformation power and deep inner healing to your spiritual path.',
+                                                'White': 'Secondary purification support cleansing and protecting your spiritual energy field.',
+                                                'Brown': 'Secondary grounding support adding earthly stability and material wisdom to your spiritual expression.',
+                                                'Turquoise': 'Secondary communication healing support blending emotional wisdom with clear authentic expression.',
+                                                'Red': 'Secondary passion energy adding drive and determination to your spiritual path.',
+                                                'Yellow': 'Secondary mental clarity enhancement bringing intellectual wisdom to complement your dominant frequency.',
+                                                'Blue': 'Secondary communication enhancement supporting truth and authentic expression in all interactions.',
+                                                'Green': 'Secondary healing support energy that nurtures and balances your primary spiritual expression.',
+                                                'Violet': 'Secondary divine connection support elevating your consciousness to higher spiritual realms.',
+                                                'Indigo': 'Secondary intuitive support opening deeper psychic awareness and spiritual perception.',
+                                                'Purple': 'Secondary mystical wisdom support enhancing your spiritual development and inner knowing.',
+                                                'Gold': 'Secondary divine wisdom support illuminating your path with sacred knowledge and enlightenment.',
+                                                'Silver': 'Secondary psychic enhancement supporting your intuitive abilities and emotional sensitivity.',
+                                                'Orange': 'Secondary creative spark supporting your main energy with artistic inspiration and emotional flow.',
+                                                'Pink': 'Secondary love support bringing gentle nurturing energy to balance your spiritual journey.'
                                               };
                                               return meanings[result.secondaryColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
                                             })()}
@@ -7146,18 +7149,21 @@ export default function AuraAnalysis() {
                                       <p className="text-xs text-amber-600">
                                         {(() => {
                                           const guidance: Record<string, string> = {
-                                            'Red': 'Strengthen root chakra through grounding, stability practices, and earth connection',
-                                            'Orange': 'Balance sacral chakra through creativity, emotional flow, and healthy boundaries',
-                                            'Yellow': 'Energize solar plexus through confidence building, personal power, and mental clarity',
-                                            'Green': 'Open heart chakra through love practices, compassion, and emotional healing',
-                                            'Blue': 'Clear throat chakra through authentic expression, truth telling, and communication',
-                                            'Indigo': 'Activate third eye through intuition development, inner wisdom, and perception',
-                                            'Violet': 'Connect crown chakra through spiritual practices, divine connection, and meditation',
-                                            'Purple': 'Balance all chakras through spiritual wisdom and mystical awareness practices',
-                                            'Pink': 'Heal heart chakra through unconditional love, emotional nurturing, and compassion',
-                                            'Gold': 'Illuminate all chakras through divine wisdom and spiritual enlightenment',
+                                            'Black': 'Integrate shadow aspects through transformation work, void consciousness, and spiritual rebirth',
                                             'White': 'Purify all chakras through light work and spiritual protection practices',
-                                            'Silver': 'Sensitize all chakras through lunar energy and psychic development'
+                                            'Brown': 'Ground all chakras through earth connection, material stability, and natural wisdom',
+                                            'Turquoise': 'Bridge heart and throat chakras through healing communication and emotional truth',
+                                            'Red': 'Strengthen root chakra through grounding, stability practices, and earth connection',
+                                            'Yellow': 'Energize solar plexus through confidence building, personal power, and mental clarity',
+                                            'Blue': 'Clear throat chakra through authentic expression, truth telling, and communication',
+                                            'Green': 'Open heart chakra through love practices, compassion, and emotional healing',
+                                            'Violet': 'Connect crown chakra through spiritual practices, divine connection, and meditation',
+                                            'Indigo': 'Activate third eye through intuition development, inner wisdom, and perception',
+                                            'Purple': 'Balance all chakras through spiritual wisdom and mystical awareness practices',
+                                            'Gold': 'Illuminate all chakras through divine wisdom and spiritual enlightenment',
+                                            'Silver': 'Sensitize all chakras through lunar energy and psychic development',
+                                            'Orange': 'Balance sacral chakra through creativity, emotional flow, and healthy boundaries',
+                                            'Pink': 'Heal heart chakra through unconditional love, emotional nurturing, and compassion'
                                           };
                                           return guidance[result.dominantColor] || 'Work with your corresponding chakra system for optimal energy alignment';
                                         })()}
@@ -7168,18 +7174,21 @@ export default function AuraAnalysis() {
                                       <p className="text-xs text-amber-600">
                                         {(() => {
                                           const practices: Record<string, string> = {
-                                            'Red': 'Morning grounding visualization, wear red colors, practice physical exercise',
-                                            'Orange': 'Creative expression time, emotional check-ins, wear orange accents',
-                                            'Yellow': 'Confidence affirmations, mental clarity exercises, wear yellow accessories',
-                                            'Green': 'Heart-opening gratitude practice, nature connection, wear green clothing',
-                                            'Blue': 'Truth-telling practice, clear communication, wear blue jewelry',
-                                            'Indigo': 'Intuitive journaling, third eye meditation, wear indigo or dark blue',
-                                            'Violet': 'Spiritual study, divine connection prayer, wear violet or purple',
-                                            'Purple': 'Mystical awareness practice, spiritual wisdom study, wear purple accessories',
-                                            'Pink': 'Loving-kindness meditation, emotional nurturing, wear pink or rose colors',
-                                            'Gold': 'Divine wisdom contemplation, enlightened service, wear gold jewelry',
+                                            'Black': 'Shadow work journaling, transformation meditation, wear black clothing for inner work',
                                             'White': 'Light protection visualization, spiritual cleansing, wear white clothing',
-                                            'Silver': 'Psychic sensitivity practice, lunar awareness, wear silver accessories'
+                                            'Brown': 'Earth connection walks, grounding meditation, wear brown or earth tones',
+                                            'Turquoise': 'Healing communication practice, emotional truth expression, wear turquoise jewelry',
+                                            'Red': 'Morning grounding visualization, wear red colors, practice physical exercise',
+                                            'Yellow': 'Confidence affirmations, mental clarity exercises, wear yellow accessories',
+                                            'Blue': 'Truth-telling practice, clear communication, wear blue jewelry',
+                                            'Green': 'Heart-opening gratitude practice, nature connection, wear green clothing',
+                                            'Violet': 'Spiritual study, divine connection prayer, wear violet or purple',
+                                            'Indigo': 'Intuitive journaling, third eye meditation, wear indigo or dark blue',
+                                            'Purple': 'Mystical awareness practice, spiritual wisdom study, wear purple accessories',
+                                            'Gold': 'Divine wisdom contemplation, enlightened service, wear gold jewelry',
+                                            'Silver': 'Psychic sensitivity practice, lunar awareness, wear silver accessories',
+                                            'Orange': 'Creative expression time, emotional check-ins, wear orange accents',
+                                            'Pink': 'Loving-kindness meditation, emotional nurturing, wear pink or rose colors'
                                           };
                                           return practices[result.dominantColor] || 'Incorporate your aura color into daily spiritual practices and clothing choices';
                                         })()}

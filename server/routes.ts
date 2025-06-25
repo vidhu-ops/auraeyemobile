@@ -17,28 +17,24 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 
 
 // Optimized fast aura analysis function for sub-1000ms performance with varied results
-// Cache for enhanced colors to avoid recreation
+// Only approved aura colors - restricted to 16 colors
 const ENHANCED_COLORS = [
-  { name: "Crimson", hex: "#DC143C" },
-  { name: "Coral", hex: "#FF7F50" },
-  { name: "Gold", hex: "#FFD700" },
-  { name: "Emerald", hex: "#50C878" },
-  { name: "Sapphire", hex: "#0F52BA" },
-  { name: "Violet", hex: "#8A2BE2" },
-  { name: "Rose", hex: "#FF69B4" },
-  { name: "Aqua", hex: "#00FFFF" },
-  { name: "Amber", hex: "#FFBF00" },
-  { name: "Jade", hex: "#00A86B" },
-  { name: "Indigo", hex: "#4B0082" },
-  { name: "Magenta", hex: "#FF00FF" },
+  { name: "Black", hex: "#000000" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Brown", hex: "#A52A2A" },
   { name: "Turquoise", hex: "#40E0D0" },
-  { name: "Orange", hex: "#FF8C00" },
-  { name: "Green", hex: "#32CD32" },
-  { name: "Blue", hex: "#0066CC" },
-  { name: "Purple", hex: "#9370DB" },
+  { name: "Red", hex: "#FF0000" },
+  { name: "Yellow", hex: "#FFFF00" },
+  { name: "Blue", hex: "#0000FF" },
+  { name: "Green", hex: "#00FF00" },
+  { name: "Violet", hex: "#8A2BE2" },
+  { name: "Indigo", hex: "#4B0082" },
+  { name: "Purple", hex: "#800080" },
+  { name: "Gold", hex: "#FFD700" },
+  { name: "Silver", hex: "#C0C0C0" },
+  { name: "Orange", hex: "#FFA500" },
   { name: "Pink", hex: "#FFC0CB" },
-  { name: "Teal", hex: "#008080" },
-  { name: "Silver", hex: "#C0C0C0" }
+  { name: "Red", hex: "#FF0000" } // Duplicate for better distribution
 ];
 
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
@@ -59,14 +55,14 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     return seed / 2147483647;
   };
   
-  // Pre-generate indices for speed
+  // Pre-generate indices for speed - only 16 approved colors
   const colorIndices = [
-    Math.floor(seededRandom() * 20),
-    Math.floor(seededRandom() * 20),
-    Math.floor(seededRandom() * 20),
-    Math.floor(seededRandom() * 20),
-    Math.floor(seededRandom() * 20),
-    Math.floor(seededRandom() * 20)
+    Math.floor(seededRandom() * 16),
+    Math.floor(seededRandom() * 16),
+    Math.floor(seededRandom() * 16),
+    Math.floor(seededRandom() * 16),
+    Math.floor(seededRandom() * 16),
+    Math.floor(seededRandom() * 16)
   ];
   
   const auraColors = colorIndices.map(i => ENHANCED_COLORS[i]);
