@@ -3132,8 +3132,8 @@ export default function AuraAnalysis() {
       }
     });
 
-    // Add subtle texture overlay for depth
-    createSmoothTextureOverlay(ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Add final color integration layer for seamless merging
+    createColorIntegrationLayer(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
   };
 
   // Function to create directional gradient zones like reference image
@@ -3231,11 +3231,15 @@ export default function AuraAnalysis() {
     return gradient;
   };
 
-  // Function to create smooth texture overlay for depth
-  const createSmoothTextureOverlay = (
+  // Function to create final color integration layer for maximum merging
+  const createColorIntegrationLayer = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
+    centerX: number,
+    centerY: number,
+    personWidth: number,
+    personHeight: number,
     colors: any,
     energyLevel: number,
     seededRandom: () => number,
@@ -3244,45 +3248,65 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    // Add subtle flowing texture particles for depth
-    const textureParticles = 80 + energyLevel * 15;
-    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    // Use color-dodge blend mode for intense color merging
+    ctx.globalCompositeOperation = 'color-dodge';
     
-    for (let i = 0; i < textureParticles; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      // Avoid face area
-      const inFaceArea = x >= faceX && x <= faceX + faceWidth && y >= faceY && y <= faceY + faceHeight;
-      
-      if (!inFaceArea) {
-        // Select color based on position for zone consistency
-        let textureColor;
-        if (y <= height * 0.25) {
-          textureColor = colors.thinkingRGB;
-        } else if (x < width * 0.4) {
-          textureColor = colors.givingRGB;
-        } else if (x > width * 0.6) {
-          textureColor = colors.receivingRGB;
-        } else {
-          textureColor = colors.personalityRGB;
-        }
-        
-        const particleSize = 30 + seededRandom() * 60;
-        const particleOpacity = 0.03 + seededRandom() * 0.06;
-        
-        // Create very soft gradient for texture
-        const textureGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-        textureGradient.addColorStop(0, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, ${particleOpacity})`);
-        textureGradient.addColorStop(0.6, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, ${particleOpacity * 0.3})`);
-        textureGradient.addColorStop(1, `rgba(${textureColor.r}, ${textureColor.g}, ${textureColor.b}, 0)`);
-        
-        ctx.fillStyle = textureGradient;
-        ctx.beginPath();
-        ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-        ctx.fill();
+    // Create cross-hatching gradients for maximum color integration
+    const integrationGradients = [
+      // Diagonal cross-gradient 1
+      {
+        gradient: createMultiColorGradient(
+          ctx,
+          [colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB, colors.givingRGB],
+          [0, 0.33, 0.66, 1],
+          [0.08, 0.06, 0.05, 0.04],
+          true,
+          { x1: 0, y1: 0, x2: width, y2: height }
+        )
+      },
+      // Diagonal cross-gradient 2
+      {
+        gradient: createMultiColorGradient(
+          ctx,
+          [colors.givingRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
+          [0, 0.33, 0.66, 1],
+          [0.06, 0.05, 0.07, 0.04],
+          true,
+          { x1: width, y1: 0, x2: 0, y2: height }
+        )
       }
+    ];
+
+    integrationGradients.forEach(item => {
+      if (item.gradient) {
+        ctx.fillStyle = item.gradient;
+        ctx.fillRect(0, 0, width, height);
+      }
+    });
+
+    // Reset blend mode and add final soft overlay
+    ctx.globalCompositeOperation = 'overlay';
+    
+    // Create final unified gradient that merges all colors
+    const unifiedGradient = createMultiColorGradient(
+      ctx,
+      [colors.personalityRGB, colors.thinkingRGB, colors.givingRGB, colors.receivingRGB, colors.personalityRGB],
+      [0, 0.25, 0.5, 0.75, 1],
+      [0.03, 0.02, 0.025, 0.02, 0.015],
+      false,
+      { 
+        x1: centerX, y1: centerY, r1: Math.min(personWidth, personHeight) * 0.2,
+        x2: centerX, y2: centerY, r2: Math.max(width, height) * 1.2
+      }
+    );
+    
+    if (unifiedGradient) {
+      ctx.fillStyle = unifiedGradient;
+      ctx.fillRect(0, 0, width, height);
     }
+    
+    // Reset blend mode
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to create enhanced personality color halo effect around entire image perimeter
