@@ -838,88 +838,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
 function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // Extremely restrictive for object analysis - almost never detect humans
-  // Bias heavily toward accepting all images as objects
+  // Ultra-restrictive detection using edge patterns and geometric shapes only
+  // NO skin color detection - focus on structural patterns like face geometry
   
-  if (imageBuffer.length < 200000) {
-    return false; // Larger threshold - most images are objects
+  if (imageBuffer.length < 100000) {
+    return false; // Small images are likely objects
   }
   
-  let absoluteHumanSkinPixels = 0;
-  let absoluteHumanFeaturePixels = 0;
+  // Look for geometric patterns that suggest human face structure
+  let circularPatterns = 0;
+  let symmetricalPatterns = 0;
+  let verticalLinePatterns = 0;
+  let horizontalLinePatterns = 0;
   let sampledPixels = 0;
-  let verifiedFaceRegionPixels = 0;
-  let complexPatternPixels = 0;
   
-  // Sample very few pixels to avoid pattern misinterpretation
-  const sampleSize = Math.min(50, Math.floor(imageBuffer.length / 200));
-  const step = Math.max(200, Math.floor(imageBuffer.length / sampleSize));
+  // Sample very conservatively to detect only obvious face structures
+  const sampleSize = Math.min(30, Math.floor(imageBuffer.length / 1000));
+  const step = Math.max(1000, Math.floor(imageBuffer.length / sampleSize));
   
-  for (let i = 0; i < imageBuffer.length - 3; i += step) {
-    const r = imageBuffer[i] || 0;
-    const g = imageBuffer[i + 1] || 0; 
-    const b = imageBuffer[i + 2] || 0;
+  for (let i = 0; i < imageBuffer.length - 12; i += step) {
+    const r1 = imageBuffer[i] || 0;
+    const g1 = imageBuffer[i + 1] || 0;
+    const b1 = imageBuffer[i + 2] || 0;
+    
+    const r2 = imageBuffer[i + 3] || 0;
+    const g2 = imageBuffer[i + 4] || 0;
+    const b2 = imageBuffer[i + 5] || 0;
+    
+    const r3 = imageBuffer[i + 6] || 0;
+    const g3 = imageBuffer[i + 7] || 0;
+    const b3 = imageBuffer[i + 8] || 0;
+    
+    const r4 = imageBuffer[i + 9] || 0;
+    const g4 = imageBuffer[i + 10] || 0;
+    const b4 = imageBuffer[i + 11] || 0;
+    
     sampledPixels++;
     
-    // Detect any complex patterns that suggest non-human content
-    const colorVariation = Math.abs(r - g) + Math.abs(g - b) + Math.abs(r - b);
-    const brightness = r + g + b;
+    // Look for smooth gradient transitions (face contours)
+    const grad1 = Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
+    const grad2 = Math.abs(r2 - r3) + Math.abs(g2 - g3) + Math.abs(b2 - b3);
+    const grad3 = Math.abs(r3 - r4) + Math.abs(g3 - g4) + Math.abs(b3 - b4);
     
-    if (colorVariation > 80 || brightness > 600 || brightness < 150) {
-      complexPatternPixels++;
+    // Detect very smooth gradients that might indicate face shading
+    if (grad1 < 5 && grad2 < 5 && grad3 < 5) {
+      circularPatterns++;
     }
     
-    // Extremely narrow human skin detection - only perfect skin tone matches
-    const isPerfectHumanSkin = (
-      // Only one very specific light skin tone range
-      (r >= 215 && r <= 220 && g >= 175 && g <= 178 && b >= 155 && b <= 158 && 
-       (r - g) >= 42 && (r - g) <= 45 && (r - b) >= 62 && (r - b) <= 65 && 
-       (g - b) >= 22 && (g - b) <= 25)
+    // Look for high contrast patterns (sharp edges like electronics)
+    const highContrast = grad1 > 100 || grad2 > 100 || grad3 > 100;
+    if (highContrast) {
+      // High contrast suggests non-human objects (electronics, text, etc.)
+      return false;
+    }
+    
+    // Look for repetitive patterns (text, buttons, interfaces)
+    const isRepetitive = (
+      Math.abs(r1 - r3) < 10 && Math.abs(g1 - g3) < 10 && Math.abs(b1 - b3) < 10 &&
+      Math.abs(r2 - r4) < 10 && Math.abs(g2 - g4) < 10 && Math.abs(b2 - b4) < 10
     );
     
-    // Only count perfect facial features with exact color ranges
-    const isPerfectHair = r <= 15 && g <= 15 && b <= 15 && (r + g + b) <= 40;
-    const isPerfectEyeRegion = (r <= 35 && g <= 35 && b <= 35) && 
-                               (Math.abs(r - g) <= 3) && (Math.abs(g - b) <= 3) && 
-                               (Math.abs(r - b) <= 3);
-    const isPerfectTeeth = r >= 252 && g >= 252 && b >= 252 && (r + g + b) >= 756;
-    
-    if (isPerfectHumanSkin) {
-      absoluteHumanSkinPixels++;
-      
-      // Require ALL three facial features to be present together
-      if (isPerfectHair && isPerfectEyeRegion && isPerfectTeeth) {
-        verifiedFaceRegionPixels++;
-      }
+    if (isRepetitive) {
+      // Repetitive patterns suggest manufactured objects
+      return false;
     }
     
-    if (isPerfectHair || isPerfectEyeRegion || isPerfectTeeth) {
-      absoluteHumanFeaturePixels++;
+    // Check for perfect geometric shapes (rectangles, perfect circles)
+    const isGeometric = (
+      (r1 === r2 && r2 === r3 && r3 === r4) ||
+      (g1 === g2 && g2 === g3 && g3 === g4) ||
+      (b1 === b2 && b2 === b3 && b3 === b4)
+    );
+    
+    if (isGeometric) {
+      // Perfect geometric patterns suggest manufactured objects
+      return false;
     }
   }
   
-  // Calculate ratios
-  const perfectSkinRatio = absoluteHumanSkinPixels / sampledPixels;
-  const verifiedFaceRatio = verifiedFaceRegionPixels / sampledPixels;
-  const perfectFeatureRatio = absoluteHumanFeaturePixels / sampledPixels;
-  const complexPatternRatio = complexPatternPixels / sampledPixels;
+  // Only flag as human if we find very specific organic gradient patterns
+  // AND no electronic/manufactured patterns
+  const organicGradientRatio = circularPatterns / sampledPixels;
   
-  // Reject if any complexity detected
-  if (complexPatternRatio > 0.3) {
-    return false;
-  }
-  
-  // Extremely high thresholds - need overwhelming evidence
-  const hasAbsoluteHumanEvidence = (
-    perfectSkinRatio > 0.50 && 
-    verifiedFaceRatio > 0.30 && 
-    perfectFeatureRatio > 0.40 &&
-    complexPatternRatio < 0.2 &&
-    sampledPixels > 30
+  // Extremely high threshold - need overwhelming evidence of human face
+  const hasDefiniteHumanFace = (
+    organicGradientRatio > 0.8 && // 80% of patterns must be organic gradients
+    sampledPixels > 20 &&
+    imageBuffer.length > 500000 // Large image size typical of portraits
   );
   
-  // Only return true with perfect human face evidence
-  return hasAbsoluteHumanEvidence;
+  return hasDefiniteHumanFace;
 }
 
   // Aura Analysis API endpoint
