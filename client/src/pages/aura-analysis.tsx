@@ -3151,61 +3151,89 @@ export default function AuraAnalysis() {
     personHeight: number,
     colors: any
   ) => {
-    // Reset to normal blending for clean gradient application
+    // Reset to normal blending
     ctx.globalCompositeOperation = 'source-over';
     
-    // Use standardized dimensions for consistent particle sizing across all images
-    const standardRadius = Math.max(width, height) * 0.9; // Full coverage radius
-    const innerRadius = Math.min(width, height) * 0.1;    // Inner starting point
+    // Calculate natural aura dimensions around the person
+    const auraRadius = Math.max(personWidth, personHeight) * 2.2;
+    const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     
-    // Layer 1: Complete personality color wash covering entire image uniformly
-    const personalityBase = ctx.createRadialGradient(
+    // Step 1: Create foundational personality color layer as smoky base covering entire image
+    const personalityLayer = ctx.createRadialGradient(
       centerX, centerY, innerRadius,
-      centerX, centerY, standardRadius
+      centerX, centerY, auraRadius
     );
-    // Ensure consistent personality color coverage across all image sizes
-    personalityBase.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`);
-    personalityBase.addColorStop(0.2, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`);
-    personalityBase.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.20)`);
-    personalityBase.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-    personalityBase.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
-    personalityBase.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    personalityLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
+    personalityLayer.addColorStop(0.25, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+    personalityLayer.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    personalityLayer.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+    personalityLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.04)`);
     
-    ctx.fillStyle = personalityBase;
+    ctx.fillStyle = personalityLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // Layer 2: Additional full-image personality wash for complete coverage
-    const personalityOverlay = ctx.createLinearGradient(0, 0, width, height);
-    personalityOverlay.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    personalityOverlay.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`);
-    personalityOverlay.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-    
+    // Step 2: Add giving energy with natural smoky fade from left side
     ctx.globalCompositeOperation = 'multiply';
-    ctx.fillStyle = personalityOverlay;
+    const givingSmoke = ctx.createRadialGradient(
+      centerX - personWidth * 1.1, centerY, 0,
+      centerX - personWidth * 1.1, centerY, auraRadius * 1.3
+    );
+    givingSmoke.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.45)`);
+    givingSmoke.addColorStop(0.15, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.32)`);
+    givingSmoke.addColorStop(0.35, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.22)`);
+    givingSmoke.addColorStop(0.55, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.12)`);
+    givingSmoke.addColorStop(0.75, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.05)`);
+    givingSmoke.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    
+    ctx.fillStyle = givingSmoke;
     ctx.fillRect(0, 0, width, height);
     
-    // Layer 3: Smooth left-side giving energy blend
-    ctx.globalCompositeOperation = 'color-dodge';
-    const leftGradient = ctx.createLinearGradient(0, centerY, width * 0.65, centerY);
-    leftGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.10)`);
-    leftGradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
-    leftGradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.03)`);
-    leftGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    // Step 3: Add receiving energy with natural smoky fade from right side  
+    const receivingSmoke = ctx.createRadialGradient(
+      centerX + personWidth * 1.1, centerY, 0,
+      centerX + personWidth * 1.1, centerY, auraRadius * 1.3
+    );
+    receivingSmoke.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.45)`);
+    receivingSmoke.addColorStop(0.15, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.32)`);
+    receivingSmoke.addColorStop(0.35, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.22)`);
+    receivingSmoke.addColorStop(0.55, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
+    receivingSmoke.addColorStop(0.75, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.05)`);
+    receivingSmoke.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
     
-    ctx.fillStyle = leftGradient;
+    ctx.fillStyle = receivingSmoke;
     ctx.fillRect(0, 0, width, height);
     
-    // Layer 4: Smooth right-side receiving energy blend
-    const rightGradient = ctx.createLinearGradient(width, centerY, width * 0.35, centerY);
-    rightGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.10)`);
-    rightGradient.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
-    rightGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.03)`);
-    rightGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+    // Step 4: Create seamless blending layer that naturally merges all three colors  
+    ctx.globalCompositeOperation = 'soft-light';
+    const blendingLayer = ctx.createRadialGradient(
+      centerX, centerY, innerRadius * 0.2,
+      centerX, centerY, auraRadius * 1.6
+    );
     
-    ctx.fillStyle = rightGradient;
+    // Calculate intermediate blend colors for natural color transitions
+    const blend1R = Math.floor((colors.personalityRGB.r + colors.givingRGB.r) / 2);
+    const blend1G = Math.floor((colors.personalityRGB.g + colors.givingRGB.g) / 2);
+    const blend1B = Math.floor((colors.personalityRGB.b + colors.givingRGB.b) / 2);
+    
+    const blend2R = Math.floor((colors.personalityRGB.r + colors.receivingRGB.r) / 2);
+    const blend2G = Math.floor((colors.personalityRGB.g + colors.receivingRGB.g) / 2);
+    const blend2B = Math.floor((colors.personalityRGB.b + colors.receivingRGB.b) / 2);
+    
+    const allBlendR = Math.floor((colors.givingRGB.r + colors.receivingRGB.r + colors.personalityRGB.r) / 3);
+    const allBlendG = Math.floor((colors.givingRGB.g + colors.receivingRGB.g + colors.personalityRGB.g) / 3);
+    const allBlendB = Math.floor((colors.givingRGB.b + colors.receivingRGB.b + colors.personalityRGB.b) / 3);
+    
+    blendingLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`);
+    blendingLayer.addColorStop(0.2, `rgba(${blend1R}, ${blend1G}, ${blend1B}, 0.12)`);
+    blendingLayer.addColorStop(0.4, `rgba(${allBlendR}, ${allBlendG}, ${allBlendB}, 0.1)`);
+    blendingLayer.addColorStop(0.6, `rgba(${blend2R}, ${blend2G}, ${blend2B}, 0.08)`);
+    blendingLayer.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.05)`);
+    blendingLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.02)`);
+    
+    ctx.fillStyle = blendingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // Reset blend mode for normal rendering
+    // Reset blend mode
     ctx.globalCompositeOperation = 'source-over';
   };
 
@@ -3922,8 +3950,8 @@ export default function AuraAnalysis() {
     
     // Create multiple haze layers for maximum mystical density
     const hazeLayers = [
-      { density: hazeZones * 0.4, sizeRange: [100, 180], opacity: [0.08, 0.15] }, // Large background haze
-      { density: hazeZones * 0.3, sizeRange: [30, 140], opacity: [0.12, 0.20] },  // Medium haze
+      { density: hazeZones * 0.4, sizeRange: [150, 180], opacity: [0.08, 0.15] }, // Large background haze
+      { density: hazeZones * 0.3, sizeRange: [100, 140], opacity: [0.12, 0.20] },  // Medium haze
       { density: hazeZones * 0.3, sizeRange: [30, 100], opacity: [0.15, 0.25] }   // Dense detail haze
     ];
     
@@ -4048,7 +4076,9 @@ export default function AuraAnalysis() {
       white: { r: 255, g: 255, b: 255 },
       gold: { r: 255, g: 215, b: 0 },
       silver: { r: 192, g: 192, b: 192 },
-      black: { r: 0, g: 0, b: 0 }
+      black: { r: 0, g: 0, b: 0 },
+      gray: { r: 128, g: 128, b: 128 },
+      brown: { r: 165, g: 42, b: 42 }
     };
 
     // Get color values
@@ -4070,7 +4100,7 @@ export default function AuraAnalysis() {
     const personHeight = height * 0.6;
 
     // Create smokey particle system around person outline
-    const particleCount = 900 + (energyLevel * 80);
+    const particleCount = 700 + (energyLevel * 80);
     
     for (let i = 0; i < particleCount; i++) {
       // Generate particles around person silhouette
