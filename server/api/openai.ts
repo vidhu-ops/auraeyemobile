@@ -313,9 +313,9 @@ export async function analyzeAuraImage(
  * Generates a fallback aura analysis for when the API is unavailable
  */
 function generateFallbackAuraAnalysis(): AuraAnalysisResult {
-  // Create a randomized aura reading
+  // Create a randomized aura reading with restricted 12 colors
   const auraColors = [
-    "Purple", "Blue", "Green", "Yellow", "Orange", "Red", "Indigo", "Violet", "Turquoise", "Gold"
+    "Violet", "Indigo", "Blue", "Green", "Yellow", "Orange", "Red", "White", "Black", "Gold", "Silver", "Brown"
   ];
 
   const traits = [
