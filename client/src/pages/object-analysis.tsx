@@ -475,12 +475,13 @@ export default function ObjectAnalysis() {
           
           // Detect human face: need clear facial features + symmetry + no manufactured patterns
           const hasHumanFace = (
-            eyeRatio > 0.25 &&        // Very strong eye patterns
-            noseRatio > 0.20 &&       // Clear nose structure
-            mouthRatio > 0.20 &&      // Strong mouth region
-            symmetryRatio > 0.30 &&   // Strong facial symmetry
-            manufacturedRatio < 0.10 && // Very minimal manufactured patterns
-            totalSamples > 100        // More data required
+            eyeRatio > 0.15 &&        // Moderate eye patterns
+            noseRatio > 0.10 &&       // Moderate nose structure
+            mouthRatio > 0.10 &&      // Moderate mouth region
+            symmetryRatio > 0.20 &&   // Moderate facial symmetry
+            manufacturedRatio < 0.15 && // Allow some manufactured patterns
+            totalSamples > 80 &&      // Moderate data requirement
+            (eyeRatio + noseRatio + mouthRatio) > 0.40  // Combined score
           );
           
           console.log('Client-side face detection:', {

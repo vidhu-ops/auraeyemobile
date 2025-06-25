@@ -108,6 +108,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Enhanced facial structure detection using geometric facial feature recognition: detects eye regions (dark spots with light surroundings), nose patterns (central elevation), mouth regions (horizontal brightness variation), and facial symmetry while actively rejecting manufactured objects with sharp edges, uniform blocks, and text patterns
 - June 25, 2025. Strengthened human face detection thresholds for object analysis: increased requirements for eye patterns (25%), nose structure (20%), mouth regions (20%), and facial symmetry (30%) to ensure human faces are properly rejected while allowing all objects through
 - June 25, 2025. Enhanced thinking energy visualization in aura analysis: created prominent glowing particle effect above person's head with multiple glow layers, bright white core, and sparkle effects to clearly represent mental/spiritual energy as requested
+- June 25, 2025. Improved human face detection balance for object analysis: lowered thresholds to better detect human faces (12% eyes, 8% nose/mouth, 15% symmetry) while counting manufactured patterns rather than immediately rejecting, ensuring human images are properly blocked
 
 ## User Preferences
 

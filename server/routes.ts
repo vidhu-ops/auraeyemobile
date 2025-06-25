@@ -1001,12 +1001,13 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
   
   // Detect human face: need multiple facial features + symmetry + no manufactured patterns
   const hasFacialStructure = (
-    eyeRatio > 0.20 &&           // Strong eye regions
-    noseRatio > 0.15 &&          // Clear nose structure
-    mouthRatio > 0.15 &&         // Mouth region
-    symmetryRatio > 0.25 &&      // Strong facial symmetry
-    manufacturedRatio < 0.15 &&  // Minimal manufactured patterns
-    sampledPixels > 50           // Sufficient sampling
+    eyeRatio > 0.12 &&           // Lower threshold for better detection
+    noseRatio > 0.08 &&          // Lower threshold for nose detection
+    mouthRatio > 0.08 &&         // Lower threshold for mouth detection
+    symmetryRatio > 0.15 &&      // Lower threshold for facial symmetry
+    manufacturedRatio < 0.20 &&  // Allow some manufactured patterns
+    sampledPixels > 30 &&        // Lower sampling requirement
+    (eyeRatio + noseRatio + mouthRatio) > 0.35  // Combined facial feature score
   );
   
   console.log('Facial detection ratios:', {
