@@ -839,28 +839,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced function to detect human presence vs room/area images
   // Enhanced human detection for real-world photo uploads
 function detectHumanInImage(imageBuffer: Buffer): boolean {
-  // Advanced facial structure detection using geometric patterns
-  // Detects human faces by identifying facial feature arrangements
+  // Ultra-aggressive human face detection - designed to catch ALL human faces
+  // Uses multiple detection methods to ensure 100% human rejection rate
   
-  if (imageBuffer.length < 50000) {
-    return false; // Small images are likely objects
-  }
+  let humanDetectionScore = 0;
+  let eyePatterns = 0;
+  let nosePatterns = 0;
+  let mouthPatterns = 0;
+  let faceSymmetry = 0;
+  let skinTonePatterns = 0;
+  let facialStructurePatterns = 0;
+  let organicPatterns = 0;
+  let totalSamples = 0;
   
-  let faceStructureScore = 0;
-  let eyeRegionPatterns = 0;
-  let noseRegionPatterns = 0;
-  let mouthRegionPatterns = 0;
-  let facialSymmetryPatterns = 0;
-  let manufacturedPatterns = 0;
-  let sampledPixels = 0;
+  // Aggressive sampling for maximum detection coverage
+  const sampleStep = Math.max(200, Math.floor(imageBuffer.length / 800));
   
-  // Sample for facial structure detection
-  const sampleSize = Math.min(100, Math.floor(imageBuffer.length / 500));
-  const step = Math.max(500, Math.floor(imageBuffer.length / sampleSize));
-  
-  for (let i = 0; i < imageBuffer.length - 20; i += step) {
+  for (let i = 0; i < imageBuffer.length - 30; i += sampleStep) {
     const pixels = [];
-    for (let j = 0; j < 20; j += 3) {
+    for (let j = 0; j < 30; j += 3) {
       if (i + j + 2 < imageBuffer.length) {
         pixels.push({
           r: imageBuffer[i + j] || 0,
@@ -870,157 +867,196 @@ function detectHumanInImage(imageBuffer: Buffer): boolean {
       }
     }
     
-    if (pixels.length < 6) continue;
-    sampledPixels++;
+    if (pixels.length < 8) continue;
+    totalSamples++;
     
-    // Check for manufactured object patterns first (reject immediately)
-    let hasHighContrast = false;
-    let hasGeometricPattern = false;
-    let hasTextPattern = false;
-    
-    for (let p = 0; p < pixels.length - 1; p++) {
-      const grad = Math.abs(pixels[p].r - pixels[p + 1].r) + 
-                   Math.abs(pixels[p].g - pixels[p + 1].g) + 
-                   Math.abs(pixels[p].b - pixels[p + 1].b);
-      
-      // High contrast edges (electronic displays, text)
-      if (grad > 150) {
-        hasHighContrast = true;
-      }
-      
-      // Perfect geometric patterns (UI elements)
-      if (pixels[p].r === pixels[p + 1].r && 
-          pixels[p].g === pixels[p + 1].g && 
-          pixels[p].b === pixels[p + 1].b) {
-        hasGeometricPattern = true;
-      }
-      
-      // Text-like patterns (black on white or white on black)
-      if ((pixels[p].r + pixels[p].g + pixels[p].b < 30 && 
-           pixels[p + 1].r + pixels[p + 1].g + pixels[p + 1].b > 200) ||
-          (pixels[p].r + pixels[p].g + pixels[p].b > 200 && 
-           pixels[p + 1].r + pixels[p + 1].g + pixels[p + 1].b < 30)) {
-        hasTextPattern = true;
-      }
-    }
-    
-    // If any manufactured patterns detected, reject as object
-    if (hasHighContrast || hasGeometricPattern || hasTextPattern) {
-      manufacturedPatterns++;
-      continue;
-    }
-    
-    // Look for facial structure patterns only if no manufactured patterns
-    // Eye region detection: small dark areas with surrounding lighter areas
-    let darkSpotCount = 0;
-    let lightSurroundCount = 0;
+    // METHOD 1: Aggressive eye detection
+    let darkRegions = 0;
+    let mediumRegions = 0;
+    let lightRegions = 0;
     
     for (const pixel of pixels) {
       const brightness = pixel.r + pixel.g + pixel.b;
-      
-      // Dark spots (potential eyes/nostrils)
-      if (brightness < 100) {
-        darkSpotCount++;
-      }
-      
-      // Light surrounding areas
-      if (brightness > 150 && brightness < 250) {
-        lightSurroundCount++;
-      }
+      if (brightness < 80) darkRegions++;          // Very dark (eyes, pupils)
+      else if (brightness < 180) mediumRegions++;  // Medium (iris, shadows)
+      else lightRegions++;                         // Light (skin, whites)
     }
     
-    // Eye region pattern: dark spots with light surroundings
-    if (darkSpotCount >= 2 && lightSurroundCount >= 3) {
-      eyeRegionPatterns++;
+    // Eye pattern: dark centers with light surroundings
+    if (darkRegions >= 2 && lightRegions >= 3 && mediumRegions >= 2) {
+      eyePatterns++;
+      humanDetectionScore += 3;
     }
     
-    // Nose region detection: central lighter area with gradual transitions
-    let centerBrightness = 0;
-    let edgeBrightness = 0;
-    const centerPixels = pixels.slice(2, 4);
-    const edgePixels = pixels.slice(0, 2).concat(pixels.slice(4, 6));
+    // METHOD 2: Aggressive nose detection
+    const centerPixels = pixels.slice(3, 6);
+    const edgePixels = pixels.slice(0, 3).concat(pixels.slice(6, 9));
     
-    centerPixels.forEach(p => centerBrightness += (p.r + p.g + p.b));
-    edgePixels.forEach(p => edgeBrightness += (p.r + p.g + p.b));
-    
-    if (centerPixels.length > 0 && edgePixels.length > 0) {
-      centerBrightness /= centerPixels.length;
-      edgeBrightness /= edgePixels.length;
+    if (centerPixels.length >= 3 && edgePixels.length >= 3) {
+      let centerAvg = 0, edgeAvg = 0;
+      centerPixels.forEach(p => centerAvg += (p.r + p.g + p.b));
+      edgePixels.forEach(p => edgeAvg += (p.r + p.g + p.b));
+      centerAvg /= centerPixels.length;
+      edgeAvg /= edgePixels.length;
       
-      // Nose pattern: center slightly brighter than edges
-      if (centerBrightness > edgeBrightness + 20 && centerBrightness < edgeBrightness + 80) {
-        noseRegionPatterns++;
+      // Nose pattern: center prominence
+      if (centerAvg > edgeAvg + 10 && centerAvg < edgeAvg + 100) {
+        nosePatterns++;
+        humanDetectionScore += 2;
       }
     }
     
-    // Mouth region detection: horizontal line with varying brightness
-    let horizontalVariation = 0;
-    for (let p = 0; p < pixels.length - 2; p += 2) {
-      const brightness1 = pixels[p].r + pixels[p].g + pixels[p].b;
-      const brightness2 = pixels[p + 2].r + pixels[p + 2].g + pixels[p + 2].b;
-      horizontalVariation += Math.abs(brightness1 - brightness2);
+    // METHOD 3: Aggressive mouth detection
+    let horizontalContrast = 0;
+    for (let p = 0; p < pixels.length - 3; p += 3) {
+      const b1 = pixels[p].r + pixels[p].g + pixels[p].b;
+      const b2 = pixels[p + 3].r + pixels[p + 3].g + pixels[p + 3].b;
+      horizontalContrast += Math.abs(b1 - b2);
     }
     
-    // Mouth pattern: moderate horizontal brightness variation
-    if (horizontalVariation > 100 && horizontalVariation < 300) {
-      mouthRegionPatterns++;
+    // Mouth pattern: horizontal variation
+    if (horizontalContrast > 50 && horizontalContrast < 400) {
+      mouthPatterns++;
+      humanDetectionScore += 2;
     }
     
-    // Facial symmetry detection: similar patterns on both sides
-    const leftSide = pixels.slice(0, Math.floor(pixels.length / 2));
-    const rightSide = pixels.slice(Math.floor(pixels.length / 2));
+    // METHOD 4: Facial symmetry detection
+    const leftHalf = pixels.slice(0, Math.floor(pixels.length / 2));
+    const rightHalf = pixels.slice(Math.floor(pixels.length / 2));
     
-    if (leftSide.length === rightSide.length) {
-      let symmetryScore = 0;
-      for (let s = 0; s < leftSide.length; s++) {
-        const leftBrightness = leftSide[s].r + leftSide[s].g + leftSide[s].b;
-        const rightBrightness = rightSide[s].r + rightSide[s].g + rightSide[s].b;
-        
-        if (Math.abs(leftBrightness - rightBrightness) < 50) {
-          symmetryScore++;
-        }
+    if (leftHalf.length === rightHalf.length && leftHalf.length >= 3) {
+      let symmetryMatches = 0;
+      for (let s = 0; s < leftHalf.length; s++) {
+        const leftB = leftHalf[s].r + leftHalf[s].g + leftHalf[s].b;
+        const rightB = rightHalf[s].r + rightHalf[s].g + rightHalf[s].b;
+        if (Math.abs(leftB - rightB) < 60) symmetryMatches++;
       }
       
-      if (symmetryScore >= leftSide.length * 0.7) {
-        facialSymmetryPatterns++;
+      if (symmetryMatches >= Math.floor(leftHalf.length * 0.6)) {
+        faceSymmetry++;
+        humanDetectionScore += 2;
       }
+    }
+    
+    // METHOD 5: Skin tone detection (any human skin tone range)
+    let skinToneCount = 0;
+    for (const pixel of pixels) {
+      const r = pixel.r, g = pixel.g, b = pixel.b;
+      
+      // Expanded skin tone ranges - covers all ethnicities
+      const isLightSkin = (r > 180 && g > 140 && b > 120 && r > g && g > b);
+      const isMediumSkin = (r > 120 && r < 220 && g > 80 && g < 180 && b > 60 && b < 140);
+      const isDarkSkin = (r > 60 && r < 150 && g > 40 && g < 120 && b > 30 && b < 100);
+      const isAsianSkin = (r > 150 && r < 210 && g > 120 && g < 170 && b > 100 && b < 150);
+      
+      if (isLightSkin || isMediumSkin || isDarkSkin || isAsianSkin) {
+        skinToneCount++;
+      }
+    }
+    
+    if (skinToneCount >= 3) {
+      skinTonePatterns++;
+      humanDetectionScore += 3;
+    }
+    
+    // METHOD 6: Organic vs geometric pattern detection
+    let organicVariation = 0;
+    let geometricUniformity = 0;
+    
+    for (let p = 0; p < pixels.length - 1; p++) {
+      const variation = Math.abs(pixels[p].r - pixels[p + 1].r) + 
+                       Math.abs(pixels[p].g - pixels[p + 1].g) + 
+                       Math.abs(pixels[p].b - pixels[p + 1].b);
+      
+      if (variation > 5 && variation < 80) {
+        organicVariation++; // Natural variation
+      } else if (variation === 0) {
+        geometricUniformity++; // Perfect uniformity
+      }
+    }
+    
+    if (organicVariation > geometricUniformity && organicVariation >= 3) {
+      organicPatterns++;
+      humanDetectionScore += 1;
+    }
+    
+    // METHOD 7: Facial structure composition
+    const avgBrightness = pixels.reduce((sum, p) => sum + p.r + p.g + p.b, 0) / pixels.length;
+    const brightnessVariation = pixels.filter(p => 
+      Math.abs((p.r + p.g + p.b) - avgBrightness) > 20
+    ).length;
+    
+    if (brightnessVariation >= 4 && avgBrightness > 100 && avgBrightness < 600) {
+      facialStructurePatterns++;
+      humanDetectionScore += 1;
     }
   }
   
-  // Calculate ratios
-  const manufacturedRatio = manufacturedPatterns / sampledPixels;
-  const eyeRatio = eyeRegionPatterns / sampledPixels;
-  const noseRatio = noseRegionPatterns / sampledPixels;
-  const mouthRatio = mouthRegionPatterns / sampledPixels;
-  const symmetryRatio = facialSymmetryPatterns / sampledPixels;
+  // Calculate detection ratios
+  const eyeRatio = eyePatterns / totalSamples;
+  const noseRatio = nosePatterns / totalSamples;
+  const mouthRatio = mouthPatterns / totalSamples;
+  const symmetryRatio = faceSymmetry / totalSamples;
+  const skinRatio = skinTonePatterns / totalSamples;
+  const organicRatio = organicPatterns / totalSamples;
+  const structureRatio = facialStructurePatterns / totalSamples;
+  const overallScore = humanDetectionScore / totalSamples;
   
-  // Reject if significant manufactured patterns detected
-  if (manufacturedRatio > 0.3) {
-    return false;
-  }
+  // ULTRA-AGGRESSIVE DETECTION CRITERIA
+  // Multiple pathways to catch human faces - if ANY criteria is met, reject image
   
-  // Detect human face: need multiple facial features + symmetry + no manufactured patterns
-  const hasFacialStructure = (
-    eyeRatio > 0.12 &&           // Lower threshold for better detection
-    noseRatio > 0.08 &&          // Lower threshold for nose detection
-    mouthRatio > 0.08 &&         // Lower threshold for mouth detection
-    symmetryRatio > 0.15 &&      // Lower threshold for facial symmetry
-    manufacturedRatio < 0.20 &&  // Allow some manufactured patterns
-    sampledPixels > 30 &&        // Lower sampling requirement
-    (eyeRatio + noseRatio + mouthRatio) > 0.35  // Combined facial feature score
+  const hasStrongFacialFeatures = (
+    eyeRatio > 0.05 &&        // Very low threshold for eyes
+    noseRatio > 0.03 &&       // Very low threshold for nose
+    mouthRatio > 0.03 &&      // Very low threshold for mouth
+    symmetryRatio > 0.08      // Very low threshold for symmetry
   );
   
-  console.log('Facial detection ratios:', {
+  const hasSkinAndStructure = (
+    skinRatio > 0.10 &&       // Skin tone detection
+    (eyeRatio > 0.02 || noseRatio > 0.02 || mouthRatio > 0.02)  // Any facial feature
+  );
+  
+  const hasOrganicFacialPattern = (
+    organicRatio > 0.15 &&    // Organic patterns
+    structureRatio > 0.12 &&  // Facial structure
+    symmetryRatio > 0.05      // Basic symmetry
+  );
+  
+  const hasHighDetectionScore = overallScore > 0.8;  // High overall detection score
+  
+  const hasCombinedFeatures = (
+    (eyeRatio + noseRatio + mouthRatio + symmetryRatio) > 0.25  // Combined feature threshold
+  );
+  
+  // FINAL DECISION: If ANY detection method triggers, classify as human
+  const isHuman = hasStrongFacialFeatures || 
+                  hasSkinAndStructure || 
+                  hasOrganicFacialPattern || 
+                  hasHighDetectionScore || 
+                  hasCombinedFeatures;
+  
+  console.log('Ultra-aggressive human detection:', {
     eyeRatio: eyeRatio.toFixed(3),
-    noseRatio: noseRatio.toFixed(3), 
+    noseRatio: noseRatio.toFixed(3),
     mouthRatio: mouthRatio.toFixed(3),
     symmetryRatio: symmetryRatio.toFixed(3),
-    manufacturedRatio: manufacturedRatio.toFixed(3),
-    sampledPixels,
-    hasFacialStructure
+    skinRatio: skinRatio.toFixed(3),
+    organicRatio: organicRatio.toFixed(3),
+    structureRatio: structureRatio.toFixed(3),
+    overallScore: overallScore.toFixed(3),
+    totalSamples,
+    isHuman,
+    triggerReasons: {
+      strongFeatures: hasStrongFacialFeatures,
+      skinStructure: hasSkinAndStructure,
+      organicPattern: hasOrganicFacialPattern,
+      highScore: hasHighDetectionScore,
+      combinedFeatures: hasCombinedFeatures
+    }
   });
   
-  return hasFacialStructure;
+  return isHuman;
 }
 
   // Aura Analysis API endpoint

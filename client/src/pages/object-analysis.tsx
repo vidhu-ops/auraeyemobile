@@ -473,16 +473,24 @@ export default function ObjectAnalysis() {
           const symmetryRatio = symmetryPatterns / totalSamples;
           const manufacturedRatio = manufacturedPatterns / totalSamples;
           
-          // Detect human face: need clear facial features + symmetry + no manufactured patterns
-          const hasHumanFace = (
-            eyeRatio > 0.15 &&        // Moderate eye patterns
-            noseRatio > 0.10 &&       // Moderate nose structure
-            mouthRatio > 0.10 &&      // Moderate mouth region
-            symmetryRatio > 0.20 &&   // Moderate facial symmetry
-            manufacturedRatio < 0.15 && // Allow some manufactured patterns
-            totalSamples > 80 &&      // Moderate data requirement
-            (eyeRatio + noseRatio + mouthRatio) > 0.40  // Combined score
+          // Ultra-aggressive human face detection - multiple detection pathways
+          const hasStrongFacialFeatures = (
+            eyeRatio > 0.05 &&        // Very low threshold for eyes
+            noseRatio > 0.03 &&       // Very low threshold for nose
+            mouthRatio > 0.03 &&      // Very low threshold for mouth
+            symmetryRatio > 0.08      // Very low threshold for symmetry
           );
+          
+          const hasCombinedFeatures = (
+            (eyeRatio + noseRatio + mouthRatio + symmetryRatio) > 0.25  // Combined feature threshold
+          );
+          
+          const hasAnyFacialStructure = (
+            eyeRatio > 0.02 || noseRatio > 0.02 || mouthRatio > 0.02 || symmetryRatio > 0.05
+          );
+          
+          // If ANY detection method triggers, classify as human
+          const hasHumanFace = hasStrongFacialFeatures || hasCombinedFeatures || hasAnyFacialStructure;
           
           console.log('Client-side face detection:', {
             eyeRatio: eyeRatio.toFixed(3),
