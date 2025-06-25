@@ -3152,28 +3152,12 @@ export default function AuraAnalysis() {
     const standardPersonRadius = Math.min(width, height) * 0.15; // Consistent person size reference
     const standardExtendedRadius = Math.max(width, height) * 0.85; // Consistent reach to edges
     
-    // LAYER 1: Giving energy layer with standardized sizing (base layer)
+    // LAYER 1: Receiving energy layer on left side (base layer)
     ctx.globalCompositeOperation = 'multiply';
-    const standardGivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
-    const givingLayer = ctx.createRadialGradient(
-      centerX - standardPersonRadius * 0.8, centerY, 0, // Left side origin with standard offset
-      centerX - standardPersonRadius * 0.8, centerY, standardGivingRadius
-    );
-    givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
-    givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
-    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
-    givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
-    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
-    
-    ctx.fillStyle = givingLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // LAYER 2: Receiving energy layer with standardized sizing (on top of giving layer)
     const standardReceivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
     const receivingLayer = ctx.createRadialGradient(
-      centerX + standardPersonRadius * 0.8, centerY, 0, // Right side origin with standard offset
-      centerX + standardPersonRadius * 0.8, centerY, standardReceivingRadius
+      centerX - standardPersonRadius * 0.8, centerY, 0, // LEFT side origin for receiving energy
+      centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
     );
     receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.55)`);
     receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
@@ -3185,40 +3169,57 @@ export default function AuraAnalysis() {
     ctx.fillStyle = receivingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 3: Enhanced color merging between giving and receiving energies only
-    ctx.globalCompositeOperation = 'soft-light';
-    const standardMergingRadius = Math.min(width, height) * 0.75; // Consistent merging radius
-    const mergingLayer = ctx.createRadialGradient(
-      centerX, centerY, standardPersonRadius * 0.3,
-      centerX, centerY, standardMergingRadius
+    // LAYER 2: Giving energy layer on right side (on top of receiving layer)
+    const standardGivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
+    const givingLayer = ctx.createRadialGradient(
+      centerX + standardPersonRadius * 0.8, centerY, 0, // RIGHT side origin for giving energy
+      centerX + standardPersonRadius * 0.8, centerY, standardGivingRadius
     );
+    givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
+    givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
+    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
+    givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
+    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
+    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
     
-    // Create blended colors for smooth transitions between giving and receiving only
-    const givingReceivingBlend = {
-      r: Math.floor((colors.givingRGB.r * 0.5 + colors.receivingRGB.r * 0.5)),
-      g: Math.floor((colors.givingRGB.g * 0.5 + colors.receivingRGB.g * 0.5)),
-      b: Math.floor((colors.givingRGB.b * 0.5 + colors.receivingRGB.b * 0.5))
+    ctx.fillStyle = givingLayer;
+    ctx.fillRect(0, 0, width, height);
+    
+    // LAYER 3: Enhanced horizontal gradient blending between left receiving and right giving energies
+    ctx.globalCompositeOperation = 'overlay';
+    
+    // Create horizontal linear gradient from left (receiving) to right (giving) for seamless blending
+    const horizontalBlendingGradient = ctx.createLinearGradient(0, 0, width, 0);
+    
+    // Start with receiving color on left, blend through center, end with giving color on right
+    horizontalBlendingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.35)`); // Pure receiving on far left
+    horizontalBlendingGradient.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`); // Receiving dominant
+    
+    // Center blend zone with both colors mixed
+    const centerBlend = {
+      r: Math.floor((colors.receivingRGB.r * 0.5 + colors.givingRGB.r * 0.5)),
+      g: Math.floor((colors.receivingRGB.g * 0.5 + colors.givingRGB.g * 0.5)),
+      b: Math.floor((colors.receivingRGB.b * 0.5 + colors.givingRGB.b * 0.5))
     };
+    horizontalBlendingGradient.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.22)`); // Perfect center blend
     
-    const givingDominantBlend = {
-      r: Math.floor((colors.givingRGB.r * 0.7 + colors.receivingRGB.r * 0.3)),
-      g: Math.floor((colors.givingRGB.g * 0.7 + colors.receivingRGB.g * 0.3)),
-      b: Math.floor((colors.givingRGB.b * 0.7 + colors.receivingRGB.b * 0.3))
-    };
+    horizontalBlendingGradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`); // Giving dominant
+    horizontalBlendingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.35)`); // Pure giving on far right
     
-    const receivingDominantBlend = {
-      r: Math.floor((colors.receivingRGB.r * 0.7 + colors.givingRGB.r * 0.3)),
-      g: Math.floor((colors.receivingRGB.g * 0.7 + colors.givingRGB.g * 0.3)),
-      b: Math.floor((colors.receivingRGB.b * 0.7 + colors.givingRGB.b * 0.3))
-    };
+    ctx.fillStyle = horizontalBlendingGradient;
+    ctx.fillRect(0, 0, width, height);
     
-    mergingLayer.addColorStop(0, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.25)`);
-    mergingLayer.addColorStop(0.25, `rgba(${givingDominantBlend.r}, ${givingDominantBlend.g}, ${givingDominantBlend.b}, 0.20)`);
-    mergingLayer.addColorStop(0.5, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.18)`);
-    mergingLayer.addColorStop(0.75, `rgba(${receivingDominantBlend.r}, ${receivingDominantBlend.g}, ${receivingDominantBlend.b}, 0.15)`);
-    mergingLayer.addColorStop(1, `rgba(${givingReceivingBlend.r}, ${givingReceivingBlend.g}, ${givingReceivingBlend.b}, 0.08)`);
+    // Additional radial blending for smoother center merge
+    ctx.globalCompositeOperation = 'soft-light';
+    const centerRadialBlend = ctx.createRadialGradient(
+      centerX, centerY, standardPersonRadius * 0.2,
+      centerX, centerY, standardPersonRadius * 2.5
+    );
+    centerRadialBlend.addColorStop(0, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.18)`);
+    centerRadialBlend.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.12)`);
+    centerRadialBlend.addColorStop(1, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.05)`);
     
-    ctx.fillStyle = mergingLayer;
+    ctx.fillStyle = centerRadialBlend;
     ctx.fillRect(0, 0, width, height);
     
     // Reset blend mode for thinking layer
@@ -3448,19 +3449,19 @@ export default function AuraAnalysis() {
       },
       { 
         color: colors.receivingRGB, 
-        zone: 'right',
+        zone: 'left',
         density: 40,
         getCoords: () => ({
-          x: width * 0.7 + seededRandom() * (width * 0.3),
+          x: seededRandom() * (width * 0.3), // LEFT side for receiving energy
           y: height * 0.15 + seededRandom() * (height * 0.7)
         })
       },
       { 
         color: colors.givingRGB, 
-        zone: 'left',
+        zone: 'right',
         density: 40,
         getCoords: () => ({
-          x: seededRandom() * (width * 0.3),
+          x: width * 0.7 + seededRandom() * (width * 0.3), // RIGHT side for giving energy
           y: height * 0.15 + seededRandom() * (height * 0.7)
         })
       },

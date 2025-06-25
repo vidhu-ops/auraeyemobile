@@ -129,6 +129,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Restructured aura layering system with proper order: personality color as base gradient from person to image edge, giving and receiving layers on top using multiply blending, thinking layer at the very top, all layers well-merged and visible with enhanced color blending
 - June 25, 2025. Standardized personality color gradient sizing: consistent radial gradient from person center to image edges (15% inner radius, 85% outer radius) with uniform opacity progression across all uploaded images, eliminated variable particle sizing for consistent visualization
 - June 25, 2025. Removed personality color visualization entirely from edited aura images: aura visualization now shows only giving energy (left), receiving energy (right), and thinking energy (above head) with proper merging between the three remaining colors
+- June 25, 2025. Fixed energy positioning in aura visualization: receiving energy now correctly positioned on left side, giving energy on right side with enhanced horizontal linear gradient blending from left to right for seamless color transitions
 
 ## User Preferences
 
