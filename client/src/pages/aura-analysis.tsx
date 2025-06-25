@@ -3148,27 +3148,35 @@ export default function AuraAnalysis() {
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // LAYER 1 (BASE): Personality color gradient from person to image edge
+    // LAYER 1 (BASE): Consistent personality color gradient from person to image edges
+    // Use standardized sizing based on image dimensions for consistency across all uploads
+    const standardPersonRadius = Math.min(width, height) * 0.15; // Consistent person size reference
+    const standardExtendedRadius = Math.max(width, height) * 0.85; // Consistent reach to edges
+    
     const personalityBaseLayer = ctx.createRadialGradient(
-      centerX, centerY, innerRadius * 0.4, // Start from person center
-      centerX, centerY, extendedRadius // Extend to image edges
+      centerX, centerY, standardPersonRadius, // Standardized inner radius
+      centerX, centerY, standardExtendedRadius // Standardized outer radius to edges
     );
-    personalityBaseLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.35)`); // Strong at person
-    personalityBaseLayer.addColorStop(0.2, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.32)`); 
-    personalityBaseLayer.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.28)`); 
-    personalityBaseLayer.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.22)`); 
-    personalityBaseLayer.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.15)`); 
-    personalityBaseLayer.addColorStop(0.95, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`); 
-    personalityBaseLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.03)`); // Fade at edges
+    
+    // Consistent opacity progression for uniform appearance across all images
+    personalityBaseLayer.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.38)`); // Strong at person center
+    personalityBaseLayer.addColorStop(0.15, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.35)`); 
+    personalityBaseLayer.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.30)`); 
+    personalityBaseLayer.addColorStop(0.45, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`); 
+    personalityBaseLayer.addColorStop(0.6, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`); 
+    personalityBaseLayer.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.12)`); 
+    personalityBaseLayer.addColorStop(0.9, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.06)`); 
+    personalityBaseLayer.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.02)`); // Gentle fade at edges
     
     ctx.fillStyle = personalityBaseLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 2: Giving energy layer (on top of personality base)
+    // LAYER 2: Giving energy layer with standardized sizing (on top of personality base)
     ctx.globalCompositeOperation = 'multiply';
+    const standardGivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
     const givingLayer = ctx.createRadialGradient(
-      centerX - personWidth * 0.8, centerY, 0, // Left side origin
-      centerX - personWidth * 0.8, centerY, auraRadius * 1.4
+      centerX - standardPersonRadius * 0.8, centerY, 0, // Left side origin with standard offset
+      centerX - standardPersonRadius * 0.8, centerY, standardGivingRadius
     );
     givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
     givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
@@ -3180,10 +3188,11 @@ export default function AuraAnalysis() {
     ctx.fillStyle = givingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 3: Receiving energy layer (on top of giving layer)
+    // LAYER 3: Receiving energy layer with standardized sizing (on top of giving layer)
+    const standardReceivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
     const receivingLayer = ctx.createRadialGradient(
-      centerX + personWidth * 0.8, centerY, 0, // Right side origin
-      centerX + personWidth * 0.8, centerY, auraRadius * 1.4
+      centerX + standardPersonRadius * 0.8, centerY, 0, // Right side origin with standard offset
+      centerX + standardPersonRadius * 0.8, centerY, standardReceivingRadius
     );
     receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.55)`);
     receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
@@ -3195,11 +3204,12 @@ export default function AuraAnalysis() {
     ctx.fillStyle = receivingLayer;
     ctx.fillRect(0, 0, width, height);
     
-    // LAYER 4: Enhanced color merging for better visibility and blending
+    // LAYER 4: Enhanced color merging with standardized sizing for better visibility and blending
     ctx.globalCompositeOperation = 'soft-light';
+    const standardMergingRadius = Math.min(width, height) * 0.75; // Consistent merging radius
     const mergingLayer = ctx.createRadialGradient(
-      centerX, centerY, innerRadius * 0.2,
-      centerX, centerY, auraRadius * 1.6
+      centerX, centerY, standardPersonRadius * 0.3,
+      centerX, centerY, standardMergingRadius
     );
     
     // Create blended colors for smooth transitions
