@@ -3320,9 +3320,9 @@ export default function AuraAnalysis() {
       {
         gradient: createMultiColorGradient(
           ctx,
-          [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB, colors.givingRGB],
-          [0, 0.2, 0.35, 0.5, 0.75, 1],
-          [0.1, 0.06, 0.08, 0.06, 0.05, 0.04],
+          [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.thinkingRGB],
+          [0, 0.35, 0.65, 1],
+          [0.1, 0.08, 0.06, 0.04],
           true,
           { x1: 0, y1: 0, x2: width, y2: height }
         )
@@ -3331,9 +3331,9 @@ export default function AuraAnalysis() {
       {
         gradient: createMultiColorGradient(
           ctx,
-          [colors.givingRGB, colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
-          [0, 0.25, 0.4, 0.55, 0.75, 1],
-          [0.06, 0.08, 0.05, 0.07, 0.07, 0.04],
+          [colors.givingRGB, colors.thinkingRGB, colors.receivingRGB, colors.thinkingRGB],
+          [0, 0.35, 0.65, 1],
+          [0.06, 0.08, 0.07, 0.04],
           true,
           { x1: width, y1: 0, x2: 0, y2: height }
         )
@@ -3400,90 +3400,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  // Function to create personality color ONLY around image edges - 300px inward with high visibility
-  const createPersonalityEdgeGlow = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-    personalityColor: { r: number, g: number, b: number },
-    energyLevel: number,
-    seededRandom: () => number,
-    faceX: number,
-    faceY: number,
-    faceWidth: number,
-    faceHeight: number
-  ) => {
-    // MAXIMUM EDGE DISTANCE: 400px from edge for maximum visibility as requested
-    const EDGE_DISTANCE = 400;
-    
-    // Use multiply blend mode for seamless gradient blending
-    ctx.globalCompositeOperation = 'multiply';
-    
-    // Top edge gradient - maximum visibility and size 
-    const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
-    topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-    topGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-    topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
-    topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
-    topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.3)`);
-    ctx.fillStyle = topGradient;
-    ctx.fillRect(0, 0, width, EDGE_DISTANCE);
-    
-    // Bottom edge gradient - maximum visibility and size
-    const bottomGradient = ctx.createLinearGradient(0, height - EDGE_DISTANCE, 0, height);
-    bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-    bottomGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    bottomGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-    bottomGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-    bottomGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-    ctx.fillStyle = bottomGradient;
-    ctx.fillRect(0, height - EDGE_DISTANCE, width, EDGE_DISTANCE);
-    
-    // Left edge gradient - maximum visibility and size
-    const leftGradient = ctx.createLinearGradient(0, 0, EDGE_DISTANCE, 0);
-    leftGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-    leftGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-    leftGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-    leftGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-    ctx.fillStyle = leftGradient;
-    ctx.fillRect(0, 0, EDGE_DISTANCE, height);
-    
-    // Right edge gradient - maximum visibility and size
-    const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
-    rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-    rightGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-    rightGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-    rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-    ctx.fillStyle = rightGradient;
-    ctx.fillRect(width - EDGE_DISTANCE, 0, EDGE_DISTANCE, height);
-    
-    // Enhanced corner gradients for seamless blending
-    const cornerGradients = [
-      { x: 0, y: 0, centerX: 0, centerY: 0 }, // Top-left
-      { x: width - EDGE_DISTANCE, y: 0, centerX: width, centerY: 0 }, // Top-right
-      { x: 0, y: height - EDGE_DISTANCE, centerX: 0, centerY: height }, // Bottom-left
-      { x: width - EDGE_DISTANCE, y: height - EDGE_DISTANCE, centerX: width, centerY: height } // Bottom-right
-    ];
-    
-    cornerGradients.forEach(corner => {
-      const cornerRadial = ctx.createRadialGradient(
-        corner.centerX, corner.centerY, 0,
-        corner.centerX, corner.centerY, EDGE_DISTANCE * 1.2
-      );
-      cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.48)`);
-      cornerRadial.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-      cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-      cornerRadial.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.18)`);
-      cornerRadial.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
-      ctx.fillStyle = cornerRadial;
-      ctx.fillRect(corner.x, corner.y, EDGE_DISTANCE, EDGE_DISTANCE);
-    });
-    
-    // Reset blend mode
-    ctx.globalCompositeOperation = 'source-over';
-  };
+  // Personality color function completely removed - no personality color in aura visualization
 
   // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
   const createConcentratedColorDisplay = (
