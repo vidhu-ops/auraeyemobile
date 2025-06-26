@@ -130,6 +130,8 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Standardized personality color gradient sizing: consistent radial gradient from person center to image edges (15% inner radius, 85% outer radius) with uniform opacity progression across all uploaded images, eliminated variable particle sizing for consistent visualization
 - June 25, 2025. Removed personality color visualization entirely from edited aura images: aura visualization now shows only giving energy (left), receiving energy (right), and thinking energy (above head) with proper merging between the three remaining colors
 - June 25, 2025. Fixed energy positioning in aura visualization: receiving energy now correctly positioned on left side, giving energy on right side with enhanced horizontal linear gradient blending from left to right for seamless color transitions
+- June 26, 2025. Implemented uniform image processing: all aura analysis images automatically resized to 1600x900 resolution at approximately 110kb file size for consistent visual appearance across all uploads
+- June 26, 2025. Standardized smoky/cloudy aura effects: fixed particle sizing (144-288px large, 126-216px medium, 108-162px detail layers) and thinking energy ball (54px radius) for uniform appearance regardless of original image size
 
 ## User Preferences
 
