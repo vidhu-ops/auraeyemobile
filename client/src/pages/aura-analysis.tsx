@@ -3414,49 +3414,49 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    // EXPANDED EDGE DISTANCE: 300px from edge for enhanced visibility as requested
-    const EDGE_DISTANCE = 300;
+    // MAXIMUM EDGE DISTANCE: 400px from edge for maximum visibility as requested
+    const EDGE_DISTANCE = 400;
     
     // Use multiply blend mode for seamless gradient blending
     ctx.globalCompositeOperation = 'multiply';
     
-    // Top edge gradient - maximum visibility with seamless blending
+    // Top edge gradient - maximum visibility and size 
     const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
-    topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
-    topGradient.addColorStop(0.3, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.25)`);
-    topGradient.addColorStop(0.6, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    topGradient.addColorStop(0.8, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
+    topGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
+    topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+    topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
     topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
     ctx.fillStyle = topGradient;
     ctx.fillRect(0, 0, width, EDGE_DISTANCE);
     
-    // Bottom edge gradient - maximum visibility with seamless blending
+    // Bottom edge gradient - maximum visibility and size
     const bottomGradient = ctx.createLinearGradient(0, height - EDGE_DISTANCE, 0, height);
     bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
-    bottomGradient.addColorStop(0.2, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
-    bottomGradient.addColorStop(0.4, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    bottomGradient.addColorStop(0.7, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.25)`);
-    bottomGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
+    bottomGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    bottomGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+    bottomGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
+    bottomGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
     ctx.fillStyle = bottomGradient;
     ctx.fillRect(0, height - EDGE_DISTANCE, width, EDGE_DISTANCE);
     
-    // Left edge gradient - maximum visibility with seamless blending
+    // Left edge gradient - maximum visibility and size
     const leftGradient = ctx.createLinearGradient(0, 0, EDGE_DISTANCE, 0);
-    leftGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
-    leftGradient.addColorStop(0.3, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.25)`);
-    leftGradient.addColorStop(0.6, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    leftGradient.addColorStop(0.8, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    leftGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
+    leftGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
+    leftGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+    leftGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
     leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
     ctx.fillStyle = leftGradient;
     ctx.fillRect(0, 0, EDGE_DISTANCE, height);
     
-    // Right edge gradient - maximum visibility with seamless blending
+    // Right edge gradient - maximum visibility and size
     const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
     rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
-    rightGradient.addColorStop(0.2, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
-    rightGradient.addColorStop(0.4, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    rightGradient.addColorStop(0.7, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.25)`);
-    rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
+    rightGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+    rightGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
+    rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
     ctx.fillStyle = rightGradient;
     ctx.fillRect(width - EDGE_DISTANCE, 0, EDGE_DISTANCE, height);
     
@@ -3473,10 +3473,10 @@ export default function AuraAnalysis() {
         corner.centerX, corner.centerY, 0,
         corner.centerX, corner.centerY, EDGE_DISTANCE * 1.2
       );
-      cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.32)`);
-      cornerRadial.addColorStop(0.3, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.24)`);
-      cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.18)`);
-      cornerRadial.addColorStop(0.7, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.12)`);
+      cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.48)`);
+      cornerRadial.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
+      cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+      cornerRadial.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.18)`);
       cornerRadial.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
       ctx.fillStyle = cornerRadial;
       ctx.fillRect(corner.x, corner.y, EDGE_DISTANCE, EDGE_DISTANCE);
