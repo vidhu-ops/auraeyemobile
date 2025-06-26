@@ -2910,9 +2910,9 @@ export default function AuraAnalysis() {
     const particleX = centerX;
     const particleY = centerY - personHeight * 0.75; // Higher above head for better visibility
     
-    // Enhanced particle sizing for clear visibility
-    const standardSize = Math.min(imageWidth, imageHeight) * 0.06; // Increased to 6% for better visibility
-    const baseRadius = Math.max(25, standardSize); // Minimum 25px, larger for prominence
+    // UNIFORM PARTICLE SIZING: Fixed sizing for all 1600x900 images for consistent appearance
+    const STANDARD_HEIGHT = 900;
+    const baseRadius = STANDARD_HEIGHT * 0.06; // Fixed 54px radius for all images
     
     // Use additive blending for bright glowing effect
     ctx.globalCompositeOperation = 'screen';
@@ -3148,13 +3148,15 @@ export default function AuraAnalysis() {
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // Standardized sizing references for consistent visualization
-    const standardPersonRadius = Math.min(width, height) * 0.15; // Consistent person size reference
-    const standardExtendedRadius = Math.max(width, height) * 0.85; // Consistent reach to edges
+    // UNIFORM SIZING SYSTEM: All images are now 1600x900, so use fixed measurements for consistency
+    const STANDARD_WIDTH = 1600;
+    const STANDARD_HEIGHT = 900;
+    const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 135px radius
+    const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 1360px reach
     
     // LAYER 1: Receiving energy layer on left side (base layer)
     ctx.globalCompositeOperation = 'multiply';
-    const standardReceivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
+    const standardReceivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
     const receivingLayer = ctx.createRadialGradient(
       centerX - standardPersonRadius * 0.8, centerY, 0, // LEFT side origin for receiving energy
       centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
@@ -3170,7 +3172,7 @@ export default function AuraAnalysis() {
     ctx.fillRect(0, 0, width, height);
     
     // LAYER 2: Giving energy layer on right side (on top of receiving layer)
-    const standardGivingRadius = Math.min(width, height) * 0.65; // Consistent sizing for all images
+    const standardGivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
     const givingLayer = ctx.createRadialGradient(
       centerX + standardPersonRadius * 0.8, centerY, 0, // RIGHT side origin for giving energy
       centerX + standardPersonRadius * 0.8, centerY, standardGivingRadius
@@ -3511,12 +3513,13 @@ export default function AuraAnalysis() {
     const baseSmokeDensity = Math.floor((1800 + energyLevel * 150) * densityMultiplier);
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
-    // Adaptive smoke layers that scale with canvas size
-    const sizeFactor = Math.min(width, height) / 900; // Scale factor based on smaller dimension
+    // UNIFORM SMOKE LAYERS: Fixed sizing for all 1600x900 images to ensure consistent appearance
+    const STANDARD_WIDTH = 1600;
+    const STANDARD_HEIGHT = 900;
     const smokeLayers = [
-      { density: baseSmokeDensity * 0.4, sizeRange: [80 * sizeFactor, 160 * sizeFactor], opacity: [0.06, 0.12] }, // Large background layer
-      { density: baseSmokeDensity * 0.3, sizeRange: [70 * sizeFactor, 120 * sizeFactor], opacity: [0.08, 0.12] }, // Medium layer
-      { density: baseSmokeDensity * 0.5, sizeRange: [60 * sizeFactor, 90 * sizeFactor], opacity: [0.06, 0.12] }   // Detail layer
+      { density: baseSmokeDensity * 0.4, sizeRange: [144, 288], opacity: [0.06, 0.12] }, // Large background layer - fixed 144-288px
+      { density: baseSmokeDensity * 0.3, sizeRange: [126, 216], opacity: [0.08, 0.12] }, // Medium layer - fixed 126-216px
+      { density: baseSmokeDensity * 0.5, sizeRange: [108, 162], opacity: [0.06, 0.12] }   // Detail layer - fixed 108-162px
     ];
     
     smokeLayers.forEach(layer => {
