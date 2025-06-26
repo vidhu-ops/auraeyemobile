@@ -3155,8 +3155,7 @@ export default function AuraAnalysis() {
     // Skip particle-based smoke zones to avoid patchy appearance
     // All aura effects are now handled by smooth gradients above
     
-    // Create personality color ONLY around the edges of the image - CRITICAL REQUIREMENT
-    createPersonalityEdgeGlow(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
+    // Personality color completely removed from aura visualization as requested
     
     // Create enhanced gradient blending between all colors for seamless merging
     createSeamlessColorBlending(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
@@ -3424,15 +3423,15 @@ export default function AuraAnalysis() {
     const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
     topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
     topGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-    topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-    topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
+    topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
+    topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.3)`);
     ctx.fillStyle = topGradient;
     ctx.fillRect(0, 0, width, EDGE_DISTANCE);
     
     // Bottom edge gradient - maximum visibility and size
     const bottomGradient = ctx.createLinearGradient(0, height - EDGE_DISTANCE, 0, height);
-    bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
     bottomGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
     bottomGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
     bottomGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
@@ -3446,13 +3445,13 @@ export default function AuraAnalysis() {
     leftGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
     leftGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
     leftGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-    leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
     ctx.fillStyle = leftGradient;
     ctx.fillRect(0, 0, EDGE_DISTANCE, height);
     
     // Right edge gradient - maximum visibility and size
     const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
-    rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
     rightGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
     rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
     rightGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
