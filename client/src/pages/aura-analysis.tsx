@@ -2562,7 +2562,7 @@ export default function AuraAnalysis() {
           // Create visible aura glow around the entire image edges
           const createAuraGlow = () => {
             // Apply subtle blur for softer glow effect
-            ctx.filter = 'blur(10px)';
+            ctx.filter = 'diffuse(10px)';
             
             // Create multiple layers of glow
             for (let layer = 0; layer < 12; layer++) {
@@ -2628,7 +2628,7 @@ export default function AuraAnalysis() {
                 name: 'giving',
                 color: givingRGB,
                 area: { x: 0, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
-                density: 70
+                density: 50
               },
               {
                 name: 'personality',
@@ -2662,7 +2662,7 @@ export default function AuraAnalysis() {
                 
                 // Create extremely blurred, natural smokey wisp effect
                 const sizeFactor = Math.min(canvasWidth, canvasHeight) / 900;
-                const wispSize = (40 + Math.random() * 80) * sizeFactor;
+                const wispSize = (50 + Math.random() * 80) * sizeFactor;
                 const opacity = 0.04 + Math.random() * 0.08;
                 const [r, g, b] = zone.color;
                 
@@ -2926,8 +2926,8 @@ export default function AuraAnalysis() {
     ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
     ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
     ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
-    ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.3)`);
-    ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+    ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.5)`);
+    ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
     
     ctx.fillStyle = ultraGlow;
     ctx.beginPath();
@@ -2941,8 +2941,8 @@ export default function AuraAnalysis() {
     );
     middleGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
     middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-    middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
-    middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+    middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
     middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
     
     ctx.fillStyle = middleGlow;
@@ -2981,7 +2981,7 @@ export default function AuraAnalysis() {
       sparkle.addColorStop(0, `rgba(255, 255, 255, 1)`);
       sparkle.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
       sparkle.addColorStop(0.5, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
-      sparkle.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+      sparkle.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
       
       ctx.fillStyle = sparkle;
       ctx.beginPath();
@@ -3088,7 +3088,7 @@ export default function AuraAnalysis() {
     // Create smooth gradient-based aura without particle patches
     createDirectionalGradientZones(ctx, width, height, centerX, centerY, personWidth, personHeight, colors);
 
-    // Create 3-Zone Energy Map (excluding thinking zone - it will be handled separately as a single glowing ball)
+    // Create 2-Zone Energy Map (excluding thinking zone and personality zone)
     const smokeZones = [
       { 
         color: colors.receivingRGB, 
@@ -3097,7 +3097,7 @@ export default function AuraAnalysis() {
         direction: { x: 1, y: 0 },
         spread: height * 1.2,
         name: 'receiving_right',
-        density: 50, // Increased density for better right-side coverage
+        density: 30, // Increased density for better right-side coverage
         zone: 'right' // Receiving energy on right side
       },
       { 
@@ -3107,23 +3107,16 @@ export default function AuraAnalysis() {
         direction: { x: -1, y: 0 },
         spread: height * 1.2,
         name: 'giving_left',
-        density: 50,
-        zone: 'left' // Giving energy on left side
-      },
-      { 
-        color: colors.personalityRGB, 
-        startX: centerX, 
-        startY: centerY, 
-        direction: { x: 0, y: 0 },
-        spread: Math.min(width, height) * 0.8,
-        name: 'personality_center',
         density: 30,
-        zone: 'center' // Core personality energy around center
+        zone: 'left' // Giving energy on left side
       }
     ];
 
     // Skip particle-based smoke zones to avoid patchy appearance
     // All aura effects are now handled by smooth gradients above
+    
+    // Create personality color ONLY around the edges of the image - CRITICAL REQUIREMENT
+    createPersonalityEdgeGlow(ctx, width, height, colors.personalityRGB, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight);
     
     // Create prominent thinking energy particle above person's head with standardized sizing
     createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel, width, height);
@@ -3155,17 +3148,17 @@ export default function AuraAnalysis() {
     const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 1360px reach
     
     // LAYER 1: Receiving energy layer on left side (base layer)
-    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalCompositeOperation = 'source-over';
     const standardReceivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
     const receivingLayer = ctx.createRadialGradient(
       centerX - standardPersonRadius * 0.8, centerY, 0, // LEFT side origin for receiving energy
       centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
     );
-    receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.55)`);
-    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
-    receivingLayer.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.28)`);
-    receivingLayer.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
-    receivingLayer.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.06)`);
+    receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
+    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.2)`);
+    receivingLayer.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.61)`);
+    receivingLayer.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.71)`);
+    receivingLayer.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.66)`);
     receivingLayer.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
     
     ctx.fillStyle = receivingLayer;
@@ -3179,7 +3172,7 @@ export default function AuraAnalysis() {
     );
     givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
     givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
-    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
+    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.68)`);
     givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
     givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
     givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
@@ -3194,7 +3187,7 @@ export default function AuraAnalysis() {
     const horizontalBlendingGradient = ctx.createLinearGradient(0, 0, width, 0);
     
     // Start with receiving color on left, blend through center, end with giving color on right
-    horizontalBlendingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.35)`); // Pure receiving on far left
+    horizontalBlendingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`); // Pure receiving on far left
     horizontalBlendingGradient.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`); // Receiving dominant
     
     // Center blend zone with both colors mixed
@@ -3203,7 +3196,7 @@ export default function AuraAnalysis() {
       g: Math.floor((colors.receivingRGB.g * 0.5 + colors.givingRGB.g * 0.5)),
       b: Math.floor((colors.receivingRGB.b * 0.5 + colors.givingRGB.b * 0.5))
     };
-    horizontalBlendingGradient.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.22)`); // Perfect center blend
+    horizontalBlendingGradient.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.29)`); // Perfect center blend
     
     horizontalBlendingGradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`); // Giving dominant
     horizontalBlendingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.35)`); // Pure giving on far right
@@ -3366,12 +3359,12 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  // Function to create enhanced personality color halo effect around entire image perimeter
-  const createPersonalityHaloEffect = (
+  // Function to create personality color ONLY around image edges - CRITICAL REQUIREMENT
+  const createPersonalityEdgeGlow = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
-    personalityColor: any,
+    personalityColor: { r: number, g: number, b: number },
     energyLevel: number,
     seededRandom: () => number,
     faceX: number,
@@ -3379,51 +3372,66 @@ export default function AuraAnalysis() {
     faceWidth: number,
     faceHeight: number
   ) => {
-    const haloParticles = 80 + Math.floor(energyLevel * 10); // More particles for stronger halo
-    const edgeMargin = Math.min(width, height) * 0.08; // Distance from image edge
+    // FIXED EDGE DISTANCE: Only 120px from edge for 1600x900 images
+    const EDGE_DISTANCE = 120;
     
-    // Create multiple layers of halo for depth
-    const haloLayers = [
-      { distance: edgeMargin * 0.3, opacity: 0.18, size: 25 },
-      { distance: edgeMargin * 0.6, opacity: 0.15, size: 35 },
-      { distance: edgeMargin * 1.0, opacity: 0.12, size: 45 }
+    // Create smooth gradient around image perimeter only
+    ctx.globalCompositeOperation = 'soft-light';
+    
+    // Top edge gradient
+    const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
+    topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    topGradient.addColorStop(0.7, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    ctx.fillStyle = topGradient;
+    ctx.fillRect(0, 0, width, EDGE_DISTANCE);
+    
+    // Bottom edge gradient
+    const bottomGradient = ctx.createLinearGradient(0, height - EDGE_DISTANCE, 0, height);
+    bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    bottomGradient.addColorStop(0.3, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    bottomGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    ctx.fillStyle = bottomGradient;
+    ctx.fillRect(0, height - EDGE_DISTANCE, width, EDGE_DISTANCE);
+    
+    // Left edge gradient
+    const leftGradient = ctx.createLinearGradient(0, 0, EDGE_DISTANCE, 0);
+    leftGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    leftGradient.addColorStop(0.7, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    ctx.fillStyle = leftGradient;
+    ctx.fillRect(0, 0, EDGE_DISTANCE, height);
+    
+    // Right edge gradient
+    const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
+    rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+    rightGradient.addColorStop(0.3, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.08)`);
+    rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
+    ctx.fillStyle = rightGradient;
+    ctx.fillRect(width - EDGE_DISTANCE, 0, EDGE_DISTANCE, height);
+    
+    // Add corner enhancement for better blending
+    const cornerGradients = [
+      { x: 0, y: 0, centerX: 0, centerY: 0 }, // Top-left
+      { x: width - EDGE_DISTANCE, y: 0, centerX: width, centerY: 0 }, // Top-right
+      { x: 0, y: height - EDGE_DISTANCE, centerX: 0, centerY: height }, // Bottom-left
+      { x: width - EDGE_DISTANCE, y: height - EDGE_DISTANCE, centerX: width, centerY: height } // Bottom-right
     ];
     
-    haloLayers.forEach(layer => {
-      for (let i = 0; i < haloParticles; i++) {
-        // Calculate position around perimeter
-        const perimeter = (width + height) * 2;
-        const position = seededRandom() * perimeter;
-        let x, y;
-        
-        if (position < width) {
-          // Top edge
-          x = position;
-          y = seededRandom() * layer.distance;
-        } else if (position < width + height) {
-          // Right edge
-          x = width - (seededRandom() * layer.distance);
-          y = position - width;
-        } else if (position < width * 2 + height) {
-          // Bottom edge
-          x = width - (position - width - height);
-          y = height - (seededRandom() * layer.distance);
-        } else {
-          // Left edge
-          x = seededRandom() * layer.distance;
-          y = height - (position - width * 2 - height);
-        }
-        
-        // Avoid face area
-        const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
-                          y >= faceY && y <= faceY + faceHeight;
-        
-        if (!inFaceArea && x >= 0 && x <= width && y >= 0 && y <= height) {
-          const smokeSize = layer.size + seededRandom() * 30;
-          drawNaturalSmoke(ctx, x, y, smokeSize, personalityColor, layer.opacity, seededRandom() * 0.8);
-        }
-      }
+    cornerGradients.forEach(corner => {
+      const cornerRadial = ctx.createRadialGradient(
+        corner.centerX, corner.centerY, 0,
+        corner.centerX, corner.centerY, EDGE_DISTANCE * 1.4
+      );
+      cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.12)`);
+      cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.06)`);
+      cornerRadial.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
+      ctx.fillStyle = cornerRadial;
+      ctx.fillRect(corner.x, corner.y, EDGE_DISTANCE, EDGE_DISTANCE);
     });
+    
+    // Reset blend mode
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
@@ -3537,6 +3545,11 @@ export default function AuraAnalysis() {
             continue;
           }
           
+          // Skip personality color completely - handled separately by edge glow
+          if (colorIndex === 3) {
+            continue;
+          }
+          
           // Avoid face area
           const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
                             smokeY >= faceY && smokeY <= faceY + faceHeight;
@@ -3567,7 +3580,7 @@ export default function AuraAnalysis() {
   ) => {
     const perimeterDensity = 180 + Math.floor(energyLevel * 60); // Dramatically increased density
     
-    // Assign specific colors to specific zones for better visibility
+    // Assign specific colors to specific zones - EXCLUDE personality color from perimeter
     const colorZones = [
       { 
         name: 'top', 
@@ -3578,11 +3591,6 @@ export default function AuraAnalysis() {
         name: 'right', 
         color: colors.receivingRGB,
         coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height }) 
-      },
-      { 
-        name: 'bottom', 
-        color: colors.personalityRGB,
-        coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * height * 0.3 }) 
       },
       { 
         name: 'left', 
@@ -3638,7 +3646,9 @@ export default function AuraAnalysis() {
     ];
     
     edges.forEach((edge, edgeIndex) => {
-      const edgeColor = allColors[edgeIndex % 4];
+      // Only use first 3 colors, skip personality color (index 3)
+      const availableColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB];
+      const edgeColor = availableColors[edgeIndex % 3];
       const edgeDensity = 25 + Math.floor(energyLevel * 8);
       
       for (let i = 0; i < edgeDensity; i++) {
