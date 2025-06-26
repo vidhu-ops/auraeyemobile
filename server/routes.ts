@@ -723,31 +723,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to standard dimensions
+  // Helper function to resize images to uniform dimensions for consistent aura visualization
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
-      // Get image metadata to determine aspect ratio
-      const metadata = await sharp(inputBuffer).metadata();
-      const aspectRatio = (metadata.width || 1) / (metadata.height || 1);
-      
-      let targetWidth, targetHeight;
-      if (aspectRatio > 1) {
-        // Landscape - ensure minimum width of 1200px
-        targetWidth = Math.max(1200, metadata.width || 1200);
-        targetHeight = Math.round(targetWidth / aspectRatio);
-      } else {
-        // Portrait or square - ensure minimum height of 900px
-        targetHeight = Math.max(900, metadata.height || 900);
-        targetWidth = Math.round(targetHeight * aspectRatio);
-      }
-      
+      // Resize all aura analysis images to uniform 1600x900 resolution for consistent appearance
       const resizedBuffer = await sharp(inputBuffer)
-        .resize(targetWidth, targetHeight, {
-          fit: 'inside', // Maintain aspect ratio without cropping
-          withoutEnlargement: false // Allow enlargement for small images
+        .resize(1600, 900, {
+          fit: 'cover', // Crop to exact dimensions for uniform appearance
+          position: 'center' // Center crop to maintain subject focus
         })
-        .jpeg({ quality: 90 }) // Higher quality for better visualization
+        .jpeg({ 
+          quality: 85, // Optimize for 110kb target size
+          progressive: true,
+          mozjpeg: true // Enable mozjpeg for better compression
+        })
         .toBuffer();
+      
+      // Check if file size is close to 110kb target
+      const fileSizeKB = resizedBuffer.length / 1024;
+      console.log(`Image resized to ${1600}x${900}, file size: ${fileSizeKB.toFixed(1)}kb`);
+      
+      // If file is significantly larger than 110kb, reduce quality further
+      if (fileSizeKB > 130) {
+        const optimizedBuffer = await sharp(inputBuffer)
+          .resize(1600, 900, {
+            fit: 'cover',
+            position: 'center'
+          })
+          .jpeg({ 
+            quality: 70, // Lower quality for size optimization
+            progressive: true,
+            mozjpeg: true
+          })
+          .toBuffer();
+        
+        const optimizedSizeKB = optimizedBuffer.length / 1024;
+        console.log(`Image optimized to ${optimizedSizeKB.toFixed(1)}kb`);
+        return optimizedBuffer;
+      }
       
       return resizedBuffer;
     } catch (error) {
