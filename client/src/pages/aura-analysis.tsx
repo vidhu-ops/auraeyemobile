@@ -2825,7 +2825,7 @@ export default function AuraAnalysis() {
       thinking: uniqueColors[0],    // Crown energy - first unique color
       receiving: uniqueColors[1],   // Receiving energy - second unique color  
       giving: uniqueColors[2],      // Giving energy - third unique color
-      personality: uniqueColors[3]  // Personality energy - fourth unique color
+      personality: '#000000'        // Personality color removed from visualization - set to transparent/black
     };
   };
 
@@ -2950,9 +2950,9 @@ export default function AuraAnalysis() {
     const particleX = centerX;
     const particleY = centerY - personHeight * 0.75; // Higher above head for better visibility
     
-    // UNIFORM PARTICLE SIZING: Fixed sizing for all 1600x900 images for consistent appearance
+    // ENHANCED PARTICLE SIZING: Larger size for maximum thinking color visibility
     const STANDARD_HEIGHT = 900;
-    const baseRadius = STANDARD_HEIGHT * 0.06; // Fixed 54px radius for all images
+    const baseRadius = STANDARD_HEIGHT * 0.12; // Doubled to 108px radius for maximum visibility
     
     // Use additive blending for bright glowing effect
     ctx.globalCompositeOperation = 'screen';
@@ -2964,14 +2964,14 @@ export default function AuraAnalysis() {
     );
     ultraGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center for maximum visibility
     ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-    ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
-    ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
-    ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.5)`);
-    ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+    ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.9)`);
+    ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+    ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.7)`);
+    ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.5)`);
     
     ctx.fillStyle = ultraGlow;
     ctx.beginPath();
-    ctx.arc(particleX, particleY, baseRadius * 6, 0, Math.PI * 2);
+    ctx.arc(particleX, particleY, baseRadius * 8, 0, Math.PI * 2);
     ctx.fill();
     
     // Bright middle glow layer for enhanced visibility
