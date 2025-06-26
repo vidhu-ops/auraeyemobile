@@ -3669,12 +3669,12 @@ export default function AuraAnalysis() {
       }
     });
     
-    // Add corner coverage to ensure complete border coverage
+    // Add corner coverage to ensure complete border coverage - exclude personality color
     const corners = [
       { x: 0, y: 0, color: colors.thinkingRGB },
       { x: width, y: 0, color: colors.receivingRGB },
-      { x: width, y: height, color: colors.personalityRGB },
-      { x: 0, y: height, color: colors.givingRGB }
+      { x: width, y: height, color: colors.givingRGB },
+      { x: 0, y: height, color: colors.thinkingRGB }
     ];
     
     corners.forEach(corner => {
