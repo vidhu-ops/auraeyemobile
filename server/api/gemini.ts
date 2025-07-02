@@ -210,19 +210,19 @@ Respond with valid JSON containing:
         outer: "Indigo"
       },
       energyLevel: 6,
-      personalityTraits: ["Intuitive", "Compassionate", "Creative"],
-      spiritualGuidance: "Focus on balancing your energy through meditation and mindfulness practices. Your intuitive abilities are strong but need to be grounded.",
+      personalityTraits: ["Intuitive", "Healing", "Compassionate", "Balanced"],
+      spiritualGuidance: "Your aura indicates a strong connection to your intuition and higher guidance. Continue to develop your spiritual practices and trust your inner wisdom.",
       chakraActivity: {
-        root: 6,
-        sacral: 5,
-        solarPlexus: 4,
+        root: 5,
+        sacral: 6,
+        solarPlexus: 5,
         heart: 7,
         throat: 6,
         thirdEye: 8,
         crown: 7
       },
-      detailedAnalysis: "Your aura indicates a person with strong spiritual awareness and healing capabilities. Continue to develop your intuitive gifts while maintaining balance in your physical life."
-    };
+      detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
+        };
 
     // Return merged results with default values filling in any missing fields
     return {
@@ -278,7 +278,7 @@ function fallbackParser(text: string): Partial<AuraAnalysisResult> {
   const result: Partial<AuraAnalysisResult> = {
     // Initialize the chakraActivity to fix TypeScript error
     chakraActivity: {
-      root: 5,
+      root: 4,
       sacral: 6,
       solarPlexus: 5,
       heart: 7,
