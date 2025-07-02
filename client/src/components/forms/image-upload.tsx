@@ -73,7 +73,7 @@ export default function ImageUpload({ onImageSelect, isLoading = false }: ImageU
           <Button className="bg-primary hover:bg-primary-dark">
             Select Image
           </Button>
-          <p className="text-xs text-gray-500 mt-4 text-center">Supported formats: JPG, PNG, HEIC. Max size: 10MB</p>
+          <p className="text-xs text-gray-500 mt-4 text-center">Supported formats: JPG, PNG, HEIC. Max size: 12MB</p>
         </div>
       ) : (
         <Card className="relative rounded-xl overflow-hidden">
