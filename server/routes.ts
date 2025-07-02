@@ -733,25 +733,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           position: 'center' // Center crop to maintain subject focus
         })
         .jpeg({ 
-          quality: 85, // Optimize for 110kb target size
+          quality: 90, // Higher quality for 200kb target size
           progressive: true,
           mozjpeg: true // Enable mozjpeg for better compression
         })
         .toBuffer();
       
-      // Check if file size is close to 110kb target
+      // Check if file size is close to 200kb target
       const fileSizeKB = resizedBuffer.length / 1024;
       console.log(`Image resized to ${1600}x${900}, file size: ${fileSizeKB.toFixed(1)}kb`);
       
-      // If file is significantly larger than 110kb, reduce quality further
-      if (fileSizeKB > 130) {
+      // If file is significantly larger than 200kb, reduce quality further
+      if (fileSizeKB > 220) {
         const optimizedBuffer = await sharp(inputBuffer)
           .resize(1600, 900, {
             fit: 'cover',
             position: 'center'
           })
           .jpeg({ 
-            quality: 70, // Lower quality for size optimization
+            quality: 80, // Lower quality for size optimization while staying under 200kb
             progressive: true,
             mozjpeg: true
           })
@@ -759,6 +759,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const optimizedSizeKB = optimizedBuffer.length / 1024;
         console.log(`Image optimized to ${optimizedSizeKB.toFixed(1)}kb`);
+        
+        // If still over 200kb, reduce quality more aggressively
+        if (optimizedSizeKB > 200) {
+          const finalOptimizedBuffer = await sharp(inputBuffer)
+            .resize(1600, 900, {
+              fit: 'cover',
+              position: 'center'
+            })
+            .jpeg({ 
+              quality: 70, // Final optimization to ensure under 200kb
+              progressive: true,
+              mozjpeg: true
+            })
+            .toBuffer();
+          
+          const finalSizeKB = finalOptimizedBuffer.length / 1024;
+          console.log(`Image final optimization to ${finalSizeKB.toFixed(1)}kb`);
+          return finalOptimizedBuffer;
+        }
+        
         return optimizedBuffer;
       }
       

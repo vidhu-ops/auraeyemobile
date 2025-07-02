@@ -1124,11 +1124,6 @@ export default function ObjectAnalysis() {
 
                             
                             <div>
-                              <h4 className="text-sm text-gray-500 mb-1">Tis object radiates</h4>
-                              <p className="text-sm">{result.objectPurpose}</p>
-                            </div>
-                            
-                            <div>
                               <h4 className="text-sm text-gray-500 mb-1">Aura Color</h4>
                               <div className="flex items-center">
                                 <span 
