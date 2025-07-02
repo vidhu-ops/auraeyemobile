@@ -130,12 +130,13 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 25, 2025. Standardized personality color gradient sizing: consistent radial gradient from person center to image edges (15% inner radius, 85% outer radius) with uniform opacity progression across all uploaded images, eliminated variable particle sizing for consistent visualization
 - June 25, 2025. Removed personality color visualization entirely from edited aura images: aura visualization now shows only giving energy (left), receiving energy (right), and thinking energy (above head) with proper merging between the three remaining colors
 - June 25, 2025. Fixed energy positioning in aura visualization: receiving energy now correctly positioned on left side, giving energy on right side with enhanced horizontal linear gradient blending from left to right for seamless color transitions
-- June 26, 2025. Implemented uniform image processing: all aura analysis images automatically resized to 1600x900 resolution at approximately 110kb file size for consistent visual appearance across all uploads
+- June 26, 2025. Implemented uniform image processing: all aura analysis images automatically resized to 1600x900 resolution at approximately 200kb file size for consistent visual appearance across all uploads
 - June 26, 2025. Standardized smoky/cloudy aura effects: fixed particle sizing (144-288px large, 126-216px medium, 108-162px detail layers) and thinking energy ball (54px radius) for uniform appearance regardless of original image size
 - June 26, 2025. Completely removed personality color from aura visualization: personality color no longer appears anywhere in the edited aura images, visualization now shows only giving energy (left), receiving energy (right), and thinking energy (above head) with seamless gradient blending
 - June 26, 2025. Enhanced gradient blending system: created seamless color merging with horizontal gradients (giving/receiving), vertical gradients (thinking), and multiply blend modes for natural color transitions without patches or artifacts
 - July 2, 2025. Increased object analysis file size limit: updated upload configuration to accept images up to 12MB for object analysis, allowing high-resolution photos while maintaining accurate human detection
 - July 2, 2025. Fixed root chakra calculation in detailed chakra analysis: corrected mathematical error in percentage calculation to properly display (value * 10)% instead of incorrect operator precedence
+- July 2, 2025. Updated aura analysis image processing: increased file size target from 110kb to 200kb for better image quality while maintaining consistent 1600x900 resolution and processing speed
 
 ## User Preferences
 

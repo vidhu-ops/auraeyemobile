@@ -484,6 +484,9 @@ export default function NumerologyPage() {
             <p className="text-xl opacity-90">
               Discover the hidden meanings in your numbers and unlock your spiritual blueprint
             </p>
+            <p className="text-l opacity-80 text-black">
+          These reading are only for the date provided by you at log in. Please create a profile for another detailed analysis.
+            </p>
           </div>
         </div>
       </div>
@@ -565,7 +568,7 @@ export default function NumerologyPage() {
                     </div>
                     <div className="flex-grow">
                       <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
-                      <p className="text-sm text-purple-600 mb-1">Your life's journey and core purpose</p>
+                      <p className="text-l text-purple-600 mb-1">Your life's journey and core purpose</p>
                       <div className="text-xs text-purple-500 space-y-2">
                         {getLifePathMeaning(numerology.lifePathNumber).split('.').filter(sentence => sentence.trim()).map((sentence, index) => {
                           const trimmed = sentence.trim();
@@ -573,25 +576,25 @@ export default function NumerologyPage() {
                           
                           // Format different sections
                           if (trimmed.includes('COLOUR:') || trimmed.includes('Colour:')) {
-                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                            return <div key={index} className="font-medium text-black">{trimmed}.</div>;
                           }
                           if (trimmed.includes('CHAKRA:') || trimmed.includes('Chakra:')) {
-                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                            return <div key={index} className="font-large text-purple-600">{trimmed}.</div>;
                           }
                           if (trimmed.includes('Planet:')) {
-                            return <div key={index} className="font-medium text-purple-600">{trimmed}.</div>;
+                            return <div key={index} className="font-large text-purple-700">{trimmed}.</div>;
                           }
                           if (trimmed.includes('PPI:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                            return <div key={index} className="mt-2 font-large text-purple-700">{trimmed}.</div>;
                           }
                           if (trimmed.includes('Angel/Archangel:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
+                            return <div key={index} className="mt-2 font-large text-purple-700">{trimmed}.</div>;
                           }
                           if (trimmed.includes('Karmic Lesson:')) {
                             return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
                           }
                           if (trimmed.includes('Healing Method:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
+                            return <div key={index} className="text-purple-600 text-large">{trimmed}.</div>;
                           }
                           if (trimmed.includes('Remedies:')) {
                             return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
