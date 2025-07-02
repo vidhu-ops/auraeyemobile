@@ -23,9 +23,9 @@ export function configureFileUpload() {
     }
   };
   
-  // Configure size limits - reduced to prevent "request entity too large" errors
+  // Configure size limits - increased for object analysis to handle larger images
   const limits = {
-    fileSize: 2 * 1024 * 1024, // 2MB max file size
+    fileSize: 12 * 1024 * 1024, // 12MB max file size for object analysis
   };
   
   // Create and return the multer instance
