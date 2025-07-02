@@ -135,6 +135,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - June 26, 2025. Completely removed personality color from aura visualization: personality color no longer appears anywhere in the edited aura images, visualization now shows only giving energy (left), receiving energy (right), and thinking energy (above head) with seamless gradient blending
 - June 26, 2025. Enhanced gradient blending system: created seamless color merging with horizontal gradients (giving/receiving), vertical gradients (thinking), and multiply blend modes for natural color transitions without patches or artifacts
 - July 2, 2025. Increased object analysis file size limit: updated upload configuration to accept images up to 12MB for object analysis, allowing high-resolution photos while maintaining accurate human detection
+- July 2, 2025. Fixed root chakra calculation in detailed chakra analysis: corrected mathematical error in percentage calculation to properly display (value * 10)% instead of incorrect operator precedence
 
 ## User Preferences
 

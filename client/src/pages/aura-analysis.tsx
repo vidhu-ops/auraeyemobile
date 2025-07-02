@@ -6965,10 +6965,10 @@ export default function AuraAnalysis() {
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Root Chakra</span>
-                                      <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({result.chakraActivity?.root || 5 * 10}%)</span>
+                                      <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({(result.chakraActivity?.root || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={result.chakraActivity?.root || 5 * 10} className="h-3 bg-red-100" />
+                                  <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
                                 </div>
 
                                 {/* Earth Star Chakra - Number 4 */}
