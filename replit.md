@@ -137,6 +137,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 2, 2025. Increased object analysis file size limit: updated upload configuration to accept images up to 12MB for object analysis, allowing high-resolution photos while maintaining accurate human detection
 - July 2, 2025. Fixed root chakra calculation in detailed chakra analysis: corrected mathematical error in percentage calculation to properly display (value * 10)% instead of incorrect operator precedence
 - July 2, 2025. Updated aura analysis image processing: increased file size target from 110kb to 200kb for better image quality while maintaining consistent 1600x900 resolution and processing speed
+- July 2, 2025. Enhanced PDF download in aura analysis: added aura visualization image to PDF reports alongside all existing analysis information for complete documentation
 
 ## User Preferences
 

@@ -714,6 +714,34 @@ export default function AuraAnalysis() {
       pdf.addPage();
       yPosition = 30;
 
+      // Add aura visualization image if available
+      if (processedAuraImage) {
+        try {
+          pdf.setFontSize(18);
+          pdf.setTextColor(75, 85, 99);
+          pdf.text('Aura Visualization', 20, yPosition);
+          yPosition += 15;
+          
+          // Add the aura visualization image
+          const imgWidth = 150; // Image width in mm
+          const imgHeight = 84; // Image height in mm (maintaining 16:9 aspect ratio)
+          const imgX = (210 - imgWidth) / 2; // Center horizontally on A4 page
+          
+          pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 20;
+          
+          // Add image description
+          pdf.setFontSize(10);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text('Your aura visualization showing energy colors and patterns', 105, yPosition, { align: 'center' });
+          yPosition += 20;
+          
+        } catch (imageError) {
+          console.error('Error adding aura image to PDF:', imageError);
+          // Continue without the image if there's an error
+        }
+      }
+
       // BASIC ANALYSIS
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
