@@ -723,8 +723,8 @@ export default function AuraAnalysis() {
           yPosition += 15;
           
           // Add the aura visualization image
-          const imgWidth = 150; // Image width in mm
-          const imgHeight = 84; // Image height in mm (maintaining 16:9 aspect ratio)
+          const imgWidth = 190; // Image width in mm
+          const imgHeight = 250; // Image height in mm (maintaining 16:9 aspect ratio)
           const imgX = (210 - imgWidth) / 2; // Center horizontally on A4 page
           
           pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
