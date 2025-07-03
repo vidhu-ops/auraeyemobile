@@ -722,18 +722,39 @@ export default function AuraAnalysis() {
           pdf.text('Aura Visualization', 20, yPosition);
           yPosition += 15;
           
-          // Add the aura visualization image
-          const imgWidth = 190; // Image width in mm
-          const imgHeight = 250; // Image height in mm (maintaining 16:9 aspect ratio)
-          const imgX = (210 - imgWidth) / 2; // Center horizontally on A4 page
+          // Create a temporary image to get dimensions
+          const tempImg = new Image();
+          tempImg.src = processedAuraImage;
           
-          pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
-          yPosition += imgHeight + 20;
+          // Use full page width for the image (A4 page width minus margins)
+          const pageWidth = 210; // A4 width in mm
+          const margin = 20; // Margins
+          const maxImageWidth = pageWidth - (margin * 2); // 170mm
+          
+          // Calculate height maintaining aspect ratio
+          const originalAspectRatio = tempImg.naturalWidth / tempImg.naturalHeight || 16/9;
+          const imageWidth = maxImageWidth;
+          const imageHeight = imageWidth / originalAspectRatio;
+          
+          // Check if image fits on current page, if not start new page
+          if (yPosition + imageHeight > 270) {
+            pdf.addPage();
+            yPosition = 30;
+            pdf.setFontSize(18);
+            pdf.setTextColor(75, 85, 99);
+            pdf.text('Aura Visualization', 20, yPosition);
+            yPosition += 15;
+          }
+          
+          const imageX = (pageWidth - imageWidth) / 2; // Center horizontally
+          
+          pdf.addImage(processedAuraImage, 'JPEG', imageX, yPosition, imageWidth, imageHeight);
+          yPosition += imageHeight + 15;
           
           // Add image description
           pdf.setFontSize(10);
           pdf.setTextColor(100, 116, 139);
-          pdf.text('Your aura visualization showing energy colors and patterns', 105, yPosition, { align: 'center' });
+          pdf.text('Your complete aura visualization with energy colors and patterns', 105, yPosition, { align: 'center' });
           yPosition += 20;
           
         } catch (imageError) {
@@ -905,7 +926,7 @@ export default function AuraAnalysis() {
       pdf.text(patternLines, 20, yPosition);
       yPosition += patternLines.length * 6 + 15;
 
-      // CHAKRA ANALYSIS
+      // DETAILED CHAKRA ANALYSIS WITH SCORES
       if (yPosition > 200) {
         pdf.addPage();
         yPosition = 30;
@@ -913,8 +934,49 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Chakra Analysis', 20, yPosition);
+      pdf.text('Detailed Chakra Analysis', 20, yPosition);
       yPosition += 15;
+
+      // Add chakra scores section
+      pdf.setFontSize(14);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Chakra Activity Levels', 20, yPosition);
+      yPosition += 12;
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+
+      // Define chakras with their scores
+      const chakraData = [
+        { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'Violet', description: 'Spiritual connection, divine wisdom, universal consciousness' },
+        { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'Indigo', description: 'Intuition, inner wisdom, psychic abilities' },
+        { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'Blue', description: 'Communication, truth, self-expression' },
+        { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'Green', description: 'Love, compassion, emotional healing' },
+        { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'Yellow', description: 'Personal power, confidence, willpower' },
+        { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'Orange', description: 'Creativity, sexuality, emotional flow' },
+        { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'Red', description: 'Grounding, survival, physical vitality' }
+      ];
+
+      chakraData.forEach((chakra, index) => {
+        if (yPosition > 250) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+
+        // Chakra name and score
+        pdf.setFontSize(12);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(`${chakra.name}: ${chakra.score}/10 (${chakra.score * 10}%)`, 20, yPosition);
+        yPosition += 7;
+
+        // Chakra description
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`${chakra.description}`, 20, yPosition);
+        yPosition += 10;
+      });
+
+      yPosition += 10;
 
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
