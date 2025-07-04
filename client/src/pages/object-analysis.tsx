@@ -184,18 +184,18 @@ export default function ObjectAnalysis() {
     const centerY = objectY + objectHeight / 2;
 
     // Create multiple smooth gradient layers for natural smoky diffusion
-    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalCompositeOperation = 'source-over';
 
     // Layer 1: Outer atmospheric haze - creates the base smoky environment
     const outerHaze = ctx.createRadialGradient(
       centerX, centerY, Math.min(objectWidth, objectHeight) * 0.2,
       centerX, centerY, Math.max(width, height) * 0.9
     );
-    outerHaze.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
-    outerHaze.addColorStop(0.3, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.08)`);
-    outerHaze.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.12)`);
-    outerHaze.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.06)`);
-    outerHaze.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    outerHaze.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.03)`);
+    outerHaze.addColorStop(0.3, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.13)`);
+    outerHaze.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.3)`);
+    outerHaze.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.6)`);
+    outerHaze.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.9)`);
     
     ctx.fillStyle = outerHaze;
     ctx.fillRect(0, 0, width, height);
@@ -207,9 +207,9 @@ export default function ObjectAnalysis() {
       centerX, centerY, Math.max(width, height) * 0.7
     );
     mediumSmoke.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
-    mediumSmoke.addColorStop(0.4, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.15)`);
-    mediumSmoke.addColorStop(0.7, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.20)`);
-    mediumSmoke.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    mediumSmoke.addColorStop(0.4, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.35)`);
+    mediumSmoke.addColorStop(0.7, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.50)`);
+    mediumSmoke.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.5)`);
     
     ctx.fillStyle = mediumSmoke;
     ctx.fillRect(0, 0, width, height);
@@ -223,7 +223,7 @@ export default function ObjectAnalysis() {
     closeField.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
     closeField.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.25)`);
     closeField.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.18)`);
-    closeField.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    closeField.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.6)`);
     
     ctx.fillStyle = closeField;
     ctx.fillRect(0, 0, width, height);
@@ -238,7 +238,7 @@ export default function ObjectAnalysis() {
     edgeGlow.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
     edgeGlow.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, ${0.12 * energyMultiplier})`);
     edgeGlow.addColorStop(0.9, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, ${0.08 * energyMultiplier})`);
-    edgeGlow.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    edgeGlow.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.3)`);
     
     ctx.fillStyle = edgeGlow;
     ctx.fillRect(0, 0, width, height);
@@ -251,7 +251,7 @@ export default function ObjectAnalysis() {
     );
     atmosphericBlend.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.02)`);
     atmosphericBlend.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.04)`);
-    atmosphericBlend.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    atmosphericBlend.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.7)`);
     
     ctx.fillStyle = atmosphericBlend;
     ctx.fillRect(0, 0, width, height);
