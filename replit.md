@@ -138,6 +138,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 2, 2025. Fixed root chakra calculation in detailed chakra analysis: corrected mathematical error in percentage calculation to properly display (value * 10)% instead of incorrect operator precedence
 - July 2, 2025. Updated aura analysis image processing: increased file size target from 110kb to 200kb for better image quality while maintaining consistent 1600x900 resolution and processing speed
 - July 2, 2025. Enhanced PDF download in aura analysis: added full-size aura visualization image maintaining original aspect ratio and included detailed chakra activity scores (x/10 and percentage) for comprehensive spiritual documentation
+- July 4, 2025. Implemented strict human detection for aura analysis: now requires human presence in uploaded images before any processing, compression, or analysis - rejects all images without humans to ensure aura analysis is only performed on human subjects
 
 ## User Preferences
 
