@@ -167,7 +167,7 @@ export default function ObjectAnalysis() {
     };
   };
 
-  // Function to create realistic smokey aura particles around objects
+  // Function to create smooth smokey diffused gradients around objects
   const createObjectSmokeyAura = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -175,13 +175,6 @@ export default function ObjectAnalysis() {
     auraColor: { r: number, g: number, b: number },
     energyLevel: number
   ) => {
-    // Seeded random for consistent effects
-    let seed = 54321;
-    const seededRandom = () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
-
     // Detect object area (assume object is in center 60% of image)
     const objectX = width * 0.2;
     const objectY = height * 0.2;
@@ -190,62 +183,81 @@ export default function ObjectAnalysis() {
     const centerX = objectX + objectWidth / 2;
     const centerY = objectY + objectHeight / 2;
 
-    // Create subtle background haze first
-    const backgroundHaze = ctx.createRadialGradient(
-      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.3,
-      centerX, centerY, Math.max(width, height) * 0.8
+    // Create multiple smooth gradient layers for natural smoky diffusion
+    ctx.globalCompositeOperation = 'multiply';
+
+    // Layer 1: Outer atmospheric haze - creates the base smoky environment
+    const outerHaze = ctx.createRadialGradient(
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.2,
+      centerX, centerY, Math.max(width, height) * 0.9
     );
-    backgroundHaze.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.08)`);
-    backgroundHaze.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.04)`);
-    backgroundHaze.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    outerHaze.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    outerHaze.addColorStop(0.3, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.08)`);
+    outerHaze.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.12)`);
+    outerHaze.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.06)`);
+    outerHaze.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
     
-    ctx.fillStyle = backgroundHaze;
+    ctx.fillStyle = outerHaze;
     ctx.fillRect(0, 0, width, height);
 
-    // Create multiple layers of natural smoke wisps around object
-    const smokeLayers = [
-      { density: 300 + energyLevel * 30, sizeRange: [20, 100], opacity: [0.15, 0.25], distance: [30, 120] },
-    ];
+    // Layer 2: Medium intensity smoke ring - builds up density
+    ctx.globalCompositeOperation = 'overlay';
+    const mediumSmoke = ctx.createRadialGradient(
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.3,
+      centerX, centerY, Math.max(width, height) * 0.7
+    );
+    mediumSmoke.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    mediumSmoke.addColorStop(0.4, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.15)`);
+    mediumSmoke.addColorStop(0.7, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.20)`);
+    mediumSmoke.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    
+    ctx.fillStyle = mediumSmoke;
+    ctx.fillRect(0, 0, width, height);
 
-    smokeLayers.forEach(layer => {
-      for (let i = 0; i < layer.density; i++) {
-        // Create smoke particles around object perimeter
-        const angle = seededRandom() * Math.PI * 2;
-        const distance = layer.distance[0] + seededRandom() * (layer.distance[1] - layer.distance[0]);
-        
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
-        
-        // Skip particles inside object core area
-        const coreDistance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        const minCoreDistance = Math.min(objectWidth, objectHeight) * 0.25;
-        
-        if (coreDistance > minCoreDistance && x >= 0 && x <= width && y >= 0 && y <= height) {
-          const smokeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
-          const smokeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
-          
-          drawAdvancedObjectSmoke(ctx, x, y, smokeSize, auraColor, smokeOpacity, seededRandom);
-        }
-      }
-    });
+    // Layer 3: Close energy field - concentrated around object
+    ctx.globalCompositeOperation = 'soft-light';
+    const closeField = ctx.createRadialGradient(
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.35,
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.8
+    );
+    closeField.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    closeField.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.25)`);
+    closeField.addColorStop(0.8, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.18)`);
+    closeField.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    
+    ctx.fillStyle = closeField;
+    ctx.fillRect(0, 0, width, height);
 
-    // Add concentrated energy wisps around object edges
-    const wispCount = 150 + energyLevel * 10;
-    for (let i = 0; i < wispCount; i++) {
-      const angle = seededRandom() * Math.PI * 2;
-      const baseDistance = Math.min(objectWidth, objectHeight) * 0.4;
-      const wispDistance = baseDistance + seededRandom() * 60;
-      
-      const x = centerX + Math.cos(angle) * wispDistance;
-      const y = centerY + Math.sin(angle) * wispDistance;
-      
-      if (x >= 0 && x <= width && y >= 0 && y <= height) {
-        const wispSize = 25 + seededRandom() * 40;
-        const wispOpacity = 0.1                   + seededRandom() * 0.3;
-        
-        drawEnergyWisp(ctx, x, y, wispSize, auraColor, wispOpacity, seededRandom);
-      }
-    }
+    // Layer 4: Concentrated energy around object edges - enhanced for higher energy
+    ctx.globalCompositeOperation = 'color-dodge';
+    const energyMultiplier = Math.min(1.5, 0.8 + (energyLevel / 10) * 0.7);
+    const edgeGlow = ctx.createRadialGradient(
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.4,
+      centerX, centerY, Math.min(objectWidth, objectHeight) * 0.65
+    );
+    edgeGlow.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    edgeGlow.addColorStop(0.6, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, ${0.12 * energyMultiplier})`);
+    edgeGlow.addColorStop(0.9, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, ${0.08 * energyMultiplier})`);
+    edgeGlow.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    
+    ctx.fillStyle = edgeGlow;
+    ctx.fillRect(0, 0, width, height);
+
+    // Layer 5: Subtle atmospheric blend for seamless integration
+    ctx.globalCompositeOperation = 'source-over';
+    const atmosphericBlend = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, Math.max(width, height) * 0.8
+    );
+    atmosphericBlend.addColorStop(0, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.02)`);
+    atmosphericBlend.addColorStop(0.5, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0.04)`);
+    atmosphericBlend.addColorStop(1, `rgba(${auraColor.r}, ${auraColor.g}, ${auraColor.b}, 0)`);
+    
+    ctx.fillStyle = atmosphericBlend;
+    ctx.fillRect(0, 0, width, height);
+
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Function to draw advanced smoke particles with natural flow
