@@ -1057,19 +1057,22 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         return res.status(400).json({ message: "No image provided" });
       }
 
-      // Resize image to standard dimensions (1600x900px)
-      imgBuffer = await resizeImageToStandard(imgBuffer);
-      imageData = imgBuffer.toString("base64");
-
-      // Check if image contains a human - aura analysis requires human images
+      // CRITICAL: Check if image contains a human BEFORE any processing
+      // Aura analysis requires human images - this is a strict requirement
       const hasHuman = await detectHumanInImage(imgBuffer);
-      // For now, allow analysis to proceed - user education will guide proper usage
-      if (!hasHuman && imgBuffer.length < 5000) {
-        // Only block very small test images
+      
+      if (!hasHuman) {
+        console.log("Image BLOCKED (no human detected)");
         return res.status(400).json({ 
           message: "Please upload a photo containing a person for aura analysis. Use Object Analysis for items or objects." 
         });
       }
+
+      console.log("Human detected - proceeding with aura analysis");
+
+      // Resize image to standard dimensions (1600x900px)
+      imgBuffer = await resizeImageToStandard(imgBuffer);
+      imageData = imgBuffer.toString("base64");
 
       // Skip all validation and logging for maximum speed
 
