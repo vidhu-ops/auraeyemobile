@@ -1,53 +1,100 @@
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, MessageSquare, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Star, MessageSquare, Calendar, Loader2 } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 
-const healers = [
-  {
-    id: 1,
-    name: "Maya Johnson",
-    specialty: "Chakra Balancing",
-    experience: "10+ years",
-    price: 75,
-    rating: 4.9,
-    reviews: 128,
-    imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    description: "Specialized in chakra alignment and energy healing with certification in Reiki.",
-    availability: "Mon-Fri"
-  },
-  {
-    id: 2,
-    name: "David Chen",
-    specialty: "Aura Cleansing",
-    experience: "8 years",
-    price: 85,
-    rating: 4.8,
-    reviews: 96,
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-    description: "Expert in aura reading and cleansing, certified in multiple healing modalities.",
-    availability: "Tue-Sat"
-  },
-  {
-    id: 3,
-    name: "Sarah Williams",
-    specialty: "Crystal Healing",
-    experience: "12 years",
-    price: 95,
-    rating: 4.9,
-    reviews: 156,
-    imageUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    description: "Advanced crystal healer with expertise in stone therapy and energy work.",
-    availability: "Mon-Sun"
-  }
-];
+interface Healer {
+  id: number;
+  name: string;
+  specialty: string;
+  description: string;
+  email: string;
+  phone: string;
+  imageUrl?: string;
+  rating?: number;
+  experience?: string;
+  location?: string;
+}
 
 export default function HealersPage() {
   const [filter, setFilter] = useState("all");
+  const [selectedHealer, setSelectedHealer] = useState<Healer | null>(null);
+  const [bookingMessage, setBookingMessage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // Fetch healers from database
+  const { data: healers = [], isLoading, error } = useQuery<Healer[]>({
+    queryKey: ["/api/healers"],
+  });
+  
+  // Booking mutation
+  const bookingMutation = useMutation({
+    mutationFn: async (data: { healerId: number; message: string }) => {
+      return apiRequest("POST", "/api/book-session", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Booking Request Sent",
+        description: "The healer will review your request and contact you soon.",
+      });
+      setIsDialogOpen(false);
+      setBookingMessage("");
+      // Invalidate user bookings to refresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/user-bookings"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Booking Failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+            <p className="text-gray-600">Loading healers...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load healers</p>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -82,55 +129,109 @@ export default function HealersPage() {
                 
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                      <span className="ml-2 font-medium">{healer.rating}</span>
-                      <span className="ml-1 text-gray-500">({healer.reviews} reviews)</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                        <span className="ml-2 font-medium">{healer.rating || 5}</span>
+                        <span className="ml-1 text-gray-500">rating</span>
+                      </div>
+                      {healer.experience && (
+                        <span className="text-sm text-gray-500">{healer.experience}</span>
+                      )}
                     </div>
                     
                     <div>
                       <p className="text-sm text-gray-600">{healer.description}</p>
                     </div>
                     
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">${healer.price}/session</span>
-                      <span className="text-sm text-gray-500">Available {healer.availability}</span>
-                    </div>
+                    {healer.location && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">📍 {healer.location}</span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
                 
                 <CardFooter className="space-x-2">
+                  {user ? (
+                    <Dialog open={isDialogOpen && selectedHealer?.id === healer.id} onOpenChange={(open) => {
+                      setIsDialogOpen(open);
+                      if (open) {
+                        setSelectedHealer(healer);
+                      }
+                    }}>
+                      <DialogTrigger asChild>
+                        <Button className="flex-1">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Book Session
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Book Session with {healer.name}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Specialty: {healer.specialty}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {healer.description}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="message">Message (Optional)</Label>
+                            <Textarea
+                              id="message"
+                              placeholder="Tell the healer about your needs or questions..."
+                              value={bookingMessage}
+                              onChange={(e) => setBookingMessage(e.target.value)}
+                              rows={4}
+                            />
+                          </div>
+                          
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={() => {
+                                bookingMutation.mutate({
+                                  healerId: healer.id,
+                                  message: bookingMessage
+                                });
+                              }}
+                              disabled={bookingMutation.isPending}
+                              className="flex-1"
+                            >
+                              {bookingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                              Send Booking Request
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setIsDialogOpen(false)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <Link to="/auth" className="flex-1">
+                      <Button className="w-full">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Login to Book
+                      </Button>
+                    </Link>
+                  )}
+                  
                   <Button 
-                    className="flex-1"
+                    variant="outline"
                     onClick={() => {
-                      // Display contact info in an alert
-                      alert(`Healer Contact Info:\nEmail: ${healer.name.toLowerCase().replace(' ', '.')}@aurafy.com\nPhone: +1 (555) ${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`);
-                      
-                      // Send booking notification
-                      fetch('/api/book-session', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          healerId: healer.id,
-                          healerName: healer.name,
-                          specialty: healer.specialty,
-                        })
-                      }).then(() => {
-                        alert('Booking request sent to healer. They will contact you shortly.');
-                      }).catch(err => {
-                        console.error('Booking error:', err);
-                        alert('Unable to send booking request. Please try again.');
-                      });
+                      alert(`Contact ${healer.name}:\nEmail: ${healer.email}\nPhone: ${healer.phone}`);
                     }}
                   >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Book Session
-                  </Button>
-                  <Button variant="outline" className="flex-1">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Message
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Contact
                   </Button>
                 </CardFooter>
               </Card>
