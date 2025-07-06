@@ -76,12 +76,22 @@ interface NumerologyReading {
   createdAt: string;
 }
 
+interface HealerBooking {
+  id: number;
+  userId: number;
+  healerId: number;
+  message: string;
+  status: string;
+  createdAt: string;
+}
+
 export default function ClientDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedSign, setSelectedSign] = useState<string>("aries");
   const [currentAuraIndex, setCurrentAuraIndex] = useState(0);
   const [currentNumerologyIndex, setCurrentNumerologyIndex] = useState(0);
+  const [activeBookingsTab, setActiveBookingsTab] = useState<string>("aura");
 
   // Progress tracking analysis functions
   const analyzeProgress = () => {
@@ -341,6 +351,12 @@ export default function ClientDashboard() {
     enabled: !!user,
   });
   
+  // Fetch user's healer bookings
+  const { data: userBookings = [], isLoading: isLoadingBookings } = useQuery<HealerBooking[]>({
+    queryKey: ["/api/user-bookings"],
+    enabled: !!user,
+  });
+  
   // Get daily horoscope for the selected sign
   const {
     data: horoscope,
@@ -452,6 +468,55 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
             
+            {/* Healer Booking Section */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-rose-500" />
+                  Connect with Healers
+                </CardTitle>
+                <CardDescription>Book sessions with certified spiritual healers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
+                        <Heart className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Browse Healers</h3>
+                        <p className="text-sm text-gray-600">Find the perfect healer for you</p>
+                      </div>
+                    </div>
+                    <Link href="/healers">
+                      <Button className="w-full" variant="outline">
+                        View All Healers
+                      </Button>
+                    </Link>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                        <Calendar className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">My Bookings</h3>
+                        <p className="text-sm text-gray-600">Manage your sessions</p>
+                      </div>
+                    </div>
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary-dark"
+                      onClick={() => setActiveBookingsTab("bookings")}
+                    >
+                      View Bookings ({userBookings.length})
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
             {/* User Reading History */}
             <Card>
               <CardHeader>
@@ -462,10 +527,11 @@ export default function ClientDashboard() {
                 <CardDescription>View all your aura and numerology readings</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="aura" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                <Tabs value={activeBookingsTab} onValueChange={setActiveBookingsTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 mb-4">
                     <TabsTrigger value="aura">Aura Readings</TabsTrigger>
                     <TabsTrigger value="numerology">Numerology</TabsTrigger>
+                    <TabsTrigger value="bookings">My Bookings</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="aura">
@@ -637,6 +703,55 @@ export default function ClientDashboard() {
                             </div>
                           </div>
                         )}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="bookings">
+                    {isLoadingBookings ? (
+                      <div className="flex justify-center items-center h-[150px]">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : userBookings.length === 0 ? (
+                      <div className="text-center h-[150px] flex flex-col justify-center text-gray-500">
+                        <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No healer bookings yet</p>
+                        <Link to="/healers">
+                          <Button className="mt-2" variant="outline" size="sm">
+                            Browse Healers
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-[150px] overflow-y-auto">
+                        {userBookings.map((booking) => (
+                          <div key={booking.id} className="border rounded-lg p-3 bg-white">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4 text-primary" />
+                                  <span className="font-medium text-sm">Healer Session #{booking.id}</span>
+                                  <span className={`px-2 py-1 text-xs rounded-full ${
+                                    booking.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                    booking.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                    'bg-yellow-100 text-yellow-700'
+                                  }`}>
+                                    {booking.status}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600 mt-1">
+                                  {booking.message ? booking.message.substring(0, 50) + (booking.message.length > 50 ? '...' : '') : 'No message'}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Requested: {format(new Date(booking.createdAt), "MMM d, yyyy")}
+                                </p>
+                              </div>
+                              <Button variant="ghost" size="sm" className="text-primary">
+                                View Details
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </TabsContent>

@@ -59,6 +59,7 @@ export interface IStorage {
   createHealerBooking(booking: InsertHealerBooking): Promise<HealerBooking>;
   getHealerBookingsByUser(userId: number): Promise<HealerBooking[]>;
   getHealerBookingsByHealer(healerId: number): Promise<HealerBooking[]>;
+  updateBookingStatus(bookingId: number, status: string): Promise<HealerBooking | undefined>;
   
   // Session store
   sessionStore: any;
@@ -219,6 +220,15 @@ export class DatabaseStorage implements IStorage {
 
   async getHealerBookingsByHealer(healerId: number): Promise<HealerBooking[]> {
     return await db.select().from(healerBookings).where(eq(healerBookings.healerId, healerId));
+  }
+
+  async updateBookingStatus(bookingId: number, status: string): Promise<HealerBooking | undefined> {
+    const [updatedBooking] = await db
+      .update(healerBookings)
+      .set({ status })
+      .where(eq(healerBookings.id, bookingId))
+      .returning();
+    return updatedBooking;
   }
 }
 

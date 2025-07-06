@@ -1597,6 +1597,80 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user's healer bookings
+  app.get("/api/user-bookings", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const bookings = await storage.getHealerBookingsByUser(req.user.id);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error retrieving user bookings:", error);
+      res.status(500).json({ message: "Failed to retrieve bookings" });
+    }
+  });
+
+  // Get healer's booking requests (for healer dashboard)
+  app.get("/api/healer-bookings", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    if (req.user.userType !== 'healer') {
+      return res.status(403).json({ message: "Access denied - healer account required" });
+    }
+
+    try {
+      // First get the healer record for this user
+      const healers = await storage.getAllHealers();
+      const healer = healers.find(h => h.email === `${req.user.username}@spiritualwellness.com`);
+      
+      if (!healer) {
+        return res.status(404).json({ message: "Healer profile not found" });
+      }
+
+      const bookings = await storage.getHealerBookingsByHealer(healer.id);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error retrieving healer bookings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer bookings" });
+    }
+  });
+
+  // Update booking status (approve/reject)
+  app.patch("/api/booking/:id/status", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    if (req.user.userType !== 'healer') {
+      return res.status(403).json({ message: "Access denied - healer account required" });
+    }
+
+    try {
+      const bookingId = parseInt(req.params.id);
+      const { status } = req.body;
+
+      if (!['approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'approved' or 'rejected'" });
+      }
+
+      // Update booking status in database
+      const updatedBooking = await storage.updateBookingStatus(bookingId, status);
+      
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      res.json({ message: `Booking ${status} successfully`, booking: updatedBooking });
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      res.status(500).json({ message: "Failed to update booking status" });
+    }
+  });
+
   // Journal entries API endpoints
   app.post("/api/journal", async (req, res) => {
     if (!req.isAuthenticated()) {
