@@ -80,9 +80,11 @@ interface HealerBooking {
   id: number;
   userId: number;
   healerId: number;
-  message: string;
+  message?: string;
   status: string;
+  healerResponse?: string;
   createdAt: string;
+  respondedAt?: string;
 }
 
 export default function ClientDashboard() {
@@ -351,10 +353,11 @@ export default function ClientDashboard() {
     enabled: !!user,
   });
   
-  // Fetch user's healer bookings
+  // Fetch user's healer bookings with real-time updates
   const { data: userBookings = [], isLoading: isLoadingBookings } = useQuery<HealerBooking[]>({
     queryKey: ["/api/user-bookings"],
     enabled: !!user,
+    refetchInterval: 3000, // Auto-refresh every 3 seconds to show healer responses
   });
   
   // Get daily horoscope for the selected sign
@@ -732,18 +735,29 @@ export default function ClientDashboard() {
                                   <Calendar className="h-4 w-4 text-primary" />
                                   <span className="font-medium text-sm">Healer Session #{booking.id}</span>
                                   <span className={`px-2 py-1 text-xs rounded-full ${
-                                    booking.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                    booking.status === 'accepted' ? 'bg-green-100 text-green-700' :
                                     booking.status === 'rejected' ? 'bg-red-100 text-red-700' :
                                     'bg-yellow-100 text-yellow-700'
                                   }`}>
-                                    {booking.status}
+                                    {booking.status === 'accepted' ? 'Accepted' : 
+                                     booking.status === 'rejected' ? 'Rejected' : 'Pending'}
                                   </span>
                                 </div>
-                                <p className="text-xs text-gray-600 mt-1">
-                                  {booking.message ? booking.message.substring(0, 50) + (booking.message.length > 50 ? '...' : '') : 'No message'}
-                                </p>
+                                {booking.message && (
+                                  <p className="text-xs text-gray-600 mt-1">
+                                    <strong>Your message:</strong> {booking.message.substring(0, 50) + (booking.message.length > 50 ? '...' : '')}
+                                  </p>
+                                )}
+                                {booking.healerResponse && (
+                                  <p className="text-xs text-blue-600 mt-1 p-2 bg-blue-50 rounded">
+                                    <strong>Healer response:</strong> {booking.healerResponse}
+                                  </p>
+                                )}
                                 <p className="text-xs text-gray-500">
                                   Requested: {format(new Date(booking.createdAt), "MMM d, yyyy")}
+                                  {booking.respondedAt && (
+                                    <span className="ml-2">• Responded: {format(new Date(booking.respondedAt), "MMM d, yyyy")}</span>
+                                  )}
                                 </p>
                               </div>
                               <Button variant="ghost" size="sm" className="text-primary">

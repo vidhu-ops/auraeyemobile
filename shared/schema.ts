@@ -113,8 +113,10 @@ export const healerBookings = pgTable("healer_bookings", {
   userId: integer("user_id").notNull().references(() => users.id),
   healerId: integer("healer_id").notNull().references(() => healers.id),
   message: text("message"),
-  status: text("status").default("pending"), // "pending", "confirmed", "cancelled"
+  status: text("status").default("pending"), // "pending", "accepted", "rejected", "cancelled"
+  healerResponse: text("healer_response"), // Healer's response message
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  respondedAt: timestamp("responded_at"), // When healer responded
 });
 
 export const insertHealerSchema = createInsertSchema(healers).omit({

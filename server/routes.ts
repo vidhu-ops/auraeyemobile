@@ -1625,10 +1625,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       // First get the healer record for this user
       const healers = await storage.getAllHealers();
-      const healer = healers.find(h => h.email === `${req.user.username}@spiritualwellness.com`);
+      
+      // Try multiple ways to match the user to a healer record
+      const healer = healers.find(h => 
+        h.email === req.user.username || 
+        h.email === `${req.user.username}@spiritualwellness.com` ||
+        h.email === `${req.user.username}@aurafy.com` ||
+        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
+      );
       
       if (!healer) {
-        return res.status(404).json({ message: "Healer profile not found" });
+        // For now, return empty bookings array instead of error to allow healers to see dashboard
+        console.log(`Healer profile not found for user: ${req.user.username}`);
+        return res.json([]);
       }
 
       const bookings = await storage.getHealerBookingsByHealer(healer.id);
@@ -1639,32 +1648,52 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Update booking status (approve/reject)
+  // Update booking status (accept/reject) with healer response
   app.patch("/api/booking/:id/status", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Authentication required" });
     }
 
-    if (req.user.userType !== 'healer') {
-      return res.status(403).json({ message: "Access denied - healer account required" });
-    }
-
     try {
       const bookingId = parseInt(req.params.id);
-      const { status } = req.body;
+      const { status, healerResponse } = req.body;
 
-      if (!['approved', 'rejected'].includes(status)) {
-        return res.status(400).json({ message: "Invalid status. Must be 'approved' or 'rejected'" });
+      if (!['accepted', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'accepted' or 'rejected'" });
       }
 
-      // Update booking status in database
-      const updatedBooking = await storage.updateBookingStatus(bookingId, status);
-      
-      if (!updatedBooking) {
+      // Check if this healer has permission to modify this booking
+      const booking = await storage.getHealerBooking(bookingId);
+      if (!booking) {
         return res.status(404).json({ message: "Booking not found" });
       }
 
-      res.json({ message: `Booking ${status} successfully`, booking: updatedBooking });
+      // Get healer record to verify permissions
+      const healers = await storage.getAllHealers();
+      const healer = healers.find(h => 
+        h.email === req.user.username || 
+        h.email === `${req.user.username}@spiritualwellness.com`
+      );
+      
+      if (!healer || healer.id !== booking.healerId) {
+        return res.status(403).json({ message: "Access denied - not authorized for this booking" });
+      }
+
+      // Update booking status with healer response
+      const updatedBooking = await storage.updateBookingStatusWithResponse(
+        bookingId, 
+        status, 
+        healerResponse || null
+      );
+      
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Failed to update booking" });
+      }
+
+      res.json({ 
+        message: `Booking ${status} successfully`, 
+        booking: updatedBooking 
+      });
     } catch (error) {
       console.error("Error updating booking status:", error);
       res.status(500).json({ message: "Failed to update booking status" });

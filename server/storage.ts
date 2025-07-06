@@ -59,7 +59,9 @@ export interface IStorage {
   createHealerBooking(booking: InsertHealerBooking): Promise<HealerBooking>;
   getHealerBookingsByUser(userId: number): Promise<HealerBooking[]>;
   getHealerBookingsByHealer(healerId: number): Promise<HealerBooking[]>;
+  getHealerBooking(bookingId: number): Promise<HealerBooking | undefined>;
   updateBookingStatus(bookingId: number, status: string): Promise<HealerBooking | undefined>;
+  updateBookingStatusWithResponse(bookingId: number, status: string, healerResponse?: string): Promise<HealerBooking | undefined>;
   
   // Session store
   sessionStore: any;
@@ -222,10 +224,28 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(healerBookings).where(eq(healerBookings.healerId, healerId));
   }
 
+  async getHealerBooking(bookingId: number): Promise<HealerBooking | undefined> {
+    const [booking] = await db.select().from(healerBookings).where(eq(healerBookings.id, bookingId));
+    return booking;
+  }
+
   async updateBookingStatus(bookingId: number, status: string): Promise<HealerBooking | undefined> {
     const [updatedBooking] = await db
       .update(healerBookings)
       .set({ status })
+      .where(eq(healerBookings.id, bookingId))
+      .returning();
+    return updatedBooking;
+  }
+
+  async updateBookingStatusWithResponse(bookingId: number, status: string, healerResponse?: string): Promise<HealerBooking | undefined> {
+    const [updatedBooking] = await db
+      .update(healerBookings)
+      .set({ 
+        status, 
+        healerResponse,
+        respondedAt: new Date()
+      })
       .where(eq(healerBookings.id, bookingId))
       .returning();
     return updatedBooking;
