@@ -256,14 +256,14 @@ export default function HomePage() {
                 ) : (
                   /* Analysis Section */
                   <div className="space-y-8">
-                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                    <div className="flex flex-col lg:flex-row gap-8 justify-center">
                       {/* Image Preview */}
                       <div className="flex-1 flex justify-center">
                         <div className="relative max-w-md w-full">
                           <img
                             src={imagePreview}
                             alt="Your photo"
-                            className="w-full rounded-lg shadow-lg"
+                            className="w-full rounded-lg shadow-lg justify-center"
                           />
                           {vibeResult && (
                             <div className={`absolute inset-0 rounded-lg bg-gradient-radial ${getColorGradient(vibeResult.dominantColor)} pointer-events-none`}></div>
