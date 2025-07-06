@@ -45,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 interface AuraReading {
   id: number;
   userId: number;
+  name: string;
   imageUrl: string;
   dominantColor: string;
   secondaryColor: string;
@@ -522,7 +523,7 @@ export default function ClientDashboard() {
                                     style={{ backgroundColor: (auraReadings as AuraReading[])[currentAuraIndex]?.dominantColor }}
                                   ></div>
                                   <div>
-                                    <h3 className="text-sm font-medium">{(auraReadings as AuraReading[])[currentAuraIndex]?.dominantColor} Aura</h3>
+                                    <h3 className="text-sm font-medium">{(auraReadings as AuraReading[])[currentAuraIndex]?.name || 'Unnamed'} - {(auraReadings as AuraReading[])[currentAuraIndex]?.dominantColor} Aura</h3>
                                     <p className="text-xs text-gray-500">
                                       {format(new Date((auraReadings as AuraReading[])[currentAuraIndex]?.createdAt), "MMM d, yyyy")}
                                     </p>
