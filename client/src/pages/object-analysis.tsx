@@ -1039,9 +1039,8 @@ export default function ObjectAnalysis() {
                   <Card>
                     <CardContent className="p-6">
                       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-6">
-                          <TabsTrigger value="basic">Basic Analysis</TabsTrigger>
-                          <TabsTrigger value="energy">Energy Profile</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-1 mb-6">
+                          <TabsTrigger value="basic">Complete Analysis</TabsTrigger>
                         </TabsList>
                         
                         <TabsContent value="basic">
@@ -1073,7 +1072,7 @@ export default function ObjectAnalysis() {
                                     <div className="text-center">
                                       <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center justify-center gap-2">
                                         <Sparkles className="h-4 w-4 text-purple-600" />
-                                        With Smokey Aura
+                                        With Aura Visualisation
                                       </h5>
                                       <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-purple-200">
                                         {enhancedAuraImage ? (
@@ -1145,7 +1144,9 @@ export default function ObjectAnalysis() {
                                 <span className="font-medium">{result.auraColor}</span>
                               </div>
                               <p className="text-sm mt-2">{result.auraDescription}</p>
+
                               
+                             
                               {/* Enhanced Color Meaning Section */}
                               <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
                                 <h5 className="text-xs font-medium text-gray-700 mb-2">Aura Color Spiritual Meaning</h5>
@@ -1174,22 +1175,7 @@ export default function ObjectAnalysis() {
                               </div>
                             </div>
                             
-                            {/* Spiritual Significance Section */}
-                            {result.spiritualSignificance && (
-                              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-100">
-                                <h4 className="font-medium text-sm mb-2">Spiritual Significance</h4>
-                                <p className="text-sm text-gray-700">
-                                  {result.spiritualSignificance}
-                                </p>
-                              </div>
-                            )}
-                            
-
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="energy">
-                          <div className="space-y-6">
+                            {/* Energy Qualities Section */}
                             <div>
                               <h4 className="text-sm text-gray-500 mb-2">Energy Qualities</h4>
                               <div className="flex flex-wrap gap-2">
@@ -1201,6 +1187,7 @@ export default function ObjectAnalysis() {
                               </div>
                             </div>
                             
+                            {/* Energy Profile Section */}
                             <div className="bg-gray-50 rounded-lg p-4">
                               <h4 className="font-medium mb-2">Energy Profile</h4>
                               <p className="text-sm text-gray-600">{result.detailedAnalysis}</p>
@@ -1244,9 +1231,22 @@ export default function ObjectAnalysis() {
                                 </div>
                               </div>
                             </div>
+
+                            {/* Spiritual Significance Section */}
+                            {result.spiritualSignificance && (
+                              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-100">
+                                <h4 className="font-medium text-sm mb-2">Spiritual Significance</h4>
+                                <p className="text-sm text-gray-700">
+                                  {result.spiritualSignificance}
+                                </p>
+                              </div>
+                            )}
+                            
+
                           </div>
                         </TabsContent>
                         
+
 
                       </Tabs>
                     </CardContent>
