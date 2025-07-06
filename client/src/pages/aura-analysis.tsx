@@ -5481,26 +5481,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
-                              {/* Daily Energy Influence */}
-                              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 border border-amber-100">
-                                <h3 className="font-medium text-lg mb-4">How Your Energy Colors Influence Your Day</h3>
-                                <div className="space-y-4">
-                                  <div>
-                                    <h4 className="font-medium text-sm mb-2">Morning Energy Pattern</h4>
-                                    <p className="text-sm text-gray-700">{getMorningEnergyInfluence(result.dominantColor, result.secondaryColor)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="font-medium text-sm mb-2">Peak Energy Hours</h4>
-                                    <p className="text-sm text-gray-700">{getPeakEnergyHours(result.dominantColor)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="font-medium text-sm mb-2">Evening Energy Guidance</h4>
-                                    <p className="text-sm text-gray-700">{getEveningEnergyGuidance(result.dominantColor)}</p>
-                                  </div>
-                                </div>
-                              </div>
+
                             </div>
                           </TabsContent>
 
