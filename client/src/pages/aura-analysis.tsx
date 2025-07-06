@@ -1373,6 +1373,7 @@ export default function AuraAnalysis() {
       color: 'Gray',
       chakra: 'Emotional Detachment',
       number: '0',
+      meaning: 'Emotional numbness creating spiritual detachment and complete avoidance of life engagement while fostering depression tendencies. This void frequency prevents authentic feeling and spiritual connection through emotional disconnection.'
     };
     
     const negativeMeanings: Record<string, string> = {
@@ -1548,10 +1549,6 @@ export default function AuraAnalysis() {
       'Gold': 'Blue',       // Divine wisdom receives through truth
       'Silver': 'Indigo',   // Soul connection receives through intuition
       'White': 'Violet',    // Pure energy receives through spirituality
-      'Red': 'Yellow',      // Transformative energy receives through mental clarity
-      'Orange': 'Green',    // Creative energy receives through healing
-      'Yellow': 'Blue',     // Mental energy receives through truth
-      'Green': 'Orange',    // Healing receives through creativity
       'Brown': 'Yellow',    // Earth energy receives through mental clarity
       'Black': 'White'      // Shadow receives through light
     };
@@ -2216,7 +2213,7 @@ export default function AuraAnalysis() {
       'Black': 'Your root chakra radiates power, protection, transformation.',
       
     };
-    return descriptions[color] || descriptions[getPositiveDescription] || 'Your unique energy signature carries powerful positive qualities.';
+    return descriptions[color] || 'Your unique energy signature carries powerful positive qualities.';
   };
 
   const getShadowTraits = (color: string): string => {
@@ -5159,7 +5156,7 @@ export default function AuraAnalysis() {
       "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return careers[color] || careers[traits] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
+    return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
 
   return (

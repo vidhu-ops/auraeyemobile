@@ -29,6 +29,7 @@ export const auraReadings = pgTable("aura_readings", {
   analysis: text("analysis").notNull(),
   rating: integer("rating"), // 1-5 star rating
   reviewText: text("review_text"), // Optional review text
+  healerNotes: text("healer_notes"), // Professional healer notes
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -61,6 +62,7 @@ export const numerologyReadings = pgTable("numerology_readings", {
   soulUrgeNumber: integer("soul_urge_number").notNull(),
   personalityNumber: integer("personality_number").notNull(),
   interpretation: text("interpretation").notNull(),
+  healerNotes: text("healer_notes"), // Professional healer notes
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

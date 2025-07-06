@@ -33,6 +33,7 @@ export interface IStorage {
   getAuraReadingsByUser(userId: number): Promise<AuraReading[]>;
   getAuraReading(id: number): Promise<AuraReading | undefined>;
   updateAuraReadingReview(id: number, rating: number, reviewText?: string): Promise<AuraReading | undefined>;
+  updateAuraReadingNotes(id: number, healerNotes: string): Promise<AuraReading | undefined>;
   
   // Journal entries
   createJournalEntry(entry: InsertJournal): Promise<Journal>;
@@ -43,6 +44,7 @@ export interface IStorage {
   saveNumerologyReading(reading: InsertNumerologyReading): Promise<NumerologyReading>;
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
+  updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined>;
   
   // Object analyses
   saveObjectAnalysis(analysis: InsertObjectAnalysis): Promise<ObjectAnalysis>;
@@ -130,6 +132,15 @@ export class DatabaseStorage implements IStorage {
     return updatedReading || undefined;
   }
 
+  async updateAuraReadingNotes(id: number, healerNotes: string): Promise<AuraReading | undefined> {
+    const [updatedReading] = await db
+      .update(auraReadings)
+      .set({ healerNotes })
+      .where(eq(auraReadings.id, id))
+      .returning();
+    return updatedReading || undefined;
+  }
+
   // Journal entries
   async createJournalEntry(entry: InsertJournal): Promise<Journal> {
     const [journalEntry] = await db
@@ -164,6 +175,15 @@ export class DatabaseStorage implements IStorage {
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {
     const [reading] = await db.select().from(numerologyReadings).where(eq(numerologyReadings.id, id));
     return reading || undefined;
+  }
+
+  async updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined> {
+    const [updatedReading] = await db
+      .update(numerologyReadings)
+      .set({ healerNotes })
+      .where(eq(numerologyReadings.id, id))
+      .returning();
+    return updatedReading || undefined;
   }
 
   // Object analyses

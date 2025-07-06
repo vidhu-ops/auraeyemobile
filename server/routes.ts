@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import crypto from "crypto";
 import sharp from "sharp";
-import { setupAuth } from "./auth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
 import { analyzeImageWithGemini, generateAuraVisualization } from "./api/gemini";
@@ -2217,6 +2217,49 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error updating object analysis review:", error);
       res.status(500).json({ message: "Failed to update review" });
+    }
+  });
+
+  // Update aura reading healer notes
+  app.patch('/api/aura-readings/:id/notes', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { healerNotes } = req.body;
+
+      // For now, we'll add healer notes to the existing analysis field with a separator
+      const reading = await storage.getAuraReading(parseInt(id));
+      if (!reading) {
+        return res.status(404).json({ message: "Aura reading not found" });
+      }
+
+      // Update the reading with healer notes (we'll add this to storage interface)
+      const updatedReading = await storage.updateAuraReadingNotes(parseInt(id), healerNotes);
+      
+      res.json(updatedReading);
+    } catch (error) {
+      console.error("Error updating aura reading notes:", error);
+      res.status(500).json({ message: "Failed to update notes" });
+    }
+  });
+
+  // Update numerology reading healer notes  
+  app.patch('/api/numerology-readings/:id/notes', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { healerNotes } = req.body;
+
+      const reading = await storage.getNumerologyReading(parseInt(id));
+      if (!reading) {
+        return res.status(404).json({ message: "Numerology reading not found" });
+      }
+
+      // Update the reading with healer notes
+      const updatedReading = await storage.updateNumerologyReadingNotes(parseInt(id), healerNotes);
+      
+      res.json(updatedReading);
+    } catch (error) {
+      console.error("Error updating numerology reading notes:", error);
+      res.status(500).json({ message: "Failed to update notes" });
     }
   });
 

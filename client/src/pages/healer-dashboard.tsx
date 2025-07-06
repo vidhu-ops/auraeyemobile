@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { 
@@ -23,7 +24,10 @@ import {
   Palette,
   Calculator,
   BarChart3,
-  Download
+  Download,
+  Edit3,
+  Save,
+  X
 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -82,6 +86,247 @@ interface NumerologyReading {
   personalityNumber: number;
   interpretation: string;
   createdAt: string;
+}
+
+// Detailed Aura Reading Card Component
+function DetailedAuraReadingCard({ reading }: { reading: any }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
+  const { toast } = useToast();
+
+  const updateReadingMutation = useMutation({
+    mutationFn: async (notes: string) => {
+      await apiRequest('PATCH', `/api/aura-readings/${reading.id}/notes`, { healerNotes: notes });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notes Updated",
+        description: "Your reading notes have been saved successfully."
+      });
+      setIsEditing(false);
+    }
+  });
+
+  const saveNotes = () => {
+    updateReadingMutation.mutate(editedNotes);
+  };
+
+  return (
+    <Card className="border-2 border-purple-100">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-purple-800">{reading.name}</CardTitle>
+            <CardDescription className="text-purple-600">
+              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-white">
+              Energy: {reading.energyLevel}/10
+            </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="p-6 space-y-6">
+        {/* Aura Colors */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-red-400 to-red-600`}></div>
+            <p className="text-sm font-medium">Personality</p>
+            <p className="text-xs text-gray-600">{reading.personalityColor}</p>
+          </div>
+          <div className="text-center">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-blue-400 to-blue-600`}></div>
+            <p className="text-sm font-medium">Giving</p>
+            <p className="text-xs text-gray-600">{reading.givingColor}</p>
+          </div>
+          <div className="text-center">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-green-400 to-green-600`}></div>
+            <p className="text-sm font-medium">Receiving</p>
+            <p className="text-xs text-gray-600">{reading.receivingColor}</p>
+          </div>
+          <div className="text-center">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-yellow-400 to-yellow-600`}></div>
+            <p className="text-sm font-medium">Thinking</p>
+            <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
+          </div>
+        </div>
+
+        {/* Full Analysis */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3">Complete Analysis</h4>
+          <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.analysis}</p>
+          </div>
+        </div>
+
+        {/* Healer Notes Section */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3">Professional Notes</h4>
+          {isEditing ? (
+            <div className="space-y-3">
+              <Textarea
+                value={editedNotes}
+                onChange={(e) => setEditedNotes(e.target.value)}
+                placeholder="Add your professional insights, additional observations, or recommendations..."
+                className="min-h-32"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={saveNotes}
+                  disabled={updateReadingMutation.isPending}
+                  size="sm"
+                >
+                  {updateReadingMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  Save Notes
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)} size="sm">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              {editedNotes || reading.healerNotes ? (
+                <p className="text-sm text-gray-700">{editedNotes || reading.healerNotes}</p>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No professional notes added yet. Click edit to add your insights.</p>
+              )}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Detailed Numerology Reading Card Component
+function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
+  const { toast } = useToast();
+
+  const updateReadingMutation = useMutation({
+    mutationFn: async (notes: string) => {
+      await apiRequest('PATCH', `/api/numerology-readings/${reading.id}/notes`, { healerNotes: notes });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notes Updated",
+        description: "Your reading notes have been saved successfully."
+      });
+      setIsEditing(false);
+    }
+  });
+
+  const saveNotes = () => {
+    updateReadingMutation.mutate(editedNotes);
+  };
+
+  return (
+    <Card className="border-2 border-blue-100">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-blue-800">{reading.name}</CardTitle>
+            <CardDescription className="text-blue-600">
+              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+            </CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="p-6 space-y-6">
+        {/* Core Numbers */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.lifePathNumber}</div>
+            <p className="text-sm font-medium">Life Path</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
+            <p className="text-sm font-medium">Destiny</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.soulUrgeNumber}</div>
+            <p className="text-sm font-medium">Soul Urge</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.personalityNumber}</div>
+            <p className="text-sm font-medium">Personality</p>
+          </div>
+        </div>
+
+        {/* Full Interpretation */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3">Complete Interpretation</h4>
+          <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.interpretation}</p>
+          </div>
+        </div>
+
+        {/* Healer Notes Section */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3">Professional Notes</h4>
+          {isEditing ? (
+            <div className="space-y-3">
+              <Textarea
+                value={editedNotes}
+                onChange={(e) => setEditedNotes(e.target.value)}
+                placeholder="Add your professional insights, additional observations, or recommendations..."
+                className="min-h-32"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={saveNotes}
+                  disabled={updateReadingMutation.isPending}
+                  size="sm"
+                >
+                  {updateReadingMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  Save Notes
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)} size="sm">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              {editedNotes || reading.healerNotes ? (
+                <p className="text-sm text-gray-700">{editedNotes || reading.healerNotes}</p>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No professional notes added yet. Click edit to add your insights.</p>
+              )}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function HealerDashboard() {
@@ -516,29 +761,9 @@ export default function HealerDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {healerAuraReadings.slice(0, 3).map((reading) => (
-                      <div key={reading.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h4 className="font-medium">{reading.name}</h4>
-                            <p className="text-sm text-gray-600">
-                              {reading.dominantColor} • Energy: {reading.energyLevel}/10
-                            </p>
-                          </div>
-                          <span className="text-xs text-gray-500">
-                            {format(new Date(reading.createdAt), "MMM d")}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-600 line-clamp-2">
-                          {reading.analysis.substring(0, 100)}...
-                        </p>
-                      </div>
+                    {healerAuraReadings.map((reading) => (
+                      <DetailedAuraReadingCard key={reading.id} reading={reading} />
                     ))}
-                    {healerAuraReadings.length > 3 && (
-                      <p className="text-sm text-gray-500 text-center">
-                        And {healerAuraReadings.length - 3} more readings...
-                      </p>
-                    )}
                   </div>
                 )}
               </CardContent>
@@ -564,29 +789,9 @@ export default function HealerDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {healerNumerologyReadings.slice(0, 3).map((reading) => (
-                      <div key={reading.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h4 className="font-medium">{reading.name}</h4>
-                            <p className="text-sm text-gray-600">
-                              Life Path: {reading.lifePathNumber} • Destiny: {reading.destinyNumber}
-                            </p>
-                          </div>
-                          <span className="text-xs text-gray-500">
-                            {format(new Date(reading.createdAt), "MMM d")}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-600 line-clamp-2">
-                          {reading.interpretation.substring(0, 100)}...
-                        </p>
-                      </div>
+                    {healerNumerologyReadings.map((reading) => (
+                      <DetailedNumerologyReadingCard key={reading.id} reading={reading} />
                     ))}
-                    {healerNumerologyReadings.length > 3 && (
-                      <p className="text-sm text-gray-500 text-center">
-                        And {healerNumerologyReadings.length - 3} more readings...
-                      </p>
-                    )}
                   </div>
                 )}
               </CardContent>
