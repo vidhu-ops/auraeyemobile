@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/forms/image-upload";
+import NameInput from "@/components/forms/name-input";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 
@@ -47,9 +48,19 @@ export default function ObjectAnalysis() {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  
+  // Name input state
+  const [name, setName] = useState<string>('');
+  const [showNameInput, setShowNameInput] = useState(true);
 
   const handlePremiumUpgrade = () => {
     showPremiumModal("general");
+  };
+
+  // Handle name submission
+  const handleNameSubmit = (submittedName: string) => {
+    setName(submittedName);
+    setShowNameInput(false);
   };
 
   // Submit review for object analysis
@@ -570,6 +581,7 @@ export default function ObjectAnalysis() {
       // Create form data for file upload
       const formData = new FormData();
       formData.append("image", file);
+      formData.append("name", name || 'Unnamed');
 
       // Send to API
       const response = await fetch("/api/analyze-object", {
@@ -840,46 +852,29 @@ export default function ObjectAnalysis() {
   const getOptimalPlacement = (color: string): string[] => {
     const placementTips: Record<string, string[]> = {
       "Purple": [
-        "Place in meditation spaces or spiritual practice areas to enhance divine connection",
+        
         "Position near crown chakra level (head height) for maximum spiritual activation",
-        "Combine with amethyst or clear quartz to amplify spiritual energy",
-        "Use during full moon ceremonies for heightened mystical experiences",
-        "Keep in sacred spaces dedicated to spiritual study or contemplation"
+        "Combine with amethyst or clear quartz to amplify spiritual energy"
       ],
       "Red": [
-        "Position at ground level or near root chakra area for maximum grounding effect",
-        "Place in areas where physical strength and vitality are needed",
         "Use in protection rituals or spaces requiring energetic boundaries",
-        "Combine with black tourmaline or hematite for enhanced grounding",
-        "Position in workout areas or spaces dedicated to physical wellness"
+        "Combine with black tourmaline or hematite for enhanced grounding"
       ],
       "Orange": [
-        "Place in creative studios or artistic spaces to enhance inspiration",
         "Position at sacral chakra level (lower abdomen height) for creative activation",
-        "Use in bedrooms or intimate spaces to enhance sacred sexuality",
-        "Combine with carnelian or orange calcite for amplified creative energy",
-        "Keep in areas dedicated to emotional healing or artistic expression"
+        "Combine with carnelian or orange calcite for amplified creative energy"
       ],
       "Yellow": [
-        "Position in study areas or workspaces to enhance mental clarity",
         "Place at solar plexus level for personal power activation",
-        "Use in communication spaces or areas for important conversations",
-        "Combine with citrine or golden topaz for enhanced confidence",
-        "Keep in areas dedicated to learning or intellectual pursuits"
+        "Combine with citrine or golden topaz for enhanced confidence"
       ],
       "Green": [
-        "Place in healing spaces or areas dedicated to wellness practices",
         "Position at heart level for maximum heart chakra activation",
-        "Use in nature-connected spaces or gardens for harmony",
-        "Combine with rose quartz or green aventurine for enhanced healing",
-        "Keep in spaces dedicated to abundance manifestation or healing work"
+        "Combine with rose quartz or green aventurine for enhanced healing"
       ],
       "Blue": [
-        "Position in communication areas or spaces for teaching and learning",
         "Place at throat chakra level for enhanced truthful expression",
-        "Use in meditation spaces for peaceful contemplation",
-        "Combine with blue lace agate or sodalite for enhanced communication",
-        "Keep in areas dedicated to spiritual study or wisdom sharing"
+        "Combine with blue lace agate or sodalite for enhanced communication"
       ]
     };
     return placementTips[color] || [
@@ -1016,10 +1011,19 @@ export default function ObjectAnalysis() {
                       </p>
                       
                       <div className="flex flex-col items-center justify-center">
-                        <ImageUpload 
-                          onImageSelect={handleImageSelect}
-                          isLoading={isAnalyzing}
-                        />
+                        {showNameInput ? (
+                          <NameInput
+                            onNameSubmit={handleNameSubmit}
+                            title="Object Analysis"
+                            description="Enter your name to begin analyzing your object's energy"
+                            placeholder="Enter your name"
+                          />
+                        ) : (
+                          <ImageUpload 
+                            onImageSelect={handleImageSelect}
+                            isLoading={isAnalyzing}
+                          />
+                        )}
                         
                         {isAnalyzing && (
                           <div className="mt-4 text-center w-full max-w-md">
@@ -1202,8 +1206,7 @@ export default function ObjectAnalysis() {
                               
                               <div className="space-y-4">
                                 <div>
-                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Environmental Energy Impact</h5>
-                                  <p className="text-sm text-gray-700 mb-2">{getEnvironmentalInfluence(result.auraColor)}</p>
+                                  
                                 </div>
                                 
                                 <div>
@@ -1212,8 +1215,7 @@ export default function ObjectAnalysis() {
                                 </div>
                                 
                                 <div>
-                                  <h5 className="font-medium text-sm mb-2 text-amber-800">Emotional & Mental Effects</h5>
-                                  <p className="text-sm text-gray-700 mb-2">{getEmotionalInfluence(result.auraColor)}</p>
+                                 
                                 </div>
                                 
                                 <div>

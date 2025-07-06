@@ -34,11 +34,12 @@ export interface AuraAnalysisResult {
  * Analyzes an uploaded image to detect aura colors and energy patterns,
  * focusing specifically on identifying the colored energy fields visible around the person
  */
-export async function analyzeAuraImage(imageBase64: string): Promise<AuraAnalysisResult> {
+export async function analyzeAuraImage(imageBase64: string, name?: string): Promise<AuraAnalysisResult> {
   try {
     // First, analyze the image for visible aura colors
     const response = await apiRequest("POST", "/api/analyze-aura", {
       image: imageBase64,
+      name: name || 'Unnamed',
       detectVisibleAura: true // Flag to indicate we want to focus on detecting actual visible aura colors
     });
     

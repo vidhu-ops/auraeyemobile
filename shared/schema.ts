@@ -21,6 +21,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const auraReadings = pgTable("aura_readings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(), // Name entered for this aura reading
   imageUrl: text("image_url").notNull(),
   dominantColor: text("dominant_color").notNull(),
   secondaryColor: text("secondary_color"),
@@ -71,6 +72,7 @@ export const insertNumerologyReadingSchema = createInsertSchema(numerologyReadin
 export const objectAnalyses = pgTable("object_analyses", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(), // Name entered for this object analysis
   imageUrl: text("image_url").notNull(),
   objectName: text("object_name").notNull(),
   objectDescription: text("object_description").notNull(),

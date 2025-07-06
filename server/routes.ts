@@ -826,6 +826,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use deterministic analysis based on image hash for consistent results
       const deterministicResult = generateDeterministicObjectAnalysis(imgBuffer);
       
+      // Get the name from request body
+      const analysisName = req.body.name || 'Unnamed';
+
       // Save the object analysis to database if user is authenticated
       let savedAnalysis = null;
       if (req.isAuthenticated() && req.user) {
@@ -835,6 +838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           savedAnalysis = await storage.saveObjectAnalysis({
             userId: req.user.id,
+            name: analysisName,
             imageUrl,
             objectName: deterministicResult.objectName,
             objectDescription: deterministicResult.objectDescription,
@@ -1076,8 +1080,36 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 
       // Skip all validation and logging for maximum speed
 
+      // Get the name from request body
+      const analysisName = req.body.name || 'Unnamed';
+
       // Use ultra-fast analysis for immediate response
       const auraAnalysis = generateFastAuraAnalysis(imgBuffer) as any;
+
+      // Save the aura reading to database if user is authenticated
+      let savedReading = null;
+      if (req.isAuthenticated() && req.user) {
+        try {
+          // Create a temporary image URL (in production, you'd upload to cloud storage)
+          const imageUrl = `data:image/jpeg;base64,${imageData}`;
+          
+          savedReading = await storage.saveAuraReading({
+            userId: req.user.id,
+            name: analysisName,
+            imageUrl,
+            dominantColor: auraAnalysis.dominantColor || 'Unknown',
+            secondaryColor: auraAnalysis.secondaryColor || 'Unknown',
+            energyLevel: auraAnalysis.energyLevel || 5,
+            analysis: JSON.stringify(auraAnalysis)
+          });
+          
+          // Add the saved reading ID to the response
+          auraAnalysis.id = savedReading.id;
+        } catch (saveError) {
+          console.error("Error saving aura reading:", saveError);
+          // Don't fail the whole request if saving fails
+        }
+      }
 
       // Skip AI visualization for maximum speed - return analysis immediately
       res.json(auraAnalysis);

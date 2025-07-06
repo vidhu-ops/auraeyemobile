@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
+import NameInput from "@/components/forms/name-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PremiumFeature } from "@/components/premium/premium-feature";
 import { analyzeAuraImage, AuraAnalysisResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
@@ -169,6 +170,10 @@ export default function AuraAnalysis() {
   const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
+  
+  // Name input state
+  const [nameEntered, setNameEntered] = useState(false);
+  const [analysisName, setAnalysisName] = useState("");
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
@@ -4677,7 +4682,7 @@ export default function AuraAnalysis() {
             } else {
               // Call API to analyze the image
               try {
-                analysisResult = await analyzeAuraImage(base64data);
+                analysisResult = await analyzeAuraImage(base64data, name);
                 // Cache the result
                 setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
               } catch (apiError: any) {
@@ -5175,12 +5180,26 @@ export default function AuraAnalysis() {
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <div className="space-y-10">
-                {/* Upload section */}
-                <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
-                  <div className="w-full">
-                    <h2 className="font-heading font-semibold text-lg md:text-xl mb-3">Upload Your Photo</h2>
-                    <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
+                {/* Name input or Upload section */}
+                {!nameEntered ? (
+                  <div className="flex justify-center">
+                    <NameInput
+                      onNameSubmit={(name) => {
+                        setAnalysisName(name);
+                        setNameEntered(true);
+                      }}
+                      title="Enter Your Name"
+                      description="Please provide your name to begin the aura analysis. This helps us track and store your reading in your profile."
+                      placeholder="Enter your name"
+                    />
                   </div>
+                ) : (
+                  <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
+                    <div className="w-full">
+                      <h2 className="font-heading font-semibold text-lg md:text-xl mb-3">Upload Your Photo</h2>
+                      <p className="text-sm text-gray-600 mb-3">Analysis for: <span className="font-medium">{analysisName}</span></p>
+                      <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
+                    </div>
                   
                   <div>
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
@@ -5212,7 +5231,8 @@ export default function AuraAnalysis() {
                       </ul>
                     </div>
                   </div>
-                </div>
+                  </div>
+                )}
                 
                 {/* Results section - full width */}
                 <div>
