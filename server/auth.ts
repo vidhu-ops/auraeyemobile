@@ -56,6 +56,16 @@ export function setupAuth(app: Express) {
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false);
         } else {
+          // Check if user exists in healers database and update userType accordingly
+          const healers = await storage.getAllHealers();
+          const healerMatch = healers.find(h => h.email === `${username}@spiritualwellness.com` || h.name === username);
+          
+          if (healerMatch) {
+            // Update user to healer type if they exist in healers database
+            const updatedUser = { ...user, userType: "healer" as const };
+            return done(null, updatedUser);
+          }
+          
           return done(null, user);
         }
       } catch (error) {
@@ -68,7 +78,21 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
-      done(null, user);
+      if (user) {
+        // Check if user exists in healers database and update userType accordingly
+        const healers = await storage.getAllHealers();
+        const healerMatch = healers.find(h => h.email === `${user.username}@spiritualwellness.com` || h.name === user.username);
+        
+        if (healerMatch) {
+          // Update user to healer type if they exist in healers database
+          const updatedUser = { ...user, userType: "healer" as const };
+          done(null, updatedUser);
+        } else {
+          done(null, user);
+        }
+      } else {
+        done(null, false);
+      }
     } catch (error) {
       done(error);
     }
@@ -85,28 +109,8 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
+        userType: "client" // All registrations default to client type
       });
-
-      // If user is registering as a healer, also create a healer profile
-      if (req.body.userType === 'healer') {
-        try {
-          const healerData: InsertHealer = {
-            name: req.body.username,
-            email: `${req.body.username}@spiritualwellness.com`,
-            specialty: "Spiritual Guidance",
-            description: "New healer joining our spiritual wellness community.",
-            phone: "+1-555-HEALER",
-            experience: "1+ years",
-            rating: 5,
-            location: "Online",
-            imageUrl: "/api/placeholder/300/300"
-          };
-          await storage.createHealer(healerData);
-        } catch (healerError) {
-          console.error("Failed to create healer profile:", healerError);
-          // Continue with user registration even if healer profile creation fails
-        }
-      }
 
       // Remove password from response
       const { password, ...userWithoutPassword } = user;
@@ -136,10 +140,29 @@ export function setupAuth(app: Express) {
   });
 
   // Get current user endpoint
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    // Remove password from response
-    const { password, ...userWithoutPassword } = req.user as any;
-    res.json(userWithoutPassword);
+    
+    try {
+      let user = req.user as any;
+      
+      // Check if user exists in healers database and update userType accordingly
+      const healers = await storage.getAllHealers();
+      const healerMatch = healers.find(h => h.email === `${user.username}@spiritualwellness.com` || h.name === user.username);
+      
+      if (healerMatch && user.userType !== "healer") {
+        // Update user to healer type if they exist in healers database
+        user = { ...user, userType: "healer" };
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error checking healer status:", error);
+      // Fallback to original user data
+      const { password, ...userWithoutPassword } = req.user as any;
+      res.json(userWithoutPassword);
+    }
   });
 }

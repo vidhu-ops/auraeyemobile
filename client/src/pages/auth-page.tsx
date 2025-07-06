@@ -21,9 +21,6 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  userType: z.enum(["client", "healer"], {
-    required_error: "Please select a user type",
-  }),
   birthDate: z.string().min(1, "Birth date is required"),
 });
 
@@ -47,7 +44,6 @@ export default function AuthPage() {
     defaultValues: {
       username: "",
       password: "",
-      userType: "client",
       birthDate: "",
     },
   });
@@ -190,27 +186,7 @@ export default function AuthPage() {
                       )}
                     />
                     
-                    <FormField
-                      control={registerForm.control}
-                      name="userType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>I am a...</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select user type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="client">Spiritual Seeker (Client)</SelectItem>
-                              <SelectItem value="healer">Energy Healer (Professional)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                   </CardContent>
                   
                   <CardFooter>
