@@ -6,10 +6,111 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box } from "lucide-react";
+import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle } from "lucide-react";
+import { useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+
+interface QuickVibeResult {
+  dominantColor: string;
+  colorMeaning: {
+    positive: string;
+    negative: string;
+  };
+  energyLevel: number;
+  message: string;
+}
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
+
+  // Quick vibe analysis mutation
+  const quickVibeMutation = useMutation({
+    mutationFn: async (imageFile: File) => {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      const response = await fetch('/api/quick-vibe', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to analyze vibe');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data: QuickVibeResult) => {
+      setVibeResult(data);
+      toast({
+        title: "Vibe Analysis Complete!",
+        description: data.message,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Analysis Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+      setVibeResult(null); // Clear previous results
+    }
+  };
+
+  const analyzeVibe = () => {
+    if (selectedImage) {
+      quickVibeMutation.mutate(selectedImage);
+    }
+  };
+
+  const resetVibeCheck = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setVibeResult(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Color gradients for aura display
+  const getColorGradient = (color: string) => {
+    const gradients = {
+      'Red': 'from-red-500/30 to-red-600/10',
+      'Orange': 'from-orange-500/30 to-orange-600/10',
+      'Yellow': 'from-yellow-500/30 to-yellow-600/10',
+      'Green': 'from-green-500/30 to-green-600/10',
+      'Blue': 'from-blue-500/30 to-blue-600/10',
+      'Violet': 'from-violet-500/30 to-violet-600/10',
+      'Indigo': 'from-indigo-500/30 to-indigo-600/10',
+      'White': 'from-white/30 to-gray-200/10',
+      'Brown': 'from-amber-800/30 to-amber-900/10',
+      'Gold': 'from-yellow-400/30 to-yellow-500/10',
+      'Silver': 'from-gray-400/30 to-gray-500/10',
+      'Black': 'from-gray-800/30 to-gray-900/10',
+    };
+    return gradients[color as keyof typeof gradients] || 'from-purple-500/30 to-purple-600/10';
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -82,7 +183,182 @@ export default function HomePage() {
         </div>
       </section>
       
-     
+      {/* What's My Vibe? Section */}
+      <section className="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center mb-4">
+              <Sparkles className="h-8 w-8 text-violet-500 mr-3" />
+              <h2 className="font-heading font-bold text-4xl md:text-5xl text-gray-900">
+                What's My Vibe?
+              </h2>
+              <Sparkles className="h-8 w-8 text-violet-500 ml-3" />
+            </div>
+            <p className="text-gray-600 text-xl max-w-3xl mx-auto">
+              Get an instant glimpse into your spiritual energy! Upload your photo for a quick aura color reading.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-8">
+                {!imagePreview ? (
+                  /* Upload Section */
+                  <div className="text-center">
+                    <div className="border-2 border-dashed border-violet-300 rounded-xl p-12 bg-violet-50/50 hover:bg-violet-50 transition-colors">
+                      <div className="flex flex-col items-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
+                          <Camera className="h-10 w-10 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          Upload Your Photo
+                        </h3>
+                        <p className="text-gray-600 mb-6 max-w-md">
+                          Choose a clear photo of yourself to discover your dominant aura color and energy signature.
+                        </p>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          className="hidden"
+                        />
+                        <Button
+                          onClick={() => fileInputRef.current?.click()}
+                          size="lg"
+                          className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+                        >
+                          <Upload className="mr-2 h-5 w-5" />
+                          Choose Photo
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Analysis Section */
+                  <div className="space-y-8">
+                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                      {/* Image Preview */}
+                      <div className="flex-1">
+                        <div className="relative">
+                          <img
+                            src={imagePreview}
+                            alt="Your photo"
+                            className="w-full max-w-md mx-auto rounded-lg shadow-lg"
+                          />
+                          {vibeResult && (
+                            <div className={`absolute inset-0 rounded-lg bg-gradient-radial ${getColorGradient(vibeResult.dominantColor)} pointer-events-none`}></div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Results or Analysis Button */}
+                      <div className="flex-1 space-y-6">
+                        {!vibeResult ? (
+                          <div className="text-center">
+                            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                              Ready to discover your vibe?
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                              Click analyze to reveal your dominant aura color and its spiritual meaning.
+                            </p>
+                            <div className="space-y-3">
+                              <Button
+                                onClick={analyzeVibe}
+                                disabled={quickVibeMutation.isPending}
+                                size="lg"
+                                className="w-full bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+                              >
+                                {quickVibeMutation.isPending ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                    Analyzing Your Vibe...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Sparkles className="mr-2 h-5 w-5" />
+                                    Analyze My Vibe
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                onClick={resetVibeCheck}
+                                variant="outline"
+                                className="w-full"
+                              >
+                                Choose Different Photo
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Results Display */
+                          <div className="space-y-6">
+                            <div className="text-center">
+                              <div className="flex items-center justify-center mb-4">
+                                <div className={`w-8 h-8 rounded-full bg-${vibeResult.dominantColor.toLowerCase()}-500 mr-3`}></div>
+                                <h3 className="text-2xl font-bold text-gray-900">
+                                  Your Vibe: {vibeResult.dominantColor}
+                                </h3>
+                              </div>
+                              <p className="text-lg text-violet-600 font-medium mb-6">
+                                {vibeResult.message}
+                              </p>
+                            </div>
+
+                            {/* Positive & Negative Meanings */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <Card className="bg-green-50 border-green-200">
+                                <CardContent className="p-4">
+                                  <div className="flex items-start">
+                                    <Heart className="h-5 w-5 text-green-500 mt-1 mr-2 flex-shrink-0" />
+                                    <div>
+                                      <h4 className="font-semibold text-green-800 mb-2">Positive Energy</h4>
+                                      <p className="text-sm text-green-700">{vibeResult.colorMeaning.positive}</p>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              <Card className="bg-orange-50 border-orange-200">
+                                <CardContent className="p-4">
+                                  <div className="flex items-start">
+                                    <AlertTriangle className="h-5 w-5 text-orange-500 mt-1 mr-2 flex-shrink-0" />
+                                    <div>
+                                      <h4 className="font-semibold text-orange-800 mb-2">Areas to Balance</h4>
+                                      <p className="text-sm text-orange-700">{vibeResult.colorMeaning.negative}</p>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="space-y-3 pt-4">
+                              <Link to="/aura-analysis">
+                                <Button className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700">
+                                  Get Full Aura Analysis
+                                  <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                              </Link>
+                              <Button
+                                onClick={resetVibeCheck}
+                                variant="outline"
+                                className="w-full"
+                              >
+                                Try Another Photo
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
       
       {/* Aura Upload Preview */}
       <section id="upload-preview" className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">

@@ -39,6 +39,11 @@
   .animation-delay-2000 {
     animation-delay: 2s;
   }
+  
+  /* Custom gradient utilities */
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
 }
 
 /* Animation keyframes */

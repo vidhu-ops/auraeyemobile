@@ -1773,6 +1773,100 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Quick vibe check - simplified aura analysis for home page
+  app.post("/api/quick-vibe", upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const imageBuffer = req.file.buffer;
+      
+      // Detect human in image first
+      const hasHuman = await detectHumanInImage(imageBuffer);
+      if (!hasHuman) {
+        return res.status(400).json({ 
+          message: "Please upload an image with a person for vibe analysis",
+          isHuman: false 
+        });
+      }
+
+      // Generate quick aura analysis - focus on personality color only
+      const fastAnalysis = generateFastAuraAnalysis(imageBuffer);
+      
+      // Get personality color (dominant color from the analysis)
+      const personalityColor = fastAnalysis.dominantColor;
+      
+      // Color meanings for quick vibe analysis
+      const colorMeanings = {
+        'Red': {
+          positive: 'Passionate, energetic, courageous, and determined. You have strong life force energy.',
+          negative: 'May indicate anger, stress, or being overwhelmed. Could suggest need for grounding.'
+        },
+        'Orange': {
+          positive: 'Creative, enthusiastic, confident, and joyful. You radiate warmth and optimism.',
+          negative: 'Might show restlessness, impatience, or scattered energy needing focus.'
+        },
+        'Yellow': {
+          positive: 'Intelligent, cheerful, analytical, and mentally active. You have bright mental energy.',
+          negative: 'Could indicate overthinking, anxiety, or mental exhaustion needing rest.'
+        },
+        'Green': {
+          positive: 'Balanced, healing, compassionate, and growth-oriented. You have natural healing abilities.',
+          negative: 'May show jealousy, possessiveness, or feeling stuck in growth patterns.'
+        },
+        'Blue': {
+          positive: 'Calm, communicative, trustworthy, and peaceful. You express truth and authenticity.',
+          negative: 'Might indicate sadness, depression, or difficulty with self-expression.'
+        },
+        'Violet': {
+          positive: 'Spiritual, intuitive, magical, and visionary. You have strong psychic abilities.',
+          negative: 'Could show disconnection from reality or being too focused on spiritual matters.'
+        },
+        'Indigo': {
+          positive: 'Wise, perceptive, deep-thinking, and spiritually aware. You see beyond the surface.',
+          negative: 'May indicate isolation, depression, or being too serious about life.'
+        },
+        'White': {
+          positive: 'Pure, protective, enlightened, and spiritually advanced. You radiate divine energy.',
+          negative: 'Might show spiritual bypassing or avoiding earthly responsibilities.'
+        },
+        'Brown': {
+          positive: 'Grounded, practical, reliable, and earth-connected. You provide stable energy.',
+          negative: 'Could indicate being stuck, materialistic, or lacking spiritual connection.'
+        },
+        'Gold': {
+          positive: 'Divine, illuminated, successful, and spiritually gifted. You have golden light energy.',
+          negative: 'May show ego issues, materialism, or spiritual pride needing humility.'
+        },
+        'Silver': {
+          positive: 'Intuitive, psychic, moon-connected, and emotionally balanced. You have lunar wisdom.',
+          negative: 'Might indicate moodiness, emotional instability, or being too receptive to others.'
+        },
+        'Black': {
+          positive: 'Protective, mysterious, transformative, and deep. You absorb negative energy.',
+          negative: 'Could show depression, negative thinking, or being overwhelmed by darkness.'
+        }
+      };
+
+      const meaning = colorMeanings[personalityColor as keyof typeof colorMeanings] || {
+        positive: 'You have a unique and special energy signature.',
+        negative: 'Your energy may need balancing and harmonizing.'
+      };
+
+      res.json({
+        dominantColor: personalityColor,
+        colorMeaning: meaning,
+        energyLevel: fastAnalysis.energyLevel,
+        message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`
+      });
+
+    } catch (error) {
+      console.error("Quick vibe analysis error:", error);
+      res.status(500).json({ message: "Failed to analyze your vibe. Please try again." });
+    }
+  });
+
   // Journal entries API endpoints
   app.post("/api/journal", async (req, res) => {
     if (!req.isAuthenticated()) {
