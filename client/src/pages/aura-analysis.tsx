@@ -4682,7 +4682,7 @@ export default function AuraAnalysis() {
             } else {
               // Call API to analyze the image
               try {
-                analysisResult = await analyzeAuraImage(base64data, name);
+                analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
                 // Cache the result
                 setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
               } catch (apiError: any) {
@@ -4732,6 +4732,9 @@ export default function AuraAnalysis() {
               setIsAnalyzing(false);
               // Set active tab to analysis to show results including visualization
               setActiveTab("analysis");
+              // Reset name input for next analysis
+              setNameEntered(false);
+              setAnalysisName('');
             }, 200);
           } catch (error) {
             console.error("Error in aura analysis:", error);
@@ -4749,6 +4752,9 @@ export default function AuraAnalysis() {
             
             clearInterval(progressInterval);
             setIsAnalyzing(false);
+            // Reset name input for retry
+            setNameEntered(false);
+            setAnalysisName('');
           }
         }
       };
@@ -4766,6 +4772,9 @@ export default function AuraAnalysis() {
         variant: "destructive",
       });
       setIsAnalyzing(false);
+      // Reset name input for retry
+      setNameEntered(false);
+      setAnalysisName('');
     }
   };
 
