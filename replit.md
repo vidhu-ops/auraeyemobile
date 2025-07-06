@@ -140,6 +140,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 2, 2025. Enhanced PDF download in aura analysis: added full-size aura visualization image maintaining original aspect ratio and included detailed chakra activity scores (x/10 and percentage) for comprehensive spiritual documentation
 - July 4, 2025. Implemented strict human detection for aura analysis: now requires human presence in uploaded images before any processing, compression, or analysis - rejects all images without humans to ensure aura analysis is only performed on human subjects
 - July 4, 2025. Enhanced object analysis visualization: replaced patchy particle-based effects with smooth, diffused gradient layers creating natural smoky aura around objects using multiple blend modes (multiply, overlay, soft-light, color-dodge) for seamless atmospheric appearance
+- July 6, 2025. Fixed healer registration system: when users register with userType "healer", the system now automatically creates a healer profile that appears on the healers page, ensuring all healer accounts are immediately available for client bookings
 
 ## User Preferences
 

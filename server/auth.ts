@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser, InsertHealer } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -86,6 +86,27 @@ export function setupAuth(app: Express) {
         ...req.body,
         password: await hashPassword(req.body.password),
       });
+
+      // If user is registering as a healer, also create a healer profile
+      if (req.body.userType === 'healer') {
+        try {
+          const healerData: InsertHealer = {
+            name: req.body.username,
+            email: `${req.body.username}@spiritualwellness.com`,
+            specialty: "Spiritual Guidance",
+            description: "New healer joining our spiritual wellness community.",
+            phone: "+1-555-HEALER",
+            experience: "1+ years",
+            rating: 5,
+            location: "Online",
+            imageUrl: "/api/placeholder/300/300"
+          };
+          await storage.createHealer(healerData);
+        } catch (healerError) {
+          console.error("Failed to create healer profile:", healerError);
+          // Continue with user registration even if healer profile creation fails
+        }
+      }
 
       // Remove password from response
       const { password, ...userWithoutPassword } = user;
