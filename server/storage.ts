@@ -63,6 +63,10 @@ export interface IStorage {
   updateBookingStatus(bookingId: number, status: string): Promise<HealerBooking | undefined>;
   updateBookingStatusWithResponse(bookingId: number, status: string, healerResponse?: string): Promise<HealerBooking | undefined>;
   
+  // Healer analytics
+  getHealerClientStats(healerId: number): Promise<any>;
+  getHealerBookingTrends(healerId: number): Promise<any>;
+  
   // Session store
   sessionStore: any;
 }
@@ -249,6 +253,66 @@ export class DatabaseStorage implements IStorage {
       .where(eq(healerBookings.id, bookingId))
       .returning();
     return updatedBooking;
+  }
+
+  async getHealerClientStats(healerId: number): Promise<any> {
+    const bookings = await db
+      .select()
+      .from(healerBookings)
+      .where(eq(healerBookings.healerId, healerId));
+    
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    const recentBookings = bookings.filter(b => new Date(b.createdAt) >= thirtyDaysAgo);
+    const acceptedBookings = bookings.filter(b => b.status === 'accepted');
+    const rejectedBookings = bookings.filter(b => b.status === 'rejected');
+    const pendingBookings = bookings.filter(b => b.status === 'pending');
+    
+    // Get unique clients
+    const uniqueClients = Array.from(new Set(bookings.map(b => b.userId)));
+    
+    return {
+      totalBookings: bookings.length,
+      recentBookings: recentBookings.length,
+      acceptedBookings: acceptedBookings.length,
+      rejectedBookings: rejectedBookings.length,
+      pendingBookings: pendingBookings.length,
+      totalClients: uniqueClients.length,
+      acceptanceRate: bookings.length > 0 ? (acceptedBookings.length / bookings.length) * 100 : 0
+    };
+  }
+
+  async getHealerBookingTrends(healerId: number): Promise<any> {
+    const bookings = await db
+      .select()
+      .from(healerBookings)
+      .where(eq(healerBookings.healerId, healerId));
+    
+    const now = new Date();
+    const trends = [];
+    
+    // Get last 7 days of booking data
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const dayEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+      
+      const dayBookings = bookings.filter(b => {
+        const bookingDate = new Date(b.createdAt);
+        return bookingDate >= dayStart && bookingDate < dayEnd;
+      });
+      
+      trends.push({
+        date: date.toISOString().split('T')[0],
+        bookings: dayBookings.length,
+        accepted: dayBookings.filter(b => b.status === 'accepted').length,
+        rejected: dayBookings.filter(b => b.status === 'rejected').length,
+        pending: dayBookings.filter(b => b.status === 'pending').length
+      });
+    }
+    
+    return trends;
   }
 }
 

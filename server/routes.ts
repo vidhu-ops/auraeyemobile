@@ -1672,10 +1672,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const healers = await storage.getAllHealers();
       const healer = healers.find(h => 
         h.email === req.user.username || 
-        h.email === `${req.user.username}@spiritualwellness.com`
+        h.email === `${req.user.username}@spiritualwellness.com` ||
+        h.email === `${req.user.username}@aurafy.com` ||
+        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
       );
       
       if (!healer || healer.id !== booking.healerId) {
+        console.log(`Healer auth failed: user=${req.user.username}, healer=${healer?.name}, booking healerId=${booking.healerId}`);
         return res.status(403).json({ message: "Access denied - not authorized for this booking" });
       }
 
@@ -1697,6 +1700,76 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error updating booking status:", error);
       res.status(500).json({ message: "Failed to update booking status" });
+    }
+  });
+
+  // Get healer analytics and client stats
+  app.get("/api/healer-analytics", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    if (req.user.userType !== 'healer') {
+      return res.status(403).json({ message: "Access denied - healer account required" });
+    }
+
+    try {
+      const healers = await storage.getAllHealers();
+      const healer = healers.find(h => 
+        h.email === req.user.username || 
+        h.email === `${req.user.username}@spiritualwellness.com` ||
+        h.email === `${req.user.username}@aurafy.com` ||
+        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
+      );
+      
+      if (!healer) {
+        return res.json({ 
+          totalBookings: 0,
+          recentBookings: 0,
+          acceptedBookings: 0,
+          rejectedBookings: 0,
+          pendingBookings: 0,
+          totalClients: 0,
+          acceptanceRate: 0
+        });
+      }
+
+      const stats = await storage.getHealerClientStats(healer.id);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error retrieving healer analytics:", error);
+      res.status(500).json({ message: "Failed to retrieve healer analytics" });
+    }
+  });
+
+  // Get healer booking trends
+  app.get("/api/healer-trends", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    if (req.user.userType !== 'healer') {
+      return res.status(403).json({ message: "Access denied - healer account required" });
+    }
+
+    try {
+      const healers = await storage.getAllHealers();
+      const healer = healers.find(h => 
+        h.email === req.user.username || 
+        h.email === `${req.user.username}@spiritualwellness.com` ||
+        h.email === `${req.user.username}@aurafy.com` ||
+        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
+      );
+      
+      if (!healer) {
+        return res.json([]);
+      }
+
+      const trends = await storage.getHealerBookingTrends(healer.id);
+      res.json(trends);
+    } catch (error) {
+      console.error("Error retrieving healer trends:", error);
+      res.status(500).json({ message: "Failed to retrieve healer trends" });
     }
   });
 
