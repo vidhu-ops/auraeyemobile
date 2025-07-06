@@ -93,7 +93,7 @@ export default function HomePage() {
     }
   };
 
-  // Color gradients for aura display
+  // Color gradients for aura display - only 12 approved colors
   const getColorGradient = (color: string) => {
     const gradients = {
       'Red': 'from-red-500/30 to-red-600/10',
@@ -109,7 +109,26 @@ export default function HomePage() {
       'Silver': 'from-gray-400/30 to-gray-500/10',
       'Black': 'from-gray-800/30 to-gray-900/10',
     };
-    return gradients[color as keyof typeof gradients] || 'from-purple-500/30 to-purple-600/10';
+    return gradients[color as keyof typeof gradients] || 'from-violet-500/30 to-violet-600/10';
+  };
+
+  // Color borders for result display
+  const getColorBorder = (color: string) => {
+    const borders = {
+      'Red': 'bg-red-500',
+      'Orange': 'bg-orange-500',
+      'Yellow': 'bg-yellow-500',
+      'Green': 'bg-green-500',
+      'Blue': 'bg-blue-500',
+      'Violet': 'bg-violet-500',
+      'Indigo': 'bg-indigo-500',
+      'White': 'bg-white border-2 border-gray-300',
+      'Brown': 'bg-amber-800',
+      'Gold': 'bg-yellow-400',
+      'Silver': 'bg-gray-400',
+      'Black': 'bg-gray-800',
+    };
+    return borders[color as keyof typeof borders] || 'bg-violet-500';
   };
 
   return (
@@ -239,12 +258,12 @@ export default function HomePage() {
                   <div className="space-y-8">
                     <div className="flex flex-col lg:flex-row gap-8 items-start">
                       {/* Image Preview */}
-                      <div className="flex-1">
-                        <div className="relative">
+                      <div className="flex-1 flex justify-center">
+                        <div className="relative max-w-md w-full">
                           <img
                             src={imagePreview}
                             alt="Your photo"
-                            className="w-full max-w-md mx-auto rounded-lg shadow-lg"
+                            className="w-full rounded-lg shadow-lg"
                           />
                           {vibeResult && (
                             <div className={`absolute inset-0 rounded-lg bg-gradient-radial ${getColorGradient(vibeResult.dominantColor)} pointer-events-none`}></div>
@@ -292,10 +311,26 @@ export default function HomePage() {
                           </div>
                         ) : (
                           /* Results Display */
-                          <div className="space-y-6">
-                            <div className="text-center">
+                          <div className="space-y-6 text-center">
+                            <div>
                               <div className="flex items-center justify-center mb-4">
-                                <div className={`w-8 h-8 rounded-full bg-${vibeResult.dominantColor.toLowerCase()}-500 mr-3`}></div>
+                                <div className={`w-8 h-8 rounded-full mr-3 ${(() => {
+                                  const borders = {
+                                    'Red': 'bg-red-500',
+                                    'Orange': 'bg-orange-500',
+                                    'Yellow': 'bg-yellow-500',
+                                    'Green': 'bg-green-500',
+                                    'Blue': 'bg-blue-500',
+                                    'Violet': 'bg-violet-500',
+                                    'Indigo': 'bg-indigo-500',
+                                    'White': 'bg-white border-2 border-gray-300',
+                                    'Brown': 'bg-amber-800',
+                                    'Gold': 'bg-yellow-400',
+                                    'Silver': 'bg-gray-400',
+                                    'Black': 'bg-gray-800',
+                                  };
+                                  return borders[vibeResult.dominantColor as keyof typeof borders] || 'bg-violet-500';
+                                })()}`}></div>
                                 <h3 className="text-2xl font-bold text-gray-900">
                                   Your Vibe: {vibeResult.dominantColor}
                                 </h3>
@@ -306,7 +341,7 @@ export default function HomePage() {
                             </div>
 
                             {/* Positive & Negative Meanings */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                               <Card className="bg-green-50 border-green-200">
                                 <CardContent className="p-4">
                                   <div className="flex items-start">

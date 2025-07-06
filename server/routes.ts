@@ -1795,9 +1795,30 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const fastAnalysis = generateFastAuraAnalysis(imageBuffer);
       
       // Get personality color (dominant color from the analysis)
-      const personalityColor = fastAnalysis.dominantColor;
+      let personalityColor = fastAnalysis.dominantColor;
       
-      // Color meanings for quick vibe analysis
+      // Map any non-approved colors to the closest approved color
+      const approvedColors = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Violet', 'Indigo', 'White', 'Brown', 'Gold', 'Silver', 'Black'];
+      if (!approvedColors.includes(personalityColor)) {
+        // Map common variations to approved colors
+        const colorMapping: { [key: string]: string } = {
+          'Purple': 'Violet',
+          'Turquoise': 'Blue',
+          'Pink': 'Red',
+          'Teal': 'Green',
+          'Magenta': 'Violet',
+          'Cyan': 'Blue',
+          'Lime': 'Green',
+          'Maroon': 'Red',
+          'Navy': 'Blue',
+          'Olive': 'Green',
+          'Aqua': 'Blue',
+          'Fuchsia': 'Violet'
+        };
+        personalityColor = colorMapping[personalityColor] || 'Violet'; // Default to violet if not found
+      }
+      
+      // Color meanings for quick vibe analysis - only 12 approved aura colors
       const colorMeanings = {
         'Red': {
           positive: 'Passionate, energetic, courageous, and determined. You have strong life force energy.',
