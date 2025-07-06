@@ -5513,10 +5513,7 @@ export default function AuraAnalysis() {
                                       <p className="text-sm text-gray-700">{getColorFrequency(result.dominantColor)}</p>
                                     </div>
                                   </div>
-                                  <div className="mt-3">
-                                    <h5 className="font-medium text-sm mb-2">Chakra Connection</h5>
-                                    <p className="text-sm text-gray-700">{getChakraConnection(result.dominantColor)}</p>
-                                  </div>
+                                  
                                 </div>
                               </div>
 
@@ -5856,8 +5853,7 @@ export default function AuraAnalysis() {
                                             return [
                                               { zone: 'Crown/Thinking', percentage: 30 },
                                               { zone: 'Receiving Energy', percentage: 25 },
-                                              { zone: 'Giving Energy', percentage: 25 },
-                                              { zone: 'Soul Connection', percentage: 20 }
+                                              { zone: 'Giving Energy', percentage: 25 }
                                             ].map((item, index) => (
                                               <div key={index} className="flex items-center justify-between">
                                                 <span className="text-sm text-gray-600">{item.zone}</span>
@@ -7545,21 +7541,7 @@ export default function AuraAnalysis() {
                                             boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
                                           }}
                                         ></span>
-                                        Astral Layer
-                                      </h5>
-                                      <p className="text-xs text-gray-600">
-                                        {getAuraLayerAnalysis("etheric", result.dominantColor)}
-                                      </p>
-                                    </div>
-                                    <div className="p-3 bg-white rounded-lg shadow-sm">
-                                      <h5 className="text-sm font-medium mb-1 flex items-center">
-                                        <span 
-                                          className="inline-block w-3 h-3 rounded-full mr-2" 
-                                          style={{ 
-                                            backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
-                                            boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
-                                          }}
-                                        ></span>
+                                       
                                         Emotional Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
@@ -7589,7 +7571,23 @@ export default function AuraAnalysis() {
                                             backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
                                             boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
                                           }}
+                                          
                                         ></span>
+                                        Astral Layer
+                                          </h5>
+                                          <p className="text-xs text-gray-600">
+                                            {getAuraLayerAnalysis("etheric", result.dominantColor)}
+                                          </p>
+                                        </div>
+                                        <div className="p-3 bg-white rounded-lg shadow-sm">
+                                          <h5 className="text-sm font-medium mb-1 flex items-center">
+                                            <span 
+                                              className="inline-block w-3 h-3 rounded-full mr-2" 
+                                              style={{ 
+                                                backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
+                                                boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
+                                              }}
+                                            ></span>
                                         Spiritual Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
@@ -7597,6 +7595,7 @@ export default function AuraAnalysis() {
                                       </p>
                                     </div>
                                   </div>
+                                  
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Energy Flow Analysis</h4>
                                   <div className="p-3 bg-white rounded-lg shadow-sm mb-4">
