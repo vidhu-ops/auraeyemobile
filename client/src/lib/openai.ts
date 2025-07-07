@@ -36,11 +36,25 @@ export interface AuraAnalysisResult {
  */
 export async function analyzeAuraImage(imageBase64: string, name?: string): Promise<AuraAnalysisResult> {
   try {
-    // First, analyze the image for visible aura colors
-    const response = await apiRequest("POST", "/api/analyze-aura", {
-      image: imageBase64,
-      name: name || 'Unnamed',
-      detectVisibleAura: true // Flag to indicate we want to focus on detecting actual visible aura colors
+    // Convert base64 to blob for form data
+    const base64Data = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: 'image/jpeg' });
+    
+    // Create form data for file upload
+    const formData = new FormData();
+    formData.append('image', blob, 'aura-image.jpg');
+    formData.append('name', name || 'Unnamed');
+    
+    // Send as form data instead of JSON
+    const response = await fetch('/api/analyze-aura', {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
     });
     
     // Check if response is successful
