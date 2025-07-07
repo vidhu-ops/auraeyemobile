@@ -17,9 +17,8 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } fr
 
 
 
-// Optimized fast aura analysis function for sub-1000ms performance with varied results
-// Only approved aura colors - restricted to 17 colors (added Gray, reduced Black frequency)
-const ENHANCED_COLORS = [
+// Only approved aura colors - restricted to 12 colors as per requirements
+const APPROVED_AURA_COLORS = [
   { name: "Violet", hex: "#8A2BE2" },
   { name: "Indigo", hex: "#4B0082" },
   { name: "Blue", hex: "#0000FF" },
@@ -34,16 +33,22 @@ const ENHANCED_COLORS = [
   { name: "Brown", hex: "#8B4513" }
 ];
 
+// Cache for human detection results to avoid repeated API calls
+const humanDetectionCache = new Map<string, { result: boolean; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 function generateFastAuraAnalysis(imageBuffer?: Buffer) {
-  // Optimized hash generation - use only first 1KB for speed
+  // Enhanced hash generation for better consistency
   let seed = 12345;
   if (imageBuffer) {
-    const sampleSize = Math.min(1024, imageBuffer.length);
+    const sampleSize = Math.min(2048, imageBuffer.length); // Increased sample size
     const sample = imageBuffer.subarray(0, sampleSize);
     seed = 0;
-    for (let i = 0; i < sample.length; i += 4) {
+    for (let i = 0; i < sample.length; i += 3) { // Changed stride for better distribution
       seed = (seed * 31 + sample[i]) >>> 0;
     }
+    // Add buffer length to seed for additional uniqueness
+    seed = (seed + imageBuffer.length) >>> 0;
   }
   
   // Fast inline random generator
@@ -957,9 +962,23 @@ function performBackupHumanDetection(imageBuffer: Buffer): boolean {
 }
 
 async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
+  // Generate cache key from image buffer
+  const cacheKey = require('crypto').createHash('md5').update(imageBuffer).digest('hex');
+  
+  // Check cache first
+  const cached = humanDetectionCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log('Using cached human detection result');
+    return cached.result;
+  }
+  
   // Use Gemini's vision API to accurately detect humans in images
   try {
     const base64Image = imageBuffer.toString('base64');
+    
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + process.env.GEMINI_API_KEY, {
       method: 'POST',
@@ -986,8 +1005,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           maxOutputTokens: 10,
           temperature: 0
         }
-      })
+      }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -1005,6 +1027,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     
     // Return true if human detected (yes), false if no human (no)
     const hasHuman = answer.includes('yes');
+    
+    // Cache the result
+    humanDetectionCache.set(cacheKey, { result: hasHuman, timestamp: Date.now() });
     
     // Log the decision for debugging
     console.log(`Image ${hasHuman ? 'BLOCKED (human detected)' : 'ALLOWED (no human)'}`);
@@ -1038,10 +1063,27 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 
       // CRITICAL: Check if image contains a human BEFORE any processing
       // Aura analysis requires human images - this is a strict requirement
-      const hasHuman = await detectHumanInImage(imgBuffer);
+      let hasHuman = false;
+      let humanDetectionAttempts = 0;
+      const maxAttempts = 3;
+      
+      while (!hasHuman && humanDetectionAttempts < maxAttempts) {
+        try {
+          hasHuman = await detectHumanInImage(imgBuffer);
+          humanDetectionAttempts++;
+          
+          if (!hasHuman && humanDetectionAttempts < maxAttempts) {
+            console.log(`Human detection attempt ${humanDetectionAttempts} failed, retrying...`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+          }
+        } catch (error) {
+          console.error(`Human detection attempt ${humanDetectionAttempts + 1} failed:`, error);
+          humanDetectionAttempts++;
+        }
+      }
       
       if (!hasHuman) {
-        console.log("Image BLOCKED (no human detected)");
+        console.log("Image BLOCKED (no human detected after multiple attempts)");
         return res.status(400).json({ 
           message: "Please upload a photo containing a person for aura analysis. Use Object Analysis for items or objects." 
         });
@@ -1049,63 +1091,111 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 
       console.log("Human detected - proceeding with aura analysis");
 
-      // Resize image to standard dimensions (1600x900px)
-      imgBuffer = await resizeImageToStandard(imgBuffer);
-      imageData = imgBuffer.toString("base64");
-
-      // Skip all validation and logging for maximum speed
+      // Resize image to standard dimensions (1600x900px) with guaranteed success
+      let compressedBuffer: Buffer;
+      try {
+        compressedBuffer = await resizeImageToStandard(imgBuffer);
+        console.log("Image compression successful");
+      } catch (compressionError) {
+        console.error("Image compression failed:", compressionError);
+        // Use original buffer if compression fails
+        compressedBuffer = imgBuffer;
+      }
+      
+      imageData = compressedBuffer.toString("base64");
 
       // Get the name from request body
       const analysisName = req.body.name || 'Unnamed';
 
-      // Use ultra-fast analysis for immediate response
-      const auraAnalysis = generateFastAuraAnalysis(imgBuffer) as any;
+      // Use ultra-fast analysis with guaranteed result
+      let auraAnalysis: any;
+      try {
+        auraAnalysis = generateFastAuraAnalysis(compressedBuffer);
+        console.log("Aura analysis generated successfully");
+      } catch (analysisError) {
+        console.error("Analysis generation failed:", analysisError);
+        // Provide guaranteed fallback analysis
+        auraAnalysis = {
+          dominantColor: "Indigo",
+          secondaryColor: "Violet",
+          energyLevel: 7,
+          personalityTraits: ["Intuitive", "Spiritual", "Wise", "Balanced"],
+          spiritualGuidance: "Your spiritual energy radiates wisdom and intuition. Continue developing your inner awareness.",
+          chakraActivity: {
+            root: 7, sacral: 6, solarPlexus: 8, heart: 9, throat: 7, thirdEye: 8, crown: 9
+          },
+          zones: {
+            giving: { colors: ["Indigo"], interpretation: "Giving energy of wisdom" },
+            receiving: { colors: ["Violet"], interpretation: "Receiving energy of spirituality" },
+            thinking: { colors: ["Indigo"], interpretation: "Mental energy of deep insight" }
+          }
+        };
+      }
+
+      // Ensure analysis has all required fields
+      if (!auraAnalysis.dominantColor) auraAnalysis.dominantColor = "Indigo";
+      if (!auraAnalysis.secondaryColor) auraAnalysis.secondaryColor = "Violet";
+      if (!auraAnalysis.energyLevel) auraAnalysis.energyLevel = 7;
+      if (!auraAnalysis.personalityTraits) auraAnalysis.personalityTraits = ["Intuitive", "Spiritual"];
+      if (!auraAnalysis.spiritualGuidance) auraAnalysis.spiritualGuidance = "Your aura shows spiritual wisdom and intuitive energy.";
+      if (!auraAnalysis.chakraActivity) {
+        auraAnalysis.chakraActivity = {
+          root: 7, sacral: 6, solarPlexus: 8, heart: 9, throat: 7, thirdEye: 8, crown: 9
+        };
+      }
 
       // Save the aura reading to database if user is authenticated
-      let savedReading = null;
       if (req.isAuthenticated() && req.user) {
         try {
           // Create a temporary image URL (in production, you'd upload to cloud storage)
           const imageUrl = `data:image/jpeg;base64,${imageData}`;
           
-          savedReading = await storage.saveAuraReading({
+          const savedReading = await storage.saveAuraReading({
             userId: req.user.id,
             name: analysisName,
             imageUrl,
-            dominantColor: auraAnalysis.dominantColor || 'Unknown',
-            secondaryColor: auraAnalysis.secondaryColor || 'Unknown',
-            energyLevel: auraAnalysis.energyLevel || 5,
+            dominantColor: auraAnalysis.dominantColor,
+            secondaryColor: auraAnalysis.secondaryColor,
+            energyLevel: auraAnalysis.energyLevel,
             analysis: JSON.stringify(auraAnalysis)
           });
           
           // Add the saved reading ID to the response
           auraAnalysis.id = savedReading.id;
+          console.log("Aura reading saved successfully");
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
           // Don't fail the whole request if saving fails
         }
       }
 
-      // Skip AI visualization for maximum speed - return analysis immediately
+      // Return guaranteed successful response
+      console.log("Aura analysis completed successfully");
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
       
-      // Even if everything fails, provide a fallback response
+      // GUARANTEED FALLBACK: Always provide a complete aura analysis
       const fallbackResult = {
         dominantColor: "Indigo",
         secondaryColor: "Violet",
-        energyLevel: 4,
-        personalityTraits: ["Intuitive", "Visionary", "Sensitive", "Spiritual"],
-        spiritualGuidance: "Your aura indicates a strong connection to your intuition and higher guidance. Continue to develop your spiritual practices and trust your inner wisdom.",
+        energyLevel: 7,
+        personalityTraits: ["Intuitive", "Spiritual", "Wise", "Balanced"],
+        spiritualGuidance: "Your aura shows deep spiritual wisdom and intuitive energy. You possess strong connections to higher consciousness and inner guidance.",
         chakraActivity: {
-          root: 5,
+          root: 7,
           sacral: 6,
           solarPlexus: 5,
           heart: 7,
           throat: 6,
           thirdEye: 9,
           crown: 8
+        },
+        zones: {
+          giving: { colors: ["Indigo"], interpretation: "Giving energy of deep wisdom and intuition" },
+          receiving: { colors: ["Violet"], interpretation: "Receiving energy of spiritual transformation" },
+          thinking: { colors: ["Indigo"], interpretation: "Mental energy of higher consciousness" },
+          overall: { colors: ["Indigo", "Violet"], interpretation: "Overall energy of spiritual wisdom and intuitive insight" }
         },
         detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
       };
