@@ -43,12 +43,9 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
       detectVisibleAura: true // Flag to indicate we want to focus on detecting actual visible aura colors
     });
     
-    // Check if response indicates room/area image validation error
+    // Check if response is successful
     if (!response.ok) {
       const errorData = await response.json();
-      if (errorData.redirectTo === "object-analysis") {
-        throw new Error("ROOM_IMAGE_DETECTED:" + errorData.message);
-      }
       throw new Error(errorData.message || "Analysis failed");
     }
     
@@ -61,12 +58,7 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
   } catch (error) {
     console.error("Error analyzing aura:", error);
     
-    // Check if this is a room/area image validation error
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    if (errorMessage && errorMessage.startsWith("ROOM_IMAGE_DETECTED:")) {
-      const message = errorMessage.replace("ROOM_IMAGE_DETECTED:", "");
-      throw new Error("ROOM_IMAGE:" + message);
-    }
+    // Standard error handling
     
     throw new Error("Failed to analyze aura. Please try again.");
   }
