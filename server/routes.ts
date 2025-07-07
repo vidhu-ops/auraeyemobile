@@ -52,22 +52,19 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     return seed / 2147483647;
   };
   
-  // Prioritize spiritual colors - exclude black from main selections
+  // Use only the 12 approved aura colors - prioritize spiritual colors
   const spiritualColors = [
-    { name: "Purple", hex: "#800080" },
+    { name: "Violet", hex: "#8A2BE2" },
+    { name: "Indigo", hex: "#4B0082" },
     { name: "Blue", hex: "#0000FF" },
     { name: "Green", hex: "#00FF00" },
     { name: "Gold", hex: "#FFD700" },
     { name: "White", hex: "#FFFFFF" },
-    { name: "Indigo", hex: "#4B0082" },
-    { name: "Violet", hex: "#8A2BE2" },
     { name: "Silver", hex: "#C0C0C0" },
-    { name: "Turquoise", hex: "#40E0D0" },
-    { name: "Pink", hex: "#FFC0CB" },
-    { name: "Orange", hex: "#FFA500" },
     { name: "Yellow", hex: "#FFFF00" },
+    { name: "Orange", hex: "#FFA500" },
     { name: "Red", hex: "#FF0000" },
-    { name: "Brown", hex: "#A52A2A" },
+    { name: "Brown", hex: "#8B4513" },
     { name: "Gray", hex: "#808080" }
   ];
   
@@ -723,66 +720,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to uniform dimensions for consistent aura visualization
+  // Helper function to resize images to uniform dimensions and compress to 200KB maximum for fast processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
-      // Resize all aura analysis images to uniform 1600x900 resolution for consistent appearance
-      const resizedBuffer = await sharp(inputBuffer)
-        .resize(1600, 900, {
-          fit: 'cover', // Crop to exact dimensions for uniform appearance
-          position: 'center' // Center crop to maintain subject focus
-        })
-        .jpeg({ 
-          quality: 90, // Higher quality for 200kb target size
-          progressive: true,
-          mozjpeg: true // Enable mozjpeg for better compression
-        })
-        .toBuffer();
+      console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Check if file size is close to 200kb target
-      const fileSizeKB = resizedBuffer.length / 1024;
-      console.log(`Image resized to ${1600}x${900}, file size: ${fileSizeKB.toFixed(1)}kb`);
+      // Start with high quality and progressively reduce if needed
+      let quality = 90;
+      let compressedBuffer: Buffer;
       
-      // If file is significantly larger than 200kb, reduce quality further
-      if (fileSizeKB > 220) {
-        const optimizedBuffer = await sharp(inputBuffer)
+      // Keep compressing until we reach 200KB or lower
+      do {
+        compressedBuffer = await sharp(inputBuffer)
           .resize(1600, 900, {
-            fit: 'cover',
-            position: 'center'
+            fit: 'cover', // Crop to exact dimensions for uniform appearance
+            position: 'center' // Center crop to maintain subject focus
           })
           .jpeg({ 
-            quality: 80, // Lower quality for size optimization while staying under 200kb
+            quality: quality,
             progressive: true,
-            mozjpeg: true
+            mozjpeg: true // Enable mozjpeg for better compression
           })
           .toBuffer();
-        
-        const optimizedSizeKB = optimizedBuffer.length / 1024;
-        console.log(`Image optimized to ${optimizedSizeKB.toFixed(1)}kb`);
-        
-        // If still over 200kb, reduce quality more aggressively
-        if (optimizedSizeKB > 200) {
-          const finalOptimizedBuffer = await sharp(inputBuffer)
-            .resize(1600, 900, {
-              fit: 'cover',
-              position: 'center'
-            })
-            .jpeg({ 
-              quality: 70, // Final optimization to ensure under 200kb
-              progressive: true,
-              mozjpeg: true
-            })
-            .toBuffer();
           
-          const finalSizeKB = finalOptimizedBuffer.length / 1024;
-          console.log(`Image final optimization to ${finalSizeKB.toFixed(1)}kb`);
-          return finalOptimizedBuffer;
-        }
+        const fileSizeKB = compressedBuffer.length / 1024;
+        console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality}`);
         
-        return optimizedBuffer;
-      }
+        // If still too large, reduce quality by 10
+        if (fileSizeKB > 200 && quality > 30) {
+          quality -= 10;
+        } else {
+          break; // Either small enough or minimum quality reached
+        }
+      } while (quality >= 30);
       
-      return resizedBuffer;
+      const finalSizeKB = compressedBuffer.length / 1024;
+      console.log(`Final compressed image: ${finalSizeKB.toFixed(1)}KB (target: 200KB max)`);
+      
+      return compressedBuffer;
     } catch (error) {
       console.error("Error resizing image:", error);
       // Return original buffer if resize fails
