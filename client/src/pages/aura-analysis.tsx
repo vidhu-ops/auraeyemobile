@@ -4678,25 +4678,9 @@ export default function AuraAnalysis() {
               setAnalysisStage("Loading cached analysis for consistency...");
             } else {
               // Call API to analyze the image
-              try {
-                analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
-                // Cache the result
-                setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
-              } catch (apiError: any) {
-                // Handle room/area image validation error
-                if (apiError.message && apiError.message.startsWith("ROOM_IMAGE:")) {
-                  const message = apiError.message.replace("ROOM_IMAGE:", "");
-                  setIsAnalyzing(false);
-                  clearInterval(progressInterval);
-                  toast({
-                    title: "Use Object Analysis Instead",
-                    description: message + " Please go to the home page and click 'Object Aura Analysis' instead.",
-                    variant: "destructive",
-                  });
-                  return;
-                }
-                throw apiError; // Re-throw other errors
-              }
+              analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
+              // Cache the result
+              setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
             }
             
             setResult(analysisResult);
