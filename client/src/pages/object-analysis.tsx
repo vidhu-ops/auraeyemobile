@@ -1101,7 +1101,7 @@ export default function ObjectAnalysis() {
                                       </div>
                                       {enhancedAuraImage && (
                                         <p className="text-xs text-gray-600 mt-2">
-                                          Smokey aura color: {result.auraColor}
+                                          Aura color: {result.auraColor}
                                         </p>
                                       )}
                                     </div>

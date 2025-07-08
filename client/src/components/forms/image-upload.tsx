@@ -96,14 +96,6 @@ export default function ImageUpload({ onImageSelect, isLoading = false }: ImageU
                 <FileImage className="h-4 w-4 text-gray-400 mr-2" />
                 <span className="text-sm text-gray-500 truncate">Image selected</span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-500 hover:text-red-500"
-                onClick={removeImage}
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </CardContent>
         </Card>

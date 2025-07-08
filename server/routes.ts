@@ -374,6 +374,92 @@ function findClosestEnhancedColor(detectedHex: string, enhancedColors: any[]) {
 }
 
 // Function to generate completely random aura analysis for maximum variety
+// Get specific traits for each color in different aura positions
+function getSpecificColorTraits(color: string, position: 'personality' | 'giving' | 'receiving' | 'thinking'): string[] {
+  const colorTraits: Record<string, Record<string, string[]>> = {
+    'Red': {
+      personality: ['Passionate leader', 'Natural warrior spirit', 'Magnetic presence'],
+      giving: ['Gives fierce protection', 'Shares bold energy', 'Offers courageous support'],
+      receiving: ['Attracts intense experiences', 'Draws powerful people', 'Receives dramatic opportunities'],
+      thinking: ['Thinks with heart-fire', 'Quick decisive thoughts', 'Passionate mental focus']
+    },
+    'Orange': {
+      personality: ['Creative innovator', 'Joyful expression', 'Natural entertainer'],
+      giving: ['Gives creative inspiration', 'Shares artistic vision', 'Offers playful energy'],
+      receiving: ['Attracts creative opportunities', 'Draws artistic souls', 'Receives pleasure experiences'],
+      thinking: ['Thinks in creative patterns', 'Innovative problem solving', 'Artistic mental processes']
+    },
+    'Yellow': {
+      personality: ['Intelligent optimist', 'Natural teacher', 'Sunny disposition'],
+      giving: ['Gives wisdom freely', 'Shares knowledge', 'Offers mental clarity'],
+      receiving: ['Attracts learning opportunities', 'Draws students', 'Receives intellectual growth'],
+      thinking: ['Brilliant analytical mind', 'Clear logical thinking', 'Optimistic mental outlook']
+    },
+    'Green': {
+      personality: ['Natural healer', 'Compassionate heart', 'Growth-oriented soul'],
+      giving: ['Gives unconditional love', 'Shares healing energy', 'Offers nurturing support'],
+      receiving: ['Attracts those needing healing', 'Draws natural abundance', 'Receives heart connections'],
+      thinking: ['Thinks with compassion', 'Heart-centered decisions', 'Healing-focused mindset']
+    },
+    'Blue': {
+      personality: ['Truth speaker', 'Calm communicator', 'Peaceful presence'],
+      giving: ['Gives honest guidance', 'Shares peaceful energy', 'Offers clear communication'],
+      receiving: ['Attracts authentic people', 'Draws truth seekers', 'Receives divine messages'],
+      thinking: ['Clear truthful thoughts', 'Calm mental clarity', 'Honest self-reflection']
+    },
+    'Indigo': {
+      personality: ['Psychic intuitive', 'Deep wisdom keeper', 'Mystical soul'],
+      giving: ['Gives psychic insights', 'Shares ancient wisdom', 'Offers spiritual guidance'],
+      receiving: ['Attracts mystical experiences', 'Draws spiritual teachers', 'Receives divine visions'],
+      thinking: ['Intuitive thought patterns', 'Psychic mental processes', 'Deep spiritual contemplation']
+    },
+    'Violet': {
+      personality: ['Spiritual master', 'Divine connector', 'Enlightened being'],
+      giving: ['Gives spiritual blessing', 'Shares divine love', 'Offers enlightened wisdom'],
+      receiving: ['Attracts spiritual awakening', 'Draws divine guidance', 'Receives cosmic consciousness'],
+      thinking: ['Divine thought connection', 'Spiritual mental clarity', 'Enlightened perspective']
+    },
+    'White': {
+      personality: ['Pure light being', 'Angelic presence', 'Divine messenger'],
+      giving: ['Gives pure love', 'Shares divine light', 'Offers spiritual protection'],
+      receiving: ['Attracts divine intervention', 'Draws angelic guidance', 'Receives pure blessings'],
+      thinking: ['Pure clear thoughts', 'Divine mental clarity', 'Angelic inspiration']
+    },
+    'Black': {
+      personality: ['Shadow worker', 'Deep transformer', 'Hidden strength'],
+      giving: ['Reveals hidden truths', 'Exposes necessary darkness', 'Forces difficult growth'],
+      receiving: ['Attracts shadow lessons', 'Draws transformative pain', 'Receives necessary endings'],
+      thinking: ['Deep shadow thoughts', 'Confronts hard truths', 'Processes difficult emotions']
+    },
+    'Gold': {
+      personality: ['Wise teacher', 'Divine achievement', 'Spiritual royalty'],
+      giving: ['Gives ancient wisdom', 'Shares divine knowledge', 'Offers spiritual mastery'],
+      receiving: ['Attracts divine opportunities', 'Draws spiritual abundance', 'Receives cosmic rewards'],
+      thinking: ['Wise divine thoughts', 'Golden mental clarity', 'Enlightened understanding']
+    },
+    'Silver': {
+      personality: ['Moon mystic', 'Intuitive mirror', 'Psychic receiver'],
+      giving: ['Gives psychic clarity', 'Shares lunar wisdom', 'Offers emotional healing'],
+      receiving: ['Attracts psychic experiences', 'Draws intuitive people', 'Receives lunar guidance'],
+      thinking: ['Intuitive thought flow', 'Psychic mental processes', 'Lunar-influenced thinking']
+    },
+    'Brown': {
+      personality: ['Earth grounded', 'Practical wisdom', 'Stable foundation'],
+      giving: ['Gives practical support', 'Shares grounded wisdom', 'Offers stable foundation'],
+      receiving: ['Attracts practical opportunities', 'Draws earth connections', 'Receives stable growth'],
+      thinking: ['Practical earth thoughts', 'Grounded mental processes', 'Stable logical thinking']
+    },
+    'Gray': {
+      personality: ['Detached observer', 'Emotional numbness', 'Spiritual stagnation'],
+      giving: ['Withholds emotional support', 'Shares indifference', 'Offers cold distance'],
+      receiving: ['Attracts isolation', 'Draws emotional blocks', 'Receives numbness'],
+      thinking: ['Emotionally detached thoughts', 'Disconnected mental state', 'Avoidant thinking patterns']
+    }
+  };
+
+  return colorTraits[color]?.[position] || [`${color} ${position} energy`, `${color} spiritual influence`, `${color} cosmic vibration`];
+}
+
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   // Create deterministic seed from image content
   const generateHash = (buffer: Buffer): number => {
@@ -387,33 +473,29 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     return seed / 233280;
   };
 
-  // Only approved aura colors - restricted to 17 colors (added Gray, reduced Black frequency)
+  // Only approved aura colors - restricted to 12 colors as per requirements
   const enhancedColors = [
-    { name: "White", hex: "#FFFFFF" },
-    { name: "Brown", hex: "#A52A2A" },
-    { name: "Turquoise", hex: "#40E0D0" },
-    { name: "Red", hex: "#FF0000" },
-    { name: "Yellow", hex: "#FFFF00" },
-    { name: "Blue", hex: "#0000FF" },
-    { name: "Green", hex: "#00FF00" },
     { name: "Violet", hex: "#8A2BE2" },
     { name: "Indigo", hex: "#4B0082" },
-    { name: "Purple", hex: "#800080" },
+    { name: "Blue", hex: "#0000FF" },
+    { name: "Green", hex: "#00FF00" },
+    { name: "Yellow", hex: "#FFFF00" },
+    { name: "Orange", hex: "#FFA500" },
+    { name: "Red", hex: "#FF0000" },
+    { name: "White", hex: "#FFFFFF" },
+    { name: "Black", hex: "#000000" },
     { name: "Gold", hex: "#FFD700" },
     { name: "Silver", hex: "#C0C0C0" },
-    { name: "Orange", hex: "#FFA500" },
-    { name: "Pink", hex: "#FFC0CB" },
-    { name: "Gray", hex: "#808080" },
-    { name: "Black", hex: "#000000" } // Only when truly detected
+    { name: "Brown", hex: "#A52A2A" }
   ];
   
-  // Deterministic color selection using seeded random - 17 approved colors, avoid black as default
+  // Deterministic color selection using seeded random - 12 approved colors
   const colorCount = enhancedColors.length;
   const auraColors = [
-    enhancedColors[Math.floor(seededRandom() * (colorCount - 1))], // Exclude black from primary selection
-    enhancedColors[Math.floor(seededRandom() * (colorCount - 1))], // Exclude black from secondary selection  
-    enhancedColors[Math.floor(seededRandom() * colorCount)], // Allow all colors for spectrum
-    enhancedColors[Math.floor(seededRandom() * colorCount)],
+    enhancedColors[Math.floor(seededRandom() * colorCount)], // Personality color
+    enhancedColors[Math.floor(seededRandom() * colorCount)], // Giving color
+    enhancedColors[Math.floor(seededRandom() * colorCount)], // Receiving color
+    enhancedColors[Math.floor(seededRandom() * colorCount)], // Thinking color
     enhancedColors[Math.floor(seededRandom() * colorCount)],
     enhancedColors[Math.floor(seededRandom() * colorCount)]
   ];
@@ -421,12 +503,14 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1] || auraColors[0];
   
-  // Optimized selections for speed
-  const selectedTraits = ["Intuitive", "Creative", "Healing", "Wise"];
-  const energyLevel = 7;
+  // Get specific traits for each color position
+  const personalityTraits = getSpecificColorTraits(auraColors[0].name, 'personality');
+  const givingTraits = getSpecificColorTraits(auraColors[1].name, 'giving');
+  const receivingTraits = getSpecificColorTraits(auraColors[2].name, 'receiving');
+  const thinkingTraits = getSpecificColorTraits(auraColors[3].name, 'thinking');
+  
+  const energyLevel = Math.floor(seededRandom() * 3) + 7; // 7-10 range
   const auraColorSpectrum = auraColors.map(color => color.name);
-  const selectedChallenges = ["Learning to trust intuition"];
-  const selectedRecommendations = ["Meditation practices"];
   
   const auraLayerColors = {
     inner: auraColors[0].name,
@@ -434,11 +518,11 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     outer: auraColors[4].name
   };
 
-  // Zone colors for 4-Zone Energy Map
-  const giveZoneColors = auraColors.slice(0, 2);
-  const receiveZoneColors = auraColors.slice(1, 3);
-  const thinkZoneColors = auraColors.slice(2, 4);
-  const overallZoneColors = [dominantColor, secondaryColor];
+  // Zone colors for 4-Zone Energy Map with specific meanings
+  const giveZoneColors = [auraColors[1]]; // Giving energy
+  const receiveZoneColors = [auraColors[2]]; // Receiving energy
+  const thinkZoneColors = [auraColors[3]]; // Thinking energy
+  const overallZoneColors = [dominantColor, secondaryColor]; // Overall personality
 
   return {
     dominantColor: dominantColor.name,
@@ -446,9 +530,9 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     auraColors: auraColorSpectrum,
     auraColorSpectrum: auraColorSpectrum,
     auraLayerColors,
-    personalityTraits: selectedTraits,
+    personalityTraits: personalityTraits,
     energyLevel,
-    spiritualGuidance: `Your aura reveals ${dominantColor.name} energy representing spiritual wisdom and ${secondaryColor.name} energy indicating creative transformation. This combination suggests a period of spiritual growth where you're developing both inner wisdom and creative expression.`,
+    spiritualGuidance: `Your aura reveals ${dominantColor.name} energy representing ${personalityTraits[0]} and ${secondaryColor.name} energy indicating ${givingTraits[0]}. This combination suggests a period of spiritual growth where you're developing both inner wisdom and creative expression.`,
     chakraActivity: {
       root: Math.floor(seededRandom() * 3) + 6,
       sacral: Math.floor(seededRandom() * 3) + 7,
@@ -458,32 +542,34 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
       thirdEye: Math.floor(seededRandom() * 3) + 7,
       crown: Math.floor(seededRandom() * 3) + 7
     },
-    detailedAnalysis: `Your aura shows ${dominantColor.name} and ${secondaryColor.name} energies with ${selectedTraits.slice(0, 2).join(' and ').toLowerCase()} qualities. The ${dominantColor.name} energy indicates a strong connection to spiritual wisdom and intuitive insights, while the ${secondaryColor.name} energy represents creative transformation and emotional healing. This combination suggests you're in a powerful phase of spiritual development where your intuitive abilities are expanding alongside your creative expression.`,
+    detailedAnalysis: `Your aura shows comprehensive energy patterns across all four zones. Personality: ${personalityTraits.join(', ')}. Giving: ${givingTraits.join(', ')}. Receiving: ${receivingTraits.join(', ')}. Thinking: ${thinkingTraits.join(', ')}. This combination reveals a complete spiritual profile with unique qualities in each energy zone.`,
     zones: {
       giving: {
         colors: giveZoneColors.map(c => c.name),
-        interpretation: `Energy of ${giveZoneColors.map(c => c.name).join(' and ')}`
+        interpretation: `${giveZoneColors[0].name} giving energy: ${givingTraits.join(', ')}`
       },
       receiving: {
         colors: receiveZoneColors.map(c => c.name),
-        interpretation: `Receptive energy of ${receiveZoneColors.map(c => c.name).join(' and ')}`
+        interpretation: `${receiveZoneColors[0].name} receiving energy: ${receivingTraits.join(', ')}`
       },
       thinking: {
         colors: thinkZoneColors.map(c => c.name),
-        interpretation: `Mental energy of ${thinkZoneColors.map(c => c.name).join(' and ')}`
+        interpretation: `${thinkZoneColors[0].name} thinking energy: ${thinkingTraits.join(', ')}`
       },
       overall: {
         colors: overallZoneColors.map(c => c.name),
-        interpretation: `Overall energy of ${overallZoneColors.map(c => c.name).join(' and ')}`
+        interpretation: `${overallZoneColors[0].name} personality: ${personalityTraits.join(', ')}`
       }
     },
-    spiritualGifts: selectedTraits.slice(0, 3),
-    currentChallenges: selectedChallenges,
-    recommendations: selectedRecommendations,
+    spiritualGifts: [...personalityTraits, ...givingTraits].slice(0, 3),
+    currentChallenges: ["Integrating all four energy zones harmoniously"],
+    recommendations: ["Focus on balancing all energy centers", "Practice zone-specific meditation"],
     balanceState: "Harmonious",
     colorMeanings: {
-      [dominantColor.name]: `${dominantColor.name} energy`,
-      [secondaryColor.name]: `${secondaryColor.name} energy`
+      [dominantColor.name]: `${dominantColor.name} personality: ${personalityTraits.join(', ')}`,
+      [secondaryColor.name]: `${secondaryColor.name} giving: ${givingTraits.join(', ')}`,
+      [auraColors[2].name]: `${auraColors[2].name} receiving: ${receivingTraits.join(', ')}`,
+      [auraColors[3].name]: `${auraColors[3].name} thinking: ${thinkingTraits.join(', ')}`
     },
     chakraAlignment: `Strong ${dominantColor.name} frequency alignment`,
     elementalConnection: `${dominantColor.name} elemental resonance`,
@@ -1082,40 +1168,78 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Get the name from request body
       const analysisName = req.body.name || 'Unnamed';
 
-      // Use ultra-fast analysis with guaranteed result
+      // Use deterministic analysis with specific traits for all 4 colors
       let auraAnalysis: any;
       try {
-        auraAnalysis = generateFastAuraAnalysis(compressedBuffer);
+        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
         console.log("Aura analysis generated successfully");
       } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
-        // Provide guaranteed fallback analysis
+        // Provide guaranteed fallback analysis with specific traits
+        const personalityTraits = getSpecificColorTraits("Indigo", "personality");
+        const givingTraits = getSpecificColorTraits("Violet", "giving");
+        const receivingTraits = getSpecificColorTraits("Blue", "receiving");
+        const thinkingTraits = getSpecificColorTraits("Gold", "thinking");
+        
         auraAnalysis = {
           dominantColor: "Indigo",
           secondaryColor: "Violet",
           energyLevel: 7,
-          personalityTraits: ["Intuitive", "Spiritual", "Wise", "Balanced"],
+          personalityTraits: personalityTraits,
           spiritualGuidance: "Your spiritual energy radiates wisdom and intuition. Continue developing your inner awareness.",
           chakraActivity: {
             root: 7, sacral: 6, solarPlexus: 8, heart: 9, throat: 7, thirdEye: 8, crown: 9
           },
           zones: {
-            giving: { colors: ["Indigo"], interpretation: "Giving energy of wisdom" },
-            receiving: { colors: ["Violet"], interpretation: "Receiving energy of spirituality" },
-            thinking: { colors: ["Indigo"], interpretation: "Mental energy of deep insight" }
+            giving: { colors: ["Violet"], interpretation: `Violet giving energy: ${givingTraits.join(', ')}` },
+            receiving: { colors: ["Blue"], interpretation: `Blue receiving energy: ${receivingTraits.join(', ')}` },
+            thinking: { colors: ["Gold"], interpretation: `Gold thinking energy: ${thinkingTraits.join(', ')}` },
+            overall: { colors: ["Indigo"], interpretation: `Indigo personality: ${personalityTraits.join(', ')}` }
+          },
+          colorMeanings: {
+            "Indigo": `Indigo personality: ${personalityTraits.join(', ')}`,
+            "Violet": `Violet giving: ${givingTraits.join(', ')}`,
+            "Blue": `Blue receiving: ${receivingTraits.join(', ')}`,
+            "Gold": `Gold thinking: ${thinkingTraits.join(', ')}`
           }
         };
       }
 
-      // Ensure analysis has all required fields
+      // Ensure analysis has all required fields with specific traits
       if (!auraAnalysis.dominantColor) auraAnalysis.dominantColor = "Indigo";
       if (!auraAnalysis.secondaryColor) auraAnalysis.secondaryColor = "Violet";
       if (!auraAnalysis.energyLevel) auraAnalysis.energyLevel = 7;
-      if (!auraAnalysis.personalityTraits) auraAnalysis.personalityTraits = ["Intuitive", "Spiritual"];
+      if (!auraAnalysis.personalityTraits) auraAnalysis.personalityTraits = getSpecificColorTraits("Indigo", "personality");
       if (!auraAnalysis.spiritualGuidance) auraAnalysis.spiritualGuidance = "Your aura shows spiritual wisdom and intuitive energy.";
       if (!auraAnalysis.chakraActivity) {
         auraAnalysis.chakraActivity = {
           root: 7, sacral: 6, solarPlexus: 8, heart: 9, throat: 7, thirdEye: 8, crown: 9
+        };
+      }
+      if (!auraAnalysis.zones) {
+        const fallbackPersonalityTraits = getSpecificColorTraits("Indigo", "personality");
+        const fallbackGivingTraits = getSpecificColorTraits("Violet", "giving");
+        const fallbackReceivingTraits = getSpecificColorTraits("Blue", "receiving");
+        const fallbackThinkingTraits = getSpecificColorTraits("Gold", "thinking");
+        
+        auraAnalysis.zones = {
+          giving: { colors: ["Violet"], interpretation: `Violet giving energy: ${fallbackGivingTraits.join(', ')}` },
+          receiving: { colors: ["Blue"], interpretation: `Blue receiving energy: ${fallbackReceivingTraits.join(', ')}` },
+          thinking: { colors: ["Gold"], interpretation: `Gold thinking energy: ${fallbackThinkingTraits.join(', ')}` },
+          overall: { colors: ["Indigo"], interpretation: `Indigo personality: ${fallbackPersonalityTraits.join(', ')}` }
+        };
+      }
+      if (!auraAnalysis.colorMeanings) {
+        const fallbackPersonalityTraits = getSpecificColorTraits("Indigo", "personality");
+        const fallbackGivingTraits = getSpecificColorTraits("Violet", "giving");
+        const fallbackReceivingTraits = getSpecificColorTraits("Blue", "receiving");
+        const fallbackThinkingTraits = getSpecificColorTraits("Gold", "thinking");
+        
+        auraAnalysis.colorMeanings = {
+          "Indigo": `Indigo personality: ${fallbackPersonalityTraits.join(', ')}`,
+          "Violet": `Violet giving: ${fallbackGivingTraits.join(', ')}`,
+          "Blue": `Blue receiving: ${fallbackReceivingTraits.join(', ')}`,
+          "Gold": `Gold thinking: ${fallbackThinkingTraits.join(', ')}`
         };
       }
 
