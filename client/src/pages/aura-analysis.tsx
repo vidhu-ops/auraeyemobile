@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
@@ -14,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2, Users } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
@@ -7286,6 +7287,22 @@ export default function AuraAnalysis() {
                                       </p>
                                     </div>
                                   </div>
+                                </div>
+                              </div>
+                              
+                              {/* Connect to Healers Button */}
+                              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-200">
+                                <div className="text-center">
+                                  <h4 className="font-semibold text-amber-800 mb-2">Need Professional Guidance?</h4>
+                                  <p className="text-sm text-amber-700 mb-4">
+                                    Connect with experienced spiritual healers who can provide personalized guidance based on your aura reading
+                                  </p>
+                                  <Link href="/healers">
+                                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                                      <Users className="h-4 w-4 mr-2" />
+                                      Connect to Healers
+                                    </Button>
+                                  </Link>
                                 </div>
                               </div>
                             </div>
