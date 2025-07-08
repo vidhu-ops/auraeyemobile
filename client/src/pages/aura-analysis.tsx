@@ -7539,118 +7539,73 @@ export default function AuraAnalysis() {
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-2">Complete Aura Color Profile</h5>
                                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-                                        {/* Always show primary color */}
-                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                          <div 
-                                            className="w-8 h-8 rounded-full flex-shrink-0" 
-                                            style={{ 
-                                              backgroundColor: getAccurateColorCode(result.dominantColor),
-                                              boxShadow: `0 0 10px ${getAccurateColorCode(result.dominantColor)}60`
-                                            }}
-                                          ></div>
-                                          <div>
-                                            <div className="text-xs text-gray-500">Dominant</div>
-                                            <div className="text-sm font-medium">{result.dominantColor}</div>
-                                          </div>
-                                        </div>
-                                        
-                                        {/* Show secondary color if present */}
-                                        {result.secondaryColor && (
-                                          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                            <div 
-                                              className="w-8 h-8 rounded-full flex-shrink-0" 
-                                              style={{ 
-                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
-                                                boxShadow: `0 0 10px ${getAccurateColorCode(result.secondaryColor)}60`
-                                              }}
-                                            ></div>
-                                            <div>
-                                              <div className="text-xs text-gray-500">Overall</div>
-                                              <div className="text-sm font-medium">{result.secondaryColor}</div>
-                                            </div>
-                                          </div>
-                                        )}
-                                        
-                                        {/* Always show Blue and Green in spectrum */}
-                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                          <div 
-                                            className="w-8 h-8 rounded-full flex-shrink-0" 
-                                            style={{ 
-                                              backgroundColor: getAccurateColorCode('Blue'),
-                                              boxShadow: `0 0 10px ${getAccurateColorCode('Blue')}60`
-                                            }}
-                                          ></div>
-                                          <div>
-                                            <div className="text-xs text-gray-500">Complementary</div>
-                                            <div className="text-sm font-medium">Blue</div>
-                                          </div>
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                          <div 
-                                            className="w-8 h-8 rounded-full flex-shrink-0" 
-                                            style={{ 
-                                              backgroundColor: getAccurateColorCode('Green'),
-                                              boxShadow: `0 0 10px ${getAccurateColorCode('Green')}60`
-                                            }}
-                                          ></div>
-                                          <div>
-                                            <div className="text-xs text-gray-500">Complementary</div>
-                                            <div className="text-sm font-medium">Green</div>
-                                          </div>
-                                        </div>
-                                        
-                                        {/* Show additional colors from spectrum if available */}
-                                        {result.auraColorSpectrum ? (
-                                          result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => (
-                                            <div key={`color-${index}`} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                        {(() => {
+                                          // Create a unique set of colors to avoid duplicates
+                                          const uniqueColors = new Set();
+                                          const colorTiles = [];
+                                          
+                                          // Always add primary color
+                                          uniqueColors.add(result.dominantColor);
+                                          colorTiles.push({
+                                            color: result.dominantColor,
+                                            label: 'Dominant'
+                                          });
+                                          
+                                          // Add secondary color if different from primary
+                                          if (result.secondaryColor && result.secondaryColor !== result.dominantColor) {
+                                            uniqueColors.add(result.secondaryColor);
+                                            colorTiles.push({
+                                              color: result.secondaryColor,
+                                              label: 'Overall'
+                                            });
+                                          }
+                                          
+                                          // Always add Blue and Green if not already present
+                                          if (!uniqueColors.has('Blue')) {
+                                            uniqueColors.add('Blue');
+                                            colorTiles.push({
+                                              color: 'Blue',
+                                              label: 'Complementary'
+                                            });
+                                          }
+                                          
+                                          if (!uniqueColors.has('Green')) {
+                                            uniqueColors.add('Green');
+                                            colorTiles.push({
+                                              color: 'Green',
+                                              label: 'Complementary'
+                                            });
+                                          }
+                                          
+                                          // Add additional spectrum colors if available, avoiding duplicates
+                                          if (result.auraColorSpectrum) {
+                                            result.auraColorSpectrum.forEach(color => {
+                                              if (!uniqueColors.has(color) && colorTiles.length < 8) {
+                                                uniqueColors.add(color);
+                                                colorTiles.push({
+                                                  color: color,
+                                                  label: 'Complementary'
+                                                });
+                                              }
+                                            });
+                                          }
+                                          
+                                          return colorTiles.map((tile, index) => (
+                                            <div key={`color-tile-${index}`} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
                                               <div 
                                                 className="w-8 h-8 rounded-full flex-shrink-0" 
                                                 style={{ 
-                                                  backgroundColor: getAccurateColorCode(color),
-                                                  boxShadow: `0 0 10px ${getAccurateColorCode(color)}60`
+                                                  backgroundColor: getAccurateColorCode(tile.color),
+                                                  boxShadow: `0 0 10px ${getAccurateColorCode(tile.color)}60`
                                                 }}
                                               ></div>
                                               <div>
-                                                <div className="text-xs text-gray-500">Complementary</div>
-                                                <div className="text-sm font-medium">{color}</div>
+                                                <div className="text-xs text-gray-500">{tile.label}</div>
+                                                <div className="text-sm font-medium">{tile.color}</div>
                                               </div>
                                             </div>
-                                          ))
-                                        ) : (
-                                          // Fallback colors when auraColorSpectrum isn't available
-                                          <>
-                                            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                              <div 
-                                                className="w-8 h-8 rounded-full flex-shrink-0"
-                                                style={{ 
-                                                  backgroundColor: getAccurateColorCode(auraHelpers.getComplementaryColor(result.dominantColor)),
-                                                  opacity: 0.8,
-                                                  boxShadow: `0 0 10px ${getAccurateColorCode(auraHelpers.getComplementaryColor(result.dominantColor))}60`
-                                                }}
-                                              ></div>
-                                              <div>
-                                                <div className="text-xs text-gray-500">Complementary</div>
-                                                <div className="text-sm font-medium">{auraHelpers.getComplementaryColor(result.dominantColor)}</div>
-                                              </div>
-                                            </div>
-                                            
-                                            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                                              <div 
-                                                className="w-8 h-8 rounded-full flex-shrink-0"
-                                                style={{ 
-                                                  backgroundColor: getAccurateColorCode(auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor)),
-                                                  opacity: 0.8,
-                                                  boxShadow: `0 0 10px ${getAccurateColorCode(auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor))}60`
-                                                }}
-                                              ></div>
-                                              <div>
-                                                <div className="text-xs text-gray-500">Harmonious</div>
-                                                <div className="text-sm font-medium">{auraHelpers.getComplementaryColor(result.secondaryColor || result.dominantColor)}</div>
-                                              </div>
-                                            </div>
-                                          </>
-                                        )}
+                                          ));
+                                        })()}
                                       </div>
                                     </div>
                                   </div>
