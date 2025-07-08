@@ -150,6 +150,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 6, 2025. Added "What's My Vibe?" quick analysis feature to home page: instant personality color detection with dominant aura color overlay, positive and negative color meanings display, streamlined single-color analysis separate from full aura/object analysis, includes radial gradient aura visualization
 - July 7, 2025. Enhanced aura analysis image processing: implemented progressive compression to guarantee 200KB maximum file size while maintaining 1600x900 resolution, optimized hash-based analysis for consistent results from identical images, restricted color palette to only 12 approved aura colors (violet, indigo, blue, green, yellow, orange, red, white, black, gold, silver, brown), improved compression quality algorithm for faster analysis and visualization
 - July 8, 2025. Updated PDF download filename from "Spiritual Analysis Report Aura Reading & Energy Analysis" to "Aura and Chakra Alignment Report" as requested by user, modified PDF title, metadata, and download filename accordingly
+- July 8, 2025. Enhanced object analysis user experience: removed completion notification popup, added "New Analysis" button for restarting the process, ensured new name input is requested for every image upload, names are properly saved to database and displayed in client dashboard
 
 ## User Preferences
 
