@@ -63,6 +63,23 @@ export default function ObjectAnalysis() {
     setShowNameInput(false);
   };
 
+  // Reset form for new analysis
+  const resetForNewAnalysis = () => {
+    setResult(null);
+    setOriginalImage(null);
+    setProcessedImage(null);
+    setEnhancedAuraImage(null);
+    setAnalysisProgress(0);
+    setAnalysisStage("Initializing object scanning...");
+    setShowReviewForm(false);
+    setRating(0);
+    setReviewText("");
+    setReviewSubmitted(false);
+    setCurrentAnalysisId(null);
+    setName('');
+    setShowNameInput(true);
+  };
+
   // Submit review for object analysis
   const submitReview = async () => {
     if (rating === 0) return;
@@ -629,11 +646,6 @@ export default function ObjectAnalysis() {
         }
       };
       reader.readAsDataURL(file);
-
-      toast({
-        title: "Analysis Complete",
-        description: `Successfully analyzed the object: ${data.objectName}`,
-      });
     } catch (error) {
       console.error("Error analyzing object:", error);
       
@@ -907,42 +919,7 @@ export default function ObjectAnalysis() {
       "Magenta": "#FF00FF",
       "Brown": "#8B4513",
       "Gray": "#808080",
-      "Grey": "#808080",
-      "Charcoal": "#36454F",
-      "Slate": "#708090",
-      "Smoke": "#848884",
-      "Obsidian": "#0F0F0F",
-      "Pewter": "#96A8A1",
-      "Ash": "#B2BEB5",
-      "Onyx": "#353839",
-      "Graphite": "#41424C",
-      "Coral": "#FF7F7F",
-      "Peach": "#FFCBA4",
-      "Lavender": "#E6E6FA",
-      "Mint": "#3EB489",
-      "Rose": "#FF66CC",
-      "Amber": "#FFBF00",
-      "Jade": "#00A86B",
-      "Sapphire": "#0F52BA",
-      "Ruby": "#E0115F",
-      "Emerald": "#50C878",
-      "Topaz": "#FFC87C",
-      "Opal": "#A8C3BC",
-      "Pearl": "#F8F6F0",
-      "Copper": "#B87333",
-      "Bronze": "#CD7F32",
-      "Platinum": "#E5E4E2",
-      "Crimson": "#DC143C",
-      "Scarlet": "#FF2400",
-      "Azure": "#007FFF",
-      "Cyan": "#00FFFF",
-      "Teal": "#008080",
-      "Lime": "#00FF00",
-      "Olive": "#808000",
-      "Navy": "#000080",
-      "Maroon": "#800000",
-      "Fuchsia": "#FF00FF",
-      "Aqua": "#00FFFF"
+      "Grey": "#808080"
     };
     return colorMap[color] || "#808080";
   };
@@ -962,10 +939,8 @@ export default function ObjectAnalysis() {
       "Black": "bg-gray-900",
       "Silver": "bg-gray-300",
       "Gold": "bg-yellow-600",
-      "Bronze": "bg-amber-600",
-      "Copper": "bg-amber-500",
-      "Turquoise": "bg-teal-400",
       "Violet": "bg-violet-500",
+      "Gray": "bg-gray-500"
     };
 
     // Default fallback color or try to match parts of the color name
@@ -1042,6 +1017,17 @@ export default function ObjectAnalysis() {
                 <div className="space-y-8">
                   <Card>
                     <CardContent className="p-6">
+                      <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold">Complete Analysis</h2>
+                        <Button
+                          onClick={resetForNewAnalysis}
+                          variant="outline"
+                          className="ml-4"
+                        >
+                          New Analysis
+                        </Button>
+                      </div>
+                      
                       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 mb-6">
                           <TabsTrigger value="basic">Complete Analysis</TabsTrigger>
