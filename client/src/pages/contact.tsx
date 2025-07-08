@@ -97,7 +97,7 @@ export default function Contact() {
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <h3 className="font-heading font-semibold text-lg mb-2">How accurate is the aura reading?</h3>
                 <p className="text-gray-600">
-                  Our AI-powered aura analysis has been trained on thousands of readings from expert healers and has shown a high level of accuracy in detecting energy patterns. While technology continues to improve, we believe our system provides valuable insights into your energetic state.
+                  Our aura analysis has been trained on thousands of readings from expert healers and has shown a high level of accuracy in detecting energy patterns. While technology continues to improve, we believe our system provides valuable insights into your energetic state.
                 </p>
               </div>
               
@@ -123,9 +123,9 @@ export default function Contact() {
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">Can I use Aurfy for professional spiritual guidance?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2">Can I use Aurafy for professional spiritual guidance?</h3>
                 <p className="text-gray-600">
-                  While Aurfy provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
+                  While Aurafy provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
                 </p>
               </div>
             </div>

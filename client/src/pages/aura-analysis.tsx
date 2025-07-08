@@ -93,8 +93,8 @@ const getColorMeditationFocus = (color: string): string => {
     'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
     'White': 'Focus on pure light meditation and spiritual protection practices',
     'Silver': 'Practice lunar energy and psychic sensitivity meditations',
-    'Black': 'Engage in shadow work and transformative healing meditations',
-    'gray': 'Focus on neutral balance and adaptable wisdom meditations'
+    'Black': 'Requires intensive shadow work, inner healing, and confronting darkness',
+    'gray': 'Meditation to address emotional detachment and spiritual numbness'
   };
   return focuses[color] || 'Focus on connecting with your unique aura color energy during meditation';
 };
@@ -1801,8 +1801,8 @@ export default function AuraAnalysis() {
       'White': 'Pure divine light - spiritual protection, angelic connection',
       'Gold': 'Christ consciousness - divine wisdom, spiritual illumination',
       'Silver': 'Lunar energy - intuitive wisdom, feminine power, psychic protection',
-      'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality',
-      'Black': 'Shadow integration - transformation power, deep inner work',     
+      'Gray': 'Emotional numbness - detachment, avoidance, spiritual stagnation',
+      'Black': 'Shadow work required - deep wounds, negativity, spiritual darkness',     
     };
     const additionalColorMeanings: Record<string, string> = {
       'red': 'Deep passion energy - intense life force, warrior spirit, primal power',
@@ -2190,10 +2190,12 @@ export default function AuraAnalysis() {
       'White': 'Purity and spiritual protection, connection to higher realms, clarity of purpose, divine guidance',
       'Pink': 'Unconditional love, compassion, nurturing energy, heart-centered healing, emotional balance',
       'Silver': 'Protection of the divine and of spiritual connection.',
-      'Gray': 'Balance, neutrality, adaptability.',
-      'Black': 'Power, protection, transformation.',
       'violet': 'Divine connection, spiritual awareness, mystical abilities, intuitive wisdom',
     };
+    // Black and Gray only show shadow traits, no positive traits
+    if (color === 'Black' || color === 'Gray' || color === 'black' || color === 'gray' || color === 'grey' || color === 'Grey') {
+      return 'No positive traits - see shadow aspects for this color';
+    }
     return traits[color] || traits['Purple'];
   };
 
@@ -4680,7 +4682,11 @@ export default function AuraAnalysis() {
               // Call API to analyze the image
               analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
               // Cache the result
-              setImageCache(prev => new Map(prev.set(imageHash, analysisResult)));
+              setImageCache(prev => {
+                const newCache = new Map(prev);
+                newCache.set(imageHash, analysisResult);
+                return newCache;
+              });
             }
             
             setResult(analysisResult);
@@ -7259,7 +7265,7 @@ export default function AuraAnalysis() {
                                       <p className="text-xs text-amber-600">
                                         {(() => {
                                           const practices: Record<string, string> = {
-                                            'Black': 'Shadow work journaling, transformation meditation, wear black clothing for inner work',
+                                            'Black': 'Intensive shadow work, addressing negativity, healing deep trauma and darkness',
                                             'White': 'Light protection visualization, spiritual cleansing, wear white clothing',
                                             'Brown': 'Earth connection walks, grounding meditation, wear brown or earth tones',
                                             'Turquoise': 'Healing communication practice, emotional truth expression, wear turquoise jewelry',

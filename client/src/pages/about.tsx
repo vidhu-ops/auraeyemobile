@@ -39,7 +39,7 @@ export default function About() {
               <div>
                 <h2 className="font-heading font-bold text-3xl mb-6">Our Story</h2>
                 <p className="text-gray-600 mb-4">
-                  Aurfy was born from a vision to bridge the gap between ancient spiritual practices and modern technology. Our founder, a spiritual healer with over 20 years of experience, recognized that many people struggled to access quality spiritual guidance and energy healing.
+                  Aurafy was born from a vision to bridge the gap between ancient spiritual practices and modern technology. Our founder, a spiritual healer with over 20 years of experience, recognized that many people struggled to access quality spiritual guidance and energy healing.
                 </p>
                 <p className="text-gray-600 mb-4">
                   By combining traditional metaphysical knowledge with cutting-edge artificial intelligence, we've created a platform that can analyze your energy field, provide personalized spiritual insights, and connect you with certified healers—all from the comfort of your home.
@@ -59,7 +59,7 @@ export default function About() {
                   <p className="text-gray-600 italic">
                     "Every person carries a unique energy signature that holds the key to their spiritual growth and well-being."
                   </p>
-                  <p className="text-right text-gray-500 mt-2">— Aurfy Founder</p>
+                  <p className="text-right text-gray-500 mt-2">— Aurafy Founder</p>
                 </div>
               </div>
             </div>
@@ -137,9 +137,9 @@ export default function About() {
                 <TabsContent value="ai">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
-                      <h3 className="font-heading font-semibold text-2xl mb-4">AI-Powered Aura Analysis</h3>
+                      <h3 className="font-heading font-semibold text-2xl mb-4">Aura Analysis</h3>
                       <p className="text-gray-600 mb-4">
-                        Our proprietary AI algorithms have been trained on thousands of aura readings performed by master healers and psychics. By analyzing subtle visual cues, energy patterns, and facial expressions in your uploaded photos, our system can detect your aura colors and energy patterns with remarkable accuracy.
+                        Our proprietary algorithms have been trained on thousands of aura readings performed by master healers and psychics. By analyzing the hidden energy patterns in your uploaded photos, our system can detect your aura colors and energy patterns with remarkable accuracy.
                       </p>
                       <p className="text-gray-600 mb-6">
                         We've combined this technology with deep knowledge of chakra systems, energy medicine, and metaphysical principles to provide you with insights that are not just accurate but spiritually meaningful and practical.

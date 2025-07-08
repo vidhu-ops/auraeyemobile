@@ -668,7 +668,7 @@ export default function ObjectAnalysis() {
       "Indigo": "Indigo aura embodies psychic abilities, deep intuition, and third eye activation. Objects with indigo energy enhance clairvoyance, spiritual seeing, and intuitive knowledge. This vibration supports mystical experiences and inner knowing.",
       "Pink": "Pink aura signifies unconditional love, emotional healing, and heart chakra opening. Objects with pink energy promote self-love, compassion, and emotional nurturing. This color indicates divine feminine energy and heart healing properties.",
       "White": "White aura represents pure divine energy, spiritual protection, and cosmic consciousness. Objects carrying white energy provide spiritual cleansing, divine connection, and energetic purification. This vibration indicates highest spiritual attunement.",
-      "Black": "Black aura signifies protective energy, mystery, and deep transformation. Objects with black energy provide psychic protection, absorb negative energies, and facilitate shadow work. This color indicates powerful grounding and protective properties.",
+      "Black": "Black aura signifies deep shadow work required, emotional blockages, and spiritual darkness. Objects with black energy carry heavy negative vibrations, suppressed trauma, and dark spiritual influences that require intensive healing and cleansing.",
       "Gold": "Gold aura embodies divine wisdom, spiritual mastery, and enlightened consciousness. Objects with gold energy enhance spiritual teaching, divine connection, and wisdom transmission. This vibration indicates advanced spiritual development.",
       "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom.",
       "Turquoise": "Turquoise aura signifies emotional healing, spiritual purification, and heart-centered living. Objects with turquoise energy promote emotional balance, heart chakra opening, and spiritual healing. This color indicates divine feminine energy and heart healing.",
@@ -751,7 +751,7 @@ export default function ObjectAnalysis() {
       
       // Neutral Family
       "White": "Provides spiritual protection, purifies energy, connects to divine, enhances clarity, promotes peace",
-      "Black": "Offers psychic protection, absorbs negativity, supports transformation, provides grounding, enhances mystery work"
+      "Black": "Indicates negative energy buildup, spiritual blockages, shadow aspects requiring healing, emotional darkness, suppressed trauma"
     };
     
     // Return specific color meaning or generate a meaningful default based on the color name
@@ -788,7 +788,7 @@ export default function ObjectAnalysis() {
       "Indigo": "Opens psychic portals that enhance intuitive abilities and spiritual sight. Indigo vibrations create mystical environments that stimulate third eye activation, facilitate prophetic dreams, and connect spaces to cosmic consciousness.",
       "Pink": "Generates unconditional love fields that heal emotional wounds and open hearts. Pink energy creates nurturing environments that promote self-love, compassion, and emotional healing while dissolving fear-based patterns.",
       "White": "Purifies and sanctifies spaces with divine light that clears negative energies and elevates consciousness. White vibrations create temples of purity that facilitate spiritual cleansing, divine connection, and cosmic awareness.",
-      "Black": "Creates protective energy shields that absorb negativity and facilitate shadow work. Black vibrations establish grounding sanctuaries that support deep transformation, mystery exploration, and psychic protection.",
+      "Black": "Creates heavy energy that drains vitality and manifests spiritual darkness. Black vibrations establish environments of negativity, depression, and spiritual stagnation requiring immediate cleansing and healing work.",
       "Gold": "Establishes divine wisdom temples that facilitate spiritual teaching and enlightenment. Gold energy creates sacred spaces that enhance spiritual mastery, divine connection, and transmission of cosmic knowledge.",
       "Silver": "Generates lunar consciousness fields that enhance psychic abilities and emotional intuition. Silver vibrations create mystical environments that support dream work, psychic development, and feminine wisdom activation."
     };
@@ -824,7 +824,7 @@ export default function ObjectAnalysis() {
       "Indigo": "Deepens emotional intuition and psychic sensitivity while enhancing spiritual emotional experiences. Promotes mystical feelings, prophetic emotions, and deep inner knowing while connecting to cosmic emotional wisdom.",
       "Pink": "Generates unconditional love feelings that heal emotional wounds and open hearts to compassion. Enhances self-love, emotional nurturing, and heart-centered living while dissolving fear, anger, and emotional pain.",
       "White": "Purifies emotional body and creates feelings of divine peace, spiritual clarity, and cosmic love. Enhances emotional purity, spiritual serenity, and connection to divine emotional states while clearing negative emotional patterns.",
-      "Black": "Facilitates deep emotional transformation and shadow work that integrates suppressed feelings. Enhances emotional protection, mystery exploration, and transformational emotional processes while absorbing negative emotional energies.",
+      "Black": "Indicates suppressed emotional trauma, unresolved grief, and deep emotional wounds requiring healing. Creates emotional heaviness, depression, and emotional blockages that need therapeutic intervention and spiritual cleansing.",
       "Gold": "Elevates emotions to divine wisdom states that transcend ordinary emotional patterns. Enhances feelings of spiritual mastery, divine love, and enlightened emotional expression while connecting to cosmic emotional intelligence.",
       "Silver": "Enhances emotional intuition and psychic emotional sensitivity while connecting to lunar emotional wisdom. Promotes empathic feelings, dream emotions, and feminine emotional knowing while balancing emotional polarities."
     };
@@ -842,7 +842,7 @@ export default function ObjectAnalysis() {
       "Indigo": "Opens psychic spiritual abilities and facilitates deep spiritual sight and knowing. Supports mystical experiences, prophetic spiritual abilities, and connection to cosmic spiritual wisdom while enhancing spiritual intuition and inner knowing.",
       "Pink": "Promotes unconditional spiritual love and healing of spiritual heart wounds. Supports compassionate spiritual service, self-love spiritual practices, and healing of spiritual relationship wounds while connecting to divine feminine spiritual energy.",
       "White": "Facilitates direct connection to divine source and cosmic consciousness while promoting spiritual purification. Supports all spiritual practices, divine union experiences, and connection to highest spiritual realms while clearing spiritual blockages.",
-      "Black": "Supports deep spiritual transformation and shadow work while providing spiritual protection. Facilitates spiritual evolution through darkness integration, mystery spiritual practices, and protection from negative spiritual influences.",
+      "Black": "Indicates spiritual darkness, blocked spiritual development, and negative spiritual influences. Creates spiritual stagnation, disconnection from divine light, and requires intensive spiritual cleansing and healing work.",
       "Gold": "Enhances spiritual mastery and connection to divine wisdom while promoting enlightenment experiences. Supports advanced spiritual practices, spiritual teaching abilities, and transmission of cosmic spiritual knowledge while connecting to divine intelligence.",
       "Silver": "Enhances psychic spiritual abilities and connection to lunar spiritual wisdom. Supports dream spiritual work, psychic spiritual development, and feminine spiritual practices while connecting to lunar spiritual consciousness."
     };
