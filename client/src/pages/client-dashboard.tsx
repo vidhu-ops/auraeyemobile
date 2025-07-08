@@ -76,6 +76,24 @@ interface NumerologyReading {
   createdAt: string;
 }
 
+interface ObjectAnalysis {
+  id: number;
+  userId: number;
+  name: string;
+  imageUrl: string;
+  objectName: string;
+  objectDescription: string;
+  objectPurpose: string;
+  auraColor: string;
+  auraDescription: string;
+  energyLevel: number;
+  energyQualities: string;
+  historicalSignificance?: string;
+  spiritualSignificance?: string;
+  detailedAnalysis: string;
+  createdAt: string;
+}
+
 interface HealerBooking {
   id: number;
   userId: number;
@@ -352,6 +370,12 @@ export default function ClientDashboard() {
     queryKey: ["/api/numerology-readings"],
     enabled: !!user,
   });
+
+  // Fetch user's object analyses
+  const { data: objectAnalyses = [], isLoading: isLoadingObjectAnalyses } = useQuery<ObjectAnalysis[]>({
+    queryKey: ["/api/object-analyses"],
+    enabled: !!user,
+  });
   
   // Fetch user's healer bookings with real-time updates
   const { data: userBookings = [], isLoading: isLoadingBookings } = useQuery<HealerBooking[]>({
@@ -531,8 +555,9 @@ export default function ClientDashboard() {
               </CardHeader>
               <CardContent>
                 <Tabs value={activeBookingsTab} onValueChange={setActiveBookingsTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                  <TabsList className="grid w-full grid-cols-4 mb-4">
                     <TabsTrigger value="aura">Aura Readings</TabsTrigger>
+                    <TabsTrigger value="object">Object Analysis</TabsTrigger>
                     <TabsTrigger value="numerology">Numerology</TabsTrigger>
                     <TabsTrigger value="bookings">My Bookings</TabsTrigger>
                   </TabsList>
@@ -611,6 +636,60 @@ export default function ClientDashboard() {
                                   : (auraReadings as AuraReading[])[currentAuraIndex]?.analysis)}
                               </p>
                             </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="object">
+                    {isLoadingObjectAnalyses ? (
+                      <div className="flex justify-center items-center h-[150px]">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : Array.isArray(objectAnalyses) && objectAnalyses.length === 0 ? (
+                      <div className="text-center h-[150px] flex flex-col justify-center text-gray-500">
+                        <Star className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No object analyses yet</p>
+                        <Link to="/object-analysis">
+                          <Button className="mt-2" variant="outline" size="sm">
+                            Analyze Your First Object
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-[200px] overflow-y-auto">
+                        {Array.isArray(objectAnalyses) && objectAnalyses.slice(0, 3).map((analysis: ObjectAnalysis) => (
+                          <div key={analysis.id} className="border rounded-lg bg-white shadow-sm p-3">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-4 h-4 rounded-full border border-gray-300"
+                                  style={{ backgroundColor: analysis.auraColor }}
+                                ></div>
+                                <div>
+                                  <h4 className="text-sm font-medium">{analysis.name || 'Unnamed'}</h4>
+                                  <p className="text-xs text-gray-500">{analysis.objectName} - {analysis.auraColor} Aura</p>
+                                </div>
+                              </div>
+                              <span className="text-xs text-gray-400">
+                                {format(new Date(analysis.createdAt), 'MMM dd')}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-2">
+                              {analysis.objectDescription.length > 80 
+                                ? analysis.objectDescription.substring(0, 80) + "..." 
+                                : analysis.objectDescription}
+                            </p>
+                          </div>
+                        ))}
+                        {Array.isArray(objectAnalyses) && objectAnalyses.length > 3 && (
+                          <div className="text-center pt-2">
+                            <Link to="/object-analysis">
+                              <Button variant="outline" size="sm">
+                                View All {objectAnalyses.length} Analyses
+                              </Button>
+                            </Link>
                           </div>
                         )}
                       </div>
