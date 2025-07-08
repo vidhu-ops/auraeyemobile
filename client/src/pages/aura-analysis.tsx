@@ -952,15 +952,17 @@ export default function AuraAnalysis() {
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
 
-      // Define chakras with their scores
+      // Define chakras with their scores (9-chakra system)
       const chakraData = [
+        { name: 'Soul Star Chakra', score: result.chakraActivity?.soulStar || 5, color: 'White', description: 'Divine connection, soul purpose, cosmic consciousness' },
         { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'Violet', description: 'Spiritual connection, divine wisdom, universal consciousness' },
         { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'Indigo', description: 'Intuition, inner wisdom, psychic abilities' },
         { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'Blue', description: 'Communication, truth, self-expression' },
         { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'Green', description: 'Love, compassion, emotional healing' },
         { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'Yellow', description: 'Personal power, confidence, willpower' },
         { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'Orange', description: 'Creativity, sexuality, emotional flow' },
-        { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'Red', description: 'Grounding, survival, physical vitality' }
+        { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'Red', description: 'Grounding, survival, physical vitality' },
+        { name: 'Earth Star Chakra', score: result.chakraActivity?.earthStar || 5, color: 'Brown', description: 'Earth connection, grounding, ancestral wisdom' }
       ];
 
       chakraData.forEach((chakra, index) => {
@@ -1026,7 +1028,52 @@ export default function AuraAnalysis() {
       const healingRec = getColorHealing(result.dominantColor, result.secondaryColor || 'White');
       const healingLines = pdf.splitTextToSize(healingRec, pageWidth - 40);
       pdf.text(healingLines, 20, yPosition);
-      yPosition += healingLines.length * 6 + 10;
+      yPosition += healingLines.length * 6 + 15;
+
+      // PERSONALITY INTEGRATION ANALYSIS
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      pdf.setFontSize(14);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Personality Integration Analysis', 20, yPosition);
+      yPosition += 12;
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+
+      // Core personality traits and chakra alignment
+      const personalityTraits = result.personalityTraits || result.spiritualGifts || [];
+      const personalityText = `Core Personality Traits: Your dominant ${result.dominantColor} energy reveals ${personalityTraits.slice(0, 3).join(', ')}. These traits directly influence how your chakra system processes and expresses energy.`;
+      const personalityLines = pdf.splitTextToSize(personalityText, pageWidth - 40);
+      pdf.text(personalityLines, 20, yPosition);
+      yPosition += personalityLines.length * 6 + 10;
+
+      // Integration patterns
+      const integrationText = `Integration Patterns: Your ${result.dominantColor} personality integrates with your chakra system through specific energy patterns. The highest-scoring chakras (${Object.entries(result.chakraActivity || {}).filter(([_, score]) => score >= 8).map(([name, score]) => `${name.replace(/([A-Z])/g, ' $1').trim()} (${score}/10)`).join(', ') || 'crown and third eye'}) show where your personality traits manifest most strongly.`;
+      const integrationLines = pdf.splitTextToSize(integrationText, pageWidth - 40);
+      pdf.text(integrationLines, 20, yPosition);
+      yPosition += integrationLines.length * 6 + 10;
+
+      // Giving and receiving integration
+      const energyText = `Energy Exchange Integration: Your giving energy (${result.zones?.giving?.colors?.[0] || result.dominantColor}) and receiving energy (${result.zones?.receiving?.colors?.[0] || result.secondaryColor}) create a unique personality blueprint. This combination influences how you interact with others and process emotional experiences through your chakra system.`;
+      const energyLines = pdf.splitTextToSize(energyText, pageWidth - 40);
+      pdf.text(energyLines, 20, yPosition);
+      yPosition += energyLines.length * 6 + 10;
+
+      // Thinking pattern integration
+      const thinkingText = `Mental Processing Integration: Your thinking energy (${result.zones?.thinking?.colors?.[0] || result.dominantColor}) shows how your personality processes information and makes decisions. This mental pattern directly affects your upper chakras (third eye, crown, soul star) and influences your spiritual development path.`;
+      const thinkingLines = pdf.splitTextToSize(thinkingText, pageWidth - 40);
+      pdf.text(thinkingLines, 20, yPosition);
+      yPosition += thinkingLines.length * 6 + 10;
+
+      // Holistic integration guidance
+      const holisticText = `Holistic Integration Guidance: To fully integrate your personality with your chakra system, focus on balancing your strongest chakras with your weaker ones. Your ${result.dominantColor} personality thrives when all energy centers work in harmony, creating a unified spiritual and emotional experience.`;
+      const holisticLines = pdf.splitTextToSize(holisticText, pageWidth - 40);
+      pdf.text(holisticLines, 20, yPosition);
+      yPosition += holisticLines.length * 6 + 15;
 
       // 9 CHAKRA SYSTEM ANALYSIS
       if (yPosition > 160) {
@@ -6618,7 +6665,7 @@ export default function AuraAnalysis() {
                                         )}
                                       </div>
                                       <p className="text-xs text-gray-600 mt-2">
-                                        Aura colors: {result.dominantColor} & {result.secondaryColor}
+                                        Dominant Aura Color: {result.dominantColor}
                                       </p>
                                     </div>
                                   </div>

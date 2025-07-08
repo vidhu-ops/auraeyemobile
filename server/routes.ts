@@ -151,7 +151,9 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
       heart: Math.floor(seededRandom() * 4) + 7,
       throat: Math.floor(seededRandom() * 4) + 6,
       thirdEye: Math.floor(seededRandom() * 4) + 7,
-      crown: Math.floor(seededRandom() * 4) + 7
+      crown: Math.floor(seededRandom() * 4) + 7,
+      soulStar: Math.floor(seededRandom() * 3) + 7,
+      earthStar: Math.floor(seededRandom() * 3) + 6
     },
     auricLayers: spectrumColors.slice(0, 4).map((color, index) => ({
       layer: index + 1,
@@ -540,7 +542,9 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
       heart: Math.floor(seededRandom() * 3) + 8,
       throat: Math.floor(seededRandom() * 3) + 6,
       thirdEye: Math.floor(seededRandom() * 3) + 7,
-      crown: Math.floor(seededRandom() * 3) + 7
+      crown: Math.floor(seededRandom() * 3) + 7,
+      soulStar: Math.floor(seededRandom() * 3) + 7,
+      earthStar: Math.floor(seededRandom() * 3) + 6
     },
     detailedAnalysis: `Your aura shows comprehensive energy patterns across all four zones. Personality: ${personalityTraits.join(', ')}. Giving: ${givingTraits.join(', ')}. Receiving: ${receivingTraits.join(', ')}. Thinking: ${thinkingTraits.join(', ')}. This combination reveals a complete spiritual profile with unique qualities in each energy zone.`,
     zones: {
