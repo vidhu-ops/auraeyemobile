@@ -728,22 +728,43 @@ export default function AuraAnalysis() {
           pdf.text('Aura Visualization', 20, yPosition);
           yPosition += 15;
           
-          // Create a temporary image to get dimensions
+          // Create a temporary image to get actual dimensions
           const tempImg = new Image();
-          tempImg.src = processedAuraImage;
+          tempImg.crossOrigin = 'anonymous';
+          
+          // Wait for image to load to get accurate dimensions
+          await new Promise<void>((resolve) => {
+            tempImg.onload = () => resolve();
+            tempImg.onerror = () => resolve(); // Continue even if image fails to load
+            tempImg.src = processedAuraImage;
+          });
           
           // Use full page width for the image (A4 page width minus margins)
-          const pageWidth = 210; // A4 width in mm
-          const margin = 20; // Margins
-          const maxImageWidth = pageWidth - (margin * 2); // 170mm
+          const pageWidthMm = 210; // A4 width in mm
+          const margin = 20; // Margins in mm
+          const maxImageWidth = pageWidthMm - (margin * 2); // 170mm
           
-          // Calculate height maintaining aspect ratio
-          const originalAspectRatio = tempImg.naturalWidth / tempImg.naturalHeight || 16/9;
+          // Calculate height maintaining exact aspect ratio from processed aura image
+          // Default to 1600:900 aspect ratio (our standard aura image dimensions)
+          const originalAspectRatio = tempImg.naturalWidth && tempImg.naturalHeight 
+            ? tempImg.naturalWidth / tempImg.naturalHeight 
+            : 1600/900; // Standard aura image aspect ratio (16:9)
+          
           const imageWidth = maxImageWidth;
           const imageHeight = imageWidth / originalAspectRatio;
           
+          // Ensure image doesn't exceed page height
+          const maxImageHeight = 120; // Maximum height in mm
+          let finalImageWidth = imageWidth;
+          let finalImageHeight = imageHeight;
+          
+          if (imageHeight > maxImageHeight) {
+            finalImageHeight = maxImageHeight;
+            finalImageWidth = finalImageHeight * originalAspectRatio;
+          }
+          
           // Check if image fits on current page, if not start new page
-          if (yPosition + imageHeight > 270) {
+          if (yPosition + finalImageHeight > 270) {
             pdf.addPage();
             yPosition = 30;
             pdf.setFontSize(18);
@@ -752,10 +773,10 @@ export default function AuraAnalysis() {
             yPosition += 15;
           }
           
-          const imageX = (pageWidth - imageWidth) / 2; // Center horizontally
+          const imageX = (pageWidthMm - finalImageWidth) / 2; // Center horizontally
           
-          pdf.addImage(processedAuraImage, 'JPEG', imageX, yPosition, imageWidth, imageHeight);
-          yPosition += imageHeight + 15;
+          pdf.addImage(processedAuraImage, 'JPEG', imageX, yPosition, finalImageWidth, finalImageHeight);
+          yPosition += finalImageHeight + 15;
           
           // Add image description
           pdf.setFontSize(10);
@@ -7442,7 +7463,7 @@ export default function AuraAnalysis() {
                                   {/* Comprehensive Aura Color Spectrum */}
                                   <div className="mb-6">
                                     <h4 className="font-medium text-sm text-secondary mb-3">Complete Aura Color Spectrum</h4>
-                                    <div className="relative h-14 bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-violet-600 rounded-md mb-2 overflow-hidden">
+                                    <div className="relative h-14 bg-gradient-to-r from-red-500 via-orange-500 via-yellow-400 via-green-500 via-blue-500 via-indigo-500 to-violet-600 rounded-md mb-2 overflow-hidden">
                                       {/* Frequency markers */}
                                       <div className="absolute inset-0 flex justify-between px-1">
                                       </div>
@@ -7472,19 +7493,21 @@ export default function AuraAnalysis() {
                                       
                                       {/* Always show Blue and Green markers */}
                                       <div 
-                                        className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-60" 
+                                        className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-90" 
                                         style={{ 
                                           left: `${auraHelpers.getColorPosition('Blue') || 67}%`,
                                           transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 8px rgba(0, 0, 255, 0.6)' 
+                                          boxShadow: '0 0 12px rgba(0, 0, 255, 0.8)',
+                                          backgroundColor: 'rgba(0, 0, 255, 0.3)' 
                                         }}
                                       ></div>
                                       <div 
-                                        className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-60" 
+                                        className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-90" 
                                         style={{ 
                                           left: `${auraHelpers.getColorPosition('Green') || 45}%`,
                                           transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 8px rgba(0, 255, 0, 0.6)' 
+                                          boxShadow: '0 0 12px rgba(0, 255, 0, 0.8)',
+                                          backgroundColor: 'rgba(0, 255, 0, 0.3)' 
                                         }}
                                       ></div>
                                       
