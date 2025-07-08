@@ -7491,26 +7491,7 @@ export default function AuraAnalysis() {
                                         ></div>
                                       )}
                                       
-                                      {/* Always show Blue and Green markers */}
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-90" 
-                                        style={{ 
-                                          left: `${auraHelpers.getColorPosition('Blue') || 67}%`,
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 12px rgba(0, 0, 255, 0.8)',
-                                          backgroundColor: 'rgba(0, 0, 255, 0.3)' 
-                                        }}
-                                      ></div>
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-90" 
-                                        style={{ 
-                                          left: `${auraHelpers.getColorPosition('Green') || 45}%`,
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 12px rgba(0, 255, 0, 0.8)',
-                                          backgroundColor: 'rgba(0, 255, 0, 0.3)' 
-                                        }}
-                                      ></div>
-                                      
+                                     
                                       
                                       {/* Additional aura colors from the spectrum (if available) */}
                                       {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => 
@@ -7562,42 +7543,10 @@ export default function AuraAnalysis() {
                                       )}
                                       
                                       {/* Fixed position markers for Purple, Violet, Indigo, Blue, Green */}
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
-                                        style={{ 
-                                          left: '10%',
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 6px rgba(128, 0, 128, 0.7)',
-                                          backgroundColor: 'rgba(128, 0, 128, 0.2)' 
-                                        }}
-                                      ></div>
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
-                                        style={{ 
-                                          left: '25%',
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 6px rgba(75, 0, 130, 0.7)',
-                                          backgroundColor: 'rgba(75, 0, 130, 0.2)' 
-                                        }}
-                                      ></div>
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
-                                        style={{ 
-                                          left: '50%',
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 6px rgba(0, 0, 255, 0.7)',
-                                          backgroundColor: 'rgba(0, 0, 255, 0.2)' 
-                                        }}
-                                      ></div>
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
-                                        style={{ 
-                                          left: '75%',
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 6px rgba(0, 255, 255, 0.7)',
-                                          backgroundColor: 'rgba(0, 255, 255, 0.2)' 
-                                        }}
-                                      ></div>
+                                     
+                                     
+                                     
+                                     
                                       <div 
                                         className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
                                         style={{ 
@@ -7612,9 +7561,6 @@ export default function AuraAnalysis() {
                                     {/* Purple to Green spectrum labels */}
                                     <div className="flex justify-between text-xs text-gray-500 mb-6">
                                       <span>Purple</span>
-                                      <span>Indigo</span>
-                                      <span>Blue</span>
-                                      <span>Cyan</span>
                                       <span>Green</span>
                                     </div>
                                     
