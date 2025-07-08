@@ -5137,7 +5137,7 @@ export default function AuraAnalysis() {
       "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return careers[getCareerAlignment(color, traits)] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
+    return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
 
   return (
