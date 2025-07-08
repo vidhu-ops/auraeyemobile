@@ -7482,11 +7482,11 @@ export default function AuraAnalysis() {
                                       
                                       {result.secondaryColor && auraHelpers.getColorPosition(result.secondaryColor) !== null && (
                                         <div 
-                                          className="absolute top-0 bottom-0 w-6 border-2 border-white rounded-sm opacity-70" 
+                                          className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-80" 
                                           style={{ 
                                             left: `${auraHelpers.getColorPosition(result.secondaryColor)}%`,
                                             transform: 'translateX(-50%)',
-                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.6)' 
+                                            boxShadow: '0 0 8px rgba(255, 255, 255, 0.6)' 
                                           }}
                                         ></div>
                                       )}
@@ -7510,6 +7510,7 @@ export default function AuraAnalysis() {
                                           backgroundColor: 'rgba(0, 255, 0, 0.3)' 
                                         }}
                                       ></div>
+                                      
                                       
                                       {/* Additional aura colors from the spectrum (if available) */}
                                       {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => 
@@ -7535,6 +7536,88 @@ export default function AuraAnalysis() {
                                       <span>Spiritual (Higher Hz)</span>
                                     </div>
                                     
+                                    {/* Secondary Purple to Green Spectrum */}
+                                    <div className="relative h-12 bg-gradient-to-r from-purple-600 via-indigo-500 via-blue-500 via-cyan-400 via-green-500 to-green-400 rounded-md mb-2 overflow-hidden">
+                                      {/* Primary and secondary color indicators on purple-green spectrum */}
+                                      {auraHelpers.getColorPosition(result.dominantColor) !== null && (
+                                        <div 
+                                          className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm" 
+                                          style={{ 
+                                            left: `${auraHelpers.getColorPosition(result.dominantColor)}%`,
+                                            transform: 'translateX(-50%)',
+                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.9)' 
+                                          }}
+                                        ></div>
+                                      )}
+                                      
+                                      {result.secondaryColor && auraHelpers.getColorPosition(result.secondaryColor) !== null && (
+                                        <div 
+                                          className="absolute top-0 bottom-0 w-4 border-2 border-white rounded-sm opacity-80" 
+                                          style={{ 
+                                            left: `${auraHelpers.getColorPosition(result.secondaryColor)}%`,
+                                            transform: 'translateX(-50%)',
+                                            boxShadow: '0 0 8px rgba(255, 255, 255, 0.7)' 
+                                          }}
+                                        ></div>
+                                      )}
+                                      
+                                      {/* Fixed position markers for Purple, Violet, Indigo, Blue, Green */}
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: '10%',
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 6px rgba(128, 0, 128, 0.7)',
+                                          backgroundColor: 'rgba(128, 0, 128, 0.2)' 
+                                        }}
+                                      ></div>
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: '25%',
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 6px rgba(75, 0, 130, 0.7)',
+                                          backgroundColor: 'rgba(75, 0, 130, 0.2)' 
+                                        }}
+                                      ></div>
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: '50%',
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 6px rgba(0, 0, 255, 0.7)',
+                                          backgroundColor: 'rgba(0, 0, 255, 0.2)' 
+                                        }}
+                                      ></div>
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: '75%',
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 6px rgba(0, 255, 255, 0.7)',
+                                          backgroundColor: 'rgba(0, 255, 255, 0.2)' 
+                                        }}
+                                      ></div>
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: '90%',
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 6px rgba(0, 255, 0, 0.7)',
+                                          backgroundColor: 'rgba(0, 255, 0, 0.2)' 
+                                        }}
+                                      ></div>
+                                    </div>
+                                    
+                                    {/* Purple to Green spectrum labels */}
+                                    <div className="flex justify-between text-xs text-gray-500 mb-6">
+                                      <span>Purple</span>
+                                      <span>Indigo</span>
+                                      <span>Blue</span>
+                                      <span>Cyan</span>
+                                      <span>Green</span>
+                                    </div>
+                                    
                                     {/* Aura color spectrum display */}
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-2">Complete Aura Color Profile</h5>
@@ -7557,23 +7640,6 @@ export default function AuraAnalysis() {
                                             colorTiles.push({
                                               color: result.secondaryColor,
                                               label: 'Overall'
-                                            });
-                                          }
-                                          
-                                          // Always add Blue and Green if not already present
-                                          if (!uniqueColors.has('Blue')) {
-                                            uniqueColors.add('Blue');
-                                            colorTiles.push({
-                                              color: 'Blue',
-                                              label: 'Complementary'
-                                            });
-                                          }
-                                          
-                                          if (!uniqueColors.has('Green')) {
-                                            uniqueColors.add('Green');
-                                            colorTiles.push({
-                                              color: 'Green',
-                                              label: 'Complementary'
                                             });
                                           }
                                           
