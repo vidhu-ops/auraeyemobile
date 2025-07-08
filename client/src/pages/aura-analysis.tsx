@@ -7470,8 +7470,26 @@ export default function AuraAnalysis() {
                                         ></div>
                                       )}
                                       
+                                      {/* Always show Blue and Green markers */}
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: `${auraHelpers.getColorPosition('Blue') || 67}%`,
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 8px rgba(0, 0, 255, 0.6)' 
+                                        }}
+                                      ></div>
+                                      <div 
+                                        className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-60" 
+                                        style={{ 
+                                          left: `${auraHelpers.getColorPosition('Green') || 45}%`,
+                                          transform: 'translateX(-50%)',
+                                          boxShadow: '0 0 8px rgba(0, 255, 0, 0.6)' 
+                                        }}
+                                      ></div>
+                                      
                                       {/* Additional aura colors from the spectrum (if available) */}
-                                      {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).map((color, index) => 
+                                      {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => 
                                         auraHelpers.getColorPosition(color) !== null && (
                                           <div 
                                             key={`spectrum-${index}`}
@@ -7530,9 +7548,38 @@ export default function AuraAnalysis() {
                                           </div>
                                         )}
                                         
+                                        {/* Always show Blue and Green in spectrum */}
+                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                          <div 
+                                            className="w-8 h-8 rounded-full flex-shrink-0" 
+                                            style={{ 
+                                              backgroundColor: getAccurateColorCode('Blue'),
+                                              boxShadow: `0 0 10px ${getAccurateColorCode('Blue')}60`
+                                            }}
+                                          ></div>
+                                          <div>
+                                            <div className="text-xs text-gray-500">Complementary</div>
+                                            <div className="text-sm font-medium">Blue</div>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
+                                          <div 
+                                            className="w-8 h-8 rounded-full flex-shrink-0" 
+                                            style={{ 
+                                              backgroundColor: getAccurateColorCode('Green'),
+                                              boxShadow: `0 0 10px ${getAccurateColorCode('Green')}60`
+                                            }}
+                                          ></div>
+                                          <div>
+                                            <div className="text-xs text-gray-500">Complementary</div>
+                                            <div className="text-sm font-medium">Green</div>
+                                          </div>
+                                        </div>
+                                        
                                         {/* Show additional colors from spectrum if available */}
                                         {result.auraColorSpectrum ? (
-                                          result.auraColorSpectrum.slice(2).map((color, index) => (
+                                          result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => (
                                             <div key={`color-${index}`} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
                                               <div 
                                                 className="w-8 h-8 rounded-full flex-shrink-0" 
