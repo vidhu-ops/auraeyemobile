@@ -180,6 +180,13 @@ export default function HomePage() {
                   <Box className="mr-2 h-5 w-5" /> Object Aura Analysis
                 </Link>
               </Button>
+              <Button 
+                onClick={() => document.getElementById('vibe-check-section')?.scrollIntoView({ behavior: 'smooth' })}
+                size="lg" 
+                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 border-0 text-white px-8 py-6 rounded-full"
+              >
+                <Sparkles className="mr-2 h-5 w-5" /> What's My Vibe?
+              </Button>
             </div>
             
             {/* Visual element replacing the image */}
@@ -203,7 +210,7 @@ export default function HomePage() {
       </section>
       
       {/* What's My Vibe? Section */}
-      <section className="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
+      <section id="vibe-check-section" className="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
