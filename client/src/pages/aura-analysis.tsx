@@ -193,8 +193,8 @@ export default function AuraAnalysis() {
       'White': 'Spiritual sensitivity, thinking of higher dimensions or purity.',
       'Gold': 'Divine thoughts, wisdom, teaching, spiritual mastery.',
       'Silver': 'Receiving higher guidance, sensitive to unseen messages.',
-      'Gray': 'Neutral analytical mind - processes information without emotional bias',
-      'Black': 'Deep transformative thinking - penetrates mysteries and embraces shadow wisdom',
+      'Gray': 'work on Neutral analytical mind - processes information without emotional bias',
+      'Black': ' work on Deep transformative thinking - penetrates mysteries and embraces shadow wisdom',
       'Brown': 'Grounded mindset, focused on stability, home or practical matters.'
     };
     return meanings[color] || 'Unique mental processing pattern - develops individual thinking approach';
@@ -213,7 +213,7 @@ export default function AuraAnalysis() {
       'White': 'Absorbing emotions, energy of others, or angelic frequencies.',
       'Gold': 'Recognized by others as powerful or spiritually influential.',
       'Silver': 'Surrounded by spiritually activated or highly sensitive people.',
-      'Black': 'Receives transformative power - attracts deep change energy from shadow work',
+      'Black': 'work on transformative power - attracts deep change energy from shadow work',
       'Brown': 'Receiving grounding or responsibilities from others.',
       'Purple': 'Receives mystical energy - attracts ancient wisdom and divine guidance'
     };
@@ -233,8 +233,8 @@ export default function AuraAnalysis() {
       'White': 'Acting from innocence, vulnerability or spiritual ideals.',
       'Gold': 'Taking action with purpose, guiding or mentoring others.',
       'Silver': 'Channeling energy, guiding others, or practicing intuition.',
-      'Gray': 'Emanates balanced perspective - helps others find neutral ground in conflicts',
-      'Black': 'Radiates transformative power - catalyzes deep change and shadow integration',
+      'Gray': 'Work on blockages to emmenate balanced perspective - helps others find neutral ground in conflicts',
+      'Black': 'work on transformative power - to catalyzes deep change and shadow integration',
       'Brown': 'Taking practical steps, helping others or organizing life.'
     };
     return meanings[color] || 'Projects unique energy signature - shares special gifts that only you can offer';
@@ -253,8 +253,8 @@ export default function AuraAnalysis() {
       'White': 'Spiritually elevated being, sensitive and light-filled energy field.',
       'Gold': 'Masterful healer energy, a teacher and guide on a mission.',
       'Silver': 'Mystic presence, sensitive soul with energetic wisdom.',
-      'Gray': 'Balanced core nature - your essence maintains spiritual equilibrium in all situations',
-      'Black': 'Transformative soul foundation - your core purpose involves deep shadow integration',
+      'Gray': 'Blockages in Balanced core nature - your essence maintains spiritual equilibrium in all situations',
+      'Black': 'Blockages in Transformative soul foundation - your core purpose involves deep shadow integration',
       'Brown': 'Deeply rooted energy, wise, nurturing and structured.'
     };
     return meanings[color] || 'Unique soul signature - your core essence carries special spiritual gifts';
@@ -389,8 +389,8 @@ export default function AuraAnalysis() {
         chakra: 'Neutral Balance Center', 
         number: '0', 
         shadowMeaning: 'Emotional detachment creating spiritual apathy and lack of passion while manifesting depression and complete disconnection from life force energy. This neutral frequency prevents authentic engagement and emotional expression.',
-        positiveMeaning: 'Neutral balance center flowing with wise neutrality and adaptable wisdom that maintains equilibrium in all situations. This balanced frequency channels diplomatic wisdom and peaceful resolution.',
-        colorMeaning: 'Balanced Wisdom - Neutral energy, wise neutrality, diplomatic balance, peaceful resolution, adaptable wisdom'
+        positiveMeaning: 'requires work',
+        colorMeaning: 'Connect to a healer'
       },
       // Lowercase versions for case-insensitive matching
 
@@ -440,8 +440,8 @@ export default function AuraAnalysis() {
       'Gold': 'Soul Star Chakra',
       'Silver': 'Lunar Energy Center',
       'White': 'Divine Light Center',
-      'Black': 'Shadow Integration Center',
-      'Gray': 'Neutral Balance Center',
+      'Black': 'work on Shadow Integration Center',
+      'Gray': 'requires work',
       'Brown': 'Earth Connection Center',
     };
 
@@ -457,8 +457,8 @@ export default function AuraAnalysis() {
       'Gold': 'divine wisdom, Christ consciousness',
       'Silver': 'lunar intuition, feminine wisdom',
       'White': 'pure light, spiritual protection',
-      'Grey': 'balanced wisdom, neutral authority',
-      'Black': 'shadow integration, transformative power',
+      'Grey': 'work on balanced wisdom, neutral authority',
+      'Black': ' work on shadow integration, transformative power',
       'Brown': 'earth connection, practical wisdom'
     };
 
@@ -705,11 +705,11 @@ export default function AuraAnalysis() {
       // Add title page
       pdf.setFontSize(22);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Analysis Report', 105, yPosition, { align: 'center' });
+      pdf.text('Aura and Chakra', 105, yPosition, { align: 'center' });
       
-      yPosition += 20;
-      pdf.setFontSize(16);
-      pdf.text('Aura Reading & Energy Analysis', 105, yPosition, { align: 'center' });
+      yPosition += 10;
+      pdf.setFontSize(22);
+      pdf.text('Alignment Report', 105, yPosition, { align: 'center' });
       
       yPosition += 20;
       pdf.setFontSize(12);
@@ -1106,18 +1106,18 @@ export default function AuraAnalysis() {
 
       // Add metadata
       pdf.setProperties({
-        title: 'Spiritual Analysis Report',
-        subject: 'Aura and Numerology Analysis',
+        title: 'Aura and Chakra Alignment Report',
+        subject: 'Aura and Chakra Analysis',
         author: 'Aurafy Spiritual Wellness Platform'
       });
 
       // Download
       const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`spiritual-analysis-${timestamp}.pdf`);
+      pdf.save(`aura-chakra-alignment-report-${timestamp}.pdf`);
 
       toast({
         title: "PDF Downloaded Successfully",
-        description: "Your complete spiritual analysis report has been saved",
+        description: "Your Aura and Chakra Alignment Report has been saved",
       });
 
     } catch (error) {
@@ -1147,8 +1147,8 @@ export default function AuraAnalysis() {
       'White': 'Pure divine light encompassing all frequencies in perfect spiritual protection. This transcendent frequency provides angelic connection, enables spiritual purification, and develops the ability to channel pure divine energy.',
     };
     const additionalMeanings: Record<string, string> = {
-      'Gray': 'Neutral wisdom - spiritual balance, cosmic neutrality, divine equilibrium',
-      'Black': 'Shadow integration - transformation power, deep inner work, void consciousness',
+      'Gray': 'Neutral wisdom - but requires work',
+      'Black': 'Shadow integration - requires work related to transformation power, deep inner work, void consciousness',
       'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
     };
     
@@ -1441,7 +1441,11 @@ export default function AuraAnalysis() {
       'Heart': 'Open to love: rose quartz crystal, heart opening yoga, green leafy foods, loving-kindness meditation, pranayama breathing, visualize green light at chest, chant YAM mantra',
       'Throat': 'Express truth: blue lace agate crystal, neck stretches, singing, journaling, truthful communication, visualize blue light at throat, chant HAM mantra',
       'Third Eye': 'Enhance intuition: amethyst crystal, forward folds, meditation, purple foods, third eye massage, visualize indigo light between brows, chant OM mantra',
-      'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra'
+      'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra',
+      'Heart-Throat': 'Heal communication: turquoise crystal, throat chakra yoga, blue-green foods, truthful communication, visualize turquoise light at throat, chant HAM mantra',
+      'Third Eye Crown': 'Enhance spiritual insight: purple amethyst crystal, meditation, purple foods, spiritual study, visualize purple light between brows and above head, chant OM mantra',
+      'Heart-Solar Plexus': 'Balance emotions: yellow rose quartz crystal, heart-opening yoga, yellow foods, loving-kindness meditation, visualize yellow light at chest and stomach, chant RAM mantra'
+      
     
     };
     
@@ -1451,7 +1455,7 @@ export default function AuraAnalysis() {
   // Comprehensive aura placement interpretations for four-zone system
   const getGivingEnergyInterpretation = (color: string): string => {
     const givingInterpretations: Record<string, string> = {
-      'Black': 'Shadow integration - transformation power, deep inner work, void consciousness. When balanced, you guide others through spiritual transformation. When imbalanced, you may avoid personal shadow work or fear inner darkness.',
+      'Black': 'Shadow integration - work on transformation power, deep inner work, void consciousness. When balanced, you guide others through spiritual transformation. When imbalanced, you may avoid personal shadow work or fear inner darkness.',
       'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. When balanced, you absorb emotions and energy of others. When imbalanced, you may be energetically vulnerable, have escapist tendencies, or difficulty being grounded.',
       'Brown': 'Humble, grounded, connected to nature and body, possessing down-to-earth wisdom. When balanced, you receive grounding and responsibilities. When imbalanced, you may experience stagnation, lack of ambition, heaviness, or resistance to change.',
       'Turquoise': 'Heart-throat bridge - healing communication, emotional truth, compassionate expression. When balanced, you speak healing truth with love. When imbalanced, you may suppress emotional truth or communicate without compassion.',
@@ -1472,7 +1476,7 @@ export default function AuraAnalysis() {
 
   const getReceivingEnergyInterpretation = (color: string): string => {
     const receivingInterpretations: Record<string, string> = {
-      'Black': 'Receiving Zone Black - You receive transformative power and deep inner work, attracting shadow integration and spiritual rebirth.',
+      'Black': 'Receiving Zone Black - You need to work on transformative power and deep inner work, attracting shadow integration and spiritual rebirth.',
       'White': 'Receiving Zone White - You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
       'Brown': 'Receiving Zone Brown - You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
       'Red': 'Taking action with purpose, guiding or mentoring others. You master healer energy, a teacher and guide on a mission. Acting from innocence, vulnerability, or spiritual ideals.',
@@ -1506,8 +1510,8 @@ export default function AuraAnalysis() {
       'White': 'Thinking Zone White - Spiritual purity, thinking of higher dimensions of purity, learning to protect energy and feel safe in the physical world. Your mental processes channel pure spiritual wisdom, focusing on energetic protection and dimensional purity.',
       'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating transformative thoughts through magical thinking and spiritual alchemy.',
       'Peach': 'Thinking Zone Peach - Your mental energy channels nurturing love and emotional support, generating compassionate healing through gentle thinking.',
-      'Grey': 'Thinking Zone Grey - Your mental processes channel balanced wisdom and neutral authority, generating peaceful resolution through adaptable thinking.',
-      'Black': 'Thinking Zone Black - Your mental energy channels transformative power and deep inner work, generating spiritual rebirth through shadow integration.'
+      'Grey': 'Thinking Zone Grey - Your mental requires channeling balanced wisdom and neutral authority, generating peaceful resolution through adaptable thinking.',
+      'Black': 'Thinking Zone Black - Your mental energy requires transformative work based on power and deep inner work, generating spiritual rebirth through shadow integration.'
       
     };
     return thinkingInterpretations[color] || `Thinking Zone ${color} - Your mental processes channel unique ${color.toLowerCase()} energy that creates distinctive thought patterns and cognitive approaches to life.`;
@@ -1527,9 +1531,7 @@ export default function AuraAnalysis() {
       'Silver': 'Overall Silver Energy - Learning to protect energy and feel safe in the physical world, enhanced intuitive abilities with emotional wisdom. Developing psychic protection while maintaining lunar sensitivity and emotional clarity.',
       'Gold': 'Overall Gold Energy - Spiritually elevated being, sensitive and light-filled energy field, master teacher energy with ancient wisdom. Living with enlightened consciousness while maintaining spiritual authority and divine wisdom integration.',
       'White': 'Overall White Energy - Learning to protect energy and feel safe in the physical world, spiritually elevated being with pure divine connection. Developing energetic boundaries while maintaining spiritual purity and divine alignment.',
-      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.',
-      'Grey': 'Overall Grey Energy - Your core energy channels balanced wisdom and neutral authority, manifesting peaceful resolution and adaptable wisdom through spiritual equilibrium.',
-      'Black': 'Overall Black Energy - Your core energy channels transformative power and deep inner work, manifesting spiritual rebirth and shadow integration through transformative life experiences.'
+      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.'
       
     };
     return overallInterpretations[color] || `Overall ${color} Energy - Your fundamental life force carries unique ${color.toLowerCase()} vibration that shapes your spiritual path and life experiences through distinctive energetic resonance.`;
@@ -1886,7 +1888,7 @@ export default function AuraAnalysis() {
         'Indigo': 'Communication combined with intuition creates natural counseling and teaching abilities.',
         'Pink': 'Communication combined with love creates natural counseling and teaching abilities.',
         'Silver': 'Communication combined with intuition creates natural counseling and teaching abilities.',
-        'Gray': 'Communication combined with balance creates natural counseling and teaching abilities.',
+        'Gray': 'blockages',
       },
       'Green': {
         'Purple': 'Healing energy enhanced by spiritual power creates natural healer capabilities.',
@@ -1900,8 +1902,8 @@ export default function AuraAnalysis() {
         'Pink': 'Healing energy combined with love creates natural healing and spiritual guidance abilities.',
         'Silver': 'Healing energy combined with intuition creates natural healing and spiritual guidance abilities.',
           'Peach': 'Healing energy combined with love creates natural healing and teaching abilities.',
-          'Gray': 'Healing energy combined with balance creates natural healing and teaching abilities.',
-          'Black': 'Healing energy combined with transformation creates natural healing and teaching abilities.',
+          'Gray': 'Some Blockages. Connect to a Healer to understand more.',
+          'Black': 'Some Blockages. Connect to a healer to be able to get more information',
       }
     };
     return balances[primary]?.[secondary] || balances[secondary]?.[primary] || 
@@ -1934,10 +1936,10 @@ export default function AuraAnalysis() {
       'gold': 'Christ Consciousness & Illumination',
       'Silver': 'Feminine Intuition & Reflection',
       'silver': 'Feminine Intuition & Reflection',
-      'Gray': 'Neutral Balance & Wisdom',
-      'gray': 'Neutral Balance & Wisdom',
-      'Black': 'Shadow Work & Deep Transformation',
-      'black': 'Shadow Work & Deep Transformation', 
+      'Gray': 'Blockages',
+      'gray': 'Blockages',
+      'Black': 'Shadow Work & Deep Transformation blockage',
+      'black': 'Shadow Work & Deep Transformation blockage', 
       'brown': 'Earth Connection & Practical Wisdom',
       'Brown': 'Earth Connection & Practical Wisdom',
     };
@@ -1959,8 +1961,8 @@ export default function AuraAnalysis() {
         'Indigo': 'Your inner intuition center radiates psychic abilities and visionary insights.',
         'Pink': 'Your inner love center emanates unconditional compassion and healing.',
         'Silver': 'Your inner core radiates protection of the divine and of spiritual connection',
-        'Gray': 'Your inner core center radiates balance, neutrality, adaptability.',
-        'Black': 'Your inner core center radiates power, protection, transformation.',
+        'Gray': 'Your inner core center radiates blockages',
+        'Black': 'Your inner core center radiates slight blockages',
       },
       'middle': {
         'Red': 'Your emotional body processes through passionate and intense feeling.',
@@ -1973,8 +1975,8 @@ export default function AuraAnalysis() {
         'Indigo': 'Your emotional intuition center radiates psychic abilities and visionary insights.',
         'Pink': 'Your emotional love center emanates unconditional compassion and healing.',
         'Silver': 'Your emotional core radiates protection of the divine and of spiritual connection',
-        'Gray': 'Your emotional core center radiates balance, neutrality, adaptability.',
-        'Black': 'Your emotional core center radiates power, protection, transformation.',
+        'Gray': 'Your emotional core center radiates slight blockages',
+        'Black': 'Your emotional core center radiates some blockages',
         'Violet': 'Your emotional body connects feelings to spiritual insights.',
         'Orange': 'Your emotional core center radiates creativity, joy, and vital energy.',
       },
@@ -2168,8 +2170,6 @@ export default function AuraAnalysis() {
       'Indigo': 'Visualize deep indigo light at your third eye. Breathe in intuition and psychic abilities.',
       'Pink': 'Focus on loving pink light at your heart center. Breathe in compassion and healing.',
       'Silver': 'Visualize silver light at your soul star chakra. Breathe in intuition and psychic abilities.',
-      'Gray': 'Visualize gray light at your root chakra. Breathe in balance, neutrality, adaptability.',
-      'Black': 'Visualize black light at your root chakra. Breathe in power, protection, transformation.',
       'Brown': 'Visualize brown light at your root chakra. Breathe in stability, grounding, practicality.',
     };
     return meditations[color] || meditations['Purple'];
@@ -5046,7 +5046,7 @@ export default function AuraAnalysis() {
       "brown": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return influences[color] || "unique spiritual qualities that shape your energetic expression.";
+    return influences[getColorPersonalityInfluence] || "unique spiritual qualities that shape your energetic expression.";
   };
 
   const getPersonalityStrengths = (color: string, traits: string[]): string => {
@@ -5073,7 +5073,7 @@ export default function AuraAnalysis() {
         "brown": "balanced & clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return strengths[color] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
+    return strengths[getPersonalityStrengths] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
   };
 
   const getPersonalityGrowthAreas = (color: string, traits: string[]): string => {
