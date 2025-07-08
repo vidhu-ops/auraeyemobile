@@ -1668,14 +1668,13 @@ export default function AuraAnalysis() {
   };
 
   const calculateAuraStrength = (aura: AuraAnalysisResult): number => {
-    return Math.min(95, (aura.energyLevel * 7) + 2);
+    return Math.min(95, Math.max(5, (aura.energyLevel * 7) + 15));
   };
 
   const calculateVulnerability = (aura: AuraAnalysisResult): number => {
-    const sensitiveColors = ['Pink', 'Blue', 'Green', 'Indigo', 'gray', 'black','red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'purple', 'pink', 'gold', 'silver','white',];
-    const isSensitive = sensitiveColors.includes(aura.dominantColor);
-    const base = isSensitive ? 60 : 40;
-    return Math.max(50, base - aura.energyLevel * 20);
+    // Vulnerability is always the inverse of aura strength to ensure they sum to 100
+    const strength = calculateAuraStrength(aura);
+    return 100 - strength;
   };
 
   const calculateEnergyBalance = (aura: AuraAnalysisResult): number => {
@@ -2252,8 +2251,6 @@ export default function AuraAnalysis() {
       'White': 'Pure energy can lead to spiritual detachment or avoidance of emotional depth. You might become overly focused on perfection while avoiding the messy aspects of human experience.',
       'Pink': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
       'Silver': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
-      'Turquoise': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
-      'Lavender': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
     };
     return descriptions[color] || descriptions['Purple'];
   };
@@ -2270,12 +2267,8 @@ export default function AuraAnalysis() {
       'White': 'Full aura field surrounding entire energy body',
       'Pink': 'Heart chakra higher octave, emotional and spiritual love center',
       'Silver': 'Soul star chakra above the crown, cosmic connection',
-      'Turquoise': 'Throat chakra higher octave, emotional and spiritual love center',
-      'Lavender': 'Third eye chakra higher octave, emotional and spiritual love center',
-      'Peach': 'Heart chakra chest, emotional and love center',
       'Gray': 'Root chakra base of spine, grounding and stability',
       'Black': 'Root chakra base of spine, grounding and stability',
-      'Cyan': 'Throat chakra throat, communication and clarity',
     };
     return placements[color] || placements['Purple'];
   };
@@ -2293,10 +2286,7 @@ export default function AuraAnalysis() {
       'Gold': 'Divine wisdom and protection flowing from higher spiritual centers. This energy indicates advanced spiritual development and cosmic consciousness.',
       'White': 'Complete spiritual integration surrounding your entire energy field. This placement indicates purity of intention and direct connection to source energy.',
       'Pink': 'Unconditional love emanating from an elevated heart center. This energy transcends personal love and connects you to universal compassion.', 
-      'Silver': 'Protection of the divine and of spiritual connection.',
-        'Turquoise': 'Communication and purity and visionary insights.',
-        'Lavender': 'Softness and a quite intutive connection.',
-        'Peach': 'Gentle love, caring, emotional warmth.',
+      'Silver': 'Protection of the divine and of spiritual connection.'
     };
     return details[color] || details['Purple'];
   };
@@ -4368,7 +4358,7 @@ export default function AuraAnalysis() {
       1: 'Red', 2: 'Orange', 3: 'Yellow', 4: 'Green', 5: 'Blue', 6: 'Indigo', 7: 'Violet',
       8: 'Gold', 9: 'White', 11: 'Silver', 22: 'Platinum', 33: 'Rainbow'
     };
-    return numberColorMapping[number] || 'Purple';
+    return numberColorMapping[getColorForNumber] || 'Purple';
   };
 
   const getPersonalityTraits = (personalityNumber: number): string => {
@@ -5147,7 +5137,7 @@ export default function AuraAnalysis() {
       "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
+    return careers[getCareerAlignment(color, traits)] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
 
   return (
