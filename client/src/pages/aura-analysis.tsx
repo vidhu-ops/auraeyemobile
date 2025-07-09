@@ -358,7 +358,7 @@ export default function AuraAnalysis() {
     ctx.save();
     ctx.globalAlpha = 0.5; // 50% opacity
     ctx.fillStyle = 'white';
-    ctx.font = '50px Arial, sans-serif';
+    ctx.font = '100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     

@@ -39,9 +39,9 @@ export default function HomePage() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.8; // 50% opacity
+    ctx.globalAlpha = 0.5; // 50% opacity
     ctx.fillStyle = 'white';
-    ctx.font = '200px Arial, sans-serif';
+    ctx.font = '100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -52,7 +52,7 @@ export default function HomePage() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('Aurafy', centerX, centerY);
+    ctx.fillText('Aurfy', centerX, centerY);
     
     ctx.restore();
   };
