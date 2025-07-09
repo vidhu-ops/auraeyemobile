@@ -39,9 +39,9 @@ export default function HomePage() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.5; // 50% opacity
+    ctx.globalAlpha = 0.8; // 50% opacity
     ctx.fillStyle = 'white';
-    ctx.font = '50px Arial, sans-serif';
+    ctx.font = '200px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -196,7 +196,7 @@ export default function HomePage() {
       'Green': 'from-green-800/30 to-green-900/80',
       'Blue': 'from-blue-800/30 to-blue-900/80',
       'Violet': 'from-violet-800/30 to-violet-900/80',
-      'Indigo': 'from-indigo-800/10 to-indigo-900/80',
+      'Indigo': 'from-indigo-800/80 to-indigo-900/10',
       'White': 'from-white/30 to-gray-300/10',
       'Brown': 'from-amber-800/30 to-amber-900/80',
       'Gold': 'from-yellow-800/30 to-yellow-900/80',
@@ -207,23 +207,23 @@ export default function HomePage() {
   };
 
   // Color borders for result display
-  const getColorBorder = (color: string) => {
-    const borders = {
-      'Red': 'bg-red-500',
-      'Orange': 'bg-orange-500',
-      'Yellow': 'bg-yellow-500',
-      'Green': 'bg-green-500',
-      'Blue': 'bg-blue-500',
-      'Violet': 'bg-violet-500',
-      'Indigo': 'bg-indigo-500',
-      'White': 'bg-white border-2 border-gray-300',
-      'Brown': 'bg-amber-800',
-      'Gold': 'bg-yellow-400',
-      'Silver': 'bg-gray-400',
-      'Black': 'bg-gray-800',
-    };
-    return borders[color as keyof typeof borders] || 'bg-violet-500';
-  };
+  function getColorBorder(color: string) {
+        const borders = {
+            'Red': 'bg-red-500',
+            'Orange': 'bg-orange-500',
+            'Yellow': 'bg-yellow-500',
+            'Green': 'bg-green-500',
+            'Blue': 'bg-blue-500',
+            'Violet': 'bg-violet-500',
+            'Indigo': 'bg-indigo-500',
+            'White': 'bg-white border-2 border-gray-300',
+            'Brown': 'bg-amber-800',
+            'Gold': 'bg-yellow-400',
+            'Silver': 'bg-gray-400',
+            'Black': 'bg-gray-800',
+        };
+        return borders[color as keyof typeof borders] || 'bg-violet-500';
+    }
 
   return (
     <div className="min-h-screen flex flex-col">
