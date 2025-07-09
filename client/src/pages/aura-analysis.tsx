@@ -349,6 +349,31 @@ export default function AuraAnalysis() {
     return combinedHash;
   };
 
+  // Add watermark to canvas
+  const addWatermark = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    
+    // Set watermark properties
+    ctx.save();
+    ctx.globalAlpha = 0.5; // 50% opacity
+    ctx.fillStyle = 'white';
+    ctx.font = '50px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Add text shadow for better visibility
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    
+    // Draw watermark text
+    ctx.fillText('Aurfy', centerX, centerY);
+    
+    ctx.restore();
+  };
+
 
 
   const getColorCompleteInfo = (colorName: string): { 
@@ -4283,6 +4308,9 @@ export default function AuraAnalysis() {
       };
       
       createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colors, auraData.energyLevel);
+      
+      // Add watermark
+      addWatermark(ctx, canvasWidth, canvasHeight);
       
       // Convert back to base64
       const enhancedImageBase64 = canvas.toDataURL('image/jpeg');

@@ -28,9 +28,98 @@ export default function HomePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
 
   // Quick vibe analysis mutation
+  // Add watermark to image
+  const addWatermark = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    
+    // Set watermark properties
+    ctx.save();
+    ctx.globalAlpha = 0.5; // 50% opacity
+    ctx.fillStyle = 'white';
+    ctx.font = '50px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Add text shadow for better visibility
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    
+    // Draw watermark text
+    ctx.fillText('Aurfy', centerX, centerY);
+    
+    ctx.restore();
+  };
+
+  // Process image with aura visualization and watermark
+  const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
+    const img = new Image();
+    img.src = imageBase64;
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw original image
+      ctx.drawImage(img, 0, 0);
+      
+      // Add aura glow effect
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      // Create radial gradient for aura
+      const gradient = ctx.createRadialGradient(
+        centerX, centerY, canvas.width * 0.1,
+        centerX, centerY, canvas.width * 0.8
+      );
+      
+      const colorGradient = getColorGradient(dominantColor);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      gradient.addColorStop(0.3, `rgba(${getColorRGB(dominantColor)}, 0.2)`);
+      gradient.addColorStop(0.7, `rgba(${getColorRGB(dominantColor)}, 0.1)`);
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Add watermark
+      addWatermark(ctx, canvas.width, canvas.height);
+      
+      // Convert to base64
+      const processedImageBase64 = canvas.toDataURL('image/jpeg');
+      setProcessedImage(processedImageBase64);
+    };
+  };
+
+  // Helper function to get color RGB values
+  const getColorRGB = (color: string) => {
+    const colorMap: { [key: string]: string } = {
+      'Red': '255, 0, 0',
+      'Orange': '255, 165, 0',
+      'Yellow': '255, 255, 0',
+      'Green': '0, 255, 0',
+      'Blue': '0, 0, 255',
+      'Violet': '138, 43, 226',
+      'Indigo': '75, 0, 130',
+      'White': '255, 255, 255',
+      'Brown': '165, 42, 42',
+      'Gold': '255, 215, 0',
+      'Silver': '192, 192, 192',
+      'Black': '0, 0, 0',
+    };
+    return colorMap[color] || '138, 43, 226'; // Default to violet
+  };
+
   const quickVibeMutation = useMutation({
     mutationFn: async (imageFile: File) => {
       const formData = new FormData();
@@ -51,6 +140,10 @@ export default function HomePage() {
     },
     onSuccess: (data: QuickVibeResult) => {
       setVibeResult(data);
+      // Process image with aura visualization and watermark
+      if (imagePreview) {
+        processImageWithVibeAura(imagePreview, data.dominantColor);
+      }
       toast({
         title: "Vibe Analysis Complete!",
         description: data.message,
@@ -87,6 +180,7 @@ export default function HomePage() {
   const resetVibeCheck = () => {
     setSelectedImage(null);
     setImagePreview(null);
+    setProcessedImage(null);
     setVibeResult(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -96,18 +190,18 @@ export default function HomePage() {
   // Color gradients for aura display - only 12 approved colors
   const getColorGradient = (color: string) => {
     const gradients = {
-      'Red': 'from-red-500/30 to-red-600/10',
-      'Orange': 'from-orange-500/30 to-orange-600/10',
-      'Yellow': 'from-yellow-500/30 to-yellow-600/10',
-      'Green': 'from-green-500/30 to-green-600/10',
-      'Blue': 'from-blue-500/30 to-blue-600/10',
-      'Violet': 'from-violet-500/30 to-violet-600/10',
-      'Indigo': 'from-indigo-500/30 to-indigo-600/10',
-      'White': 'from-white/30 to-gray-200/10',
-      'Brown': 'from-amber-800/30 to-amber-900/10',
-      'Gold': 'from-yellow-400/30 to-yellow-500/10',
-      'Silver': 'from-gray-400/30 to-gray-500/10',
-      'Black': 'from-gray-800/30 to-gray-900/10',
+      'Red': 'from-red-800/30 to-red-800/80',
+      'Orange': 'from-orange-800/30 to-orange-900/80',
+      'Yellow': 'from-yellow-800/30 to-yellow-900/80',
+      'Green': 'from-green-800/30 to-green-900/80',
+      'Blue': 'from-blue-800/30 to-blue-900/80',
+      'Violet': 'from-violet-800/30 to-violet-900/80',
+      'Indigo': 'from-indigo-800/10 to-indigo-900/80',
+      'White': 'from-white/30 to-gray-300/10',
+      'Brown': 'from-amber-800/30 to-amber-900/80',
+      'Gold': 'from-yellow-800/30 to-yellow-900/80',
+      'Silver': 'from-gray-400/30 to-gray-900/80',
+      'Black': 'from-gray-800/30 to-gray-900/80',
     };
     return gradients[color as keyof typeof gradients] || 'from-violet-500/30 to-violet-600/10';
   };
@@ -268,11 +362,11 @@ export default function HomePage() {
                       <div className="flex-1 flex justify-center">
                         <div className="relative max-w-md w-full">
                           <img
-                            src={imagePreview}
+                            src={processedImage || imagePreview}
                             alt="Your photo"
                             className="w-full rounded-lg shadow-lg justify-center"
                           />
-                          {vibeResult && (
+                          {vibeResult && !processedImage && (
                             <div className={`absolute inset-0 rounded-lg bg-gradient-radial ${getColorGradient(vibeResult.dominantColor)} pointer-events-none`}></div>
                           )}
                         </div>
@@ -329,7 +423,7 @@ export default function HomePage() {
                                     'Green': 'bg-green-500',
                                     'Blue': 'bg-blue-500',
                                     'Violet': 'bg-violet-500',
-                                    'Indigo': 'bg-indigo-500',
+                                    'Indigo': 'bg-indigo-900',
                                     'White': 'bg-white border-2 border-gray-300',
                                     'Brown': 'bg-amber-800',
                                     'Gold': 'bg-yellow-400',
