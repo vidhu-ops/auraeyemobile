@@ -356,7 +356,7 @@ export default function AuraAnalysis() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.8; // 80% opacity for better visibility
+    ctx.globalAlpha = 0.4; // 80% opacity for better visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
