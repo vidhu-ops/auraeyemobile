@@ -369,7 +369,7 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('Aurfy', centerX, centerY);
+    ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
   };
@@ -709,7 +709,7 @@ export default function AuraAnalysis() {
       ctx.fillText(`My Aura: ${result.dominantColor}`, canvas.width / 2, canvas.height - 100);
       
       ctx.font = '18px Arial';
-      ctx.fillText('Discover your spiritual energy with Aurfy', canvas.width / 2, canvas.height - 70);
+      ctx.fillText('Discover your spiritual energy with Aurafy', canvas.width / 2, canvas.height - 70);
       
       ctx.font = '16px Arial';
       ctx.fillText(`Energy Level: ${result.energyLevel}/10`, canvas.width / 2, canvas.height - 40);
