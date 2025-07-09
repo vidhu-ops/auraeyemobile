@@ -4,6 +4,7 @@ import { apiRequest } from "./queryClient";
 const GPT_MODEL = "gpt-4o";
 
 export interface AuraAnalysisResult {
+  zones: any;
   id?: number; // Added for review system functionality
   dominantColor: string;
   secondaryColor: string;
@@ -18,6 +19,7 @@ export interface AuraAnalysisResult {
   personalityTraits: string[];
   spiritualGuidance: string;
   chakraActivity: {
+    soulStar: number;
     root: number;
     sacral: number;
     solarPlexus: number;
