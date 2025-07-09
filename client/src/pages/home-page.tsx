@@ -52,7 +52,7 @@ export default function HomePage() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('Aurfy', centerX, centerY);
+    ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
   };
