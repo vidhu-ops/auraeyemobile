@@ -356,19 +356,26 @@ export default function AuraAnalysis() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.5; // 50% opacity
+    ctx.globalAlpha = 0.8; // 80% opacity for better visibility
     ctx.fillStyle = 'white';
-    ctx.font = '100px Arial, sans-serif';
+    ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Add text shadow for better visibility
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    // Add strong text shadow for better visibility
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
+    
+    // Draw watermark text
+    ctx.fillText('Aurafy', centerX, centerY);
+    
+    // Add a second layer for extra visibility
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
-    
-    // Draw watermark text
     ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
@@ -2996,6 +3003,9 @@ export default function AuraAnalysis() {
           ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.1)`;
           ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           ctx.globalCompositeOperation = 'source-over';
+          
+          // Add watermark as the top layer
+          addWatermark(ctx, canvasWidth, canvasHeight);
         }
         
         resolve(canvas.toDataURL());

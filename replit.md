@@ -160,6 +160,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 9, 2025. Implemented dynamic "Current Life Phase" and "Recommended Focus Areas" in Spiritual & Emotional Insights section: replaced static content with color-based dynamic generation, life phases now vary based on dominant/secondary colors (14 unique phases), focus areas generated from all 4 aura colors with specific recommendations for personality, thinking, giving, and receiving energies
 - July 9, 2025. Added "Aurafy" watermark to all generated images: implemented white text watermark at 50% opacity positioned in center of both aura analysis visualizations and "What's My Vibe" images, includes shadow effects for better visibility across different background colors
 - July 9, 2025. Updated aura analysis watermark to 100px font size: increased watermark font size from 50px to 100px Arial in human aura analysis visualization for better visibility and branding prominence
+- July 9, 2025. Enhanced watermark visibility: increased opacity to 80%, added bold font weight, strengthened shadow effects (8px blur with 4px offset), and applied double-layer text rendering for maximum visibility across all backgrounds. Ensured watermark is applied as the top layer after all aura effects in processImageWithAura function
 
 ## User Preferences
 
