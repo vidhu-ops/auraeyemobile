@@ -7106,19 +7106,6 @@ export default function AuraAnalysis() {
                               <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
-                                {/* Soul Star Chakra - Number 7 */}
-                                <div className="bg-gradient-to-r from-white to-gray-50 rounded-lg p-4 border border-gray-200">
-                                  <div className="mb-2">
-                                    <p className="text-sm text-gray-600 mb-3">
-                                      The Soul Star Chakra connects you to divine consciousness and spiritual transcendence, representing your highest potential and cosmic awareness.
-                                    </p>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Soul Star Chakra</span>
-                                      <span className="text-gray-600">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
-                                    </div>
-                                  </div>
-                                  <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-200" />
-                                </div>
 
                                 {/* Crown Chakra - Number 3 */}
                                 <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-200">
@@ -7218,46 +7205,51 @@ export default function AuraAnalysis() {
                                   <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
                                 </div>
 
-                                {/* Earth Star Chakra - Number 4 */}
-                                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200">
-                                  <div className="mb-2">
-                                    <p className="text-sm text-gray-600 mb-3">
-                                      The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
-                                    </p>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium">Earth Star Chakra</span>
-                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
-                                    </div>
-                                  </div>
-                                  <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
-                                </div>
+
                               </div>
 
                               {/* Chakra Summary */}
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
                                 <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-purple-600 mb-1">
-                                      {Math.round((result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Higher Chakras</div>
-                                    <div className="text-xs text-gray-500">Spiritual Connection</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-green-600 mb-1">
-                                      {Math.round((result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Middle Chakras</div>
-                                    <div className="text-xs text-gray-500">Emotional Balance</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-red-600 mb-1">
-                                      {Math.round((result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Lower Chakras</div>
-                                    <div className="text-xs text-gray-500">Physical Grounding</div>
-                                  </div>
+                                  {(() => {
+                                    // Calculate raw averages for each chakra group
+                                    const higherRaw = (result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3;
+                                    const middleRaw = (result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3;
+                                    const lowerRaw = (result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3;
+                                    
+                                    // Calculate total and normalize to 100%
+                                    const total = higherRaw + middleRaw + lowerRaw;
+                                    const higherPercent = Math.round((higherRaw / total) * 100);
+                                    const middlePercent = Math.round((middleRaw / total) * 100);
+                                    const lowerPercent = 100 - higherPercent - middlePercent; // Ensure exact 100% total
+                                    
+                                    return (
+                                      <>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-purple-600 mb-1">
+                                            {higherPercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Higher Chakras</div>
+                                          <div className="text-xs text-gray-500">Spiritual Connection</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-green-600 mb-1">
+                                            {middlePercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Middle Chakras</div>
+                                          <div className="text-xs text-gray-500">Emotional Balance</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-red-600 mb-1">
+                                            {lowerPercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Lower Chakras</div>
+                                          <div className="text-xs text-gray-500">Physical Grounding</div>
+                                        </div>
+                                      </>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             </div>
