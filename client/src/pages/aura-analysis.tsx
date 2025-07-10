@@ -5572,60 +5572,37 @@ export default function AuraAnalysis() {
 
                               {/* 9 Chakra Graph */}
                               <div className="bg-white rounded-xl p-6 border border-gray-200">
-                                <h3 className="font-medium text-lg mb-4">Your 9-Chakra Energy System</h3>
+                                <h3 className="font-medium text-lg mb-4">Your 8-Chakra Energy System</h3>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  {/* Primary 7 Chakras */}
-                                  <div className="md:col-span-2">
-                                    <h4 className="font-medium text-sm mb-3">Primary Chakras</h4>
-                                    <div className="space-y-3">
-                                      {Object.entries(result.chakraActivity || {}).map(([chakra, value]) => (
-                                        <div key={chakra} className="flex items-center space-x-3">
-                                          <div className="w-20 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
-                                          <div className="flex-1">
-                                            <div className="w-full bg-gray-200 rounded-full h-3">
-                                              <div 
-                                                className={`h-3 rounded-full transition-all duration-500 ${getChakraColor(chakra)}`}
-                                                style={{ width: `${value * 10}%` }}
-                                              ></div>
-                                            </div>
-                                          </div>
-                                          <div className="w-12 text-sm text-gray-500">{value}/10</div>
+                                <div className="space-y-3">
+                                  {/* All Chakras in one list */}
+                                  {Object.entries(result.chakraActivity || {}).map(([chakra, value]) => (
+                                    <div key={chakra} className="flex items-center space-x-3">
+                                      <div className="w-24 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                      <div className="flex-1">
+                                        <div className="w-full bg-gray-200 rounded-full h-3">
+                                          <div 
+                                            className={`h-3 rounded-full transition-all duration-500 ${getChakraColor(chakra)}`}
+                                            style={{ width: `${value * 10}%` }}
+                                          ></div>
                                         </div>
-                                      ))}
+                                      </div>
+                                      <div className="w-12 text-sm text-gray-500">{value}/10</div>
                                     </div>
-                                  </div>
+                                  ))}
                                   
-                                  {/* Extended Chakras */}
-                                  <div>
-                                    <h4 className="font-medium text-sm mb-3">Extended Chakras</h4>
-                                    <div className="space-y-3">
-                                      <div className="flex items-center space-x-3">
-                                        <div className="w-20 text-sm text-gray-600">Soul Star</div>
-                                        <div className="flex-1">
-                                          <div className="w-full bg-gray-200 rounded-full h-3">
-                                            <div 
-                                              className="bg-gradient-to-r from-white to-purple-300 h-3 rounded-full transition-all duration-500"
-                                              style={{ width: `${calculateSoulStarChakra(result)}%` }}
-                                            ></div>
-                                          </div>
-                                        </div>
-                                        <div className="w-12 text-sm text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10</div>
-                                      </div>
-                                      
-                                      <div className="flex items-center space-x-3">
-                                        <div className="w-20 text-sm text-gray-600">Earth Star</div>
-                                        <div className="flex-1">
-                                          <div className="w-full bg-gray-200 rounded-full h-3">
-                                            <div 
-                                              className="bg-gradient-to-r from-amber-600 to-yellow-500 h-3 rounded-full transition-all duration-500"
-                                              style={{ width: `${calculateEarthStarChakra(result)}%` }}
-                                            ></div>
-                                          </div>
-                                        </div>
-                                        <div className="w-12 text-sm text-gray-500">{Math.round(calculateEarthStarChakra(result)/10)}/10</div>
+                                  {/* Earth Star Chakra */}
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-24 text-sm text-gray-600">Earth Star</div>
+                                    <div className="flex-1">
+                                      <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div 
+                                          className="bg-gradient-to-r from-amber-600 to-yellow-500 h-3 rounded-full transition-all duration-500"
+                                          style={{ width: `${calculateEarthStarChakra(result)}%` }}
+                                        ></div>
                                       </div>
                                     </div>
+                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateEarthStarChakra(result)/10)}/10</div>
                                   </div>
                                 </div>
                               </div>
@@ -7103,7 +7080,7 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
-                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              <h3 className="font-medium text-lg">8-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
@@ -7213,8 +7190,8 @@ export default function AuraAnalysis() {
                                 <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   {(() => {
-                                    // Calculate raw averages for each chakra group
-                                    const higherRaw = (result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3;
+                                    // Calculate raw averages for each chakra group (8 chakras total)
+                                    const higherRaw = (result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5) / 2;
                                     const middleRaw = (result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3;
                                     const lowerRaw = (result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3;
                                     
