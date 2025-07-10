@@ -5570,7 +5570,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
-                              {/* 9 Chakra Graph */}
+                              {/* 8 Chakra Graph */}
                               <div className="bg-white rounded-xl p-6 border border-gray-200">
                                 <h3 className="font-medium text-lg mb-4">Your 8-Chakra Energy System</h3>
                                 
@@ -7080,7 +7080,7 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
-                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              <h3 className="font-medium text-lg">8-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
@@ -7180,6 +7180,20 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
                                   <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
+                                </div>
+
+                                {/* Earth Star Chakra - Number 8 */}
+                                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Earth Star Chakra</span>
+                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
                                 </div>
 
 
