@@ -1069,9 +1069,8 @@ export default function AuraAnalysis() {
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
 
-      // Define chakras with their scores (9-chakra system)
+      // Define chakras with their scores (8-chakra system)
       const chakraData = [
-        { name: 'Soul Star Chakra', score: result.chakraActivity?.soulStar || 5, color: 'White', description: 'Divine connection, soul purpose, cosmic consciousness' },
         { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'Violet', description: 'Spiritual connection, divine wisdom, universal consciousness' },
         { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'Indigo', description: 'Intuition, inner wisdom, psychic abilities' },
         { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'Blue', description: 'Communication, truth, self-expression' },
@@ -1079,11 +1078,12 @@ export default function AuraAnalysis() {
         { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'Yellow', description: 'Personal power, confidence, willpower' },
         { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'Orange', description: 'Creativity, sexuality, emotional flow' },
         { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'Red', description: 'Grounding, survival, physical vitality' },
-        { name: 'Earth Star Chakra', score: result.chakraActivity?.earthStar || 5, color: 'Brown', description: 'Earth connection, grounding, ancestral wisdom' }
+        { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'Brown', description: 'Earth connection, grounding, ancestral wisdom' }
       ];
 
       chakraData.forEach((chakra, index) => {
-        if (yPosition > 250) {
+        // Check if we need a new page before adding chakra info
+        if (yPosition > 240) {
           pdf.addPage();
           yPosition = 30;
         }
@@ -1092,13 +1092,14 @@ export default function AuraAnalysis() {
         pdf.setFontSize(12);
         pdf.setTextColor(75, 85, 99);
         pdf.text(`${chakra.name}: ${chakra.score}/10 (${chakra.score * 10}%)`, 20, yPosition);
-        yPosition += 7;
+        yPosition += 8;
 
-        // Chakra description
+        // Chakra description with proper text wrapping
         pdf.setFontSize(10);
         pdf.setTextColor(55, 65, 81);
-        pdf.text(`${chakra.description}`, 20, yPosition);
-        yPosition += 10;
+        const descriptionLines = pdf.splitTextToSize(chakra.description, pageWidth - 40);
+        pdf.text(descriptionLines, 20, yPosition);
+        yPosition += descriptionLines.length * 5 + 8;
       });
 
       yPosition += 10;
@@ -1106,13 +1107,25 @@ export default function AuraAnalysis() {
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
 
+      // Check for page break before continuing
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
       // Primary chakra connection
       const primaryChakra = getDetailedPlacement(result.dominantColor);
       pdf.text(`Primary Chakra Connection - ${result.dominantColor}:`, 20, yPosition);
       yPosition += 8;
       const primaryChakraLines = pdf.splitTextToSize(primaryChakra, pageWidth - 40);
       pdf.text(primaryChakraLines, 20, yPosition);
-      yPosition += primaryChakraLines.length * 6 + 10;
+      yPosition += primaryChakraLines.length * 5 + 10;
+
+      // Check for page break before secondary chakra
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
 
       // Secondary chakra connection
       if (result.secondaryColor) {
@@ -1121,7 +1134,13 @@ export default function AuraAnalysis() {
         yPosition += 8;
         const secondaryChakraLines = pdf.splitTextToSize(secondaryChakra, pageWidth - 40);
         pdf.text(secondaryChakraLines, 20, yPosition);
-        yPosition += secondaryChakraLines.length * 6 + 10;
+        yPosition += secondaryChakraLines.length * 5 + 10;
+      }
+
+      // Check for page break before strengths
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
       }
 
       // Chakra strengths and shadow aspects
@@ -1130,14 +1149,26 @@ export default function AuraAnalysis() {
       const positiveTraits = getPositiveTraits(result.dominantColor);
       const strengthLines = pdf.splitTextToSize(positiveTraits, pageWidth - 40);
       pdf.text(strengthLines, 20, yPosition);
-      yPosition += strengthLines.length * 6 + 10;
+      yPosition += strengthLines.length * 5 + 10;
+
+      // Check for page break before shadow aspects
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
 
       pdf.text('Shadow Aspects to Balance:', 20, yPosition);
       yPosition += 8;
       const shadowTraits = getShadowTraits(result.dominantColor);
       const shadowLines = pdf.splitTextToSize(shadowTraits, pageWidth - 40);
       pdf.text(shadowLines, 20, yPosition);
-      yPosition += shadowLines.length * 6 + 10;
+      yPosition += shadowLines.length * 5 + 10;
+
+      // Check for page break before healing recommendations
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
 
       // Chakra healing recommendations
       pdf.text('Healing Recommendations:', 20, yPosition);
@@ -1145,7 +1176,7 @@ export default function AuraAnalysis() {
       const healingRec = getColorHealing(result.dominantColor, result.secondaryColor || 'White');
       const healingLines = pdf.splitTextToSize(healingRec, pageWidth - 40);
       pdf.text(healingLines, 20, yPosition);
-      yPosition += healingLines.length * 6 + 15;
+      yPosition += healingLines.length * 5 + 15;
 
       // PERSONALITY INTEGRATION ANALYSIS
       if (yPosition > 200) {
@@ -1168,31 +1199,55 @@ export default function AuraAnalysis() {
       pdf.text(personalityLines, 20, yPosition);
       yPosition += personalityLines.length * 6 + 10;
 
+      // Check for page break before integration patterns
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
       // Integration patterns
       const integrationText = `Integration Patterns: Your ${result.dominantColor} personality integrates with your chakra system through specific energy patterns. The highest-scoring chakras (${Object.entries(result.chakraActivity || {}).filter(([_, score]) => score >= 8).map(([name, score]) => `${name.replace(/([A-Z])/g, ' $1').trim()} (${score}/10)`).join(', ') || 'crown and third eye'}) show where your personality traits manifest most strongly.`;
       const integrationLines = pdf.splitTextToSize(integrationText, pageWidth - 40);
       pdf.text(integrationLines, 20, yPosition);
-      yPosition += integrationLines.length * 6 + 10;
+      yPosition += integrationLines.length * 5 + 10;
+
+      // Check for page break before energy exchange
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
 
       // Giving and receiving integration
       const energyText = `Energy Exchange Integration: Your giving energy (${result.zones?.giving?.colors?.[0] || result.dominantColor}) and receiving energy (${result.zones?.receiving?.colors?.[0] || result.secondaryColor}) create a unique personality blueprint. This combination influences how you interact with others and process emotional experiences through your chakra system.`;
       const energyLines = pdf.splitTextToSize(energyText, pageWidth - 40);
       pdf.text(energyLines, 20, yPosition);
-      yPosition += energyLines.length * 6 + 10;
+      yPosition += energyLines.length * 5 + 10;
 
-      // Thinking pattern integration
-      const thinkingText = `Mental Processing Integration: Your thinking energy (${result.zones?.thinking?.colors?.[0] || result.dominantColor}) shows how your personality processes information and makes decisions. This mental pattern directly affects your upper chakras (third eye, crown, soul star) and influences your spiritual development path.`;
+      // Check for page break before thinking pattern
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      // Thinking pattern integration (updated to reflect 8-chakra system)
+      const thinkingText = `Mental Processing Integration: Your thinking energy (${result.zones?.thinking?.colors?.[0] || result.dominantColor}) shows how your personality processes information and makes decisions. This mental pattern directly affects your upper chakras (third eye, crown) and influences your spiritual development path.`;
       const thinkingLines = pdf.splitTextToSize(thinkingText, pageWidth - 40);
       pdf.text(thinkingLines, 20, yPosition);
-      yPosition += thinkingLines.length * 6 + 10;
+      yPosition += thinkingLines.length * 5 + 10;
+
+      // Check for page break before holistic guidance
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
 
       // Holistic integration guidance
       const holisticText = `Holistic Integration Guidance: To fully integrate your personality with your chakra system, focus on balancing your strongest chakras with your weaker ones. Your ${result.dominantColor} personality thrives when all energy centers work in harmony, creating a unified spiritual and emotional experience.`;
       const holisticLines = pdf.splitTextToSize(holisticText, pageWidth - 40);
       pdf.text(holisticLines, 20, yPosition);
-      yPosition += holisticLines.length * 6 + 15;
+      yPosition += holisticLines.length * 5 + 15;
 
-      // 9 CHAKRA SYSTEM ANALYSIS
+      // 8 CHAKRA SYSTEM ANALYSIS
       if (yPosition > 160) {
         pdf.addPage();
         yPosition = 30;
@@ -1200,7 +1255,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('9 Chakra System Analysis', 20, yPosition);
+      pdf.text('8 Chakra System Analysis', 20, yPosition);
       yPosition += 15;
 
       pdf.setFontSize(12);
