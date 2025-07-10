@@ -5598,26 +5598,22 @@ export default function AuraAnalysis() {
                                   
                                   {/* Extended Chakras */}
                                   <div>
-                                    <h4 className="font-medium text-sm mb-3">Higher Chakras</h4>
+                                    <h4 className="font-medium text-sm mb-3"></h4>
                                     <div className="space-y-3">
                                       <div className="flex items-center space-x-3">
-                                        <div className="w-16 text-xs text-gray-600">Earth Star</div>
+                                        <div className="w-16 text-xs text-gray-600"></div>
                                         <div className="flex-1">
-                                          <div className="w-full bg-gray-200 rounded-full h-2">
-                                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: `${calculateEarthStarChakra(result)}%` }}></div>
-                                          </div>
+                                          
                                         </div>
-                                        <div className="w-12 text-xs text-gray-500">{Math.round(calculateEarthStarChakra(result)/10)}/10</div>
+                                        
                                       </div>
                                       
                                       <div className="flex items-center space-x-3">
-                                        <div className="w-16 text-xs text-gray-600">Soul Star</div>
+                                        <div className="w-16 text-xs text-gray-600"></div>
                                         <div className="flex-1">
-                                          <div className="w-full bg-gray-200 rounded-full h-2">
-                                            <div className="bg-white border h-2 rounded-full" style={{ width: `${calculateSoulStarChakra(result)}%` }}></div>
-                                          </div>
+                                         
                                         </div>
-                                        <div className="w-12 text-xs text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10</div>
+                                       
                                       </div>
                                     </div>
                                   </div>
@@ -7231,27 +7227,44 @@ export default function AuraAnalysis() {
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
                                 <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-purple-600 mb-1">
-                                      {Math.round((result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Higher Chakras</div>
-                                    <div className="text-xs text-gray-500">Spiritual Connection</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-green-600 mb-1">
-                                      {Math.round((result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Middle Chakras</div>
-                                    <div className="text-xs text-gray-500">Emotional Balance</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-red-600 mb-1">
-                                      {Math.round((result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3 * 10)}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Lower Chakras</div>
-                                    <div className="text-xs text-gray-500">Physical Grounding</div>
-                                  </div>
+                                  {(() => {
+                                    // Calculate raw averages for each chakra group
+                                    const higherRaw = (result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5 + calculateSoulStarChakra(result)/10) / 3;
+                                    const middleRaw = (result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3;
+                                    const lowerRaw = (result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3;
+                                    
+                                    // Calculate total and normalize to 100%
+                                    const total = higherRaw + middleRaw + lowerRaw;
+                                    const higherPercent = Math.round((higherRaw / total) * 100);
+                                    const middlePercent = Math.round((middleRaw / total) * 100);
+                                    const lowerPercent = 100 - higherPercent - middlePercent; // Ensure exact 100% total
+                                    
+                                    return (
+                                      <>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-purple-600 mb-1">
+                                            {higherPercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Higher Chakras</div>
+                                          <div className="text-xs text-gray-500">Spiritual Connection</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-green-600 mb-1">
+                                            {middlePercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Middle Chakras</div>
+                                          <div className="text-xs text-gray-500">Emotional Balance</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-red-600 mb-1">
+                                            {lowerPercent}%
+                                          </div>
+                                          <div className="text-sm text-gray-600">Lower Chakras</div>
+                                          <div className="text-xs text-gray-500">Physical Grounding</div>
+                                        </div>
+                                      </>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             </div>

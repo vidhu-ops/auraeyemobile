@@ -161,6 +161,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 9, 2025. Added "Aurafy" watermark to all generated images: implemented white text watermark at 50% opacity positioned in center of both aura analysis visualizations and "What's My Vibe" images, includes shadow effects for better visibility across different background colors
 - July 9, 2025. Updated aura analysis watermark to 100px font size: increased watermark font size from 50px to 100px Arial in human aura analysis visualization for better visibility and branding prominence
 - July 9, 2025. Enhanced watermark visibility: increased opacity to 80%, added bold font weight, strengthened shadow effects (8px blur with 4px offset), and applied double-layer text rendering for maximum visibility across all backgrounds. Ensured watermark is applied as the top layer after all aura effects in processImageWithAura function
+- July 10, 2025. Fixed chakra profile percentages: implemented proper normalization so Higher Chakras, Middle Chakras, and Lower Chakras percentages always sum to exactly 100%. Each group percentage is calculated proportionally based on raw averages, ensuring accurate chakra distribution display
 
 ## User Preferences
 
