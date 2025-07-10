@@ -163,6 +163,7 @@ Aurfy is a comprehensive spiritual wellness platform that combines modern AI tec
 - July 9, 2025. Enhanced watermark visibility: increased opacity to 80%, added bold font weight, strengthened shadow effects (8px blur with 4px offset), and applied double-layer text rendering for maximum visibility across all backgrounds. Ensured watermark is applied as the top layer after all aura effects in processImageWithAura function
 - July 10, 2025. Fixed chakra profile percentages: implemented proper normalization so Higher Chakras, Middle Chakras, and Lower Chakras percentages always sum to exactly 100%. Each group percentage is calculated proportionally based on raw averages, ensuring accurate chakra distribution display
 - July 10, 2025. Fixed Earth Star chakra display in 9-Chakra Energy System: added complete "Extended Chakras" section with both Soul Star and Earth Star chakras properly displayed with progress bars and scores, completing the full 9-chakra visualization in the chakra scores tab
+- July 10, 2025. Eliminated duplicate Soul Star and Earth Star chakras: removed duplicate entries from detailed chakra analysis section ensuring they only appear once in the "Your 9-Chakra Energy System" section, applied consistent normalization to both chakra profile sections for accurate percentage calculations
 
 ## User Preferences
 
