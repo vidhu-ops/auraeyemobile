@@ -1,4 +1,5 @@
 import { storage } from "./storage";
+import { hashPassword } from "./auth";
 
 export async function seedHealers() {
   try {
@@ -12,6 +13,8 @@ export async function seedHealers() {
     const healersData = [
       {
         name: "Dr. Sarah Chen",
+        username: "sarah.chen",
+        password: await hashPassword("healer123"),
         specialty: "Energy Healing & Chakra Balancing",
         description: "With over 15 years of experience in energy healing, Dr. Chen specializes in chakra alignment and spiritual wellness. She combines traditional Eastern practices with modern healing techniques.",
         email: "sarah.chen@spiritualwellness.com",
@@ -23,6 +26,8 @@ export async function seedHealers() {
       },
       {
         name: "Master Liu Wei",
+        username: "liu.wei",
+        password: await hashPassword("healer123"),
         specialty: "Aura Reading & Spiritual Guidance",
         description: "Master Liu is a renowned aura reader and spiritual guide who has helped thousands discover their true spiritual path. His intuitive abilities are complemented by deep meditation practices.",
         email: "liu.wei@spiritualwellness.com",
@@ -34,6 +39,8 @@ export async function seedHealers() {
       },
       {
         name: "Dr. Maya Patel",
+        username: "maya.patel",
+        password: await hashPassword("healer123"),
         specialty: "Numerology & Life Path Analysis",
         description: "Dr. Patel is an expert in numerological analysis and life path guidance. She helps clients understand their cosmic blueprint through detailed numerological interpretations.",
         email: "maya.patel@spiritualwellness.com",
@@ -45,6 +52,8 @@ export async function seedHealers() {
       },
       {
         name: "Reverend Michael Stone",
+        username: "michael.stone",
+        password: await hashPassword("healer123"),
         specialty: "Crystal Healing & Meditation",
         description: "Reverend Stone combines crystal healing with guided meditation to create transformative spiritual experiences. His sessions focus on inner peace and spiritual awakening.",
         email: "michael.stone@spiritualwellness.com",
@@ -56,6 +65,8 @@ export async function seedHealers() {
       },
       {
         name: "Dr. Amara Johnson",
+        username: "amara.johnson",
+        password: await hashPassword("healer123"),
         specialty: "Holistic Wellness & Spiritual Coaching",
         description: "Dr. Johnson takes a holistic approach to spiritual wellness, combining life coaching with spiritual practices to help clients achieve balance and purpose.",
         email: "amara.johnson@spiritualwellness.com",

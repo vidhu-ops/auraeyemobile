@@ -226,7 +226,7 @@ export default function AuthPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium text-xl mb-1">AI Aura Analysis</h3>
+                <h3 className="font-medium text-xl mb-1">Aura Analysis</h3>
                 <p className="opacity-80">Upload photos and receive detailed analysis of your aura colors and energy patterns.</p>
               </div>
             </div>

@@ -1868,24 +1868,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
 
     try {
-      // First get the healer record for this user
-      const healers = await storage.getAllHealers();
+      // For healer users, the healer data is already stored in the session
+      const healerData = req.user.healerData;
       
-      // Try multiple ways to match the user to a healer record
-      const healer = healers.find(h => 
-        h.email === req.user.username || 
-        h.email === `${req.user.username}@spiritualwellness.com` ||
-        h.email === `${req.user.username}@aurafy.com` ||
-        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
-      );
-      
-      if (!healer) {
-        // For now, return empty bookings array instead of error to allow healers to see dashboard
-        console.log(`Healer profile not found for user: ${req.user.username}`);
+      if (!healerData) {
+        console.log(`Healer data not found for user: ${req.user.username}`);
         return res.json([]);
       }
 
-      const bookings = await storage.getHealerBookingsByHealer(healer.id);
+      const bookings = await storage.getHealerBookingsByHealer(healerData.id);
       res.json(bookings);
     } catch (error) {
       console.error("Error retrieving healer bookings:", error);
@@ -1914,16 +1905,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       // Get healer record to verify permissions
-      const healers = await storage.getAllHealers();
-      const healer = healers.find(h => 
-        h.email === req.user.username || 
-        h.email === `${req.user.username}@spiritualwellness.com` ||
-        h.email === `${req.user.username}@aurafy.com` ||
-        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
-      );
+      const healerData = req.user.healerData;
       
-      if (!healer || healer.id !== booking.healerId) {
-        console.log(`Healer auth failed: user=${req.user.username}, healer=${healer?.name}, booking healerId=${booking.healerId}`);
+      if (!healerData || healerData.id !== booking.healerId) {
+        console.log(`Healer auth failed: user=${req.user.username}, healer=${healerData?.name}, booking healerId=${booking.healerId}`);
         return res.status(403).json({ message: "Access denied - not authorized for this booking" });
       }
 
@@ -1959,15 +1944,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
 
     try {
-      const healers = await storage.getAllHealers();
-      const healer = healers.find(h => 
-        h.email === req.user.username || 
-        h.email === `${req.user.username}@spiritualwellness.com` ||
-        h.email === `${req.user.username}@aurafy.com` ||
-        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
-      );
+      const healerData = req.user.healerData;
       
-      if (!healer) {
+      if (!healerData) {
         return res.json({ 
           totalBookings: 0,
           recentBookings: 0,
@@ -1979,7 +1958,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         });
       }
 
-      const stats = await storage.getHealerClientStats(healer.id);
+      const stats = await storage.getHealerClientStats(healerData.id);
       res.json(stats);
     } catch (error) {
       console.error("Error retrieving healer analytics:", error);
@@ -1998,19 +1977,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
 
     try {
-      const healers = await storage.getAllHealers();
-      const healer = healers.find(h => 
-        h.email === req.user.username || 
-        h.email === `${req.user.username}@spiritualwellness.com` ||
-        h.email === `${req.user.username}@aurafy.com` ||
-        h.name.toLowerCase().replace(/\s+/g, '') === req.user.username.toLowerCase()
-      );
+      const healerData = req.user.healerData;
       
-      if (!healer) {
+      if (!healerData) {
         return res.json([]);
       }
 
-      const trends = await storage.getHealerBookingTrends(healer.id);
+      const trends = await storage.getHealerBookingTrends(healerData.id);
       res.json(trends);
     } catch (error) {
       console.error("Error retrieving healer trends:", error);

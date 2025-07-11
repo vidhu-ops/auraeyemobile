@@ -15,7 +15,7 @@ declare global {
 
 const scryptAsync = promisify(scrypt);
 
-async function hashPassword(password: string) {
+export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const buf = (await scryptAsync(password, salt, 64)) as Buffer;
   return `${buf.toString("hex")}.${salt}`;
@@ -52,20 +52,27 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        // First check if this is a healer login
+        const healer = await storage.getHealerByUsername(username);
+        if (healer && await comparePasswords(password, healer.password)) {
+          // Return healer as authenticated user with healer type
+          const healerUser = {
+            id: healer.id,
+            username: healer.username,
+            password: healer.password,
+            userType: "healer" as const,
+            birthDate: null,
+            createdAt: healer.createdAt,
+            healerData: healer // Store full healer data for dashboard access
+          };
+          return done(null, healerUser);
+        }
+        
+        // If not a healer, check regular users
         const user = await storage.getUserByUsername(username);
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false);
         } else {
-          // Check if user exists in healers database and update userType accordingly
-          const healers = await storage.getAllHealers();
-          const healerMatch = healers.find(h => h.email === `${username}@spiritualwellness.com` || h.name === username);
-          
-          if (healerMatch) {
-            // Update user to healer type if they exist in healers database
-            const updatedUser = { ...user, userType: "healer" as const };
-            return done(null, updatedUser);
-          }
-          
           return done(null, user);
         }
       } catch (error) {
@@ -74,24 +81,39 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
+  passport.serializeUser((user, done) => {
+    done(null, { id: user.id, userType: user.userType });
+  });
+  
+  passport.deserializeUser(async (userData: any, done) => {
     try {
-      const user = await storage.getUser(id);
-      if (user) {
-        // Check if user exists in healers database and update userType accordingly
-        const healers = await storage.getAllHealers();
-        const healerMatch = healers.find(h => h.email === `${user.username}@spiritualwellness.com` || h.name === user.username);
-        
-        if (healerMatch) {
-          // Update user to healer type if they exist in healers database
-          const updatedUser = { ...user, userType: "healer" as const };
-          done(null, updatedUser);
+      const { id, userType } = userData;
+      
+      if (userType === 'healer') {
+        // For healers, get the healer data directly
+        const healer = await storage.getHealer(id);
+        if (healer) {
+          const healerUser = {
+            id: healer.id,
+            username: healer.username,
+            password: healer.password,
+            userType: "healer" as const,
+            birthDate: null,
+            createdAt: healer.createdAt,
+            healerData: healer
+          };
+          done(null, healerUser);
         } else {
-          done(null, user);
+          done(null, false);
         }
       } else {
-        done(null, false);
+        // For regular users, get from users table
+        const user = await storage.getUser(id);
+        if (user) {
+          done(null, user);
+        } else {
+          done(null, false);
+        }
       }
     } catch (error) {
       done(error);

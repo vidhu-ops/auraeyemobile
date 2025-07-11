@@ -7135,7 +7135,7 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
-                              <h3 className="font-medium text-lg">8-Chakra Energy System Analysis</h3>
+                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
