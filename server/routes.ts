@@ -1260,7 +1260,27 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             dominantColor: auraAnalysis.dominantColor,
             secondaryColor: auraAnalysis.secondaryColor,
             energyLevel: auraAnalysis.energyLevel,
-            analysis: JSON.stringify(auraAnalysis)
+            analysis: JSON.stringify(auraAnalysis),
+            // Individual color zones for quick access
+            personalityColor: auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
+            givingColor: auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
+            receivingColor: auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+            thinkingColor: auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor,
+            // Spiritual guidance and traits
+            spiritualGuidance: auraAnalysis.spiritualGuidance,
+            personalityTraits: JSON.stringify(auraAnalysis.personalityTraits || []),
+            // Chakra activity scores
+            chakraActivity: JSON.stringify(auraAnalysis.chakraActivity || {}),
+            // Zones data for detailed analysis
+            zones: JSON.stringify(auraAnalysis.zones || {}),
+            // Color meanings for each position
+            colorMeanings: JSON.stringify(auraAnalysis.colorMeanings || {}),
+            // Detailed analysis text
+            detailedAnalysis: auraAnalysis.detailedAnalysis,
+            // Aura color spectrum for extended analysis
+            auraColorSpectrum: JSON.stringify(auraAnalysis.auraColorSpectrum || []),
+            // Processed aura image with visualization
+            processedAuraImage: auraAnalysis.processedAuraImage || null
           });
           
           // Add the saved reading ID to the response
