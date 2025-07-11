@@ -37,8 +37,8 @@ const APPROVED_AURA_COLORS = [
 const humanDetectionCache = new Map<string, { result: boolean; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-function generateFastAuraAnalysis(imageBuffer?: Buffer) {
-  // Enhanced hash generation for better consistency
+function generateFastAuraAnalysis(imageBuffer?: Buffer, urlSeed?: string) {
+  // Enhanced hash generation for better consistency with URL diversity
   let seed = 12345;
   if (imageBuffer) {
     const sampleSize = Math.min(2048, imageBuffer.length); // Increased sample size
@@ -49,6 +49,13 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer) {
     }
     // Add buffer length to seed for additional uniqueness
     seed = (seed + imageBuffer.length) >>> 0;
+    
+    // Add URL diversity factor if provided
+    if (urlSeed) {
+      for (let i = 0; i < urlSeed.length; i++) {
+        seed = (seed * 31 + urlSeed.charCodeAt(i)) >>> 0;
+      }
+    }
   }
   
   // Fast inline random generator
@@ -462,14 +469,21 @@ function getSpecificColorTraits(color: string, position: 'personality' | 'giving
   return colorTraits[color]?.[position] || [`${color} ${position} energy`, `${color} spiritual influence`, `${color} cosmic vibration`];
 }
 
-function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
-  // Create deterministic seed from image content
-  const generateHash = (buffer: Buffer): number => {
-    const hash = crypto.createHash('md5').update(buffer).digest('hex');
+function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: string) {
+  // Create deterministic seed from image content and optional URL for versatility
+  const generateHash = (buffer: Buffer, urlSeed?: string): number => {
+    const hasher = crypto.createHash('md5').update(buffer);
+    
+    // Add URL diversity factor if provided to create different combinations for different sources
+    if (urlSeed) {
+      hasher.update(urlSeed);
+    }
+    
+    const hash = hasher.digest('hex');
     return parseInt(hash.substring(0, 8), 16);
   };
   
-  let seed = generateHash(imageBuffer);
+  let seed = generateHash(imageBuffer, imageUrl);
   const seededRandom = () => {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
@@ -491,16 +505,59 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer) {
     { name: "Brown", hex: "#A52A2A" }
   ];
   
-  // Deterministic color selection using seeded random - 12 approved colors
+  // Enhanced color selection with diversity - ensuring varied combinations
   const colorCount = enhancedColors.length;
-  const auraColors = [
-    enhancedColors[Math.floor(seededRandom() * colorCount)], // Personality color
-    enhancedColors[Math.floor(seededRandom() * colorCount)], // Giving color
-    enhancedColors[Math.floor(seededRandom() * colorCount)], // Receiving color
-    enhancedColors[Math.floor(seededRandom() * colorCount)], // Thinking color
-    enhancedColors[Math.floor(seededRandom() * colorCount)],
-    enhancedColors[Math.floor(seededRandom() * colorCount)]
-  ];
+  
+  // Create more diverse color combinations by using different selection strategies
+  const diversityFactor = Math.floor(seededRandom() * 3); // 0, 1, or 2 for different approaches
+  
+  let auraColors = [];
+  
+  if (diversityFactor === 0) {
+    // Complementary colors approach - select colors that work well together
+    const primaryIndex = Math.floor(seededRandom() * colorCount);
+    const complementaryIndex = (primaryIndex + Math.floor(colorCount / 2)) % colorCount;
+    const tertiaryIndex = (primaryIndex + Math.floor(colorCount / 3)) % colorCount;
+    const quaternaryIndex = (primaryIndex + Math.floor(colorCount / 4)) % colorCount;
+    
+    auraColors = [
+      enhancedColors[primaryIndex], // Personality color
+      enhancedColors[complementaryIndex], // Giving color
+      enhancedColors[tertiaryIndex], // Receiving color
+      enhancedColors[quaternaryIndex], // Thinking color
+      enhancedColors[(primaryIndex + 1) % colorCount],
+      enhancedColors[(primaryIndex + 2) % colorCount]
+    ];
+  } else if (diversityFactor === 1) {
+    // Triadic colors approach - select colors at equal intervals
+    const baseIndex = Math.floor(seededRandom() * colorCount);
+    const interval = Math.floor(colorCount / 3);
+    
+    auraColors = [
+      enhancedColors[baseIndex], // Personality color
+      enhancedColors[(baseIndex + interval) % colorCount], // Giving color
+      enhancedColors[(baseIndex + interval * 2) % colorCount], // Receiving color
+      enhancedColors[(baseIndex + Math.floor(seededRandom() * 3) + 1) % colorCount], // Thinking color
+      enhancedColors[(baseIndex + 3) % colorCount],
+      enhancedColors[(baseIndex + 4) % colorCount]
+    ];
+  } else {
+    // Random diverse approach - truly random but avoid repetition
+    const usedIndices = new Set();
+    auraColors = [];
+    
+    for (let i = 0; i < 6; i++) {
+      let colorIndex;
+      let attempts = 0;
+      do {
+        colorIndex = Math.floor(seededRandom() * colorCount);
+        attempts++;
+      } while (usedIndices.has(colorIndex) && attempts < 20);
+      
+      usedIndices.add(colorIndex);
+      auraColors.push(enhancedColors[colorIndex]);
+    }
+  }
   
   const dominantColor = auraColors[0];
   const secondaryColor = auraColors[1] || auraColors[0];
@@ -1170,9 +1227,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       const analysisName = req.body.name || 'Unnamed';
 
       // Use deterministic analysis with specific traits for all 4 colors
+      // Create URL diversity seed from original filename, timestamp, and request details
+      const urlSeed = req.file?.originalname || req.body.filename || Date.now().toString();
+      
       let auraAnalysis: any;
       try {
-        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
+        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer, urlSeed);
         console.log("Aura analysis generated successfully");
       } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
@@ -1976,8 +2036,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
         });
       }
 
-      // Generate quick aura analysis - focus on personality color only
-      const fastAnalysis = generateFastAuraAnalysis(imageBuffer);
+      // Generate quick aura analysis - focus on personality color only with URL diversity
+      const urlSeed = req.file?.originalname || Date.now().toString();
+      const fastAnalysis = generateFastAuraAnalysis(imageBuffer, urlSeed);
       
       // Get personality color (dominant color from the analysis)
       let personalityColor = fastAnalysis.dominantColor;
