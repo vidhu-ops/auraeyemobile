@@ -88,10 +88,11 @@ interface NumerologyReading {
   createdAt: string;
 }
 
-// Detailed Aura Reading Card Component
+// Comprehensive Aura Reading Card Component with Full Analysis
 function DetailedAuraReadingCard({ reading }: { reading: any }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
+  const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
 
   const updateReadingMutation = useMutation({
@@ -111,6 +112,221 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
     updateReadingMutation.mutate(editedNotes);
   };
 
+  // Parse JSON fields safely
+  const parseJsonField = (field: string) => {
+    try {
+      return JSON.parse(field || '{}');
+    } catch {
+      return {};
+    }
+  };
+
+  const chakraActivity = parseJsonField(reading.chakraActivity);
+  const zones = parseJsonField(reading.zones);
+  const colorMeanings = parseJsonField(reading.colorMeanings);
+  const personalityTraits = parseJsonField(reading.personalityTraits);
+  const auraColorSpectrum = parseJsonField(reading.auraColorSpectrum);
+
+  // Color mapping for visualization
+  const getColorClass = (color: string) => {
+    const colorMap: { [key: string]: string } = {
+      'Red': 'from-red-400 to-red-600',
+      'Orange': 'from-orange-400 to-orange-600',
+      'Yellow': 'from-yellow-400 to-yellow-600',
+      'Green': 'from-green-400 to-green-600',
+      'Blue': 'from-blue-400 to-blue-600',
+      'Indigo': 'from-indigo-400 to-indigo-600',
+      'Violet': 'from-violet-400 to-violet-600',
+      'White': 'from-gray-100 to-gray-300',
+      'Black': 'from-gray-800 to-gray-900',
+      'Gold': 'from-yellow-300 to-yellow-500',
+      'Silver': 'from-gray-300 to-gray-500',
+      'Brown': 'from-amber-600 to-amber-800'
+    };
+    return colorMap[color] || 'from-gray-400 to-gray-600';
+  };
+
+  // Comprehensive PDF Download Function - matches actual aura analysis PDF
+  const downloadPDF = async () => {
+    const jsPDF = (await import('jspdf')).default;
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.width;
+    let yPosition = 30;
+    
+    // HEADER
+    pdf.setFontSize(24);
+    pdf.setTextColor(75, 85, 99);
+    pdf.text('Aura and Chakra Alignment Report', 20, yPosition);
+    yPosition += 20;
+    
+    // Reading Details
+    pdf.setFontSize(14);
+    pdf.setTextColor(55, 65, 81);
+    pdf.text(`Name: ${reading.name}`, 20, yPosition);
+    yPosition += 10;
+    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}`, 20, yPosition);
+    yPosition += 10;
+    pdf.text(`Energy Level: ${reading.energyLevel}/10`, 20, yPosition);
+    yPosition += 20;
+    
+    // AURA COLORS SECTION
+    pdf.setFontSize(18);
+    pdf.setTextColor(75, 85, 99);
+    pdf.text('Your Aura Color Analysis', 20, yPosition);
+    yPosition += 15;
+    
+    pdf.setFontSize(12);
+    pdf.setTextColor(55, 65, 81);
+    pdf.text(`Personality Color: ${reading.personalityColor}`, 20, yPosition);
+    yPosition += 8;
+    pdf.text(`Giving Energy Color: ${reading.givingColor}`, 20, yPosition);
+    yPosition += 8;
+    pdf.text(`Receiving Energy Color: ${reading.receivingColor}`, 20, yPosition);
+    yPosition += 8;
+    pdf.text(`Thinking Energy Color: ${reading.thinkingColor}`, 20, yPosition);
+    yPosition += 15;
+    
+    // COLOR MEANINGS
+    if (Object.keys(colorMeanings).length > 0) {
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Color Meanings & Interpretations', 20, yPosition);
+      yPosition += 15;
+      
+      Object.entries(colorMeanings).forEach(([color, meaning]) => {
+        if (yPosition > 250) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(`${color} Energy:`, 20, yPosition);
+        yPosition += 8;
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(55, 65, 81);
+        const meaningLines = pdf.splitTextToSize(String(meaning), pageWidth - 40);
+        pdf.text(meaningLines, 20, yPosition);
+        yPosition += meaningLines.length * 5 + 10;
+      });
+    }
+    
+    // CHAKRA ACTIVITY SECTION
+    if (Object.keys(chakraActivity).length > 0) {
+      if (yPosition > 180) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('8-Chakra Energy System', 20, yPosition);
+      yPosition += 15;
+      
+      // Chakra scores
+      Object.entries(chakraActivity).forEach(([chakra, score]) => {
+        if (yPosition > 250) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(75, 85, 99);
+        const chakraName = chakra.charAt(0).toUpperCase() + chakra.slice(1).replace(/([A-Z])/g, ' $1');
+        pdf.text(`${chakraName} Chakra: ${score}/10 (${score * 10}%)`, 20, yPosition);
+        yPosition += 8;
+      });
+      
+      yPosition += 10;
+    }
+    
+    // SPIRITUAL GUIDANCE
+    if (reading.spiritualGuidance) {
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Spiritual Guidance', 20, yPosition);
+      yPosition += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      const guidanceLines = pdf.splitTextToSize(reading.spiritualGuidance, pageWidth - 40);
+      pdf.text(guidanceLines, 20, yPosition);
+      yPosition += guidanceLines.length * 5 + 15;
+    }
+    
+    // DETAILED ANALYSIS
+    if (reading.detailedAnalysis) {
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Detailed Analysis', 20, yPosition);
+      yPosition += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      const analysisLines = pdf.splitTextToSize(reading.detailedAnalysis, pageWidth - 40);
+      pdf.text(analysisLines, 20, yPosition);
+      yPosition += analysisLines.length * 5 + 15;
+    }
+    
+    // PERSONALITY TRAITS
+    if (Array.isArray(personalityTraits) && personalityTraits.length > 0) {
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Personality Traits', 20, yPosition);
+      yPosition += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      const traitsText = personalityTraits.join(', ');
+      const traitsLines = pdf.splitTextToSize(traitsText, pageWidth - 40);
+      pdf.text(traitsLines, 20, yPosition);
+      yPosition += traitsLines.length * 5 + 15;
+    }
+    
+    // HEALER NOTES
+    if (reading.healerNotes) {
+      if (yPosition > 200) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Professional Healer Notes', 20, yPosition);
+      yPosition += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      const notesLines = pdf.splitTextToSize(reading.healerNotes, pageWidth - 40);
+      pdf.text(notesLines, 20, yPosition);
+    }
+    
+    // Save PDF
+    const timestamp = format(new Date(reading.createdAt), "yyyy-MM-dd");
+    pdf.save(`aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`);
+    
+    toast({
+      title: "PDF Downloaded Successfully",
+      description: "Your complete Aura and Chakra Alignment Report has been saved",
+    });
+  };
+
   return (
     <Card className="border-2 border-purple-100">
       <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
@@ -126,6 +342,15 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
               Energy: {reading.energyLevel}/10
             </Badge>
             <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadPDF}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </Button>
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsEditing(!isEditing)}
@@ -136,41 +361,112 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
         </div>
       </CardHeader>
       
-      <CardContent className="p-6 space-y-6">
-        {/* Aura Colors */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-red-400 to-red-600`}></div>
-            <p className="text-sm font-medium">Personality</p>
-            <p className="text-xs text-gray-600">{reading.personalityColor}</p>
-          </div>
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-blue-400 to-blue-600`}></div>
-            <p className="text-sm font-medium">Giving</p>
-            <p className="text-xs text-gray-600">{reading.givingColor}</p>
-          </div>
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-green-400 to-green-600`}></div>
-            <p className="text-sm font-medium">Receiving</p>
-            <p className="text-xs text-gray-600">{reading.receivingColor}</p>
-          </div>
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br from-yellow-400 to-yellow-600`}></div>
-            <p className="text-sm font-medium">Thinking</p>
-            <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
-          </div>
-        </div>
+      <CardContent className="p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="chakras">Chakras</TabsTrigger>
+            <TabsTrigger value="colors">Colors</TabsTrigger>
+            <TabsTrigger value="analysis">Analysis</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-6">
+            {/* Aura Colors Display */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.personalityColor)}`}></div>
+                <p className="text-sm font-medium">Personality</p>
+                <p className="text-xs text-gray-600">{reading.personalityColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.givingColor)}`}></div>
+                <p className="text-sm font-medium">Giving</p>
+                <p className="text-xs text-gray-600">{reading.givingColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.receivingColor)}`}></div>
+                <p className="text-sm font-medium">Receiving</p>
+                <p className="text-xs text-gray-600">{reading.receivingColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.thinkingColor)}`}></div>
+                <p className="text-sm font-medium">Thinking</p>
+                <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
+              </div>
+            </div>
 
-        {/* Full Analysis */}
-        <div>
-          <h4 className="font-semibold text-lg mb-3">Complete Analysis</h4>
-          <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.analysis}</p>
-          </div>
-        </div>
+            {/* Spiritual Guidance */}
+            {reading.spiritualGuidance && (
+              <div>
+                <h4 className="font-semibold text-lg mb-3">Spiritual Guidance</h4>
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg border border-purple-200">
+                  <p className="text-sm text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Personality Traits */}
+            {Array.isArray(personalityTraits) && personalityTraits.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-lg mb-3">Personality Traits</h4>
+                <div className="flex flex-wrap gap-2">
+                  {personalityTraits.map((trait, index) => (
+                    <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
+                      {trait}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="chakras" className="space-y-6">
+            <h4 className="font-semibold text-lg mb-3">Chakra Activity Levels</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(chakraActivity).map(([chakra, score]) => (
+                <div key={chakra} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</span>
+                    <span className="text-sm font-bold text-indigo-600">{score}/10</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+                      style={{ width: `${(score / 10) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="colors" className="space-y-6">
+            <h4 className="font-semibold text-lg mb-3">Color Meanings</h4>
+            <div className="space-y-4">
+              {Object.entries(colorMeanings).map(([color, meaning]) => (
+                <div key={color} className="p-4 border rounded-lg bg-gradient-to-r from-gray-50 to-white">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(color)}`}></div>
+                    <h5 className="font-medium text-gray-800">{color}</h5>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{String(meaning)}</p>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="analysis" className="space-y-6">
+            <div>
+              <h4 className="font-semibold text-lg mb-3">Complete Analysis</h4>
+              <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.detailedAnalysis || reading.analysis}</p>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Healer Notes Section */}
-        <div>
+        <div className="mt-6 pt-6 border-t border-gray-200">
           <h4 className="font-semibold text-lg mb-3">Professional Notes</h4>
           {isEditing ? (
             <div className="space-y-3">

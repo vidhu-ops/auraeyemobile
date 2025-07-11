@@ -26,7 +26,27 @@ export const auraReadings = pgTable("aura_readings", {
   dominantColor: text("dominant_color").notNull(),
   secondaryColor: text("secondary_color"),
   energyLevel: integer("energy_level").notNull(),
-  analysis: text("analysis").notNull(),
+  analysis: text("analysis").notNull(), // Full JSON analysis data
+  // Individual color zones for quick access
+  personalityColor: text("personality_color"),
+  givingColor: text("giving_color"),
+  receivingColor: text("receiving_color"),
+  thinkingColor: text("thinking_color"),
+  // Spiritual guidance and traits
+  spiritualGuidance: text("spiritual_guidance"),
+  personalityTraits: text("personality_traits"), // JSON array as string
+  // Chakra activity scores
+  chakraActivity: text("chakra_activity"), // JSON object as string
+  // Zones data for detailed analysis
+  zones: text("zones"), // JSON object as string
+  // Color meanings for each position
+  colorMeanings: text("color_meanings"), // JSON object as string
+  // Detailed analysis text
+  detailedAnalysis: text("detailed_analysis"),
+  // Aura color spectrum for extended analysis
+  auraColorSpectrum: text("aura_color_spectrum"), // JSON array as string
+  // Processed aura image with visualization
+  processedAuraImage: text("processed_aura_image"), // Base64 image data
   rating: integer("rating"), // 1-5 star rating
   reviewText: text("review_text"), // Optional review text
   healerNotes: text("healer_notes"), // Professional healer notes
