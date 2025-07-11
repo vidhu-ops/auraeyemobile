@@ -52,7 +52,7 @@ export default function HomePage() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('Aurfy', centerX, centerY);
+    ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
   };
@@ -117,7 +117,7 @@ export default function HomePage() {
       'Silver': '192, 192, 192',
       'Black': '0, 0, 0',
     };
-    return colorMap[color] || '138, 43, 226'; // Default to violet
+    return colorMap[color] || 'getColorRGB'; // Default to violet
   };
 
   const quickVibeMutation = useMutation({
@@ -195,7 +195,7 @@ export default function HomePage() {
       'Yellow': 'from-yellow-800/30 to-yellow-900/80',
       'Green': 'from-green-800/30 to-green-900/80',
       'Blue': 'from-blue-800/30 to-blue-900/80',
-      'Violet': 'from-violet-800/30 to-violet-900/80',
+      'Violet': 'from-violet-500/30 to-violet-900/100',
       'Indigo': 'from-indigo-800/80 to-indigo-900/10',
       'White': 'from-white/30 to-gray-300/10',
       'Brown': 'from-amber-800/30 to-amber-900/80',
@@ -203,11 +203,11 @@ export default function HomePage() {
       'Silver': 'from-gray-400/30 to-gray-900/80',
       'Black': 'from-gray-800/30 to-gray-900/80',
     };
-    return gradients[color as keyof typeof gradients] || 'from-violet-500/30 to-violet-600/10';
+    return gradients[color as keyof typeof gradients] || 'getColorGradient';
   };
 
   // Color borders for result display
-  function getColorBorder(color: string) {
+  function getColorBorder({ color }: { color: string; }): string {
         const borders = {
             'Red': 'bg-red-500',
             'Orange': 'bg-orange-500',
