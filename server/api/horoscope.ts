@@ -584,10 +584,7 @@ export async function calculateNumerologyProfile(name: string, birthDate: string
 function algorithmicNumerologyCalculation(name: string, birthDate: string): NumerologyResult {
   // Helper function to reduce number to single digit unless it's a master number
   const reduceNumber = (num: number): number => {
-    // Master numbers are preserved
-    if (num === 11 || num === 22 || num === 33) return num;
-    
-    // Reduce to single digit
+    // Reduce ALL numbers to single digit (1-9) - no master numbers
     while (num > 9) {
       num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
     }
@@ -702,10 +699,7 @@ function generateInterpretation(lifePath: number, destiny: number, soulUrge: num
     6: "Responsibility, harmony, and nurturing others are central to your path.",
     7: "Spiritual growth, analysis, and search for truth define your journey.",
     8: "Material achievement, power, and authority are key themes in your life.",
-    9: "Humanitarianism, compassion, and artistic expression mark your path.",
-    11: "As a master number, you have heightened intuition and spiritual insight.",
-    22: "As a master builder, you have the potential to create large-scale works that benefit humanity.",
-    33: "As a master teacher, you embody compassion and service to humanity."
+    9: "Humanitarianism, compassion, and artistic expression mark your path."
   };
   
   const destinyMeanings: Record<number, string> = {
@@ -717,17 +711,14 @@ function generateInterpretation(lifePath: number, destiny: number, soulUrge: num
     6: "Service, responsibility, and creating harmony are your destiny.",
     7: "Analysis, spiritual wisdom, and specialized knowledge define your path.",
     8: "Business acumen, executive ability, and material accomplishment are your destiny.",
-    9: "Humanitarian service, artistic expression, and compassion define your work.",
-    11: "Your destiny involves inspiring others through spiritual insight and intuition.",
-    22: "Your destiny is to build structures and systems that serve humanity on a large scale.",
-    33: "Your destiny is to serve humanity through compassionate healing and teaching."
+    9: "Humanitarian service, artistic expression, and compassion define your work."
   };
   
   return `Your Life Path number ${lifePath} indicates that ${lifePathMeanings[lifePath] || "you have a unique journey ahead"}. Your Destiny number ${destiny} suggests that ${destinyMeanings[destiny] || "your purpose involves growth and achievement"}. 
 
-With a Soul Urge number of ${soulUrge}, your inner desires and motivations center around ${soulUrge === 1 ? "independence and leadership" : soulUrge === 2 ? "harmony and cooperation" : soulUrge === 3 ? "self-expression and joy" : soulUrge === 4 ? "stability and order" : soulUrge === 5 ? "freedom and adventure" : soulUrge === 6 ? "nurturing and responsibility" : soulUrge === 7 ? "spiritual wisdom and analysis" : soulUrge === 8 ? "achievement and authority" : soulUrge === 9 ? "humanitarian service" : soulUrge === 11 ? "spiritual insight and inspiration" : soulUrge === 22 ? "practical visionary work" : "spiritual mastery and service"}.
+With a Soul Urge number of ${soulUrge}, your inner desires and motivations center around ${soulUrge === 1 ? "independence and leadership" : soulUrge === 2 ? "harmony and cooperation" : soulUrge === 3 ? "self-expression and joy" : soulUrge === 4 ? "stability and order" : soulUrge === 5 ? "freedom and adventure" : soulUrge === 6 ? "nurturing and responsibility" : soulUrge === 7 ? "spiritual wisdom and analysis" : soulUrge === 8 ? "achievement and authority" : soulUrge === 9 ? "humanitarian service" : "spiritual growth and service"}.
 
-Your Personality number ${personality} reveals that you present yourself to others as ${personality === 1 ? "confident and independent" : personality === 2 ? "diplomatic and cooperative" : personality === 3 ? "expressive and joyful" : personality === 4 ? "reliable and organized" : personality === 5 ? "adaptable and freedom-loving" : personality === 6 ? "responsible and nurturing" : personality === 7 ? "thoughtful and analytical" : personality === 8 ? "authoritative and capable" : personality === 9 ? "compassionate and artistic" : personality === 11 ? "inspirational and intuitive" : personality === 22 ? "masterful and ambitious" : "compassionate and service-oriented"}.
+Your Personality number ${personality} reveals that you present yourself to others as ${personality === 1 ? "confident and independent" : personality === 2 ? "diplomatic and cooperative" : personality === 3 ? "expressive and joyful" : personality === 4 ? "reliable and organized" : personality === 5 ? "adaptable and freedom-loving" : personality === 6 ? "responsible and nurturing" : personality === 7 ? "thoughtful and analytical" : personality === 8 ? "authoritative and capable" : personality === 9 ? "compassionate and artistic" : "balanced and complete"}.
 
 The interaction between these numbers creates a unique numerological blueprint that guides your life's journey. By honoring your Life Path, working toward your Destiny, acknowledging your Soul Urge, and expressing your Personality authentically, you can align with your highest potential and purpose.`;
 }

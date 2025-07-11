@@ -726,10 +726,7 @@ export async function generateNumerologyReading(name: string, birthDate: string)
 function calculateNumerologyProfile(name: string, birthDate: string): any {
   // Helper function to reduce number to single digit unless it's a master number
   const reduceNumber = (num: number): number => {
-    // Master numbers are preserved
-    if (num === 11 || num === 22 || num === 33) return num;
-
-    // Reduce to single digit
+    // Reduce ALL numbers to single digit (1-9) - no master numbers
     while (num > 9) {
       num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
     }
