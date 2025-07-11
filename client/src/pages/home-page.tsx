@@ -501,7 +501,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-heading font-bold text-3xl md:text-4xl text-dark mb-4">Scan Your Aura</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Upload your photo and our AI will analyze your energy field, revealing your aura colors and providing personalized insights.</p>
+            <p className="text-gray-600 max-w-2xl mx-auto">Upload your photo and our analyzer will analyze your energy field, revealing your aura colors and providing personalized insights.</p>
           </div>
 
           <div className="max-w-4xl mx-auto flex justify-center">

@@ -167,7 +167,7 @@ export default function About() {
                         className="rounded-xl shadow-lg"
                       />
                       <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-purple-500 to-blue-500 text-white p-3 rounded-lg shadow-lg text-sm font-medium">
-                        Powered by advanced AI technology
+                        Powered by advanced Analysis algorithms
                       </div>
                     </div>
                   </div>
@@ -217,7 +217,7 @@ export default function About() {
                     <div>
                       <h3 className="font-heading font-semibold text-2xl mb-4">Our Research Foundation</h3>
                       <p className="text-gray-600 mb-4">
-                        The Aurfy approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
+                        The Aurafy approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
                       </p>
                       <p className="text-gray-600 mb-6">
                         Our team includes not only spiritual practitioners but also data scientists, psychologists, and researchers who work together to create a holistic approach to spiritual wellness that honors tradition while embracing innovation.
@@ -270,12 +270,12 @@ export default function About() {
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
                     <img 
-                      src="https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                      alt="Maya Johnson" 
+                      src="https://C:/Users/weewee/Downloads/WhatsApp%20Image%202025-06-16%20at%205.50.48%20PM.jpeg" 
+                      alt="Nishant Sharma" 
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h3 className="font-heading font-semibold text-xl mb-1">Maya Johnson</h3>
+                  <h3 className="font-heading font-semibold text-xl mb-1">Nishant Sharma</h3>
                   <p className="text-primary mb-3">Founder & Lead Healer</p>
                   <p className="text-gray-600 text-sm">
                     A certified Reiki Master with 20+ years of experience in energy healing, Maya founded Aurfy to bring spiritual wellness to the digital age.
@@ -329,7 +329,7 @@ export default function About() {
         </section>
         
         {/* Join us CTA */}
-        <section className="py-16 bg-gradient-to-r from-primary to-primary-dark text-white">
+        <section className="py-16 bg-gradient-to-r from-secondary to-primary text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="font-heading font-bold text-3xl md:text-4xl mb-6">Join Our Spiritual Community</h2>

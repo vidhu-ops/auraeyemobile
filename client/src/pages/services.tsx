@@ -125,7 +125,7 @@ export default function Services() {
         </section>
         
         {/* Premium Banner */}
-        <section className="py-16 bg-gradient-to-r from-primary to-primary-dark text-white">
+        <section className="py-16 bg-gradient-to-r from-secondary to-primary text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl font-heading font-bold mb-4">Unlock Premium Features</h2>

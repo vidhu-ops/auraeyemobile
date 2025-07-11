@@ -119,6 +119,8 @@ export const insertObjectAnalysisSchema = createInsertSchema(objectAnalyses).omi
 export const healers = pgTable("healers", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  username: text("username").notNull().unique(), // Login username
+  password: text("password").notNull(), // Hashed password
   specialty: text("specialty").notNull(),
   description: text("description").notNull(),
   email: text("email").notNull(),
