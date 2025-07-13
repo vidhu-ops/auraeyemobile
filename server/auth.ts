@@ -131,7 +131,8 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
-        userType: "client" // All registrations default to client type
+        userType: "client", // All registrations default to client type
+        credits: 10 // Give new users 10 credits
       });
 
       // Remove password from response
