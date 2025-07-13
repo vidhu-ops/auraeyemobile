@@ -153,6 +153,21 @@ export const insertHealerBookingSchema = createInsertSchema(healerBookings).omit
   createdAt: true,
 });
 
+export const vibeFeedback = pgTable("vibe_feedback", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  personalityColor: text("personality_color").notNull(),
+  colorMeaning: text("color_meaning").notNull(),
+  feedback: text("feedback").notNull(), // "yes" or "no"
+  sessionId: text("session_id"), // To track unique vibe analysis sessions
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertVibeFeedbackSchema = createInsertSchema(vibeFeedback).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -167,3 +182,5 @@ export type Healer = typeof healers.$inferSelect;
 export type InsertHealer = z.infer<typeof insertHealerSchema>;
 export type HealerBooking = typeof healerBookings.$inferSelect;
 export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;
+export type VibeFeedback = typeof vibeFeedback.$inferSelect;
+export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;

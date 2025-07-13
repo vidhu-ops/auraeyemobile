@@ -30,6 +30,8 @@ export default function HomePage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -182,9 +184,60 @@ export default function HomePage() {
     setImagePreview(null);
     setProcessedImage(null);
     setVibeResult(null);
+    setFeedbackSubmitted(false);
+    setSelectedFeedback(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Feedback submission mutation
+  const feedbackMutation = useMutation({
+    mutationFn: async (feedbackData: { personalityColor: string; colorMeaning: string; feedback: string; sessionId?: string }) => {
+      const response = await fetch('/api/vibe-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedbackData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      setFeedbackSubmitted(true);
+      toast({
+        title: "Feedback Submitted",
+        description: "Thank you for your feedback! It helps us improve our accuracy.",
+      });
+    },
+    onError: (error) => {
+      console.error('Feedback submission error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit feedback. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleFeedbackSubmit = (feedback: string) => {
+    if (!vibeResult) return;
+    
+    setSelectedFeedback(feedback);
+    
+    const feedbackData = {
+      personalityColor: vibeResult.dominantColor,
+      colorMeaning: `${vibeResult.colorMeaning.positive} / ${vibeResult.colorMeaning.negative}`,
+      feedback,
+      sessionId: Date.now().toString(),
+    };
+    
+    feedbackMutation.mutate(feedbackData);
   };
 
   // Color gradients for aura display - only 12 approved colors
@@ -467,6 +520,57 @@ export default function HomePage() {
                                 </CardContent>
                               </Card>
                             </div>
+
+                            {/* Feedback Section */}
+                            {!feedbackSubmitted && (
+                              <Card className="bg-blue-50 border-blue-200 mt-4">
+                                <CardContent className="p-4">
+                                  <div className="text-center">
+                                    <h4 className="font-semibold text-blue-800 mb-3">Was this reading accurate?</h4>
+                                    <p className="text-sm text-blue-700 mb-4">Your feedback helps us improve our spiritual analysis accuracy.</p>
+                                    <div className="flex justify-center space-x-4">
+                                      <Button
+                                        onClick={() => handleFeedbackSubmit('yes')}
+                                        disabled={feedbackMutation.isPending}
+                                        size="sm"
+                                        className="bg-green-500 hover:bg-green-600 text-white"
+                                      >
+                                        {feedbackMutation.isPending && selectedFeedback === 'yes' ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          '👍 Yes'
+                                        )}
+                                      </Button>
+                                      <Button
+                                        onClick={() => handleFeedbackSubmit('no')}
+                                        disabled={feedbackMutation.isPending}
+                                        size="sm"
+                                        variant="outline"
+                                        className="border-red-300 text-red-700 hover:bg-red-50"
+                                      >
+                                        {feedbackMutation.isPending && selectedFeedback === 'no' ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          '👎 No'
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )}
+
+                            {/* Feedback Success Message */}
+                            {feedbackSubmitted && (
+                              <Card className="bg-green-50 border-green-200 mt-4">
+                                <CardContent className="p-4">
+                                  <div className="text-center">
+                                    <h4 className="font-semibold text-green-800 mb-2">Thank you for your feedback!</h4>
+                                    <p className="text-sm text-green-700">Your input helps us improve our spiritual analysis accuracy.</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )}
 
                             {/* Action Buttons */}
                             <div className="space-y-3 pt-4">

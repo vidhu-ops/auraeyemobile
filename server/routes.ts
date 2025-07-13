@@ -1991,6 +1991,35 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Submit vibe feedback
+  app.post("/api/vibe-feedback", async (req, res) => {
+    try {
+      const { personalityColor, colorMeaning, feedback, sessionId } = req.body;
+      
+      if (!personalityColor || !colorMeaning || !feedback) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      if (!['yes', 'no'].includes(feedback.toLowerCase())) {
+        return res.status(400).json({ message: "Feedback must be 'yes' or 'no'" });
+      }
+
+      const vibeFeedbackData = {
+        userId: req.user?.id || null,
+        personalityColor,
+        colorMeaning,
+        feedback: feedback.toLowerCase(),
+        sessionId
+      };
+
+      const savedFeedback = await storage.saveVibeFeedback(vibeFeedbackData);
+      res.status(201).json(savedFeedback);
+    } catch (error) {
+      console.error("Error saving vibe feedback:", error);
+      res.status(500).json({ message: "Failed to save feedback" });
+    }
+  });
+
   // Quick vibe check - simplified aura analysis for home page
   app.post("/api/quick-vibe", upload.single('image'), async (req, res) => {
     try {
