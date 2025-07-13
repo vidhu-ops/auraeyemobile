@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, User, Zap, Star } from "lucide-react";
