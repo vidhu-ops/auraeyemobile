@@ -59,7 +59,7 @@ export default function HomePage() {
     ctx.restore();
   };
 
-  // Process image with aura visualization and watermark
+  // Process image with smokey aura visualization and watermark
   const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
     const img = new Image();
     img.src = imageBase64;
@@ -75,24 +75,81 @@ export default function HomePage() {
       // Draw original image
       ctx.drawImage(img, 0, 0);
       
-      // Add aura glow effect
+      // Get color RGB values
+      const colorRGB = getColorRGB(dominantColor);
+      
+      // Create smokey aura effect with multiple layers
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       
-      // Create radial gradient for aura
-      const gradient = ctx.createRadialGradient(
+      // Layer 1: Large smokey particles around person
+      const numLargeParticles = 12;
+      const largeParticleSize = Math.min(canvas.width, canvas.height) * 0.18;
+      
+      for (let i = 0; i < numLargeParticles; i++) {
+        const angle = (i / numLargeParticles) * Math.PI * 2;
+        const distance = Math.min(canvas.width, canvas.height) * 0.25;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, largeParticleSize);
+        gradient.addColorStop(0, `rgba(${colorRGB}, 0.15)`);
+        gradient.addColorStop(0.5, `rgba(${colorRGB}, 0.08)`);
+        gradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillRect(x - largeParticleSize, y - largeParticleSize, largeParticleSize * 2, largeParticleSize * 2);
+      }
+      
+      // Layer 2: Medium smokey particles
+      const numMediumParticles = 8;
+      const mediumParticleSize = Math.min(canvas.width, canvas.height) * 0.14;
+      
+      for (let i = 0; i < numMediumParticles; i++) {
+        const angle = (i / numMediumParticles) * Math.PI * 2 + Math.PI / 8;
+        const distance = Math.min(canvas.width, canvas.height) * 0.35;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, mediumParticleSize);
+        gradient.addColorStop(0, `rgba(${colorRGB}, 0.12)`);
+        gradient.addColorStop(0.5, `rgba(${colorRGB}, 0.06)`);
+        gradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.globalCompositeOperation = 'soft-light';
+        ctx.fillRect(x - mediumParticleSize, y - mediumParticleSize, mediumParticleSize * 2, mediumParticleSize * 2);
+      }
+      
+      // Layer 3: Base aura glow
+      const baseGradient = ctx.createRadialGradient(
         centerX, centerY, canvas.width * 0.1,
-        centerX, centerY, canvas.width * 0.8
+        centerX, centerY, canvas.width * 0.6
       );
+      baseGradient.addColorStop(0, `rgba(${colorRGB}, 0.1)`);
+      baseGradient.addColorStop(0.4, `rgba(${colorRGB}, 0.06)`);
+      baseGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
       
-      const colorGradient = getColorGradient(dominantColor);
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      gradient.addColorStop(0.3, `rgba(${getColorRGB(dominantColor)}, 0.2)`);
-      gradient.addColorStop(0.7, `rgba(${getColorRGB(dominantColor)}, 0.1)`);
-      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      
-      ctx.fillStyle = gradient;
+      ctx.fillStyle = baseGradient;
+      ctx.globalCompositeOperation = 'overlay';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Layer 4: Outer atmospheric effect
+      const outerGradient = ctx.createRadialGradient(
+        centerX, centerY, canvas.width * 0.3,
+        centerX, centerY, canvas.width * 0.85
+      );
+      outerGradient.addColorStop(0, `rgba(${colorRGB}, 0.05)`);
+      outerGradient.addColorStop(0.7, `rgba(${colorRGB}, 0.03)`);
+      outerGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
+      
+      ctx.fillStyle = outerGradient;
+      ctx.globalCompositeOperation = 'color-dodge';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Reset composite operation for watermark
+      ctx.globalCompositeOperation = 'source-over';
       
       // Add watermark
       addWatermark(ctx, canvas.width, canvas.height);
@@ -244,13 +301,13 @@ export default function HomePage() {
   const getColorGradient = (color: string) => {
     const gradients = {
       'Red': 'from-red-800/30 to-red-800/80',
-      'Orange': 'from-orange-800/30 to-orange-900/80',
-      'Yellow': 'from-yellow-800/30 to-yellow-900/80',
+      'Orange': 'from-orange-800 to-orange-100',
+      'Yellow': 'from-yellow-500/30 to-yellow-500/70',
       'Green': 'from-green-800/30 to-green-900/80',
       'Blue': 'from-blue-800/30 to-blue-900/80',
-      'Violet': 'from-violet-500/30 to-violet-900/100',
-      'Indigo': 'from-indigo-800/80 to-indigo-900/10',
-      'White': 'from-white/30 to-gray-300/10',
+      'Violet': 'from-violet-900/100 to-violet-900/10',
+      'Indigo': 'from-indigo-800 to-indigo-70',
+      'White': 'from-white to-gray-300/10',
       'Brown': 'from-amber-800/30 to-amber-900/80',
       'Gold': 'from-yellow-800/30 to-yellow-900/80',
       'Silver': 'from-gray-400/30 to-gray-900/80',
@@ -260,7 +317,7 @@ export default function HomePage() {
   };
 
   // Color borders for result display
-  function getColorBorder({ color }: { color: string; }): string {
+  function getColorBorder ({ color }: { color: string; }): string {
         const borders = {
             'Red': 'bg-red-500',
             'Orange': 'bg-orange-500',
@@ -275,7 +332,7 @@ export default function HomePage() {
             'Silver': 'bg-gray-400',
             'Black': 'bg-gray-800',
         };
-        return borders[color as keyof typeof borders] || 'bg-violet-500';
+        return borders[color as keyof typeof borders] || 'color';
     }
 
   return (
@@ -526,7 +583,7 @@ export default function HomePage() {
                               <Card className="bg-blue-50 border-blue-200 mt-4">
                                 <CardContent className="p-4">
                                   <div className="text-center">
-                                    <h4 className="font-semibold text-blue-800 mb-3">Was this reading accurate?</h4>
+                                    <h4 className="font-semibold text-blue-800 mb-3">Which do you relate to more?</h4>
                                     <p className="text-sm text-blue-700 mb-4">Your feedback helps us improve our spiritual analysis accuracy.</p>
                                     <div className="flex justify-center space-x-4">
                                       <Button
@@ -538,7 +595,7 @@ export default function HomePage() {
                                         {feedbackMutation.isPending && selectedFeedback === 'yes' ? (
                                           <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
-                                          '👍 Yes'
+                                          'Positive'
                                         )}
                                       </Button>
                                       <Button
@@ -551,7 +608,7 @@ export default function HomePage() {
                                         {feedbackMutation.isPending && selectedFeedback === 'no' ? (
                                           <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
-                                          '👎 No'
+                                          'Negative'
                                         )}
                                       </Button>
                                     </div>
@@ -577,6 +634,13 @@ export default function HomePage() {
                               <Link to="/aura-analysis">
                                 <Button className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700">
                                   Get Full Aura Analysis
+                                  <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                              </Link>
+                              
+                              <Link to="/journal">
+                                <Button className="space-y-3 border-2 w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-purple-600 hover:to-violet-700">
+                                  Journal with us
                                   <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                               </Link>
