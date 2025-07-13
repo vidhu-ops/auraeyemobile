@@ -389,7 +389,7 @@ export class DatabaseStorage implements IStorage {
     await this.createCreditTransaction({
       userId,
       amount: -amount,
-      type,
+      transactionType: type,
       description,
       balanceAfter: newBalance,
     });
@@ -408,7 +408,7 @@ export class DatabaseStorage implements IStorage {
     await this.createCreditTransaction({
       userId,
       amount,
-      type,
+      transactionType: type,
       description,
       balanceAfter: newBalance,
     });
