@@ -19,6 +19,7 @@ import Journal from "@/pages/journal";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Services from "@/pages/services";
+import PricingPage from "@/pages/pricing";
 import { AuthProvider } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -40,6 +41,7 @@ function Router() {
       <ProtectedRoute path="/journal" component={Journal} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/pricing" component={PricingPage} />
       <Route path="/healers" component={HealersPage} />
       <Route path="/healer-crm" component={HealerCRM} />
       <Route component={NotFoundPage} />

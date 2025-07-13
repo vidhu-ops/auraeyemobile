@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useCredits } from "@/hooks/use-credits";
 import { 
   Sheet, 
   SheetContent, 
@@ -14,11 +15,12 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, CreditCard } from "lucide-react";
 
 export default function Navbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
+  const { credits } = useCredits();
   const [open, setOpen] = useState(false);
 
   const handleLogout = () => {
@@ -83,6 +85,10 @@ export default function Navbar() {
                   <div className="pt-4 border-t border-gray-200 mt-4">
                     {user ? (
                       <>
+                        <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
+                          <CreditCard className="h-4 w-4 text-gray-600" />
+                          <span className="text-sm font-medium text-gray-700">{credits} credits</span>
+                        </div>
                         <Link 
                           href={user.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"} 
                           onClick={closeSheet}
@@ -146,6 +152,10 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 px-3 py-1 bg-gray-100 rounded-full">
+                  <CreditCard className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">{credits}</span>
+                </div>
                 <Link href={user.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"}>
                   <Button variant="outline" className="border-primary text-primary hover:bg-primary-light/10">
                     Dashboard

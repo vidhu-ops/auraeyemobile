@@ -15,6 +15,26 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification } from "./email-service";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
+// Credit checking middleware
+async function checkCredits(req: any, res: any, next: any) {
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  
+  const userId = req.user.id;
+  const userCredits = await storage.getUserCredits(userId);
+  
+  if (userCredits < 1) {
+    return res.status(402).json({ 
+      error: "Insufficient credits",
+      message: "You need at least 1 credit to use this service. Please purchase credits to continue.",
+      credits: userCredits 
+    });
+  }
+  
+  next();
+}
+
 
 
 // Only approved aura colors - restricted to 12 colors as per requirements
@@ -916,7 +936,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // API routes
   // Object Analysis API endpoint
-  app.post("/api/analyze-object", upload.single("image"), async (req, res) => {
+  app.post("/api/analyze-object", isAuthenticated, checkCredits, upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imgBuffer: Buffer;
@@ -975,6 +995,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             spiritualSignificance: deterministicResult.spiritualSignificance,
             detailedAnalysis: deterministicResult.detailedAnalysis
           });
+          
+          // Deduct 1 credit for successful analysis
+          await storage.deductCredits(req.user.id, 1, 'object_analysis', `Object analysis for ${analysisName}`);
         } catch (saveError) {
           console.error("Error saving object analysis:", saveError);
           // Continue even if saving fails
@@ -1190,7 +1213,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 }
 
   // Aura Analysis API endpoint
-  app.post("/api/analyze-aura", upload.single("image"), async (req, res) => {
+  app.post("/api/analyze-aura", isAuthenticated, checkCredits, upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
@@ -1342,6 +1365,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           
           // Add the saved reading ID to the response
           auraAnalysis.id = savedReading.id;
+          
+          // Deduct 1 credit for successful analysis
+          await storage.deductCredits(req.user.id, 1, 'aura_analysis', `Aura analysis for ${analysisName}`);
           console.log("Aura reading saved successfully");
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
@@ -2021,7 +2047,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Quick vibe check - simplified aura analysis for home page
-  app.post("/api/quick-vibe", upload.single('image'), async (req, res) => {
+  app.post("/api/quick-vibe", isAuthenticated, checkCredits, upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No image file provided" });
@@ -2123,6 +2149,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
         negative: 'Your energy may need balancing and harmonizing.'
       };
 
+      // Deduct 1 credit for successful analysis
+      if (req.user) {
+        await storage.deductCredits(req.user.id, 1, 'quick_vibe', 'Quick vibe analysis');
+      }
+
       res.json({
         dominantColor: personalityColor,
         colorMeaning: meaning,
@@ -2201,6 +2232,28 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error retrieving aura readings:", error);
       res.status(500).json({ message: "Failed to retrieve aura readings" });
+    }
+  });
+
+  // Get user's credits
+  app.get("/api/credits", isAuthenticated, async (req, res) => {
+    try {
+      const credits = await storage.getUserCredits(req.user.id);
+      res.json({ credits });
+    } catch (error) {
+      console.error("Error retrieving user credits:", error);
+      res.status(500).json({ message: "Failed to retrieve credits" });
+    }
+  });
+
+  // Get user's credit transactions
+  app.get("/api/credit-transactions", isAuthenticated, async (req, res) => {
+    try {
+      const transactions = await storage.getCreditTransactionsByUser(req.user.id);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error retrieving credit transactions:", error);
+      res.status(500).json({ message: "Failed to retrieve credit transactions" });
     }
   });
 

@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   userType: text("user_type").notNull().default("client"), // "client" or "healer"
   birthDate: text("birth_date"),
+  credits: integer("credits").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -168,6 +169,21 @@ export const insertVibeFeedbackSchema = createInsertSchema(vibeFeedback).omit({
   createdAt: true,
 });
 
+export const creditTransactions = pgTable("credit_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(), // Positive for additions, negative for usage
+  type: text("type").notNull(), // "purchase", "aura_analysis", "object_analysis", "vibe_analysis", "bonus"
+  description: text("description").notNull(),
+  balanceAfter: integer("balance_after").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCreditTransactionSchema = createInsertSchema(creditTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -184,3 +200,5 @@ export type HealerBooking = typeof healerBookings.$inferSelect;
 export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;
 export type VibeFeedback = typeof vibeFeedback.$inferSelect;
 export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;
+export type CreditTransaction = typeof creditTransactions.$inferSelect;
+export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
