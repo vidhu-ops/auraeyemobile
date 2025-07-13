@@ -1,4 +1,4 @@
-import { apiRequest } from "./queryClient";
+import { apiRequest, queryClient } from "./queryClient";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const GPT_MODEL = "gpt-4o";
@@ -66,6 +66,9 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
     }
     
     const result = await response.json();
+    
+    // Invalidate credits cache to update the display
+    queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
     
     // Optional: Could add client-side color enhancement/visualization here
     // based on the detected dominant and secondary colors
