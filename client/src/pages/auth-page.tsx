@@ -58,7 +58,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (user) {
-    return <Redirect to={user.userType === "healer" ? "/healer-dashboard" : "/client-dashboard"} />;
+    return <Redirect to="/" />;
   }
 
   return (
