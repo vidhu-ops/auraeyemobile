@@ -34,6 +34,8 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 
 interface HealerBooking {
   id: number;
@@ -799,7 +801,10 @@ export default function HealerDashboard() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
@@ -1198,6 +1203,9 @@ export default function HealerDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

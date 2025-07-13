@@ -446,8 +446,8 @@ export default function ClientDashboard() {
               <p className="opacity-80">Your spiritual wellness dashboard</p>
             </div>
             <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full">
-              <div className="text-yellow-300">💳</div>
-              <span className="font-medium">{credits} credits</span>
+              <div className="text-black">💳</div>
+              <span className="font-medium text-black">{credits} credits</span>
             </div>
           </div>
         </div>
