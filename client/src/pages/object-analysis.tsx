@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
+import { queryClient } from "@/lib/queryClient";
 import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -628,6 +629,9 @@ export default function ObjectAnalysis() {
       setResult(data);
       setAnalysisProgress(100);
       setActiveTab("basic");
+      
+      // Invalidate credits cache to update the display
+      queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       
       // Reset review system for new analysis and set current analysis ID
       setReviewSubmitted(false);
