@@ -309,6 +309,10 @@ export class DatabaseStorage implements IStorage {
     // Get unique clients
     const uniqueClients = Array.from(new Set(bookings.map(b => b.userId)));
     
+    // Calculate total credits generated (1 credit per booking)
+    const totalCreditsGenerated = bookings.length;
+    const recentCreditsGenerated = recentBookings.length;
+    
     return {
       totalBookings: bookings.length,
       recentBookings: recentBookings.length,
@@ -316,7 +320,9 @@ export class DatabaseStorage implements IStorage {
       rejectedBookings: rejectedBookings.length,
       pendingBookings: pendingBookings.length,
       totalClients: uniqueClients.length,
-      acceptanceRate: bookings.length > 0 ? (acceptedBookings.length / bookings.length) * 100 : 0
+      acceptanceRate: bookings.length > 0 ? (acceptedBookings.length / bookings.length) * 100 : 0,
+      totalCreditsGenerated,
+      recentCreditsGenerated
     };
   }
 

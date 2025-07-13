@@ -771,6 +771,13 @@ export default function HealerDashboard() {
                 </span>
               )}
             </p>
+            
+            {/* Credit Information */}
+            <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+              <p className="text-xs text-green-700 font-medium">
+                💰 Client spent 1 credit for this booking
+              </p>
+            </div>
           </div>
           
           {booking.status === 'pending' && (
@@ -1014,6 +1021,14 @@ export default function HealerDashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Unique Clients</span>
                     <span className="font-semibold">{analytics?.totalClients || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Total Credits Generated</span>
+                    <span className="font-semibold text-green-600">{analytics?.totalCreditsGenerated || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Recent Credits (30 days)</span>
+                    <span className="font-semibold text-green-600">{analytics?.recentCreditsGenerated || 0}</span>
                   </div>
                 </div>
               </CardContent>

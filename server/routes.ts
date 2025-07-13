@@ -1830,10 +1830,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const { healerId, message } = req.body;
       
+      // Check if user has enough credits (1 credit required)
+      const userCredits = await storage.getUserCredits(user.id);
+      if (userCredits < 1) {
+        return res.status(400).json({ 
+          message: "Insufficient credits. You need 1 credit to book a healer session.",
+          requiredCredits: 1,
+          currentCredits: userCredits
+        });
+      }
+
       // Get healer details
       const healer = await storage.getHealer(healerId);
       if (!healer) {
         return res.status(404).json({ message: "Healer not found" });
+      }
+
+      // Deduct 1 credit for the booking
+      const creditDeducted = await storage.deductCredits(
+        user.id,
+        1,
+        "healer_booking",
+        `Healer booking with ${healer.name}`
+      );
+
+      if (!creditDeducted) {
+        return res.status(400).json({ 
+          message: "Failed to deduct credits. Please try again.",
+          requiredCredits: 1,
+          currentCredits: userCredits
+        });
       }
 
       // Create booking record
@@ -1860,7 +1886,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       res.status(201).json({ 
         message: "Booking request sent successfully",
         booking: booking,
-        emailSent: emailSent
+        emailSent: emailSent,
+        creditsDeducted: 1,
+        remainingCredits: userCredits - 1
       });
     } catch (error) {
       console.error("Error processing booking:", error);
