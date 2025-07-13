@@ -173,7 +173,7 @@ export const creditTransactions = pgTable("credit_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   amount: integer("amount").notNull(), // Positive for additions, negative for usage
-  type: text("type").notNull(), // "purchase", "aura_analysis", "object_analysis", "vibe_analysis", "bonus"
+  transactionType: text("transaction_type").notNull(), // "purchase", "aura_analysis", "object_analysis", "vibe_analysis", "bonus"
   description: text("description").notNull(),
   balanceAfter: integer("balance_after").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
