@@ -41,17 +41,17 @@ export default function HomePage() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.5; // 50% opacity
+    ctx.globalAlpha = 0.8; // 80% opacity for better visibility on darker aura
     ctx.fillStyle = 'white';
-    ctx.font = '100px Arial, sans-serif';
+    ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Add text shadow for better visibility
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
+    // Add stronger text shadow for better visibility on darker backgrounds
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
     
     // Draw watermark text
     ctx.fillText('Aurafy', centerX, centerY);
@@ -82,19 +82,20 @@ export default function HomePage() {
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       
-      // Layer 1: Large smokey particles around person
-      const numLargeParticles = 12;
-      const largeParticleSize = Math.min(canvas.width, canvas.height) * 0.18;
+      // Layer 1: Dark smokey particles around person
+      const numLargeParticles = 16;
+      const largeParticleSize = Math.min(canvas.width, canvas.height) * 0.22;
       
       for (let i = 0; i < numLargeParticles; i++) {
         const angle = (i / numLargeParticles) * Math.PI * 2;
-        const distance = Math.min(canvas.width, canvas.height) * 0.25;
+        const distance = Math.min(canvas.width, canvas.height) * 0.2;
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, largeParticleSize);
-        gradient.addColorStop(0, `rgba(${colorRGB}, 0.15)`);
-        gradient.addColorStop(0.5, `rgba(${colorRGB}, 0.08)`);
+        gradient.addColorStop(0, `rgba(${colorRGB}, 0.35)`);
+        gradient.addColorStop(0.4, `rgba(${colorRGB}, 0.2)`);
+        gradient.addColorStop(0.8, `rgba(${colorRGB}, 0.08)`);
         gradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
         
         ctx.fillStyle = gradient;
@@ -102,19 +103,19 @@ export default function HomePage() {
         ctx.fillRect(x - largeParticleSize, y - largeParticleSize, largeParticleSize * 2, largeParticleSize * 2);
       }
       
-      // Layer 2: Medium smokey particles
-      const numMediumParticles = 8;
-      const mediumParticleSize = Math.min(canvas.width, canvas.height) * 0.14;
+      // Layer 2: Medium dark smokey particles
+      const numMediumParticles = 12;
+      const mediumParticleSize = Math.min(canvas.width, canvas.height) * 0.18;
       
       for (let i = 0; i < numMediumParticles; i++) {
-        const angle = (i / numMediumParticles) * Math.PI * 2 + Math.PI / 8;
-        const distance = Math.min(canvas.width, canvas.height) * 0.35;
+        const angle = (i / numMediumParticles) * Math.PI * 2 + Math.PI / 6;
+        const distance = Math.min(canvas.width, canvas.height) * 0.3;
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, mediumParticleSize);
-        gradient.addColorStop(0, `rgba(${colorRGB}, 0.12)`);
-        gradient.addColorStop(0.5, `rgba(${colorRGB}, 0.06)`);
+        gradient.addColorStop(0, `rgba(${colorRGB}, 0.28)`);
+        gradient.addColorStop(0.5, `rgba(${colorRGB}, 0.15)`);
         gradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
         
         ctx.fillStyle = gradient;
@@ -122,30 +123,32 @@ export default function HomePage() {
         ctx.fillRect(x - mediumParticleSize, y - mediumParticleSize, mediumParticleSize * 2, mediumParticleSize * 2);
       }
       
-      // Layer 3: Base aura glow
+      // Layer 3: Darker base aura glow
       const baseGradient = ctx.createRadialGradient(
-        centerX, centerY, canvas.width * 0.1,
-        centerX, centerY, canvas.width * 0.6
+        centerX, centerY, canvas.width * 0.08,
+        centerX, centerY, canvas.width * 0.5
       );
-      baseGradient.addColorStop(0, `rgba(${colorRGB}, 0.1)`);
-      baseGradient.addColorStop(0.4, `rgba(${colorRGB}, 0.06)`);
+      baseGradient.addColorStop(0, `rgba(${colorRGB}, 0.25)`);
+      baseGradient.addColorStop(0.3, `rgba(${colorRGB}, 0.15)`);
+      baseGradient.addColorStop(0.7, `rgba(${colorRGB}, 0.08)`);
       baseGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
       
       ctx.fillStyle = baseGradient;
       ctx.globalCompositeOperation = 'overlay';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Layer 4: Outer atmospheric effect
+      // Layer 4: Outer dark atmospheric effect
       const outerGradient = ctx.createRadialGradient(
-        centerX, centerY, canvas.width * 0.3,
-        centerX, centerY, canvas.width * 0.85
+        centerX, centerY, canvas.width * 0.25,
+        centerX, centerY, canvas.width * 0.75
       );
-      outerGradient.addColorStop(0, `rgba(${colorRGB}, 0.05)`);
-      outerGradient.addColorStop(0.7, `rgba(${colorRGB}, 0.03)`);
+      outerGradient.addColorStop(0, `rgba(${colorRGB}, 0.12)`);
+      outerGradient.addColorStop(0.5, `rgba(${colorRGB}, 0.08)`);
+      outerGradient.addColorStop(0.9, `rgba(${colorRGB}, 0.03)`);
       outerGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
       
       ctx.fillStyle = outerGradient;
-      ctx.globalCompositeOperation = 'color-dodge';
+      ctx.globalCompositeOperation = 'multiply';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // Reset composite operation for watermark
