@@ -27,17 +27,18 @@ import { ProtectedRoute } from "./lib/protected-route";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomePage} />
+      <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/login" component={AuthPage} />
       <Route path="/services" component={Services} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
-      <Route path="/aura-analysis" component={AuraAnalysis} />
-      <Route path="/object-analysis" component={ObjectAnalysis} />
-      <Route path="/daily-horoscope" component={DailyHoroscope} />
+      <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
+      <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
+      <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
       <ProtectedRoute path="/personalized-horoscope" component={PersonalizedHoroscope} />
-      <Route path="/numerology" component={Numerology} />
+      <ProtectedRoute path="/numerology" component={Numerology} />
       <ProtectedRoute path="/journal" component={Journal} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
