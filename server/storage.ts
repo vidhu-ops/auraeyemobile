@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction } from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -73,6 +73,13 @@ export interface IStorage {
   // Vibe feedback
   saveVibeFeedback(feedback: InsertVibeFeedback): Promise<VibeFeedback>;
   getVibeFeedbackByUser(userId: number): Promise<VibeFeedback[]>;
+  
+  // Credit management
+  getUserCredits(userId: number): Promise<number>;
+  deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean>;
+  addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean>;
+  getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]>;
+  createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction>;
   
   // Session store
   sessionStore: any;
@@ -359,6 +366,70 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(vibeFeedback)
       .where(eq(vibeFeedback.userId, userId));
+  }
+
+  // Credit management methods
+  async getUserCredits(userId: number): Promise<number> {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    return user?.credits || 0;
+  }
+
+  async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    const currentCredits = await this.getUserCredits(userId);
+    if (currentCredits < amount) {
+      return false; // Insufficient credits
+    }
+    
+    const newBalance = currentCredits - amount;
+    
+    // Update user credits
+    await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
+    
+    // Log transaction
+    await this.createCreditTransaction({
+      userId,
+      amount: -amount,
+      type,
+      description,
+      balanceAfter: newBalance,
+    });
+    
+    return true;
+  }
+
+  async addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    const currentCredits = await this.getUserCredits(userId);
+    const newBalance = currentCredits + amount;
+    
+    // Update user credits
+    await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
+    
+    // Log transaction
+    await this.createCreditTransaction({
+      userId,
+      amount,
+      type,
+      description,
+      balanceAfter: newBalance,
+    });
+    
+    return true;
+  }
+
+  async getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]> {
+    return await db
+      .select()
+      .from(creditTransactions)
+      .where(eq(creditTransactions.userId, userId))
+      .orderBy(creditTransactions.createdAt);
+  }
+
+  async createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction> {
+    const [creditTransaction] = await db
+      .insert(creditTransactions)
+      .values(transaction)
+      .returning();
+    return creditTransaction;
   }
 }
 

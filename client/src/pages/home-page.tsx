@@ -6,9 +6,11 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle } from "lucide-react";
+import { useCredits } from "@/hooks/use-credits";
+import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +26,7 @@ interface QuickVibeResult {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { credits, isLoading: creditsLoading } = useCredits();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -209,6 +212,8 @@ export default function HomePage() {
       if (imagePreview) {
         processImageWithVibeAura(imagePreview, data.dominantColor);
       }
+      // Invalidate credits cache to update the display
+      queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       toast({
         title: "Vibe Analysis Complete!",
         description: data.message,
@@ -237,6 +242,24 @@ export default function HomePage() {
   };
 
   const analyzeVibe = () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to analyze your vibe.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (credits < 1) {
+      toast({
+        title: "Insufficient Credits",
+        description: "You need at least 1 credit to analyze your vibe. Please purchase credits to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (selectedImage) {
       quickVibeMutation.mutate(selectedImage);
     }
@@ -495,9 +518,20 @@ export default function HomePage() {
                             <h3 className="text-2xl font-semibold text-gray-900 mb-4">
                               Ready to discover your vibe?
                             </h3>
-                            <p className="text-gray-600 mb-6">
+                            <p className="text-gray-600 mb-2">
                               Click analyze to reveal your dominant aura color and its spiritual meaning.
                             </p>
+                            {user && (
+                              <div className="flex items-center justify-center text-sm text-gray-600 mb-4">
+                                <CreditCard className="h-4 w-4 mr-1" />
+                                <span>Cost: 1 credit | Your balance: {credits} credits</span>
+                              </div>
+                            )}
+                            {!user && (
+                              <p className="text-sm text-gray-600 mb-4">
+                                Login required to analyze your vibe (1 credit)
+                              </p>
+                            )}
                             <div className="space-y-3">
                               <Button
                                 onClick={analyzeVibe}
