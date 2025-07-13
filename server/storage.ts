@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback } from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -69,6 +69,10 @@ export interface IStorage {
   // Healer analytics
   getHealerClientStats(healerId: number): Promise<any>;
   getHealerBookingTrends(healerId: number): Promise<any>;
+  
+  // Vibe feedback
+  saveVibeFeedback(feedback: InsertVibeFeedback): Promise<VibeFeedback>;
+  getVibeFeedbackByUser(userId: number): Promise<VibeFeedback[]>;
   
   // Session store
   sessionStore: any;
@@ -339,6 +343,22 @@ export class DatabaseStorage implements IStorage {
     }
     
     return trends;
+  }
+
+  // Vibe feedback methods
+  async saveVibeFeedback(feedback: InsertVibeFeedback): Promise<VibeFeedback> {
+    const [vibeFeedbackResult] = await db
+      .insert(vibeFeedback)
+      .values(feedback)
+      .returning();
+    return vibeFeedbackResult;
+  }
+
+  async getVibeFeedbackByUser(userId: number): Promise<VibeFeedback[]> {
+    return await db
+      .select()
+      .from(vibeFeedback)
+      .where(eq(vibeFeedback.userId, userId));
   }
 }
 
