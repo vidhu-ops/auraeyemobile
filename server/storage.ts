@@ -108,9 +108,20 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values({
         ...insertUser,
-        userType: insertUser.userType || "client"
+        userType: insertUser.userType || "client",
+        credits: insertUser.credits || 10 // Ensure new users get 10 credits
       })
       .returning();
+    
+    // Log the initial credit grant
+    await this.createCreditTransaction({
+      userId: user.id,
+      amount: 10,
+      transactionType: "registration",
+      description: "Welcome bonus - 10 free credits",
+      balanceAfter: 10,
+    });
+    
     return user;
   }
 

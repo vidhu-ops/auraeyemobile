@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   userType: text("user_type").notNull().default("client"), // "client" or "healer"
   birthDate: text("birth_date"),
-  credits: integer("credits").default(0),
+  credits: integer("credits").default(10),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
