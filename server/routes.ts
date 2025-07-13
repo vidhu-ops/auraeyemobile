@@ -2266,11 +2266,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Get user's credits
   app.get("/api/credits", isAuthenticated, async (req, res) => {
     try {
-      const credits = await storage.getUserCredits(req.user.id);
+      const userId = req.user.id;
+      
+      // Validate user ID
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const credits = await storage.getUserCredits(userId);
       res.json({ credits });
     } catch (error) {
       console.error("Error retrieving user credits:", error);
       res.status(500).json({ message: "Failed to retrieve credits" });
+    }
+  });
+
+  // Get user's credit transaction history
+  app.get("/api/credit-transactions", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Validate user ID
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const transactions = await storage.getCreditTransactionsByUser(userId);
+      res.json({ transactions });
+    } catch (error) {
+      console.error("Error retrieving credit transactions:", error);
+      res.status(500).json({ message: "Failed to retrieve credit transactions" });
     }
   });
 

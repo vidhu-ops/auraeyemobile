@@ -376,11 +376,27 @@ export class DatabaseStorage implements IStorage {
 
   // Credit management methods
   async getUserCredits(userId: number): Promise<number> {
+    if (!userId || typeof userId !== 'number') {
+      throw new Error('Invalid userId provided for credit check');
+    }
+    
     const [user] = await db.select().from(users).where(eq(users.id, userId));
-    return user?.credits || 0;
+    if (!user) {
+      throw new Error('User not found for credit check');
+    }
+    
+    return user.credits || 0;
   }
 
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    if (!userId || typeof userId !== 'number') {
+      throw new Error('Invalid userId provided for credit deduction');
+    }
+    
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid amount for credit deduction');
+    }
+    
     const currentCredits = await this.getUserCredits(userId);
     if (currentCredits < amount) {
       return false; // Insufficient credits
@@ -388,7 +404,12 @@ export class DatabaseStorage implements IStorage {
     
     const newBalance = currentCredits - amount;
     
-    // Update user credits
+    // Ensure balance doesn't go negative
+    if (newBalance < 0) {
+      return false;
+    }
+    
+    // Update user credits atomically
     await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
     
     // Log transaction
@@ -404,10 +425,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    if (!userId || typeof userId !== 'number') {
+      throw new Error('Invalid userId provided for credit addition');
+    }
+    
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid amount for credit addition');
+    }
+    
     const currentCredits = await this.getUserCredits(userId);
     const newBalance = currentCredits + amount;
     
-    // Update user credits
+    // Update user credits atomically
     await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
     
     // Log transaction
