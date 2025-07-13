@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { useCredits } from "@/hooks/use-credits";
 import { 
   Calendar, 
   CheckCircle, 
@@ -627,6 +628,7 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
 
 export default function HealerDashboard() {
   const { user } = useAuth();
+  const { credits } = useCredits();
   const [activeTab, setActiveTab] = useState("overview");
   const [bookingTab, setBookingTab] = useState("pending");
   const [selectedBooking, setSelectedBooking] = useState<HealerBooking | null>(null);
@@ -799,8 +801,16 @@ export default function HealerDashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Healer Dashboard</h1>
-        <p className="text-gray-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Healer Dashboard</h1>
+            <p className="text-gray-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+          </div>
+          <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
+            <div className="text-violet-600">💳</div>
+            <span className="font-medium text-violet-800">{credits} credits</span>
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
