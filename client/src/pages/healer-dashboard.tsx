@@ -149,184 +149,336 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
     return colorMap[color] || 'from-gray-400 to-gray-600';
   };
 
-  // Comprehensive PDF Download Function - matches actual aura analysis PDF
+  // Enhanced PDF Download Function with All Tabs and UI/UX Components
   const downloadPDF = async () => {
     const jsPDF = (await import('jspdf')).default;
-    const pdf = new jsPDF();
+    const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.width;
+    const pageHeight = pdf.internal.pageSize.height;
     let yPosition = 30;
     
-    // HEADER
-    pdf.setFontSize(24);
-    pdf.setTextColor(75, 85, 99);
-    pdf.text('Aura and Chakra Alignment Report', 20, yPosition);
-    yPosition += 20;
+    // Helper function to add page break if needed
+    const checkPageBreak = (neededSpace: number) => {
+      if (yPosition + neededSpace > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+    };
     
-    // Reading Details
-    pdf.setFontSize(14);
-    pdf.setTextColor(55, 65, 81);
-    pdf.text(`Name: ${reading.name}`, 20, yPosition);
-    yPosition += 10;
-    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}`, 20, yPosition);
-    yPosition += 10;
-    pdf.text(`Energy Level: ${reading.energyLevel}/10`, 20, yPosition);
-    yPosition += 20;
-    
-    // AURA COLORS SECTION
-    pdf.setFontSize(18);
-    pdf.setTextColor(75, 85, 99);
-    pdf.text('Your Aura Color Analysis', 20, yPosition);
-    yPosition += 15;
-    
-    pdf.setFontSize(12);
-    pdf.setTextColor(55, 65, 81);
-    pdf.text(`Personality Color: ${reading.personalityColor}`, 20, yPosition);
-    yPosition += 8;
-    pdf.text(`Giving Energy Color: ${reading.givingColor}`, 20, yPosition);
-    yPosition += 8;
-    pdf.text(`Receiving Energy Color: ${reading.receivingColor}`, 20, yPosition);
-    yPosition += 8;
-    pdf.text(`Thinking Energy Color: ${reading.thinkingColor}`, 20, yPosition);
-    yPosition += 15;
-    
-    // COLOR MEANINGS
-    if (Object.keys(colorMeanings).length > 0) {
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Color Meanings & Interpretations', 20, yPosition);
-      yPosition += 15;
+    // Helper function to draw colored rectangle
+    const drawColorRect = (x: number, y: number, width: number, height: number, color: string) => {
+      const colorMap: { [key: string]: [number, number, number] } = {
+        'Red': [255, 0, 0],
+        'Orange': [255, 165, 0],
+        'Yellow': [255, 255, 0],
+        'Green': [0, 255, 0],
+        'Blue': [0, 0, 255],
+        'Indigo': [75, 0, 130],
+        'Violet': [138, 43, 226],
+        'White': [255, 255, 255],
+        'Black': [0, 0, 0],
+        'Gold': [255, 215, 0],
+        'Silver': [192, 192, 192],
+        'Brown': [165, 42, 42]
+      };
       
-      Object.entries(colorMeanings).forEach(([color, meaning]) => {
-        if (yPosition > 250) {
-          pdf.addPage();
-          yPosition = 30;
+      const [r, g, b] = colorMap[color] || [128, 128, 128];
+      pdf.setFillColor(r, g, b);
+      pdf.rect(x, y, width, height, 'F');
+      
+      // Add border
+      pdf.setDrawColor(100, 100, 100);
+      pdf.setLineWidth(0.5);
+      pdf.rect(x, y, width, height, 'S');
+    };
+    
+    // Helper function to draw progress bar
+    const drawProgressBar = (x: number, y: number, width: number, height: number, percentage: number) => {
+      // Background
+      pdf.setFillColor(230, 230, 230);
+      pdf.rect(x, y, width, height, 'F');
+      
+      // Progress fill
+      pdf.setFillColor(99, 102, 241); // Indigo color
+      pdf.rect(x, y, (width * percentage) / 100, height, 'F');
+      
+      // Border
+      pdf.setDrawColor(100, 100, 100);
+      pdf.setLineWidth(0.5);
+      pdf.rect(x, y, width, height, 'S');
+    };
+    
+    // HEADER WITH ENHANCED STYLING
+    pdf.setFontSize(28);
+    pdf.setTextColor(75, 85, 99);
+    pdf.text('HEALER PROFESSIONAL REPORT', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+    
+    pdf.setFontSize(20);
+    pdf.setTextColor(147, 51, 234); // Purple color
+    pdf.text('Complete Aura and Chakra Analysis', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 25;
+    
+    // READING DETAILS BOX
+    pdf.setFillColor(248, 250, 252);
+    pdf.rect(15, yPosition - 5, pageWidth - 30, 30, 'F');
+    pdf.setDrawColor(203, 213, 225);
+    pdf.setLineWidth(1);
+    pdf.rect(15, yPosition - 5, pageWidth - 30, 30, 'S');
+    
+    pdf.setFontSize(14);
+    pdf.setTextColor(30, 41, 59);
+    pdf.text(`Client Name: ${reading.name}`, 20, yPosition + 5);
+    pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}`, 20, yPosition + 12);
+    pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 20, yPosition + 19);
+    yPosition += 40;
+    
+    // Add processed aura image if available
+    if (reading.processedAuraImage) {
+      try {
+        checkPageBreak(60);
+        pdf.setFontSize(18);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Aura Visualization', 20, yPosition);
+        yPosition += 10;
+        
+        // Add image centered
+        const imgWidth = 150;
+        const imgHeight = 84.375; // 16:9 aspect ratio
+        const imgX = (pageWidth - imgWidth) / 2;
+        
+        pdf.addImage(reading.processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 15;
+      } catch (error) {
+        console.error('Error adding aura image to PDF:', error);
+      }
+    }
+    
+    // TAB 1: OVERVIEW - AURA COLORS WITH VISUAL CIRCLES
+    checkPageBreak(80);
+    pdf.setFontSize(20);
+    pdf.setTextColor(147, 51, 234);
+    pdf.text('TAB 1: OVERVIEW - AURA COLOR ANALYSIS', 20, yPosition);
+    yPosition += 15;
+    
+    // Draw aura color circles in a row
+    const circleSize = 20;
+    const circleY = yPosition + 10;
+    const colors = [
+      { name: 'Personality', color: reading.personalityColor, x: 30 },
+      { name: 'Giving', color: reading.givingColor, x: 80 },
+      { name: 'Receiving', color: reading.receivingColor, x: 130 },
+      { name: 'Thinking', color: reading.thinkingColor, x: 180 }
+    ];
+    
+    colors.forEach(({ name, color, x }) => {
+      drawColorRect(x, circleY, circleSize, circleSize, color);
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(name, x + circleSize/2, circleY + circleSize + 8, { align: 'center' });
+      pdf.text(color, x + circleSize/2, circleY + circleSize + 15, { align: 'center' });
+    });
+    
+    yPosition += 50;
+    
+    // SPIRITUAL GUIDANCE BOX
+    if (reading.spiritualGuidance) {
+      checkPageBreak(40);
+      pdf.setFontSize(16);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Spiritual Guidance', 20, yPosition);
+      yPosition += 10;
+      
+      // Create styled box
+      pdf.setFillColor(249, 250, 251);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, 35, 'F');
+      pdf.setDrawColor(147, 51, 234);
+      pdf.setLineWidth(1);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, 35, 'S');
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const guidanceLines = pdf.splitTextToSize(reading.spiritualGuidance, pageWidth - 40);
+      pdf.text(guidanceLines, 20, yPosition + 5);
+      yPosition += 45;
+    }
+    
+    // PERSONALITY TRAITS AS BADGES
+    if (Array.isArray(personalityTraits) && personalityTraits.length > 0) {
+      checkPageBreak(30);
+      pdf.setFontSize(16);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Personality Traits', 20, yPosition);
+      yPosition += 10;
+      
+      // Draw trait badges
+      let xPos = 20;
+      personalityTraits.forEach((trait, index) => {
+        if (xPos + 40 > pageWidth - 20) {
+          xPos = 20;
+          yPosition += 15;
         }
         
+        const traitWidth = trait.length * 2.5 + 10;
+        pdf.setFillColor(237, 233, 254);
+        pdf.rect(xPos, yPosition - 5, traitWidth, 10, 'F');
+        pdf.setDrawColor(147, 51, 234);
+        pdf.setLineWidth(0.5);
+        pdf.rect(xPos, yPosition - 5, traitWidth, 10, 'S');
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(88, 28, 135);
+        pdf.text(trait, xPos + 5, yPosition + 2);
+        
+        xPos += traitWidth + 5;
+      });
+      yPosition += 20;
+    }
+    
+    // TAB 2: CHAKRAS WITH VISUAL PROGRESS BARS
+    pdf.addPage();
+    yPosition = 30;
+    
+    pdf.setFontSize(20);
+    pdf.setTextColor(147, 51, 234);
+    pdf.text('TAB 2: CHAKRA ACTIVITY LEVELS', 20, yPosition);
+    yPosition += 20;
+    
+    if (Object.keys(chakraActivity).length > 0) {
+      Object.entries(chakraActivity).forEach(([chakra, score]) => {
+        checkPageBreak(20);
+        
+        const chakraName = chakra.charAt(0).toUpperCase() + chakra.slice(1).replace(/([A-Z])/g, ' $1');
+        
+        // Chakra name and score
+        pdf.setFontSize(12);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(`${chakraName} Chakra`, 20, yPosition);
+        pdf.text(`${score}/10`, pageWidth - 40, yPosition);
+        yPosition += 5;
+        
+        // Progress bar
+        drawProgressBar(20, yPosition, pageWidth - 60, 6, (score / 10) * 100);
+        yPosition += 15;
+      });
+    }
+    
+    // TAB 3: COLORS WITH DETAILED MEANINGS
+    pdf.addPage();
+    yPosition = 30;
+    
+    pdf.setFontSize(20);
+    pdf.setTextColor(147, 51, 234);
+    pdf.text('TAB 3: COLOR MEANINGS & INTERPRETATIONS', 20, yPosition);
+    yPosition += 20;
+    
+    if (Object.keys(colorMeanings).length > 0) {
+      Object.entries(colorMeanings).forEach(([color, meaning]) => {
+        checkPageBreak(35);
+        
+        // Color name with colored square
+        drawColorRect(20, yPosition - 5, 12, 12, color);
         pdf.setFontSize(14);
         pdf.setTextColor(75, 85, 99);
-        pdf.text(`${color} Energy:`, 20, yPosition);
-        yPosition += 8;
+        pdf.text(`${color} Energy`, 38, yPosition + 5);
+        yPosition += 15;
+        
+        // Meaning in styled box
+        pdf.setFillColor(249, 250, 251);
+        const meaningLines = pdf.splitTextToSize(String(meaning), pageWidth - 40);
+        const boxHeight = meaningLines.length * 5 + 10;
+        pdf.rect(15, yPosition - 5, pageWidth - 30, boxHeight, 'F');
+        pdf.setDrawColor(229, 231, 235);
+        pdf.setLineWidth(0.5);
+        pdf.rect(15, yPosition - 5, pageWidth - 30, boxHeight, 'S');
         
         pdf.setFontSize(11);
         pdf.setTextColor(55, 65, 81);
-        const meaningLines = pdf.splitTextToSize(String(meaning), pageWidth - 40);
-        pdf.text(meaningLines, 20, yPosition);
-        yPosition += meaningLines.length * 5 + 10;
+        pdf.text(meaningLines, 20, yPosition + 2);
+        yPosition += boxHeight + 10;
       });
     }
     
-    // CHAKRA ACTIVITY SECTION
-    if (Object.keys(chakraActivity).length > 0) {
-      if (yPosition > 180) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-      
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('8-Chakra Energy System', 20, yPosition);
-      yPosition += 15;
-      
-      // Chakra scores
-      Object.entries(chakraActivity).forEach(([chakra, score]) => {
-        if (yPosition > 250) {
-          pdf.addPage();
-          yPosition = 30;
-        }
-        
-        pdf.setFontSize(12);
-        pdf.setTextColor(75, 85, 99);
-        const chakraName = chakra.charAt(0).toUpperCase() + chakra.slice(1).replace(/([A-Z])/g, ' $1');
-        pdf.text(`${chakraName} Chakra: ${score}/10 (${score * 10}%)`, 20, yPosition);
-        yPosition += 8;
-      });
-      
-      yPosition += 10;
-    }
+    // TAB 4: COMPLETE ANALYSIS
+    pdf.addPage();
+    yPosition = 30;
     
-    // SPIRITUAL GUIDANCE
-    if (reading.spiritualGuidance) {
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-      
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Guidance', 20, yPosition);
-      yPosition += 15;
-      
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      const guidanceLines = pdf.splitTextToSize(reading.spiritualGuidance, pageWidth - 40);
-      pdf.text(guidanceLines, 20, yPosition);
-      yPosition += guidanceLines.length * 5 + 15;
-    }
+    pdf.setFontSize(20);
+    pdf.setTextColor(147, 51, 234);
+    pdf.text('TAB 4: COMPLETE DETAILED ANALYSIS', 20, yPosition);
+    yPosition += 20;
     
-    // DETAILED ANALYSIS
     if (reading.detailedAnalysis) {
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
+      pdf.setFillColor(249, 250, 251);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'F');
+      pdf.setDrawColor(229, 231, 235);
+      pdf.setLineWidth(0.5);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'S');
       
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Detailed Analysis', 20, yPosition);
-      yPosition += 15;
-      
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
       const analysisLines = pdf.splitTextToSize(reading.detailedAnalysis, pageWidth - 40);
-      pdf.text(analysisLines, 20, yPosition);
-      yPosition += analysisLines.length * 5 + 15;
+      
+      // Handle multi-page analysis
+      let lineIndex = 0;
+      while (lineIndex < analysisLines.length) {
+        const remainingLines = analysisLines.slice(lineIndex);
+        const maxLinesPerPage = Math.floor((pageHeight - yPosition - 10) / 5);
+        const linesToAdd = remainingLines.slice(0, maxLinesPerPage);
+        
+        pdf.text(linesToAdd, 20, yPosition + 5);
+        lineIndex += linesToAdd.length;
+        
+        if (lineIndex < analysisLines.length) {
+          pdf.addPage();
+          yPosition = 30;
+          
+          // Continue analysis box on new page
+          pdf.setFillColor(249, 250, 251);
+          pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'F');
+          pdf.setDrawColor(229, 231, 235);
+          pdf.setLineWidth(0.5);
+          pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'S');
+        }
+      }
     }
     
-    // PERSONALITY TRAITS
-    if (Array.isArray(personalityTraits) && personalityTraits.length > 0) {
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
+    // HEALER NOTES SECTION
+    if (reading.healerNotes || editedNotes) {
+      pdf.addPage();
+      yPosition = 30;
       
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Personality Traits', 20, yPosition);
-      yPosition += 15;
+      pdf.setFontSize(20);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('PROFESSIONAL HEALER NOTES', 20, yPosition);
+      yPosition += 20;
+      
+      // Yellow highlighted box for healer notes
+      pdf.setFillColor(254, 252, 232);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'F');
+      pdf.setDrawColor(251, 191, 36);
+      pdf.setLineWidth(1);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'S');
       
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
-      const traitsText = personalityTraits.join(', ');
-      const traitsLines = pdf.splitTextToSize(traitsText, pageWidth - 40);
-      pdf.text(traitsLines, 20, yPosition);
-      yPosition += traitsLines.length * 5 + 15;
+      const notes = editedNotes || reading.healerNotes || "No professional notes added yet.";
+      const notesLines = pdf.splitTextToSize(notes, pageWidth - 40);
+      pdf.text(notesLines, 20, yPosition + 5);
     }
     
-    // HEALER NOTES
-    if (reading.healerNotes) {
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-      
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Professional Healer Notes', 20, yPosition);
-      yPosition += 15;
-      
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      const notesLines = pdf.splitTextToSize(reading.healerNotes, pageWidth - 40);
-      pdf.text(notesLines, 20, yPosition);
-    }
+    // FOOTER
+    pdf.setFontSize(10);
+    pdf.setTextColor(156, 163, 175);
+    pdf.text('Generated by Professional Healer Dashboard - Aurfy Platform', pageWidth / 2, pageHeight - 10, { align: 'center' });
     
     // Save PDF
     const timestamp = format(new Date(reading.createdAt), "yyyy-MM-dd");
-    pdf.save(`aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`);
+    pdf.save(`healer-complete-aura-report-${reading.name}-${timestamp}.pdf`);
     
     toast({
-      title: "PDF Downloaded Successfully",
-      description: "Your complete Aura and Chakra Alignment Report has been saved",
+      title: "Complete Healer Report Downloaded",
+      description: "Your comprehensive 4-tab aura analysis report with all UI components has been generated",
     });
   };
 
