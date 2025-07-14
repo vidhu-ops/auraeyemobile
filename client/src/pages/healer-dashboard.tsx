@@ -28,7 +28,8 @@ import {
   Download,
   Edit3,
   Save,
-  X
+  X,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -89,6 +90,112 @@ interface NumerologyReading {
   personalityNumber: number;
   interpretation: string;
   createdAt: string;
+}
+
+// Healer Numerology Input Component
+function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
+  const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !birthDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both name and birth date",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/healer-numerology", {
+        name: name.trim(),
+        birthDate
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Numerology Reading Created",
+          description: `Personal numerology reading for ${name} has been generated`,
+        });
+        
+        // Reset form
+        setName("");
+        setBirthDate("");
+        
+        // Refresh the readings list
+        queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+        onSuccess();
+      } else {
+        throw new Error("Failed to create numerology reading");
+      }
+    } catch (error) {
+      console.error("Error creating numerology reading:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create numerology reading. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Person's Name
+          </label>
+          <Input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter full name"
+            className="w-full"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Birth Date
+          </label>
+          <Input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="w-full"
+            required
+          />
+        </div>
+      </div>
+      
+      <Button 
+        type="submit" 
+        disabled={isLoading}
+        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Generating Numerology Reading...
+          </>
+        ) : (
+          <>
+            <Calculator className="w-4 h-4 mr-2" />
+            Generate Personal Numerology Reading
+          </>
+        )}
+      </Button>
+    </form>
+  );
 }
 
 // Comprehensive Aura Reading Card Component with Full Analysis
@@ -1155,6 +1262,24 @@ export default function HealerDashboard() {
 
         {/* Spiritual Tools Tab */}
         <TabsContent value="tools" className="space-y-6">
+          {/* Personal Numerology Generator */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-blue-500" />
+                Personal Numerology Generator
+              </CardTitle>
+              <CardDescription>Generate detailed numerology readings for any date - stored privately for your healer account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HealerNumerologyInput onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+                setActiveTab("readings");
+              }} />
+            </CardContent>
+          </Card>
+
+          {/* Spiritual Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6 text-center">
