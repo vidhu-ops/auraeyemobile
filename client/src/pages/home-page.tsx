@@ -109,24 +109,24 @@ export default function HomePage() {
       ctx.globalCompositeOperation = 'soft-light';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Layer 3: Enhanced smokey diffused particles for natural effect
-      const numSmokeParticles = 25;
-      const smokeParticleSize = Math.min(canvas.width, canvas.height) * 0.20;
+      // Layer 3: Diffused smokey particles around person
+      const numSmokeParticles = 20;
+      const smokeParticleSize = Math.min(canvas.width, canvas.height) * 0.15;
       
       for (let i = 0; i < numSmokeParticles; i++) {
         const angle = (i / numSmokeParticles) * Math.PI * 2;
-        const distance = Math.min(canvas.width, canvas.height) * (0.15 + Math.random() * 0.25);
+        const distance = Math.min(canvas.width, canvas.height) * (0.2 + Math.random() * 0.2);
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
         const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, smokeParticleSize);
-        smokeGradient.addColorStop(0, `rgba(${colorRGB}, 0.4)`);
-        smokeGradient.addColorStop(0.3, `rgba(${colorRGB}, 0.25)`);
-        smokeGradient.addColorStop(0.6, `rgba(${colorRGB}, 0.1)`);
+        smokeGradient.addColorStop(0, `rgba(${colorRGB}, 0.3)`);
+        smokeGradient.addColorStop(0.4, `rgba(${colorRGB}, 0.15)`);
+        smokeGradient.addColorStop(0.8, `rgba(${colorRGB}, 0.05)`);
         smokeGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
         
         ctx.fillStyle = smokeGradient;
-        ctx.globalCompositeOperation = 'soft-light';
+        ctx.globalCompositeOperation = 'overlay';
         ctx.fillRect(x - smokeParticleSize, y - smokeParticleSize, smokeParticleSize * 2, smokeParticleSize * 2);
       }
       
