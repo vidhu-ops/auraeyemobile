@@ -997,7 +997,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           // Deduct 1 credit for successful analysis
-          await storage.deductCredits(req.user.id, 1, 'object_analysis', `Object analysis for ${analysisName}`);
+          const creditDeducted = await storage.deductCredits(req.user.id, 1, 'object_analysis', `Object analysis for ${analysisName}`);
+          console.log('Object analysis credit deduction result:', creditDeducted);
         } catch (saveError) {
           console.error("Error saving object analysis:", saveError);
           // Continue even if saving fails
