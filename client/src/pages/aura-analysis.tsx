@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -14,8 +14,9 @@ import { analyzeAuraImage, AuraAnalysisResult, calculateNumerology, NumerologyRe
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2, Users } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Download, Star, MessageSquare, CheckCircle2, Users, Upload, RotateCcw } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
@@ -180,6 +181,247 @@ export default function AuraAnalysis() {
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
+  
+  // Drag and drop state
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [userName, setUserName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFileSelect({ target: { files } } as any);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageSelect = async (file: File) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to analyze your aura.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+    setAnalysisStage("Preparing image for analysis...");
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("name", userName);
+
+      const response = await apiRequest("POST", "/api/analyze-aura", formData);
+      
+      if (response.ok) {
+        const analysisResult = await response.json();
+        setResult(analysisResult);
+        setCurrentAnalysisId(analysisResult.id);
+        setAnalysisProgress(100);
+        setAnalysisStage("Analysis complete!");
+        
+        toast({
+          title: "Aura Analysis Complete",
+          description: "Your spiritual energy analysis is ready!",
+        });
+      } else {
+        throw new Error("Analysis failed");
+      }
+    } catch (error) {
+      console.error("Error analyzing aura:", error);
+      toast({
+        title: "Analysis Failed",
+        description: "There was an error analyzing your aura. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Helper function to get color hex code
+  const getColorHex = (colorName: string): string => {
+    return getAccurateColorCode(colorName);
+  };
+
+  // Helper function to get color name from hex
+  const getColorNameFromHex = (hex: string): string => {
+    const colorMap: Record<string, string> = {
+      '#FF0000': 'Red',
+      '#FF4500': 'Orange',
+      '#FFFF00': 'Yellow',
+      '#00FF00': 'Green',
+      '#0000FF': 'Blue',
+      '#4B0082': 'Indigo',
+      '#EE82EE': 'Violet',
+      '#800080': 'Purple',
+      '#FFC0CB': 'Pink',
+      '#FFD700': 'Gold',
+      '#C0C0C0': 'Silver',
+      '#FFFFFF': 'White',
+      '#000000': 'Black',
+      '#808080': 'Gray',
+      '#A52A2A': 'Brown'
+    };
+    return colorMap[hex] || 'Purple';
+  };
+
+  // Helper function to get color keyword
+  const getColorKeyword = (color: string): string => {
+    const keywords: Record<string, string> = {
+      'Red': 'Passion & Power',
+      'Orange': 'Creativity & Joy',
+      'Yellow': 'Wisdom & Confidence',
+      'Green': 'Healing & Growth',
+      'Blue': 'Peace & Communication',
+      'Indigo': 'Intuition & Insight',
+      'Violet': 'Spirituality & Transformation',
+      'Purple': 'Mysticism & Magic',
+      'Pink': 'Love & Compassion',
+      'Gold': 'Divine Wisdom',
+      'Silver': 'Psychic Sensitivity',
+      'White': 'Purity & Protection',
+      'Black': 'Mystery & Depth',
+      'Gray': 'Balance & Neutrality',
+      'Brown': 'Grounding & Stability'
+    };
+    return keywords[color] || 'Spiritual Energy';
+  };
+
+  // Helper function to get spectrum position
+  const getSpectrumPosition = (color: string): number | null => {
+    const positions: Record<string, number> = {
+      'Red': 0,
+      'Orange': 16,
+      'Yellow': 33,
+      'Green': 50,
+      'Blue': 67,
+      'Indigo': 83,
+      'Violet': 100
+    };
+    return positions[color] || null;
+  };
+
+  // Helper function to get color meaning for energy tab
+  const getColorMeaningForEnergyTab = (color: string): string => {
+    return getColorSpiritalMeaning(color);
+  };
+
+  // Helper function to calculate Earth Star chakra
+  const calculateEarthStarChakra = (result: AuraAnalysisResult): number => {
+    if (!result.chakraActivity) return 50;
+    const { root, sacral } = result.chakraActivity;
+    return Math.round(((root + sacral) / 2) * 10);
+  };
+
+  // Helper function to get detailed placement
+  const getDetailedPlacement = (color: string): string => {
+    const placements: Record<string, string> = {
+      'Red': 'Connected to Root Chakra - represents grounding, survival, and physical vitality',
+      'Orange': 'Connected to Sacral Chakra - represents creativity, sexuality, and emotional flow',
+      'Yellow': 'Connected to Solar Plexus Chakra - represents personal power, confidence, and mental clarity',
+      'Green': 'Connected to Heart Chakra - represents love, compassion, and emotional healing',
+      'Blue': 'Connected to Throat Chakra - represents communication, truth, and self-expression',
+      'Indigo': 'Connected to Third Eye Chakra - represents intuition, wisdom, and spiritual insight',
+      'Violet': 'Connected to Crown Chakra - represents spiritual connection and divine consciousness',
+      'Purple': 'Connected to Crown Chakra - represents mystical wisdom and spiritual mastery',
+      'Pink': 'Connected to Heart Chakra - represents unconditional love and emotional nurturing',
+      'Gold': 'Connected to all chakras - represents divine wisdom and spiritual enlightenment',
+      'Silver': 'Connected to Third Eye and Crown - represents psychic abilities and lunar wisdom',
+      'White': 'Connected to Crown Chakra - represents purity, protection, and divine light',
+      'Black': 'Connected to Root Chakra - represents shadow work and deep transformation',
+      'Gray': 'Connected to all chakras - represents balance and neutral energy flow',
+      'Brown': 'Connected to Earth Star Chakra - represents earthly grounding and stability'
+    };
+    return placements[color] || 'Connected to the chakra system for spiritual alignment';
+  };
+
+  // Helper function to get color healing
+  const getColorHealing = (primary: string, secondary: string): string => {
+    const healing: Record<string, string> = {
+      'Red': 'Focus on grounding exercises, physical activity, and root chakra meditation',
+      'Orange': 'Engage in creative activities, emotional expression, and sacral chakra healing',
+      'Yellow': 'Practice confidence building, mental clarity exercises, and solar plexus work',
+      'Green': 'Spend time in nature, practice heart-opening meditations, and compassion work',
+      'Blue': 'Focus on communication, throat chakra clearing, and truthful expression',
+      'Indigo': 'Develop intuition, practice third eye meditation, and inner wisdom work',
+      'Violet': 'Engage in spiritual practices, crown chakra meditation, and divine connection',
+      'Purple': 'Focus on mystical studies, spiritual development, and magical practices',
+      'Pink': 'Practice self-love, emotional healing, and heart chakra nurturing',
+      'Gold': 'Seek divine wisdom, practice enlightenment work, and spiritual teaching',
+      'Silver': 'Develop psychic abilities, lunar work, and emotional sensitivity healing',
+      'White': 'Practice purification, protection work, and divine light meditation',
+      'Black': 'Focus on shadow work, transformation, and deep inner healing',
+      'Gray': 'Seek balance, neutrality, and harmonious energy flow',
+      'Brown': 'Practice earthly grounding, stability work, and environmental connection'
+    };
+    
+    const primaryHealing = healing[primary] || 'Focus on spiritual alignment and energy work';
+    const secondaryHealing = healing[secondary] || 'Support with complementary energy practices';
+    
+    return `${primaryHealing}. Additionally, ${secondaryHealing.toLowerCase()} to create a balanced energy field.`;
+  };
+
+  // Helper function to get energy pattern
+  const getEnergyPattern = (primary: string, secondary: string): string => {
+    return `Your energy pattern shows a ${primary.toLowerCase()} foundation with ${secondary.toLowerCase()} influences, creating a unique spiritual signature that guides your life path and relationships.`;
+  };
+
+  // Helper function to calculate aura strength
+  const calculateAuraStrength = (result: AuraAnalysisResult): number => {
+    if (!result.chakraActivity) return 75;
+    const values = Object.values(result.chakraActivity);
+    const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+    return Math.round(average * 10);
+  };
+
+  // Helper function to calculate energy balance
+  const calculateEnergyBalance = (result: AuraAnalysisResult): number => {
+    if (!result.chakraActivity) return 80;
+    const values = Object.values(result.chakraActivity);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const balance = 100 - ((max - min) * 10);
+    return Math.round(Math.max(0, balance));
+  };
+
+  // Helper function to calculate vulnerability
+  const calculateVulnerability = (result: AuraAnalysisResult): number => {
+    if (!result.chakraActivity) return 25;
+    const values = Object.values(result.chakraActivity);
+    const weakest = Math.min(...values);
+    return Math.round((10 - weakest) * 10);
+  };
 
   // Zone-specific color meanings for 4-Zone Energy Map
   const getThinkingEnergyMeaning = (color: string): string => {
