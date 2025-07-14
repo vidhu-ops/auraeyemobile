@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import Navigation from "@/components/layout/navbar";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
@@ -179,6 +180,325 @@ export default function AuraAnalysis() {
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
+  
+  // Missing state variables for full functionality
+  const [loading, setLoading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [numerologyResult, setNumerologyResult] = useState<NumerologyResult | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // Handler for image selection
+  const handleImageSelect = async (file: File) => {
+    setLoading(true);
+    setResult(null);
+    setOriginalImage(null);
+    setProcessedAuraImage(null);
+    setAnalysisProgress(0);
+    setAnalysisStage("Initializing aura scanning...");
+
+    try {
+      // Store original image
+      const imageUrl = URL.createObjectURL(file);
+      setOriginalImage(imageUrl);
+      setImageFile(file);
+
+      // Create form data for file upload
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("name", analysisName || 'Unnamed');
+
+      // Send to API
+      const response = await fetch("/api/analyze-aura", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      const data: AuraAnalysisResult = await response.json();
+      setResult(data);
+      setAnalysisProgress(100);
+      setActiveTab("overview");
+      
+      // Reset review system for new analysis
+      setReviewSubmitted(false);
+      setRating(0);
+      setReviewText("");
+      setCurrentAnalysisId(data.id || null);
+
+      toast({
+        title: "Analysis Complete",
+        description: "Your aura analysis has been completed successfully!",
+      });
+
+    } catch (error) {
+      console.error('Error in aura analysis:', error);
+      toast({
+        title: "Analysis Error",
+        description: error instanceof Error ? error.message : "An error occurred during analysis",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler for sharing aura image
+  const shareAuraImage = async () => {
+    if (!processedAuraImage) return;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Aura Analysis',
+          text: 'Check out my spiritual aura analysis!',
+          url: processedAuraImage,
+        });
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied",
+          description: "Analysis link copied to clipboard!",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        title: "Share Error",
+        description: "Unable to share at this time",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handler for downloading PDF with comprehensive manual UI/UX recreation
+  const downloadAuraPDF = async () => {
+    if (!result) return;
+    
+    setIsGeneratingPDF(true);
+    
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let yPosition = 20;
+      
+      // HEADER
+      pdf.setFontSize(22);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Aura and Chakra Alignment Report', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 15;
+      
+      // SUBHEADER
+      pdf.setFontSize(14);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text('Comprehensive Spiritual Energy Analysis', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+      
+      // OVERVIEW TAB CONTENT
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Overview', 20, yPosition);
+      yPosition += 15;
+      
+      // Primary Aura Color Box
+      pdf.setFillColor(249, 250, 251);
+      pdf.rect(20, yPosition - 5, pageWidth - 40, 20, 'F');
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('Primary Aura Color:', 25, yPosition + 5);
+      pdf.text(result.dominantColor, 25, yPosition + 12);
+      yPosition += 30;
+      
+      // Secondary Aura Color Box (if exists)
+      if (result.secondaryColor) {
+        pdf.setFillColor(249, 250, 251);
+        pdf.rect(20, yPosition - 5, pageWidth - 40, 20, 'F');
+        pdf.text('Secondary Aura Color:', 25, yPosition + 5);
+        pdf.text(result.secondaryColor, 25, yPosition + 12);
+        yPosition += 30;
+      }
+      
+      // Energy Level Box
+      pdf.setFillColor(249, 250, 251);
+      pdf.rect(20, yPosition - 5, pageWidth - 40, 20, 'F');
+      pdf.text('Energy Level:', 25, yPosition + 5);
+      pdf.text(result.energyLevel?.toString() || 'N/A', 25, yPosition + 12);
+      yPosition += 30;
+      
+      // Spiritual Guidance Box
+      if (result.spiritualGuidance) {
+        pdf.setFillColor(249, 250, 251);
+        pdf.rect(20, yPosition - 5, pageWidth - 40, 40, 'F');
+        pdf.text('Spiritual Guidance:', 25, yPosition + 5);
+        const guidanceLines = pdf.splitTextToSize(result.spiritualGuidance, pageWidth - 50);
+        pdf.text(guidanceLines, 25, yPosition + 12);
+        yPosition += 50;
+      }
+      
+      // NEW PAGE FOR CHAKRAS
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      // CHAKRAS TAB CONTENT
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Chakra Activity Levels', 20, yPosition);
+      yPosition += 15;
+      
+      if (result.chakraActivity) {
+        Object.entries(result.chakraActivity).forEach(([chakra, activity]) => {
+          pdf.setFontSize(12);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`${chakra}:`, 25, yPosition);
+          
+          // Progress bar visualization
+          const barWidth = 100;
+          const barHeight = 5;
+          const barX = 25;
+          const barY = yPosition + 3;
+          
+          // Background bar
+          pdf.setFillColor(229, 231, 235);
+          pdf.rect(barX, barY, barWidth, barHeight, 'F');
+          
+          // Progress bar
+          const progressWidth = (activity / 10) * barWidth;
+          pdf.setFillColor(59, 130, 246);
+          pdf.rect(barX, barY, progressWidth, barHeight, 'F');
+          
+          // Score text
+          pdf.text(`${activity}/10`, barX + barWidth + 10, yPosition + 3);
+          yPosition += 12;
+        });
+      }
+      
+      // NEW PAGE FOR COLORS
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      // COLORS TAB CONTENT
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Four Aura Colors', 20, yPosition);
+      yPosition += 15;
+      
+      const fourColors = [
+        { label: 'Personality', color: result.personalityColor },
+        { label: 'Giving', color: result.givingColor },
+        { label: 'Receiving', color: result.receivingColor },
+        { label: 'Thinking', color: result.thinkingColor }
+      ];
+      
+      fourColors.forEach((item) => {
+        if (item.color) {
+          pdf.setFillColor(249, 250, 251);
+          pdf.rect(20, yPosition - 5, pageWidth - 40, 20, 'F');
+          pdf.setFontSize(12);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`${item.label}:`, 25, yPosition + 5);
+          pdf.text(item.color, 25, yPosition + 12);
+          yPosition += 25;
+        }
+      });
+      
+      // Color Meanings
+      if (result.colorMeanings) {
+        yPosition += 10;
+        pdf.setFontSize(14);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Color Meanings', 20, yPosition);
+        yPosition += 15;
+        
+        Object.entries(result.colorMeanings).forEach(([color, meaning]) => {
+          if (yPosition > 250) {
+            pdf.addPage();
+            yPosition = 30;
+          }
+          
+          pdf.setFillColor(249, 250, 251);
+          pdf.rect(20, yPosition - 5, pageWidth - 40, 30, 'F');
+          pdf.setFontSize(10);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`${color}:`, 25, yPosition + 5);
+          const meaningLines = pdf.splitTextToSize(meaning, pageWidth - 50);
+          pdf.text(meaningLines, 25, yPosition + 12);
+          yPosition += 35;
+        });
+      }
+      
+      // NEW PAGE FOR ANALYSIS
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
+      // ANALYSIS TAB CONTENT
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Detailed Analysis', 20, yPosition);
+      yPosition += 15;
+      
+      if (result.detailedAnalysis) {
+        pdf.setFillColor(249, 250, 251);
+        pdf.rect(20, yPosition - 5, pageWidth - 40, 60, 'F');
+        pdf.setFontSize(12);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('Detailed Analysis:', 25, yPosition + 5);
+        const analysisLines = pdf.splitTextToSize(result.detailedAnalysis, pageWidth - 50);
+        pdf.text(analysisLines, 25, yPosition + 12);
+        yPosition += 70;
+      }
+      
+      // Personality Traits
+      if (result.personalityTraits) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Personality Traits', 20, yPosition);
+        yPosition += 15;
+        
+        result.personalityTraits.forEach((trait, index) => {
+          pdf.setFillColor(219, 234, 254);
+          pdf.rect(20 + (index % 3) * 60, yPosition, 55, 10, 'F');
+          pdf.setFontSize(10);
+          pdf.setTextColor(30, 64, 175);
+          pdf.text(trait, 23 + (index % 3) * 60, yPosition + 6);
+          
+          if ((index + 1) % 3 === 0) {
+            yPosition += 15;
+          }
+        });
+      }
+      
+      // Save PDF
+      const fileName = `aura-chakra-alignment-report-${analysisName || 'analysis'}-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      
+      toast({
+        title: "PDF Downloaded",
+        description: "Your comprehensive aura analysis report has been downloaded!",
+      });
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "PDF Generation Error",
+        description: "Unable to generate PDF at this time",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   // Zone-specific color meanings for 4-Zone Energy Map
   const getThinkingEnergyMeaning = (color: string): string => {
@@ -664,7 +984,6 @@ export default function AuraAnalysis() {
   // Numerology states
   const [numerologyName, setNumerologyName] = useState("");
   const [numerologyBirthDate, setNumerologyBirthDate] = useState("");
-  const [numerologyResult, setNumerologyResult] = useState<NumerologyResult | null>(null);
   const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
   
   const handlePremiumUpgrade = () => {
@@ -672,136 +991,6 @@ export default function AuraAnalysis() {
   };
 
   // Function to download complete aura and numerology analysis as PDF
-  // Function to share aura image on social media
-  const shareAuraImage = async (platform: 'facebook' | 'instagram' | 'twitter') => {
-    if (!result || !processedAuraImage) {
-      toast({
-        title: "No Image Available",
-        description: "Please complete your aura analysis first to share the visualization.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // Create a canvas with the processed aura image and overlay text
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      canvas.width = 800;
-      canvas.height = 800;
-
-      // Create image element from processed aura image
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = processedAuraImage;
-      });
-
-      // Draw the aura image
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      // Add overlay with aura information
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fillRect(0, canvas.height - 150, canvas.width, 150);
-
-      // Add text overlay
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 24px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(`My Aura: ${result.dominantColor}`, canvas.width / 2, canvas.height - 100);
-      
-      ctx.font = '18px Arial';
-      ctx.fillText('Discover your spiritual energy with Aurafy', canvas.width / 2, canvas.height - 70);
-      
-      ctx.font = '16px Arial';
-      ctx.fillText(`Energy Level: ${result.energyLevel}/10`, canvas.width / 2, canvas.height - 40);
-
-      // Convert canvas to blob
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, 'image/png', 0.9);
-      });
-
-      // Check if Web Share API is supported and has file sharing capability
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'aura-analysis.png', { type: 'image/png' })] })) {
-        const file = new File([blob], 'aura-analysis.png', { type: 'image/png' });
-        await navigator.share({
-          title: `My Aura Analysis - ${result.dominantColor}`,
-          text: `Check out my aura analysis! My dominant color is ${result.dominantColor} with an energy level of ${result.energyLevel}/10. Discover your spiritual energy with Aurfy!`,
-          files: [file]
-        });
-      } else {
-        // Fallback: Create download link and open social media sharing
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'aura-analysis.png';
-        link.click();
-        URL.revokeObjectURL(url);
-
-        // Open social media sharing after download
-        const shareText = `Check out my aura analysis! My dominant color is ${result.dominantColor} with an energy level of ${result.energyLevel}/10. Discover your spiritual energy with Aurfy! ${window.location.href}`;
-        
-        switch (platform) {
-          case 'facebook':
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareText)}`, '_blank');
-            break;
-          case 'instagram':
-            // Instagram doesn't support direct URL sharing, so we'll open Instagram and show instructions
-            toast({
-              title: "Image Downloaded",
-              description: "Your aura image has been downloaded. Open Instagram and upload the downloaded image to share your aura analysis!",
-            });
-            break;
-          case 'twitter':
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-            break;
-        }
-
-        toast({
-          title: "Ready to Share",
-          description: "Your aura visualization has been downloaded. Upload it when sharing on social media!",
-        });
-      }
-    } catch (error) {
-      console.error('Error sharing aura image:', error);
-      toast({
-        title: "Share Failed",
-        description: "Failed to prepare image for sharing. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const downloadAuraPDF = async () => {
-    if (!result) return;
-
-    try {
-      toast({
-        title: "Generating PDF",
-        description: "Capturing screenshots of all aura analysis tabs...",
-      });
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const pageWidth = 210;
-      const pageHeight = 297;
-      let yPosition = 50;
-      
-      // Add title page
-      pdf.setFontSize(22);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Aura and Chakra', 105, yPosition, { align: 'center' });
       
       yPosition += 10;
       pdf.setFontSize(22);
