@@ -56,8 +56,8 @@ export default function PricingPage() {
   ];
 
   const creditValues = [
-    { service: "Aura Analysis", credits: 11, description: "Complete aura reading with chakra analysis" },
-    { service: "Object Analysis", credits: 11, description: "Spiritual analysis of objects and their energy" },
+    { service: "Aura Analysis", credits: 1, description: "Complete aura reading with chakra analysis" },
+    { service: "Object Analysis", credits: 1, description: "Spiritual analysis of objects and their energy" },
     { service: "What's My Vibe", credits: 1, description: "Quick personality color analysis" },
     { service: "Numerology", credits: 0, description: "Life path and destiny calculations" },
     { service: "Horoscope", credits: 0, description: "Daily, monthly, and yearly readings" },
