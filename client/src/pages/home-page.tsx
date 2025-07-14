@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
+import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
@@ -389,9 +390,9 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-16 relative z-10">
           <div className="flex flex-col items-center text-center">
             <div className="mb-8 animate-fade-in-down">
-              <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Discover Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-amber-300">Aura</span> <br />
-                Embrace Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300">Energy</span>
+              <h1 className="font-Raleway font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
+                Discover Your <span className="text-gradient-to-r from-amber-300 to-blue-600">Aura</span> <br />
+                Embrace Your <span className="text-secondary bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300">Energy</span>
               </h1>
             </div>
             

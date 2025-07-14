@@ -28,7 +28,8 @@ import {
   Download,
   Edit3,
   Save,
-  X
+  X,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -91,12 +92,120 @@ interface NumerologyReading {
   createdAt: string;
 }
 
+// Healer Numerology Input Component
+function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
+  const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !birthDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both name and birth date",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/healer-numerology", {
+        name: name.trim(),
+        birthDate
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Numerology Reading Created",
+          description: `Personal numerology reading for ${name} has been generated`,
+        });
+        
+        // Reset form
+        setName("");
+        setBirthDate("");
+        
+        // Refresh the readings list
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+        onSuccess();
+      } else {
+        throw new Error("Failed to create numerology reading");
+      }
+    } catch (error) {
+      console.error("Error creating numerology reading:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create numerology reading. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Person's Name
+          </label>
+          <Input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter full name"
+            className="w-full"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Birth Date
+          </label>
+          <Input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="w-full"
+            required
+          />
+        </div>
+      </div>
+      
+      <Button 
+        type="submit" 
+        disabled={isLoading}
+        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Generating Numerology Reading...
+          </>
+        ) : (
+          <>
+            <Calculator className="w-4 h-4 mr-2" />
+            Generate Personal Numerology Reading
+          </>
+        )}
+      </Button>
+    </form>
+  );
+}
+
 // Comprehensive Aura Reading Card Component with Full Analysis
 function DetailedAuraReadingCard({ reading }: { reading: any }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
   const [activeTab, setActiveTab] = useState("overview");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const updateReadingMutation = useMutation({
     mutationFn: async (notes: string) => {
@@ -149,337 +258,218 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
     return colorMap[color] || 'from-gray-400 to-gray-600';
   };
 
-  // Enhanced PDF Download Function with All Tabs and UI/UX Components
+  // Enhanced PDF Download Function with Screenshot Capture of All Tabs
   const downloadPDF = async () => {
-    const jsPDF = (await import('jspdf')).default;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.width;
-    const pageHeight = pdf.internal.pageSize.height;
-    let yPosition = 30;
-    
-    // Helper function to add page break if needed
-    const checkPageBreak = (neededSpace: number) => {
-      if (yPosition + neededSpace > pageHeight - 20) {
-        pdf.addPage();
-        yPosition = 30;
+    try {
+      setIsGeneratingPDF(true);
+      const jsPDF = (await import('jspdf')).default;
+      const html2canvas = (await import('html2canvas')).default;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.width;
+      const pageHeight = pdf.internal.pageSize.height;
+      
+      // Get healer name from user
+      const healerName = user?.username || 'Professional Healer';
+      
+      // Create professional header
+      pdf.setFontSize(24);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('HEALER PROFESSIONAL REPORT', pageWidth / 2, 25, { align: 'center' });
+      
+      pdf.setFontSize(16);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Healer: ${healerName}`, pageWidth / 2, 35, { align: 'center' });
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text(`Client: ${reading.name}`, pageWidth / 2, 45, { align: 'center' });
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}`, pageWidth / 2, 55, { align: 'center' });
+      
+      // Add a horizontal line
+      pdf.setDrawColor(203, 213, 225);
+      pdf.setLineWidth(0.5);
+      pdf.line(20, 65, pageWidth - 20, 65);
+      
+      // Get the tab container element
+      const tabContainer = document.querySelector(`[data-reading-id="${reading.id}"]`);
+      if (!tabContainer) {
+        throw new Error('Tab container not found');
       }
-    };
-    
-    // Helper function to draw colored rectangle
-    const drawColorRect = (x: number, y: number, width: number, height: number, color: string) => {
-      const colorMap: { [key: string]: [number, number, number] } = {
-        'Red': [255, 0, 0],
-        'Orange': [255, 165, 0],
-        'Yellow': [255, 255, 0],
-        'Green': [0, 255, 0],
-        'Blue': [0, 0, 255],
-        'Indigo': [75, 0, 130],
-        'Violet': [138, 43, 226],
-        'White': [255, 255, 255],
-        'Black': [0, 0, 0],
-        'Gold': [255, 215, 0],
-        'Silver': [192, 192, 192],
-        'Brown': [165, 42, 42]
+      
+      const tabs = ['overview', 'chakras', 'colors', 'analysis'];
+      const tabNames = {
+        overview: 'Overview - Aura Colors & Spiritual Guidance',
+        chakras: 'Chakra Activity Levels',
+        colors: 'Color Meanings & Interpretations',
+        analysis: 'Complete Detailed Analysis'
       };
       
-      const [r, g, b] = colorMap[color] || [128, 128, 128];
-      pdf.setFillColor(r, g, b);
-      pdf.rect(x, y, width, height, 'F');
-      
-      // Add border
-      pdf.setDrawColor(100, 100, 100);
-      pdf.setLineWidth(0.5);
-      pdf.rect(x, y, width, height, 'S');
-    };
-    
-    // Helper function to draw progress bar
-    const drawProgressBar = (x: number, y: number, width: number, height: number, percentage: number) => {
-      // Background
-      pdf.setFillColor(230, 230, 230);
-      pdf.rect(x, y, width, height, 'F');
-      
-      // Progress fill
-      pdf.setFillColor(99, 102, 241); // Indigo color
-      pdf.rect(x, y, (width * percentage) / 100, height, 'F');
-      
-      // Border
-      pdf.setDrawColor(100, 100, 100);
-      pdf.setLineWidth(0.5);
-      pdf.rect(x, y, width, height, 'S');
-    };
-    
-    // HEADER WITH ENHANCED STYLING
-    pdf.setFontSize(28);
-    pdf.setTextColor(75, 85, 99);
-    pdf.text('HEALER PROFESSIONAL REPORT', pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 15;
-    
-    pdf.setFontSize(20);
-    pdf.setTextColor(147, 51, 234); // Purple color
-    pdf.text('Complete Aura and Chakra Analysis', pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 25;
-    
-    // READING DETAILS BOX
-    pdf.setFillColor(248, 250, 252);
-    pdf.rect(15, yPosition - 5, pageWidth - 30, 30, 'F');
-    pdf.setDrawColor(203, 213, 225);
-    pdf.setLineWidth(1);
-    pdf.rect(15, yPosition - 5, pageWidth - 30, 30, 'S');
-    
-    pdf.setFontSize(14);
-    pdf.setTextColor(30, 41, 59);
-    pdf.text(`Client Name: ${reading.name}`, 20, yPosition + 5);
-    pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}`, 20, yPosition + 12);
-    pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 20, yPosition + 19);
-    yPosition += 40;
-    
-    // Add processed aura image if available
-    if (reading.processedAuraImage) {
-      try {
-        checkPageBreak(60);
-        pdf.setFontSize(18);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text('Aura Visualization', 20, yPosition);
-        yPosition += 10;
-        
-        // Add image centered
-        const imgWidth = 150;
-        const imgHeight = 84.375; // 16:9 aspect ratio
-        const imgX = (pageWidth - imgWidth) / 2;
-        
-        pdf.addImage(reading.processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
-        yPosition += imgHeight + 15;
-      } catch (error) {
-        console.error('Error adding aura image to PDF:', error);
+      // Add processed aura image if available
+      if (reading.processedAuraImage) {
+        try {
+          pdf.addPage();
+          
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
+          
+          // Add image centered
+          const imgWidth = 160;
+          const imgHeight = 90; // 16:9 aspect ratio
+          const imgX = (pageWidth - imgWidth) / 2;
+          
+          pdf.addImage(reading.processedAuraImage, 'JPEG', imgX, 35, imgWidth, imgHeight);
+          
+          pdf.setFontSize(12);
+          pdf.setTextColor(107, 114, 128);
+          pdf.text('Processed Aura Analysis Visualization', pageWidth / 2, 135, { align: 'center' });
+          
+        } catch (error) {
+          console.error('Error adding aura image to PDF:', error);
+        }
       }
-    }
-    
-    // TAB 1: OVERVIEW - AURA COLORS WITH VISUAL CIRCLES
-    checkPageBreak(80);
-    pdf.setFontSize(20);
-    pdf.setTextColor(147, 51, 234);
-    pdf.text('TAB 1: OVERVIEW - AURA COLOR ANALYSIS', 20, yPosition);
-    yPosition += 15;
-    
-    // Draw aura color circles in a row
-    const circleSize = 20;
-    const circleY = yPosition + 10;
-    const colors = [
-      { name: 'Personality', color: reading.personalityColor, x: 30 },
-      { name: 'Giving', color: reading.givingColor, x: 80 },
-      { name: 'Receiving', color: reading.receivingColor, x: 130 },
-      { name: 'Thinking', color: reading.thinkingColor, x: 180 }
-    ];
-    
-    colors.forEach(({ name, color, x }) => {
-      drawColorRect(x, circleY, circleSize, circleSize, color);
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text(name, x + circleSize/2, circleY + circleSize + 8, { align: 'center' });
-      pdf.text(color, x + circleSize/2, circleY + circleSize + 15, { align: 'center' });
-    });
-    
-    yPosition += 50;
-    
-    // SPIRITUAL GUIDANCE BOX
-    if (reading.spiritualGuidance) {
-      checkPageBreak(40);
-      pdf.setFontSize(16);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Guidance', 20, yPosition);
-      yPosition += 10;
       
-      // Create styled box
-      pdf.setFillColor(249, 250, 251);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 35, 'F');
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(1);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 35, 'S');
-      
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-      const guidanceLines = pdf.splitTextToSize(reading.spiritualGuidance, pageWidth - 40);
-      pdf.text(guidanceLines, 20, yPosition + 5);
-      yPosition += 45;
-    }
-    
-    // PERSONALITY TRAITS AS BADGES
-    if (Array.isArray(personalityTraits) && personalityTraits.length > 0) {
-      checkPageBreak(30);
-      pdf.setFontSize(16);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Personality Traits', 20, yPosition);
-      yPosition += 10;
-      
-      // Draw trait badges
-      let xPos = 20;
-      personalityTraits.forEach((trait, index) => {
-        if (xPos + 40 > pageWidth - 20) {
-          xPos = 20;
-          yPosition += 15;
+      // Capture each tab
+      for (let i = 0; i < tabs.length; i++) {
+        const tab = tabs[i];
+        const tabName = tabNames[tab];
+        
+        // Switch to the tab
+        setActiveTab(tab);
+        
+        // Wait for tab to render
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Find the tab content
+        const tabContent = tabContainer.querySelector(`[data-state="active"]`);
+        if (!tabContent) {
+          console.error(`Tab content not found for ${tab}`);
+          continue;
         }
         
-        const traitWidth = trait.length * 2.5 + 10;
-        pdf.setFillColor(237, 233, 254);
-        pdf.rect(xPos, yPosition - 5, traitWidth, 10, 'F');
-        pdf.setDrawColor(147, 51, 234);
-        pdf.setLineWidth(0.5);
-        pdf.rect(xPos, yPosition - 5, traitWidth, 10, 'S');
+        // Capture screenshot of the tab
+        const canvas = await html2canvas(tabContent as HTMLElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: tabContent.scrollWidth,
+          height: tabContent.scrollHeight
+        });
         
-        pdf.setFontSize(9);
-        pdf.setTextColor(88, 28, 135);
-        pdf.text(trait, xPos + 5, yPosition + 2);
+        // Convert canvas to image
+        const imgData = canvas.toDataURL('image/png');
         
-        xPos += traitWidth + 5;
-      });
-      yPosition += 20;
-    }
-    
-    // TAB 2: CHAKRAS WITH VISUAL PROGRESS BARS
-    pdf.addPage();
-    yPosition = 30;
-    
-    pdf.setFontSize(20);
-    pdf.setTextColor(147, 51, 234);
-    pdf.text('TAB 2: CHAKRA ACTIVITY LEVELS', 20, yPosition);
-    yPosition += 20;
-    
-    if (Object.keys(chakraActivity).length > 0) {
-      Object.entries(chakraActivity).forEach(([chakra, score]) => {
-        checkPageBreak(20);
+        // Add new page for each tab
+        pdf.addPage();
         
-        const chakraName = chakra.charAt(0).toUpperCase() + chakra.slice(1).replace(/([A-Z])/g, ' $1');
+        // Add tab title
+        pdf.setFontSize(18);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`TAB ${i + 1}: ${tabName.toUpperCase()}`, 20, 25);
         
-        // Chakra name and score
+        // Add subtitle with client info
         pdf.setFontSize(12);
         pdf.setTextColor(75, 85, 99);
-        pdf.text(`${chakraName} Chakra`, 20, yPosition);
-        pdf.text(`${score}/10`, pageWidth - 40, yPosition);
-        yPosition += 5;
+        pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
         
-        // Progress bar
-        drawProgressBar(20, yPosition, pageWidth - 60, 6, (score / 10) * 100);
-        yPosition += 15;
-      });
-    }
-    
-    // TAB 3: COLORS WITH DETAILED MEANINGS
-    pdf.addPage();
-    yPosition = 30;
-    
-    pdf.setFontSize(20);
-    pdf.setTextColor(147, 51, 234);
-    pdf.text('TAB 3: COLOR MEANINGS & INTERPRETATIONS', 20, yPosition);
-    yPosition += 20;
-    
-    if (Object.keys(colorMeanings).length > 0) {
-      Object.entries(colorMeanings).forEach(([color, meaning]) => {
-        checkPageBreak(35);
-        
-        // Color name with colored square
-        drawColorRect(20, yPosition - 5, 12, 12, color);
-        pdf.setFontSize(14);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text(`${color} Energy`, 38, yPosition + 5);
-        yPosition += 15;
-        
-        // Meaning in styled box
-        pdf.setFillColor(249, 250, 251);
-        const meaningLines = pdf.splitTextToSize(String(meaning), pageWidth - 40);
-        const boxHeight = meaningLines.length * 5 + 10;
-        pdf.rect(15, yPosition - 5, pageWidth - 30, boxHeight, 'F');
-        pdf.setDrawColor(229, 231, 235);
+        // Add horizontal line
+        pdf.setDrawColor(203, 213, 225);
         pdf.setLineWidth(0.5);
-        pdf.rect(15, yPosition - 5, pageWidth - 30, boxHeight, 'S');
+        pdf.line(20, 40, pageWidth - 20, 40);
+        
+        // Calculate image dimensions to fit page
+        const maxWidth = pageWidth - 40;
+        const maxHeight = pageHeight - 60;
+        
+        const imgWidth = Math.min(maxWidth, canvas.width * 0.264583); // Convert pixels to mm
+        const imgHeight = Math.min(maxHeight, canvas.height * 0.264583);
+        
+        // Center the image
+        const imgX = (pageWidth - imgWidth) / 2;
+        const imgY = 50;
+        
+        // Add the screenshot to PDF
+        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth, imgHeight);
+        
+        // Add tab number at bottom
+        pdf.setFontSize(10);
+        pdf.setTextColor(156, 163, 175);
+        pdf.text(`Tab ${i + 1} of ${tabs.length}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+      
+      // Add healer notes page
+      if (reading.healerNotes || editedNotes) {
+        pdf.addPage();
+        
+        pdf.setFontSize(18);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text('PROFESSIONAL HEALER NOTES', 20, 25);
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(`Healer: ${healerName}`, 20, 35);
+        pdf.text(`Client: ${reading.name}`, 20, 45);
+        
+        // Add horizontal line
+        pdf.setDrawColor(203, 213, 225);
+        pdf.setLineWidth(0.5);
+        pdf.line(20, 50, pageWidth - 20, 50);
+        
+        // Add notes in a styled box
+        pdf.setFillColor(254, 252, 232);
+        pdf.rect(15, 60, pageWidth - 30, 80, 'F');
+        pdf.setDrawColor(251, 191, 36);
+        pdf.setLineWidth(1);
+        pdf.rect(15, 60, pageWidth - 30, 80, 'S');
         
         pdf.setFontSize(11);
         pdf.setTextColor(55, 65, 81);
-        pdf.text(meaningLines, 20, yPosition + 2);
-        yPosition += boxHeight + 10;
-      });
-    }
-    
-    // TAB 4: COMPLETE ANALYSIS
-    pdf.addPage();
-    yPosition = 30;
-    
-    pdf.setFontSize(20);
-    pdf.setTextColor(147, 51, 234);
-    pdf.text('TAB 4: COMPLETE DETAILED ANALYSIS', 20, yPosition);
-    yPosition += 20;
-    
-    if (reading.detailedAnalysis) {
-      pdf.setFillColor(249, 250, 251);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'F');
-      pdf.setDrawColor(229, 231, 235);
-      pdf.setLineWidth(0.5);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'S');
-      
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-      const analysisLines = pdf.splitTextToSize(reading.detailedAnalysis, pageWidth - 40);
-      
-      // Handle multi-page analysis
-      let lineIndex = 0;
-      while (lineIndex < analysisLines.length) {
-        const remainingLines = analysisLines.slice(lineIndex);
-        const maxLinesPerPage = Math.floor((pageHeight - yPosition - 10) / 5);
-        const linesToAdd = remainingLines.slice(0, maxLinesPerPage);
-        
-        pdf.text(linesToAdd, 20, yPosition + 5);
-        lineIndex += linesToAdd.length;
-        
-        if (lineIndex < analysisLines.length) {
-          pdf.addPage();
-          yPosition = 30;
-          
-          // Continue analysis box on new page
-          pdf.setFillColor(249, 250, 251);
-          pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'F');
-          pdf.setDrawColor(229, 231, 235);
-          pdf.setLineWidth(0.5);
-          pdf.rect(15, yPosition - 5, pageWidth - 30, pageHeight - yPosition - 15, 'S');
-        }
+        const notes = editedNotes || reading.healerNotes || "No professional notes added yet.";
+        const notesLines = pdf.splitTextToSize(notes, pageWidth - 40);
+        pdf.text(notesLines, 20, 70);
       }
-    }
-    
-    // HEALER NOTES SECTION
-    if (reading.healerNotes || editedNotes) {
-      pdf.addPage();
-      yPosition = 30;
       
+      // Add final footer page
+      pdf.addPage();
       pdf.setFontSize(20);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('PROFESSIONAL HEALER NOTES', 20, yPosition);
-      yPosition += 20;
+      pdf.text('REPORT SUMMARY', pageWidth / 2, 50, { align: 'center' });
       
-      // Yellow highlighted box for healer notes
-      pdf.setFillColor(254, 252, 232);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'F');
-      pdf.setDrawColor(251, 191, 36);
-      pdf.setLineWidth(1);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'S');
+      pdf.setFontSize(14);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 70, { align: 'center' });
+      pdf.text(`Client Analyzed: ${reading.name}`, pageWidth / 2, 85, { align: 'center' });
+      pdf.text(`Energy Level: ${reading.energyLevel}/10`, pageWidth / 2, 100, { align: 'center' });
+      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 115, { align: 'center' });
       
       pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      const notes = editedNotes || reading.healerNotes || "No professional notes added yet.";
-      const notesLines = pdf.splitTextToSize(notes, pageWidth - 40);
-      pdf.text(notesLines, 20, yPosition + 5);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text('This report contains complete screenshot captures of all aura analysis tabs', pageWidth / 2, 140, { align: 'center' });
+      pdf.text('Generated by Aurfy Professional Healer Dashboard', pageWidth / 2, 150, { align: 'center' });
+      
+      // Save PDF
+      const timestamp = format(new Date(reading.createdAt), "yyyy-MM-dd");
+      pdf.save(`healer-${healerName}-client-${reading.name}-complete-aura-report-${timestamp}.pdf`);
+      
+      toast({
+        title: "Complete Screenshot PDF Generated",
+        description: `Professional report for ${reading.name} with all tab screenshots has been downloaded`,
+      });
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "There was an error generating the PDF. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingPDF(false);
     }
-    
-    // FOOTER
-    pdf.setFontSize(10);
-    pdf.setTextColor(156, 163, 175);
-    pdf.text('Generated by Professional Healer Dashboard - Aurfy Platform', pageWidth / 2, pageHeight - 10, { align: 'center' });
-    
-    // Save PDF
-    const timestamp = format(new Date(reading.createdAt), "yyyy-MM-dd");
-    pdf.save(`healer-complete-aura-report-${reading.name}-${timestamp}.pdf`);
-    
-    toast({
-      title: "Complete Healer Report Downloaded",
-      description: "Your comprehensive 4-tab aura analysis report with all UI components has been generated",
-    });
   };
 
   return (
@@ -500,10 +490,15 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
               variant="outline"
               size="sm"
               onClick={downloadPDF}
+              disabled={isGeneratingPDF}
               className="flex items-center gap-2"
             >
-              <Download className="h-4 w-4" />
-              Download PDF
+              {isGeneratingPDF ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {isGeneratingPDF ? 'Generating PDF...' : 'Download PDF'}
             </Button>
             <Button
               variant="ghost"
@@ -517,7 +512,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       </CardHeader>
       
       <CardContent className="p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" data-reading-id={reading.id}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="chakras">Chakras</TabsTrigger>
@@ -816,9 +811,9 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
-  // Fetch healer's own numerology readings
+  // Fetch healer's own numerology readings (only from spiritual tools)
   const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
-    queryKey: ["/api/numerology-readings"],
+    queryKey: ["/api/healer-numerology-readings"],
     enabled: !!user,
   });
 
@@ -1267,6 +1262,24 @@ export default function HealerDashboard() {
 
         {/* Spiritual Tools Tab */}
         <TabsContent value="tools" className="space-y-6">
+          {/* Personal Numerology Generator */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-blue-500" />
+                Personal Numerology Generator
+              </CardTitle>
+              <CardDescription>Generate detailed numerology readings for any date - stored privately for your healer account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HealerNumerologyInput onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+                setActiveTab("readings");
+              }} />
+            </CardContent>
+          </Card>
+
+          {/* Spiritual Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6 text-center">
