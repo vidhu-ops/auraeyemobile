@@ -696,20 +696,22 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
           <TabsContent value="chakras" className="space-y-6">
             <h4 className="font-semibold text-lg mb-3">Chakra Activity Levels</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(chakraActivity).map(([chakra, score]) => (
-                <div key={chakra} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</span>
-                    <span className="text-sm font-bold text-indigo-600">{score}/10</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
-                      style={{ width: `${(score / 10) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+              {Object.entries(chakraActivity).map(([chakra, score]) => {
+                  return (
+                      <div key={chakra} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                          <div className="flex justify-between items-center mb-2">
+                              <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</span>
+                              <span className="text-sm font-bold text-indigo-600">{score}/10</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+                                  style={{ width: `${(score / 10) * 100}%` }}
+                              ></div>
+                          </div>
+                      </div>
+                  );
+              })}
             </div>
           </TabsContent>
           
@@ -1476,19 +1478,6 @@ export default function HealerDashboard() {
                 <p className="text-sm text-gray-600 mb-4">Analyze your own spiritual energy and aura colors</p>
                 <Link to="/aura-analysis">
                   <Button className="w-full">Start Analysis</Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calculator className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="font-semibold mb-2">Numerology Reading</h3>
-                <p className="text-sm text-gray-600 mb-4">Discover your life path and spiritual numbers</p>
-                <Link to="/numerology">
-                  <Button className="w-full">Get Reading</Button>
                 </Link>
               </CardContent>
             </Card>
