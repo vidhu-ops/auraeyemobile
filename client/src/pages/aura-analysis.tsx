@@ -1081,8 +1081,9 @@ export default function AuraAnalysis() {
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
 
-      // Define chakras with their scores (8-chakra system)
+      // Define chakras with their scores (9-chakra system)
       const chakraData = [
+        { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'White', description: 'Divine connection, soul purpose, highest spiritual potential' },
         { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'Violet', description: 'Spiritual connection, divine wisdom, universal consciousness' },
         { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'Indigo', description: 'Intuition, inner wisdom, psychic abilities' },
         { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'Blue', description: 'Communication, truth, self-expression' },
@@ -5716,9 +5717,23 @@ export default function AuraAnalysis() {
 
                               {/* 8 Chakra Graph */}
                               <div className="bg-white rounded-xl p-6 border border-gray-200">
-                                <h3 className="font-medium text-lg mb-4">Your 8-Chakra Energy System</h3>
+                                <h3 className="font-medium text-lg mb-4">Your 9-Chakra Energy System</h3>
                                 
                                 <div className="space-y-3">
+                                  {/* Soul Star Chakra */}
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-24 text-sm text-gray-600">Soul Star</div>
+                                    <div className="flex-1">
+                                      <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div 
+                                          className="bg-gradient-to-r from-white to-gold h-3 rounded-full transition-all duration-500"
+                                          style={{ width: `${calculateSoulStarChakra(result)}%` }}
+                                        ></div>
+                                      </div>
+                                    </div>
+                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10</div>
+                                  </div>
+                                  
                                   {/* All Chakras in consistent order */}
                                   {[
                                     { key: 'crown', name: 'Crown', color: 'bg-violet-500' },
@@ -7226,9 +7241,23 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
-                              <h3 className="font-medium text-lg">8-Chakra Energy System Analysis</h3>
+                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
+
+                                {/* Soul Star Chakra */}
+                                <div className="bg-gradient-to-r from-white to-yellow-50 rounded-lg p-4 border border-gray-300">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Soul Star Chakra connects you to your soul's purpose, divine guidance, and highest spiritual potential beyond the physical realm.
+                                    </p>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Soul Star Chakra</span>
+                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
+                                </div>
 
                                 {/* Crown Chakra - Number 3 */}
                                 <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-200">
@@ -7350,8 +7379,8 @@ export default function AuraAnalysis() {
                                 <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   {(() => {
-                                    // Calculate raw averages for each chakra group (8 chakras total)
-                                    const higherRaw = (result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5) / 2;
+                                    // Calculate raw averages for each chakra group (9 chakras total)
+                                    const higherRaw = (calculateSoulStarChakra(result)/10 + result.chakraActivity?.crown || 5 + result.chakraActivity?.thirdEye || 5) / 3;
                                     const middleRaw = (result.chakraActivity?.throat || 5 + result.chakraActivity?.heart || 5 + result.chakraActivity?.solarPlexus || 5) / 3;
                                     const lowerRaw = (result.chakraActivity?.sacral || 5 + result.chakraActivity?.root || 5 + calculateEarthStarChakra(result)/10) / 3;
                                     
