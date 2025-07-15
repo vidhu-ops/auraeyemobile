@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
-import { useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
@@ -1534,38 +1534,38 @@ export default function HealerDashboard() {
                 ) : (
                   <div className="space-y-4">
                     {healerNumerologyReadings.map((reading) => (
-                      <div key={reading.id} className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h3 className="font-semibold text-lg text-purple-800">{reading.name}</h3>
-                            <p className="text-sm text-gray-600">{format(new Date(reading.createdAt), "PPp")}</p>
-                          </div>
-                          <NumerologyPDFDownload reading={reading} />
+                        <div key={reading.id} className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                            <div className="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 className="font-semibold text-lg text-purple-800">{reading.name}</h3>
+                                    <p className="text-sm text-gray-600">{format(new Date(reading.createdAt), "PPp")}</p>
+                                </div>
+                                <NumerologyPDFDownload reading={reading} />
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                <div className="text-center p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-purple-600">{reading.lifePathNumber}</div>
+                                    <div className="text-xs text-gray-500">Life Path</div>
+                                </div>
+                                <div className="text-center p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
+                                    <div className="text-xs text-gray-500">Destiny</div>
+                                </div>
+                                <div className="text-center p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-green-600">{reading.soulUrgeNumber}</div>
+                                    <div className="text-xs text-gray-500">Soul Urge</div>
+                                </div>
+                                <div className="text-center p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-orange-600">{reading.personalityNumber}</div>
+                                    <div className="text-xs text-gray-500">Personality</div>
+                                </div>
+                            </div>
+
+                            <div className="p-3 bg-white rounded-lg border">
+                                <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
+                            </div>
                         </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                          <div className="text-center p-3 bg-white rounded-lg border">
-                            <div className="text-2xl font-bold text-purple-600">{reading.lifePathNumber}</div>
-                            <div className="text-xs text-gray-500">Life Path</div>
-                          </div>
-                          <div className="text-center p-3 bg-white rounded-lg border">
-                            <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
-                            <div className="text-xs text-gray-500">Destiny</div>
-                          </div>
-                          <div className="text-center p-3 bg-white rounded-lg border">
-                            <div className="text-2xl font-bold text-green-600">{reading.soulUrgeNumber}</div>
-                            <div className="text-xs text-gray-500">Soul Urge</div>
-                          </div>
-                          <div className="text-center p-3 bg-white rounded-lg border">
-                            <div className="text-2xl font-bold text-orange-600">{reading.personalityNumber}</div>
-                            <div className="text-xs text-gray-500">Personality</div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-3 bg-white rounded-lg border">
-                          <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
-                        </div>
-                      </div>
                     ))}
                   </div>
                 )}
