@@ -1515,80 +1515,58 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
 
-            {/* Live Numerology Calculator */}
+            {/* My Numerology Readings (Historical) */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-blue-500" />
-                  Live Numerology Calculator
+                  My Numerology Readings
                 </CardTitle>
-                <CardDescription>Generate instant numerology readings (not saved to dashboard)</CardDescription>
+                <CardDescription>Your saved numerology readings and analysis</CardDescription>
               </CardHeader>
               <CardContent>
-                <LiveNumerologyCalculator 
-                  onResultGenerated={setLiveNumerologyResult}
-                  isCalculating={isCalculatingNumerology}
-                  setIsCalculating={setIsCalculatingNumerology}
-                />
-                
-                {liveNumerologyResult && (
-                  <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
-                    <h3 className="font-semibold text-lg mb-4 text-purple-800">
-                      Numerology Reading for {liveNumerologyResult.name}
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="p-3 bg-white rounded-lg border">
-                        <h4 className="font-medium text-purple-700 mb-2">Core Numbers</h4>
-                        <div className="space-y-1 text-sm">
-                          <p><strong>Life Path:</strong> {liveNumerologyResult.lifePath}</p>
-                          <p><strong>Destiny:</strong> {liveNumerologyResult.destiny}</p>
-                          <p><strong>Soul Urge:</strong> {liveNumerologyResult.soulUrge}</p>
-                          <p><strong>Personality:</strong> {liveNumerologyResult.personality}</p>
+                {healerNumerologyReadings.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Calculator className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-500 mb-4">No numerology readings yet</p>
+                    <p className="text-sm text-gray-400">Use the Personal Numerology Generator in Spiritual Tools to create readings</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {healerNumerologyReadings.map((reading) => (
+                      <div key={reading.id} className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-semibold text-lg text-purple-800">{reading.name}</h3>
+                            <p className="text-sm text-gray-600">{format(new Date(reading.createdAt), "PPp")}</p>
+                          </div>
+                          <NumerologyPDFDownload reading={reading} />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl font-bold text-purple-600">{reading.lifePathNumber}</div>
+                            <div className="text-xs text-gray-500">Life Path</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
+                            <div className="text-xs text-gray-500">Destiny</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl font-bold text-green-600">{reading.soulUrgeNumber}</div>
+                            <div className="text-xs text-gray-500">Soul Urge</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl font-bold text-orange-600">{reading.personalityNumber}</div>
+                            <div className="text-xs text-gray-500">Personality</div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-3 bg-white rounded-lg border">
+                          <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
                         </div>
                       </div>
-                      
-                      <div className="p-3 bg-white rounded-lg border">
-                        <h4 className="font-medium text-purple-700 mb-2">Chakra Analysis</h4>
-                        <div className="space-y-1 text-sm">
-                          <p><strong>Decision Making:</strong> {liveNumerologyResult.decisionMakingChakra}</p>
-                          <p><strong>Dominant Soul:</strong> {liveNumerologyResult.dominantSoulChakra}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 bg-white rounded-lg border">
-                      <h4 className="font-medium text-purple-700 mb-2">Interpretations</h4>
-                      <div className="space-y-2 text-sm">
-                        <p><strong>Life Path:</strong> {liveNumerologyResult.lifePathInterpretation}</p>
-                        <p><strong>Destiny:</strong> {liveNumerologyResult.destinyInterpretation}</p>
-                        <p><strong>Soul Urge:</strong> {liveNumerologyResult.soulUrgeInterpretation}</p>
-                        <p><strong>Personality:</strong> {liveNumerologyResult.personalityInterpretation}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 flex gap-2">
-                      <Button 
-                        onClick={() => setLiveNumerologyResult(null)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Clear Reading
-                      </Button>
-                      <Button 
-                        onClick={() => {
-                          // Generate new reading with same data
-                          setLiveNumerologyResult(null);
-                          // The form will still have the data, user can click generate again
-                        }}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        New Reading
-                      </Button>
-                    </div>
+                    ))}
                   </div>
                 )}
               </CardContent>
@@ -1598,20 +1576,165 @@ export default function HealerDashboard() {
 
         {/* Spiritual Tools Tab */}
         <TabsContent value="tools" className="space-y-6">
-          {/* Personal Numerology Generator */}
+          {/* Enhanced Personal Numerology Generator */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-blue-500" />
-                Personal Numerology Generator
+                Complete Numerology Analysis
               </CardTitle>
-              <CardDescription>Generate detailed numerology readings for any date - stored privately for your healer account</CardDescription>
+              <CardDescription>Generate comprehensive numerology readings with all available calculations and interpretations</CardDescription>
             </CardHeader>
             <CardContent>
-              <HealerNumerologyInput onSuccess={() => {
-                queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
-                setActiveTab("readings");
-              }} />
+              <LiveNumerologyCalculator 
+                onResultGenerated={setLiveNumerologyResult}
+                isCalculating={isCalculatingNumerology}
+                setIsCalculating={setIsCalculatingNumerology}
+              />
+              
+              {liveNumerologyResult && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                  <h3 className="font-semibold text-lg mb-4 text-purple-800">
+                    Complete Numerology Analysis for {liveNumerologyResult.name}
+                  </h3>
+                  
+                  {/* Birth Information */}
+                  <div className="mb-6 p-4 bg-white rounded-lg border">
+                    <h4 className="font-medium text-purple-700 mb-2">Birth Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-sm font-medium text-gray-600">Full Name:</span>
+                        <p className="text-lg font-semibold text-gray-800">{liveNumerologyResult.name}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-600">Birth Date:</span>
+                        <p className="text-lg font-semibold text-gray-800">{liveNumerologyResult.birthDate}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Core Numbers Section */}
+                  <div className="mb-6">
+                    <h4 className="font-medium text-purple-700 mb-3">Core Numbers</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="text-4xl font-bold text-purple-600 mb-1">{liveNumerologyResult.lifePath}</div>
+                        <div className="text-sm font-medium text-gray-700">Life Path</div>
+                        <div className="text-xs text-gray-500">Your life's journey and purpose</div>
+                      </div>
+                      <div className="text-center p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="text-4xl font-bold text-blue-600 mb-1">{liveNumerologyResult.destiny}</div>
+                        <div className="text-sm font-medium text-gray-700">Destiny</div>
+                        <div className="text-xs text-gray-500">Your life's mission</div>
+                      </div>
+                      <div className="text-center p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="text-4xl font-bold text-green-600 mb-1">{liveNumerologyResult.soulUrge}</div>
+                        <div className="text-sm font-medium text-gray-700">Soul Urge</div>
+                        <div className="text-xs text-gray-500">Inner desires and motivations</div>
+                      </div>
+                      <div className="text-center p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="text-4xl font-bold text-orange-600 mb-1">{liveNumerologyResult.personality}</div>
+                        <div className="text-sm font-medium text-gray-700">Personality</div>
+                        <div className="text-xs text-gray-500">How others see you</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Chakra Analysis Section */}
+                  <div className="mb-6">
+                    <h4 className="font-medium text-purple-700 mb-3">Chakra Analysis</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-lg">{liveNumerologyResult.decisionMakingChakra}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-700">Decision Making Chakra</div>
+                            <div className="text-sm text-gray-500">Your decision-making process</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-lg">{liveNumerologyResult.dominantSoulChakra}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-700">Dominant Soul Chakra</div>
+                            <div className="text-sm text-gray-500">Your spiritual energy center</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Detailed Interpretations */}
+                  <div className="mb-6">
+                    <h4 className="font-medium text-purple-700 mb-3">Detailed Interpretations</h4>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <h5 className="font-medium text-purple-600 mb-2 flex items-center gap-2">
+                          <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{liveNumerologyResult.lifePath}</span>
+                          </div>
+                          Life Path Analysis
+                        </h5>
+                        <p className="text-sm text-gray-700 leading-relaxed">{liveNumerologyResult.lifePathInterpretation}</p>
+                      </div>
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <h5 className="font-medium text-blue-600 mb-2 flex items-center gap-2">
+                          <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{liveNumerologyResult.destiny}</span>
+                          </div>
+                          Destiny Analysis
+                        </h5>
+                        <p className="text-sm text-gray-700 leading-relaxed">{liveNumerologyResult.destinyInterpretation}</p>
+                      </div>
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <h5 className="font-medium text-green-600 mb-2 flex items-center gap-2">
+                          <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{liveNumerologyResult.soulUrge}</span>
+                          </div>
+                          Soul Urge Analysis
+                        </h5>
+                        <p className="text-sm text-gray-700 leading-relaxed">{liveNumerologyResult.soulUrgeInterpretation}</p>
+                      </div>
+                      <div className="p-4 bg-white rounded-lg border shadow-sm">
+                        <h5 className="font-medium text-orange-600 mb-2 flex items-center gap-2">
+                          <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{liveNumerologyResult.personality}</span>
+                          </div>
+                          Personality Analysis
+                        </h5>
+                        <p className="text-sm text-gray-700 leading-relaxed">{liveNumerologyResult.personalityInterpretation}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Button 
+                      onClick={() => setLiveNumerologyResult(null)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Clear Analysis
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        setLiveNumerologyResult(null);
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Analysis
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
