@@ -3362,16 +3362,135 @@ export default function AuraAnalysis() {
       return currentSeed / 233280;
     };
 
-    const centerX = width / 1;
-    const centerY = height / 1;
-    const personWidth = width * 0.5;
-    const personHeight = height * 0.5;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Create diffused smokey aura effect around the person
+    createDiffusedSmokeAura(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
+  };
 
-    // Use normal blend mode for transparent smoke particles
+  // Function to create clean diffused smoke aura like the reference image
+  const createDiffusedSmokeAura = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    const personRadius = Math.min(width, height) * 0.2; // Person protection area
+    
+    // Create base diffused layers for each color
     ctx.globalCompositeOperation = 'source-over';
+    
+    // LAYER 1: Receiving energy (left side) - Green diffusion
+    const receivingGradient = ctx.createRadialGradient(
+      centerX - personRadius * 0.5, centerY, 0,
+      centerX - personRadius * 0.5, centerY, width * 0.8
+    );
+    receivingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+    receivingGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.4)`);
+    receivingGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.6)`);
+    receivingGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.2)`);
+    
+    ctx.fillStyle = receivingGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // LAYER 2: Giving energy (right side) - Orange diffusion
+    const givingGradient = ctx.createRadialGradient(
+      centerX + personRadius * 0.5, centerY, 0,
+      centerX + personRadius * 0.5, centerY, width * 0.8
+    );
+    givingGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    givingGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.4)`);
+    givingGradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.6)`);
+    givingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.2)`);
+    
+    ctx.fillStyle = givingGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // LAYER 3: Personality energy (around person) - Violet diffusion
+    const personalityGradient = ctx.createRadialGradient(
+      centerX, centerY, personRadius,
+      centerX, centerY, width * 0.6
+    );
+    personalityGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+    personalityGradient.addColorStop(0.4, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.3)`);
+    personalityGradient.addColorStop(0.8, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.5)`);
+    personalityGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.1)`);
+    
+    ctx.fillStyle = personalityGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // LAYER 4: Thinking energy (top area) - Blue diffusion
+    const thinkingGradient = ctx.createRadialGradient(
+      centerX, centerY - personRadius * 1.5, 0,
+      centerX, centerY - personRadius * 1.5, height * 0.6
+    );
+    thinkingGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.5)`);
+    thinkingGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.3)`);
+    thinkingGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
+    
+    ctx.fillStyle = thinkingGradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Add subtle smokey particles for enhanced effect
+    addSubtleSmokeParticles(ctx, width, height, centerX, centerY, personRadius, colors, seededRandom);
+  };
 
-    // Create natural flowing smoke wisps with proper transparency
-    createNaturalSmokeWisps(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
+  // Function to add subtle smoke particles for enhanced smokey effect
+  const addSubtleSmokeParticles = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    personRadius: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    seededRandom: () => number
+  ) => {
+    const colorArray = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    // Create subtle smoke wisps
+    for (let i = 0; i < 200; i++) {
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Skip if too close to person center
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius) continue;
+      
+      // Select color based on position
+      const colorIndex = Math.floor(seededRandom() * colorArray.length);
+      const color = colorArray[colorIndex];
+      
+      // Create soft smoke wisp
+      const radius = (5 + seededRandom() * 15) * (Math.min(width, height) / 800);
+      const opacity = 0.1 + seededRandom() * 0.15;
+      
+      ctx.filter = 'blur(8px)';
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Reset filter and alpha
+      ctx.filter = 'none';
+      ctx.globalAlpha = 1;
+    }
   };
 
   // Function to create clear face area ensuring complete visibility of facial features
@@ -4983,56 +5102,55 @@ export default function AuraAnalysis() {
   };
 
   // Helper function to get color class based on aura color
-  const getColorClass = (color: string) => {
-    const colorMap: Record<string, string> = {
-      purple: "bg-purple-500",
-      violet: "bg-purple-600",
-      indigo: "bg-indigo-500",
-      blue: "bg-blue-500",
-      green: "bg-green-500",
-      yellow: "bg-yellow-500",
-      orange: "bg-orange-500",
-      red: "bg-red-500",
-      pink: "bg-pink-500",
-      white: "bg-gray-100",
-      gold: "bg-amber-400",
-      silver: "bg-gray-300",
-      turquoise: "bg-teal-500",
-      darkpink: "bg-pink-600",
-      brown: "bg-brown-500",
-      black: "bg-black"
-      // Add more colors as needed
-    };
+  function getColorClass(color: string) {
+        const colorMap: Record<string, string> = {
+            purple: "bg-purple-500",
+            violet: "bg-purple-600",
+            indigo: "bg-indigo-500",
+            blue: "bg-blue-500",
+            green: "bg-green-500",
+            yellow: "bg-yellow-500",
+            orange: "bg-orange-500",
+            red: "bg-red-500",
+            pink: "bg-pink-500",
+            white: "bg-gray-100",
+            gold: "bg-amber-400",
+            silver: "bg-gray-300",
+            turquoise: "bg-teal-500",
+            darkpink: "bg-pink-600",
+            brown: "bg-brown-500",
+            black: "bg-black"
+            // Add more colors as needed
+        };
 
-    const lowerColor = color.toLowerCase();
-    return colorMap[lowerColor] || "bg-gray-400";
-  };
+        const lowerColor = color.toLowerCase();
+        return colorMap[lowerColor] || "bg-gray-400";
+    }
 
   // Helper function to get text color class based on aura color
-  const getTextColorClass = (color: string) => {
-    const colorMap: Record<string, string> = {
-      purple: "text-purple-500",
-      violet: "text-purple-600",
-      indigo: "text-indigo-500",
-      blue: "text-blue-500",
-      green: "text-green-500",
-      yellow: "text-yellow-500",
-      orange: "text-orange-500",
-      red: "text-red-500",
-      pink: "text-pink-500",
-      white: "text-gray-100",
-      gold: "text-amber-400",
-      silver: "text-gray-300",
-      turquoise: "text-teal-500",
-      magenta: "text-pink-600",
-      brown: "text-brown-500",
-      black: "text-black"
-      
-    };
+  function getTextColorClass(color: string) {
+        const colorMap: Record<string, string> = {
+            purple: "text-purple-500",
+            violet: "text-purple-600",
+            indigo: "text-indigo-500",
+            blue: "text-blue-500",
+            green: "text-green-500",
+            yellow: "text-yellow-500",
+            orange: "text-orange-500",
+            red: "text-red-500",
+            pink: "text-pink-500",
+            white: "text-gray-100",
+            gold: "text-amber-400",
+            silver: "text-gray-300",
+            turquoise: "text-teal-500",
+            magenta: "text-pink-600",
+            brown: "text-brown-500",
+            black: "text-black"
+        };
 
-    const lowerColor = color.toLowerCase();
-    return colorMap[lowerColor] || "text-gray-400";
-  };
+        const lowerColor = color.toLowerCase();
+        return colorMap[lowerColor] || "text-gray-400";
+    }
 
 
 
@@ -5935,7 +6053,7 @@ export default function AuraAnalysis() {
                                     <div className="bg-white border rounded-lg p-4 shadow-sm">
                                       <div className="flex items-center space-x-3 mb-3">
                                         <div 
-                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                          className="w-12 h-12 rounded-full flex items-center justify-center shadow-mb"
                                           style={{backgroundColor: (() => {
                                             const detectedColors = extractAllAuraColors(result);
                                             return detectedColors.personality;
@@ -6009,7 +6127,7 @@ export default function AuraAnalysis() {
                                         <div key={index} className="border rounded-lg p-4 bg-gradient-to-br from-white to-gray-50">
                                           <div className="flex items-center space-x-3 mb-3">
                                             <div 
-                                              className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                                              className="w-12 h-12 rounded-full flex items-center justify-center"
                                               style={{backgroundColor: colorData.hex}}
                                             >
                                               <span className="text-white text-lg">{colorData.icon}</span>
@@ -6773,16 +6891,14 @@ export default function AuraAnalysis() {
                                   <span 
                                     className="inline-block w-6 h-6 rounded-full border border-gray-200" 
                                     style={{ 
-                                      backgroundColor: getAccurateColorCode(result.dominantColor),
-                                      boxShadow: `0 0 8px 1px ${getAccurateColorCode(result.dominantColor)}80`
+                                      backgroundColor: getAccurateColorCode(result.dominantColor)
                                     }}
                                   ></span>
                                   {result.secondaryColor && (
                                     <span 
                                       className="inline-block w-6 h-6 rounded-full border border-gray-200" 
                                       style={{ 
-                                        backgroundColor: getAccurateColorCode(result.secondaryColor),
-                                        boxShadow: `0 0 8px 1px ${getAccurateColorCode(result.secondaryColor)}80`
+                                        backgroundColor: getAccurateColorCode(result.secondaryColor)
                                       }}
                                     ></span>
                                   )}
@@ -6840,9 +6956,7 @@ export default function AuraAnalysis() {
                                       style={{
                                         background: `radial-gradient(circle at center, 
                                           ${getAccurateColorCode(result.dominantColor)} 80%, 
-                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)} 70%)`,
-                                        boxShadow: `0 0 30px 10px ${getAccurateColorCode(result.dominantColor)}80`,
-                                        opacity: 0.9
+                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)} 70%)`
                                       }}
                                     ></div>
                                     <div 
@@ -6873,8 +6987,7 @@ export default function AuraAnalysis() {
                                           <div 
                                             className="w-12 h-12 rounded-full flex-shrink-0" 
                                             style={{ 
-                                              backgroundColor: getAccurateColorCode(result.dominantColor),
-                                              boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.dominantColor)}60`
+                                              backgroundColor: getAccurateColorCode(result.dominantColor)
                                             }}
                                           ></div>
                                           <div className="flex-1">
@@ -6906,8 +7019,7 @@ export default function AuraAnalysis() {
                                             <div 
                                               className="w-12 h-12 rounded-full flex-shrink-0" 
                                               style={{ 
-                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
-                                                boxShadow: `0 0 10px 2px ${getAccurateColorCode(result.secondaryColor)}60`
+                                                backgroundColor: getAccurateColorCode(result.secondaryColor)
                                               }}
                                             ></div>
                                             <div className="flex-1">

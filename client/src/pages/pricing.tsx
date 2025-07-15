@@ -87,8 +87,8 @@ export default function PricingPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {creditValues.map((item) => (
-                  <Card key={item.service} className="bg-white/80 backdrop-blur-sm">
-                    <CardContent className="p-4">
+                  <Card key={item.service} className="bg-white backdrop-blur-sm">
+                    <CardContent className="p-2">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold text-gray-900">{item.service}</h3>
                         <Badge variant={item.credits === 0 ? "secondary" : "default"}>
@@ -111,14 +111,14 @@ export default function PricingPage() {
                     key={plan.id}
                     className={`relative transition-all duration-200 hover:shadow-lg ${
                       plan.popular
-                        ? "border-purple-500 border-2 bg-gradient-to-b from-purple-50 to-white"
-                        : "bg-white/80 backdrop-blur-sm"
+                        ? "border-purple-500 bg-gradient-to-b from-purple-50 to-white"
+                        : "bg-white backdrop-blur-sm"
                     }`}
                   >
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="bg-purple-600 text-white px-4 py-1">
-                          <Star className="w-3 h-3 mr-1" />
+                        <Badge className="bg-purple-600 text-white">
+                          <Star className="w-3 h-3" />
                           Most Popular
                         </Badge>
                       </div>
@@ -126,7 +126,7 @@ export default function PricingPage() {
                     
                     <CardHeader className="text-center">
                       <div className="flex justify-center mb-4">
-                        <div className={`p-3 rounded-full ${
+                        <div className={`p-1 rounded-full ${
                           plan.popular ? "bg-purple-100" : "bg-gray-100"
                         }`}>
                           <IconComponent className={`w-6 h-6 ${
@@ -138,7 +138,7 @@ export default function PricingPage() {
                       <CardDescription className="text-gray-600">
                         {plan.credits} Credits Included
                       </CardDescription>
-                      <div className="mt-4">
+                      <div className="mt-1">
                         <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                         <span className="text-gray-500 ml-2">/month</span>
                       </div>
@@ -170,7 +170,7 @@ export default function PricingPage() {
             </div>
 
             {/* Features Comparison */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 mb-8">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-8 mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
                 Why Choose Our Credit System?
               </h2>

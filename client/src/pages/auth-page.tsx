@@ -75,7 +75,7 @@ export default function AuthPage() {
           <CardHeader>
             <div className="flex items-center space-x-2 mb-2">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-xl">A</span>
+                <span className="text-black font-heading font-bold text-xl">A</span>
               </div>
               <span className="font-heading font-bold text-2xl text-primary">Aurafy</span>
             </div>
@@ -211,7 +211,7 @@ export default function AuthPage() {
       </div>
       
       <div className="w-full md:w-1/2 bg-blue-to-br from-light-dark to-primary text-black p-6 md:p-12 flex items-center">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w mx-auto">
           <h1 className="font-heading font-bold text-3xl md:text-4xl mb-6">Begin Your Spiritual Journey</h1>
           <p className="text-lg opacity-90 mb-8">
             Aurafy connects you with powerful spiritual tools to discover your aura, analyze your energy, and embark on a path of healing and self-discovery.
@@ -219,7 +219,7 @@ export default function AuthPage() {
           
           <div className="space-y-6">
             <div className="flex items-start">
-              <div className="bg-white/10 rounded-full p-2 mr-4">
+              <div className="bg-white rounded-full p-2 mr-4">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
