@@ -4443,7 +4443,7 @@ export default function AuraAnalysis() {
 
 
 
-  function generateAuraVisualization({ originalImageBase64, auraData }: { originalImageBase64: string | undefined; auraData: AuraAnalysisResult; }): void {
+  const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult): void => {
         if (!originalImageBase64) return;
 
         // Create a new image element to work with
@@ -4500,7 +4500,7 @@ export default function AuraAnalysis() {
             const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
             setEnhancedAuraImage(enhancedImageBase64);
         };
-    }
+    };
   
   // Function to draw aura cloud effects
   function drawAuraClouds(ctx: CanvasRenderingContext2D,
@@ -5033,8 +5033,8 @@ export default function AuraAnalysis() {
             // Generate aura visualization using canvas overlay
             if (base64String) {
               setAnalysisStage("Creating your aura visualization...");
-              const auraProcessedImage = await processImageWithAura(base64String, analysisResult);
-              setProcessedAuraImage(auraProcessedImage);
+              generateAuraVisualization(base64String, analysisResult);
+              setProcessedAuraImage(base64String);
               setAnalysisStage("Aura visualization complete!");
             } else {
               setProcessedAuraImage(base64String || '');
