@@ -2995,133 +2995,18 @@ export default function AuraAnalysis() {
                             const r = parseInt(hex.slice(1, 3), 16);
                             const g = parseInt(hex.slice(3, 5), 16);
                             const b = parseInt(hex.slice(5, 7), 16);
-                            return [r, g, b];
+                            return { r, g, b };
                         };
 
-                        const thinkingRGB = hexToRGB(allColors.thinking);
-                        const receivingRGB = hexToRGB(allColors.receiving);
-                        const givingRGB = hexToRGB(allColors.giving);
-                        const personalityRGB = hexToRGB(allColors.personality);
-
-                        // Create zone-specific large smokey particles only
-                        const createZoneSmoke = (color: number[], zone: 'thinking' | 'giving' | 'receiving' | 'personality') => {
-                            const [r, g, b] = color;
-
-                            // Create large smokey particles in specific zones
-                            ctx.save();
-                            ctx.filter = 'blur(50px)';
-                            ctx.globalCompositeOperation = 'screen';
-
-                            const particleCount = 60; // More large particles
-                            for (let i = 0; i < particleCount; i++) {
-                                let x, y;
-
-                                // Position particles in zone-specific areas
-                                switch (zone) {
-                                    case 'thinking':
-                                        x = Math.random() * canvasWidth;
-                                        y = Math.random() * canvasHeight * 0.5;
-                                        break;
-                                    case 'giving':
-                                        x = Math.random() * canvasWidth * 0.7;
-                                        y = Math.random() * canvasHeight;
-                                        break;
-                                    case 'receiving':
-                                        x = canvasWidth * 0.3 + Math.random() * canvasWidth * 0.7;
-                                        y = Math.random() * canvasHeight;
-                                        break;
-                                    case 'personality':
-                                        x = Math.random() * canvasWidth;
-                                        y = canvasHeight * 0.5 + Math.random() * canvasHeight * 0.5;
-                                        break;
-                                }
-
-                                // Skip if too close to person's face
-                                const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                                if (distFromCenter < canvasWidth * 0.1) continue;
-
-                                const size = 400 + Math.random() * 160; // Larger particles
-                                const opacity = 0.15 + Math.random() * 0.25;
-
-                                // Create large smokey particle
-                                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-                                ctx.beginPath();
-                                ctx.arc(x, y, size, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
-
-                            ctx.restore();
+                        const colorsRGB = {
+                            thinkingRGB: hexToRGB(allColors.thinking),
+                            receivingRGB: hexToRGB(allColors.receiving),
+                            givingRGB: hexToRGB(allColors.giving),
+                            personalityRGB: hexToRGB(allColors.personality)
                         };
 
-                        // Create additional large smokey particles for blending
-                        const createSmokeLayers = () => {
-                            ctx.save();
-                            ctx.filter = 'blur(70px)';
-                            ctx.globalCompositeOperation = 'multiply';
-
-                            // Create overlapping large smoke particles
-                            const smokeCount = 40;
-                            const colors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
-
-                            for (let i = 0; i < smokeCount; i++) {
-                                const colorIndex = Math.floor(Math.random() * colors.length);
-                                const [r, g, b] = colors[colorIndex];
-
-                                const x = Math.random() * canvasWidth;
-                                const y = Math.random() * canvasHeight;
-
-                                // Skip if too close to person's face
-                                const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                                if (distFromCenter < canvasWidth * 0.08) continue;
-
-                                const size = 400 + Math.random() * 180; // Large particles
-                                const opacity = 0.18 + Math.random() * 0.15;
-
-                                // Create large smokey particle
-                                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-                                ctx.beginPath();
-                                ctx.arc(x, y, size, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
-
-                            ctx.restore();
-                        };
-
-                        // Apply zone-specific smokey effects
-                        createZoneSmoke(thinkingRGB, 'thinking');
-                        createZoneSmoke(givingRGB, 'giving');
-                        createZoneSmoke(receivingRGB, 'receiving');
-                        createZoneSmoke(personalityRGB, 'personality');
-
-                        // Add diffused smoke layers for natural blending
-                        createSmokeLayers();
-
-                        // Final large particle blending layer
-                        ctx.save();
-                        ctx.filter = 'blur(90px)';
-                        ctx.globalCompositeOperation = 'soft-light';
-
-                        const finalBlendCount = 30;
-                        const blendColors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
-
-                        for (let i = 0; i < finalBlendCount; i++) {
-                            const colorIndex = Math.floor(Math.random() * blendColors.length);
-                            const [r, g, b] = blendColors[colorIndex];
-
-                            const x = Math.random() * canvasWidth;
-                            const y = Math.random() * canvasHeight;
-
-                            const size = 120 + Math.random() * 200; // Large particles
-                            const opacity = 0.05 + Math.random() * 0.12;
-
-                            // Create large particle without gradient
-                            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-                            ctx.beginPath();
-                            ctx.arc(x, y, size, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-
-                        ctx.restore();
+                        // Use the new improved smokey effect function
+                        createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colorsRGB, 7, Date.now());
                     };
 
                     // Apply aura effects
@@ -3461,126 +3346,190 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Person protection area - keep face clear like reference images
-    const personRadius = Math.min(width, height) * 0.15;
+    const personRadius = Math.min(width, height) * 0.12;
     
-    // Create multiple layers of smokey particles that cover the entire image
-    const colorArray = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    // Define color zones for proper positioning matching reference images
+    const colorZones = [
+      {
+        color: colors.thinkingRGB,
+        zone: 'top',
+        startY: 0,
+        endY: height * 0.35,
+        startX: 0,
+        endX: width,
+        density: 0.4,
+        name: 'thinking'
+      },
+      {
+        color: colors.receivingRGB,
+        zone: 'left',
+        startY: height * 0.1,
+        endY: height * 0.9,
+        startX: 0,
+        endX: width * 0.45,
+        density: 0.45,
+        name: 'receiving'
+      },
+      {
+        color: colors.givingRGB,
+        zone: 'right',
+        startY: height * 0.1,
+        endY: height * 0.9,
+        startX: width * 0.55,
+        endX: width,
+        density: 0.45,
+        name: 'giving'
+      },
+      {
+        color: colors.personalityRGB,
+        zone: 'bottom',
+        startY: height * 0.65,
+        endY: height,
+        startX: 0,
+        endX: width,
+        density: 0.35,
+        name: 'personality'
+      }
+    ];
     
-    // LAYER 1: Large heavily blurred background smoke clouds
+    // Create dense smokey layers for each zone
+    colorZones.forEach(zone => {
+      // LAYER 1: Large heavily blurred background smoke clouds
+      ctx.save();
+      ctx.filter = 'blur(28px)';
+      ctx.globalCompositeOperation = 'multiply';
+      
+      const particles1 = Math.floor(150 * zone.density);
+      for (let i = 0; i < particles1; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        // Skip if too close to person's face
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 60 + seededRandom() * 140;
+        const opacity = 0.45 + seededRandom() * 0.35;
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 2: Medium blurred smoke particles for cloud density
+      ctx.save();
+      ctx.filter = 'blur(20px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      
+      const particles2 = Math.floor(180 * zone.density);
+      for (let i = 0; i < particles2; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 35 + seededRandom() * 85;
+        const opacity = 0.35 + seededRandom() * 0.4;
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 3: Dense diffused smoke particles for realistic smokey effect
+      ctx.save();
+      ctx.filter = 'blur(15px)';
+      ctx.globalCompositeOperation = 'overlay';
+      
+      const particles3 = Math.floor(250 * zone.density);
+      for (let i = 0; i < particles3; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 20 + seededRandom() * 60;
+        const opacity = 0.3 + seededRandom() * 0.4;
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 4: Fine atmospheric haze for dense smoke completion
+      ctx.save();
+      ctx.filter = 'blur(10px)';
+      ctx.globalCompositeOperation = 'color-dodge';
+      
+      const particles4 = Math.floor(300 * zone.density);
+      for (let i = 0; i < particles4; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 12 + seededRandom() * 35;
+        const opacity = 0.18 + seededRandom() * 0.25;
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 5: Ultra-fine detail particles for natural smoke texture
+      ctx.save();
+      ctx.filter = 'blur(6px)';
+      ctx.globalCompositeOperation = 'screen';
+      
+      const particles5 = Math.floor(200 * zone.density);
+      for (let i = 0; i < particles5; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 8 + seededRandom() * 20;
+        const opacity = 0.12 + seededRandom() * 0.18;
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+    
+    // Create enhanced thinking energy above head - bright and prominent
     ctx.save();
-    ctx.filter = 'blur(20px)';
-    ctx.globalCompositeOperation = 'multiply';
-    for (let i = 0; i < 80; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      // Skip if too close to person's face
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius) continue;
-      
-      const colorIndex = Math.floor(seededRandom() * colorArray.length);
-      const color = colorArray[colorIndex];
-      
-      const radius = 40 + seededRandom() * 120;
-      const opacity = 0.3 + seededRandom() * 0.4;
-      
-      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // LAYER 2: Medium blurred smoke particles for cloud density
-    ctx.save();
-    ctx.filter = 'blur(15px)';
-    ctx.globalCompositeOperation = 'soft-light';
-    for (let i = 0; i < 120; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius) continue;
-      
-      const colorIndex = Math.floor(seededRandom() * colorArray.length);
-      const color = colorArray[colorIndex];
-      
-      const radius = 20 + seededRandom() * 80;
-      const opacity = 0.4 + seededRandom() * 0.5;
-      
-      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // LAYER 3: Dense diffused smoke particles for realistic smokey effect
-    ctx.save();
-    ctx.filter = 'blur(10px)';
-    ctx.globalCompositeOperation = 'overlay';
-    for (let i = 0; i < 200; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius) continue;
-      
-      const colorIndex = Math.floor(seededRandom() * colorArray.length);
-      const color = colorArray[colorIndex];
-      
-      const radius = 10 + seededRandom() * 40;
-      const opacity = 0.2 + seededRandom() * 0.3;
-      
-      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // LAYER 4: Fine blurred smoke wisps for detail and merging
-    ctx.save();
-    ctx.filter = 'blur(8px)';
-    ctx.globalCompositeOperation = 'color-dodge';
-    for (let i = 0; i < 300; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
-      
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius) continue;
-      
-      const colorIndex = Math.floor(seededRandom() * colorArray.length);
-      const color = colorArray[colorIndex];
-      
-      const radius = 5 + seededRandom() * 20;
-      const opacity = 0.1 + seededRandom() * 0.2;
-      
-      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // LAYER 5: Ultra-fine mist for seamless merging
-    ctx.save();
-    ctx.filter = 'blur(25px)';
+    ctx.filter = 'blur(4px)';
     ctx.globalCompositeOperation = 'screen';
-    for (let i = 0; i < 150; i++) {
-      const x = seededRandom() * width;
-      const y = seededRandom() * height;
+    
+    // Concentrated thinking energy above person's head
+    const thinkingX = centerX;
+    const thinkingY = centerY - height * 0.18;
+    
+    for (let i = 0; i < 35; i++) {
+      const offsetX = (seededRandom() - 0.5) * 80;
+      const offsetY = (seededRandom() - 0.5) * 40;
+      const x = thinkingX + offsetX;
+      const y = thinkingY + offsetY;
       
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius) continue;
+      const radius = 15 + seededRandom() * 25;
+      const opacity = 0.7 + seededRandom() * 0.3;
       
-      const colorIndex = Math.floor(seededRandom() * colorArray.length);
-      const color = colorArray[colorIndex];
-      
-      const radius = 60 + seededRandom() * 100;
-      const opacity = 0.05 + seededRandom() * 0.1;
-      
-      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
