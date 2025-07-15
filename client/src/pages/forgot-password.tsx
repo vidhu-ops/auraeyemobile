@@ -64,7 +64,7 @@ export default function ForgotPassword() {
         setStep("reset");
         toast({
           title: "Reset Code Sent",
-          description: "Please check your email for the reset code",
+          description: "Please check WhatsApp on your registered mobile number for the reset code",
         });
       } else {
         setError(result.message || "Failed to send reset code");
@@ -147,8 +147,8 @@ export default function ForgotPassword() {
           </CardTitle>
           <CardDescription>
             {step === "request" 
-              ? "Enter your email address and we'll send you a reset code" 
-              : "Enter the reset code sent to your email and your new password"
+              ? "Enter your email address and we'll send a reset code to your registered mobile number via WhatsApp" 
+              : "Enter the reset code sent to your registered mobile number via WhatsApp and your new password"
             }
           </CardDescription>
         </CardHeader>
@@ -186,7 +186,7 @@ export default function ForgotPassword() {
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Sending..." : "Send Reset Code"}
+                  {isLoading ? "Sending to WhatsApp..." : "Send Reset Code to WhatsApp"}
                 </Button>
               </form>
             </Form>
@@ -209,7 +209,7 @@ export default function ForgotPassword() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Check your email for the reset code
+                        Check WhatsApp on your registered mobile number for the reset code
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
