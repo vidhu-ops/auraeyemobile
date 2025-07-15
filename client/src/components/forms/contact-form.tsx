@@ -48,7 +48,7 @@ export default function ContactForm() {
 
   if (isSubmitted) {
     return (
-      <div className="p-8 text-center">
+      <div className="p-1 text-center">
         <div className="inline-flex items-center justify-center rounded-full bg-green-100 p-2 mb-4">
           <Check className="h-8 w-8 text-green-600" />
         </div>
