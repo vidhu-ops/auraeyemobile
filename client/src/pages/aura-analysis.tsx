@@ -395,19 +395,44 @@ export default function AuraAnalysis() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.7; // Increased opacity for better visibility
+    
+    // First, clear any potential dark area behind the watermark
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1.0;
+    
+    // Measure text to clear exact area behind it
+    ctx.font = 'bold 100px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const textMetrics = ctx.measureText('Aurafy');
+    const textWidth = textMetrics.width;
+    const textHeight = 100; // Font size
+    
+    // Clear area behind watermark with transparent rectangle
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.fillRect(
+      centerX - textWidth * 0.6,
+      centerY - textHeight * 0.6,
+      textWidth * 1.2,
+      textHeight * 1.2
+    );
+    
+    // Now apply watermark with pure white text
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 0.85; // High opacity for visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Remove shadow to eliminate black spot - use pure white text only
-    ctx.shadowColor = 'transparent';
+    // Completely remove all shadow properties to eliminate black spot
+    ctx.shadowColor = 'rgba(0, 0, 0, 0)';
     ctx.shadowBlur = 0;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     
-    // Draw watermark text
+    // Draw watermark text as pure white overlay
     ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
@@ -3338,7 +3363,7 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Person protection area - keep face clear like reference images
-    const personRadius = Math.min(width, height) * 0.18;
+    const personRadius = Math.min(width, height) * 0.22;
     
     // Define color zones for proper positioning matching reference images
     const colorZones = [
