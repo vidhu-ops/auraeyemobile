@@ -2439,6 +2439,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.log(`Fetching aura readings for healer: ${req.user.username} (ID: ${req.user.id})`);
       const auraReadings = await storage.getAuraReadingsByUser(req.user.id);
       console.log(`Found ${auraReadings.length} aura readings for healer ${req.user.username}`);
+      console.log(`Healer aura readings data:`, auraReadings.map(r => ({ id: r.id, name: r.name, userId: r.userId, createdAt: r.createdAt })));
       res.json(auraReadings);
     } catch (error) {
       console.error("Error retrieving healer aura readings:", error);
