@@ -6532,10 +6532,9 @@ export default function AuraAnalysis() {
                                       <div className="space-y-3">
                                         <div className="flex items-center space-x-3">
                                           <div 
-                                            className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
+                                            className="w-8 h-8 rounded-full border-2 border-white"
                                             style={{ 
-                                              backgroundColor: getAccurateColorCode(result.dominantColor),
-                                              boxShadow: `0 0 15px 2px ${getAccurateColorCode(result.dominantColor)}60`
+                                              backgroundColor: getAccurateColorCode(result.dominantColor)
                                             }}
                                           ></div>
                                           <div>
@@ -6546,10 +6545,9 @@ export default function AuraAnalysis() {
                                         {result.secondaryColor && (
                                           <div className="flex items-center space-x-3">
                                             <div 
-                                              className="w-6 h-6 rounded-full border-2 border-white shadow-lg"
+                                              className="w-6 h-6 rounded-full border-2 border-white"
                                               style={{ 
-                                                backgroundColor: getAccurateColorCode(result.secondaryColor),
-                                                boxShadow: `0 0 10px 1px ${getAccurateColorCode(result.secondaryColor)}60`
+                                                backgroundColor: getAccurateColorCode(result.secondaryColor)
                                               }}
                                             ></div>
                                             <div>
@@ -6568,8 +6566,7 @@ export default function AuraAnalysis() {
                                         <div 
                                           className="w-16 h-16 rounded-full mx-auto mb-2 opacity-80"
                                           style={{ 
-                                            backgroundColor: getAccurateColorCode(result.dominantColor),
-                                            boxShadow: `0 0 15px ${getAccurateColorCode(result.dominantColor)}60`
+                                            backgroundColor: getAccurateColorCode(result.dominantColor)
                                           }}
                                         ></div>
                                         <div className="text-sm font-medium">{getChakraConnection(result.dominantColor).split('Chakra')[0]}Chakra</div>
