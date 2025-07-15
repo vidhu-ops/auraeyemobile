@@ -2564,8 +2564,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const decisionMakingChakra = calculateDecisionMakingChakra(birthDate);
       const dominantSoulChakra = calculateDominantSoulChakra(birthDate);
 
-      // Generate AI interpretations
-      const aiResponse = await generateNumerologyAnalysis({
+      // Generate AI interpretations using Gemini to avoid OpenAI quota issues
+      const aiResponse = await generateGeminiNumerologyAnalysis({
         lifePath,
         destiny,
         soulUrge,
@@ -2898,4 +2898,89 @@ function calculateDominantSoulChakra(birthDate: string): number {
   httpServer.headersTimeout = 66000;
   
   return httpServer;
+}
+
+// Gemini-based numerology analysis to avoid OpenAI quota issues
+async function generateGeminiNumerologyAnalysis(numbers: {
+  lifePath: number;
+  destiny: number;
+  soulUrge: number;
+  personality: number;
+  decisionMakingChakra: number;
+  dominantSoulChakra: number;
+}): Promise<{
+  lifePathInterpretation: string;
+  destinyInterpretation: string;
+  soulUrgeInterpretation: string;
+  personalityInterpretation: string;
+}> {
+  try {
+    // Import Gemini here to avoid issues
+    const { GoogleGenAI } = await import("@google/genai");
+    
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("Gemini API key not available");
+    }
+    
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    
+    const prompt = `You are an expert numerologist with decades of experience. Generate detailed interpretations for these numerology numbers:
+
+Life Path Number: ${numbers.lifePath}
+Destiny Number: ${numbers.destiny}
+Soul Urge Number: ${numbers.soulUrge}
+Personality Number: ${numbers.personality}
+Decision Making Chakra: ${numbers.decisionMakingChakra}
+Dominant Soul Chakra: ${numbers.dominantSoulChakra}
+
+Please provide detailed interpretations for each number that include:
+1. Core meaning and spiritual significance
+2. Personality traits and characteristics
+3. Life path guidance and challenges
+4. Spiritual lessons and growth opportunities
+
+Respond with a JSON object containing:
+{
+  "lifePathInterpretation": "detailed interpretation",
+  "destinyInterpretation": "detailed interpretation", 
+  "soulUrgeInterpretation": "detailed interpretation",
+  "personalityInterpretation": "detailed interpretation"
+}`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            lifePathInterpretation: { type: "string" },
+            destinyInterpretation: { type: "string" },
+            soulUrgeInterpretation: { type: "string" },
+            personalityInterpretation: { type: "string" }
+          },
+          required: ["lifePathInterpretation", "destinyInterpretation", "soulUrgeInterpretation", "personalityInterpretation"]
+        }
+      },
+      contents: prompt
+    });
+
+    const rawJson = response.text;
+    if (rawJson) {
+      const data = JSON.parse(rawJson);
+      return data;
+    } else {
+      throw new Error("Empty response from Gemini");
+    }
+  } catch (error) {
+    console.error("Gemini numerology analysis error:", error);
+    
+    // Fallback to basic interpretations
+    return {
+      lifePathInterpretation: `Your Life Path number ${numbers.lifePath} indicates your life's journey and core purpose. This number represents the main lessons you're here to learn and the path you're meant to walk.`,
+      destinyInterpretation: `Your Destiny number ${numbers.destiny} reveals your ultimate goals and the gifts you're meant to develop. This represents your highest potential and life mission.`,
+      soulUrgeInterpretation: `Your Soul Urge number ${numbers.soulUrge} shows your inner desires and motivations. This reflects what truly drives you at a soul level.`,
+      personalityInterpretation: `Your Personality number ${numbers.personality} reveals how you present yourself to the world and how others perceive you. This represents your outer expression and social persona.`
+    };
+  }
 }
