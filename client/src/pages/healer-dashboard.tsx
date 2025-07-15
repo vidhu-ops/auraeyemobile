@@ -708,20 +708,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
             <Badge variant="outline" className="bg-white">
               Energy: {reading.energyLevel}/10
             </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={downloadPDF}
-              disabled={isGeneratingPDF}
-              className="flex items-center gap-2"
-            >
-              {isGeneratingPDF ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-              {isGeneratingPDF ? 'Generating PDF...' : 'Download PDF'}
-            </Button>
+            
             <Button
               variant="ghost"
               size="sm"
