@@ -2955,23 +2955,32 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.json({ message: "If an account with this email exists, a password reset code has been sent." });
       }
 
+      // Check if user has a mobile number
+      if (!user.mobileNumber) {
+        return res.status(400).json({ message: "This account was created without mobile verification. Please contact support." });
+      }
+
       // Generate 6-digit reset token
       const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
       
       // Store reset token with 15-minute expiry
       await storage.createPasswordResetToken({
         email,
+        mobileNumber: user.mobileNumber,
         token: resetToken,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
       });
 
-      // Send reset email
-      const emailSent = await sendPasswordResetEmail(email, resetToken);
+      // Send reset code via WhatsApp to registered mobile number
+      const otpSent = await sendOTPSMS(user.mobileNumber, resetToken);
       
-      if (emailSent) {
-        res.json({ message: "Password reset code sent to your email" });
+      if (otpSent) {
+        res.json({ 
+          message: "Password reset code sent to your registered mobile number via WhatsApp",
+          mobileNumber: user.mobileNumber.slice(-4) // Only show last 4 digits for security
+        });
       } else {
-        res.status(500).json({ message: "Failed to send password reset email" });
+        res.status(500).json({ message: "Failed to send password reset code to WhatsApp" });
       }
     } catch (error) {
       console.error("Error requesting password reset:", error);
