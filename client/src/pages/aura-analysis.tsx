@@ -960,12 +960,7 @@ export default function AuraAnalysis() {
         yPosition += descLines.length * 6 + 10;
       }
 
-      // ENERGY READING - Check if we need a new page
-      if (yPosition > 220) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-      
+      // ENERGY READING
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
       pdf.text('Energy Reading', 20, yPosition);
@@ -1312,7 +1307,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('8 Chakra System Analysis', 20, yPosition);
+      pdf.text('9 Chakra System Analysis', 20, yPosition);
       yPosition += 15;
 
       pdf.setFontSize(12);
