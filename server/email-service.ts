@@ -81,3 +81,30 @@ Spiritual Wellness Platform
     html: emailHtml
   });
 }
+
+export async function sendPasswordResetEmail(
+  email: string,
+  resetToken: string
+): Promise<boolean> {
+  const subject = "Password Reset Request - Aurfy";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #6366f1;">Password Reset Request</h2>
+      <p>Hello,</p>
+      <p>You have requested to reset your password for your Aurfy account.</p>
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #374151; margin-top: 0;">Your Reset Code:</h3>
+        <p style="font-size: 24px; font-weight: bold; color: #6366f1; margin-bottom: 0; letter-spacing: 2px;">${resetToken}</p>
+      </div>
+      <p>This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email.</p>
+      <p>Best regards,<br>The Aurfy Team</p>
+    </div>
+  `;
+
+  return await sendEmail({
+    to: email,
+    from: "noreply@spiritualwellness.com",
+    subject,
+    html
+  });
+}

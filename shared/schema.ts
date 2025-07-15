@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   userType: text("user_type").notNull().default("client"), // "client" or "healer"
   birthDate: text("birth_date"),
+  email: text("email"),
+  mobileNumber: text("mobile_number"),
   credits: integer("credits").default(10),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -17,6 +19,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   userType: true,
   birthDate: true,
+  email: true,
+  mobileNumber: true,
 });
 
 export const auraReadings = pgTable("aura_readings", {
@@ -184,6 +188,36 @@ export const insertCreditTransactionSchema = createInsertSchema(creditTransactio
   createdAt: true,
 });
 
+// OTP verification table for mobile numbers during registration
+export const otpVerifications = pgTable("otp_verifications", {
+  id: serial("id").primaryKey(),
+  mobileNumber: text("mobile_number").notNull(),
+  otp: text("otp").notNull(),
+  verified: boolean("verified").default(false),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Password reset tokens table for forgot password functionality
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  token: text("token").notNull(),
+  used: boolean("used").default(false),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -202,3 +236,7 @@ export type VibeFeedback = typeof vibeFeedback.$inferSelect;
 export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;
 export type CreditTransaction = typeof creditTransactions.$inferSelect;
 export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
+export type OtpVerification = typeof otpVerifications.$inferSelect;
+export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
