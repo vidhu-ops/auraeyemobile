@@ -81,81 +81,93 @@ export default function HomePage() {
       // Get color RGB values
       const colorRGB = getColorRGB(dominantColor);
       
-      // Create diffused smokey aura effect filling entire image
+      // Create realistic smokey aura effect matching reference images
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
+      const personRadius = Math.min(canvas.width, canvas.height) * 0.15;
       
-      // Layer 1: Full image color wash (except person's face area)
-      const fullImageGradient = ctx.createRadialGradient(
-        centerX, centerY, canvas.width * 0.15, // Small inner radius to preserve face
-        centerX, centerY, Math.max(canvas.width, canvas.height) * 0.7 // Large outer radius
-      );
-      fullImageGradient.addColorStop(0, `rgba(${colorRGB}, 0.05)`); // Light around face
-      fullImageGradient.addColorStop(0.3, `rgba(${colorRGB}, 0.15)`);
-      fullImageGradient.addColorStop(0.7, `rgba(${colorRGB}, 0.25)`);
-      fullImageGradient.addColorStop(1, `rgba(${colorRGB}, 0.35)`); // Darker at edges
+      // Parse color RGB values
+      const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
       
-      ctx.fillStyle = fullImageGradient;
+      // Create deterministic seeded random for consistent results
+      let seed = dominantColor.charCodeAt(0) + canvas.width + canvas.height;
+      const seededRandom = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
+      
+      // LAYER 1: Large background smoke clouds covering entire image
       ctx.globalCompositeOperation = 'multiply';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Layer 2: Edge color fill
-      const edgeGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      edgeGradient.addColorStop(0, `rgba(${colorRGB}, 0.2)`);
-      edgeGradient.addColorStop(0.5, `rgba(${colorRGB}, 0.1)`);
-      edgeGradient.addColorStop(1, `rgba(${colorRGB}, 0.2)`);
-      
-      ctx.fillStyle = edgeGradient;
-      ctx.globalCompositeOperation = 'soft-light';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Layer 3: Diffused smokey particles around person
-      const numSmokeParticles = 20;
-      const smokeParticleSize = Math.min(canvas.width, canvas.height) * 0.15;
-      
-      for (let i = 0; i < numSmokeParticles; i++) {
-        const angle = (i / numSmokeParticles) * Math.PI * 2;
-        const distance = Math.min(canvas.width, canvas.height) * (0.2 + Math.random() * 0.2);
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
+      for (let i = 0; i < 60; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
         
-        const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, smokeParticleSize);
-        smokeGradient.addColorStop(0, `rgba(${colorRGB}, 0.3)`);
-        smokeGradient.addColorStop(0.4, `rgba(${colorRGB}, 0.15)`);
-        smokeGradient.addColorStop(0.8, `rgba(${colorRGB}, 0.05)`);
-        smokeGradient.addColorStop(1, `rgba(${colorRGB}, 0)`);
+        // Skip if too close to person's face
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
         
-        ctx.fillStyle = smokeGradient;
-        ctx.globalCompositeOperation = 'overlay';
-        ctx.fillRect(x - smokeParticleSize, y - smokeParticleSize, smokeParticleSize * 2, smokeParticleSize * 2);
+        const radius = 30 + seededRandom() * 80;
+        const opacity = 0.2 + seededRandom() * 0.3;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
       }
       
-      // Layer 4: Concentrated smokey aura around person center
-      const concentratedGradient = ctx.createRadialGradient(
-        centerX, centerY, canvas.width * 0.05,
-        centerX, centerY, canvas.width * 0.4
-      );
-      concentratedGradient.addColorStop(0, `rgba(${colorRGB}, 0.1)`);
-      concentratedGradient.addColorStop(0.3, `rgba(${colorRGB}, 0.25)`);
-      concentratedGradient.addColorStop(0.7, `rgba(${colorRGB}, 0.15)`);
-      concentratedGradient.addColorStop(1, `rgba(${colorRGB}, 0.05)`);
+      // LAYER 2: Medium smoke particles for cloud density
+      ctx.globalCompositeOperation = 'soft-light';
+      for (let i = 0; i < 80; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 15 + seededRandom() * 50;
+        const opacity = 0.3 + seededRandom() * 0.4;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
       
-      ctx.fillStyle = concentratedGradient;
+      // LAYER 3: Dense smoke particles for realistic smokey effect
+      ctx.globalCompositeOperation = 'overlay';
+      for (let i = 0; i < 120; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 8 + seededRandom() * 25;
+        const opacity = 0.15 + seededRandom() * 0.25;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // LAYER 4: Fine smoke wisps for detail
       ctx.globalCompositeOperation = 'color-dodge';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Layer 5: Atmospheric diffusion effect
-      const atmosphericGradient = ctx.createRadialGradient(
-        centerX, centerY, canvas.width * 0.3,
-        centerX, centerY, Math.max(canvas.width, canvas.height) * 0.6
-      );
-      atmosphericGradient.addColorStop(0, `rgba(${colorRGB}, 0.08)`);
-      atmosphericGradient.addColorStop(0.5, `rgba(${colorRGB}, 0.12)`);
-      atmosphericGradient.addColorStop(1, `rgba(${colorRGB}, 0.18)`);
-      
-      ctx.fillStyle = atmosphericGradient;
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 200; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 3 + seededRandom() * 12;
+        const opacity = 0.08 + seededRandom() * 0.15;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
       
       // Reset composite operation for watermark
       ctx.globalCompositeOperation = 'source-over';
