@@ -96,7 +96,9 @@ export default function HomePage() {
         return seed / 233280;
       };
       
-      // LAYER 1: Large background smoke clouds covering entire image
+      // LAYER 1: Large heavily blurred background smoke clouds
+      ctx.save();
+      ctx.filter = 'blur(20px)';
       ctx.globalCompositeOperation = 'multiply';
       for (let i = 0; i < 60; i++) {
         const x = seededRandom() * canvas.width;
@@ -114,8 +116,11 @@ export default function HomePage() {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
       
-      // LAYER 2: Medium smoke particles for cloud density
+      // LAYER 2: Medium blurred smoke particles for cloud density
+      ctx.save();
+      ctx.filter = 'blur(15px)';
       ctx.globalCompositeOperation = 'soft-light';
       for (let i = 0; i < 80; i++) {
         const x = seededRandom() * canvas.width;
@@ -132,8 +137,11 @@ export default function HomePage() {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
       
-      // LAYER 3: Dense smoke particles for realistic smokey effect
+      // LAYER 3: Dense diffused smoke particles for realistic smokey effect
+      ctx.save();
+      ctx.filter = 'blur(10px)';
       ctx.globalCompositeOperation = 'overlay';
       for (let i = 0; i < 120; i++) {
         const x = seededRandom() * canvas.width;
@@ -150,8 +158,11 @@ export default function HomePage() {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
       
-      // LAYER 4: Fine smoke wisps for detail
+      // LAYER 4: Fine blurred smoke wisps for detail and merging
+      ctx.save();
+      ctx.filter = 'blur(8px)';
       ctx.globalCompositeOperation = 'color-dodge';
       for (let i = 0; i < 200; i++) {
         const x = seededRandom() * canvas.width;
@@ -168,6 +179,28 @@ export default function HomePage() {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
+      
+      // LAYER 5: Ultra-fine mist for seamless merging
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 100; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius) continue;
+        
+        const radius = 40 + seededRandom() * 80;
+        const opacity = 0.05 + seededRandom() * 0.1;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
       
       // Reset composite operation for watermark
       ctx.globalCompositeOperation = 'source-over';
