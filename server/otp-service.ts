@@ -66,14 +66,24 @@ export async function isMobileVerified(mobileNumber: string): Promise<boolean> {
   return !!record;
 }
 
-// Send OTP via SMS (simulated - logs to console)
+// Send OTP via SMS (simulated - logs to console with detailed information)
 export async function sendOTPSMS(mobileNumber: string, otp: string): Promise<boolean> {
   // In a real implementation, this would use a service like Twilio
-  console.log(`SMS OTP for ${mobileNumber}: ${otp}`);
-  console.log(`Your Aurfy verification code is: ${otp}. This code will expire in 10 minutes.`);
+  console.log(`\n=== SMS OTP SENDING ===`);
+  console.log(`Mobile: ${mobileNumber}`);
+  console.log(`OTP Code: ${otp}`);
+  console.log(`Message: Your Aurfy verification code is: ${otp}. This code will expire in 10 minutes.`);
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log(`======================\n`);
   
   // For demo purposes, we'll always return true
-  // In production, you would integrate with SMS service like Twilio
+  // In production, you would integrate with SMS service like Twilio:
+  // const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  // await client.messages.create({
+  //   body: `Your Aurfy verification code is: ${otp}. This code will expire in 10 minutes.`,
+  //   from: process.env.TWILIO_PHONE_NUMBER,
+  //   to: mobileNumber
+  // });
   return true;
 }
 
