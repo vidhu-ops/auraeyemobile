@@ -12,7 +12,9 @@ import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
-import { sendHealerBookingNotification } from "./email-service";
+import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
+import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
+import { hashPassword } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
 
 // Credit checking middleware
@@ -2931,6 +2933,147 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error updating numerology reading notes:", error);
       res.status(500).json({ message: "Failed to update notes" });
+    }
+  });
+
+  // Forgot Password Routes
+  
+  // Request password reset
+  app.post('/api/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Check if user exists
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if email exists for security
+        return res.json({ message: "If an account with this email exists, a password reset code has been sent." });
+      }
+
+      // Generate 6-digit reset token
+      const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store reset token with 15-minute expiry
+      await storage.createPasswordResetToken({
+        email,
+        token: resetToken,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+      });
+
+      // Send reset email
+      const emailSent = await sendPasswordResetEmail(email, resetToken);
+      
+      if (emailSent) {
+        res.json({ message: "Password reset code sent to your email" });
+      } else {
+        res.status(500).json({ message: "Failed to send password reset email" });
+      }
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Reset password with token
+  app.post('/api/reset-password', async (req, res) => {
+    try {
+      const { email, token, newPassword } = req.body;
+      
+      if (!email || !token || !newPassword) {
+        return res.status(400).json({ message: "Email, token, and new password are required" });
+      }
+
+      // Validate reset token
+      const resetTokenRecord = await storage.validatePasswordResetToken(email, token);
+      if (!resetTokenRecord) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Get user
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Hash new password
+      const hashedPassword = await hashPassword(newPassword);
+      
+      // Update password
+      await storage.updateUserPassword(user.id, hashedPassword);
+      
+      // Mark token as used
+      await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
+
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Mobile OTP Routes
+  
+  // Send OTP to mobile number
+  app.post('/api/send-otp', async (req, res) => {
+    try {
+      const { mobileNumber } = req.body;
+      
+      if (!mobileNumber) {
+        return res.status(400).json({ message: "Mobile number is required" });
+      }
+
+      // Generate and send OTP
+      const otpSent = await generateAndSendOTP(mobileNumber);
+      
+      if (otpSent) {
+        res.json({ message: "OTP sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send OTP" });
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      res.status(500).json({ message: "Failed to send OTP" });
+    }
+  });
+
+  // Verify OTP
+  app.post('/api/verify-otp', async (req, res) => {
+    try {
+      const { mobileNumber, otp } = req.body;
+      
+      if (!mobileNumber || !otp) {
+        return res.status(400).json({ message: "Mobile number and OTP are required" });
+      }
+
+      // Verify OTP
+      const isValid = await verifyOTP(mobileNumber, otp);
+      
+      if (isValid) {
+        res.json({ message: "OTP verified successfully", verified: true });
+      } else {
+        res.status(400).json({ message: "Invalid or expired OTP", verified: false });
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      res.status(500).json({ message: "Failed to verify OTP" });
+    }
+  });
+
+  // Check if mobile number is verified
+  app.get('/api/mobile-verified/:mobileNumber', async (req, res) => {
+    try {
+      const { mobileNumber } = req.params;
+      
+      const isVerified = await isMobileVerified(mobileNumber);
+      
+      res.json({ verified: isVerified });
+    } catch (error) {
+      console.error("Error checking mobile verification:", error);
+      res.status(500).json({ message: "Failed to check mobile verification" });
     }
   });
 

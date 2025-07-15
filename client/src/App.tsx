@@ -20,6 +20,7 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Services from "@/pages/services";
 import PricingPage from "@/pages/pricing";
+import ForgotPassword from "@/pages/forgot-password";
 import { AuthProvider } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -30,6 +31,7 @@ function Router() {
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/services" component={Services} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/dashboard" component={ClientDashboard} />

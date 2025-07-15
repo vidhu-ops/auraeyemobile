@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Redirect } from "wouter";
+import { Redirect, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Loader2 } from "lucide-react";
+import MobileOtpVerification from "@/components/mobile-otp-verification";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -22,6 +23,7 @@ const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   birthDate: z.string().min(1, "Birth date is required"),
+  mobileNumber: z.string().optional(),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -29,6 +31,8 @@ type RegisterData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [showMobileVerification, setShowMobileVerification] = useState(false);
+  const [verifiedMobile, setVerifiedMobile] = useState<string>("");
   const { user, loginMutation, registerMutation } = useAuth();
   
   const loginForm = useForm<LoginData>({
@@ -45,6 +49,7 @@ export default function AuthPage() {
       username: "",
       password: "",
       birthDate: "",
+      mobileNumber: "",
     },
   });
 
@@ -53,7 +58,17 @@ export default function AuthPage() {
   };
 
   const onRegisterSubmit = (data: RegisterData) => {
-    registerMutation.mutate(data);
+    // Include verified mobile number in registration data
+    const registrationData = {
+      ...data,
+      mobileNumber: verifiedMobile || data.mobileNumber,
+    };
+    registerMutation.mutate(registrationData);
+  };
+
+  const handleMobileVerified = (mobileNumber: string) => {
+    setVerifiedMobile(mobileNumber);
+    setShowMobileVerification(false);
   };
 
   // Redirect if already logged in
@@ -122,7 +137,7 @@ export default function AuthPage() {
                     />
                   </CardContent>
                   
-                  <CardFooter>
+                  <CardFooter className="flex-col space-y-2">
                     <Button 
                       type="submit" 
                       className="w-full bg-primary hover:bg-primary-dark"
@@ -135,6 +150,9 @@ export default function AuthPage() {
                         </>
                       ) : "Login"}
                     </Button>
+                    <Link href="/forgot-password" className="text-sm text-center text-primary hover:text-primary-dark">
+                      Forgot your password?
+                    </Link>
                   </CardFooter>
                 </form>
               </Form>
@@ -185,6 +203,35 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
+
+                    {/* Mobile Verification Section */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Mobile Verification (Optional)</label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowMobileVerification(!showMobileVerification)}
+                          disabled={registerMutation.isPending}
+                        >
+                          {showMobileVerification ? "Skip" : "Add Mobile"}
+                        </Button>
+                      </div>
+                      
+                      {showMobileVerification && (
+                        <MobileOtpVerification
+                          onVerified={handleMobileVerified}
+                          initialMobileNumber={registerForm.watch("mobileNumber") || ""}
+                        />
+                      )}
+                      
+                      {verifiedMobile && (
+                        <div className="text-sm text-green-600 font-medium">
+                          ✓ Mobile verified: {verifiedMobile}
+                        </div>
+                      )}
+                    </div>
                     
 
                   </CardContent>
