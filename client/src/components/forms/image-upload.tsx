@@ -52,7 +52,7 @@ export default function ImageUpload({ onImageSelect, isLoading = false }: ImageU
       {!selectedImage ? (
         <div
           className={`border-2 border-dashed ${
-            dragActive ? 'border-primary bg-primary' : 'border-gray-300 bg-gray-50'
+            dragActive ? 'border-primary bg-primary' : 'border-gray-300'
           } rounded-xl p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer h-64`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}

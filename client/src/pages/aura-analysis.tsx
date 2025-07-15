@@ -2897,7 +2897,7 @@ export default function AuraAnalysis() {
             ctx.filter = 'none';
           };
           
-          // Create smokey aura effects with specific energy zone colors
+          // Create beautiful smokey aura effects with all 4 colors
           const createSmokeyAuraEffects = () => {
             // Get the 4-zone energy colors
             const allColors = extractAllAuraColors(auraData);
@@ -2915,138 +2915,124 @@ export default function AuraAnalysis() {
             const givingRGB = hexToRGB(allColors.giving);
             const personalityRGB = hexToRGB(allColors.personality);
             
-            // Create zone-specific smokey effects
-            const zones = [
-              {
-                name: 'thinking',
-                color: thinkingRGB,
-                area: { x: 0, y: 0, width: canvasWidth, height: canvasHeight * 0.2 },
-                density: 30
-              },
-              {
-                name: 'receiving',
-                color: receivingRGB,
-                area: { x: canvasWidth * 0.6, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
-                density: 60
-              },
-              {
-                name: 'giving',
-                color: givingRGB,
-                area: { x: 0, y: 0, width: canvasWidth * 0.4, height: canvasHeight },
-                density: 50
-              },
-              {
-                name: 'personality',
-                color: personalityRGB,
-                area: { x: canvasWidth * 0.2, y: canvasHeight * 0.2, width: canvasWidth * 0.6, height: canvasHeight * 0.6 },
-                density: 30
-              }
-            ];
+            // Create natural, diffused smokey effect layers
+            const createSmokeLayer = (color: number[], opacity: number, blurSize: number) => {
+              ctx.save();
+              ctx.filter = `blur(${blurSize}px)`;
+              ctx.globalCompositeOperation = 'multiply';
+              
+              // Create large, soft gradient covering entire image
+              const gradient = ctx.createRadialGradient(
+                centerX, centerY, canvasWidth * 0.12, // Inner - protect person
+                centerX, centerY, canvasWidth * 0.85   // Outer - full coverage
+              );
+              
+              const [r, g, b] = color;
+              gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+              gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`);
+              gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`);
+              gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.7})`);
+              gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+              
+              ctx.fillStyle = gradient;
+              ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+              ctx.restore();
+            };
             
-            zones.forEach(zone => {
-              for (let i = 0; i < zone.density; i++) {
-                // Generate smokey particle position within zone
-                const x = zone.area.x + Math.random() * zone.area.width;
-                const y = zone.area.y + Math.random() * zone.area.height;
+            // Create zone-specific gradients for natural color flow
+            const createZoneGradient = (color: number[], position: 'top' | 'left' | 'right' | 'center') => {
+              ctx.save();
+              ctx.filter = 'blur(35px)';
+              ctx.globalCompositeOperation = 'soft-light';
+              
+              const [r, g, b] = color;
+              let gradient;
+              
+              switch (position) {
+                case 'top': // Thinking energy
+                  gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight * 0.4);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.6)`);
+                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.3)`);
+                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                  break;
                 
-                // Enhanced person protection - larger area to keep face completely visible
-                const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                if (distFromCenter < canvasWidth * 0.22) {
-                  continue;
-                }
+                case 'left': // Giving energy
+                  gradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.6, 0);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.5)`);
+                  gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                  break;
                 
-                // Additional rectangular protection for face and upper body
-                const faceLeft = centerX - canvasWidth * 0.15;
-                const faceRight = centerX + canvasWidth * 0.15;
-                const faceTop = centerY - canvasHeight * 0.25;
-                const faceBottom = centerY + canvasHeight * 0.25;
+                case 'right': // Receiving energy
+                  gradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.4, 0);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.5)`);
+                  gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                  break;
                 
-                if (x >= faceLeft && x <= faceRight && y >= faceTop && y <= faceBottom) {
-                  continue;
-                }
-                
-                // Create extremely blurred, natural smokey wisp effect
-                const sizeFactor = Math.min(canvasWidth, canvasHeight) / 900;
-                const wispSize = (50 + Math.random() * 80) * sizeFactor;
-                const opacity = 0.04 + Math.random() * 0.08;
-                const [r, g, b] = zone.color;
-                
-                // Apply heavy blur filter for ultra-soft smokey effect
-                ctx.filter = 'blur(50px)';
-                
-                // Create many overlapping layers for dense, natural smoke
-                const smokeLayers = 12 + Math.floor(Math.random() * 8);
-                
-                for (let layer = 0; layer < smokeLayers; layer++) {
-                  const layerOffset = (Math.random() - 0.5) * wispSize * 1.8;
-                  const layerX = x + layerOffset;
-                  const layerY = y + layerOffset;
-                  const layerSize = wispSize * (0.6 + Math.random() * 2.0);
-                  const layerOpacity = opacity * (0.3 + Math.random() * 0.7);
-                  
-                  const smokeGradient = ctx.createRadialGradient(
-                    layerX, layerY, 0,
-                    layerX, layerY, layerSize
+                case 'center': // Personality energy
+                  gradient = ctx.createRadialGradient(
+                    centerX, centerY, canvasWidth * 0.15,
+                    centerX, centerY, canvasWidth * 0.6
                   );
-                  
-                  // Create extremely soft gradient for natural smoke flow
-                  smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`);
-                  smokeGradient.addColorStop(0.15, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.9})`);
-                  smokeGradient.addColorStop(0.35, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.6})`);
-                  smokeGradient.addColorStop(0.65, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.3})`);
-                  smokeGradient.addColorStop(0.85, `rgba(${r}, ${g}, ${b}, ${layerOpacity * 0.1})`);
-                  smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  
-                  ctx.fillStyle = smokeGradient;
-                  ctx.beginPath();
-                  ctx.arc(layerX, layerY, layerSize, 0, Math.PI * 2);
-                  ctx.fill();
-                }
-                
-                // Reset filter
-                ctx.filter = 'none';
-                
-                // Add flowing smoke trails with heavy blur for natural movement
-                if (Math.random() > 0.5) {
-                  ctx.filter = 'blur(45px)';
-                  const trailLength = 40 + Math.random() * 60;
-                  const angle = Math.random() * Math.PI * 2;
-                  
-                  for (let trail = 0; trail < trailLength; trail++) {
-                    const trailProgress = trail / trailLength;
-                    const trailX = x + Math.cos(angle) * trail * 4;
-                    const trailY = y + Math.sin(angle) * trail * 4 + Math.sin(trailProgress * Math.PI * 8) * 12;
-                    const trailSize = wispSize * (1 - trailProgress * 0.6);
-                    const trailOpacity = opacity * (1 - trailProgress) * 0.3;
-                    
-                    // Ensure trail doesn't overlap with person's face
-                    const trailDistFromCenter = Math.sqrt((trailX - centerX) ** 2 + (trailY - centerY) ** 2);
-                    if (trailDistFromCenter < canvas.width * 0.18) {
-                      continue;
-                    }
-                    
-                    if (trailSize > 15) {
-                      const trailGradient = ctx.createRadialGradient(
-                        trailX, trailY, 0,
-                        trailX, trailY, trailSize
-                      );
-                      
-                      trailGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${trailOpacity})`);
-                      trailGradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.8})`);
-                      trailGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.5})`);
-                      trailGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${trailOpacity * 0.2})`);
-                      trailGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                      
-                      ctx.fillStyle = trailGradient;
-                      ctx.beginPath();
-                      ctx.arc(trailX, trailY, trailSize, 0, Math.PI * 2);
-                      ctx.fill();
-                    }
-                  }
-                  ctx.filter = 'none';
-                }
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+                  gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.15)`);
+                  gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, 0.3)`);
+                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.4)`);
+                  break;
               }
-            });
+              
+              ctx.fillStyle = gradient;
+              ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+              ctx.restore();
+            };
+            
+            // Apply multiple layers for natural smokey effect
+            createSmokeLayer(personalityRGB, 0.15, 40);
+            createSmokeLayer(givingRGB, 0.18, 45);
+            createSmokeLayer(receivingRGB, 0.16, 42);
+            createSmokeLayer(thinkingRGB, 0.12, 38);
+            
+            // Add zone-specific gradients
+            createZoneGradient(thinkingRGB, 'top');
+            createZoneGradient(givingRGB, 'left');
+            createZoneGradient(receivingRGB, 'right');
+            createZoneGradient(personalityRGB, 'center');
+            
+            // Create additional diffused particles for natural smoke texture
+            ctx.save();
+            ctx.filter = 'blur(25px)';
+            ctx.globalCompositeOperation = 'overlay';
+            
+            const colors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
+            
+            for (let i = 0; i < 80; i++) {
+              const angle = (i / 80) * Math.PI * 2;
+              const distance = canvasWidth * 0.25 + Math.random() * canvasWidth * 0.4;
+              const x = centerX + Math.cos(angle) * distance;
+              const y = centerY + Math.sin(angle) * distance;
+              
+              const colorIndex = Math.floor(Math.random() * colors.length);
+              const [r, g, b] = colors[colorIndex];
+              const size = 30 + Math.random() * 60;
+              const opacity = 0.08 + Math.random() * 0.12;
+              
+              const particleGradient = ctx.createRadialGradient(
+                x, y, 0,
+                x, y, size
+              );
+              
+              particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+              particleGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
+              particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+              
+              ctx.fillStyle = particleGradient;
+              ctx.beginPath();
+              ctx.arc(x, y, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            
+            ctx.restore();
           };
           
           // Apply aura effects
