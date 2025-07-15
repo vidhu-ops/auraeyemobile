@@ -21,6 +21,7 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email address").optional(),
   password: z.string().min(6, "Password must be at least 6 characters"),
   birthDate: z.string().min(1, "Birth date is required"),
   mobileNumber: z.string().min(10, "Mobile number verification is required"),
@@ -47,6 +48,7 @@ export default function AuthPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       birthDate: "",
       mobileNumber: "",
@@ -170,6 +172,20 @@ export default function AuthPage() {
                           <FormLabel>Username</FormLabel>
                           <FormControl>
                             <Input placeholder="Choose a username" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={registerForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email (Optional)</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email for password reset" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
