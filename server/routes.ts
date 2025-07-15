@@ -2447,6 +2447,157 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Live numerology calculation endpoint (no saving to database) - for healers only
+  app.post("/api/numerology-live", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const { name, birthDate } = req.body;
+      
+      if (!name || !birthDate) {
+        return res.status(400).json({ message: "Name and birth date are required" });
+      }
+
+      console.log(`Generating live numerology reading for: ${name} (healer: ${req.user.username})`);
+      
+      // Helper functions for numerology calculations
+      const reduceNumber = (num: number): number => {
+        // Reduce ALL numbers to single digit (1-9) - no master numbers
+        while (num > 9) {
+          num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+        }
+        return num;
+      };
+
+      const letterToNumber = (letter: string): number => {
+        const letterMap: Record<string, number> = {
+          'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+          'B': 2, 'K': 2, 'R': 2,
+          'C': 3, 'G': 3, 'L': 3, 'S': 3,
+          'D': 4, 'M': 4, 'T': 4,
+          'E': 5, 'H': 5, 'N': 5, 'X': 5,
+          'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+          'Z': 7,
+          'P': 8
+        };
+        
+        return letterMap[letter.toUpperCase()] || 0;
+      };
+
+      // Calculate Life Path Number
+      const calculateLifePath = (date: string): number => {
+        const digits = date.replace(/\D/g, '');
+        let sum = 0;
+        for (const digit of digits) {
+          sum += parseInt(digit);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Destiny Number
+      const calculateDestiny = (fullName: string): number => {
+        let sum = 0;
+        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+          sum += letterToNumber(char);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Soul Urge Number
+      const calculateSoulUrge = (fullName: string): number => {
+        let sum = 0;
+        const vowels = 'AEIOUY';
+        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+          if (vowels.includes(char.toUpperCase())) {
+            sum += letterToNumber(char);
+          }
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Personality Number - based on day digits only
+      const calculatePersonality = (date: string): number => {
+        const dateParts = date.split('-');
+        if (dateParts.length !== 3) return 5;
+        
+        const day = dateParts[2]; // DD - only use day digits
+        let sum = 0;
+        for (const digit of day) {
+          sum += parseInt(digit);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Decision Making Chakra
+      const calculateDecisionMakingChakra = (date: string): number => {
+        const dateParts = date.split('-');
+        if (dateParts.length !== 3) return 5;
+        
+        const month = dateParts[1]; // MM - only use month digits
+        let sum = 0;
+        for (const digit of month) {
+          sum += parseInt(digit);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Calculate Dominant Soul Chakra
+      const calculateDominantSoulChakra = (date: string): number => {
+        const dateParts = date.split('-');
+        if (dateParts.length !== 3) return 5;
+        
+        const year = dateParts[0]; // YYYY - only use year digits
+        let sum = 0;
+        for (const digit of year) {
+          sum += parseInt(digit);
+        }
+        return reduceNumber(sum);
+      };
+
+      // Generate core numbers - no database saving
+      const lifePath = calculateLifePath(birthDate);
+      const destiny = calculateDestiny(name);
+      const soulUrge = calculateSoulUrge(name);
+      const personality = calculatePersonality(birthDate);
+      const decisionMakingChakra = calculateDecisionMakingChakra(birthDate);
+      const dominantSoulChakra = calculateDominantSoulChakra(birthDate);
+
+      // Generate AI interpretations
+      const aiResponse = await generateNumerologyAnalysis({
+        lifePath,
+        destiny,
+        soulUrge,
+        personality,
+        decisionMakingChakra,
+        dominantSoulChakra
+      });
+
+      // Return live result without saving to database
+      const result = {
+        name,
+        birthDate,
+        lifePath,
+        destiny,
+        soulUrge,
+        personality,
+        decisionMakingChakra,
+        dominantSoulChakra,
+        lifePathInterpretation: aiResponse.lifePathInterpretation,
+        destinyInterpretation: aiResponse.destinyInterpretation,
+        soulUrgeInterpretation: aiResponse.soulUrgeInterpretation,
+        personalityInterpretation: aiResponse.personalityInterpretation
+      };
+
+      console.log(`Live numerology reading generated successfully for ${name}`);
+      res.json(result);
+    } catch (error) {
+      console.error("Error generating live numerology reading:", error);
+      res.status(500).json({ message: "Failed to generate numerology reading" });
+    }
+  });
+
   // API endpoint for calculating numerology based on name and birth date
   app.post("/api/numerology", async (req, res) => {
     try {

@@ -95,6 +95,105 @@ interface NumerologyReading {
 }
 
 // Healer Numerology Input Component
+// Live Numerology Calculator Component (no saving to database)
+function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalculating }: {
+  onResultGenerated: (result: any) => void;
+  isCalculating: boolean;
+  setIsCalculating: (calculating: boolean) => void;
+}) {
+  const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const { toast } = useToast();
+
+  const generateNumerology = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!fullName.trim() || !birthDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both full name and birth date.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsCalculating(true);
+    try {
+      const response = await apiRequest("POST", "/api/numerology-live", {
+        name: fullName.trim(),
+        birthDate: birthDate
+      });
+      
+      onResultGenerated(response);
+      
+      toast({
+        title: "Success",
+        description: "Live numerology reading generated!",
+        variant: "default"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate numerology reading. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
+  return (
+    <form onSubmit={generateNumerology} className="space-y-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name
+          </label>
+          <Input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Enter full name"
+            className="w-full"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Birth Date
+          </label>
+          <Input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="w-full"
+            required
+          />
+        </div>
+      </div>
+      
+      <Button 
+        type="submit" 
+        disabled={isCalculating}
+        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+      >
+        {isCalculating ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Generating Live Reading...
+          </>
+        ) : (
+          <>
+            <Calculator className="w-4 h-4 mr-2" />
+            Generate Live Numerology Reading
+          </>
+        )}
+      </Button>
+    </form>
+  );
+}
+
 function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -999,11 +1098,9 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
-  // Fetch healer's own numerology readings
-  const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
-    queryKey: ["/api/healer-numerology-readings"],
-    enabled: !!user,
-  });
+  // State for live numerology calculator
+  const [liveNumerologyResult, setLiveNumerologyResult] = useState<any>(null);
+  const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
 
   // Mutation for responding to bookings
   const respondToBookingMutation = useMutation({
@@ -1418,29 +1515,80 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
 
-            {/* Numerology Readings */}
+            {/* Live Numerology Calculator */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-blue-500" />
-                  My Numerology Readings
+                  Live Numerology Calculator
                 </CardTitle>
-                <CardDescription>Your personal numerological insights</CardDescription>
+                <CardDescription>Generate instant numerology readings (not saved to dashboard)</CardDescription>
               </CardHeader>
               <CardContent>
-                {healerNumerologyReadings.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calculator className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-500 mb-4">No numerology readings yet</p>
-                    <Link to="/numerology">
-                      <Button>Get Your First Reading</Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {healerNumerologyReadings.map((reading) => (
-                      <DetailedNumerologyReadingCard key={reading.id} reading={reading} />
-                    ))}
+                <LiveNumerologyCalculator 
+                  onResultGenerated={setLiveNumerologyResult}
+                  isCalculating={isCalculatingNumerology}
+                  setIsCalculating={setIsCalculatingNumerology}
+                />
+                
+                {liveNumerologyResult && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                    <h3 className="font-semibold text-lg mb-4 text-purple-800">
+                      Numerology Reading for {liveNumerologyResult.name}
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="p-3 bg-white rounded-lg border">
+                        <h4 className="font-medium text-purple-700 mb-2">Core Numbers</h4>
+                        <div className="space-y-1 text-sm">
+                          <p><strong>Life Path:</strong> {liveNumerologyResult.lifePath}</p>
+                          <p><strong>Destiny:</strong> {liveNumerologyResult.destiny}</p>
+                          <p><strong>Soul Urge:</strong> {liveNumerologyResult.soulUrge}</p>
+                          <p><strong>Personality:</strong> {liveNumerologyResult.personality}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="p-3 bg-white rounded-lg border">
+                        <h4 className="font-medium text-purple-700 mb-2">Chakra Analysis</h4>
+                        <div className="space-y-1 text-sm">
+                          <p><strong>Decision Making:</strong> {liveNumerologyResult.decisionMakingChakra}</p>
+                          <p><strong>Dominant Soul:</strong> {liveNumerologyResult.dominantSoulChakra}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-white rounded-lg border">
+                      <h4 className="font-medium text-purple-700 mb-2">Interpretations</h4>
+                      <div className="space-y-2 text-sm">
+                        <p><strong>Life Path:</strong> {liveNumerologyResult.lifePathInterpretation}</p>
+                        <p><strong>Destiny:</strong> {liveNumerologyResult.destinyInterpretation}</p>
+                        <p><strong>Soul Urge:</strong> {liveNumerologyResult.soulUrgeInterpretation}</p>
+                        <p><strong>Personality:</strong> {liveNumerologyResult.personalityInterpretation}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 flex gap-2">
+                      <Button 
+                        onClick={() => setLiveNumerologyResult(null)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Clear Reading
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          // Generate new reading with same data
+                          setLiveNumerologyResult(null);
+                          // The form will still have the data, user can click generate again
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        New Reading
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
