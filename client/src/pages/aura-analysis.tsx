@@ -5719,19 +5719,27 @@ export default function AuraAnalysis() {
                                 <h3 className="font-medium text-lg mb-4">Your 8-Chakra Energy System</h3>
                                 
                                 <div className="space-y-3">
-                                  {/* All Chakras in one list */}
-                                  {Object.entries(result.chakraActivity || {}).map(([chakra, value]) => (
-                                    <div key={chakra} className="flex items-center space-x-3">
-                                      <div className="w-24 text-sm text-gray-600 capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                  {/* All Chakras in consistent order */}
+                                  {[
+                                    { key: 'crown', name: 'Crown', color: 'bg-violet-500' },
+                                    { key: 'thirdEye', name: 'Third Eye', color: 'bg-indigo-500' },
+                                    { key: 'throat', name: 'Throat', color: 'bg-blue-500' },
+                                    { key: 'heart', name: 'Heart', color: 'bg-green-500' },
+                                    { key: 'solarPlexus', name: 'Solar Plexus', color: 'bg-yellow-500' },
+                                    { key: 'sacral', name: 'Sacral', color: 'bg-orange-500' },
+                                    { key: 'root', name: 'Root', color: 'bg-red-500' }
+                                  ].map((chakra) => (
+                                    <div key={chakra.key} className="flex items-center space-x-3">
+                                      <div className="w-24 text-sm text-gray-600">{chakra.name}</div>
                                       <div className="flex-1">
                                         <div className="w-full bg-gray-200 rounded-full h-3">
                                           <div 
-                                            className={`h-3 rounded-full transition-all duration-500 ${getChakraColor(chakra)}`}
-                                            style={{ width: `${value * 10}%` }}
+                                            className={`h-3 rounded-full transition-all duration-500 ${chakra.color}`}
+                                            style={{ width: `${(result.chakraActivity?.[chakra.key] || 5) * 10}%` }}
                                           ></div>
                                         </div>
                                       </div>
-                                      <div className="w-12 text-sm text-gray-500">{value}/10</div>
+                                      <div className="w-12 text-sm text-gray-500">{result.chakraActivity?.[chakra.key] || 5}/10</div>
                                     </div>
                                   ))}
                                   
@@ -7218,7 +7226,7 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             <div className="space-y-6">
-                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              <h3 className="font-medium text-lg">8-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
