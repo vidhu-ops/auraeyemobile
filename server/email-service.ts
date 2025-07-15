@@ -19,11 +19,22 @@ interface EmailParams {
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   if (!mailService) {
-    console.log("Email service not configured - would send:", params.subject);
+    console.log("\n=== EMAIL SERVICE NOT CONFIGURED ===");
+    console.log("SENDGRID_API_KEY not found in environment variables");
+    console.log("Would send email:", params.subject);
+    console.log("To:", params.to);
+    console.log("From:", params.from);
+    console.log("===================================\n");
     return false;
   }
 
   try {
+    console.log("\n=== SENDING EMAIL ===");
+    console.log("To:", params.to);
+    console.log("From:", params.from);
+    console.log("Subject:", params.subject);
+    console.log("Time:", new Date().toLocaleString());
+    
     await mailService.send({
       to: params.to,
       from: params.from,
@@ -31,9 +42,14 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       text: params.text,
       html: params.html,
     });
+    
+    console.log("Email sent successfully!");
+    console.log("====================\n");
     return true;
   } catch (error) {
+    console.error('\n=== EMAIL ERROR ===');
     console.error('SendGrid email error:', error);
+    console.error('===================\n');
     return false;
   }
 }

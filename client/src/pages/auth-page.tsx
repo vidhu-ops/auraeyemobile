@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Loader2 } from "lucide-react";
-import MobileOtpVerification from "@/components/mobile-otp-verification";
+import MobileOtpVerificationSimple from "@/components/mobile-otp-verification-simple";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -23,7 +23,7 @@ const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   birthDate: z.string().min(1, "Birth date is required"),
-  mobileNumber: z.string().optional(),
+  mobileNumber: z.string().min(10, "Mobile number verification is required"),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -204,33 +204,24 @@ export default function AuthPage() {
                       )}
                     />
 
-                    {/* Mobile Verification Section */}
+                    {/* Mobile Verification Section - MANDATORY */}
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Mobile Verification (Optional)</label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowMobileVerification(!showMobileVerification)}
-                          disabled={registerMutation.isPending}
-                        >
-                          {showMobileVerification ? "Skip" : "Add Mobile"}
-                        </Button>
+                      <div className="border-t pt-4">
+                        <label className="text-sm font-medium text-red-600 mb-2 block">
+                          * Mobile Verification Required
+                        </label>
+                        
+                        {!verifiedMobile ? (
+                          <MobileOtpVerificationSimple
+                            onVerified={handleMobileVerified}
+                            initialMobileNumber={registerForm.watch("mobileNumber") || ""}
+                          />
+                        ) : (
+                          <div className="text-sm text-green-600 font-medium bg-green-50 p-3 rounded-lg">
+                            ✓ Mobile verified: {verifiedMobile}
+                          </div>
+                        )}
                       </div>
-                      
-                      {showMobileVerification && (
-                        <MobileOtpVerification
-                          onVerified={handleMobileVerified}
-                          initialMobileNumber={registerForm.watch("mobileNumber") || ""}
-                        />
-                      )}
-                      
-                      {verifiedMobile && (
-                        <div className="text-sm text-green-600 font-medium">
-                          ✓ Mobile verified: {verifiedMobile}
-                        </div>
-                      )}
                     </div>
                     
 
@@ -240,14 +231,14 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-primary hover:bg-primary-dark"
-                      disabled={registerMutation.isPending}
+                      disabled={registerMutation.isPending || !verifiedMobile}
                     >
                       {registerMutation.isPending ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
                           Creating account...
                         </>
-                      ) : "Create Account"}
+                      ) : !verifiedMobile ? "Please verify mobile number first" : "Create Account"}
                     </Button>
                   </CardFooter>
                 </form>
