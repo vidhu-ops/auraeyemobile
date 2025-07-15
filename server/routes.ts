@@ -2447,6 +2447,50 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Admin endpoint to add/subtract credits manually
+  app.post("/api/admin/credits", isAuthenticated, async (req, res) => {
+    try {
+      const { targetUserId, amount, operation, description } = req.body;
+      
+      // Check if user is admin (you can modify this check as needed)
+      if (req.user.username !== 'admin' && req.user.userType !== 'admin') {
+        return res.status(403).json({ message: "Access denied: Not an admin" });
+      }
+      
+      if (!targetUserId || !amount || !operation) {
+        return res.status(400).json({ message: "Missing required fields: targetUserId, amount, operation" });
+      }
+      
+      const parsedAmount = parseInt(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        return res.status(400).json({ message: "Invalid amount" });
+      }
+      
+      let success = false;
+      if (operation === 'add') {
+        success = await storage.addCredits(targetUserId, parsedAmount, 'admin_add', description || `Manual credit addition by ${req.user.username}`);
+      } else if (operation === 'subtract') {
+        success = await storage.deductCredits(targetUserId, parsedAmount, 'admin_subtract', description || `Manual credit deduction by ${req.user.username}`);
+      } else {
+        return res.status(400).json({ message: "Invalid operation. Use 'add' or 'subtract'" });
+      }
+      
+      if (success) {
+        const newBalance = await storage.getUserCredits(targetUserId);
+        res.json({ 
+          success: true, 
+          message: `Credits ${operation === 'add' ? 'added' : 'subtracted'} successfully`,
+          newBalance 
+        });
+      } else {
+        res.status(400).json({ message: "Failed to update credits. Check user ID and balance." });
+      }
+    } catch (error) {
+      console.error("Error updating credits:", error);
+      res.status(500).json({ message: "Failed to update credits" });
+    }
+  });
+
   // Live numerology calculation endpoint (no saving to database) - for healers only
   app.post("/api/numerology-live", isAuthenticated, async (req, res) => {
     try {
