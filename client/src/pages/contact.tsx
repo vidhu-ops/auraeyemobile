@@ -29,8 +29,8 @@ export default function Contact() {
         </section>
         
         {/* Contact section */}
-        <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
-          <div className="container mx-auto px-4">
+        <section className="py-12 bg-gradient-to-br from-primary to-secondary">
+          <div className="container mx-auto px-2">
             <div className="max-w-5xl mx-auto">
               <Card className="rounded-2xl shadow-xl overflow-hidden">
                 <div className="flex flex-col md:flex-row">
@@ -41,10 +41,10 @@ export default function Contact() {
                   </div>
                   
                   {/* Contact information */}
-                  <div className="md:w-5/12 bg-gradient-to-br from-primary to-secondary text-white p-8 flex flex-col justify-between">
+                  <div className="md:w-8/12 bg-blue-500 to-purple-600 text-white p-8">
                     <div>
                       <h2 className="font-heading font-semibold text-xl mb-6">Contact Information</h2>
-                      <div className="space-y-4">
+                      <div className="space-y-9">
                         <div className="flex items-start">
                           <MapPin className="mt-1 mr-3 h-5 w-5" />
                           <p>123 Spiritual Drive<br/>Harmony Valley, CA 90210</p>
@@ -62,7 +62,7 @@ export default function Contact() {
                       <div className="mt-8">
                         <h3 className="font-medium mb-3">Follow Us</h3>
                         <div className="flex space-x-4">
-                          <a href="#" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
+                          <a href="#" className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-white transition-colors">
                             <Instagram className="h-5 w-5" />
                           </a>
                           <a href="#" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
@@ -79,7 +79,7 @@ export default function Contact() {
                     </div>
                     
                     <div className="mt-auto">
-                      <p className="font-accent italic text-white/80">"The universe is not outside of you. Look inside yourself; everything that you want, you already are." — Rumi</p>
+                      <p className="py-8 font-accent italic text-white/80">"The universe is not outside of you. Look inside yourself; everything that you want, you already are." — Rumi</p>
                     </div>
                   </div>
                 </div>

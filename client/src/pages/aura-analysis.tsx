@@ -960,7 +960,12 @@ export default function AuraAnalysis() {
         yPosition += descLines.length * 6 + 10;
       }
 
-      // ENERGY READING
+      // ENERGY READING - Check if we need a new page
+      if (yPosition > 220) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+      
       pdf.setFontSize(18);
       pdf.setTextColor(75, 85, 99);
       pdf.text('Energy Reading', 20, yPosition);
@@ -6355,7 +6360,7 @@ export default function AuraAnalysis() {
                                   <div className="bg-white border rounded-lg p-6 shadow-sm">
                                     <div className="flex items-center space-x-4 mb-4">
                                       <div 
-                                        className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
+                                        className="w-16 h-16 rounded-full flex items-center justify-center "
                                         style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}
                                       >
                                         <span className="text-white font-bold text-lg">
@@ -7944,8 +7949,7 @@ export default function AuraAnalysis() {
                                               <div 
                                                 className="w-8 h-8 rounded-full flex-shrink-0" 
                                                 style={{ 
-                                                  backgroundColor: getAccurateColorCode(tile.color),
-                                                  boxShadow: `0 0 10px ${getAccurateColorCode(tile.color)}60`
+                                                  backgroundColor: getAccurateColorCode(tile.color)
                                                 }}
                                               ></div>
                                               <div>
