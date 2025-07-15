@@ -395,26 +395,19 @@ export default function AuraAnalysis() {
     
     // Set watermark properties
     ctx.save();
-    ctx.globalAlpha = 0.4; // 80% opacity for better visibility
+    ctx.globalAlpha = 0.7; // Increased opacity for better visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Add strong text shadow for better visibility
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 4;
+    // Remove shadow to eliminate black spot - use pure white text only
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     
     // Draw watermark text
-    ctx.fillText('Aurafy', centerX, centerY);
-    
-    // Add a second layer for extra visibility
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
     ctx.fillText('Aurafy', centerX, centerY);
     
     ctx.restore();
