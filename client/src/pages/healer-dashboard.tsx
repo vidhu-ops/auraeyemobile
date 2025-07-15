@@ -1098,6 +1098,12 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
+  // Fetch healer's own numerology readings
+  const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
+    queryKey: ["/api/healer-numerology-readings"],
+    enabled: !!user,
+  });
+
   // State for live numerology calculator
   const [liveNumerologyResult, setLiveNumerologyResult] = useState<any>(null);
   const [isCalculatingNumerology, setIsCalculatingNumerology] = useState(false);
@@ -1540,7 +1546,50 @@ export default function HealerDashboard() {
                                     <h3 className="font-semibold text-lg text-purple-800">{reading.name}</h3>
                                     <p className="text-sm text-gray-600">{format(new Date(reading.createdAt), "PPp")}</p>
                                 </div>
-                                <NumerologyPDFDownload reading={reading} />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Create a simplified PDF download function
+                                    const pdf = new jsPDF();
+                                    
+                                    // Title
+                                    pdf.setFontSize(20);
+                                    pdf.setTextColor(0, 0, 0);
+                                    pdf.text("Numerology Reading Report", 105, 20, { align: "center" });
+                                    
+                                    // Client information
+                                    pdf.setFontSize(12);
+                                    pdf.text(`Client: ${reading.name}`, 20, 40);
+                                    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 20, 50);
+                                    pdf.text(`Healer: ${user?.username || 'Unknown'}`, 20, 60);
+                                    
+                                    // Core numbers
+                                    pdf.setFontSize(14);
+                                    pdf.setTextColor(0, 0, 0);
+                                    pdf.text("Core Numbers", 20, 80);
+                                    
+                                    pdf.setFontSize(11);
+                                    pdf.text(`Life Path Number: ${reading.lifePathNumber}`, 20, 95);
+                                    pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
+                                    pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
+                                    pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
+                                    
+                                    // Interpretation
+                                    pdf.setFontSize(14);
+                                    pdf.text("Complete Interpretation", 20, 145);
+                                    
+                                    pdf.setFontSize(10);
+                                    const splitText = pdf.splitTextToSize(reading.interpretation, 170);
+                                    pdf.text(splitText, 20, 155);
+                                    
+                                    // Save the PDF
+                                    pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
+                                  }}
+                                  title="Download PDF"
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
