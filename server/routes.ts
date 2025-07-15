@@ -1495,6 +1495,88 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
   });
 
   // Numerology calculation endpoints
+  // Healer numerology endpoint - creates readings for healer's private use
+  app.post("/api/healer-numerology", isAuthenticated, async (req, res) => {
+    try {
+      const { name, birthDate } = req.body;
+      
+      console.log('Received healer numerology request:', { name, birthDate });
+      
+      if (!name || !birthDate) {
+        return res.status(400).json({ message: "Name and birth date are required" });
+      }
+      
+      let numerologyProfile: NumerologyResult;
+      
+      try {
+        // Try using the API-based calculation
+        numerologyProfile = await calculateNumerologyProfile(name, birthDate);
+        
+        console.log('Returning healer numerology profile:', numerologyProfile);
+        
+        // Save the numerology reading for the healer with healer-tools source
+        await storage.saveNumerologyReading({
+          userId: req.user.id,
+          name,
+          birthDate,
+          lifePathNumber: numerologyProfile.lifePathNumber,
+          destinyNumber: numerologyProfile.destinyNumber,
+          soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+          personalityNumber: numerologyProfile.personalityNumber,
+          interpretation: numerologyProfile.interpretation,
+          readingSource: "healer-tools"
+        });
+      } catch (apiError) {
+        console.error("Healer numerology API error, using fallback:", apiError);
+        
+        // Create a fallback calculation
+        numerologyProfile = {
+          lifePathNumber: calculateLifePath(birthDate),
+          destinyNumber: calculateDestiny(name),
+          soulUrgeNumber: calculateSoulUrge(name),
+          personalityNumber: calculatePersonality(birthDate),
+          soulChakraNumber: calculateDominantSoulChakra(birthDate),
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
+          colorAssociations: {
+            lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
+            destinyColor: getColorForNumber(calculateDestiny(name)),
+            soulUrgeColor: getColorForNumber(calculateSoulUrge(name)),
+            personalityColor: getColorForNumber(calculatePersonality(birthDate)),
+            soulChakraColor: getColorForNumber(calculateDominantSoulChakra(birthDate))
+          },
+          strengths: [
+            `Natural ${getColorForNumber(calculateLifePath(birthDate))} energy enhances your leadership abilities`,
+            `Your ${getColorForNumber(calculateDestiny(name))} vibration amplifies your communication skills`,
+            `The ${getColorForNumber(calculateSoulUrge(name))} influence strengthens your intuitive abilities`
+          ],
+          challenges: [
+            `Balancing ${getColorForNumber(calculateLifePath(birthDate))} intensity in daily interactions`,
+            `Managing ${getColorForNumber(calculateDestiny(name))} energy in personal relationships`,
+            `Integrating ${getColorForNumber(calculateSoulUrge(name))} wisdom into practical decisions`
+          ]
+        };
+        
+        // Save the fallback numerology reading for the healer with healer-tools source
+        await storage.saveNumerologyReading({
+          userId: req.user.id,
+          name,
+          birthDate,
+          lifePathNumber: numerologyProfile.lifePathNumber,
+          destinyNumber: numerologyProfile.destinyNumber,
+          soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+          personalityNumber: numerologyProfile.personalityNumber,
+          interpretation: numerologyProfile.interpretation,
+          readingSource: "healer-tools"
+        });
+      }
+      
+      res.json(numerologyProfile);
+    } catch (error) {
+      console.error("Healer numerology error:", error);
+      res.status(500).json({ message: "Error generating numerology reading" });
+    }
+  });
+
   app.post("/api/numerology", async (req, res) => {
     try {
       const { name, birthDate } = req.body;
@@ -2323,6 +2405,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error retrieving numerology readings:", error);
       res.status(500).json({ message: "Failed to retrieve numerology readings" });
+    }
+  });
+
+  // Get healer's numerology readings (only from spiritual tools)
+  app.get("/api/healer-numerology-readings", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const healerNumerologyReadings = await storage.getHealerNumerologyReadingsByUser(req.user.id);
+      res.json(healerNumerologyReadings);
+    } catch (error) {
+      console.error("Error retrieving healer numerology readings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer numerology readings" });
     }
   });
 
