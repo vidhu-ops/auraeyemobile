@@ -2418,7 +2418,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(403).json({ message: "Access denied: Not a healer" });
       }
 
+      console.log(`Fetching numerology readings for healer: ${req.user.username} (ID: ${req.user.id})`);
       const numerologyReadings = await storage.getNumerologyReadingsByUser(req.user.id);
+      console.log(`Found ${numerologyReadings.length} numerology readings for healer ${req.user.username}`);
       res.json(numerologyReadings);
     } catch (error) {
       console.error("Error retrieving healer numerology readings:", error);
