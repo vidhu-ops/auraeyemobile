@@ -2428,6 +2428,24 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get healer's aura readings (only readings performed by the healer)
+  app.get("/api/healer-aura-readings", isAuthenticated, async (req, res) => {
+    try {
+      // Check if user is a healer by checking userType
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      console.log(`Fetching aura readings for healer: ${req.user.username} (ID: ${req.user.id})`);
+      const auraReadings = await storage.getAuraReadingsByUser(req.user.id);
+      console.log(`Found ${auraReadings.length} aura readings for healer ${req.user.username}`);
+      res.json(auraReadings);
+    } catch (error) {
+      console.error("Error retrieving healer aura readings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer aura readings" });
+    }
+  });
+
   // API endpoint for calculating numerology based on name and birth date
   app.post("/api/numerology", async (req, res) => {
     try {

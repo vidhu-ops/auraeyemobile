@@ -995,7 +995,7 @@ export default function HealerDashboard() {
 
   // Fetch healer's own aura readings
   const { data: healerAuraReadings = [] } = useQuery<AuraReading[]>({
-    queryKey: ["/api/aura-readings"],
+    queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
   });
 
