@@ -60,8 +60,8 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
         }, 1000);
         
         toast({
-          title: "OTP Sent",
-          description: "Please check your mobile for the verification code",
+          title: "WhatsApp OTP Sent",
+          description: "Please check your WhatsApp for the verification code",
         });
       } else {
         setError(result.message || "Failed to send OTP");
@@ -95,8 +95,8 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
       if (response.ok && result.verified) {
         setStep("verified");
         toast({
-          title: "Mobile Verified",
-          description: "Your mobile number has been verified successfully",
+          title: "WhatsApp Verified",
+          description: "Your WhatsApp number has been verified successfully",
         });
         onVerified(mobileNumber);
       } else {
@@ -135,8 +135,8 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
         }, 1000);
         
         toast({
-          title: "OTP Resent",
-          description: "A new verification code has been sent to your mobile",
+          title: "WhatsApp OTP Resent",
+          description: "A new verification code has been sent to your WhatsApp",
         });
       } else {
         setError(result.message || "Failed to resend OTP");
@@ -170,7 +170,7 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
       <div className="flex items-center space-x-2 mb-4">
         <Smartphone className="h-5 w-5 text-purple-600" />
         <h3 className="text-lg font-semibold text-gray-900">
-          {step === "mobile" ? "Mobile Verification" : "Enter OTP"}
+          {step === "mobile" ? "WhatsApp Verification" : "Enter WhatsApp OTP"}
         </h3>
       </div>
 
@@ -183,16 +183,16 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
       {step === "mobile" ? (
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Mobile Number</label>
+            <label className="text-sm font-medium">WhatsApp Number</label>
             <Input
               type="tel"
-              placeholder="Enter your mobile number"
+              placeholder="Enter your WhatsApp number"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               disabled={isLoading}
             />
             <p className="text-xs text-gray-500">
-              You'll receive a 6-digit verification code
+              You'll receive a 6-digit verification code on WhatsApp
             </p>
           </div>
 
@@ -202,14 +202,14 @@ export default function MobileOtpVerificationSimple({ onVerified, initialMobileN
             className="w-full"
             disabled={isLoading || !mobileNumber}
           >
-            {isLoading ? "Sending..." : "Send Verification Code"}
+            {isLoading ? "Sending..." : "Send WhatsApp Code"}
           </Button>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-4">
-              Verification code sent to {mobileNumber}
+              WhatsApp verification code sent to {mobileNumber}
             </p>
           </div>
           

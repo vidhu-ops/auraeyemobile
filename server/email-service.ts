@@ -91,7 +91,7 @@ Spiritual Wellness Platform
 
   return await sendEmail({
     to: healerEmail,
-    from: 'noreply@spiritualwellness.com', // You should use your verified sender email
+    from: 'noreply@aurfy.com', // Using aurfy.com domain
     subject: emailSubject,
     text: emailText,
     html: emailHtml
@@ -119,7 +119,7 @@ export async function sendPasswordResetEmail(
 
   return await sendEmail({
     to: email,
-    from: "noreply@spiritualwellness.com",
+    from: "noreply@aurfy.com",
     subject,
     html
   });
