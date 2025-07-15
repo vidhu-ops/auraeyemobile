@@ -3026,13 +3026,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "Mobile number is required" });
       }
 
-      // Generate and send OTP
-      const otpSent = await generateAndSendOTP(mobileNumber);
+      // Generate and send OTP with WhatsApp validation
+      const otpResult = await generateAndSendOTP(mobileNumber);
       
-      if (otpSent) {
-        res.json({ message: "OTP sent successfully" });
+      if (otpResult.success) {
+        res.json({ 
+          message: "OTP sent successfully via WhatsApp",
+          validationMessage: otpResult.message 
+        });
       } else {
-        res.status(500).json({ message: "Failed to send OTP" });
+        res.status(500).json({ 
+          message: "Failed to send OTP",
+          error: otpResult.message 
+        });
       }
     } catch (error) {
       console.error("Error sending OTP:", error);

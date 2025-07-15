@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { otpVerifications } from "@shared/schema";
 import { eq, and, gt } from "drizzle-orm";
+import { validateWhatsAppNumber } from "./whatsapp-validator";
 
 // Generate a 6-digit OTP
 function generateOTP(): string {
@@ -101,14 +102,32 @@ export async function sendOTPSMS(mobileNumber: string, otp: string): Promise<boo
   }
 }
 
-// Generate and send OTP
-export async function generateAndSendOTP(mobileNumber: string): Promise<boolean> {
+// Generate and send OTP with WhatsApp validation
+export async function generateAndSendOTP(mobileNumber: string): Promise<{ success: boolean; message?: string; }> {
   try {
+    console.log(`\n=== WHATSAPP VALIDATION ===`);
+    console.log(`Validating number: ${mobileNumber}`);
+    
+    // Validate WhatsApp number first
+    const validation = await validateWhatsAppNumber(mobileNumber);
+    
+    console.log(`Validation result:`, validation);
+    
+    if (!validation.hasWhatsApp) {
+      console.log('Number does not have WhatsApp, but proceeding anyway (fallback)');
+      console.log(`============================\n`);
+      // Continue with OTP sending even if validation fails (fallback behavior)
+    }
+    
     const otp = await storeOTP(mobileNumber);
     const sent = await sendOTPSMS(mobileNumber, otp);
-    return sent;
+    
+    return { 
+      success: sent, 
+      message: validation.message || (sent ? 'OTP sent successfully' : 'Failed to send OTP')
+    };
   } catch (error) {
     console.error("Error generating/sending OTP:", error);
-    return false;
+    return { success: false, message: 'Error processing OTP request' };
   }
 }
