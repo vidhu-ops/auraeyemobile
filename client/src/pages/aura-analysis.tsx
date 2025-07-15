@@ -2915,61 +2915,16 @@ export default function AuraAnalysis() {
             const givingRGB = hexToRGB(allColors.giving);
             const personalityRGB = hexToRGB(allColors.personality);
             
-            // Create zone-specific smokey effects exactly like reference images
+            // Create zone-specific large smokey particles only
             const createZoneSmoke = (color: number[], zone: 'thinking' | 'giving' | 'receiving' | 'personality') => {
               const [r, g, b] = color;
               
-              // Create large diffused color zones
+              // Create large smokey particles in specific zones
               ctx.save();
-              ctx.filter = 'blur(60px)';
+              ctx.filter = 'blur(50px)';
               ctx.globalCompositeOperation = 'screen';
               
-              let gradient;
-              
-              switch (zone) {
-                case 'thinking': // Top zone - thinking energy
-                  gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight * 0.6);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.8)`);
-                  gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.6)`);
-                  gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, 0.3)`);
-                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  break;
-                
-                case 'giving': // Left zone - giving energy
-                  gradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.8, 0);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.8)`);
-                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.6)`);
-                  gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, 0.3)`);
-                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  break;
-                
-                case 'receiving': // Right zone - receiving energy
-                  gradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.2, 0);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.8)`);
-                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.6)`);
-                  gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, 0.3)`);
-                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  break;
-                
-                case 'personality': // Bottom zone - personality energy
-                  gradient = ctx.createLinearGradient(0, canvasHeight, 0, canvasHeight * 0.4);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.7)`);
-                  gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.5)`);
-                  gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, 0.3)`);
-                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                  break;
-              }
-              
-              ctx.fillStyle = gradient;
-              ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-              ctx.restore();
-              
-              // Add diffused smokey particles for texture
-              ctx.save();
-              ctx.filter = 'blur(40px)';
-              ctx.globalCompositeOperation = 'overlay';
-              
-              const particleCount = 40;
+              const particleCount = 60; // More large particles
               for (let i = 0; i < particleCount; i++) {
                 let x, y;
                 
@@ -2997,20 +2952,11 @@ export default function AuraAnalysis() {
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
                 if (distFromCenter < canvasWidth * 0.1) continue;
                 
-                const size = 60 + Math.random() * 120;
-                const opacity = 0.1 + Math.random() * 0.2;
+                const size = 80 + Math.random() * 160; // Larger particles
+                const opacity = 0.15 + Math.random() * 0.25;
                 
-                const particleGradient = ctx.createRadialGradient(
-                  x, y, 0,
-                  x, y, size
-                );
-                
-                particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-                particleGradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.7})`);
-                particleGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
-                particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                
-                ctx.fillStyle = particleGradient;
+                // Create large smokey particle
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
                 ctx.beginPath();
                 ctx.arc(x, y, size, 0, Math.PI * 2);
                 ctx.fill();
@@ -3019,14 +2965,14 @@ export default function AuraAnalysis() {
               ctx.restore();
             };
             
-            // Create additional diffused smoke layers for natural blending
+            // Create additional large smokey particles for blending
             const createSmokeLayers = () => {
               ctx.save();
-              ctx.filter = 'blur(80px)';
+              ctx.filter = 'blur(70px)';
               ctx.globalCompositeOperation = 'multiply';
               
-              // Create overlapping smoke clouds
-              const smokeCount = 25;
+              // Create overlapping large smoke particles
+              const smokeCount = 40;
               const colors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
               
               for (let i = 0; i < smokeCount; i++) {
@@ -3040,20 +2986,11 @@ export default function AuraAnalysis() {
                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
                 if (distFromCenter < canvasWidth * 0.08) continue;
                 
-                const size = 80 + Math.random() * 200;
-                const opacity = 0.05 + Math.random() * 0.1;
+                const size = 100 + Math.random() * 180; // Large particles
+                const opacity = 0.08 + Math.random() * 0.15;
                 
-                const smokeGradient = ctx.createRadialGradient(
-                  x, y, 0,
-                  x, y, size
-                );
-                
-                smokeGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-                smokeGradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${opacity * 0.8})`);
-                smokeGradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
-                smokeGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                
-                ctx.fillStyle = smokeGradient;
+                // Create large smokey particle
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
                 ctx.beginPath();
                 ctx.arc(x, y, size, 0, Math.PI * 2);
                 ctx.fill();
@@ -3071,12 +3008,12 @@ export default function AuraAnalysis() {
             // Add diffused smoke layers for natural blending
             createSmokeLayers();
             
-            // Final color blending layer
+            // Final large particle blending layer
             ctx.save();
-            ctx.filter = 'blur(100px)';
+            ctx.filter = 'blur(90px)';
             ctx.globalCompositeOperation = 'soft-light';
             
-            const finalBlendCount = 15;
+            const finalBlendCount = 30;
             const blendColors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
             
             for (let i = 0; i < finalBlendCount; i++) {
@@ -3086,19 +3023,11 @@ export default function AuraAnalysis() {
               const x = Math.random() * canvasWidth;
               const y = Math.random() * canvasHeight;
               
-              const size = 100 + Math.random() * 200;
-              const opacity = 0.03 + Math.random() * 0.07;
+              const size = 120 + Math.random() * 200; // Large particles
+              const opacity = 0.05 + Math.random() * 0.12;
               
-              const blendGradient = ctx.createRadialGradient(
-                x, y, 0,
-                x, y, size
-              );
-              
-              blendGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              blendGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${opacity * 0.6})`);
-              blendGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-              
-              ctx.fillStyle = blendGradient;
+              // Create large particle without gradient
+              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
               ctx.beginPath();
               ctx.arc(x, y, size, 0, Math.PI * 2);
               ctx.fill();
