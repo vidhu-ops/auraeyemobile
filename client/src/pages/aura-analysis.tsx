@@ -4443,64 +4443,64 @@ export default function AuraAnalysis() {
 
 
 
-  const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult) => {
-    if (!originalImageBase64) return;
-    
-    // Create a new image element to work with
-    const img = new Image();
-    img.src = originalImageBase64;
-    
-    img.onload = () => {
-      // Create a canvas to draw on
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Set proper proportional canvas dimensions for better visualization
-      const aspectRatio = img.width / img.height;
-      let canvasWidth, canvasHeight;
-      
-      // Maintain aspect ratio while ensuring adequate size for visualization
-      if (aspectRatio > 1) {
-        // Landscape image
-        canvasWidth = Math.max(1200, img.width);
-        canvasHeight = canvasWidth / aspectRatio;
-      } else {
-        // Portrait or square image
-        canvasHeight = Math.max(900, img.height);
-        canvasWidth = canvasHeight * aspectRatio;
-      }
-      
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      
-      // Draw original image to fill the canvas with proper proportions
-      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
-      
-      // Get dominant and secondary colors
-      const dominantColor = getAccurateColorCode(auraData.dominantColor);
-      const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
-      
-      // Extract all 4 distinct aura colors from the analysis result
-      const detectedColors = extractAllAuraColors(auraData);
-      
-      const colors = {
-        thinkingRGB: hexToRgb(detectedColors.thinking),
-        receivingRGB: hexToRgb(detectedColors.receiving), 
-        givingRGB: hexToRgb(detectedColors.giving),
-        personalityRGB: hexToRgb(detectedColors.personality)
-      };
-      
-      createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colors, auraData.energyLevel);
-      
-      // Add watermark
-      addWatermark(ctx, canvasWidth, canvasHeight);
-      
-      // Convert back to base64
-      const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
-      setEnhancedAuraImage(enhancedImageBase64);
-    };
-  };
+  function generateAuraVisualization({ originalImageBase64, auraData }: { originalImageBase64: string | undefined; auraData: AuraAnalysisResult; }): void {
+        if (!originalImageBase64) return;
+
+        // Create a new image element to work with
+        const img = new Image();
+        img.src = originalImageBase64;
+
+        img.onload = () => {
+            // Create a canvas to draw on
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // Set proper proportional canvas dimensions for better visualization
+            const aspectRatio = img.width / img.height;
+            let canvasWidth, canvasHeight;
+
+            // Maintain aspect ratio while ensuring adequate size for visualization
+            if (aspectRatio > 1) {
+                // Landscape image
+                canvasWidth = Math.max(1200, img.width);
+                canvasHeight = canvasWidth / aspectRatio;
+            } else {
+                // Portrait or square image
+                canvasHeight = Math.max(900, img.height);
+                canvasWidth = canvasHeight * aspectRatio;
+            }
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Draw original image to fill the canvas with proper proportions
+            ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+            // Get dominant and secondary colors
+            const dominantColor = getAccurateColorCode(auraData.dominantColor);
+            const secondaryColor = getAccurateColorCode(auraData.secondaryColor || auraData.dominantColor);
+
+            // Extract all 4 distinct aura colors from the analysis result
+            const detectedColors = extractAllAuraColors(auraData);
+
+            const colors = {
+                thinkingRGB: hexToRgb(detectedColors.thinking),
+                receivingRGB: hexToRgb(detectedColors.receiving),
+                givingRGB: hexToRgb(detectedColors.giving),
+                personalityRGB: hexToRgb(detectedColors.personality)
+            };
+
+            createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colors, auraData.energyLevel);
+
+            // Add watermark
+            addWatermark(ctx, canvasWidth, canvasHeight);
+
+            // Convert back to base64
+            const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
+            setEnhancedAuraImage(enhancedImageBase64);
+        };
+    }
   
   // Function to draw aura cloud effects
   const drawAuraClouds = (
@@ -8094,7 +8094,7 @@ export default function AuraAnalysis() {
                       </CardContent>
                     </Card>
                   ) : (
-                    <Card className="h-96 flex items-center justify-center bg-white/50 border-dashed border-2">
+                    <Card className="h-96 flex items-center justify-center bg-gray border-dashed border-2">
                       <div className="text-center p-6">
                         <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 opacity-30`}></div>
                         <p className="text-gray-600">Upload your photo to see your aura analysis</p>

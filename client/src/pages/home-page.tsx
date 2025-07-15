@@ -459,7 +459,7 @@ export default function HomePage() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-white/80 backdrop-blur-sm">
+            <Card className="bg-white backdrop-blur-sm">
               <CardContent className="p-1">
                 {!imagePreview ? (
                   /* Upload Section */
@@ -537,7 +537,7 @@ export default function HomePage() {
                                 onClick={analyzeVibe}
                                 disabled={quickVibeMutation.isPending}
                                 size="lg"
-                                className="w-full bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+                                className="w-full bg-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
                               >
                                 {quickVibeMutation.isPending ? (
                                   <>
