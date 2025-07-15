@@ -3182,7 +3182,6 @@ export default function AuraAnalysis() {
     // Create horizontal gradient blending from left (giving) to right (receiving)
     const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
     horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
-    horizontalGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.04)`);
     horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.02)`);
     horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.04)`);
     horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
@@ -3346,7 +3345,7 @@ export default function AuraAnalysis() {
     seededRandom: () => number
   ) => {
     // Person protection area - keep face clear like reference images
-    const personRadius = Math.min(width, height) * 0.12;
+    const personRadius = Math.min(width, height) * 0.18;
     
     // Define color zones for proper positioning matching reference images
     const colorZones = [
@@ -3392,24 +3391,80 @@ export default function AuraAnalysis() {
       }
     ];
     
+    // First create gradient base layers for smooth color merging
+    colorZones.forEach(zone => {
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      
+      let gradient;
+      
+      // Create zone-specific gradients for natural color blending
+      switch (zone.name) {
+        case 'thinking':
+          gradient = ctx.createLinearGradient(0, 0, 0, height * 0.5);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.12)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          break;
+        case 'receiving':
+          gradient = ctx.createLinearGradient(0, 0, width * 0.6, 0);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          break;
+        case 'giving':
+          gradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          break;
+        case 'personality':
+          gradient = ctx.createLinearGradient(0, height, 0, height * 0.6);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          break;
+      }
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      
+      // Create clear area around person's face
+      ctx.globalCompositeOperation = 'destination-out';
+      const clearGradient = ctx.createRadialGradient(
+        centerX, centerY, 0,
+        centerX, centerY, personRadius
+      );
+      clearGradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+      clearGradient.addColorStop(0.8, 'rgba(0, 0, 0, 0.3)');
+      clearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      
+      ctx.fillStyle = clearGradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.restore();
+    });
+    
     // Create dense smokey layers for each zone
     colorZones.forEach(zone => {
       // LAYER 1: Large heavily blurred background smoke clouds
       ctx.save();
-      ctx.filter = 'blur(28px)';
-      ctx.globalCompositeOperation = 'multiply';
+      ctx.filter = 'blur(35px)';
+      ctx.globalCompositeOperation = 'soft-light';
       
-      const particles1 = Math.floor(150 * zone.density);
+      const particles1 = Math.floor(80 * zone.density);
       for (let i = 0; i < particles1; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
+        if (distanceFromCenter < personRadius * 1.2) continue;
         
-        const radius = 60 + seededRandom() * 140;
-        const opacity = 0.45 + seededRandom() * 0.35;
+        const radius = 60 + seededRandom() * 120;
+        const opacity = 0.25 + seededRandom() * 0.3;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3420,19 +3475,19 @@ export default function AuraAnalysis() {
       
       // LAYER 2: Medium blurred smoke particles for cloud density
       ctx.save();
-      ctx.filter = 'blur(20px)';
-      ctx.globalCompositeOperation = 'soft-light';
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'multiply';
       
-      const particles2 = Math.floor(180 * zone.density);
+      const particles2 = Math.floor(60 * zone.density);
       for (let i = 0; i < particles2; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
+        if (distanceFromCenter < personRadius * 1.1) continue;
         
-        const radius = 35 + seededRandom() * 85;
-        const opacity = 0.35 + seededRandom() * 0.4;
+        const radius = 40 + seededRandom() * 80;
+        const opacity = 0.2 + seededRandom() * 0.25;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3441,12 +3496,12 @@ export default function AuraAnalysis() {
       }
       ctx.restore();
       
-      // LAYER 3: Dense diffused smoke particles for realistic smokey effect
+      // LAYER 3: Fine diffused smoke particles for realistic smokey effect
       ctx.save();
       ctx.filter = 'blur(15px)';
       ctx.globalCompositeOperation = 'overlay';
       
-      const particles3 = Math.floor(250 * zone.density);
+      const particles3 = Math.floor(40 * zone.density);
       for (let i = 0; i < particles3; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
@@ -3454,54 +3509,8 @@ export default function AuraAnalysis() {
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
         if (distanceFromCenter < personRadius) continue;
         
-        const radius = 20 + seededRandom() * 60;
-        const opacity = 0.3 + seededRandom() * 0.4;
-        
-        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 4: Fine atmospheric haze for dense smoke completion
-      ctx.save();
-      ctx.filter = 'blur(10px)';
-      ctx.globalCompositeOperation = 'color-dodge';
-      
-      const particles4 = Math.floor(300 * zone.density);
-      for (let i = 0; i < particles4; i++) {
-        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
-        
-        const radius = 12 + seededRandom() * 35;
-        const opacity = 0.18 + seededRandom() * 0.25;
-        
-        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 5: Ultra-fine detail particles for natural smoke texture
-      ctx.save();
-      ctx.filter = 'blur(6px)';
-      ctx.globalCompositeOperation = 'screen';
-      
-      const particles5 = Math.floor(200 * zone.density);
-      for (let i = 0; i < particles5; i++) {
-        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
-        
-        const radius = 8 + seededRandom() * 20;
-        const opacity = 0.12 + seededRandom() * 0.18;
+        const radius = 25 + seededRandom() * 50;
+        const opacity = 0.15 + seededRandom() * 0.2;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3511,9 +3520,37 @@ export default function AuraAnalysis() {
       ctx.restore();
     });
     
+    // Add cross-zone merging particles for natural color blending
+    ctx.save();
+    ctx.filter = 'blur(40px)';
+    ctx.globalCompositeOperation = 'screen';
+    
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < 60; i++) {
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Skip if too close to person's face
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.3) continue;
+      
+      const colorIndex = Math.floor(seededRandom() * allColors.length);
+      const color = allColors[colorIndex];
+      
+      const radius = 50 + seededRandom() * 100;
+      const opacity = 0.08 + seededRandom() * 0.12;
+      
+      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
     // Create enhanced thinking energy above head - bright and prominent
     ctx.save();
-    ctx.filter = 'blur(4px)';
+    ctx.filter = 'blur(6px)';
     ctx.globalCompositeOperation = 'screen';
     
     // Concentrated thinking energy above person's head
@@ -3586,7 +3623,7 @@ export default function AuraAnalysis() {
         personHeight: number,
         colors: any,
         energyLevel: number,
-        seededRandom: () => number) {
+        seededRandom: () => number): void {
         // Define comprehensive person protection area to ensure complete person visibility like the reference image
         const faceX = centerX - personWidth * 0.9;
         const faceY = centerY - personHeight * 0.8;
@@ -3778,7 +3815,7 @@ export default function AuraAnalysis() {
         faceX: number,
         faceY: number,
         faceWidth: number,
-        faceHeight: number) {
+        faceHeight: number): void {
         // Use color-dodge blend mode for intense color merging with thinking color integration
         ctx.globalCompositeOperation = 'color-dodge';
 
