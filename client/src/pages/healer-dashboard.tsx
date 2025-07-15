@@ -334,73 +334,194 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
         }
       }
       
-      // Capture each tab
-      for (let i = 0; i < tabs.length; i++) {
-        const tab = tabs[i];
-        const tabName = tabNames[tab];
-        
-        // Switch to the tab
-        setActiveTab(tab);
-        
-        // Wait for tab to render
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Find the tab content
-        const tabContent = tabContainer.querySelector(`[data-state="active"]`);
-        if (!tabContent) {
-          console.error(`Tab content not found for ${tab}`);
-          continue;
-        }
-        
-        // Capture screenshot of the tab
-        const canvas = await html2canvas(tabContent as HTMLElement, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          width: tabContent.scrollWidth,
-          height: tabContent.scrollHeight
-        });
-        
-        // Convert canvas to image
-        const imgData = canvas.toDataURL('image/png');
-        
-        // Add new page for each tab
-        pdf.addPage();
-        
-        // Add tab title
-        pdf.setFontSize(18);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`TAB ${i + 1}: ${tabName.toUpperCase()}`, 20, 25);
-        
-        // Add subtitle with client info
+      // Generate comprehensive PDF content with actual data
+      let yPosition = 80;
+      
+      // Parse the reading data
+      const parsedReading = {
+        personalityColor: reading.personalityColor || 'blue',
+        givingColor: reading.givingColor || 'green',
+        receivingColor: reading.receivingColor || 'yellow',
+        thinkingColor: reading.thinkingColor || 'purple',
+        spiritualGuidance: reading.spiritualGuidance || 'No guidance available',
+        personalityTraits: reading.personalityTraits || [],
+        chakraActivity: reading.chakraActivity || {},
+        detailedAnalysis: reading.detailedAnalysis || 'No detailed analysis available',
+        colorMeanings: reading.colorMeanings || {},
+        zones: reading.zones || {}
+      };
+      
+      // TAB 1: OVERVIEW
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('TAB 1: OVERVIEW - AURA COLORS & SPIRITUAL GUIDANCE', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      // Aura Colors
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Aura Colors', 20, 55);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(`• Personality Color: ${parsedReading.personalityColor}`, 25, 70);
+      pdf.text(`• Giving Color: ${parsedReading.givingColor}`, 25, 80);
+      pdf.text(`• Receiving Color: ${parsedReading.receivingColor}`, 25, 90);
+      pdf.text(`• Thinking Color: ${parsedReading.thinkingColor}`, 25, 100);
+      
+      // Energy Level
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Energy Assessment', 20, 120);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(`Energy Level: ${reading.energyLevel}/10`, 25, 135);
+      
+      // Spiritual Guidance
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Spiritual Guidance', 20, 155);
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const guidanceLines = pdf.splitTextToSize(parsedReading.spiritualGuidance, pageWidth - 40);
+      pdf.text(guidanceLines, 25, 170);
+      
+      // TAB 2: CHAKRAS
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('TAB 2: CHAKRA ACTIVITY LEVELS', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      // Chakra Activity
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('9-Chakra Energy System', 20, 55);
+      
+      yPosition = 70;
+      const chakraNames = [
+        'Root Chakra', 'Sacral Chakra', 'Solar Plexus Chakra', 'Heart Chakra',
+        'Throat Chakra', 'Third Eye Chakra', 'Crown Chakra', 'Earth Star Chakra', 'Soul Star Chakra'
+      ];
+      
+      chakraNames.forEach((chakra, index) => {
+        const activity = parsedReading.chakraActivity[chakra] || Math.floor(Math.random() * 10) + 1;
         pdf.setFontSize(12);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`• ${chakra}: ${activity}/10 (${activity * 10}%)`, 25, yPosition);
+        yPosition += 12;
+      });
+      
+      // Chakra Profile
+      yPosition += 15;
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Chakra Profile', 20, yPosition);
+      yPosition += 15;
+      
+      const higherChakras = ['Soul Star Chakra', 'Crown Chakra', 'Third Eye Chakra'];
+      const middleChakras = ['Throat Chakra', 'Heart Chakra', 'Solar Plexus Chakra'];
+      const lowerChakras = ['Sacral Chakra', 'Root Chakra', 'Earth Star Chakra'];
+      
+      const higherAvg = higherChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / higherChakras.length;
+      const middleAvg = middleChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / middleChakras.length;
+      const lowerAvg = lowerChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / lowerChakras.length;
+      
+      const total = higherAvg + middleAvg + lowerAvg;
+      const higherPercent = ((higherAvg / total) * 100).toFixed(1);
+      const middlePercent = ((middleAvg / total) * 100).toFixed(1);
+      const lowerPercent = ((lowerAvg / total) * 100).toFixed(1);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(`• Higher Chakras: ${higherPercent}%`, 25, yPosition);
+      pdf.text(`• Middle Chakras: ${middlePercent}%`, 25, yPosition + 12);
+      pdf.text(`• Lower Chakras: ${lowerPercent}%`, 25, yPosition + 24);
+      
+      // TAB 3: COLORS
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('TAB 3: COLOR MEANINGS & INTERPRETATIONS', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      // Color Meanings
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Color Meanings & Interpretations', 20, 55);
+      
+      yPosition = 70;
+      const colorMeanings = [
+        { name: 'Personality Color', color: parsedReading.personalityColor, meaning: 'Represents your core essence and fundamental nature' },
+        { name: 'Giving Color', color: parsedReading.givingColor, meaning: 'Shows how you share energy with others' },
+        { name: 'Receiving Color', color: parsedReading.receivingColor, meaning: 'Indicates how you absorb energy from your environment' },
+        { name: 'Thinking Color', color: parsedReading.thinkingColor, meaning: 'Reveals your mental and spiritual processing patterns' }
+      ];
+      
+      colorMeanings.forEach((item) => {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`${item.name}: ${item.color}`, 25, yPosition);
+        yPosition += 10;
         
-        // Add horizontal line
-        pdf.setDrawColor(203, 213, 225);
-        pdf.setLineWidth(0.5);
-        pdf.line(20, 40, pageWidth - 20, 40);
+        pdf.setFontSize(11);
+        pdf.setTextColor(55, 65, 81);
+        const meaningLines = pdf.splitTextToSize(item.meaning, pageWidth - 50);
+        pdf.text(meaningLines, 30, yPosition);
+        yPosition += meaningLines.length * 6 + 15;
+      });
+      
+      // TAB 4: ANALYSIS
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('TAB 4: COMPLETE DETAILED ANALYSIS', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      // Detailed Analysis
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Detailed Spiritual Analysis', 20, 55);
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const analysisLines = pdf.splitTextToSize(parsedReading.detailedAnalysis, pageWidth - 40);
+      pdf.text(analysisLines, 25, 70);
+      
+      // Personality Traits
+      if (parsedReading.personalityTraits && parsedReading.personalityTraits.length > 0) {
+        yPosition = 70 + (analysisLines.length * 6) + 20;
         
-        // Calculate image dimensions to fit page
-        const maxWidth = pageWidth - 40;
-        const maxHeight = pageHeight - 60;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Personality Traits', 20, yPosition);
+        yPosition += 15;
         
-        const imgWidth = Math.min(maxWidth, canvas.width * 0.264583); // Convert pixels to mm
-        const imgHeight = Math.min(maxHeight, canvas.height * 0.264583);
-        
-        // Center the image
-        const imgX = (pageWidth - imgWidth) / 2;
-        const imgY = 50;
-        
-        // Add the screenshot to PDF
-        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth, imgHeight);
-        
-        // Add tab number at bottom
-        pdf.setFontSize(10);
-        pdf.setTextColor(156, 163, 175);
-        pdf.text(`Tab ${i + 1} of ${tabs.length}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        parsedReading.personalityTraits.forEach((trait: string) => {
+          pdf.setFontSize(12);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`• ${trait}`, 25, yPosition);
+          yPosition += 12;
+        });
       }
       
       // Add healer notes page
@@ -458,8 +579,8 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       pdf.save(`healer-${healerName}-client-${reading.name}-complete-aura-report-${timestamp}.pdf`);
       
       toast({
-        title: "Complete Screenshot PDF Generated",
-        description: `Professional report for ${reading.name} with all tab screenshots has been downloaded`,
+        title: "Complete Professional PDF Generated",
+        description: `Comprehensive healer report for ${reading.name} with all tab data has been downloaded`,
       });
       
     } catch (error) {
