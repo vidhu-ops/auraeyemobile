@@ -129,7 +129,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         setBirthDate("");
         
         // Refresh the readings list
-        queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
         onSuccess();
       } else {
         throw new Error("Failed to create numerology reading");
@@ -811,9 +811,9 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
-  // Fetch healer's own numerology readings (only from spiritual tools)
+  // Fetch healer's own numerology readings
   const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
-    queryKey: ["/api/healer-numerology-readings"],
+    queryKey: ["/api/numerology-readings"],
     enabled: !!user,
   });
 
@@ -1273,7 +1273,7 @@ export default function HealerDashboard() {
             </CardHeader>
             <CardContent>
               <HealerNumerologyInput onSuccess={() => {
-                queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
                 setActiveTab("readings");
               }} />
             </CardContent>

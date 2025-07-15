@@ -36,9 +36,10 @@ export function setupAuth(app: Express) {
     store: storage.sessionStore,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to false for development
+      secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      domain: process.env.NODE_ENV === "production" ? undefined : undefined,
     }
   };
 
@@ -191,13 +192,6 @@ export function setupAuth(app: Express) {
 
 // Authentication middleware
 export function isAuthenticated(req: any, res: any, next: any) {
-  console.log('isAuthenticated check:', {
-    isAuthenticated: req.isAuthenticated(),
-    user: req.user ? { id: req.user.id, username: req.user.username, userType: req.user.userType } : null,
-    sessionID: req.sessionID,
-    session: req.session ? 'exists' : 'missing'
-  });
-  
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: "Authentication required" });
   }
