@@ -4503,145 +4503,143 @@ export default function AuraAnalysis() {
     }
   
   // Function to draw aura cloud effects
-  const drawAuraClouds = (
-    ctx: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    dominantColor: string, 
-    secondaryColor: string,
-    energyLevel: number
-  ) => {
-    // Enhanced color mapping with proper hex values
-    const colorMap: Record<string, { r: number, g: number, b: number }> = {
-      red: { r: 255, g: 68, b: 68 },
-      orange: { r: 255, g: 136, b: 0 },
-      yellow: { r: 255, g: 215, b: 0 },
-      green: { r: 50, g: 205, b: 50 },
-      blue: { r: 65, g: 105, b: 225 },
-      indigo: { r: 75, g: 0, b: 130 },
-      violet: { r: 138, g: 43, b: 226 },
-      purple: { r: 153, g: 50, b: 204 },
-      pink: { r: 255, g: 105, b: 180 },
-      white: { r: 255, g: 255, b: 255 },
-      gold: { r: 255, g: 215, b: 0 },
-      silver: { r: 192, g: 192, b: 192 },
-      black: { r: 0, g: 0, b: 0 },
-      gray: { r: 128, g: 128, b: 128 },
-      brown: { r: 165, g: 42, b: 42 }
-    };
+  function drawAuraClouds(ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        dominantColor: string,
+        secondaryColor: string,
+        energyLevel: number) {
+        // Enhanced color mapping with proper hex values
+        const colorMap: Record<string, { r: number; g: number; b: number; }> = {
+            red: { r: 255, g: 68, b: 68 },
+            orange: { r: 255, g: 136, b: 0 },
+            yellow: { r: 255, g: 215, b: 0 },
+            green: { r: 50, g: 205, b: 50 },
+            blue: { r: 65, g: 105, b: 225 },
+            indigo: { r: 75, g: 0, b: 130 },
+            violet: { r: 138, g: 43, b: 226 },
+            purple: { r: 153, g: 50, b: 204 },
+            pink: { r: 255, g: 105, b: 180 },
+            white: { r: 255, g: 255, b: 255 },
+            gold: { r: 255, g: 215, b: 0 },
+            silver: { r: 192, g: 192, b: 192 },
+            black: { r: 0, g: 0, b: 0 },
+            gray: { r: 128, g: 128, b: 128 },
+            brown: { r: 165, g: 42, b: 42 }
+        };
 
-    // Get color values
-    const dominantRGB = colorMap[dominantColor.toLowerCase()] || colorMap.violet;
-    const secondaryRGB = colorMap[secondaryColor.toLowerCase()] || dominantRGB;
+        // Get color values
+        const dominantRGB = colorMap[dominantColor.toLowerCase()] || colorMap.violet;
+        const secondaryRGB = colorMap[secondaryColor.toLowerCase()] || dominantRGB;
 
-    // Create deterministic random based on image content for consistent results
-    const seedValue = dominantColor.charCodeAt(0) + secondaryColor.charCodeAt(0) + energyLevel;
-    let randomSeed = seedValue;
-    const seededRandom = () => {
-      randomSeed = (randomSeed * 9301 + 49297) % 233280;
-      return randomSeed / 233280;
-    };
+        // Create deterministic random based on image content for consistent results
+        const seedValue = dominantColor.charCodeAt(0) + secondaryColor.charCodeAt(0) + energyLevel;
+        let randomSeed = seedValue;
+        const seededRandom = () => {
+            randomSeed = (randomSeed * 9301 + 49297) % 233280;
+            return randomSeed / 233280;
+        };
 
-    // Find person outline using edge detection approximation
-    const centerX = width * 0.4;
-    const centerY = height * 0.5; // Assume person is in lower half
-    const personWidth = width * 0.3;
-    const personHeight = height * 0.6;
+        // Find person outline using edge detection approximation
+        const centerX = width * 0.4;
+        const centerY = height * 0.5; // Assume person is in lower half
+        const personWidth = width * 0.3;
+        const personHeight = height * 0.6;
 
-    // Create smokey particle system around person outline
-    const particleCount = 700 + (energyLevel * 80);
-    
-    for (let i = 0; i < particleCount; i++) {
-      // Generate particles around person silhouette
-      const angle = (seededRandom() * 2 * Math.PI);
-      const distance = (seededRandom() * 100 + 20) * (energyLevel / 10);
-      
-      // Create oval distribution around person
-      const ellipseX = Math.cos(angle) * (personWidth * 0.6 + distance);
-      const ellipseY = Math.sin(angle) * (personHeight * 0.5 + distance * 0.7);
-      
-      const particleX = centerX + ellipseX;
-      const particleY = centerY + ellipseY;
+        // Create smokey particle system around person outline
+        const particleCount = 700 + (energyLevel * 80);
 
-      // Skip particles that would be inside the person area
-      const distanceFromCenter = Math.sqrt(
-        Math.pow((particleX - centerX) / (personWidth * 0.4), 2) + 
-        Math.pow((particleY - centerY) / (personHeight * 0.4), 2)
-      );
-      
-      if (distanceFromCenter < 1) continue;
+        for (let i = 0; i < particleCount; i++) {
+            // Generate particles around person silhouette
+            const angle = (seededRandom() * 2 * Math.PI);
+            const distance = (seededRandom() * 100 + 20) * (energyLevel / 10);
 
-      // Determine particle color (blend dominant and secondary)
-      const colorBlend = seededRandom();
-      const useSecondary = colorBlend > 0.7;
-      const rgb = useSecondary ? secondaryRGB : dominantRGB;
-      
-      // Adaptive particle size based on canvas dimensions
-      const sizeFactor = Math.min(width, height) / 900;
-      const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10) * sizeFactor;
-      const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
-      const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
+            // Create oval distribution around person
+            const ellipseX = Math.cos(angle) * (personWidth * 0.6 + distance);
+            const ellipseY = Math.sin(angle) * (personHeight * 0.5 + distance * 0.7);
 
-      // Create smokey gradient for each particle
-      const gradient = ctx.createRadialGradient(
-        particleX, particleY, 0,
-        particleX, particleY, particleSize * 8
-      );
-      
-      gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+            const particleX = centerX + ellipseX;
+            const particleY = centerY + ellipseY;
 
-      // Set blend mode for smokey effect
-      ctx.globalCompositeOperation = 'screen';
-      ctx.fillStyle = gradient;
-      
-      // Draw particle as soft circle
-      ctx.beginPath();
-      ctx.arc(particleX, particleY, particleSize * 10, 0, Math.PI * 3);
-      ctx.fill();
+            // Skip particles that would be inside the person area
+            const distanceFromCenter = Math.sqrt(
+                Math.pow((particleX - centerX) / (personWidth * 0.4), 2) +
+                Math.pow((particleY - centerY) / (personHeight * 0.4), 2)
+            );
+
+            if (distanceFromCenter < 1) continue;
+
+            // Determine particle color (blend dominant and secondary)
+            const colorBlend = seededRandom();
+            const useSecondary = colorBlend > 0.7;
+            const rgb = useSecondary ? secondaryRGB : dominantRGB;
+
+            // Adaptive particle size based on canvas dimensions
+            const sizeFactor = Math.min(width, height) / 900;
+            const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10) * sizeFactor;
+            const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
+            const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
+
+            // Create smokey gradient for each particle
+            const gradient = ctx.createRadialGradient(
+                particleX, particleY, 0,
+                particleX, particleY, particleSize * 8
+            );
+
+            gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
+            gradient.addColorStop(0.3, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.7})`);
+            gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.3})`);
+            gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+
+            // Set blend mode for smokey effect
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = gradient;
+
+            // Draw particle as soft circle
+            ctx.beginPath();
+            ctx.arc(particleX, particleY, particleSize * 10, 0, Math.PI * 3);
+            ctx.fill();
+        }
+
+        // Add flowing aura streams around the outline
+        const streamCount = 8 + Math.floor(energyLevel / 2);
+        ctx.globalCompositeOperation = 'screen';
+
+        for (let s = 0; s < streamCount; s++) {
+            const streamAngle = (s / streamCount) * Math.PI * 2;
+            const streamStartX = centerX + Math.cos(streamAngle) * personWidth * 0.5;
+            const streamStartY = centerY + Math.sin(streamAngle) * personHeight * 0.4;
+
+            // Create flowing curve
+            const controlX = streamStartX + Math.cos(streamAngle) * 50;
+            const controlY = streamStartY + Math.sin(streamAngle) * 30;
+            const endX = streamStartX + Math.cos(streamAngle) * 100;
+            const endY = streamStartY + Math.sin(streamAngle) * 80;
+
+            // Color selection for stream
+            const streamRGB = seededRandom() > 0.5 ? dominantRGB : secondaryRGB;
+            const streamOpacity = 0.2 + seededRandom() * 0.3;
+
+            // Draw stream with gradient
+            const streamGradient = ctx.createLinearGradient(streamStartX, streamStartY, endX, endY);
+            streamGradient.addColorStop(0, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity})`);
+            streamGradient.addColorStop(0.5, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity * 0.7})`);
+            streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
+
+            ctx.strokeStyle = streamGradient;
+            const sizeFactor = Math.min(width, height) / 900;
+            ctx.lineWidth = (4 + seededRandom() * 6) * sizeFactor; // Adaptive line width
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(streamStartX, streamStartY);
+            ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+            ctx.stroke();
+        }
+
+        // Reset composite operation
+        ctx.globalCompositeOperation = 'source-over';
     }
-
-    // Add flowing aura streams around the outline
-    const streamCount = 8 + Math.floor(energyLevel / 2);
-    ctx.globalCompositeOperation = 'screen';
-    
-    for (let s = 0; s < streamCount; s++) {
-      const streamAngle = (s / streamCount) * Math.PI * 2;
-      const streamStartX = centerX + Math.cos(streamAngle) * personWidth * 0.5;
-      const streamStartY = centerY + Math.sin(streamAngle) * personHeight * 0.4;
-      
-      // Create flowing curve
-      const controlX = streamStartX + Math.cos(streamAngle) * 50;
-      const controlY = streamStartY + Math.sin(streamAngle) * 30;
-      const endX = streamStartX + Math.cos(streamAngle) * 100;
-      const endY = streamStartY + Math.sin(streamAngle) * 80;
-      
-      // Color selection for stream
-      const streamRGB = seededRandom() > 0.5 ? dominantRGB : secondaryRGB;
-      const streamOpacity = 0.2 + seededRandom() * 0.3;
-      
-      // Draw stream with gradient
-      const streamGradient = ctx.createLinearGradient(streamStartX, streamStartY, endX, endY);
-      streamGradient.addColorStop(0, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity})`);
-      streamGradient.addColorStop(0.5, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity * 0.7})`);
-      streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
-      
-      ctx.strokeStyle = streamGradient;
-      const sizeFactor = Math.min(width, height) / 900;
-      ctx.lineWidth = (4 + seededRandom() * 6) * sizeFactor; // Adaptive line width
-      ctx.lineCap = 'round';
-      
-      ctx.beginPath();
-      ctx.moveTo(streamStartX, streamStartY);
-      ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-      ctx.stroke();
-    }
-
-    // Reset composite operation
-    ctx.globalCompositeOperation = 'source-over';
-  };
 
   // Function to calculate numerology based on name and birth date
   const calculateNumerologyData = async (name: string, birthDate: string) => {
