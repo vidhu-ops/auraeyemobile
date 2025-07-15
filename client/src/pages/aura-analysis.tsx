@@ -2919,19 +2919,19 @@ export default function AuraAnalysis() {
             const createSmokeLayer = (color: number[], opacity: number, blurSize: number) => {
               ctx.save();
               ctx.filter = `blur(${blurSize}px)`;
-              ctx.globalCompositeOperation = 'multiply';
+              ctx.globalCompositeOperation = 'screen';
               
               // Create large, soft gradient covering entire image
               const gradient = ctx.createRadialGradient(
-                centerX, centerY, canvasWidth * 0.12, // Inner - protect person
-                centerX, centerY, canvasWidth * 0.85   // Outer - full coverage
+                centerX, centerY, canvasWidth * 0.08, // Inner - protect person
+                centerX, centerY, canvasWidth * 0.75   // Outer - full coverage
               );
               
               const [r, g, b] = color;
               gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-              gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`);
-              gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`);
-              gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.7})`);
+              gradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`);
+              gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.6})`);
+              gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity * 0.8})`);
               gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity})`);
               
               ctx.fillStyle = gradient;
@@ -2942,43 +2942,43 @@ export default function AuraAnalysis() {
             // Create zone-specific gradients for natural color flow
             const createZoneGradient = (color: number[], position: 'top' | 'left' | 'right' | 'center') => {
               ctx.save();
-              ctx.filter = 'blur(35px)';
-              ctx.globalCompositeOperation = 'soft-light';
+              ctx.filter = 'blur(25px)';
+              ctx.globalCompositeOperation = 'color-dodge';
               
               const [r, g, b] = color;
               let gradient;
               
               switch (position) {
                 case 'top': // Thinking energy
-                  gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight * 0.4);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.6)`);
-                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.3)`);
+                  gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight * 0.5);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.8)`);
+                  gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.5)`);
                   gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                   break;
                 
                 case 'left': // Giving energy
-                  gradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.6, 0);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.5)`);
-                  gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+                  gradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.7, 0);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.7)`);
+                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.4)`);
                   gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                   break;
                 
                 case 'right': // Receiving energy
-                  gradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.4, 0);
-                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.5)`);
-                  gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+                  gradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.3, 0);
+                  gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.7)`);
+                  gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.4)`);
                   gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
                   break;
                 
                 case 'center': // Personality energy
                   gradient = ctx.createRadialGradient(
-                    centerX, centerY, canvasWidth * 0.15,
-                    centerX, centerY, canvasWidth * 0.6
+                    centerX, centerY, canvasWidth * 0.1,
+                    centerX, centerY, canvasWidth * 0.5
                   );
                   gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-                  gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.15)`);
-                  gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, 0.3)`);
-                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.4)`);
+                  gradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, 0.3)`);
+                  gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, 0.6)`);
+                  gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.8)`);
                   break;
               }
               
@@ -2987,13 +2987,13 @@ export default function AuraAnalysis() {
               ctx.restore();
             };
             
-            // Apply multiple layers for natural smokey effect
-            createSmokeLayer(personalityRGB, 0.15, 40);
-            createSmokeLayer(givingRGB, 0.18, 45);
-            createSmokeLayer(receivingRGB, 0.16, 42);
-            createSmokeLayer(thinkingRGB, 0.12, 38);
+            // Apply multiple layers for natural smokey effect with higher opacity
+            createSmokeLayer(personalityRGB, 0.35, 30);
+            createSmokeLayer(givingRGB, 0.4, 35);
+            createSmokeLayer(receivingRGB, 0.38, 32);
+            createSmokeLayer(thinkingRGB, 0.3, 28);
             
-            // Add zone-specific gradients
+            // Add zone-specific gradients with stronger presence
             createZoneGradient(thinkingRGB, 'top');
             createZoneGradient(givingRGB, 'left');
             createZoneGradient(receivingRGB, 'right');
@@ -3001,36 +3001,60 @@ export default function AuraAnalysis() {
             
             // Create additional diffused particles for natural smoke texture
             ctx.save();
-            ctx.filter = 'blur(25px)';
-            ctx.globalCompositeOperation = 'overlay';
+            ctx.filter = 'blur(20px)';
+            ctx.globalCompositeOperation = 'normal';
             
             const colors = [thinkingRGB, givingRGB, receivingRGB, personalityRGB];
             
-            for (let i = 0; i < 80; i++) {
-              const angle = (i / 80) * Math.PI * 2;
-              const distance = canvasWidth * 0.25 + Math.random() * canvasWidth * 0.4;
-              const x = centerX + Math.cos(angle) * distance;
-              const y = centerY + Math.sin(angle) * distance;
+            // Create particles for each color in its specific zone
+            colors.forEach((color, colorIndex) => {
+              const [r, g, b] = color;
+              const particleCount = 25; // More particles per color
               
-              const colorIndex = Math.floor(Math.random() * colors.length);
-              const [r, g, b] = colors[colorIndex];
-              const size = 30 + Math.random() * 60;
-              const opacity = 0.08 + Math.random() * 0.12;
-              
-              const particleGradient = ctx.createRadialGradient(
-                x, y, 0,
-                x, y, size
-              );
-              
-              particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-              particleGradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
-              particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-              
-              ctx.fillStyle = particleGradient;
-              ctx.beginPath();
-              ctx.arc(x, y, size, 0, Math.PI * 2);
-              ctx.fill();
-            }
+              for (let i = 0; i < particleCount; i++) {
+                let x, y;
+                
+                // Position particles based on color zone
+                switch (colorIndex) {
+                  case 0: // Thinking - top area
+                    x = centerX + (Math.random() - 0.5) * canvasWidth * 0.8;
+                    y = Math.random() * canvasHeight * 0.3;
+                    break;
+                  case 1: // Giving - left area
+                    x = Math.random() * canvasWidth * 0.6;
+                    y = centerY + (Math.random() - 0.5) * canvasHeight * 0.8;
+                    break;
+                  case 2: // Receiving - right area
+                    x = canvasWidth * 0.4 + Math.random() * canvasWidth * 0.6;
+                    y = centerY + (Math.random() - 0.5) * canvasHeight * 0.8;
+                    break;
+                  case 3: // Personality - around center
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = canvasWidth * 0.2 + Math.random() * canvasWidth * 0.3;
+                    x = centerX + Math.cos(angle) * distance;
+                    y = centerY + Math.sin(angle) * distance;
+                    break;
+                }
+                
+                const size = 40 + Math.random() * 80;
+                const opacity = 0.15 + Math.random() * 0.25;
+                
+                const particleGradient = ctx.createRadialGradient(
+                  x, y, 0,
+                  x, y, size
+                );
+                
+                particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+                particleGradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.7})`);
+                particleGradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+                particleGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                
+                ctx.fillStyle = particleGradient;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            });
             
             ctx.restore();
           };
