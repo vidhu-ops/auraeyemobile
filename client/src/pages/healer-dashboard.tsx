@@ -29,8 +29,10 @@ import {
   Edit3,
   Save,
   X,
-  Plus
+  Plus,
+  FileText
 } from "lucide-react";
+import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
@@ -664,7 +666,10 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
   const { toast } = useToast();
+  const { user } = useAuth();
 
+  const queryClient = useQueryClient();
+  
   const updateReadingMutation = useMutation({
     mutationFn: async (notes: string) => {
       await apiRequest('PATCH', `/api/numerology-readings/${reading.id}/notes`, { healerNotes: notes });
@@ -675,11 +680,60 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
         description: "Your reading notes have been saved successfully."
       });
       setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/healer-numerology-readings"] });
     }
   });
 
   const saveNotes = () => {
     updateReadingMutation.mutate(editedNotes);
+  };
+
+  const downloadPDF = () => {
+    const pdf = new jsPDF();
+    
+    // Title
+    pdf.setFontSize(20);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text("Numerology Reading Report", 105, 20, { align: "center" });
+    
+    // Client information
+    pdf.setFontSize(12);
+    pdf.text(`Client: ${reading.name}`, 20, 40);
+    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 20, 50);
+    pdf.text(`Healer: ${user?.username || 'Unknown'}`, 20, 60);
+    
+    // Core numbers
+    pdf.setFontSize(14);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text("Core Numbers", 20, 80);
+    
+    pdf.setFontSize(11);
+    pdf.text(`Life Path Number: ${reading.lifePathNumber}`, 20, 95);
+    pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
+    pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
+    pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
+    
+    // Interpretation
+    pdf.setFontSize(14);
+    pdf.text("Complete Interpretation", 20, 145);
+    
+    pdf.setFontSize(10);
+    const splitText = pdf.splitTextToSize(reading.interpretation, 170);
+    pdf.text(splitText, 20, 155);
+    
+    // Healer notes if available
+    if (reading.healerNotes) {
+      const notesY = 155 + (splitText.length * 4) + 10;
+      pdf.setFontSize(14);
+      pdf.text("Healer Notes", 20, notesY);
+      
+      pdf.setFontSize(10);
+      const splitNotes = pdf.splitTextToSize(reading.healerNotes, 170);
+      pdf.text(splitNotes, 20, notesY + 10);
+    }
+    
+    // Save the PDF
+    pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
   };
 
   return (
@@ -692,13 +746,24 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
               {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
             </CardDescription>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsEditing(!isEditing)}
-          >
-            {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={downloadPDF}
+              title="Download PDF"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditing(!isEditing)}
+              title={isEditing ? "Cancel Edit" : "Edit Notes"}
+            >
+              {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -813,7 +878,7 @@ export default function HealerDashboard() {
 
   // Fetch healer's own numerology readings
   const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
-    queryKey: ["/api/numerology-readings"],
+    queryKey: ["/api/healer-numerology-readings"],
     enabled: !!user,
   });
 

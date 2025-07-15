@@ -2410,6 +2410,23 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get healer's numerology readings (only readings performed by the healer)
+  app.get("/api/healer-numerology-readings", isAuthenticated, async (req, res) => {
+    try {
+      // Check if user is a healer
+      const healer = await storage.getHealerByUserId(req.user.id);
+      if (!healer) {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const numerologyReadings = await storage.getNumerologyReadingsByUser(req.user.id);
+      res.json(numerologyReadings);
+    } catch (error) {
+      console.error("Error retrieving healer numerology readings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer numerology readings" });
+    }
+  });
+
   // API endpoint for calculating numerology based on name and birth date
   app.post("/api/numerology", async (req, res) => {
     try {
