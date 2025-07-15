@@ -27,6 +27,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByMobileNumber(mobileNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   
@@ -86,6 +87,7 @@ export interface IStorage {
   // Password reset tokens
   createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
+  validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
 
   // Session store
@@ -112,6 +114,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByMobileNumber(mobileNumber: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.mobileNumber, mobileNumber));
     return user || undefined;
   }
 
@@ -515,6 +522,21 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(passwordResetTokens.email, email),
+          eq(passwordResetTokens.token, token),
+          eq(passwordResetTokens.used, false),
+          gt(passwordResetTokens.expiresAt, new Date())
+        )
+      );
+    return resetToken || undefined;
+  }
+
+  async validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(
+        and(
+          eq(passwordResetTokens.mobileNumber, mobileNumber),
           eq(passwordResetTokens.token, token),
           eq(passwordResetTokens.used, false),
           gt(passwordResetTokens.expiresAt, new Date())

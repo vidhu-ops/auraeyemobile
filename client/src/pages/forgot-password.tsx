@@ -13,7 +13,7 @@ import { Link } from "wouter";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  whatsappNumber: z.string().min(10, "Please enter a valid WhatsApp number").regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid WhatsApp number with country code"),
 });
 
 const resetPasswordSchema = z.object({
@@ -30,7 +30,7 @@ type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"request" | "reset" | "success">("request");
-  const [email, setEmail] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { toast } = useToast();
@@ -38,7 +38,7 @@ export default function ForgotPassword() {
   const forgotForm = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      whatsappNumber: "",
     },
   });
 
@@ -60,11 +60,11 @@ export default function ForgotPassword() {
       const result = await response.json();
       
       if (response.ok) {
-        setEmail(data.email);
+        setWhatsappNumber(data.whatsappNumber);
         setStep("reset");
         toast({
           title: "Reset Code Sent",
-          description: "Please check WhatsApp on your registered mobile number for the reset code",
+          description: "Please check WhatsApp for the reset code",
         });
       } else {
         setError(result.message || "Failed to send reset code");
@@ -82,7 +82,7 @@ export default function ForgotPassword() {
 
     try {
       const response = await apiRequest("POST", "/api/reset-password", {
-        email,
+        whatsappNumber,
         token: data.token,
         newPassword: data.newPassword,
       });
@@ -147,8 +147,8 @@ export default function ForgotPassword() {
           </CardTitle>
           <CardDescription>
             {step === "request" 
-              ? "Enter your email address and we'll send a reset code to your registered mobile number via WhatsApp" 
-              : "Enter the reset code sent to your registered mobile number via WhatsApp and your new password"
+              ? "Enter your WhatsApp number and we'll send you a reset code" 
+              : "Enter the reset code sent to your WhatsApp and your new password"
             }
           </CardDescription>
         </CardHeader>
@@ -164,14 +164,14 @@ export default function ForgotPassword() {
               <form onSubmit={forgotForm.handleSubmit(handleForgotPassword)} className="space-y-4">
                 <FormField
                   control={forgotForm.control}
-                  name="email"
+                  name="whatsappNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>WhatsApp Number</FormLabel>
                       <FormControl>
                         <Input
-                          type="email"
-                          placeholder="Enter your email address"
+                          type="tel"
+                          placeholder="Enter your WhatsApp number (e.g., +1234567890)"
                           {...field}
                           disabled={isLoading}
                         />
@@ -209,7 +209,7 @@ export default function ForgotPassword() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Check WhatsApp on your registered mobile number for the reset code
+                        Check WhatsApp for the reset code
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
