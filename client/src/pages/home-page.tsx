@@ -84,7 +84,7 @@ export default function HomePage() {
       // Create realistic smokey aura effect matching reference images
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const personRadius = Math.min(canvas.width, canvas.height) * 0.15;
+      const personRadius = Math.min(canvas.width, canvas.height) * 0.18; // Increased protection radius
       
       // Parse color RGB values
       const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
@@ -106,9 +106,9 @@ export default function HomePage() {
         
         // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.2) continue;
+        if (distanceFromCenter < personRadius * 1.4) continue;
         
-        const radius = 40 + seededRandom() * 120;
+        const radius = 10 + seededRandom() * 120;
         const opacity = 0.25 + seededRandom() * 0.35;
         
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
@@ -127,7 +127,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.1) continue;
+        if (distanceFromCenter < personRadius * 1.3) continue;
         
         const radius = 25 + seededRandom() * 70;
         const opacity = 0.35 + seededRandom() * 0.4;
@@ -148,7 +148,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.05) continue;
+        if (distanceFromCenter < personRadius * 1.25) continue;
         
         const radius = 12 + seededRandom() * 35;
         const opacity = 0.2 + seededRandom() * 0.3;
@@ -169,7 +169,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
+        if (distanceFromCenter < personRadius * 1.2) continue;
         
         const radius = 5 + seededRandom() * 18;
         const opacity = 0.1 + seededRandom() * 0.2;
@@ -190,7 +190,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
+        if (distanceFromCenter < personRadius * 1.2) continue;
         
         const radius = 50 + seededRandom() * 100;
         const opacity = 0.08 + seededRandom() * 0.15;
@@ -207,9 +207,9 @@ export default function HomePage() {
       ctx.filter = 'blur(18px)';
       ctx.globalCompositeOperation = 'multiply';
       for (let i = 0; i < 250; i++) {
-        // Create concentrated smoke around person's perimeter
+        // Create concentrated smoke around person's perimeter with better face protection
         const angle = seededRandom() * Math.PI * 2;
-        const distance = personRadius * 1.1 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.25);
+        const distance = personRadius * 1.3 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.25);
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
