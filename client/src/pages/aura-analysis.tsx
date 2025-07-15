@@ -811,6 +811,14 @@ export default function AuraAnalysis() {
       pdf.setFontSize(12);
       const date = new Date().toLocaleDateString();
       pdf.text(`Generated on: ${date}`, 105, yPosition, { align: 'center' });
+      
+      yPosition += 15;
+      pdf.setFontSize(12);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(`Report created by: ${user?.username || 'Unknown User'}`, 105, yPosition, { align: 'center' });
+      
+      yPosition += 8;
+      pdf.text(`Report created for: ${analysisName || 'Unnamed'}`, 105, yPosition, { align: 'center' });
 
       // Start content
       pdf.addPage();
