@@ -1376,6 +1376,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
       }
 
+      // Add the name to the response
+      auraAnalysis.name = analysisName;
+      
       // Return guaranteed successful response
       console.log("Aura analysis completed successfully");
       res.json(auraAnalysis);
@@ -1404,7 +1407,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           thinking: { colors: ["Indigo"], interpretation: "Mental energy of higher consciousness" },
           overall: { colors: ["Indigo", "Violet"], interpretation: "Overall energy of spiritual wisdom and intuitive insight" }
         },
-        detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
+        detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences.",
+        name: analysisName
       };
       
       res.json(fallbackResult);
