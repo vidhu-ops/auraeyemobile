@@ -390,9 +390,9 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-16 relative z-10">
           <div className="flex flex-col items-center text-center">
             <div className="mb-8 animate-fade-in-down">
-              <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Discover Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-amber-300">Aura</span> <br />
-                Embrace Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300">Energy</span>
+              <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
+                Discover Your <span className="text-secondary to primary">Aura</span> <br />
+                Embrace Your <span className="text-emerald-300">Energy</span>
               </h1>
             </div>
             
@@ -403,12 +403,12 @@ export default function HomePage() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
-              <Button asChild size="lg" className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 border-0 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" className="bg-primary hover:pink border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/aura-analysis">
                   <Camera className="mr-2 h-5 w-5" /> Human Aura Analysis
                 </Link>
               </Button>
-              <Button asChild size="lg" className="bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 border-0 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" className="bg-pink-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/object-analysis">
                   <Box className="mr-2 h-5 w-5" /> Object Aura Analysis
                 </Link>
@@ -416,7 +416,7 @@ export default function HomePage() {
               <Button 
                 onClick={() => document.getElementById('vibe-check-section')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg" 
-                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 border-0 text-white px-8 py-6 rounded-full"
+                className="bg-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 border-0 text-white px-8 py-6 rounded-full"
               >
                 <Sparkles className="mr-2 h-5 w-5" /> What's My Vibe?
               </Button>
@@ -425,10 +425,10 @@ export default function HomePage() {
             {/* Visual element replacing the image */}
             <div className="mt-16 flex justify-center animate-fade-in">
               <div className="relative w-72 h-72 md:w-80 md:h-80">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-pink-500/60 to-violet-500/60 blur-lg animate-pulse"></div>
+                <div className="absolute inset-0 rounded-full bg--pink-500/60 to-violet-500/60 blur-lg animate-pulse"></div>
                 <div className="absolute inset-4 rounded-full bg-gradient-to-bl from-cyan-500/60 to-blue-500/60 blur-md animate-pulse animation-delay-1000"></div>
-                <div className="absolute inset-16 rounded-full bg-gradient-to-r from-amber-400/60 to-orange-500/60 blur-sm animate-pulse animation-delay-2000"></div>
-                <div className="absolute inset-20 rounded-full bg-black/10 backdrop-blur-sm"></div>
+                <div className="absolute rounded-full bg-gradient-to-r from-amber-400/60 to-orange-500/60 blur-sm animate-pulse animation-delay-2000"></div>
+                <div className="absolute inset-20 rounded-full bg-purple-600 opacity-60 backdrop-blur-sm"></div>
               </div>
             </div>
           </div>
@@ -459,12 +459,12 @@ export default function HomePage() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-1">
                 {!imagePreview ? (
                   /* Upload Section */
                   <div className="text-center">
-                    <div className="border-2 border-dashed border-violet-300 rounded-xl p-12 bg-violet-50/50 hover:bg-violet-50 transition-colors">
+                    <div className=" border-violet-300 rounded-xl p-12 bg-violet-50/50 hover:bg-violet-50 transition-colors">
                       <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
                           <Camera className="h-10 w-10 text-white" />
@@ -485,7 +485,7 @@ export default function HomePage() {
                         <Button
                           onClick={() => fileInputRef.current?.click()}
                           size="lg"
-                          className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+                          className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
                         >
                           <Upload className="mr-2 h-5 w-5" />
                           Choose Photo
