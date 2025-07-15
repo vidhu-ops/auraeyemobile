@@ -6,6 +6,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser, InsertHealer } from "@shared/schema";
+import { validateEmailAddress } from "./email-validator";
 
 declare global {
   namespace Express {
@@ -136,6 +137,22 @@ export function setupAuth(app: Express) {
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
+      }
+
+      // Validate email address if provided
+      if (req.body.email) {
+        const emailValidation = await validateEmailAddress(req.body.email);
+        
+        if (!emailValidation.isValid) {
+          return res.status(400).json({ 
+            message: "Email validation failed", 
+            error: emailValidation.message,
+            deliverability: emailValidation.deliverability
+          });
+        }
+        
+        // Log successful email validation
+        console.log(`Email validation successful for ${req.body.email}: ${emailValidation.message}`);
       }
 
       const user = await storage.createUser({

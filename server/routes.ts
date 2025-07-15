@@ -16,6 +16,7 @@ import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-s
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
+import { validateEmailAddress } from "./email-validator";
 
 // Credit checking middleware
 async function checkCredits(req: any, res: any, next: any) {
@@ -3012,6 +3013,29 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error resetting password:", error);
       res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Email validation endpoint
+  app.post('/api/validate-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const validation = await validateEmailAddress(email);
+      
+      res.json({
+        isValid: validation.isValid,
+        message: validation.message,
+        deliverability: validation.deliverability,
+        qualityScore: validation.qualityScore
+      });
+    } catch (error) {
+      console.error("Error validating email:", error);
+      res.status(500).json({ message: "Failed to validate email" });
     }
   });
 
