@@ -3,10 +3,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import { queryClient } from "@/lib/queryClient";
-import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -958,6 +959,102 @@ export default function ObjectAnalysis() {
 
     return colorMap[color];
   };
+
+  // Check if user is a healer
+  const isHealer = user?.userType === 'healer' || false;
+
+  // If user is a client (not a healer), show locked state
+  if (!isHealer) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-white mb-4">
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Object Analysis
+                </span>
+              </h1>
+              <p className="text-white/80 text-lg">
+                Professional spiritual analysis of objects and their energetic properties
+              </p>
+            </div>
+
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold">
+                  Professional Object Reading Required
+                </CardTitle>
+                <CardDescription className="text-white/70 text-lg">
+                  Object analysis requires professional interpretation for accurate spiritual insights
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-white/5 rounded-lg p-6 border border-white/10">
+                  <h3 className="text-xl font-semibold mb-4 text-center">Why Work with a Healer?</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Energy Reading</h4>
+                        <p className="text-white/70 text-sm">Expert analysis of object energy and spiritual properties</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Historical Significance</h4>
+                        <p className="text-white/70 text-sm">Understanding the deeper meaning and past connections</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Energetic Cleansing</h4>
+                        <p className="text-white/70 text-sm">Recommendations for clearing negative energies</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Spiritual Guidance</h4>
+                        <p className="text-white/70 text-sm">How to work with the object's energy for healing</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center space-y-4">
+                  <p className="text-white/80">
+                    Professional healers can provide comprehensive object analysis reports with detailed energy readings, historical insights, and spiritual guidance for working with your objects.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href="/healers">
+                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-3">
+                        <Users className="w-5 h-5 mr-2" />
+                        Connect with a Healer
+                      </Button>
+                    </Link>
+                    <Link href="/my-readings">
+                      <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-3">
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        View My Readings
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
