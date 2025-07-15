@@ -6,6 +6,7 @@ const GPT_MODEL = "gpt-4o";
 export interface AuraAnalysisResult {
   zones: any;
   id?: number; // Added for review system functionality
+  name?: string; // Added for PDF generation
   dominantColor: string;
   secondaryColor: string;
   // Extended color spectrum for more detailed aura analysis

@@ -818,7 +818,10 @@ export default function AuraAnalysis() {
       pdf.text(`Report created by: ${user?.username || 'Unknown User'}`, 105, yPosition, { align: 'center' });
       
       yPosition += 8;
-      const reportForText = `Report created for: ${analysisName || 'Unnamed'}`;
+      console.log('PDF Generation - analysisName:', analysisName);
+      console.log('PDF Generation - result.name:', result?.name);
+      const nameToUse = analysisName || result?.name || 'Unnamed';
+      const reportForText = `Report created for: ${nameToUse}`;
       pdf.text(reportForText, 105, yPosition, { align: 'center' });
 
       // Start content
@@ -1341,7 +1344,7 @@ export default function AuraAnalysis() {
 
       // Download
       const timestamp = new Date().toISOString().split('T')[0];
-      const safeName = (analysisName || 'unnamed').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+      const safeName = (nameToUse || 'unnamed').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
       pdf.save(`aura-chakra-alignment-report-${safeName}-${timestamp}.pdf`);
 
       toast({
