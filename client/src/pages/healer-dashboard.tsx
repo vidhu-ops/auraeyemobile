@@ -131,7 +131,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         setBirthDate("");
         
         // Refresh the readings list
-        queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
         onSuccess();
       } else {
         throw new Error("Failed to create numerology reading");
@@ -1338,7 +1338,7 @@ export default function HealerDashboard() {
             </CardHeader>
             <CardContent>
               <HealerNumerologyInput onSuccess={() => {
-                queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
                 setActiveTab("readings");
               }} />
             </CardContent>
