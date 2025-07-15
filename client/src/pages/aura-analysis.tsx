@@ -3040,7 +3040,7 @@ export default function AuraAnalysis() {
                                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
                                 if (distFromCenter < canvasWidth * 0.1) continue;
 
-                                const size = 80 + Math.random() * 160; // Larger particles
+                                const size = 400 + Math.random() * 160; // Larger particles
                                 const opacity = 0.15 + Math.random() * 0.25;
 
                                 // Create large smokey particle
@@ -3074,8 +3074,8 @@ export default function AuraAnalysis() {
                                 const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
                                 if (distFromCenter < canvasWidth * 0.08) continue;
 
-                                const size = 100 + Math.random() * 180; // Large particles
-                                const opacity = 0.08 + Math.random() * 0.15;
+                                const size = 400 + Math.random() * 180; // Large particles
+                                const opacity = 0.18 + Math.random() * 0.15;
 
                                 // Create large smokey particle
                                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
