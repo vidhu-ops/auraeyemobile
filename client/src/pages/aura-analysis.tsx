@@ -396,38 +396,16 @@ export default function AuraAnalysis() {
     // Set watermark properties
     ctx.save();
     
-    // First, clear any potential dark area behind the watermark
+    // Apply watermark with pure white text and no background interference
     ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1.0;
-    
-    // Measure text to clear exact area behind it
-    ctx.font = 'bold 100px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const textMetrics = ctx.measureText('Aurafy');
-    const textWidth = textMetrics.width;
-    const textHeight = 100; // Font size
-    
-    // Clear area behind watermark with transparent rectangle
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.fillRect(
-      centerX - textWidth * 0.6,
-      centerY - textHeight * 0.6,
-      textWidth * 1.2,
-      textHeight * 1.2
-    );
-    
-    // Now apply watermark with pure white text
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 0.85; // High opacity for visibility
+    ctx.globalAlpha = 0.9; // High opacity for visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Completely remove all shadow properties to eliminate black spot
-    ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    // No shadow at all to prevent any black spots
+    ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
@@ -3412,7 +3390,7 @@ export default function AuraAnalysis() {
     // First create gradient base layers for smooth color merging
     colorZones.forEach(zone => {
       ctx.save();
-      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalCompositeOperation = 'source-over';
       
       let gradient;
       
@@ -3447,21 +3425,6 @@ export default function AuraAnalysis() {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
       
-      // Create clear area around person's face
-      ctx.globalCompositeOperation = 'destination-out';
-      const clearGradient = ctx.createRadialGradient(
-        centerX, centerY, 0,
-        centerX, centerY, personRadius
-      );
-      clearGradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
-      clearGradient.addColorStop(0.8, 'rgba(0, 0, 0, 0.3)');
-      clearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      
-      ctx.fillStyle = clearGradient;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
-      ctx.fill();
-      
       ctx.restore();
     });
     
@@ -3479,7 +3442,7 @@ export default function AuraAnalysis() {
         
         // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.2) continue;
+        if (distanceFromCenter < personRadius * 1.5) continue;
         
         const radius = 60 + seededRandom() * 120;
         const opacity = 0.25 + seededRandom() * 0.3;
@@ -3494,7 +3457,7 @@ export default function AuraAnalysis() {
       // LAYER 2: Medium blurred smoke particles for cloud density
       ctx.save();
       ctx.filter = 'blur(25px)';
-      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalCompositeOperation = 'soft-light';
       
       const particles2 = Math.floor(60 * zone.density);
       for (let i = 0; i < particles2; i++) {
@@ -3502,7 +3465,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.1) continue;
+        if (distanceFromCenter < personRadius * 1.4) continue;
         
         const radius = 40 + seededRandom() * 80;
         const opacity = 0.2 + seededRandom() * 0.25;
@@ -3525,7 +3488,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius) continue;
+        if (distanceFromCenter < personRadius * 1.3) continue;
         
         const radius = 25 + seededRandom() * 50;
         const opacity = 0.15 + seededRandom() * 0.2;
