@@ -56,8 +56,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize WhatsApp service (disabled for now due to Puppeteer dependencies)
-  // initializeWhatsApp();
+  // Initialize WhatsApp service
+  console.log('Initializing WhatsApp service...');
+  initializeWhatsApp();
   
   const server = await registerRoutes(app);
 
