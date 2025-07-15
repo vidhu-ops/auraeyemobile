@@ -195,9 +195,8 @@ export default function AuraAnalysis() {
     try {
       setIsSavingHealerNotes(true);
       
-      const response = await apiRequest('POST', '/api/aura-analysis/healer-notes', {
-        analysisId,
-        notes
+      const response = await apiRequest('PATCH', `/api/aura-readings/${analysisId}/notes`, {
+        healerNotes: notes
       });
       
       if (response.ok) {
@@ -1364,6 +1363,41 @@ export default function AuraAnalysis() {
           const numLines = pdf.splitTextToSize(numerologyResult.interpretation, pageWidth - 40);
           pdf.text(numLines, 20, yPosition);
         }
+      }
+
+      // Add healer notes section if available
+      if (isHealer && healerNotes.trim()) {
+        // Check if we need a new page
+        if (yPosition + 40 > 270) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+        
+        // Add healer notes section
+        pdf.setFontSize(16);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Professional Healer Notes', 20, yPosition);
+        yPosition += 15;
+        
+        // Add healer information
+        pdf.setFontSize(10);
+        pdf.setTextColor(107, 114, 128);
+        pdf.text(`Healer: ${user?.username || 'Professional Healer'}`, 20, yPosition);
+        yPosition += 8;
+        pdf.text(`Date: ${new Date().toLocaleDateString()}`, 20, yPosition);
+        yPosition += 12;
+        
+        // Add healer notes content
+        pdf.setFontSize(11);
+        pdf.setTextColor(75, 85, 99);
+        const notesLines = pdf.splitTextToSize(healerNotes, pageWidth - 40);
+        pdf.text(notesLines, 20, yPosition);
+        yPosition += (notesLines.length * 5) + 10;
+        
+        // Add separator line
+        pdf.setDrawColor(229, 231, 235);
+        pdf.line(20, yPosition, pageWidth + 10, yPosition);
+        yPosition += 10;
       }
 
       // Add footer to all pages
@@ -8055,6 +8089,68 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                         </Tabs>
+
+                        {/* Healer Notes Section - Only visible to healers */}
+                        {isHealer && result && (
+                          <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="font-medium text-lg text-purple-800">Professional Healer Notes</h3>
+                              <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                                Healer Only
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-4">
+                              Add your professional insights and recommendations for this aura analysis. These notes will be included in the downloaded PDF.
+                            </p>
+                            
+                            <div className="space-y-3">
+                              <Textarea
+                                placeholder="Enter your professional insights, recommendations, or additional observations about this aura analysis..."
+                                value={healerNotes}
+                                onChange={(e) => setHealerNotes(e.target.value)}
+                                className="min-h-[120px] resize-none"
+                                rows={6}
+                              />
+                              
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-gray-500">
+                                  {healerNotes.length} characters
+                                </span>
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setHealerNotes("")}
+                                    disabled={!healerNotes.trim()}
+                                  >
+                                    Clear
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      if (currentAnalysisId) {
+                                        saveHealerNotes(currentAnalysisId, healerNotes);
+                                      }
+                                    }}
+                                    disabled={isSavingHealerNotes || !healerNotes.trim() || !currentAnalysisId}
+                                  >
+                                    {isSavingHealerNotes ? (
+                                      <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Saving...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                        Save Notes
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* 5-Star Review System */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 mt-8">
