@@ -1514,7 +1514,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         console.log('Returning healer numerology profile:', numerologyProfile);
         
-        // Save the numerology reading for the healer with healer-tools source
+        // Save the numerology reading for the healer
         await storage.saveNumerologyReading({
           userId: req.user.id,
           name,
@@ -1523,8 +1523,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           destinyNumber: numerologyProfile.destinyNumber,
           soulUrgeNumber: numerologyProfile.soulUrgeNumber,
           personalityNumber: numerologyProfile.personalityNumber,
-          interpretation: numerologyProfile.interpretation,
-          readingSource: "healer-tools"
+          interpretation: numerologyProfile.interpretation
         });
       } catch (apiError) {
         console.error("Healer numerology API error, using fallback:", apiError);
@@ -1556,7 +1555,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           ]
         };
         
-        // Save the fallback numerology reading for the healer with healer-tools source
+        // Save the fallback numerology reading for the healer
         await storage.saveNumerologyReading({
           userId: req.user.id,
           name,
@@ -1565,8 +1564,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           destinyNumber: numerologyProfile.destinyNumber,
           soulUrgeNumber: numerologyProfile.soulUrgeNumber,
           personalityNumber: numerologyProfile.personalityNumber,
-          interpretation: numerologyProfile.interpretation,
-          readingSource: "healer-tools"
+          interpretation: numerologyProfile.interpretation
         });
       }
       
@@ -2405,21 +2403,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error retrieving numerology readings:", error);
       res.status(500).json({ message: "Failed to retrieve numerology readings" });
-    }
-  });
-
-  // Get healer's numerology readings (only from spiritual tools)
-  app.get("/api/healer-numerology-readings", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
-    try {
-      const healerNumerologyReadings = await storage.getHealerNumerologyReadingsByUser(req.user.id);
-      res.json(healerNumerologyReadings);
-    } catch (error) {
-      console.error("Error retrieving healer numerology readings:", error);
-      res.status(500).json({ message: "Failed to retrieve healer numerology readings" });
     }
   });
 

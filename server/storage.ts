@@ -1,6 +1,6 @@
 import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction } from "../shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -43,7 +43,6 @@ export interface IStorage {
   // Numerology readings
   saveNumerologyReading(reading: InsertNumerologyReading): Promise<NumerologyReading>;
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
-  getHealerNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
   updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined>;
   
@@ -194,15 +193,6 @@ export class DatabaseStorage implements IStorage {
 
   async getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]> {
     return await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
-  }
-
-  async getHealerNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]> {
-    return await db.select().from(numerologyReadings).where(
-      and(
-        eq(numerologyReadings.userId, userId),
-        eq(numerologyReadings.readingSource, "healer-tools")
-      )
-    );
   }
 
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {

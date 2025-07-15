@@ -84,7 +84,6 @@ export const numerologyReadings = pgTable("numerology_readings", {
   personalityNumber: integer("personality_number").notNull(),
   interpretation: text("interpretation").notNull(),
   healerNotes: text("healer_notes"), // Professional healer notes
-  readingSource: text("reading_source").default("regular"), // "regular" or "healer-tools"
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
