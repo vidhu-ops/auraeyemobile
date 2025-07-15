@@ -2942,22 +2942,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Request password reset
   app.post('/api/forgot-password', async (req, res) => {
     try {
-      const { email } = req.body;
+      const { whatsappNumber } = req.body;
       
-      if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+      if (!whatsappNumber) {
+        return res.status(400).json({ message: "WhatsApp number is required" });
       }
 
-      // Check if user exists
-      const user = await storage.getUserByEmail(email);
+      // Check if user exists with this WhatsApp number
+      const user = await storage.getUserByMobileNumber(whatsappNumber);
       if (!user) {
-        // Don't reveal if email exists for security
-        return res.json({ message: "If an account with this email exists, a password reset code has been sent." });
-      }
-
-      // Check if user has a mobile number
-      if (!user.mobileNumber) {
-        return res.status(400).json({ message: "This account was created without mobile verification. Please contact support." });
+        // Don't reveal if WhatsApp number exists for security
+        return res.json({ message: "If an account with this WhatsApp number exists, a password reset code has been sent." });
       }
 
       // Generate 6-digit reset token
@@ -2965,19 +2960,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       // Store reset token with 15-minute expiry
       await storage.createPasswordResetToken({
-        email,
-        mobileNumber: user.mobileNumber,
+        email: user.email,
+        mobileNumber: whatsappNumber,
         token: resetToken,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
       });
 
-      // Send reset code via WhatsApp to registered mobile number
-      const otpSent = await sendOTPSMS(user.mobileNumber, resetToken);
+      // Send reset code via WhatsApp
+      const otpSent = await sendOTPSMS(whatsappNumber, resetToken);
       
       if (otpSent) {
         res.json({ 
-          message: "Password reset code sent to your registered mobile number via WhatsApp",
-          mobileNumber: user.mobileNumber.slice(-4) // Only show last 4 digits for security
+          message: "Password reset code sent to your WhatsApp",
+          mobileNumber: whatsappNumber.slice(-4) // Only show last 4 digits for security
         });
       } else {
         res.status(500).json({ message: "Failed to send password reset code to WhatsApp" });
@@ -2991,20 +2986,20 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Reset password with token
   app.post('/api/reset-password', async (req, res) => {
     try {
-      const { email, token, newPassword } = req.body;
+      const { whatsappNumber, token, newPassword } = req.body;
       
-      if (!email || !token || !newPassword) {
-        return res.status(400).json({ message: "Email, token, and new password are required" });
+      if (!whatsappNumber || !token || !newPassword) {
+        return res.status(400).json({ message: "WhatsApp number, token, and new password are required" });
       }
 
-      // Validate reset token
-      const resetTokenRecord = await storage.validatePasswordResetToken(email, token);
+      // Validate reset token using WhatsApp number
+      const resetTokenRecord = await storage.validatePasswordResetTokenByMobile(whatsappNumber, token);
       if (!resetTokenRecord) {
         return res.status(400).json({ message: "Invalid or expired reset token" });
       }
 
-      // Get user
-      const user = await storage.getUserByEmail(email);
+      // Get user by WhatsApp number
+      const user = await storage.getUserByMobileNumber(whatsappNumber);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
