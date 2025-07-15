@@ -179,6 +179,46 @@ export default function AuraAnalysis() {
   
   // Image hash storage for consistent results
   const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
+  
+  // Healer notes state (only for healers)
+  const [healerNotes, setHealerNotes] = useState("");
+  const [isHealerNotesExpanded, setIsHealerNotesExpanded] = useState(false);
+  const [isSavingHealerNotes, setIsSavingHealerNotes] = useState(false);
+  
+  // Check if user is a healer (password healer123)
+  const isHealer = user?.userType === 'healer' || false;
+
+  // Save healer notes function
+  const saveHealerNotes = async (analysisId: number, notes: string) => {
+    if (!isHealer) return;
+    
+    try {
+      setIsSavingHealerNotes(true);
+      
+      const response = await apiRequest('POST', '/api/aura-analysis/healer-notes', {
+        analysisId,
+        notes
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Notes Saved",
+          description: "Healer notes have been saved successfully.",
+        });
+      } else {
+        throw new Error('Failed to save notes');
+      }
+    } catch (error) {
+      console.error('Error saving healer notes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save healer notes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingHealerNotes(false);
+    }
+  };
 
   // Zone-specific color meanings for 4-Zone Energy Map
   const getThinkingEnergyMeaning = (color: string): string => {
