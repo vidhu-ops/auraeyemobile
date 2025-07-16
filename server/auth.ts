@@ -23,20 +23,27 @@ export async function hashPassword(password: string) {
 }
 
 async function comparePasswords(supplied: string, stored: string) {
-  if (!stored || !stored.includes(".")) {
-    console.error("Invalid stored password format:", stored);
+  if (!stored) {
+    console.error("No stored password provided");
     return false;
   }
   
-  const [hashed, salt] = stored.split(".");
-  if (!hashed || !salt) {
-    console.error("Missing hash or salt in stored password");
-    return false;
+  // Check if it's a hashed password (contains a dot)
+  if (stored.includes(".")) {
+    const [hashed, salt] = stored.split(".");
+    if (!hashed || !salt) {
+      console.error("Missing hash or salt in stored password");
+      return false;
+    }
+    
+    const hashedBuf = Buffer.from(hashed, "hex");
+    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+    return timingSafeEqual(hashedBuf, suppliedBuf);
+  } else {
+    // It's a plain text password - compare directly
+    console.log("Comparing plain text password for healer");
+    return supplied === stored;
   }
-  
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
 export function setupAuth(app: Express) {
