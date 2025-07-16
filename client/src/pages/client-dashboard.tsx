@@ -565,8 +565,8 @@ export default function ClientDashboard() {
               </CardHeader>
               <CardContent>
                 <Tabs value={activeBookingsTab} onValueChange={setActiveBookingsTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 mb-4">
-                    <TabsTrigger value="aura">Aura Readings</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                    
                     <TabsTrigger value="object">Object Analysis</TabsTrigger>
                     <TabsTrigger value="numerology">Numerology</TabsTrigger>
                     <TabsTrigger value="bookings">My Bookings</TabsTrigger>
@@ -897,11 +897,8 @@ export default function ClientDashboard() {
                   return (
                     <div className="space-y-6">
                       {/* Overview Stats */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">{progressData.totalReadings}</div>
-                          <div className="text-xs text-blue-500">Aura Readings</div>
-                        </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        
                         <div className="text-center p-3 bg-green-50 rounded-lg">
                           <div className="text-2xl font-bold text-green-600">{progressData.totalJournalEntries}</div>
                           <div className="text-xs text-green-500">Journal Entries</div>
