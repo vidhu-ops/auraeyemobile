@@ -169,6 +169,10 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(auraReadings).where(eq(auraReadings.userId, userId));
   }
 
+  async getAuraReadingsByPerformedBy(performedBy: number): Promise<AuraReading[]> {
+    return await db.select().from(auraReadings).where(eq(auraReadings.performedBy, performedBy));
+  }
+
   async getAuraReading(id: number): Promise<AuraReading | undefined> {
     const [reading] = await db.select().from(auraReadings).where(eq(auraReadings.id, id));
     return reading || undefined;
@@ -221,6 +225,10 @@ export class DatabaseStorage implements IStorage {
 
   async getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]> {
     return await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+  }
+
+  async getNumerologyReadingsByPerformedBy(performedBy: number): Promise<NumerologyReading[]> {
+    return await db.select().from(numerologyReadings).where(eq(numerologyReadings.performedBy, performedBy));
   }
 
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {

@@ -1339,6 +1339,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           
           const savedReading = await storage.saveAuraReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name: analysisName,
             imageUrl,
             dominantColor: auraAnalysis.dominantColor,
@@ -1524,6 +1525,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         // Save the numerology reading for the healer
         await storage.saveNumerologyReading({
           userId: req.user.id,
+          performedBy: req.user.userType === 'healer' ? req.user.id : null,
           name,
           birthDate,
           lifePathNumber: numerologyProfile.lifePathNumber,
@@ -1565,6 +1567,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         // Save the fallback numerology reading for the healer
         await storage.saveNumerologyReading({
           userId: req.user.id,
+          performedBy: req.user.userType === 'healer' ? req.user.id : null,
           name,
           birthDate,
           lifePathNumber: numerologyProfile.lifePathNumber,
@@ -1604,6 +1607,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             lifePathNumber: numerologyProfile.lifePathNumber,
@@ -1647,6 +1651,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             lifePathNumber: numerologyProfile.lifePathNumber,
@@ -1726,6 +1731,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             lifePathNumber: numerologyProfile.lifePathNumber,
@@ -1752,6 +1758,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (req.isAuthenticated() && req.user) {
           await storage.saveNumerologyReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             ...numerologyProfile
@@ -2422,8 +2429,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       console.log(`Fetching numerology readings for healer: ${req.user.username} (ID: ${req.user.id})`);
-      const numerologyReadings = await storage.getNumerologyReadingsByUser(req.user.id);
-      console.log(`Found ${numerologyReadings.length} numerology readings for healer ${req.user.username}`);
+      const numerologyReadings = await storage.getNumerologyReadingsByPerformedBy(req.user.id);
+      console.log(`Found ${numerologyReadings.length} numerology readings performed by healer ${req.user.username}`);
       res.json(numerologyReadings);
     } catch (error) {
       console.error("Error retrieving healer numerology readings:", error);
@@ -2440,9 +2447,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       console.log(`Fetching aura readings for healer: ${req.user.username} (ID: ${req.user.id})`);
-      const auraReadings = await storage.getAuraReadingsByUser(req.user.id);
-      console.log(`Found ${auraReadings.length} aura readings for healer ${req.user.username}`);
-      console.log(`Healer aura readings data:`, auraReadings.map(r => ({ id: r.id, name: r.name, userId: r.userId, createdAt: r.createdAt })));
+      const auraReadings = await storage.getAuraReadingsByPerformedBy(req.user.id);
+      console.log(`Found ${auraReadings.length} aura readings performed by healer ${req.user.username}`);
+      console.log(`Healer aura readings data:`, auraReadings.map(r => ({ id: r.id, name: r.name, userId: r.userId, performedBy: r.performedBy, createdAt: r.createdAt })));
       res.json(auraReadings);
     } catch (error) {
       console.error("Error retrieving healer aura readings:", error);
@@ -2823,6 +2830,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         try {
           const readingToSave = {
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             lifePathNumber,
