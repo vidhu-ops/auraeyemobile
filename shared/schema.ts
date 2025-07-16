@@ -26,6 +26,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const auraReadings = pgTable("aura_readings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  performedBy: integer("performed_by").references(() => users.id), // Which healer account performed this reading
   name: text("name").notNull(), // Name entered for this aura reading
   imageUrl: text("image_url").notNull(),
   dominantColor: text("dominant_color").notNull(),
@@ -80,6 +81,7 @@ export const insertJournalSchema = createInsertSchema(journals).omit({
 export const numerologyReadings = pgTable("numerology_readings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  performedBy: integer("performed_by").references(() => users.id), // Which healer account performed this reading
   name: text("name").notNull(),
   birthDate: text("birth_date").notNull(),
   lifePathNumber: integer("life_path_number").notNull(),
