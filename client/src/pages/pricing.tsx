@@ -188,9 +188,9 @@ export default function PricingPage() {
                   <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
                     <Check className="w-8 h-8 text-green-600" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No Expiration</h3>
+                  <h3 className="text-lg font-semibold mb-2">Monthly Expiration</h3>
                   <p className="text-gray-600">
-                    Your credits never expire. Take your time with your spiritual journey.
+                    Your credits expire monthly. Take your time with your spiritual journey.
                   </p>
                 </div>
                 <div className="text-center">
