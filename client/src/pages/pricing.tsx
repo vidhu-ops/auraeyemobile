@@ -11,11 +11,11 @@ export default function PricingPage() {
     {
       id: "healer",
       name: "Healer Package",
-      price: "$24.99",
+      price: "3500",
       credits: 50,
       icon: Crown,
       popular: false,
-      features: [
+      features: ["Monthly, Quarterly, and Annual Plans Available",
         "50 Credits Included",
         "Healer Dashboard Access",
         "Client Booking System",
@@ -26,7 +26,7 @@ export default function PricingPage() {
     {
       id: "user",
       name: "User Package",
-      price: "$14.99",
+      price: "1000",
       credits: 30,
       icon: Users,
       popular: true,
@@ -35,13 +35,14 @@ export default function PricingPage() {
         "All Analysis Tools",
         "Personal Dashboard",
         "Reading History",
+        "Montly usage only",
         "Priority Support"
       ]
     },
     {
       id: "credits",
       name: "Credits Upgrade",
-      price: "$9.99",
+      price: "3000",
       credits: 10,
       icon: Zap,
       popular: false,
@@ -181,7 +182,7 @@ export default function PricingPage() {
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Flexible Usage</h3>
                   <p className="text-gray-600">
-                    Use credits when you need them. No monthly commitments or subscriptions.
+                    Use credits for different services throughout the month. Monthly Expriration or subscriptions.
                   </p>
                 </div>
                 <div className="text-center">
@@ -199,7 +200,7 @@ export default function PricingPage() {
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Premium Quality</h3>
                   <p className="text-gray-600">
-                    Each analysis is powered by advanced AI and spiritual expertise.
+                    Each analysis is powered by advanced and spiritual expertise.
                   </p>
                 </div>
               </div>

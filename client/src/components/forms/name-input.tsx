@@ -70,7 +70,7 @@ export default function NameInput({
           </div>
           
           <Button type="submit" className="w-full">
-            Continue to Analysis
+            Enter A New Name for Analysis
           </Button>
         </form>
       </CardContent>
