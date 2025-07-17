@@ -3270,19 +3270,19 @@ export default function AuraAnalysis() {
     
     // Create horizontal gradient blending from left (giving) to right (receiving)
     const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.08)`);
-    horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.02)`);
-    horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.04)`);
-    horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
+    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.18)`);
+    horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
+    horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
+    horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.18)`);
     
     ctx.fillStyle = horizontalGradient;
     ctx.fillRect(0, 0, width, height);
     
     // Create vertical gradient for thinking energy (top 25% of image)
     const verticalGradient = ctx.createLinearGradient(0, 0, 0, height * 0.25);
-    verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
-    verticalGradient.addColorStop(0.6, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.06)`);
-    verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
+    verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
+    verticalGradient.addColorStop(0.6, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
+    verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.03)`);
     
     ctx.fillStyle = verticalGradient;
     ctx.fillRect(0, 0, width, height * 0.25);
@@ -3491,27 +3491,27 @@ export default function AuraAnalysis() {
       switch (zone.name) {
         case 'thinking':
           gradient = ctx.createLinearGradient(0, 0, 0, height * 0.5);
-          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.12)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.4)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.1)`);
           break;
         case 'receiving':
           gradient = ctx.createLinearGradient(0, 0, width * 0.6, 0);
-          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
-          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
           break;
         case 'giving':
           gradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
-          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
-          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.3)`);
           break;
         case 'personality':
           gradient = ctx.createLinearGradient(0, height, 0, height * 0.6);
-          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.32)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
           break;
       }
       
@@ -3538,7 +3538,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.5) continue;
         
         const radius = 60 + seededRandom() * 120;
-        const opacity = 0.25 + seededRandom() * 0.3;
+        const opacity = 0.4 + seededRandom() * 0.35;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3561,7 +3561,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.4) continue;
         
         const radius = 40 + seededRandom() * 80;
-        const opacity = 0.2 + seededRandom() * 0.25;
+        const opacity = 0.35 + seededRandom() * 0.3;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3584,7 +3584,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.3) continue;
         
         const radius = 25 + seededRandom() * 50;
-        const opacity = 0.15 + seededRandom() * 0.2;
+        const opacity = 0.3 + seededRandom() * 0.25;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3613,7 +3613,7 @@ export default function AuraAnalysis() {
       const color = allColors[colorIndex];
       
       const radius = 50 + seededRandom() * 100;
-      const opacity = 0.08 + seededRandom() * 0.12;
+      const opacity = 0.2 + seededRandom() * 0.25;
       
       ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
       ctx.beginPath();
