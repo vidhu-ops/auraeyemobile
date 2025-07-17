@@ -955,7 +955,7 @@ export default function AuraAnalysis() {
       pdf.setDrawColor(218, 220, 224);
       pdf.line(20, yPosition, pageWidth, yPosition);
 
-      // Define all tabs to capture
+      // Define all tabs to capture - using actual tab IDs from the interface
       const tabs = [
         { id: 'analysis', name: 'Analysis Overview' },
         { id: 'energy-reading', name: 'Chakra Score' },
@@ -1027,7 +1027,7 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Capture screenshots of all tabs
+      // Capture screenshots of all tabs with improved detection
       const screenshots: { [key: string]: string } = {};
       
       for (const tab of tabs) {
@@ -1035,28 +1035,80 @@ export default function AuraAnalysis() {
           // Switch to the tab
           setActiveTab(tab.id);
           
-          // Wait for tab content to render
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Wait longer for tab content to render completely
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
-          // Find the tab content container
-          const tabContent = document.querySelector(`[data-tab="${tab.id}"]`) || 
-                            document.querySelector('.tab-content') ||
-                            document.querySelector('.space-y-6');
+          // Multiple strategies to find tab content
+          let tabContent = null;
           
-          if (tabContent) {
-            // Capture screenshot of the tab content
-            const canvas = await html2canvas(tabContent as HTMLElement, {
-              backgroundColor: '#ffffff',
-              scale: 2,
-              useCORS: true,
-              allowTaint: true,
-              scrollX: 0,
-              scrollY: 0,
-              width: tabContent.scrollWidth,
-              height: tabContent.scrollHeight
-            });
+          // Strategy 1: Find by exact tab ID
+          tabContent = document.querySelector(`[data-tab="${tab.id}"]`);
+          
+          // Strategy 2: Find by tab content class when active
+          if (!tabContent) {
+            tabContent = document.querySelector('.tab-content');
+          }
+          
+          // Strategy 3: Find the main content area
+          if (!tabContent) {
+            tabContent = document.querySelector('.space-y-6');
+          }
+          
+          // Strategy 4: Find by specific content containers
+          if (!tabContent) {
+            const selectors = [
+              '.bg-white.rounded-lg.p-6',
+              '.bg-gray-50.p-6',
+              '.grid.grid-cols-1.gap-6',
+              '.flex.flex-col.space-y-4',
+              '.aura-tab-content'
+            ];
             
-            screenshots[tab.id] = canvas.toDataURL('image/png');
+            for (const selector of selectors) {
+              tabContent = document.querySelector(selector);
+              if (tabContent) break;
+            }
+          }
+          
+          // Strategy 5: Find the main container div
+          if (!tabContent) {
+            tabContent = document.querySelector('main > div') || 
+                        document.querySelector('.container > div') ||
+                        document.querySelector('div[class*="space-y"]');
+          }
+          
+          if (tabContent && tabContent.scrollWidth > 0 && tabContent.scrollHeight > 0) {
+            // Ensure element is visible and has content
+            const rect = tabContent.getBoundingClientRect();
+            
+            if (rect.width > 0 && rect.height > 0) {
+              // Capture screenshot of the tab content with enhanced settings
+              const canvas = await html2canvas(tabContent as HTMLElement, {
+                backgroundColor: '#ffffff',
+                scale: 1.5, // Reduced scale for better performance
+                useCORS: true,
+                allowTaint: true,
+                scrollX: 0,
+                scrollY: 0,
+                width: tabContent.scrollWidth,
+                height: tabContent.scrollHeight,
+                logging: false, // Disable logging to reduce console noise
+                ignoreElements: (element) => {
+                  // Ignore certain elements that might cause issues
+                  return element.tagName === 'SCRIPT' || 
+                         element.tagName === 'STYLE' ||
+                         element.classList.contains('toast') ||
+                         element.classList.contains('tooltip');
+                }
+              });
+              
+              screenshots[tab.id] = canvas.toDataURL('image/png');
+              console.log(`Successfully captured tab: ${tab.id} (${rect.width}x${rect.height})`);
+            } else {
+              console.warn(`Tab ${tab.id} has zero dimensions: ${rect.width}x${rect.height}`);
+            }
+          } else {
+            console.warn(`Tab content not found or has zero size for tab: ${tab.id}`);
           }
         } catch (error) {
           console.error(`Error capturing screenshot for tab ${tab.id}:`, error);
@@ -1066,7 +1118,7 @@ export default function AuraAnalysis() {
       // Restore original tab
       setActiveTab(currentTab);
 
-      // Add each tab screenshot to the PDF
+      // Add each tab screenshot to the PDF with enhanced layout
       for (const tab of tabs) {
         if (screenshots[tab.id]) {
           pdf.addPage();
@@ -1084,24 +1136,71 @@ export default function AuraAnalysis() {
           pdf.line(20, yPosition, pageWidth, yPosition);
           yPosition += 15;
           
-          // Add the screenshot with proper sizing
+          // Add the screenshot with proper sizing and aspect ratio
           try {
-            // Calculate image dimensions to fit page while maintaining quality
-            const maxWidth = 170; // A4 width minus margins
-            const maxHeight = 220; // Maximum height in mm
+            // Create a temporary image to get dimensions
+            const img = new Image();
+            img.src = screenshots[tab.id];
             
-            // Use a reasonable scaling factor for screenshots
-            const imgWidth = Math.min(maxWidth, 150);
-            const imgHeight = Math.min(maxHeight, 180);
+            // Calculate optimal dimensions
+            const pageWidthMm = 210; // A4 width
+            const pageHeightMm = 297; // A4 height
+            const margin = 20;
+            const availableWidth = pageWidthMm - (margin * 2);
+            const availableHeight = pageHeightMm - yPosition - 30; // Leave space for footer
+            
+            // Use natural image dimensions if available, otherwise use default
+            const naturalWidth = img.naturalWidth || 1000;
+            const naturalHeight = img.naturalHeight || 1000;
+            const aspectRatio = naturalWidth / naturalHeight;
+            
+            // Calculate dimensions to fit within available space
+            let imgWidth = Math.min(availableWidth, 160);
+            let imgHeight = imgWidth / aspectRatio;
+            
+            // If height is too large, scale down based on height
+            if (imgHeight > availableHeight) {
+              imgHeight = Math.min(availableHeight, 200);
+              imgWidth = imgHeight * aspectRatio;
+            }
             
             // Center the image horizontally
-            const xPos = (210 - imgWidth) / 2;
+            const xPos = (pageWidthMm - imgWidth) / 2;
             
             pdf.addImage(screenshots[tab.id], 'PNG', xPos, yPosition, imgWidth, imgHeight);
             
+            console.log(`Added screenshot for tab ${tab.id}: ${imgWidth}x${imgHeight}mm`);
+            
           } catch (error) {
             console.error(`Error adding screenshot for tab ${tab.id}:`, error);
+            
+            // Add a fallback message if screenshot fails
+            pdf.setFontSize(12);
+            pdf.setTextColor(107, 114, 128);
+            pdf.text(`[Screenshot for ${tab.name} could not be captured]`, 20, yPosition);
           }
+        } else {
+          // Add page even if no screenshot, with explanation
+          pdf.addPage();
+          yPosition = 30;
+          
+          pdf.setFontSize(20);
+          pdf.setTextColor(34, 34, 34);
+          pdf.text(tab.name, 20, yPosition);
+          yPosition += 15;
+          
+          pdf.setLineWidth(0.5);
+          pdf.setDrawColor(218, 220, 224);
+          pdf.line(20, yPosition, pageWidth, yPosition);
+          yPosition += 15;
+          
+          pdf.setFontSize(12);
+          pdf.setTextColor(107, 114, 128);
+          pdf.text(`[Content for ${tab.name} tab could not be captured]`, 20, yPosition);
+          yPosition += 10;
+          pdf.text('This tab may contain dynamic content that requires manual viewing.', 20, yPosition);
+          
+          console.log(`No screenshot available for tab: ${tab.id}`);
         }
       }
 
