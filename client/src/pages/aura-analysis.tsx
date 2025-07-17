@@ -215,7 +215,7 @@ export default function AuraAnalysis() {
                   Connect with a Professional Healer
                 </CardTitle>
                 <CardDescription className="text-white/70 text-lg">
-                  Aura analysis requires professional interpretation for accurate spiritual guidance
+                  Aura analysis requires professional interpretation for accurate spiritual guidance. You can run an analysis yourself but the healer can provide the same along with remedies and personalised guidance.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -491,7 +491,7 @@ export default function AuraAnalysis() {
     
     // Apply watermark with pure white text and no background interference
     ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 0.9; // High opacity for visibility
+    ctx.globalAlpha = 0.5; // High opacity for visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
@@ -504,7 +504,7 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 0;
     
     // Draw watermark text as pure white overlay
-    ctx.fillText('Aurafy', centerX, centerY);
+    ctx.fillText('Aurafy', centerX-2, centerY);
     
     ctx.restore();
   };
@@ -3465,7 +3465,7 @@ export default function AuraAnalysis() {
         endY: height * 0.9,
         startX: width * 0.55,
         endX: width,
-        density: 0.45,
+        density: 0.75,
         name: 'giving'
       },
       {
@@ -3505,7 +3505,7 @@ export default function AuraAnalysis() {
           gradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
           gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
           gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
           break;
         case 'personality':
           gradient = ctx.createLinearGradient(0, height, 0, height * 0.6);
@@ -3778,11 +3778,11 @@ export default function AuraAnalysis() {
       centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
     );
     receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
-    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.2)`);
+    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.5)`);
     receivingLayer.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.61)`);
     receivingLayer.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.71)`);
     receivingLayer.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.66)`);
-    receivingLayer.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+    receivingLayer.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
     
     ctx.fillStyle = receivingLayer;
     ctx.fillRect(0, 0, width, height);
@@ -3797,8 +3797,8 @@ export default function AuraAnalysis() {
     givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
     givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.68)`);
     givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.06)`);
-    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.76)`);
+    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.4)`);
     
     ctx.fillStyle = givingLayer;
     ctx.fillRect(0, 0, width, height);
@@ -3821,7 +3821,7 @@ export default function AuraAnalysis() {
     };
     horizontalBlendingGradient.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.29)`); // Perfect center blend
     
-    horizontalBlendingGradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`); // Giving dominant
+    horizontalBlendingGradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`); // Giving dominant
     horizontalBlendingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.35)`); // Pure giving on far right
     
     ctx.fillStyle = horizontalBlendingGradient;
@@ -3835,7 +3835,7 @@ export default function AuraAnalysis() {
     );
     centerRadialBlend.addColorStop(0, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.18)`);
     centerRadialBlend.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.12)`);
-    centerRadialBlend.addColorStop(1, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.05)`);
+    centerRadialBlend.addColorStop(1, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.25)`);
     
     ctx.fillStyle = centerRadialBlend;
     ctx.fillRect(0, 0, width, height);
@@ -3993,7 +3993,7 @@ export default function AuraAnalysis() {
         topGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
         topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
         topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
-        topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.3)`);
+        topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.5)`);
         ctx.fillStyle = topGradient;
         ctx.fillRect(0, 0, width, EDGE_DISTANCE);
 
@@ -4021,9 +4021,9 @@ export default function AuraAnalysis() {
         const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
         rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
         rightGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-        rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
+        rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.58)`);
         rightGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-        rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
+        rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.85)`);
         ctx.fillStyle = rightGradient;
         ctx.fillRect(width - EDGE_DISTANCE, 0, EDGE_DISTANCE, height);
 
@@ -4043,7 +4043,7 @@ export default function AuraAnalysis() {
             cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.48)`);
             cornerRadial.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
             cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-            cornerRadial.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.18)`);
+            cornerRadial.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
             cornerRadial.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
             ctx.fillStyle = cornerRadial;
             ctx.fillRect(corner.x, corner.y, EDGE_DISTANCE, EDGE_DISTANCE);
@@ -4086,7 +4086,7 @@ export default function AuraAnalysis() {
             {
                 color: colors.givingRGB,
                 zone: 'right',
-                density: 40,
+                density: 60,
                 getCoords: () => ({
                     x: width * 0.7 + seededRandom() * (width * 0.3), // RIGHT side for giving energy
                     y: height * 0.15 + seededRandom() * (height * 0.7)
@@ -4348,7 +4348,7 @@ export default function AuraAnalysis() {
       gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.85})`);
       gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
       gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
+      gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0.2)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
@@ -4421,7 +4421,7 @@ export default function AuraAnalysis() {
                 gradient.addColorStop(0.3, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.9})`);
                 gradient.addColorStop(0.6, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.5})`);
                 gradient.addColorStop(0.85, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.2})`);
-                gradient.addColorStop(1, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, 0)`);
+                gradient.addColorStop(1, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, 0.2)`);
 
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
@@ -4712,7 +4712,7 @@ export default function AuraAnalysis() {
             gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
             gradient.addColorStop(0.3, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.7})`);
             gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.3})`);
-            gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+            gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`);
 
             // Set blend mode for smokey effect
             ctx.globalCompositeOperation = 'screen';
@@ -5384,9 +5384,7 @@ export default function AuraAnalysis() {
         "Gold": "Your physical layer resonates with divine healing wisdom. Gold energy supports regenerative health, spiritual healing integration, and advanced cellular repair mechanisms.",
         "Indigo": "Your physical layer shows enhanced nervous system sensitivity and brain-body connection. Indigo energy supports neurological health, pineal gland function, and intuitive body awareness.",
         "Pink": "Your physical layer demonstrates nurturing self-care and heart-centered health. Pink energy supports emotional-physical healing, stress reduction, and loving body relationship.",
-        "Silver": "Your physical layer carries lunar wisdom affecting hormonal cycles and fluid balance. Silver energy supports reproductive health, emotional-physical integration, and psychic body awareness.",
-        "Turquoise": "Your physical layer shows balanced healing communication. Turquoise energy supports throat chakra health, clear body expression, and healing voice activation.",
-        "Lavender": "Your physical layer demonstrates gentle healing and nervous system support. Lavender energy promotes relaxation, stress relief, and peaceful body restoration."
+        "Silver": "Your physical layer carries lunar wisdom affecting hormonal cycles and fluid balance. Silver energy supports reproductive health, emotional-physical integration, and psychic body awareness."
       },
       etheric: {
         "Purple": "Your etheric layer shows strong spiritual development and healing energy fields. Physical vitality is enhanced through psychic connections rather than purely physical sources.",
@@ -5399,9 +5397,7 @@ export default function AuraAnalysis() {
         "Gold": "Your etheric layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
         "Indigo": "Your etheric layer is connected to higher intuition and visionary abilities. Physical body benefits from third eye meditation.",
         "Pink": "Your etheric layer resonates with unconditional love and compassion. Physical health is enhanced through heart-centered practices.",
-        "Silver": "Your etheric layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-        "Turquoise": "Your etheric layer resonates with unconditional love and compassion. Physical health is enhanced through heart-centered practices.",
-        "Lavender": "Your etheric layer resonates with unconditional love and compassion. Physical health is enhanced through heart-centered practices.",
+        "Silver": "Your etheric layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices."
       },
       emotional: {
         "Purple": "Your emotional layer reveals spiritual sensitivity and intuitive emotional processing. You may experience emotions as spiritual messages.",
@@ -5414,9 +5410,7 @@ export default function AuraAnalysis() {
         "Gold": "Your emotional layer carries wisdom in emotional processing. You have access to ancient emotional patterns and healing.",
         "Indigo": "Your emotional layer connects emotions to intuitive knowing. You understand the deeper purpose behind emotional experiences.",
         "Pink": "Your emotional layer is suffused with love and compassion. Your emotional responses are heart-centered and nurturing.",
-        "Silver": "Your emotional layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-        "olive": "Your emotional layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-        "Teal": "Your emotional layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
+        "Silver": "Your emotional layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices."
       },
       mental: {
         "Purple": "Your mental layer shows psychic abilities integrated into thought processes. Your thinking is informed by spiritual insights.",
@@ -5429,11 +5423,7 @@ export default function AuraAnalysis() {
         "Gold": "Your mental layer accesses wisdom and higher knowledge. Your thoughts carry authority and spiritual insight.",
         "Indigo": "Your mental layer shows visionary thinking and future-oriented perspectives. Your ideas come from higher dimensions.",
         "Pink": "Your mental layer processes thoughts through the lens of compassion. Your thinking is heart-centered and loving.",
-        "Silver": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-         "olive": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-         "Teal": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-         "Bronze": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
-         "Cobalt": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices.",
+        "Silver": "Your mental layer carries spiritual wisdom and divine protection. Physical vitality is enhanced through spiritual practices."
       },
       spiritual: {
         "Purple": "Your spiritual layer reveals advanced spiritual development and direct connection to higher dimensions. Your spiritual path involves psychic development.",
@@ -5455,36 +5445,36 @@ export default function AuraAnalysis() {
   
   // These functions are already defined above, so removing duplicates.
 
-  const getTraitExplanation = (trait: string, color: string): string => {
-    const traitExplanations: Record<string, string> = {
-      "Intuitive": "You perceive information beyond the five senses, receiving guidance directly from higher consciousness.",
-      "Empathetic": "You naturally sense and absorb the emotional states of others, making you a compassionate healing presence.",
-      "Creative": "Your energy naturally manifests new forms and ideas, bringing previously unseen concepts into reality.",
-      "Analytical": "You process energy through logical frameworks, bringing clarity and order to spiritual information.",
-      "Spiritual": "Your energy vibrates at frequencies that connect easily with higher dimensions and spiritual realms.",
-      "Healing": "You naturally channel universal life force energy in ways that restore balance and wholeness.",
-      "Visionary": "You perceive potential futures and possibilities beyond current reality constraints.",
-      "Grounded": "Your energy maintains strong earth connection while working with higher frequencies.",
-      "Passionate": "Your energy field pulses with intense life force that energizes projects and relationships.",
-      "Compassionate": "Your heart chakra emanates unconditional love energy that nurtures and supports others.",
-      "Wise": "Your energy field contains accumulated wisdom from multiple lifetimes and dimensions.",
-      "Psychic": "Your subtle energy sensors are highly developed, allowing perception beyond physical reality.",
-      "Balanced": "Your energy system maintains harmonious flow between all chakras and subtle bodies.",
-      "Focused": "Your energy can be precisely directed toward specific intentions with minimal scatter.",
-      "Expansive": "Your energy field extends widely, connecting with collective consciousness and universal mind.",
-      "Calming": "Your energy field is soothing and peaceful, creating a sense of tranquility and relaxation.",
-      "Energetic": "Your energy field is vibrant and dynamic, radiating vitality and enthusiasm.",
-      "Transformative": "Your energy field carries the power to shift and transform reality.",
-      "Protective": "Your energy field is a barrier against negative influences and energies.",
-      "Receptive": "Your energy field is open and receptive to new ideas and experiences.",
-      "Projective": "Your energy field is focused and directed outward, projecting your intentions into reality.",
-      "Reflective": "Your energy field is introspective and self-aware, allowing for deep self-reflection.",
-      "Integrative": "Your energy field is holistic, integrating physical, emotional, mental, and spiritual aspects.",
-      "Divine": "Your energy field is aligned with divine consciousness, connecting you to the source of all creation.",
-    };
-    
-    return traitExplanations[trait] || "";
-  };
+  function getTraitExplanation({ }: { trait: string; color: string; }): string {
+        const traitExplanations: Record<string, string> = {
+            "Intuitive": "You perceive information beyond the five senses, receiving guidance directly from higher consciousness.",
+            "Empathetic": "You naturally sense and absorb the emotional states of others, making you a compassionate healing presence.",
+            "Creative": "Your energy naturally manifests new forms and ideas, bringing previously unseen concepts into reality.",
+            "Analytical": "You process energy through logical frameworks, bringing clarity and order to spiritual information.",
+            "Spiritual": "Your energy vibrates at frequencies that connect easily with higher dimensions and spiritual realms.",
+            "Healing": "You naturally channel universal life force energy in ways that restore balance and wholeness.",
+            "Visionary": "You perceive potential futures and possibilities beyond current reality constraints.",
+            "Grounded": "Your energy maintains strong earth connection while working with higher frequencies.",
+            "Passionate": "Your energy field pulses with intense life force that energizes projects and relationships.",
+            "Compassionate": "Your heart chakra emanates unconditional love energy that nurtures and supports others.",
+            "Wise": "Your energy field contains accumulated wisdom from multiple lifetimes and dimensions.",
+            "Psychic": "Your subtle energy sensors are highly developed, allowing perception beyond physical reality.",
+            "Balanced": "Your energy system maintains harmonious flow between all chakras and subtle bodies.",
+            "Focused": "Your energy can be precisely directed toward specific intentions with minimal scatter.",
+            "Expansive": "Your energy field extends widely, connecting with collective consciousness and universal mind.",
+            "Calming": "Your energy field is soothing and peaceful, creating a sense of tranquility and relaxation.",
+            "Energetic": "Your energy field is vibrant and dynamic, radiating vitality and enthusiasm.",
+            "Transformative": "Your energy field carries the power to shift and transform reality.",
+            "Protective": "Your energy field is a barrier against negative influences and energies.",
+            "Receptive": "Your energy field is open and receptive to new ideas and experiences.",
+            "Projective": "Your energy field is focused and directed outward, projecting your intentions into reality.",
+            "Reflective": "Your energy field is introspective and self-aware, allowing for deep self-reflection.",
+            "Integrative": "Your energy field is holistic, integrating physical, emotional, mental, and spiritual aspects.",
+            "Divine": "Your energy field is aligned with divine consciousness, connecting you to the source of all creation.",
+        };
+
+        return traitExplanations[getTraitExplanation] || "";
+    }
 
   const getColorPersonalityInfluence = (color: string): string => {
     const influences: Record<string, string> = {
@@ -5501,16 +5491,12 @@ export default function AuraAnalysis() {
       "Gold": "divine wisdom, spiritual achievement, and enlightened mastery that guides others toward truth.",
       "Silver": "psychic sensitivity, lunar wisdom, and reflective insight that enhances intuitive abilities.",
       "Turquoise": "healing communication, clear expression, and balanced energy that supports throat chakra health.",
-      "peach" : "creative energy, sensual vitality, and joyful expression that brings warmth and love to life.",
-      "lavender": "gentle healing, nervous system support, and peaceful energy that promotes relaxation and stress relief.",
-      "cyan": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
-      "teal": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       "black": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
         "gray": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       "brown": "balanced healing, clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return influences[getColorPersonalityInfluence] || "unique spiritual qualities that shape your energetic expression.";
+    return influences[color] || "unique spiritual qualities that shape your energetic expression.";
   };
 
   const getPersonalityStrengths = (color: string, traits: string[]): string => {
@@ -5537,10 +5523,10 @@ export default function AuraAnalysis() {
         "brown": "balanced & clear communication, and harmonious energy that supports throat chakra health.",
       
     };
-    return strengths[getPersonalityStrengths] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
+    return strengths[color] || "Your unique combination of traits creates a powerful foundation for personal and spiritual growth.";
   };
 
-  const getPersonalityGrowthAreas = (color: string, traits: string[]): string => {
+  const getPersonalityGrowthAreas = ({ color, traits }: { color: string; traits: string[]; }): string => {
     const growthAreas: Record<string, string> = {
       "Red": "Learning patience and gentleness, balancing action with reflection, and softening intensity when needed.",
       "Orange": "Developing focus and completion skills, grounding creative energy, and maintaining emotional boundaries.",
@@ -5875,7 +5861,7 @@ export default function AuraAnalysis() {
                                       <div className="w-full bg-gray-200 rounded-full h-3">
                                         <div 
                                           className="bg-gradient-to-r from-white to-gold h-3 rounded-full transition-all duration-500"
-                                          style={{ width: `${calculateSoulStarChakra(result)}%` }}
+                                          style={{ width: `${Math.round(calculateSoulStarChakra(result)/10) * 10}%` }}
                                         ></div>
                                       </div>
                                     </div>
@@ -5913,7 +5899,7 @@ export default function AuraAnalysis() {
                                       <div className="w-full bg-gray-200 rounded-full h-3">
                                         <div 
                                           className="bg-gradient-to-r from-amber-600 to-yellow-500 h-3 rounded-full transition-all duration-500"
-                                          style={{ width: `${calculateEarthStarChakra(result)}%` }}
+                                          style={{ width: `${Math.round(calculateEarthStarChakra(result)/10) * 10}%` }}
                                         ></div>
                                       </div>
                                     </div>
@@ -6775,7 +6761,7 @@ export default function AuraAnalysis() {
                                       </h4>
                                       <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                          <span className="text-sm text-gray-600">Active Chakra</span>
+                                          <span className="text-sm text-gray-600">Most Influential Chakra/Active Chakra</span>
                                           <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).chakraAlignment}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
@@ -6787,7 +6773,7 @@ export default function AuraAnalysis() {
                                           <span className="text-sm font-mono bg-white px-2 py-1 rounded">{getCombinedInsights(result, numerologyResult).sacredMantra}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                          <span className="text-sm text-gray-600">Soul Chakra Type</span>
+                                          <span className="text-sm text-gray-600">The Chakra that you use most   </span>
                                           <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult).dominantSoulChakra}</span>
                                         </div>
                                       </div>
@@ -7190,7 +7176,7 @@ export default function AuraAnalysis() {
                               </div>
                               
                               <div>
-                                <h4 className="text-sm text-gray-500 mb-1">Energy Level</h4>
+                                <h4 className="text-lg text-gray-500 mb-1">Aura Size</h4>
                                 <Progress value={result.energyLevel * 10} className="h-2" />
                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                                   <span>Low</span>
@@ -7216,7 +7202,7 @@ export default function AuraAnalysis() {
                               {/* Energy Aspects Section */}
                               <div>
                                 <h4 className="text-sm text-gray-500 mb-4">Energy Aspects</h4>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                   <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-3 text-center border border-amber-200">
                                     <div className="text-amber-600 mb-1">
                                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7244,6 +7230,22 @@ export default function AuraAnalysis() {
                                       <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((i) => (
                                           <span key={i} className={`w-2 h-2 rounded-full ${i <= Math.floor((result.chakraActivity?.heart || 5 || 5) / 2) ? 'bg-purple-500' : 'bg-purple-200'}`}></span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg p-3 text-center border border-pink-200">
+                                    <div className="text-pink-600 mb-1">
+                                      <svg xmlns="http://www.w3.org/2001/svg" className="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4M12 4v16" />
+                                      </svg>
+                                    </div>
+                                    <h5 className="font-medium text-sm">Aura Quality</h5>
+                                    <div className="mt-1 flex justify-center">
+                                      <div className="flex space-x-1">
+                                        {[1, 2, 3, 4, 5].map((i) => (
+                                          <span key={i} className={`w-2 h-2 rounded-full ${i <= Math.floor((result.chakraActivity?.solarPlexus || 5 || 5) / 2) ? 'bg-pink-500' : 'bg-pink-200'}`}></span>
                                         ))}
                                       </div>
                                     </div>
@@ -7319,7 +7321,7 @@ export default function AuraAnalysis() {
                                             <div>
                                               <span className="font-medium block text-sm text-indigo-900">{trait}</span>
                                               <span className="text-xs text-gray-600 block mt-1 leading-relaxed">
-                                                {getTraitExplanation(trait, result.dominantColor)}
+                                                {getTraitExplanation({ trait, color: result.dominantColor })}
                                               </span>
                                             </div>
                                           </div>
@@ -7349,7 +7351,7 @@ export default function AuraAnalysis() {
                                         Growth Opportunities
                                       </h5>
                                       <p className="text-xs text-amber-700">
-                                        {getPersonalityGrowthAreas(result.dominantColor, result.personalityTraits)}
+                                        {getPersonalityGrowthAreas({ color: result.dominantColor, traits: result.personalityTraits })}
                                       </p>
                                     </div>
                                   </div>
@@ -7506,7 +7508,7 @@ export default function AuraAnalysis() {
                                 <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200">
                                   <div className="mb-2">
                                     <p className="text-sm text-gray-600 mb-3">
-                                      The Earth Star Chakra anchors you to earth energy, provides deep grounding, and connects you to planetary consciousness.
+                                      The Earth Star Chakra anchors you to earth energy and ansectral energy, creates a support system nad monetary stability.
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Earth Star Chakra</span>
@@ -7599,7 +7601,6 @@ export default function AuraAnalysis() {
                                               'Black': 'Shadow integration and transformation energy representing deep inner work, void consciousness, and spiritual rebirth through darkness.',
                                               'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
                                               'Brown': 'Earth connection energy representing material stability, physical grounding, and natural wisdom through earthly connections.',
-                                              'Turquoise': 'Heart-throat bridge energy combining emotional healing with clear communication, facilitating authentic expression of feelings.',
                                               'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
                                               'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
                                               'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',

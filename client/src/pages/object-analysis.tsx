@@ -170,20 +170,22 @@ export default function ObjectAnalysis() {
       
       // Enhanced color mapping for object auras with comprehensive color palette
       const objectColorMap: Record<string, string> = {
-        'Crimson': '#DC143C', 'Scarlet': '#FF2400', 'Ruby': '#E0115F', 'Coral': '#FF7F50',
-        'Salmon': '#FA8072', 'Rose': '#FF007F', 'Orange': '#FFA500', 'Amber': '#FFBF00',
-        'Copper': '#B87333', 'Bronze': '#CD7F32', 'Apricot': '#FBCEB1', 'Peach': '#FFCBA4',
-        'Yellow': '#FFFF00', 'Gold': '#FFD700', 'Citrine': '#E4D00A', 'Lemon': '#FFF700',
-        'Cream': '#FFFDD0', 'Ivory': '#FFFFF0', 'Emerald': '#50C878', 'Jade': '#00A86B',
-        'Forest': '#228B22', 'Lime': '#32CD32', 'Mint': '#98FB98', 'Sage': '#9CAF88',
-        'Azure': '#007FFF', 'Sapphire': '#0F52BA', 'Cobalt': '#0047AB', 'Navy': '#000080',
-        'Teal': '#008080', 'Aqua': '#00FFFF', 'Amethyst': '#9966CC', 'Lavender': '#E6E6FA',
-        'Plum': '#DDA0DD', 'Mauve': '#E0B0FF', 'Periwinkle': '#CCCCFF', 'Lilac': '#C8A2C8',
-        'Magenta': '#FF00FF', 'Fuchsia': '#FF77FF', 'Pink': '#FFC0CB', 'Blush': '#DE5D83',
-        'Cherry': '#DE3163', 'Wine': '#722F37', 'Silver': '#C0C0C0', 'Platinum': '#E5E4E2',
-        'Pearl': '#F0EAD6', 'Opal': '#A8C3BC', 'Moonstone': '#3AA8C1', 'Crystal': '#A7D8DE',
-        'Red': '#FF0000', 'Green': '#008000', 'Blue': '#0000FF', 'Purple': '#800080',
-        'White': '#FFFFFF', 'Black': '#000000', 'Gray': '#808080', 'Brown': '#A52A2A'
+        
+        
+        'Yellow': '#FFFF00',
+        'Violet': '#8A2BE2',
+        'Indigo': '#4B0082',
+        'Gold': '#FFD700',
+        'Pink': '#FFC0CB',
+        'Silver': '#C0C0C0',
+        'Red': '#FF0000',
+        'Green': '#008000',
+        'Blue': '#0000FF',
+        'Purple': '#800080',
+        'White': '#FFFFFF',
+        'Black': '#000000',
+        'Gray': '#808080',
+        'Brown': '#A52A2A'
       };
       const auraHex = objectColorMap[auraColor] || '#9370DB';
       const auraRgb = hexToRgb(auraHex);
@@ -366,9 +368,7 @@ export default function ObjectAnalysis() {
       'violet': 'sepia(100%) saturate(200%) hue-rotate(260deg) brightness(1.1)',
       'indigo': 'sepia(100%) saturate(200%) hue-rotate(240deg) brightness(1.0)',
       'gold': 'sepia(90%) saturate(90%) hue-rotate(10deg) brightness(1.2)',
-      'silver': 'grayscale(30%) brightness(1.2) contrast(110%)',
-      'turquoise': 'sepia(100%) saturate(200%) hue-rotate(180deg) brightness(1.2)',
-      'magenta': 'sepia(100%) saturate(200%) hue-rotate(300deg) brightness(1.1)'
+      'silver': 'grayscale(30%) brightness(1.2) contrast(110%)'
     };
     
     return colorFilters[auraColor.toLowerCase()] || 'sepia(20%) saturate(70%) hue-rotate(150deg) brightness(1.3)';
@@ -687,8 +687,7 @@ export default function ObjectAnalysis() {
       "White": "White aura represents pure divine energy, spiritual protection, and cosmic consciousness. Objects carrying white energy provide spiritual cleansing, divine connection, and energetic purification. This vibration indicates highest spiritual attunement.",
       "Black": "Black aura signifies deep shadow work required, emotional blockages, and spiritual darkness. Objects with black energy carry heavy negative vibrations, suppressed trauma, and dark spiritual influences that require intensive healing and cleansing.",
       "Gold": "Gold aura embodies divine wisdom, spiritual mastery, and enlightened consciousness. Objects with gold energy enhance spiritual teaching, divine connection, and wisdom transmission. This vibration indicates advanced spiritual development.",
-      "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom.",
-      "Turquoise": "Turquoise aura signifies emotional healing, spiritual purification, and heart-centered living. Objects with turquoise energy promote emotional balance, heart chakra opening, and spiritual healing. This color indicates divine feminine energy and heart healing.",
+      "Silver": "Silver aura represents lunar energy, psychic sensitivity, and emotional intuition. Objects carrying silver energy enhance psychic abilities, dream work, and emotional clarity. This color indicates connection to lunar cycles and feminine wisdom."
         
     };
     return colorMeanings[color] || `${color} aura embodies unique spiritual frequencies and metaphysical properties. Objects carrying ${color.toLowerCase()} energy provide specialized vibrational healing and consciousness expansion through distinctive color therapy principles.`;
@@ -697,74 +696,32 @@ export default function ObjectAnalysis() {
   const getColorPositiveTraits = (color: string): string => {
     const positiveTraits: Record<string, string> = {
       // Red Family
-      "Crimson": "Ignites passionate life force, strengthens warrior spirit, enhances primal power, promotes bold action, activates survival instincts",
-      "Scarlet": "Awakens sacred fire energy, promotes divine courage, enhances spiritual passion, supports transformative power, ignites soul awakening",
-      "Ruby": "Amplifies royal vitality, strengthens noble power, enhances commanding presence, promotes leadership energy, activates regal strength",
       "Red": "Increases physical vitality, strengthens willpower, enhances survival instincts, promotes courage, grounds excess energy",
       
       // Orange Family  
-      "Coral": "Provides emotional healing wisdom, enhances fluid adaptability, promotes nurturing protection, supports gentle strength, brings ocean wisdom",
-      "Salmon": "Activates life current flow, enhances creative fertility, promotes abundance manifestation, supports reproductive energy, brings flowing vitality",
+      
       "Orange": "Stimulates creativity, balances emotions, enhances personal power, supports artistic expression, promotes emotional healing",
-      "Amber": "Connects to ancient earth wisdom, provides protective energy, enhances timeless insight, supports preserved knowledge, brings earth connection",
-      "Copper": "Activates electrical awakening, enhances neural activation, amplifies psychic abilities, promotes mental clarity, supports conductive energy",
-      "Bronze": "Provides warrior shield protection, enhances enduring courage, promotes strategic power, supports battle wisdom, brings protective strength",
-      "Apricot": "Offers gentle healing warmth, promotes nurturing comfort, enhances peaceful energy, supports harmonious balance, brings soft healing",
-      "Peach": "Enhances sweet harmony, promotes loving kindness, supports emotional balance, provides heart healing, brings gentle strength",
       
       // Yellow Family
-      "Yellow": "Boosts mental clarity, enhances communication, increases confidence, supports learning, amplifies personal power",
+         "Yellow": "Boosts mental clarity, enhances communication, increases confidence, supports learning, amplifies personal power",
       "Gold": "Enhances wisdom, promotes enlightenment, connects to divine mind, supports teaching, amplifies spiritual power",
-      "Citrine": "Activates abundance flow, promotes prosperity energy, enhances wealth manifestation, supports success attraction, brings golden opportunities",
-      "Lemon": "Provides purifying light energy, enhances mental clarity, promotes detoxification power, supports fresh beginnings, brings cleansing energy",
-      "Cream": "Offers pure spiritual essence, enhances divine grace, promotes angelic presence, supports sacred innocence, brings spiritual purity",
-      "Ivory": "Connects to ancient knowledge, enhances timeless wisdom, promotes sacred teachings, supports preserved truth, brings eternal understanding",
       
       // Green Family
-      "Emerald": "Activates heart mastery, promotes unconditional love, enhances emotional healing, supports compassionate wisdom, brings soul connection",
-      "Jade": "Provides protective harmony, enhances balanced energy, promotes peaceful strength, supports stable growth, brings harmonious protection",
-      "Forest": "Connects to nature wisdom, enhances earth connection, promotes natural healing, supports environmental harmony, brings grounding energy",
-      "Lime": "Activates fresh energy, promotes revitalizing power, enhances new growth, supports spring awakening, brings renewal force",
-      "Mint": "Provides cooling balance, enhances soothing energy, promotes mental freshness, supports emotional cooling, brings peaceful clarity",
-      "Sage": "Connects to elder wisdom, enhances ancient knowledge, promotes spiritual guidance, supports ceremonial power, brings sacred understanding",
       "Green": "Opens heart chakra, promotes healing, attracts abundance, enhances compassion, connects to nature",
       
       // Blue Family
-      "Azure": "Connects to sky consciousness, enhances limitless awareness, promotes infinite potential, supports heavenly connection, brings divine perspective",
-      "Sapphire": "Activates truth crystal energy, enhances divine wisdom, promotes spiritual insight, supports celestial knowledge, brings sacred communication",
-      "Cobalt": "Provides deep truth understanding, enhances oceanic wisdom, promotes mysterious knowledge, supports hidden insights, brings profound understanding",
-      "Navy": "Enhances authority power, promotes command presence, strengthens leadership energy, supports disciplined wisdom, brings structured authority",
-      "Teal": "Activates healing waters, promotes emotional cleansing, enhances spiritual purification, supports therapeutic energy, brings soul washing",
-      "Aqua": "Provides flow state consciousness, enhances fluid adaptability, promotes emotional fluidity, supports psychic currents, brings adaptable energy",
       "Blue": "Enhances communication, promotes truth, brings peace, supports teaching, activates throat chakra",
       
       // Purple Family
-      "Amethyst": "Provides spiritual protection, enhances psychic shielding, promotes divine connection, supports mystical awareness, brings soul guarding",
-      "Lavender": "Offers gentle spirituality, promotes peaceful awakening, enhances soft mysticism, supports calming presence, brings serene wisdom",
-      "Plum": "Activates royal mysticism, enhances noble spirituality, promotes regal intuition, supports aristocratic wisdom, brings refined consciousness",
-      "Mauve": "Provides subtle magic, enhances gentle enchantment, promotes soft power, supports understated strength, brings quiet wisdom",
-      "Periwinkle": "Connects to fairy energy, enhances magical lightness, promotes ethereal connection, supports whimsical power, brings enchanted awareness",
-      "Lilac": "Activates spring awakening, promotes new spiritual growth, enhances fresh intuition, supports budding psychic abilities, brings emerging wisdom",
       "Purple": "Enhances spiritual awareness, deepens meditation practice, amplifies intuitive abilities, connects to divine guidance, promotes mystical experiences",
       "Indigo": "Amplifies psychic abilities, enhances intuition, supports spiritual seeing, deepens meditation, activates third eye",
       "Violet": "Promotes spiritual transformation, enhances consciousness elevation, supports mystical awakening, brings divine connection, activates soul evolution",
       
       // Pink/Magenta Family
-      "Magenta": "Activates divine rebellion, enhances unconventional wisdom, promotes breakthrough energy, supports revolutionary spirit, brings paradigm shifting",
-      "Fuchsia": "Provides electric passion, enhances intense creativity, promotes vibrant expression, supports dynamic energy, brings powerful manifestation",
       "Pink": "Promotes self-love, enhances compassion, supports emotional healing, opens heart, brings nurturing energy",
-      "Blush": "Offers innocent awakening, promotes gentle emergence, enhances soft power, supports tender strength, brings delicate wisdom",
-      "Cherry": "Activates sweet vitality, enhances joyful energy, promotes celebratory spirit, supports life appreciation, brings happiness manifestation",
-      "Wine": "Provides mature wisdom, enhances aged knowledge, promotes refined understanding, supports sophisticated insight, brings cultured awareness",
-      "Rose": "Activates divine love frequency, enhances unconditional acceptance, promotes heart opening, supports compassionate healing, brings soul recognition",
       
       // Metallic Family
       "Silver": "Enhances psychic sensitivity, supports dream work, amplifies intuition, connects to lunar energy, promotes emotional clarity",
-      "Platinum": "Activates rare excellence, enhances precious energy, promotes refined power, supports elite consciousness, brings exceptional awareness",
-      "Pearl": "Connects to ocean treasure, enhances hidden wisdom, promotes deep mysteries, supports lunar magic, brings feminine power",
-      "Opal": "Activates rainbow consciousness, enhances multi-dimensional awareness, promotes spectrum energy, supports prismatic wisdom, brings colorful insight",
-      "Moonstone": "Connects to cyclical wisdom, enhances natural rhythms, promotes feminine cycles, supports intuitive timing, brings lunar connection",
-      "Crystal": "Provides pure amplification, enhances energy enhancement, promotes clarity magnification, supports spiritual broadcasting, brings divine transmission",
       
       // Neutral Family
       "White": "Provides spiritual protection, purifies energy, connects to divine, enhances clarity, promotes peace",
@@ -990,7 +947,7 @@ export default function ObjectAnalysis() {
                   Professional Object Reading Required
                 </CardTitle>
                 <CardDescription className="text-white/70 text-lg">
-                  Object analysis requires professional interpretation for accurate spiritual insights
+                  Object analysis requires professional interpretation for accurate spiritual insights.You can run an analysis yourself but the healer can provide the same along with remedies and personalised guidance.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
