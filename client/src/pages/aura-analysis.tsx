@@ -3270,7 +3270,7 @@ export default function AuraAnalysis() {
     
     // Create horizontal gradient blending from left (giving) to right (receiving)
     const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.18)`);
+    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
     horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
     horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
     horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.18)`);
@@ -3503,9 +3503,9 @@ export default function AuraAnalysis() {
           break;
         case 'giving':
           gradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
-          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
-          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.3)`);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.4)`);
           break;
         case 'personality':
           gradient = ctx.createLinearGradient(0, height, 0, height * 0.6);
