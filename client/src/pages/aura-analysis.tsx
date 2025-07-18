@@ -3349,17 +3349,23 @@ export default function AuraAnalysis() {
             const zone = zones[energyKey];
             
             if (zone) {
-                // Layer 1: Large background diffusion
-                createDiffusedSmokeLayer(color, zone, 25, PARTICLE_SIZES.large, 50, 0.45, 'soft-light');
+                // Layer 1: Large background diffusion - maximum blur for diffused effect
+                createDiffusedSmokeLayer(color, zone, 50, PARTICLE_SIZES.large, 80, 0.7, 'soft-light');
                 
-                // Layer 2: Medium blend particles
-                createDiffusedSmokeLayer(color, zone, 30, PARTICLE_SIZES.medium, 35, 0.35, 'multiply');
+                // Layer 2: Medium blend particles - heavy blur for smooth blending
+                createDiffusedSmokeLayer(color, zone, 60, PARTICLE_SIZES.medium, 65, 0.6, 'multiply');
                 
-                // Layer 3: Small atmospheric particles
-                createDiffusedSmokeLayer(color, zone, 35, PARTICLE_SIZES.small, 20, 0.25, 'overlay');
+                // Layer 3: Small atmospheric particles - ultra dense and diffused
+                createDiffusedSmokeLayer(color, zone, 80, PARTICLE_SIZES.small, 45, 0.5, 'overlay');
                 
-                // Layer 4: Tiny detail particles
-                createDiffusedSmokeLayer(color, zone, 25, PARTICLE_SIZES.tiny, 10, 0.15, 'screen');
+                // Layer 4: Tiny detail particles - maximum density for blending
+                createDiffusedSmokeLayer(color, zone, 70, PARTICLE_SIZES.tiny, 25, 0.4, 'screen');
+                
+                // Layer 5: Extra dense diffusion layer - heavy blur for maximum density
+                createDiffusedSmokeLayer(color, zone, 45, PARTICLE_SIZES.medium, 70, 0.3, 'multiply');
+                
+                // Layer 6: Ultra-heavy blur layer for maximum diffusion
+                createDiffusedSmokeLayer(color, zone, 30, PARTICLE_SIZES.large, 100, 0.25, 'color-dodge');
             }
         });
         
@@ -3367,23 +3373,50 @@ export default function AuraAnalysis() {
         ctx.save();
         ctx.globalCompositeOperation = 'soft-light';
         
-        // Horizontal gradient (giving to receiving)
+        // Horizontal gradient (giving to receiving) - much darker and more diffused
         const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`);
-        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
-        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`);
+        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.45)`);
+        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.35)`);
+        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.45)`);
         
         ctx.fillStyle = horizontalGradient;
         ctx.fillRect(0, 0, width, height);
         
-        // Vertical gradient (thinking to personality)
+        // Vertical gradient (thinking to personality) - increased opacity for darker effect
         const verticalGradient = ctx.createLinearGradient(0, 0, 0, height);
-        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.1)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.1)`);
-        verticalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.42)`);
+        verticalGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.25)`);
+        verticalGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`);
+        verticalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.38)`);
         
         ctx.fillStyle = verticalGradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        ctx.restore();
+        
+        // Add cross-gradient blending layers for maximum diffusion
+        ctx.save();
+        ctx.globalCompositeOperation = 'multiply';
+        
+        // Create diagonal gradient for better color blending
+        const diagonalGradient = ctx.createLinearGradient(0, 0, width, height);
+        diagonalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.2)`);
+        diagonalGradient.addColorStop(0.25, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
+        diagonalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
+        diagonalGradient.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.2)`);
+        diagonalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
+        
+        ctx.fillStyle = diagonalGradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Add radial diffusion from center for smoother blending
+        const radialBlend = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height) * 0.7);
+        radialBlend.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.05)`);
+        radialBlend.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
+        radialBlend.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.1)`);
+        radialBlend.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
+        
+        ctx.fillStyle = radialBlend;
         ctx.fillRect(0, 0, width, height);
         
         ctx.restore();
