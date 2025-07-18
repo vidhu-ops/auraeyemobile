@@ -3350,16 +3350,16 @@ export default function AuraAnalysis() {
             
             if (zone) {
                 // Layer 1: Large background diffusion
-                createDiffusedSmokeLayer(color, zone, 20, PARTICLE_SIZES.large, 50, 0.12, 'soft-light');
+                createDiffusedSmokeLayer(color, zone, 25, PARTICLE_SIZES.large, 50, 0.45, 'soft-light');
                 
                 // Layer 2: Medium blend particles
-                createDiffusedSmokeLayer(color, zone, 25, PARTICLE_SIZES.medium, 35, 0.08, 'multiply');
+                createDiffusedSmokeLayer(color, zone, 30, PARTICLE_SIZES.medium, 35, 0.35, 'multiply');
                 
                 // Layer 3: Small atmospheric particles
-                createDiffusedSmokeLayer(color, zone, 30, PARTICLE_SIZES.small, 20, 0.06, 'overlay');
+                createDiffusedSmokeLayer(color, zone, 35, PARTICLE_SIZES.small, 20, 0.25, 'overlay');
                 
                 // Layer 4: Tiny detail particles
-                createDiffusedSmokeLayer(color, zone, 20, PARTICLE_SIZES.tiny, 10, 0.04, 'screen');
+                createDiffusedSmokeLayer(color, zone, 25, PARTICLE_SIZES.tiny, 10, 0.15, 'screen');
             }
         });
         
@@ -3369,19 +3369,19 @@ export default function AuraAnalysis() {
         
         // Horizontal gradient (giving to receiving)
         const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
-        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
+        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.25)`);
+        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
+        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`);
         
         ctx.fillStyle = horizontalGradient;
         ctx.fillRect(0, 0, width, height);
         
         // Vertical gradient (thinking to personality)
         const verticalGradient = ctx.createLinearGradient(0, 0, 0, height);
-        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.03)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.03)`);
-        verticalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.1)`);
+        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
+        verticalGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.1)`);
+        verticalGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.1)`);
+        verticalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
         
         ctx.fillStyle = verticalGradient;
         ctx.fillRect(0, 0, width, height);
