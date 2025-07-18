@@ -913,7 +913,7 @@ export default function AuraAnalysis() {
     try {
       toast({
         title: "Generating PDF",
-        description: "Creating your complete spiritual analysis report...",
+        description: "Creating your complete spiritual analysis report with all visual elements...",
       });
 
       const pdf = new jsPDF({
@@ -923,44 +923,62 @@ export default function AuraAnalysis() {
       });
 
       const pageWidth = 190;
-      const pageHeight = 350;
       let yPosition = 50;
       
-      // Add title page
-      pdf.setFontSize(22);
-      pdf.setTextColor(75, 85, 99);
+      // Add title page with Google Docs style
+      pdf.setFontSize(26);
+      pdf.setTextColor(34, 34, 34);
       pdf.text('Aura and Chakra', 105, yPosition, { align: 'center' });
       
-      yPosition += 10;
-      pdf.setFontSize(22);
+      yPosition += 12;
+      pdf.setFontSize(26);
       pdf.text('Alignment Report', 105, yPosition, { align: 'center' });
       
-      yPosition += 20;
-      pdf.setFontSize(12);
+      yPosition += 25;
+      pdf.setFontSize(14);
+      pdf.setTextColor(95, 99, 104);
       const date = new Date().toLocaleDateString();
       pdf.text(`Generated on: ${date}`, 105, yPosition, { align: 'center' });
       
-      yPosition += 15;
-      pdf.setFontSize(12);
-      pdf.setTextColor(107, 114, 128);
+      yPosition += 10;
+      pdf.setFontSize(14);
       pdf.text(`Report created by: ${user?.username || 'Unknown User'}`, 105, yPosition, { align: 'center' });
       
       yPosition += 8;
-      console.log('PDF Generation - analysisName:', analysisName);
-      console.log('PDF Generation - result.name:', result?.name);
       const nameToUse = analysisName || result?.name || 'Unnamed';
       const reportForText = `Report created for: ${nameToUse}`;
       pdf.text(reportForText, 105, yPosition, { align: 'center' });
 
-      // Start content
+      // Add decorative line
+      yPosition += 20;
+      pdf.setLineWidth(0.5);
+      pdf.setDrawColor(218, 220, 224);
+      pdf.line(20, yPosition, pageWidth, yPosition);
+
+      // Define all tabs to capture - using actual tab IDs from the interface
+      const tabs = [
+        { id: 'analysis', name: 'Analysis Overview' },
+        { id: 'energy-reading', name: 'Chakra Score' },
+        { id: 'chakras', name: 'Detailed Chakras Analysis' },
+        { id: 'guidance', name: 'Spiritual Guidance' },
+        { id: 'spectrum', name: 'Color Spectrum' },
+        { id: 'energy-map', name: 'Energy Map' },
+        { id: 'detailed', name: 'Detailed Analysis' },
+        { id: 'combined', name: 'Combined Analysis' }
+      ];
+
+      // Get current active tab to restore later
+      const currentTab = activeTab;
+
+      // First add the aura visualization image on page 2
       pdf.addPage();
       yPosition = 30;
-
+      
       // Add aura visualization image if available
       if (enhancedAuraImage) {
         try {
           pdf.setFontSize(18);
-          pdf.setTextColor(75, 85, 99);
+          pdf.setTextColor(34, 34, 34);
           pdf.text('Aura Visualization', 20, yPosition);
           yPosition += 15;
           
@@ -971,26 +989,25 @@ export default function AuraAnalysis() {
           // Wait for image to load to get accurate dimensions
           await new Promise<void>((resolve) => {
             tempImg.onload = () => resolve();
-            tempImg.onerror = () => resolve(); // Continue even if image fails to load
+            tempImg.onerror = () => resolve();
             tempImg.src = enhancedAuraImage;
           });
           
           // Use full page width for the image (A4 page width minus margins)
-          const pageWidthMm = 210; // A4 width in mm
-          const margin = 20; // Margins in mm
-          const maxImageWidth = pageWidthMm - (margin * 2); // 170mm
+          const pageWidthMm = 210;
+          const margin = 20;
+          const maxImageWidth = pageWidthMm - (margin * 2);
           
-          // Calculate height maintaining exact aspect ratio from processed aura image
-          // Default to 900:1800 aspect ratio (our standard aura image dimensions)
+          // Calculate height maintaining exact aspect ratio
           const originalAspectRatio = tempImg.naturalWidth && tempImg.naturalHeight 
             ? tempImg.naturalWidth / tempImg.naturalHeight 
-            : 900/1800; // Standard aura image aspect ratio (1:2)
+            : 1600/900;
           
           const imageWidth = maxImageWidth;
           const imageHeight = imageWidth / originalAspectRatio;
           
           // Ensure image doesn't exceed page height
-          const maxImageHeight = 120; // Maximum height in mm
+          const maxImageHeight = 120;
           let finalImageWidth = imageWidth;
           let finalImageHeight = imageHeight;
           
@@ -999,859 +1016,255 @@ export default function AuraAnalysis() {
             finalImageWidth = finalImageHeight * originalAspectRatio;
           }
           
-          // Check if image fits on current page, if not start new page
-          if (yPosition + finalImageHeight > 270) {
-            pdf.addPage();
-            yPosition = 30;
-            pdf.setFontSize(18);
-            pdf.setTextColor(75, 85, 99);
-            pdf.text('Aura Visualization', 20, yPosition);
-            yPosition += 15;
+          // Center the image horizontally
+          const xPosition = (pageWidthMm - finalImageWidth) / 2;
+          
+          pdf.addImage(enhancedAuraImage, 'PNG', xPosition, yPosition, finalImageWidth, finalImageHeight);
+          yPosition += finalImageHeight + 20;
+          
+        } catch (error) {
+          console.error('Error adding aura image to PDF:', error);
+        }
+      }
+
+      // Capture screenshots of all tabs with improved detection
+      const screenshots: { [key: string]: string } = {};
+      
+      for (const tab of tabs) {
+        try {
+          // Switch to the tab
+          setActiveTab(tab.id);
+          
+          // Wait longer for tab content to render completely
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Multiple strategies to find tab content
+          let tabContent = null;
+          
+          // Strategy 1: Find by exact tab ID
+          tabContent = document.querySelector(`[data-tab="${tab.id}"]`);
+          
+          // Strategy 2: Find by tab content class when active
+          if (!tabContent) {
+            tabContent = document.querySelector('.tab-content');
           }
           
-          const imageX = (pageWidthMm - finalImageWidth) / 2; // Center horizontally
+          // Strategy 3: Find the main content area
+          if (!tabContent) {
+            tabContent = document.querySelector('.space-y-6');
+          }
           
-          pdf.addImage(enhancedAuraImage, 'JPEG', imageX, yPosition, finalImageWidth, finalImageHeight);
-          yPosition += finalImageHeight + 15;
+          // Strategy 4: Find by specific content containers
+          if (!tabContent) {
+            const selectors = [
+              '.bg-white.rounded-lg.p-6',
+              '.bg-gray-50.p-6',
+              '.grid.grid-cols-1.gap-6',
+              '.flex.flex-col.space-y-4',
+              '.aura-tab-content'
+            ];
+            
+            for (const selector of selectors) {
+              tabContent = document.querySelector(selector);
+              if (tabContent) break;
+            }
+          }
           
-          // Add image description
-          pdf.setFontSize(10);
-          pdf.setTextColor(100, 116, 139);
-          pdf.text('Your complete aura visualization with energy colors and patterns', 105, yPosition, { align: 'center' });
-          yPosition += 20;
+          // Strategy 5: Find the main container div
+          if (!tabContent) {
+            tabContent = document.querySelector('main > div') || 
+                        document.querySelector('.container > div') ||
+                        document.querySelector('div[class*="space-y"]');
+          }
           
-        } catch (imageError) {
-          console.error('Error adding aura image to PDF:', imageError);
-          // Continue without the image if there's an error
+          if (tabContent && tabContent.scrollWidth > 0 && tabContent.scrollHeight > 0) {
+            // Ensure element is visible and has content
+            const rect = tabContent.getBoundingClientRect();
+            
+            if (rect.width > 0 && rect.height > 0) {
+              // Capture screenshot of the tab content with enhanced settings
+              const canvas = await html2canvas(tabContent as HTMLElement, {
+                backgroundColor: '#ffffff',
+                scale: 1.5, // Reduced scale for better performance
+                useCORS: true,
+                allowTaint: true,
+                scrollX: 0,
+                scrollY: 0,
+                width: tabContent.scrollWidth,
+                height: tabContent.scrollHeight,
+                logging: false, // Disable logging to reduce console noise
+                ignoreElements: (element) => {
+                  // Ignore certain elements that might cause issues
+                  return element.tagName === 'SCRIPT' || 
+                         element.tagName === 'STYLE' ||
+                         element.classList.contains('toast') ||
+                         element.classList.contains('tooltip');
+                }
+              });
+              
+              screenshots[tab.id] = canvas.toDataURL('image/png');
+              console.log(`Successfully captured tab: ${tab.id} (${rect.width}x${rect.height})`);
+            } else {
+              console.warn(`Tab ${tab.id} has zero dimensions: ${rect.width}x${rect.height}`);
+            }
+          } else {
+            console.warn(`Tab content not found or has zero size for tab: ${tab.id}`);
+          }
+        } catch (error) {
+          console.error(`Error capturing screenshot for tab ${tab.id}:`, error);
         }
       }
 
-      // BASIC ANALYSIS
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Basic Analysis', 20, yPosition);
-      yPosition += 15;
+      // Restore original tab
+      setActiveTab(currentTab);
 
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text(`Primary Aura Color: ${result.dominantColor}`, 20, yPosition);
-      yPosition += 8;
-      pdf.text(`Secondary Aura Color: ${result.secondaryColor}`, 20, yPosition);
-      yPosition += 8;
-      pdf.text(`Energy Level: ${result.energyLevel}`, 20, yPosition);
-      yPosition += 15;
-
-      if (result.spiritualGuidance) {
-        pdf.text('Aura Description:', 20, yPosition);
-        yPosition += 8;
-        const descLines = pdf.splitTextToSize(result.spiritualGuidance, pageWidth - 40);
-        pdf.text(descLines, 20, yPosition);
-        yPosition += descLines.length * 6 + 10;
-      }
-
-      // ENERGY READING
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Energy Reading', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      
-      pdf.text(`Primary Color Analysis - ${result.dominantColor}:`, 20, yPosition);
-      yPosition += 8;
-      const dominantMeaning = getColorMeaningForEnergyTab(result.dominantColor);
-      const positiveLines = pdf.splitTextToSize(dominantMeaning, pageWidth - 40);
-      pdf.text(positiveLines, 20, yPosition);
-      yPosition += positiveLines.length * 6 + 10;
-
-      if (result.secondaryColor) {
-        pdf.text(`Secondary Color Analysis - ${result.secondaryColor}:`, 20, yPosition);
-        yPosition += 8;
-        const secondaryMeaning = getColorMeaningForEnergyTab(result.secondaryColor);
-        const secondaryLines = pdf.splitTextToSize(secondaryMeaning, pageWidth - 40);
-        pdf.text(secondaryLines, 20, yPosition);
-        yPosition += secondaryLines.length * 6 + 10;
-      }
-
-      // COLOR SPECTRUM
-      if (yPosition > 220) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Extended Color Spectrum', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      
-      // Display 4 colors with meanings
-      const spectrumColors = [
-        result.dominantColor,
-        result.secondaryColor,
-        result.auraColorSpectrum?.[2] || 'Gold',
-        result.auraColorSpectrum?.[3] || 'White'
-      ];
-
-      spectrumColors.forEach((color, index) => {
-        if (color) {
-          pdf.text(`${index + 1}. ${color}: ${getColorKeyword(color)}`, 20, yPosition);
-          yPosition += 8;
+      // Add each tab screenshot to the PDF with enhanced layout
+      for (const tab of tabs) {
+        if (screenshots[tab.id]) {
+          pdf.addPage();
+          yPosition = 30;
+          
+          // Add section header with Google Docs styling
+          pdf.setFontSize(20);
+          pdf.setTextColor(34, 34, 34);
+          pdf.text(tab.name, 20, yPosition);
+          yPosition += 15;
+          
+          // Add decorative line
+          pdf.setLineWidth(0.5);
+          pdf.setDrawColor(218, 220, 224);
+          pdf.line(20, yPosition, pageWidth, yPosition);
+          yPosition += 15;
+          
+          // Add the screenshot with proper sizing and aspect ratio
+          try {
+            // Create a temporary image to get dimensions
+            const img = new Image();
+            img.src = screenshots[tab.id];
+            
+            // Calculate optimal dimensions
+            const pageWidthMm = 210; // A4 width
+            const pageHeightMm = 297; // A4 height
+            const margin = 20;
+            const availableWidth = pageWidthMm - (margin * 2);
+            const availableHeight = pageHeightMm - yPosition - 30; // Leave space for footer
+            
+            // Use natural image dimensions if available, otherwise use default
+            const naturalWidth = img.naturalWidth || 1000;
+            const naturalHeight = img.naturalHeight || 1000;
+            const aspectRatio = naturalWidth / naturalHeight;
+            
+            // Calculate dimensions to fit within available space
+            let imgWidth = Math.min(availableWidth, 160);
+            let imgHeight = imgWidth / aspectRatio;
+            
+            // If height is too large, scale down based on height
+            if (imgHeight > availableHeight) {
+              imgHeight = Math.min(availableHeight, 200);
+              imgWidth = imgHeight * aspectRatio;
+            }
+            
+            // Center the image horizontally
+            const xPos = (pageWidthMm - imgWidth) / 2;
+            
+            pdf.addImage(screenshots[tab.id], 'PNG', xPos, yPosition, imgWidth, imgHeight);
+            
+            console.log(`Added screenshot for tab ${tab.id}: ${imgWidth}x${imgHeight}mm`);
+            
+          } catch (error) {
+            console.error(`Error adding screenshot for tab ${tab.id}:`, error);
+            
+            // Add a fallback message if screenshot fails
+            pdf.setFontSize(12);
+            pdf.setTextColor(107, 114, 128);
+            pdf.text(`[Screenshot for ${tab.name} could not be captured]`, 20, yPosition);
+          }
+        } else {
+          // Add page even if no screenshot, with explanation
+          pdf.addPage();
+          yPosition = 30;
+          
+          pdf.setFontSize(20);
+          pdf.setTextColor(34, 34, 34);
+          pdf.text(tab.name, 20, yPosition);
+          yPosition += 15;
+          
+          pdf.setLineWidth(0.5);
+          pdf.setDrawColor(218, 220, 224);
+          pdf.line(20, yPosition, pageWidth, yPosition);
+          yPosition += 15;
+          
+          pdf.setFontSize(12);
+          pdf.setTextColor(107, 114, 128);
+          pdf.text(`[Content for ${tab.name} tab could not be captured]`, 20, yPosition);
+          yPosition += 10;
+          pdf.text('This tab may contain dynamic content that requires manual viewing.', 20, yPosition);
+          
+          console.log(`No screenshot available for tab: ${tab.id}`);
         }
-      });
+      }
+
+      // Add summary page
+      pdf.addPage();
+      yPosition = 30;
+      
+      pdf.setFontSize(20);
+      pdf.setTextColor(34, 34, 34);
+      pdf.text('Professional Summary', 20, yPosition);
+      yPosition += 15;
+      
+      pdf.setLineWidth(0.5);
+      pdf.setDrawColor(218, 220, 224);
+      pdf.line(20, yPosition, pageWidth, yPosition);
+      yPosition += 20;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('This comprehensive spiritual analysis report includes:', 20, yPosition);
       yPosition += 10;
-
-      // AURA LAYER BREAKDOWN
-      if (result.auraLayerColors) {
-        pdf.text('Aura Layer Analysis:', 20, yPosition);
-        yPosition += 10;
-
-        if (result.auraLayerColors.inner) {
-          pdf.text(`Receiving Layer - ${result.auraLayerColors.inner}:`, 20, yPosition);
-          yPosition += 6;
-          const innerLines = pdf.splitTextToSize(getLayerMeaning('inner', result.auraLayerColors.inner), pageWidth - 40);
-          pdf.text(innerLines, 20, yPosition);
-          yPosition += innerLines.length * 6 + 8;
-        }
-
-        if (result.auraLayerColors.middle) {
-          pdf.text(`Giving Layer - ${result.auraLayerColors.middle}:`, 20, yPosition);
-          yPosition += 6;
-          const middleLines = pdf.splitTextToSize(getLayerMeaning('middle', result.auraLayerColors.middle), pageWidth - 40);
-          pdf.text(middleLines, 20, yPosition);
-          yPosition += middleLines.length * 6 + 8;
-        }
-
-        if (result.auraLayerColors.outer) {
-          pdf.text(`Thinking Layer - ${result.auraLayerColors.outer}:`, 20, yPosition);
-          yPosition += 6;
-          const outerLines = pdf.splitTextToSize(getLayerMeaning('outer', result.auraLayerColors.outer), pageWidth - 40);
-          pdf.text(outerLines, 20, yPosition);
-          yPosition += outerLines.length * 6 + 8;
-        }
-      }
-
-      // SPIRITUAL GUIDANCE
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Guidance', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-
-      if (result.spiritualGuidance) {
-        const guidanceLines = pdf.splitTextToSize(result.spiritualGuidance, pageWidth - 40);
-        pdf.text(guidanceLines, 20, yPosition);
-        yPosition += guidanceLines.length * 6 + 15;
-      }
-
-      // ENERGY MAP ANALYSIS
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Energy Map', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-
-      // Energy harmony analysis
-      const harmonyAnalysis = getColorHarmonyAnalysis(result.dominantColor, result.secondaryColor, result.auraColorSpectrum);
-      const harmonyLines = pdf.splitTextToSize(harmonyAnalysis, pageWidth - 40);
-      pdf.text(harmonyLines, 20, yPosition);
-      yPosition += harmonyLines.length * 6 + 15;
-
-      // COMBINED ANALYSIS
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Combined Analysis', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-
-      // Color balance and energy pattern
-      const energyPattern = getEnergyPattern(result.dominantColor, result.secondaryColor);
-      const patternLines = pdf.splitTextToSize(energyPattern, pageWidth - 40);
-      pdf.text(patternLines, 20, yPosition);
-      yPosition += patternLines.length * 6 + 15;
-
-      // DETAILED CHAKRA ANALYSIS WITH SCORES
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Detailed Chakra Analysis', 20, yPosition);
-      yPosition += 15;
-
-      // Add chakra scores section
-      pdf.setFontSize(14);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Chakra Activity Levels', 20, yPosition);
-      yPosition += 12;
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-
-      // Define chakras with their scores (9-chakra system)
-      const chakraData = [
-        { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'White', description: 'Divine connection, soul purpose, highest spiritual potential' },
-        { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'Violet', description: 'Spiritual connection, divine wisdom, universal consciousness' },
-        { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'Indigo', description: 'Intuition, inner wisdom, psychic abilities' },
-        { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'Blue', description: 'Communication, truth, self-expression' },
-        { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'Green', description: 'Love, compassion, emotional healing' },
-        { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'Yellow', description: 'Personal power, confidence, willpower' },
-        { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'Orange', description: 'Creativity, sexuality, emotional flow' },
-        { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'Red', description: 'Grounding, survival, physical vitality' },
-        { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'Brown', description: 'Earth connection, grounding, ancestral wisdom' }
-      ];
-
-      chakraData.forEach((chakra, index) => {
-        // Check if we need a new page before adding chakra info
-        if (yPosition > 240) {
-          pdf.addPage();
-          yPosition = 30;
-        }
-
-        // Chakra name and score
-        pdf.setFontSize(12);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text(`${chakra.name}: ${chakra.score}/10 (${chakra.score * 10}%)`, 20, yPosition);
-        yPosition += 8;
-
-        // Chakra description with proper text wrapping
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        const descriptionLines = pdf.splitTextToSize(chakra.description, pageWidth - 40);
-        pdf.text(descriptionLines, 20, yPosition);
-        yPosition += descriptionLines.length * 5 + 8;
-      });
-
-      yPosition += 10;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-
-      // Check for page break before continuing
-      if (yPosition > 220) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Primary chakra connection
-      const primaryChakra = getDetailedPlacement(result.dominantColor);
-      pdf.text(`Primary Chakra Connection - ${result.dominantColor}:`, 20, yPosition);
-      yPosition += 8;
-      const primaryChakraLines = pdf.splitTextToSize(primaryChakra, pageWidth - 40);
-      pdf.text(primaryChakraLines, 20, yPosition);
-      yPosition += primaryChakraLines.length * 5 + 10;
-
-      // Check for page break before secondary chakra
-      if (yPosition > 220) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Secondary chakra connection
-      if (result.secondaryColor) {
-        const secondaryChakra = getDetailedPlacement(result.secondaryColor);
-        pdf.text(`Secondary Chakra Connection - ${result.secondaryColor}:`, 20, yPosition);
-        yPosition += 8;
-        const secondaryChakraLines = pdf.splitTextToSize(secondaryChakra, pageWidth - 40);
-        pdf.text(secondaryChakraLines, 20, yPosition);
-        yPosition += secondaryChakraLines.length * 5 + 10;
-      }
-
-      // Check for page break before strengths
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Chakra strengths and shadow aspects
-      pdf.text('Chakra Strengths:', 20, yPosition);
-      yPosition += 8;
-      const positiveTraits = getPositiveTraits(result.dominantColor);
-      const strengthLines = pdf.splitTextToSize(positiveTraits, pageWidth - 40);
-      pdf.text(strengthLines, 20, yPosition);
-      yPosition += strengthLines.length * 5 + 10;
-
-      // Check for page break before shadow aspects
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.text('Shadow Aspects to Balance:', 20, yPosition);
-      yPosition += 8;
-      const shadowTraits = getShadowTraits(result.dominantColor);
-      const shadowLines = pdf.splitTextToSize(shadowTraits, pageWidth - 40);
-      pdf.text(shadowLines, 20, yPosition);
-      yPosition += shadowLines.length * 5 + 10;
-
-      // Check for page break before healing recommendations
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Chakra healing recommendations
-      pdf.text('Healing Recommendations:', 20, yPosition);
-      yPosition += 8;
-      const healingRec = getColorHealing(result.dominantColor, result.secondaryColor || 'White');
-      const healingLines = pdf.splitTextToSize(healingRec, pageWidth - 40);
-      pdf.text(healingLines, 20, yPosition);
-      yPosition += healingLines.length * 5 + 15;
-
-      // PERSONALITY INTEGRATION ANALYSIS
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(14);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('Personality Integration Analysis', 20, yPosition);
-      yPosition += 12;
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-
-      // Core personality traits and chakra alignment
-      const personalityTraits = result.personalityTraits || result.spiritualGifts || [];
-      const personalityText = `Core Personality Traits: Your dominant ${result.dominantColor} energy reveals ${personalityTraits.slice(0, 3).join(', ')}. These traits directly influence how your chakra system processes and expresses energy.`;
-      const personalityLines = pdf.splitTextToSize(personalityText, pageWidth - 40);
-      pdf.text(personalityLines, 20, yPosition);
-      yPosition += personalityLines.length * 6 + 10;
-
-      // Check for page break before integration patterns
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Integration patterns
-      const integrationText = `Integration Patterns: Your ${result.dominantColor} personality integrates with your chakra system through specific energy patterns. The highest-scoring chakras (${Object.entries(result.chakraActivity || {}).filter(([_, score]) => score >= 8).map(([name, score]) => `${name.replace(/([A-Z])/g, ' $1').trim()} (${score}/10)`).join(', ') || 'crown and third eye'}) show where your personality traits manifest most strongly.`;
-      const integrationLines = pdf.splitTextToSize(integrationText, pageWidth - 40);
-      pdf.text(integrationLines, 20, yPosition);
-      yPosition += integrationLines.length * 5 + 10;
-
-      // Check for page break before energy exchange
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Giving and receiving integration
-      const energyText = `Energy Exchange Integration: Your giving energy (${result.zones?.giving?.colors?.[0] || result.dominantColor}) and receiving energy (${result.zones?.receiving?.colors?.[0] || result.secondaryColor}) create a unique personality blueprint. This combination influences how you interact with others and process emotional experiences through your chakra system.`;
-      const energyLines = pdf.splitTextToSize(energyText, pageWidth - 40);
-      pdf.text(energyLines, 20, yPosition);
-      yPosition += energyLines.length * 5 + 10;
-
-      // Check for page break before thinking pattern
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Thinking pattern integration (updated to reflect 8-chakra system)
-      const thinkingText = `Mental Processing Integration: Your thinking energy (${result.zones?.thinking?.colors?.[0] || result.dominantColor}) shows how your personality processes information and makes decisions. This mental pattern directly affects your upper chakras (third eye, crown) and influences your spiritual development path.`;
-      const thinkingLines = pdf.splitTextToSize(thinkingText, pageWidth - 40);
-      pdf.text(thinkingLines, 20, yPosition);
-      yPosition += thinkingLines.length * 5 + 10;
-
-      // Check for page break before holistic guidance
-      if (yPosition > 200) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      // Holistic integration guidance
-      const holisticText = `Holistic Integration Guidance: To fully integrate your personality with your chakra system, focus on balancing your strongest chakras with your weaker ones. Your ${result.dominantColor} personality thrives when all energy centers work in harmony, creating a unified spiritual and emotional experience.`;
-      const holisticLines = pdf.splitTextToSize(holisticText, pageWidth - 40);
-      pdf.text(holisticLines, 20, yPosition);
-      yPosition += holisticLines.length * 5 + 15;
-
-      // 8 CHAKRA SYSTEM ANALYSIS
-      if (yPosition > 160) {
-        pdf.addPage();
-        yPosition = 30;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text('9 Chakra System Analysis', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-
-      const chakraSystem = get9ChakraAnalysis(result.dominantColor, result.secondaryColor);
       
-      chakraSystem.forEach((chakra, index) => {
-        if (yPosition > 240) {
-          pdf.addPage();
-          yPosition = 30;
-        }
-        
-        pdf.setFontSize(11);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text(`${index + 1}. ${chakra.name} (${chakra.location})`, 20, yPosition);
+      const reportItems = [
+        '• Complete aura visualization with energy patterns',
+        '• Detailed chakra activity analysis with 9-chakra system',
+        '• Color spectrum and energy mapping insights',
+        '• Spiritual guidance and growth recommendations',
+        '• Professional interpretation of energy readings',
+        '• Personalized traits and characteristics analysis'
+      ];
+      
+      reportItems.forEach(item => {
+        pdf.text(item, 25, yPosition);
         yPosition += 8;
-        
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        const chakraLines = pdf.splitTextToSize(chakra.analysis, pageWidth - 40);
-        pdf.text(chakraLines, 20, yPosition);
-        yPosition += chakraLines.length * 5 + 8;
       });
+      
+      yPosition += 15;
+      pdf.setFontSize(10);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text('Generated by Aurfy - Your Spiritual Wellness Platform', 105, yPosition, { align: 'center' });
+      pdf.text(`Report Date: ${new Date().toLocaleDateString()}`, 105, yPosition + 8, { align: 'center' });
 
-      // NUMEROLOGY ANALYSIS
-      if (numerologyResult) {
-        if (yPosition > 180) {
-          pdf.addPage();
-          yPosition = 30;
-        }
-
-        pdf.setFontSize(18);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text('Numerology Analysis', 20, yPosition);
-        yPosition += 15;
-        
-        pdf.setFontSize(12);
-        pdf.setTextColor(55, 65, 81);
-        
-        pdf.text(`Life Path Number: ${numerologyResult.lifePathNumber}`, 20, yPosition);
-        yPosition += 8;
-        pdf.text(`Destiny Number: ${numerologyResult.destinyNumber}`, 20, yPosition);
-        yPosition += 8;
-        pdf.text(`Soul Urge Number: ${numerologyResult.soulUrgeNumber}`, 20, yPosition);
-        yPosition += 8;
-        pdf.text(`Personality Number: ${numerologyResult.personalityNumber}`, 20, yPosition);
-        yPosition += 15;
-        
-        if (numerologyResult.interpretation) {
-          pdf.text('Interpretation:', 20, yPosition);
-          yPosition += 8;
-          const numLines = pdf.splitTextToSize(numerologyResult.interpretation, pageWidth - 40);
-          pdf.text(numLines, 20, yPosition);
-        }
-      }
-
-      // Add healer notes section if available
-      if (isHealer && healerNotes.trim()) {
-        // Check if we need a new page
-        if (yPosition + 40 > 270) {
-          pdf.addPage();
-          yPosition = 30;
-        }
-        
-        // Add healer notes section
-        pdf.setFontSize(16);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text('Professional Healer Notes', 20, yPosition);
-        yPosition += 15;
-        
-        // Add healer information
-        pdf.setFontSize(10);
-        pdf.setTextColor(107, 114, 128);
-        pdf.text(`Healer: ${user?.username || 'Professional Healer'}`, 20, yPosition);
-        yPosition += 8;
-        pdf.text(`Date: ${new Date().toLocaleDateString()}`, 20, yPosition);
-        yPosition += 12;
-        
-        // Add healer notes content
-        pdf.setFontSize(11);
-        pdf.setTextColor(75, 85, 99);
-        const notesLines = pdf.splitTextToSize(healerNotes, pageWidth - 40);
-        pdf.text(notesLines, 20, yPosition);
-        yPosition += (notesLines.length * 5) + 10;
-        
-        // Add separator line
-        pdf.setDrawColor(229, 231, 235);
-        pdf.line(20, yPosition, pageWidth + 10, yPosition);
-        yPosition += 10;
-      }
-
-      // Add footer to all pages
-      const totalPages = pdf.getNumberOfPages();
-      for (let i = 1; i <= totalPages; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(8);
-        pdf.setTextColor(156, 163, 175);
-        pdf.text('Generated by Aurafy - Your Spiritual Wellness Platform', 105, 285, { align: 'center' });
-        pdf.text(`Page ${i} of ${totalPages}`, 190, 285, { align: 'right' });
-      }
-
-      // Add metadata
-      pdf.setProperties({
-        title: 'Aura and Chakra Alignment Report',
-        subject: 'Aura and Chakra Analysis',
-        author: 'Aurafy Spiritual Wellness Platform'
-      });
-
-      // Download
-      const timestamp = new Date().toISOString().split('T')[0];
-      const safeName = (nameToUse || 'unnamed').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-      pdf.save(`aura-chakra-alignment-report-${safeName}-${timestamp}.pdf`);
+      // Save the PDF
+      const filename = `aura-chakra-alignment-report-${nameToUse.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      pdf.save(filename);
 
       toast({
-        title: "PDF Downloaded Successfully",
-        description: "Your Aura and Chakra Alignment Report has been saved",
+        title: "PDF Generated Successfully",
+        description: "Your complete aura analysis report with all visual elements has been downloaded.",
       });
 
     } catch (error) {
-      console.error('PDF Generation Error:', error);
+      console.error('Error generating PDF:', error);
       toast({
-        title: "Download Failed",
-        description: "Could not generate PDF. Please try again.",
+        title: "PDF Generation Failed",
+        description: "There was an error creating your PDF report. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  // Helper function to get color meanings with positive and shadow aspects
-  const getColorMeaning = (colorName: string): string => {
-    const meaningMap: Record<string, string> = {
-      'Red': 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.',
-      'Orange': 'Sacral chakra creative fire igniting passionate artistic expression and joyful emotional flow. This vibrant frequency awakens sensual pleasure, creative abundance, and the ability to manifest dreams through inspired action.',
-      'Yellow': 'Solar plexus radiance illuminating personal power and intellectual brilliance. This golden frequency activates confidence, mental clarity, and the ability to transform knowledge into wisdom while maintaining optimistic leadership.',
-      'Green': 'Heart chakra emerald light radiating unconditional love and natural healing abilities. This nurturing frequency opens compassionate service, emotional balance, and the gift of creating harmony while facilitating deep healing.',
-      'Blue': 'Throat chakra sapphire truth activating authentic communication and peaceful wisdom. This calming frequency enables honest expression, trustworthy leadership, and the ability to speak divine truth with compassion.',
-      'Indigo': 'Third eye indigo flame awakening psychic abilities and intuitive wisdom. This mystical frequency opens spiritual sight, enhances dream work, and develops the ability to see beyond physical reality into deeper truths.',
-      'Violet': 'Crown chakra violet ray connecting to cosmic consciousness and divine guidance. This transcendent frequency opens spiritual channels, enhances meditation, and develops the ability to access higher wisdom.',
-      'Purple': 'Higher crown mystical purple activating spiritual mastery and divine authority. This regal frequency channels cosmic wisdom, enables spiritual teaching, and develops the ability to bridge earthly and heavenly realms.',
-      'Pink': 'Higher heart rose frequency radiating unconditional divine love and emotional healing. This gentle frequency opens soul-level compassion, enables heart healing, and develops the ability to love without conditions.',
-      'Gold': 'Christ consciousness golden flame illuminating soul purpose and divine wisdom. This sacred frequency activates spiritual mastery, enables divine teaching, and develops the ability to guide others toward enlightenment.',
-      'Silver': 'Lunar silver light activating intuitive wisdom and psychic protection. This reflective frequency enhances feminine wisdom, enables emotional sensitivity, and develops the ability to reflect truth.',
-      'White': 'Pure divine light encompassing all frequencies in perfect spiritual protection. This transcendent frequency provides angelic connection, enables spiritual purification, and develops the ability to channel pure divine energy.',
-    };
-    const additionalMeanings: Record<string, string> = {
-      'Gray': 'Neutral wisdom - but requires work',
-      'Black': 'Shadow integration - requires work related to transformation power, deep inner work, void consciousness',
-      'Brown': 'Earth connection - material stability, physical grounding, natural wisdom',
-    };
-    
-    return meaningMap[colorName] || additionalMeanings[colorName] || additionalMeanings[colorName.toLowerCase()] || meaningMap[colorName.toLowerCase()] || meaningMap['getColourMenaing'];
-  }
-
-  const getColorPositiveMeaning = (colorName: string): string => {
-    const redMeaning = {
-      color: 'Red',
-      chakra: 'Root Chakra',
-      number: '1',
-      meaning: 'Root chakra kundalini activation flowing with primal life force energy that empowers your physical vitality and natural leadership magnetism. This fundamental frequency channels courageous action and manifestation power through your earthly presence.'
-    };
-    
-    const orangeMeaning = {
-      color: 'Orange', 
-      chakra: 'Sacral Chakra',
-      number: '2',
-      meaning: 'Sacral chakra harmonization creating perfect balance for creative manifestation and sacred sexual vitality. This dynamic frequency liberates emotional expression while awakening your inner artistic genius and creative soul purpose.'
-    };
-    
-    const yellowMeaning = {
-      color: 'Yellow',
-      chakra: 'Solar Plexus Chakra', 
-      number: '3',
-      meaning: 'Solar plexus power center radiating brilliant mental clarity and digestive harmony while strengthening your personal will and intellectual mastery. This golden frequency illuminates your path to confident self-expression and mental sovereignty.'
-    };
-    
-    const greenMeaning = {
-      color: 'Green',
-      chakra: 'Heart Chakra',
-      number: '4', 
-      meaning: 'Heart chakra opening into unconditional love consciousness with natural healing abilities flowing through your emotional center. This healing frequency creates perfect emotional balance while manifesting prosperity consciousness through heart-centered living.'
-    };
-    
-    const blueMeaning = {
-      color: 'Blue',
-      chakra: 'Throat Chakra',
-      number: '5',
-      meaning: 'Throat chakra clarity channeling divine truth expression through psychic communication abilities and spiritual teaching gifts. This truth frequency establishes peaceful authority while enabling authentic voice expression and sacred communication.'
-    };
-    
-    const indigoMeaning = {
-      color: 'Indigo', 
-      chakra: 'Third Eye Chakra',
-      number: '6',
-      meaning: 'Third eye awakening with clairvoyant sight activation bringing profound spiritual wisdom and intuitive knowing. This mystical frequency opens doorways to higher understanding and psychic perception through divine inner sight.'
-    };
-    
-    const violetMeaning = {
-      color: 'Violet',
-      chakra: 'Crown Chakra',
-      number: '7',
-      meaning: 'Crown chakra activation establishing direct divine connection for spiritual mastery and cosmic consciousness expansion. This enlightened frequency brings awakened awareness and connection to universal wisdom and divine guidance.'
-    };
-    
-    const purpleMeaning = {
-      color: 'Purple',
-      chakra: 'Crown Chakra Higher Octave',
-      number: '7',
-      meaning: 'Royal spiritual power emanating divine nobility with magical abilities and access to higher wisdom realms. This regal frequency channels mystical authority and connection to ancient spiritual knowledge and cosmic sovereignty.'
-    };
-    
-    const pinkMeaning = {
-      color: 'Pink', 
-      chakra: 'Heart Chakra Higher Octave',
-      number: '4',
-      meaning: 'Divine feminine love frequency expressing emotional healing mastery through nurturing power and compassionate leadership. This heart wisdom frequency creates healing through unconditional love and gentle strength expression.'
-    };
-    
-    const goldMeaning = {
-      color: 'Gold',
-      chakra: 'Solar Plexus Higher Octave', 
-      number: '3',
-      meaning: 'Christ consciousness frequency radiating divine wisdom and spiritual wealth through enlightened mastery. This golden frequency provides cosmic protection while channeling divine authority and spiritual abundance through sacred service.'
-    };
-    
-    const silverMeaning = {
-      color: 'Silver',
-      chakra: 'Third Eye Higher Octave',
-      number: '6',
-      meaning: 'Lunar intuition activation providing psychic protection through feminine wisdom and emotional intelligence mastery. This reflective frequency enhances intuitive abilities and creates energetic boundaries through divine feminine power.'
-    };
-    
-    const whiteMeaning = {
-      color: 'White',
-      chakra: 'Crown Chakra Pure Light',
-      number: '7',
-      meaning: 'Pure divine light emanation providing angelic protection and spiritual clarity through cosmic consciousness connection. This pristine frequency channels divine guidance and universal wisdom through clear spiritual perception and enlightened awareness.'
-    };
-    
-    const blackMeaning = {
-      color: 'Black',
-      chakra: 'Shadow Integration Center',
-      number: '0',
-      meaning: 'Blockages : Shadow integration power activating deep inner work and transformative healing through void consciousness. This transformative frequency enables the ability to embrace darkness and manifest spiritual rebirth through shadow work and purification.'
-    };
-
-    const grayMeaning = {
-      color: 'Gray',
-      chakra: 'Neutral Balance Center',
-      number: '0',
-      meaning: 'Blockages - Neutral balance frequency providing spiritual equilibrium and wise neutrality through cosmic neutrality. This balanced frequency channels diplomatic wisdom and peaceful resolution through adaptable spiritual insight and emotional intelligence.'
-    };
-
-    
-    
-    const colorMeanings: Record<string, string> = {
-      'Red': redMeaning.meaning,
-      'Orange': orangeMeaning.meaning,
-      'Yellow': yellowMeaning.meaning, 
-      'Green': greenMeaning.meaning,
-      'Blue': blueMeaning.meaning,
-      'Indigo': indigoMeaning.meaning,
-      'Violet': violetMeaning.meaning,
-      'Purple': purpleMeaning.meaning,
-      'Pink': pinkMeaning.meaning,
-      'Gold': goldMeaning.meaning,
-      'Silver': silverMeaning.meaning,
-      'White': whiteMeaning.meaning,
-      'black': blackMeaning.meaning,
-      'gray': grayMeaning.meaning,
-    };
-    
-    return colorMeanings[colorName] || colorMeanings['Purple'];
-  }
-
-
-
-  const getColorNegativeMeaning = (colorName: string): string => {
-    const redShadow = {
-      color: 'Red',
-      chakra: 'Root Chakra Imbalance',
-      number: '1',
-      meaning: 'Root chakra imbalance manifesting through survival fears and aggressive tendencies that create blood pressure issues and adrenal exhaustion. This overactive frequency can lead to destructive anger patterns and inability to ground spiritual energy properly.'
-    };
-    
-    const orangeShadow = {
-      color: 'Orange',
-      chakra: 'Sacral Chakra Blockage',
-      number: '2',
-      meaning: 'Sacral chakra blockage creating creative stagnation and sexual dysfunction while causing reproductive system imbalances and emotional instability. This restricted frequency prevents authentic creative expression and healthy emotional flow.'
-    };
-    
-    const yellowShadow = {
-      color: 'Yellow',
-      chakra: 'Solar Plexus Weakness',
-      number: '3',
-      meaning: 'Solar plexus weakness generating digestive problems and low self-esteem that manifests as anxiety disorders and constant power struggles. This diminished frequency creates mental confusion and inability to maintain personal boundaries.'
-    };
-    
-    const greenShadow = {
-      color: 'Green',
-      chakra: 'Heart Chakra Closure',
-      number: '4',
-      meaning: 'Heart chakra closure building emotional walls that create relationship difficulties and immune system weakness while manifesting lung problems. This protected frequency prevents authentic love expression and emotional vulnerability.'
-    };
-    
-    const blueShadow = {
-      color: 'Blue',
-      chakra: 'Throat Chakra Blockage',
-      number: '5',
-      meaning: 'Throat chakra blockage causing communication fears and thyroid imbalances that create neck tension and truth suppression. This constricted frequency prevents authentic voice expression and honest spiritual communication.'
-    };
-    
-    const indigoShadow = {
-      color: 'Indigo',
-      chakra: 'Third Eye Cloudiness',
-      number: '6',
-      meaning: 'Third eye cloudiness creating intuitive blocks and chronic headaches while causing vision problems and spiritual confusion. This clouded frequency prevents psychic development and clear spiritual perception.'
-    };
-    
-    const violetShadow = {
-      color: 'Violet',
-      chakra: 'Crown Chakra Disconnection',
-      number: '7',
-      meaning: 'Crown chakra disconnection triggering spiritual crisis and depression while causing neurological issues and complete isolation from divine connection. This severed frequency creates existential emptiness and spiritual despair.'
-    };
-    
-    const purpleShadow = {
-      color: 'Purple',
-      chakra: 'Spiritual Bypassing',
-      number: '7',
-      meaning: 'Spiritual bypassing tendencies creating ego inflation and mental health struggles while causing dangerous disconnection from physical reality. This distorted frequency prevents authentic spiritual growth through shadow integration.'
-    };
-    
-    const pinkShadow = {
-      color: 'Pink',
-      chakra: 'Heart Wounds',
-      number: '4',
-      meaning: 'Heart wounds creating codependency patterns and boundary dissolution that leads to emotional manipulation and excessive self-sacrifice. This wounded frequency attracts unhealthy relationship dynamics and emotional exploitation.'
-    };
-    
-    const goldShadow = {
-      color: 'Gold',
-      chakra: 'Spiritual Materialism',
-      number: '3',
-      meaning: 'Spiritual materialism creating ego attachment and fear of divine responsibility while manifesting perfectionism and disconnection from authentic spiritual service. This corrupted frequency prevents humble spiritual development.'
-    };
-    
-    const silverShadow = {
-      color: 'Silver',
-      chakra: 'Emotional Volatility',
-      number: '6',
-      meaning: 'Emotional volatility causing psychic overwhelm and hormonal imbalances that create mood disorders and excessive lunar sensitivity. This unstable frequency prevents emotional regulation and psychic protection.'
-    };
-    
-    const whiteShadow = {
-      color: 'White',
-      chakra: 'Spiritual Bypassing',
-      number: '7',
-      meaning: 'Because they are so in tune with the spiritual realm, white auras might be detached from the material world and ungrounded. They are trusting and discerning but may give people the benefit of the doubt even when they don’t deserve it. Because they are good-natured and see the best in everyone, young and inexperienced white auras can fall prey to trickery and manipulation.'
-    };
-    
-    const blackShadow = {
-      color: 'Black',
-      chakra: 'Shadow Obsession',
-      number: '0',
-      meaning: 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation patterns from others. This dark frequency prevents healthy shadow integration through darkness addiction and social withdrawal.'
-    };
-
-    const grayShadow = {
-      color: 'Gray',
-      chakra: 'Emotional Detachment',
-      number: '0',
-      meaning: 'Emotional numbness creating spiritual detachment and complete avoidance of life engagement while fostering depression tendencies. This void frequency prevents authentic feeling and spiritual connection through emotional disconnection.'
-    };
-    
-    const negativeMeanings: Record<string, string> = {
-      'Red': redShadow.meaning,
-      'Orange': orangeShadow.meaning,
-      'Yellow': yellowShadow.meaning,
-      'Green': greenShadow.meaning,
-      'Blue': blueShadow.meaning,
-      'Indigo': indigoShadow.meaning,
-      'Violet': violetShadow.meaning,
-      'Purple': purpleShadow.meaning,
-      'Pink': pinkShadow.meaning,
-      'Gold': goldShadow.meaning,
-      'Silver': silverShadow.meaning,
-      'White': whiteShadow.meaning,
-      'black': blackShadow.meaning,
-      'gray': grayShadow.meaning
-      
-    };
-    const additionalNegativeMeanings: Record<string, string> = {
-      'Gray': 'Emotional numbness creating spiritual detachment and complete avoidance of life engagement while fostering depression tendencies. This void frequency prevents authentic feeling and spiritual connection through emotional disconnection.',
-      'Black': 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation patterns from others. This dark frequency prevents healthy shadow integration through darkness addiction and social withdrawal.',
-      'Brown': 'Material attachment creating earthly limitation and spiritual heaviness while fostering excessive grounding that prevents transcendence. This heavy frequency prevents spiritual elevation through material world fixation.'
-    };
-    
-    // First check both arrays for the color
-    const specificMeaning = negativeMeanings[colorName] || additionalNegativeMeanings[colorName] || 
-                           negativeMeanings[colorName.toLowerCase()] || additionalNegativeMeanings[colorName.toLowerCase()];
-    
-    if (specificMeaning) {
-      return specificMeaning;
-    }
-    
-    // If no specific meaning found, provide authentic color-based shadow meanings
-    const shadowMeanings: Record<string, string> = {
-      'Orange': 'Creative stagnation creating emotional instability and sexual energy imbalances while fostering compulsive behaviors and artistic blocks.',
-      'Yellow': 'Mental overwhelm creating digestive issues and confidence crises while fostering anxiety patterns and personal power struggles.',
-      'Violet': 'Spiritual disconnection creating depression and crown chakra closure while fostering isolation from divine guidance and cosmic consciousness.',
-      'White': 'Spiritual bypassing creating perfectionism and shadow avoidance while fostering disconnection from earthly reality and human emotions.',
-      'Pink': 'Codependent love creating boundary issues and emotional manipulation while fostering self-sacrifice patterns and heart wounds.',
-      'Gold': 'Ego inflation creating spiritual materialism and divine disconnection while fostering perfectionism and fear of authentic service.',
-      'Silver': 'Psychic overwhelm creating emotional volatility and lunar sensitivity while fostering mood instability and energetic absorption.',
-      'Purple': 'Spiritual bypassing creating reality disconnection and ego inflation while fostering mystical delusion and mental health struggles.',
-      'Indigo': 'Psychic confusion creating intuitive blocks and third eye cloudiness while fostering spiritual overwhelm and vision problems.',
-      'Gray': 'Emotional numbness creating spiritual detachment and life avoidance while fostering depression and complete disconnection from emotions.',
-      'Black': 'Shadow obsession creating negative energy absorption and depression depths while fostering complete isolation and darkness addiction.',
-      'Brown': 'Material attachment creating earthly limitation and spiritual heaviness while fostering excessive grounding and transcendence blocks.',
-      'Red': 'Survival fears creating aggressive tendencies and adrenal exhaustion while fostering blood pressure issues and spiritual grounding blocks.',
-    };
-    
-    return shadowMeanings[colorName] || shadowMeanings[colorName.toLowerCase()] || shadowMeanings['Purple'];
-  }
-
-  // Chakra healing remedies for weaker chakras
-  const getChakraRemedies = (chakraName: string, activityLevel: number): string => {
-    if (activityLevel >= 70) return '';
-    
-    const remedies: Record<string, string> = {
-      'Root': 'Ground yourself daily: walk barefoot on earth, use red jasper crystal, practice warrior poses, eat root vegetables, visualize red light at tailbone, chant LAM mantra',
-      'Sacral': 'Enhance creativity: orange carnelian crystal, hip circles, swimming, creative arts, tantric breathing, visualize orange light below navel, chant VAM mantra',
-      'Solar Plexus': 'Build confidence: citrine crystal, core strengthening, yellow foods, sun gazing meditation, power breathing, visualize yellow light at stomach, chant RAM mantra',
-      'Heart': 'Open to love: rose quartz crystal, heart opening yoga, green leafy foods, loving-kindness meditation, pranayama breathing, visualize green light at chest, chant YAM mantra',
-      'Throat': 'Express truth: blue lace agate crystal, neck stretches, singing, journaling, truthful communication, visualize blue light at throat, chant HAM mantra',
-      'Third Eye': 'Enhance intuition: amethyst crystal, forward folds, meditation, purple foods, third eye massage, visualize indigo light between brows, chant OM mantra',
-      'Crown': 'Connect to divine: clear quartz crystal, headstand, fasting, prayer, silence meditation, visualize violet light above head, chant SILENCE mantra',
-      'Heart-Throat': 'Heal communication: turquoise crystal, throat chakra yoga, blue-green foods, truthful communication, visualize turquoise light at throat, chant HAM mantra',
-      'Third Eye Crown': 'Enhance spiritual insight: purple amethyst crystal, meditation, purple foods, spiritual study, visualize purple light between brows and above head, chant OM mantra',
-      'Heart-Solar Plexus': 'Balance emotions: yellow rose quartz crystal, heart-opening yoga, yellow foods, loving-kindness meditation, visualize yellow light at chest and stomach, chant RAM mantra'
-      
-    
-    };
-    
-    return remedies[chakraName] || 'Balance through meditation, crystals, yoga, proper nutrition, and energy healing practices';
-  }
-
-  // Comprehensive aura placement interpretations for four-zone system
   const getGivingEnergyInterpretation = (color: string): string => {
     const givingInterpretations: Record<string, string> = {
-      'Black': 'Shadow integration - work on transformation power, deep inner work, void consciousness. When balanced, you guide others through spiritual transformation. When imbalanced, you may avoid personal shadow work or fear inner darkness.',
-      'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. When balanced, you absorb emotions and energy of others. When imbalanced, you may be energetically vulnerable, have escapist tendencies, or difficulty being grounded.',
-      'Brown': 'Humble, grounded, connected to nature and body, possessing down-to-earth wisdom. When balanced, you receive grounding and responsibilities. When imbalanced, you may experience stagnation, lack of ambition, heaviness, or resistance to change.',
       'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. When balanced, you feel grounded and responsible. When imbalanced, you may have suppressed anger, burnout, aggressive behavior, or hyper-competitiveness.',
       'Yellow': 'Intelligent, optimistic, joyful, confident, creative, constantly learning new things. When balanced, you feel challenged to lead or perform. When imbalanced, you may struggle with overconfidence, fear mental challenges, or have self-worth issues.',
       'Blue': 'Clear communication, honest expression, authenticity, speaking truth with peace. When balanced, you receive kindness and emotional requests from others. When imbalanced, you may have difficulty expressing authentic truth, fear confrontation, or avoid honest conversations.',
@@ -2979,6 +2392,150 @@ export default function AuraAnalysis() {
   // Function to generate aura visualization with colored clouds
   // Function to process the uploaded image with aura colors
 
+  function processImageWithAura({ imageBase64, auraData }: { imageBase64: string; auraData: AuraAnalysisResult; }): Promise<string> {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                // Set proper proportional canvas size for better visualization
+                const aspectRatio = img.width / img.height;
+                let canvasWidth, canvasHeight;
+
+                // Maintain aspect ratio while ensuring adequate size
+                if (aspectRatio > 1) {
+                    // Landscape image
+                    canvasWidth = Math.max(1200, img.width);
+                    canvasHeight = canvasWidth / aspectRatio;
+                } else {
+                    // Portrait or square image
+                    canvasHeight = Math.max(900, img.height);
+                    canvasWidth = canvasHeight * aspectRatio;
+                }
+
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                // Draw original image to fill canvas with proper proportions
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+                    // Create simple but visible aura effects around the person
+                    const centerX = canvasWidth / 2;
+                    const centerY = canvasHeight / 2;
+
+                    // Get dominant and secondary colors
+                    const dominantColor = auraData.dominantColor || 'Blue';
+                    const secondaryColor = auraData.secondaryColor || 'Purple';
+
+                    // Convert color names to RGB
+                    const getColorRGB = (colorName: string) => {
+                        const colorMap: Record<string, [number, number, number]> = {
+                            'Red': [255, 0, 0],
+                            'Orange': [255, 165, 0],
+                            'Yellow': [255, 255, 0],
+                            'Green': [0, 255, 0],
+                            'Blue': [0, 100, 255],
+                            'Purple': [128, 0, 128],
+                            'Violet': [148, 0, 211],
+                            'Indigo': [75, 0, 130],
+                            'Pink': [255, 192, 203],
+                            'Gold': [255, 215, 0],
+                            'Silver': [192, 192, 192],
+                            'White': [255, 255, 255],
+                            'Gray': [128, 128, 128],
+                            'Black': [0, 0, 0],
+                            'Brown': [165, 42, 42]
+                        };
+                        return colorMap[colorName] || [0, 100, 255]; // Default to blue
+                    };
+
+                    const [dr, dg, db] = getColorRGB(dominantColor);
+                    const [sr, sg, sb] = getColorRGB(secondaryColor);
+
+                    // Create visible aura glow around the entire image edges
+                    const createAuraGlow = () => {
+                        // Apply subtle blur for softer glow effect
+                        ctx.filter = 'diffuse(10px)';
+
+                        // Create multiple layers of glow
+                        for (let layer = 0; layer < 12; layer++) {
+                            const radius = 40 + (layer * 25);
+                            const opacity = 0.12 - (layer * 0.008);
+
+                            // Use dominant color for most layers
+                            const useSecondary = layer % 4 === 0;
+                            const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
+
+                            // Create radial gradient from center outward
+                            const gradient = ctx.createRadialGradient(
+                                centerX, centerY, canvasWidth * 0.12, // Inner radius - protect person
+                                centerX, centerY, canvasWidth * 0.8 + radius // Outer radius
+                            );
+
+                            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+                            gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+                            gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+                            gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
+
+                            ctx.fillStyle = gradient;
+                            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                        }
+
+                        // Reset filter
+                        ctx.filter = 'none';
+                    };
+
+                    // Create smokey aura effects matching reference images exactly
+                    const createSmokeyAuraEffects = () => {
+                        // Get the 4-zone energy colors
+                        const allColors = extractAllAuraColors(auraData);
+
+                        // Convert hex colors to RGB
+                        const hexToRGB = (hex: string) => {
+                            const r = parseInt(hex.slice(1, 3), 16);
+                            const g = parseInt(hex.slice(3, 5), 16);
+                            const b = parseInt(hex.slice(5, 7), 16);
+                            return { r, g, b };
+                        };
+
+                        const colorsRGB = {
+                            thinkingRGB: hexToRGB(allColors.thinking),
+                            receivingRGB: hexToRGB(allColors.receiving),
+                            givingRGB: hexToRGB(allColors.giving),
+                            personalityRGB: hexToRGB(allColors.personality)
+                        };
+
+                        // Use the new improved smokey effect function
+                        createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colorsRGB, 7, Date.now());
+                    };
+
+                    // Apply aura effects
+                    createAuraGlow();
+                    createSmokeyAuraEffects();
+
+                    // Add a subtle overall color tint
+                    ctx.globalCompositeOperation = 'overlay';
+                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.1)`;
+                    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                    ctx.globalCompositeOperation = 'source-over';
+
+                    // Add watermark as the top layer
+                    addWatermark(ctx, canvasWidth, canvasHeight);
+                }
+
+                resolve(canvas.toDataURL());
+            };
+
+            img.onerror = () => {
+                console.error('Failed to load image for aura processing');
+                resolve(imageBase64); // Return original if processing fails
+            };
+
+            img.src = imageBase64;
+        });
+    }
 
   // Helper function to convert hex to RGB
   const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
@@ -3161,8 +2718,8 @@ export default function AuraAnalysis() {
         const particleY = centerY - personHeight * 0.75; // Higher above head for better visibility
 
 
-        // UNIFORM PARTICLE SIZING: Fixed sizing for all 900x1800 images for consistent appearance
-        const STANDARD_HEIGHT = 1800;
+        // UNIFORM PARTICLE SIZING: Fixed sizing for all 1600x900 images for consistent appearance
+        const STANDARD_HEIGHT = 900;
         const baseRadius = STANDARD_HEIGHT * 0.06; // Fixed 54px radius for all images
 
 
@@ -3177,9 +2734,9 @@ export default function AuraAnalysis() {
         ultraGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center for maximum visibility
         ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
         ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
-        ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.3)`);
-        ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.1)`);
-        ultraGlow.addColorStop(0.2, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+        ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
+        ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.5)`);
+        ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
 
         ctx.fillStyle = ultraGlow;
         ctx.beginPath();
@@ -3192,7 +2749,7 @@ export default function AuraAnalysis() {
             particleX, particleY, baseRadius * 3
         );
         middleGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
-        middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.1)`);
+        middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
         middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
         middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
         middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
@@ -3209,7 +2766,7 @@ export default function AuraAnalysis() {
         );
         innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Pure white center
         innerCore.addColorStop(0.1, `rgba(255, 255, 255, 1)`); // Extended white core
-        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.11)`);
+        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
         innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
         innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
 
@@ -3274,181 +2831,238 @@ export default function AuraAnalysis() {
   };
 
   // Function to create realistic smokey cloudy effect matching reference images exactly
-  function createRealisticSmokeEffect(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        centerX: number,
-        centerY: number,
-        colors: {
-            thinkingRGB: { r: number; g: number; b: number; };
-            receivingRGB: { r: number; g: number; b: number; };
-            givingRGB: { r: number; g: number; b: number; };
-            personalityRGB: { r: number; g: number; b: number; };
-        },
-        energyLevel: number,
-        seededRandom: () => number): void {
+  const createRealisticSmokeEffect = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    // Person protection area - keep face clear like reference images
+    const personRadius = Math.min(width, height) * 0.22;
+    
+    // Define color zones for proper positioning matching reference images
+    const colorZones = [
+      {
+        color: colors.thinkingRGB,
+        zone: 'top',
+        startY: 0,
+        endY: height * 0.35,
+        startX: 0,
+        endX: width,
+        density: 0.4,
+        name: 'thinking'
+      },
+      {
+        color: colors.receivingRGB,
+        zone: 'left',
+        startY: height * 0.1,
+        endY: height * 0.9,
+        startX: 0,
+        endX: width * 0.45,
+        density: 0.45,
+        name: 'receiving'
+      },
+      {
+        color: colors.givingRGB,
+        zone: 'right',
+        startY: height * 0.1,
+        endY: height * 0.9,
+        startX: width * 0.55,
+        endX: width,
+        density: 0.75,
+        name: 'giving'
+      },
+      {
+        color: colors.personalityRGB,
+        zone: 'bottom',
+        startY: height * 0.65,
+        endY: height,
+        startX: 0,
+        endX: width,
+        density: 0.35,
+        name: 'personality'
+      }
+    ];
+    
+    // First create gradient base layers for smooth color merging
+    colorZones.forEach(zone => {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      
+      let gradient;
+      
+      // Create zone-specific gradients for natural color blending
+      switch (zone.name) {
+        case 'thinking':
+          gradient = ctx.createLinearGradient(0, 0, 0, height * 0.5);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.4)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.1)`);
+          break;
+        case 'receiving':
+          gradient = ctx.createLinearGradient(0, 0, width * 0.6, 0);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          break;
+        case 'giving':
+          gradient = ctx.createLinearGradient(width, 0, width * 0.4, 0);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.4)`);
+          break;
+        case 'personality':
+          gradient = ctx.createLinearGradient(0, height, 0, height * 0.6);
+          gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.32)`);
+          gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
+          gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          break;
+      }
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      
+      ctx.restore();
+    });
+    
+    // Create dense smokey layers for each zone
+    colorZones.forEach(zone => {
+      // LAYER 1: Large heavily blurred background smoke clouds
+      ctx.save();
+      ctx.filter = 'blur(35px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      
+      const particles1 = Math.floor(80 * zone.density);
+      for (let i = 0; i < particles1; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Person protection area - keep face clearly visible
-        const personRadius = Math.min(width, height) * 0.2;
+        // Skip if too close to person's face
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.5) continue;
         
-        // STANDARDIZED PARTICLE SIZES for 900x1800 images
-        const PARTICLE_SIZES = {
-            large: 100,     // Large diffused background particles
-            medium: 60,     // Medium blend particles  
-            small: 30,      // Small detail particles
-            tiny: 15        // Tiny atmospheric particles
-        };
+        const radius = 60 + seededRandom() * 120;
+        const opacity = 0.4 + seededRandom() * 0.35;
         
-        // Create perfect diffused smoke layers with no patches
-        const createDiffusedSmokeLayer = (
-            color: { r: number, g: number, b: number },
-            zone: { startX: number, endX: number, startY: number, endY: number },
-            particleCount: number,
-            particleSize: number,
-            blur: number,
-            opacity: number,
-            blendMode: string = 'soft-light'
-        ) => {
-            ctx.save();
-            ctx.filter = `blur(${blur}px)`;
-            ctx.globalCompositeOperation = blendMode as GlobalCompositeOperation;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-                const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-                
-                // Skip if too close to person's face
-                const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                if (distanceFromCenter < personRadius * 1.8) continue;
-                
-                // Create radial gradient for smooth particle edges
-                const particleGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-                particleGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
-                particleGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.7})`);
-                particleGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-                
-                ctx.fillStyle = particleGradient;
-                ctx.beginPath();
-                ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
-        };
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 2: Medium blurred smoke particles for cloud density
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      
+      const particles2 = Math.floor(60 * zone.density);
+      for (let i = 0; i < particles2; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Define energy zones with perfect positioning
-        const zones = {
-            thinking: { startX: 0, endX: width, startY: 0, endY: height * 0.4 },
-            receiving: { startX: 0, endX: width * 0.6, startY: height * 0.2, endY: height * 0.8 },
-            giving: { startX: width * 0.4, endX: width, startY: height * 0.2, endY: height * 0.8 },
-            personality: { startX: 0, endX: width, startY: height * 0.6, endY: height }
-        };
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.4) continue;
         
-        // Create multiple diffused smoke layers for each energy color
-        Object.entries(colors).forEach(([energyName, color]) => {
-            const energyKey = energyName.replace('RGB', '') as keyof typeof zones;
-            const zone = zones[energyKey];
-            
-            if (zone) {
-                // Layer 1: Large background diffusion - maximum blur for diffused effect
-                createDiffusedSmokeLayer(color, zone, 50, PARTICLE_SIZES.large, 80, 0.7, 'soft-light');
-                
-                // Layer 2: Medium blend particles - heavy blur for smooth blending
-                createDiffusedSmokeLayer(color, zone, 60, PARTICLE_SIZES.medium, 65, 0.6, 'multiply');
-                
-                // Layer 3: Small atmospheric particles - ultra dense and diffused
-                createDiffusedSmokeLayer(color, zone, 80, PARTICLE_SIZES.small, 45, 0.5, 'overlay');
-                
-                // Layer 4: Tiny detail particles - maximum density for blending
-                createDiffusedSmokeLayer(color, zone, 70, PARTICLE_SIZES.tiny, 25, 0.4, 'screen');
-                
-                // Layer 5: Extra dense diffusion layer - heavy blur for maximum density
-                createDiffusedSmokeLayer(color, zone, 45, PARTICLE_SIZES.medium, 70, 0.3, 'multiply');
-                
-                // Layer 6: Ultra-heavy blur layer for maximum diffusion
-                createDiffusedSmokeLayer(color, zone, 30, PARTICLE_SIZES.large, 100, 0.25, 'color-dodge');
-            }
-        });
+        const radius = 40 + seededRandom() * 80;
+        const opacity = 0.35 + seededRandom() * 0.3;
         
-        // Create seamless gradient blending between all colors
-        ctx.save();
-        ctx.globalCompositeOperation = 'soft-light';
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 3: Fine diffused smoke particles for realistic smokey effect
+      ctx.save();
+      ctx.filter = 'blur(15px)';
+      ctx.globalCompositeOperation = 'overlay';
+      
+      const particles3 = Math.floor(40 * zone.density);
+      for (let i = 0; i < particles3; i++) {
+        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Horizontal gradient (giving to receiving) - much darker and more diffused
-        const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.45)`);
-        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.35)`);
-        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.45)`);
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.3) continue;
         
-        ctx.fillStyle = horizontalGradient;
-        ctx.fillRect(0, 0, width, height);
+        const radius = 25 + seededRandom() * 50;
+        const opacity = 0.3 + seededRandom() * 0.25;
         
-        // Vertical gradient (thinking to personality) - increased opacity for darker effect
-        const verticalGradient = ctx.createLinearGradient(0, 0, 0, height);
-        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.42)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.25)`);
-        verticalGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.25)`);
-        verticalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.38)`);
-        
-        ctx.fillStyle = verticalGradient;
-        ctx.fillRect(0, 0, width, height);
-        
-        ctx.restore();
-        
-        // Add cross-gradient blending layers for maximum diffusion
-        ctx.save();
-        ctx.globalCompositeOperation = 'multiply';
-        
-        // Create diagonal gradient for better color blending
-        const diagonalGradient = ctx.createLinearGradient(0, 0, width, height);
-        diagonalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.2)`);
-        diagonalGradient.addColorStop(0.25, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-        diagonalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.15)`);
-        diagonalGradient.addColorStop(0.75, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.2)`);
-        diagonalGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.18)`);
-        
-        ctx.fillStyle = diagonalGradient;
-        ctx.fillRect(0, 0, width, height);
-        
-        // Add radial diffusion from center for smoother blending
-        const radialBlend = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height) * 0.7);
-        radialBlend.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.05)`);
-        radialBlend.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
-        radialBlend.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.1)`);
-        radialBlend.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.08)`);
-        
-        ctx.fillStyle = radialBlend;
-        ctx.fillRect(0, 0, width, height);
-        
-        ctx.restore();
-        
-        // Create enhanced thinking energy above head
-        ctx.save();
-        ctx.filter = 'blur(6px)';
-        ctx.globalCompositeOperation = 'screen';
-        
-        // Concentrated thinking energy above person's head
-        const thinkingX = centerX;
-        const thinkingY = centerY - height * 0.18;
-        
-        for (let i = 0; i < 20; i++) {
-            const offsetX = (seededRandom() - 0.5) * 60;
-            const offsetY = (seededRandom() - 0.5) * 30;
-            const x = thinkingX + offsetX;
-            const y = thinkingY + offsetY;
-            
-            const radius = 12 + seededRandom() * 18;
-            const opacity = 0.6 + seededRandom() * 0.4;
-            
-            ctx.fillStyle = `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.restore();
-        
-        // Reset composite operation
-        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+    
+    // Add cross-zone merging particles for natural color blending
+    ctx.save();
+    ctx.filter = 'blur(40px)';
+    ctx.globalCompositeOperation = 'screen';
+    
+    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+    
+    for (let i = 0; i < 60; i++) {
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      
+      // Skip if too close to person's face
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.3) continue;
+      
+      const colorIndex = Math.floor(seededRandom() * allColors.length);
+      const color = allColors[colorIndex];
+      
+      const radius = 50 + seededRandom() * 100;
+      const opacity = 0.2 + seededRandom() * 0.25;
+      
+      ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
     }
+    ctx.restore();
+    
+    // Create enhanced thinking energy above head - bright and prominent
+    ctx.save();
+    ctx.filter = 'blur(6px)';
+    ctx.globalCompositeOperation = 'screen';
+    
+    // Concentrated thinking energy above person's head
+    const thinkingX = centerX;
+    const thinkingY = centerY - height * 0.18;
+    
+    for (let i = 0; i < 35; i++) {
+      const offsetX = (seededRandom() - 0.5) * 80;
+      const offsetY = (seededRandom() - 0.5) * 40;
+      const x = thinkingX + offsetX;
+      const y = thinkingY + offsetY;
+      
+      const radius = 15 + seededRandom() * 25;
+      const opacity = 0.7 + seededRandom() * 0.3;
+      
+      ctx.fillStyle = `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+  };
 
 
 
@@ -3563,9 +3177,9 @@ export default function AuraAnalysis() {
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // UNIFORM SIZING SYSTEM: All images are now 900x1800, so use fixed measurements for consistency
-    const STANDARD_WIDTH = 900;
-    const STANDARD_HEIGHT = 1800;
+    // UNIFORM SIZING SYSTEM: All images are now 1600x900, so use fixed measurements for consistency
+    const STANDARD_WIDTH = 1600;
+    const STANDARD_HEIGHT = 900;
     const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 135px radius
     const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 1360px reach
     
@@ -3934,9 +3548,9 @@ export default function AuraAnalysis() {
         const baseSmokeDensity = Math.floor((1800 + energyLevel * 150) * densityMultiplier);
         const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
 
-        // UNIFORM SMOKE LAYERS: Fixed sizing for all 900x1800 images to ensure consistent appearance
-        const STANDARD_WIDTH = 900;
-        const STANDARD_HEIGHT = 1800;
+        // UNIFORM SMOKE LAYERS: Fixed sizing for all 1600x900 images to ensure consistent appearance
+        const STANDARD_WIDTH = 1600;
+        const STANDARD_HEIGHT = 900;
         const smokeLayers = [
             { density: baseSmokeDensity * 0.4, sizeRange: [144, 288], opacity: [0.06, 0.12] }, // Large background layer - fixed 144-288px
             { density: baseSmokeDensity * 0.3, sizeRange: [126, 216], opacity: [0.08, 0.12] }, // Medium layer - fixed 126-216px

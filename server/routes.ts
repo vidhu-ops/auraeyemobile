@@ -904,7 +904,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Keep compressing until we reach 200KB or lower
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(900, 1800, {
+          .resize(1600, 900, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -954,7 +954,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      // Resize image to standard dimensions (900x1800px)
+      // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // Check if image contains a human using Gemini vision API - object analysis should reject human images
@@ -1237,7 +1237,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (900x1800px) with guaranteed success
+      // Resize image to standard dimensions (1600x900px) with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);
