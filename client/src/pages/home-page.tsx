@@ -72,19 +72,20 @@ export default function HomePage() {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       
+      // PRESERVE ORIGINAL IMAGE DIMENSIONS - DO NOT RESIZE
       canvas.width = img.width;
       canvas.height = img.height;
       
-      // Draw original image
-      ctx.drawImage(img, 0, 0);
+      // Draw original image at full size
+      ctx.drawImage(img, 0, 0, img.width, img.height);
       
       // Get color RGB values
       const colorRGB = getColorRGB(dominantColor);
       
-      // Create realistic smokey aura effect matching reference images
+      // Create dense smokey cloud effect around person
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const personRadius = Math.min(canvas.width, canvas.height) * 0.18; // Increased protection radius
+      const personRadius = Math.min(canvas.width, canvas.height) * 0.15; // Smaller protection radius for denser effect
       
       // Parse color RGB values
       const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
@@ -96,19 +97,40 @@ export default function HomePage() {
         return seed / 233280;
       };
       
-      // LAYER 1: Large heavily blurred background smoke clouds - increased density
+      // LAYER 1: Ultra-dense background smoke - massive cloud coverage
       ctx.save();
-      ctx.filter = 'blur(35px)';
-      ctx.globalCompositeOperation = 'soft-light';
-      for (let i = 0; i < 120; i++) {
+      ctx.filter = 'blur(40px)';
+      ctx.globalCompositeOperation = 'multiply';
+      for (let i = 0; i < 300; i++) {
         const x = seededRandom() * canvas.width;
         const y = seededRandom() * canvas.height;
         
         // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.4) continue;
+        if (distanceFromCenter < personRadius * 1.1) continue;
         
-        const radius = 10 + seededRandom() * 120;
+        const radius = 30 + seededRandom() * 150;
+        const opacity = 0.35 + seededRandom() * 0.45;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 2: Dense medium smoke particles - cloud density
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      for (let i = 0; i < 400; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.05) continue;
+        
+        const radius = 20 + seededRandom() * 80;
         const opacity = 0.25 + seededRandom() * 0.35;
         
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
@@ -118,39 +140,18 @@ export default function HomePage() {
       }
       ctx.restore();
       
-      // LAYER 2: Medium blurred smoke particles for cloud density - increased density
+      // LAYER 3: Super dense small particles - concentrated smoke
       ctx.save();
-      ctx.filter = 'blur(25px)';
-      ctx.globalCompositeOperation = 'multiply';
-      for (let i = 0; i < 150; i++) {
-        const x = seededRandom() * canvas.width;
-        const y = seededRandom() * canvas.height;
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.3) continue;
-        
-        const radius = 25 + seededRandom() * 70;
-        const opacity = 0.35 + seededRandom() * 0.4;
-        
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 3: Dense diffused smoke particles for realistic smokey effect - increased density
-      ctx.save();
-      ctx.filter = 'blur(15px)';
+      ctx.filter = 'blur(18px)';
       ctx.globalCompositeOperation = 'overlay';
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 500; i++) {
         const x = seededRandom() * canvas.width;
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.25) continue;
+        if (distanceFromCenter < personRadius * 1.08) continue;
         
-        const radius = 12 + seededRandom() * 35;
+        const radius = 8 + seededRandom() * 40;
         const opacity = 0.2 + seededRandom() * 0.3;
         
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
@@ -160,19 +161,19 @@ export default function HomePage() {
       }
       ctx.restore();
       
-      // LAYER 4: Fine blurred smoke wisps for detail and merging - increased density
+      // LAYER 4: Fine smoke wisps - detail layer
       ctx.save();
       ctx.filter = 'blur(12px)';
       ctx.globalCompositeOperation = 'color-dodge';
-      for (let i = 0; i < 300; i++) {
+      for (let i = 0; i < 600; i++) {
         const x = seededRandom() * canvas.width;
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.2) continue;
+        if (distanceFromCenter < personRadius * 1.05) continue;
         
-        const radius = 5 + seededRandom() * 18;
-        const opacity = 0.1 + seededRandom() * 0.2;
+        const radius = 4 + seededRandom() * 20;
+        const opacity = 0.15 + seededRandom() * 0.25;
         
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
         ctx.beginPath();
@@ -181,43 +182,43 @@ export default function HomePage() {
       }
       ctx.restore();
       
-      // LAYER 5: Ultra-fine mist for seamless merging - increased density
+      // LAYER 5: Perimeter concentrated smoke - ultra-dense around person
       ctx.save();
-      ctx.filter = 'blur(30px)';
-      ctx.globalCompositeOperation = 'screen';
-      for (let i = 0; i < 200; i++) {
-        const x = seededRandom() * canvas.width;
-        const y = seededRandom() * canvas.height;
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.2) continue;
-        
-        const radius = 50 + seededRandom() * 100;
-        const opacity = 0.08 + seededRandom() * 0.15;
-        
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 6: Concentrated perimeter smoke for ultra-dense effect
-      ctx.save();
-      ctx.filter = 'blur(18px)';
+      ctx.filter = 'blur(20px)';
       ctx.globalCompositeOperation = 'multiply';
-      for (let i = 0; i < 250; i++) {
-        // Create concentrated smoke around person's perimeter with better face protection
+      for (let i = 0; i < 400; i++) {
+        // Create concentrated smoke around person's perimeter
         const angle = seededRandom() * Math.PI * 2;
-        const distance = personRadius * 1.3 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.25);
+        const distance = personRadius * 1.1 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
         // Skip if outside canvas
         if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
         
-        const radius = 20 + seededRandom() * 50;
-        const opacity = 0.12 + seededRandom() * 0.25;
+        const radius = 15 + seededRandom() * 60;
+        const opacity = 0.2 + seededRandom() * 0.35;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 6: Ultra-fine atmospheric mist - seamless merging
+      ctx.save();
+      ctx.filter = 'blur(35px)';
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 200; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.05) continue;
+        
+        const radius = 60 + seededRandom() * 120;
+        const opacity = 0.08 + seededRandom() * 0.12;
         
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
         ctx.beginPath();
@@ -232,8 +233,8 @@ export default function HomePage() {
       // Add watermark
       addWatermark(ctx, canvas.width, canvas.height);
       
-      // Convert to base64
-      const processedImageBase64 = canvas.toDataURL('image/jpeg');
+      // Convert to base64 - preserve original quality
+      const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
       setProcessedImage(processedImageBase64);
     };
   };
@@ -254,7 +255,7 @@ export default function HomePage() {
       'Silver': '192, 192, 192',
       'Black': '0, 0, 0',
     };
-    return colorMap[color] || 'getColorRGB'; // Default to violet
+    return colorMap[color] || '138, 43, 226'; // Default to violet
   };
 
   const quickVibeMutation = useMutation({
