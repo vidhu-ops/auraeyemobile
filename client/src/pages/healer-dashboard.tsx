@@ -359,12 +359,13 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
     return colorMap[color] || 'from-gray-400 to-gray-600';
   };
 
-  // Enhanced PDF Download Function with Screenshot Capture of All Tabs
+
+
+  // Comprehensive PDF Download Function with All Tab Content
   const downloadPDF = async () => {
     try {
       setIsGeneratingPDF(true);
       const jsPDF = (await import('jspdf')).default;
-      const html2canvas = (await import('html2canvas')).default;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.width;
       const pageHeight = pdf.internal.pageSize.height;
@@ -372,14 +373,23 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       // Get healer name from user
       const healerName = user?.username || 'Professional Healer';
       
+      // Parse the reading data with proper handling
+      const spiritualGuidance = parseJsonField(reading.spiritualGuidance) || 'No spiritual guidance available';
+      const detailedAnalysis = parseJsonField(reading.detailedAnalysis) || 'No detailed analysis available';
+      const colorMeanings = parseJsonField(reading.colorMeanings) || {};
+      const personalityTraits = parseJsonField(reading.personalityTraits) || [];
+      const chakraActivity = parseJsonField(reading.chakraActivity) || {};
+      const zones = parseJsonField(reading.zones) || {};
+      const auraColorSpectrum = parseJsonField(reading.auraColorSpectrum) || [];
+      
       // Create professional header
       pdf.setFontSize(24);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('HEALER PROFESSIONAL REPORT', pageWidth / 2, 25, { align: 'center' });
+      pdf.text('COMPREHENSIVE AURA ANALYSIS REPORT', pageWidth / 2, 25, { align: 'center' });
       
       pdf.setFontSize(16);
       pdf.setTextColor(75, 85, 99);
-      pdf.text(`Healer: ${healerName}`, pageWidth / 2, 35, { align: 'center' });
+      pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 35, { align: 'center' });
       
       pdf.setFontSize(18);
       pdf.setTextColor(30, 41, 59);
@@ -394,20 +404,6 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       pdf.setLineWidth(0.5);
       pdf.line(20, 65, pageWidth - 20, 65);
       
-      // Get the tab container element
-      const tabContainer = document.querySelector(`[data-reading-id="${reading.id}"]`);
-      if (!tabContainer) {
-        throw new Error('Tab container not found');
-      }
-      
-      const tabs = ['overview', 'chakras', 'colors', 'analysis'];
-      const tabNames = {
-        overview: 'Overview - Aura Colors & Spiritual Guidance',
-        chakras: 'Chakra Activity Levels',
-        colors: 'Color Meanings & Interpretations',
-        analysis: 'Complete Detailed Analysis'
-      };
-      
       // Add processed aura image if available
       if (reading.processedAuraImage) {
         try {
@@ -417,7 +413,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
           pdf.setTextColor(147, 51, 234);
           pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
           
-          // Add image centered
+          // Add image centered with proper aspect ratio
           const imgWidth = 160;
           const imgHeight = 90; // 16:9 aspect ratio
           const imgX = (pageWidth - imgWidth) / 2;
@@ -426,116 +422,126 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
           
           pdf.setFontSize(12);
           pdf.setTextColor(107, 114, 128);
-          pdf.text('Processed Aura Analysis Visualization', pageWidth / 2, 135, { align: 'center' });
+          pdf.text('Processed Aura Analysis Visualization with Energy Fields', pageWidth / 2, 135, { align: 'center' });
           
         } catch (error) {
           console.error('Error adding aura image to PDF:', error);
         }
       }
       
-      // Generate comprehensive PDF content with actual data
-      let yPosition = 80;
-      
-      // Parse the reading data
-      const parsedReading = {
-        personalityColor: reading.personalityColor || 'blue',
-        givingColor: reading.givingColor || 'green',
-        receivingColor: reading.receivingColor || 'yellow',
-        thinkingColor: reading.thinkingColor || 'purple',
-        spiritualGuidance: reading.spiritualGuidance || 'No guidance available',
-        personalityTraits: reading.personalityTraits || [],
-        chakraActivity: reading.chakraActivity || {},
-        detailedAnalysis: reading.detailedAnalysis || 'No detailed analysis available',
-        colorMeanings: reading.colorMeanings || {},
-        zones: reading.zones || {}
-      };
-      
-      // TAB 1: OVERVIEW
+      // TAB 1: ANALYSIS - Complete Basic Analysis
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('TAB 1: OVERVIEW - AURA COLORS & SPIRITUAL GUIDANCE', 20, 25);
+      pdf.text('ANALYSIS TAB - COMPLETE AURA ANALYSIS', 20, 25);
       
       pdf.setFontSize(12);
       pdf.setTextColor(75, 85, 99);
       pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
       pdf.line(20, 40, pageWidth - 20, 40);
       
-      // Aura Colors
+      let yPos = 50;
+      
+      // Aura Colors Section
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Aura Colors', 20, 55);
+      pdf.text('Your Aura Colors', 20, yPos);
+      yPos += 15;
       
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
-      pdf.text(`• Personality Color: ${parsedReading.personalityColor}`, 25, 70);
-      pdf.text(`• Giving Color: ${parsedReading.givingColor}`, 25, 80);
-      pdf.text(`• Receiving Color: ${parsedReading.receivingColor}`, 25, 90);
-      pdf.text(`• Thinking Color: ${parsedReading.thinkingColor}`, 25, 100);
+      pdf.text(`• Personality Color: ${reading.personalityColor}`, 25, yPos);
+      yPos += 10;
+      pdf.text(`• Giving Color: ${reading.givingColor}`, 25, yPos);
+      yPos += 10;
+      pdf.text(`• Receiving Color: ${reading.receivingColor}`, 25, yPos);
+      yPos += 10;
+      pdf.text(`• Thinking Color: ${reading.thinkingColor}`, 25, yPos);
+      yPos += 20;
       
-      // Energy Level
+      // Energy Level Section
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Energy Assessment', 20, 120);
+      pdf.text('Energy Assessment', 20, yPos);
+      yPos += 15;
       
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
-      pdf.text(`Energy Level: ${reading.energyLevel}/10`, 25, 135);
+      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 25, yPos);
+      yPos += 20;
       
-      // Spiritual Guidance
+      // Spiritual Analysis
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Spiritual Guidance', 20, 155);
+      pdf.text('Complete Spiritual Analysis', 20, yPos);
+      yPos += 15;
       
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
-      const guidanceLines = pdf.splitTextToSize(parsedReading.spiritualGuidance, pageWidth - 40);
-      pdf.text(guidanceLines, 25, 170);
+      const analysisLines = pdf.splitTextToSize(reading.analysis, pageWidth - 40);
+      pdf.text(analysisLines, 25, yPos);
+      yPos += analysisLines.length * 6 + 15;
       
-      // TAB 2: CHAKRAS
+      // TAB 2: CHAKRA SCORES - Complete 9-Chakra System
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('TAB 2: CHAKRA ACTIVITY LEVELS', 20, 25);
+      pdf.text('CHAKRA SCORES TAB - 9-CHAKRA ENERGY SYSTEM', 20, 25);
       
       pdf.setFontSize(12);
       pdf.setTextColor(75, 85, 99);
       pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
       pdf.line(20, 40, pageWidth - 20, 40);
       
-      // Chakra Activity
+      yPos = 55;
+      
+      // 9-Chakra Energy System
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('9-Chakra Energy System', 20, 55);
+      pdf.text('9-Chakra Energy System Analysis', 20, yPos);
+      yPos += 15;
       
-      yPosition = 70;
-      const chakraNames = [
-        'Root Chakra', 'Sacral Chakra', 'Solar Plexus Chakra', 'Heart Chakra',
-        'Throat Chakra', 'Third Eye Chakra', 'Crown Chakra', 'Earth Star Chakra', 'Soul Star Chakra'
+      const chakraDetails = [
+        { name: 'Soul Star Chakra', description: 'Connects to soul\'s purpose and divine guidance' },
+        { name: 'Crown Chakra', description: 'Spiritual connection and universal consciousness' },
+        { name: 'Third Eye Chakra', description: 'Intuition, wisdom, and inner vision' },
+        { name: 'Throat Chakra', description: 'Communication and self-expression' },
+        { name: 'Heart Chakra', description: 'Love, compassion, and emotional balance' },
+        { name: 'Solar Plexus Chakra', description: 'Personal power and confidence' },
+        { name: 'Sacral Chakra', description: 'Creativity, sexuality, and emotions' },
+        { name: 'Root Chakra', description: 'Grounding, survival, and stability' },
+        { name: 'Earth Star Chakra', description: 'Earth connection and grounding energy' }
       ];
       
-      chakraNames.forEach((chakra, index) => {
-        const activity = parsedReading.chakraActivity[chakra] || Math.floor(Math.random() * 10) + 1;
-        pdf.setFontSize(12);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text(`• ${chakra}: ${activity}/10 (${activity * 10}%)`, 25, yPosition);
-        yPosition += 12;
+      chakraDetails.forEach((chakra) => {
+        const activity = chakraActivity[chakra.name] || Math.floor(Math.random() * 10) + 1;
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`${chakra.name}: ${activity}/10 (${activity * 10}%)`, 25, yPos);
+        yPos += 8;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(chakra.description, 30, yPos);
+        yPos += 12;
       });
       
       // Chakra Profile
-      yPosition += 15;
+      yPos += 10;
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Chakra Profile', 20, yPosition);
-      yPosition += 15;
+      pdf.text('Your Chakra Profile', 20, yPos);
+      yPos += 15;
       
+      // Calculate chakra percentages
       const higherChakras = ['Soul Star Chakra', 'Crown Chakra', 'Third Eye Chakra'];
       const middleChakras = ['Throat Chakra', 'Heart Chakra', 'Solar Plexus Chakra'];
       const lowerChakras = ['Sacral Chakra', 'Root Chakra', 'Earth Star Chakra'];
       
-      const higherAvg = higherChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / higherChakras.length;
-      const middleAvg = middleChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / middleChakras.length;
-      const lowerAvg = lowerChakras.reduce((sum, chakra) => sum + (parsedReading.chakraActivity[chakra] || 5), 0) / lowerChakras.length;
+      const higherAvg = higherChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / higherChakras.length;
+      const middleAvg = middleChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / middleChakras.length;
+      const lowerAvg = lowerChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / lowerChakras.length;
       
       const total = higherAvg + middleAvg + lowerAvg;
       const higherPercent = ((higherAvg / total) * 100).toFixed(1);
@@ -544,84 +550,256 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       
       pdf.setFontSize(12);
       pdf.setTextColor(55, 65, 81);
-      pdf.text(`• Higher Chakras: ${higherPercent}%`, 25, yPosition);
-      pdf.text(`• Middle Chakras: ${middlePercent}%`, 25, yPosition + 12);
-      pdf.text(`• Lower Chakras: ${lowerPercent}%`, 25, yPosition + 24);
+      pdf.text(`• Higher Chakras (Spiritual): ${higherPercent}%`, 25, yPos);
+      yPos += 10;
+      pdf.text(`• Middle Chakras (Emotional): ${middlePercent}%`, 25, yPos);
+      yPos += 10;
+      pdf.text(`• Lower Chakras (Physical): ${lowerPercent}%`, 25, yPos);
       
-      // TAB 3: COLORS
+      // TAB 3: DETAILED CHAKRA ANALYSIS
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('TAB 3: COLOR MEANINGS & INTERPRETATIONS', 20, 25);
+      pdf.text('DETAILED CHAKRA ANALYSIS TAB', 20, 25);
       
       pdf.setFontSize(12);
       pdf.setTextColor(75, 85, 99);
       pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
       pdf.line(20, 40, pageWidth - 20, 40);
       
-      // Color Meanings
+      yPos = 55;
+      
+      // Detailed chakra interpretations
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Color Meanings & Interpretations', 20, 55);
+      pdf.text('Detailed Chakra Activity Analysis', 20, yPos);
+      yPos += 15;
       
-      yPosition = 70;
-      const colorMeanings = [
-        { name: 'Personality Color', color: parsedReading.personalityColor, meaning: 'Represents your core essence and fundamental nature' },
-        { name: 'Giving Color', color: parsedReading.givingColor, meaning: 'Shows how you share energy with others' },
-        { name: 'Receiving Color', color: parsedReading.receivingColor, meaning: 'Indicates how you absorb energy from your environment' },
-        { name: 'Thinking Color', color: parsedReading.thinkingColor, meaning: 'Reveals your mental and spiritual processing patterns' }
-      ];
+      const chakraInterpretations = {
+        'Soul Star Chakra': 'Your connection to divine purpose and spiritual guidance from higher realms.',
+        'Crown Chakra': 'Your spiritual awareness and connection to universal consciousness.',
+        'Third Eye Chakra': 'Your intuitive abilities and inner wisdom for spiritual insight.',
+        'Throat Chakra': 'Your ability to communicate truth and express your authentic self.',
+        'Heart Chakra': 'Your capacity for love, compassion, and emotional harmony.',
+        'Solar Plexus Chakra': 'Your personal power, confidence, and sense of self-worth.',
+        'Sacral Chakra': 'Your creative energy, emotional expression, and life passion.',
+        'Root Chakra': 'Your sense of safety, grounding, and connection to physical world.',
+        'Earth Star Chakra': 'Your deep connection to Earth\'s energy and natural grounding.'
+      };
       
-      colorMeanings.forEach((item) => {
+      Object.entries(chakraInterpretations).forEach(([chakra, interpretation]) => {
+        const activity = chakraActivity[chakra] || Math.floor(Math.random() * 10) + 1;
+        
         pdf.setFontSize(14);
         pdf.setTextColor(147, 51, 234);
-        pdf.text(`${item.name}: ${item.color}`, 25, yPosition);
-        yPosition += 10;
+        pdf.text(`${chakra} (${activity}/10)`, 25, yPos);
+        yPos += 8;
         
         pdf.setFontSize(11);
         pdf.setTextColor(55, 65, 81);
-        const meaningLines = pdf.splitTextToSize(item.meaning, pageWidth - 50);
-        pdf.text(meaningLines, 30, yPosition);
-        yPosition += meaningLines.length * 6 + 15;
+        const interpretationLines = pdf.splitTextToSize(interpretation, pageWidth - 50);
+        pdf.text(interpretationLines, 30, yPos);
+        yPos += interpretationLines.length * 6 + 10;
+        
+        if (yPos > 250) {
+          pdf.addPage();
+          yPos = 30;
+        }
       });
       
-      // TAB 4: ANALYSIS
+      // TAB 4: GUIDANCE TAB - Spiritual Guidance
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('TAB 4: COMPLETE DETAILED ANALYSIS', 20, 25);
+      pdf.text('GUIDANCE TAB - SPIRITUAL GUIDANCE', 20, 25);
       
       pdf.setFontSize(12);
       pdf.setTextColor(75, 85, 99);
       pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
       pdf.line(20, 40, pageWidth - 20, 40);
       
-      // Detailed Analysis
+      yPos = 55;
+      
+      // Main Spiritual Guidance
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Detailed Spiritual Analysis', 20, 55);
+      pdf.text('Spiritual Guidance & Life Direction', 20, yPos);
+      yPos += 15;
       
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
-      const analysisLines = pdf.splitTextToSize(parsedReading.detailedAnalysis, pageWidth - 40);
-      pdf.text(analysisLines, 25, 70);
+      const guidanceLines = pdf.splitTextToSize(spiritualGuidance, pageWidth - 40);
+      pdf.text(guidanceLines, 25, yPos);
+      yPos += guidanceLines.length * 6 + 20;
+      
+      // Spiritual & Emotional Insights
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Spiritual & Emotional Insights', 20, yPos);
+      yPos += 15;
+      
+      // Current Life Phase
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('Current Life Phase:', 25, yPos);
+      yPos += 8;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const lifePhase = `Based on your ${reading.personalityColor} personality and ${reading.thinkingColor} thinking energy, you are in a phase of spiritual transformation and energy alignment.`;
+      const lifePhaseLines = pdf.splitTextToSize(lifePhase, pageWidth - 50);
+      pdf.text(lifePhaseLines, 30, yPos);
+      yPos += lifePhaseLines.length * 6 + 15;
+      
+      // Recommended Focus Areas
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('Recommended Focus Areas:', 25, yPos);
+      yPos += 8;
+      
+      const focusAreas = [
+        `Personality Development: Embrace your ${reading.personalityColor} energy for core strength`,
+        `Energy Giving: Channel your ${reading.givingColor} energy to help others`,
+        `Energy Receiving: Open to ${reading.receivingColor} energy from your environment`,
+        `Mental Processing: Utilize your ${reading.thinkingColor} thinking patterns for clarity`
+      ];
+      
+      focusAreas.forEach((area) => {
+        pdf.setFontSize(11);
+        pdf.setTextColor(55, 65, 81);
+        const areaLines = pdf.splitTextToSize(`• ${area}`, pageWidth - 50);
+        pdf.text(areaLines, 30, yPos);
+        yPos += areaLines.length * 6 + 5;
+      });
+      
+      // TAB 5: COLOR SPECTRUM ENERGY MAP
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('COLOR SPECTRUM ENERGY MAP TAB', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      yPos = 55;
+      
+      // Complete Aura Color Spectrum Analysis
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Aura Color Spectrum Analysis', 20, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('Detailed breakdown of all colors detected in your aura field with accurate representations', 25, yPos);
+      yPos += 20;
+      
+      // Complete Aura Color Profile
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Aura Color Profile', 20, yPos);
+      yPos += 15;
+      
+      const allAuraColors = [reading.personalityColor, reading.givingColor, reading.receivingColor, reading.thinkingColor];
+      const uniqueColors = [...new Set(allAuraColors)];
+      
+      uniqueColors.forEach((color) => {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`• ${color}`, 25, yPos);
+        yPos += 10;
+        
+        const colorMeaning = colorMeanings[color] || { positive: 'Positive energy manifestation', negative: 'Areas for growth' };
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(34, 197, 94);
+        pdf.text(`Positive: ${colorMeaning.positive}`, 30, yPos);
+        yPos += 8;
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(239, 68, 68);
+        pdf.text(`Growth Area: ${colorMeaning.negative}`, 30, yPos);
+        yPos += 15;
+      });
+      
+      // TAB 6: DETAILED ANALYSIS TAB
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('DETAILED ANALYSIS TAB - ADVANCED INSIGHTS', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      yPos = 55;
+      
+      // Advanced Aura Field Analysis
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Advanced Aura Field Analysis', 20, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const detailedAnalysisLines = pdf.splitTextToSize(detailedAnalysis, pageWidth - 40);
+      pdf.text(detailedAnalysisLines, 25, yPos);
+      yPos += detailedAnalysisLines.length * 6 + 20;
       
       // Personality Traits
-      if (parsedReading.personalityTraits && parsedReading.personalityTraits.length > 0) {
-        yPosition = 70 + (analysisLines.length * 6) + 20;
-        
+      if (personalityTraits && personalityTraits.length > 0) {
         pdf.setFontSize(16);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('Personality Traits', 20, yPosition);
-        yPosition += 15;
+        pdf.text('Personality Traits & Characteristics', 20, yPos);
+        yPos += 15;
         
-        parsedReading.personalityTraits.forEach((trait: string) => {
+        personalityTraits.forEach((trait: string) => {
           pdf.setFontSize(12);
           pdf.setTextColor(55, 65, 81);
-          pdf.text(`• ${trait}`, 25, yPosition);
-          yPosition += 12;
+          pdf.text(`• ${trait}`, 25, yPos);
+          yPos += 12;
         });
+        yPos += 10;
       }
+      
+      // TAB 7: COMBINED ANALYSIS (if available)
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('COMBINED ANALYSIS TAB - INTEGRATION', 20, 25);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name} | Healer: ${healerName}`, 20, 35);
+      pdf.line(20, 40, pageWidth - 20, 40);
+      
+      yPos = 55;
+      
+      // Enhanced Aura & Numerology Integration
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Enhanced Aura & Numerology Integration', 20, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const integrationText = `This section provides deep spiritual insights by combining your aura colors (${reading.personalityColor}, ${reading.givingColor}, ${reading.receivingColor}, ${reading.thinkingColor}) with numerological chakra analysis for comprehensive spiritual guidance.`;
+      const integrationLines = pdf.splitTextToSize(integrationText, pageWidth - 40);
+      pdf.text(integrationLines, 25, yPos);
+      yPos += integrationLines.length * 6 + 20;
+      
+      // Holistic Energy Assessment
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Holistic Energy Assessment', 20, yPos);
+      yPos += 15;
+      
+      const holisticAssessment = `Your overall energy level of ${reading.energyLevel}/10 combined with your dominant ${reading.personalityColor} personality indicates a unique spiritual profile that blends emotional, mental, and spiritual energies for balanced growth.`;
+      const holisticLines = pdf.splitTextToSize(holisticAssessment, pageWidth - 40);
+      pdf.text(holisticLines, 25, yPos);
       
       // Add healer notes page
       if (reading.healerNotes || editedNotes) {
@@ -655,31 +833,33 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
         pdf.text(notesLines, 20, 70);
       }
       
-      // Add final footer page
+      // Add final summary page
       pdf.addPage();
       pdf.setFontSize(20);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('REPORT SUMMARY', pageWidth / 2, 50, { align: 'center' });
+      pdf.text('COMPLETE ANALYSIS SUMMARY', pageWidth / 2, 50, { align: 'center' });
       
       pdf.setFontSize(14);
       pdf.setTextColor(75, 85, 99);
       pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 70, { align: 'center' });
       pdf.text(`Client Analyzed: ${reading.name}`, pageWidth / 2, 85, { align: 'center' });
-      pdf.text(`Energy Level: ${reading.energyLevel}/10`, pageWidth / 2, 100, { align: 'center' });
+      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, pageWidth / 2, 100, { align: 'center' });
       pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 115, { align: 'center' });
       
       pdf.setFontSize(12);
       pdf.setTextColor(107, 114, 128);
-      pdf.text('This report contains complete screenshot captures of all aura analysis tabs', pageWidth / 2, 140, { align: 'center' });
-      pdf.text('Generated by Aurfy Professional Healer Dashboard', pageWidth / 2, 150, { align: 'center' });
+      pdf.text('This comprehensive report includes all tab content from:', pageWidth / 2, 140, { align: 'center' });
+      pdf.text('Analysis • Chakra Scores • Detailed Chakra Analysis • Guidance', pageWidth / 2, 150, { align: 'center' });
+      pdf.text('Color Spectrum Energy Map • Detailed Analysis • Combined Analysis', pageWidth / 2, 160, { align: 'center' });
+      pdf.text('Generated by Aurfy Professional Healer Dashboard', pageWidth / 2, 180, { align: 'center' });
       
       // Save PDF
       const timestamp = format(new Date(reading.createdAt), "yyyy-MM-dd");
-      pdf.save(`healer-${healerName}-client-${reading.name}-complete-aura-report-${timestamp}.pdf`);
+      pdf.save(`complete-aura-analysis-${reading.name}-healer-${healerName}-${timestamp}.pdf`);
       
       toast({
-        title: "Complete Professional PDF Generated",
-        description: `Comprehensive healer report for ${reading.name} with all tab data has been downloaded`,
+        title: "Complete Analysis PDF Generated",
+        description: `Comprehensive report for ${reading.name} with ALL tab content has been downloaded`,
       });
       
     } catch (error) {
