@@ -2457,6 +2457,25 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get healer's numerology readings (only readings performed by the healer)
+  app.get("/api/healer-numerology-readings", isAuthenticated, async (req, res) => {
+    try {
+      // Check if user is a healer by checking userType
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      console.log(`Fetching numerology readings for healer: ${req.user.username} (ID: ${req.user.id})`);
+      const numerologyReadings = await storage.getNumerologyReadingsByPerformedBy(req.user.id);
+      console.log(`Found ${numerologyReadings.length} numerology readings performed by healer ${req.user.username}`);
+      console.log(`Healer numerology readings data:`, numerologyReadings.map(r => ({ id: r.id, name: r.name, userId: r.userId, performedBy: r.performedBy, createdAt: r.createdAt })));
+      res.json(numerologyReadings);
+    } catch (error) {
+      console.error("Error retrieving healer numerology readings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer numerology readings" });
+    }
+  });
+
   // Admin endpoint to add/subtract credits manually
   app.post("/api/admin/credits", isAuthenticated, async (req, res) => {
     try {
