@@ -907,6 +907,25 @@ export default function AuraAnalysis() {
     }
   };
 
+  // Helper function for PDF color meanings
+  const getColorMeaningForPDF = (colorName: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Red represents life force energy, passion, and survival instincts. It indicates strong physical vitality, courage, and determination. This color suggests you are action-oriented and possess natural leadership qualities.',
+      'Orange': 'Orange embodies creativity, emotional expression, and social connection. It reflects your ability to bring joy and enthusiasm to relationships while maintaining healthy boundaries with others.',
+      'Yellow': 'Yellow signifies mental clarity, intellectual power, and optimism. This color indicates strong analytical abilities, clear communication skills, and a natural tendency toward learning and teaching.',
+      'Green': 'Green represents healing energy, balance, and heart-centered wisdom. It shows your natural ability to help others while maintaining emotional stability and compassionate understanding.',
+      'Blue': 'Blue reflects peaceful communication, truth, and spiritual awareness. This color indicates your ability to express yourself authentically while maintaining calm and supportive energy.',
+      'Indigo': 'Indigo represents psychic abilities, deep intuition, and spiritual insight. This color suggests you have natural access to higher wisdom and can perceive beyond the physical realm.',
+      'Violet': 'Violet embodies spiritual connection, divine consciousness, and enlightenment. This color indicates your strong connection to higher spiritual realms and natural wisdom.',
+      'White': 'White represents purity, divine protection, and spiritual clarity. This color indicates your connection to angelic guidance and your role as a spiritual light for others.',
+      'Black': 'Black indicates deep transformation, shadow work, and protective energy. This color suggests you are processing deep spiritual changes and developing strong energetic boundaries.',
+      'Gold': 'Gold represents divine wisdom, spiritual authority, and enlightened consciousness. This color indicates your connection to higher spiritual teachings and natural healing abilities.',
+      'Silver': 'Silver reflects lunar wisdom, psychic protection, and intuitive insights. This color indicates your strong connection to feminine wisdom and natural psychic abilities.',
+      'Brown': 'Brown represents grounding, earth connection, and practical wisdom. This color indicates your ability to bridge spiritual insights with practical everyday applications.'
+    };
+    return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
+  };
+
   const downloadComprehensiveAuraPDF = async () => {
     if (!result) return;
 
@@ -980,28 +999,28 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(14);
       pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Personality Color: ${result.personalityColor}`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, 20, yPosition);
       yPosition += 8;
-      yPosition = addTextWithPageBreak(`Giving Energy: ${result.givingColor}`, 20, yPosition);
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`Receiving Energy: ${result.receivingColor}`, 20, yPosition);
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`Thinking Energy: ${result.thinkingColor}`, 20, yPosition);
+      if (result.secondaryColor) {
+        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, 20, yPosition);
+        yPosition += 8;
+      }
+      yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, 20, yPosition);
       yPosition += 15;
 
-      // SECTION 2: SPIRITUAL GUIDANCE
+      // SECTION 2: SPIRITUAL ANALYSIS
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('SPIRITUAL GUIDANCE', 20, yPosition);
+      yPosition = addTextWithPageBreak('SPIRITUAL ANALYSIS', 20, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const spiritualGuidance = result.spiritualGuidance || "Your aura reveals unique spiritual patterns that guide your personal development journey.";
-      yPosition = addWrappedText(spiritualGuidance, 20, yPosition, pageWidth - 40);
+      const analysis = result.detailedAnalysis || result.analysis || "Your aura reveals unique spiritual patterns that guide your personal development journey. The colors detected in your energy field indicate specific aspects of your personality, emotional state, and spiritual development.";
+      yPosition = addWrappedText(analysis, 20, yPosition, pageWidth - 40);
       yPosition += 10;
 
-      // SECTION 3: CHAKRA ACTIVITY ANALYSIS  
+      // SECTION 3: ENERGY LEVEL ANALYSIS  
       if (yPosition > pageHeight - 60) {
         pdf.addPage();
         yPosition = 20;
@@ -1009,21 +1028,20 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('CHAKRA ACTIVITY ANALYSIS', 20, yPosition);
+      yPosition = addTextWithPageBreak('ENERGY LEVEL ANALYSIS', 20, yPosition);
       yPosition += 10;
 
-      // Calculate chakra scores
-      const chakraNames = ['Root', 'Sacral', 'Solar Plexus', 'Heart', 'Throat', 'Third Eye', 'Crown', 'Earth Star', 'Soul Star'];
-      const chakraScores = calculateChakraActivity(result.personalityColor, result.givingColor, result.receivingColor, result.thinkingColor);
-      
       pdf.setFontSize(12);
       pdf.setTextColor(50, 50, 50);
-      chakraNames.forEach((chakra, index) => {
-        const score = chakraScores[index] || 0;
-        const percentage = Math.round((score / 10) * 100);
-        yPosition = addTextWithPageBreak(`${chakra} Chakra: ${score}/10 (${percentage}%)`, 20, yPosition);
-        yPosition += 6;
-      });
+      yPosition = addTextWithPageBreak(`Overall Energy Level: ${result.energyLevel}/10`, 20, yPosition);
+      yPosition += 6;
+      
+      const energyDescription = result.energyLevel >= 8 ? 'Very High Energy - Vibrant and Active' :
+                              result.energyLevel >= 6 ? 'High Energy - Strong and Focused' :
+                              result.energyLevel >= 4 ? 'Moderate Energy - Balanced and Steady' :
+                              'Low Energy - Calm and Gentle';
+      
+      yPosition = addTextWithPageBreak(`Energy Classification: ${energyDescription}`, 20, yPosition);
       yPosition += 10;
 
       // SECTION 4: DETAILED COLOR MEANINGS
@@ -1037,51 +1055,32 @@ export default function AuraAnalysis() {
       yPosition = addTextWithPageBreak('DETAILED COLOR MEANINGS', 20, yPosition);
       yPosition += 10;
 
-      // Personality Color Analysis
+      // Dominant Color Analysis
       pdf.setFontSize(14);
       pdf.setTextColor(100, 0, 150);
-      yPosition = addTextWithPageBreak(`Personality Color - ${result.personalityColor}:`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Dominant Color - ${result.dominantColor}:`, 20, yPosition);
       yPosition += 8;
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const personalityMeaning = getPersonalityColorInterpretation(result.personalityColor);
-      yPosition = addWrappedText(personalityMeaning, 20, yPosition, pageWidth - 40);
+      const dominantMeaning = getColorMeaningForPDF(result.dominantColor);
+      yPosition = addWrappedText(dominantMeaning, 20, yPosition, pageWidth - 40);
       yPosition += 10;
 
-      // Giving Energy Analysis
-      pdf.setFontSize(14);
-      pdf.setTextColor(100, 0, 150);
-      yPosition = addTextWithPageBreak(`Giving Energy - ${result.givingColor}:`, 20, yPosition);
-      yPosition += 8;
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      const givingMeaning = getGivingEnergyInterpretation(result.givingColor);
-      yPosition = addWrappedText(givingMeaning, 20, yPosition, pageWidth - 40);
-      yPosition += 10;
+      // Secondary Color Analysis (if present)
+      if (result.secondaryColor) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(100, 0, 150);
+        yPosition = addTextWithPageBreak(`Secondary Color - ${result.secondaryColor}:`, 20, yPosition);
+        yPosition += 8;
+        pdf.setFontSize(11);
+        pdf.setTextColor(60, 60, 60);
+        const secondaryMeaning = getColorMeaningForPDF(result.secondaryColor);
+        yPosition = addWrappedText(secondaryMeaning, 20, yPosition, pageWidth - 40);
+        yPosition += 10;
+      }
+      yPosition += 5;
 
-      // Receiving Energy Analysis  
-      pdf.setFontSize(14);
-      pdf.setTextColor(100, 0, 150);
-      yPosition = addTextWithPageBreak(`Receiving Energy - ${result.receivingColor}:`, 20, yPosition);
-      yPosition += 8;
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      const receivingMeaning = getReceivingEnergyInterpretation(result.receivingColor);
-      yPosition = addWrappedText(receivingMeaning, 20, yPosition, pageWidth - 40);
-      yPosition += 10;
-
-      // Thinking Energy Analysis
-      pdf.setFontSize(14);
-      pdf.setTextColor(100, 0, 150);
-      yPosition = addTextWithPageBreak(`Thinking Energy - ${result.thinkingColor}:`, 20, yPosition);
-      yPosition += 8;
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      const thinkingMeaning = getThinkingEnergyInterpretation(result.thinkingColor);
-      yPosition = addWrappedText(thinkingMeaning, 20, yPosition, pageWidth - 40);
-      yPosition += 15;
-
-      // SECTION 5: PERSONALITY TRAITS & CHARACTERISTICS
+      // SECTION 5: SPIRITUAL INSIGHTS & CHARACTERISTICS
       if (yPosition > pageHeight - 80) {
         pdf.addPage();
         yPosition = 20;
@@ -1089,23 +1088,97 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('PERSONALITY TRAITS & CHARACTERISTICS', 20, yPosition);
+      yPosition = addTextWithPageBreak('SPIRITUAL INSIGHTS & CHARACTERISTICS', 20, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(12);
       pdf.setTextColor(50, 50, 50);
-      const personalityTraits = result.personalityTraits || [];
-      if (personalityTraits.length > 0) {
-        personalityTraits.forEach((trait: string) => {
-          yPosition = addTextWithPageBreak(`• ${trait}`, 25, yPosition);
+      
+      // Color-based spiritual traits
+      const spiritualTraits = result.personalityTraits || [
+        `${result.dominantColor} energy promotes spiritual growth and awareness`,
+        'Natural ability to sense energy fields and spiritual presence',
+        'Strong intuitive connection to higher consciousness',
+        'Balanced approach to spiritual and material worlds'
+      ];
+      spiritualTraits.forEach((trait: string) => {
+        yPosition = addTextWithPageBreak(`• ${trait}`, 25, yPosition);
+        yPosition += 6;
+      });
+      yPosition += 15;
+
+      // SECTION 6: COMPREHENSIVE ANALYSIS & RECOMMENDATIONS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 0, 130);
+      yPosition = addTextWithPageBreak('COMPREHENSIVE ANALYSIS & RECOMMENDATIONS', 20, yPosition);
+      yPosition += 10;
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(60, 60, 60);
+      const comprehensiveAnalysis = result.detailedAnalysis || result.analysis || "Your aura analysis reveals a complex spiritual profile with multiple energy layers that indicate your current life phase and growth opportunities.";
+      yPosition = addWrappedText(comprehensiveAnalysis, 20, yPosition, pageWidth - 40);
+      yPosition += 15;
+
+      // SECTION 7: SPIRITUAL GUIDANCE
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 0, 130);
+      yPosition = addTextWithPageBreak('SPIRITUAL GUIDANCE', 20, yPosition);
+      yPosition += 10;
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(60, 60, 60);
+      const spiritualGuidance = result.spiritualGuidance || "Continue your spiritual journey with awareness and openness to the energies around you.";
+      yPosition = addWrappedText(spiritualGuidance, 20, yPosition, pageWidth - 40);
+      yPosition += 15;
+
+      // SECTION 8: CHAKRA SYSTEM ANALYSIS
+      if (yPosition > pageHeight - 100) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 0, 130);
+      yPosition = addTextWithPageBreak('CHAKRA SYSTEM ANALYSIS', 20, yPosition);
+      yPosition += 10;
+
+      pdf.setFontSize(12);
+      pdf.setTextColor(50, 50, 50);
+      
+      if (result.chakraActivity) {
+        const chakraNames = {
+          soulStar: 'Soul Star Chakra',
+          crown: 'Crown Chakra',
+          thirdEye: 'Third Eye Chakra',
+          throat: 'Throat Chakra',
+          heart: 'Heart Chakra',
+          solarPlexus: 'Solar Plexus Chakra',
+          sacral: 'Sacral Chakra',
+          root: 'Root Chakra'
+        };
+
+        Object.entries(result.chakraActivity).forEach(([key, value]) => {
+          const name = chakraNames[key as keyof typeof chakraNames] || key;
+          const percentage = Math.round((value / 10) * 100);
+          yPosition = addTextWithPageBreak(`${name}: ${value}/10 (${percentage}%)`, 20, yPosition);
           yPosition += 6;
         });
       } else {
-        yPosition = addWrappedText("Your aura reveals unique personality characteristics that reflect your spiritual development and energy patterns.", 20, yPosition, pageWidth - 40);
+        yPosition = addWrappedText("Chakra analysis shows balanced energy flow across all seven main energy centers, supporting overall spiritual well-being.", 20, yPosition, pageWidth - 40);
       }
       yPosition += 15;
 
-      // SECTION 6: DETAILED ANALYSIS & RECOMMENDATIONS
+      // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
       if (yPosition > pageHeight - 80) {
         pdf.addPage();
         yPosition = 20;
@@ -1113,123 +1186,33 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('DETAILED ANALYSIS & RECOMMENDATIONS', 20, yPosition);
+      yPosition = addTextWithPageBreak('FINAL SUMMARY & RECOMMENDATIONS', 20, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const detailedAnalysis = result.detailedAnalysis || "Your aura analysis reveals a complex spiritual profile with multiple energy layers that indicate your current life phase and growth opportunities.";
-      yPosition = addWrappedText(detailedAnalysis, 20, yPosition, pageWidth - 40);
+      const finalSummary = `Your aura analysis reveals a ${result.dominantColor.toLowerCase()} dominant energy with an energy level of ${result.energyLevel}/10. This indicates a ${result.energyLevel >= 7 ? 'highly active' : result.energyLevel >= 5 ? 'balanced' : 'gentle'} spiritual presence. Continue developing your spiritual awareness through meditation, energy work, and conscious living practices. Your unique energy signature offers valuable gifts to the world - embrace your authentic spiritual self and share your light with others.`;
+      yPosition = addWrappedText(finalSummary, 20, yPosition, pageWidth - 40);
       yPosition += 15;
 
-      // SECTION 7: CHAKRA BALANCE INSIGHTS
-      if (yPosition > pageHeight - 80) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('CHAKRA BALANCE INSIGHTS', 20, yPosition);
-      yPosition += 10;
-
-      // Calculate chakra groups
-      const lowerChakras = [(chakraScores[0] || 0), (chakraScores[1] || 0), (chakraScores[2] || 0)];
-      const middleChakras = [(chakraScores[3] || 0), (chakraScores[4] || 0)];
-      const higherChakras = [(chakraScores[5] || 0), (chakraScores[6] || 0), (chakraScores[7] || 0), (chakraScores[8] || 0)];
-
-      const lowerAvg = lowerChakras.reduce((a, b) => a + b, 0) / lowerChakras.length;
-      const middleAvg = middleChakras.reduce((a, b) => a + b, 0) / middleChakras.length;
-      const higherAvg = higherChakras.reduce((a, b) => a + b, 0) / higherChakras.length;
-
-      const total = lowerAvg + middleAvg + higherAvg;
-      const lowerPct = Math.round((lowerAvg / total) * 100);
-      const middlePct = Math.round((middleAvg / total) * 100);
-      const higherPct = 100 - lowerPct - middlePct;
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Lower Chakras (Grounding): ${lowerPct}%`, 20, yPosition);
-      yPosition += 6;
-      yPosition = addTextWithPageBreak(`Middle Chakras (Expression): ${middlePct}%`, 20, yPosition);
-      yPosition += 6;
-      yPosition = addTextWithPageBreak(`Higher Chakras (Spiritual): ${higherPct}%`, 20, yPosition);
-      yPosition += 15;
-
-      // SECTION 8: AURA COLOR SPECTRUM ANALYSIS
-      if (yPosition > pageHeight - 80) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('AURA COLOR SPECTRUM ANALYSIS', 20, yPosition);
-      yPosition += 10;
-
-      const allColors = [result.personalityColor, result.givingColor, result.receivingColor, result.thinkingColor];
-      const uniqueColors = [...new Set(allColors)];
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak('Colors Present in Your Aura:', 20, yPosition);
-      yPosition += 8;
-
-      uniqueColors.forEach(color => {
-        const meaning = getColorSpiritalMeaning(color);
-        yPosition = addTextWithPageBreak(`${color}:`, 25, yPosition);
-        yPosition += 5;
-        yPosition = addWrappedText(meaning, 25, yPosition, pageWidth - 50, 5);
-        yPosition += 8;
-      });
-
-      // SECTION 9: LIFE PHASE & GROWTH GUIDANCE
-      if (yPosition > pageHeight - 80) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('LIFE PHASE & GROWTH GUIDANCE', 20, yPosition);
-      yPosition += 10;
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      yPosition = addWrappedText("Based on your aura color combination, you are currently in a phase of spiritual development that emphasizes balance between material grounding and spiritual expansion. Your energy pattern suggests opportunities for personal growth through conscious integration of your gifts and challenges.", 20, yPosition, pageWidth - 40);
-      yPosition += 15;
-
-      // FOOTER
-      pdf.addPage();
-      yPosition = 20;
-      pdf.setFontSize(16);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('PROFESSIONAL SUMMARY', 20, yPosition);
-      yPosition += 15;
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      yPosition = addWrappedText("This comprehensive aura analysis provides insights into your energetic patterns, chakra activity, and spiritual development. Use this information as guidance for personal growth, meditation focus, and understanding your unique energetic signature.", 20, yPosition, pageWidth - 40);
-      yPosition += 20;
-
+      // Add footer
       pdf.setFontSize(10);
-      pdf.setTextColor(120, 120, 120);
-      yPosition = addTextWithPageBreak('Generated by Aurfy - Your Spiritual Wellness Platform', pageWidth/2, pageHeight - 15, { align: 'center' });
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(`Generated by Aurfy - Spiritual Wellness Platform | ${new Date().toLocaleDateString()}`, pageWidth/2, pageHeight - 10, { align: 'center' });
 
-      // Save the PDF
-      const filename = `aura-chakra-analysis-${nameToUse.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(filename);
+      // Download the PDF
+      const currentDate = new Date().toISOString().split('T')[0];
+      pdf.save(`aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`);
 
       toast({
         title: "PDF Downloaded Successfully",
-        description: "Your complete aura analysis report with all sections has been downloaded.",
+        description: "Your comprehensive aura analysis report has been downloaded with all sections and analysis data.",
       });
-
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast({
         title: "PDF Generation Failed",
-        description: "There was an error creating your PDF report. Please try again.",
+        description: "Failed to generate comprehensive PDF. Please try again.",
         variant: "destructive",
       });
     }
