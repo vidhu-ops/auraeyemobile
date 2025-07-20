@@ -1008,6 +1008,41 @@ export default function AuraAnalysis() {
       yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, 20, yPosition);
       yPosition += 15;
 
+      // ADD AURA VISUALIZATION IMAGE
+      if (processedImage) {
+        // Check if we need a new page for the image
+        if (yPosition > pageHeight - 120) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFontSize(16);
+        pdf.setTextColor(75, 0, 130);
+        yPosition = addTextWithPageBreak('AURA VISUALIZATION', 20, yPosition);
+        yPosition += 10;
+
+        try {
+          // Add the processed aura image to PDF
+          const imgWidth = 120; // Width in mm
+          const imgHeight = 67.5; // Height in mm (maintaining 16:9 aspect ratio)
+          const imgX = (pageWidth - imgWidth) / 2; // Center the image
+          
+          pdf.addImage(processedImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 15;
+
+          pdf.setFontSize(11);
+          pdf.setTextColor(100, 100, 100);
+          yPosition = addTextWithPageBreak('Your personalized aura visualization showing energy patterns and spiritual colors', pageWidth/2, yPosition, { align: 'center' });
+          yPosition += 15;
+        } catch (imageError) {
+          console.error('Error adding image to PDF:', imageError);
+          pdf.setFontSize(11);
+          pdf.setTextColor(150, 150, 150);
+          yPosition = addTextWithPageBreak('Aura visualization image could not be embedded in PDF', 20, yPosition);
+          yPosition += 10;
+        }
+      }
+
       // SECTION 2: SPIRITUAL ANALYSIS
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
