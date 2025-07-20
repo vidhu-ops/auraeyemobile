@@ -21,6 +21,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   birthDate: true,
   email: true,
   mobileNumber: true,
+  credits: true,
 });
 
 export const auraReadings = pgTable("aura_readings", {
