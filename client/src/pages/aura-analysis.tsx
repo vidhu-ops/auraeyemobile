@@ -1276,13 +1276,15 @@ export default function AuraAnalysis() {
       'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul. When balanced, you are surrounded by spiritually activated people. When imbalanced, you may feel energetically overloaded, ungrounded, or have difficulty being in the body.',
       'Orange': 'Creative, joyful, playful, sexually alive, loves experimenting with pleasure and life. When balanced, you increase ability to influence others. When imbalanced, you may experience restlessness, overindulgence, scattered energy, or addiction to stimulation.',
       'Pink': 'Loving, emotionally open, romantic, using beauty and art affectionately. When balanced, you feel pressure to connect and challenge yourself. When imbalanced, you may over-nurture, become overly dependent, or fear rejection and abandonment.',
+      'White': 'Pure, pure light, pure consciousness, pure energy, pure love. When balanced, you are recognized as pure and protected. When imbalanced, you may feel disconnected from earth, have difficulty with material world, or feel spiritually',
+      'Black': 'You may be giving from a space of obligation, fear of rejection, or energetic depletion. This suggests overgiving or empathic burnout—where your actions support others but drain your own vitality..'
     };
     return givingInterpretations[color] || `Giving Zone ${color} - You give unique ${color.toLowerCase()} energy that flows outward to support and uplift others through your natural spiritual gifts and energetic offerings.`;
   };
 
   const getReceivingEnergyInterpretation = (color: string): string => {
     const receivingInterpretations: Record<string, string> = {
-      'Black': 'Receiving Zone Black - You need to work on transformative power and deep inner work, attracting shadow integration and spiritual rebirth.',
+      'Black': 'Receiving Zone Black - You may be unconsciously absorbing unresolved emotions, psychic debris, or ancestral burdens from others or your environment.You tend to take in energy that doesnt belong to you, especially from close relationships. This creates emotional heaviness and energetic fatigue.',
       'White': 'Receiving Zone White - You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
       'Brown': 'Receiving Zone Brown - You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
       'Red': 'Taking action with purpose, guiding or mentoring others. You master healer energy, a teacher and guide on a mission. Acting from innocence, vulnerability, or spiritual ideals.',
@@ -1317,7 +1319,7 @@ export default function AuraAnalysis() {
       'Purple': 'Thinking Zone Purple - Your mental energy channels mystical understanding and ancient wisdom, generating transformative thoughts through magical thinking and spiritual alchemy.',
       'Peach': 'Thinking Zone Peach - Your mental energy channels nurturing love and emotional support, generating compassionate healing through gentle thinking.',
       'Grey': 'Thinking Zone Grey - Your mental requires channeling balanced wisdom and neutral authority, generating peaceful resolution through adaptable thinking.',
-      'Black': 'Thinking Zone Black - Your mental energy requires transformative work based on power and deep inner work, generating spiritual rebirth through shadow integration.'
+      'Black': 'Thinking Zone Black - Your thoughts may be clouded by fear, overthinking, or limiting beliefs rooted in past trauma. This indicates a mental fog or energetic block in accessing higher clarity. You may feel disconnected from your intuitive wisdom'
       
     };
     return thinkingInterpretations[color] || `Thinking Zone ${color} - Your mental processes channel unique ${color.toLowerCase()} energy that creates distinctive thought patterns and cognitive approaches to life.`;
@@ -1337,7 +1339,8 @@ export default function AuraAnalysis() {
       'Silver': 'Overall Silver Energy - Learning to protect energy and feel safe in the physical world, enhanced intuitive abilities with emotional wisdom. Developing psychic protection while maintaining lunar sensitivity and emotional clarity.',
       'Gold': 'Overall Gold Energy - Spiritually elevated being, sensitive and light-filled energy field, master teacher energy with ancient wisdom. Living with enlightened consciousness while maintaining spiritual authority and divine wisdom integration.',
       'White': 'Overall White Energy - Learning to protect energy and feel safe in the physical world, spiritually elevated being with pure divine connection. Developing energetic boundaries while maintaining spiritual purity and divine alignment.',
-      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.'
+      'Purple': 'Overall Purple Energy - Your core energy channels mystical transformation and ancient wisdom, manifesting magical experiences through spiritual alchemy and transformative life initiations.',
+      'Black': 'You are carrying unresolved karmic patterns from past lifetimes or ancestral lines that are now seeking healing.This isn’t a punishment—it’s a sacred invitation to transmute shadow into light. You’re in a cycle of karmic cleansing, and by facing this darkness with love, you activate powerful spiritual breakthroughs and clear your soul path forward. love and emotional support, manifesting compassionate healing through gentle emotional wisdom and heart-centered living.'
       
     };
     return overallInterpretations[color] || `Overall ${color} Energy - Your fundamental life force carries unique ${color.toLowerCase()} vibration that shapes your spiritual path and life experiences through distinctive energetic resonance.`;
@@ -1446,20 +1449,20 @@ export default function AuraAnalysis() {
     return 'Energy filtering';
   };
 
-  const getChakraColor = (chakra: string): string => {
-    const chakraColors: Record<string, string> = {
-      'root': 'bg-red-500',
-      'sacral': 'bg-orange-500',
-      'solarPlexus': 'bg-yellow-500',
-      'heart': 'bg-green-500',
-      'throat': 'bg-blue-500',
-      'thirdEye': 'bg-indigo-500',
-      'crown': 'bg-purple-500',
-      'soulStar': 'bg-pink-500',
-      'earthStar': 'bg-brown-500'
-    };
-    return chakraColors[chakra] || 'bg-gray-400';
-  };
+  function getChakraColor({ chakra }: { chakra: string; }): string {
+        const chakraColors: Record<string, string> = {
+            'root': 'bg-red-500',
+            'sacral': 'bg-orange-500',
+            'solarPlexus': 'bg-yellow-500',
+            'heart': 'bg-green-500',
+            'throat': 'bg-blue-500',
+            'thirdEye': 'bg-indigo-500',
+            'crown': 'bg-purple-500',
+            'soulStar': 'bg-pink-500',
+            'earthStar': 'bg-brown-500'
+        };
+        return chakraColors[chakra] || 'bg-gray-400';
+    }
 
   const calculateEarthStarChakra = (aura: AuraAnalysisResult): number => {
     // Earth Star Chakra (Number 4) - Brown/Earth colors, grounding energy
