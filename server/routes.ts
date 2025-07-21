@@ -901,7 +901,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let quality = 90;
       let compressedBuffer: Buffer;
       
-      // Keep compressing until we reach 200KB or lower
+      // Keep compressing until we reach 150KB or lower for faster processing
       do {
         compressedBuffer = await sharp(inputBuffer)
           .resize(1600, 900, {
@@ -919,7 +919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality}`);
         
         // If still too large, reduce quality by 10
-        if (fileSizeKB > 200 && quality > 30) {
+        if (fileSizeKB > 150 && quality > 30) {
           quality -= 10;
         } else {
           break; // Either small enough or minimum quality reached
@@ -927,7 +927,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } while (quality >= 30);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`Final compressed image: ${finalSizeKB.toFixed(1)}KB (target: 200KB max)`);
+      console.log(`Final compressed image: ${finalSizeKB.toFixed(1)}KB (target: 150KB max)`);
       
       return compressedBuffer;
     } catch (error) {
