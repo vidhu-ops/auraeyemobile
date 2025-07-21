@@ -2884,10 +2884,10 @@ export default function AuraAnalysis() {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.35,
+        endY: height * 0.4,
         startX: 0,
         endX: width,
-        density: 0.4,
+        density: 0.7, // Increased for better visibility
         name: 'thinking'
       },
       {
@@ -2896,8 +2896,8 @@ export default function AuraAnalysis() {
         startY: height * 0.1,
         endY: height * 0.9,
         startX: 0,
-        endX: width * 0.45,
-        density: 0.45,
+        endX: width * 0.5,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'receiving'
       },
       {
@@ -2905,19 +2905,19 @@ export default function AuraAnalysis() {
         zone: 'right',
         startY: height * 0.1,
         endY: height * 0.9,
-        startX: width * 0.55,
+        startX: width * 0.5,
         endX: width,
-        density: 0.75,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.65,
+        startY: height * 0.6,
         endY: height,
         startX: 0,
         endX: width,
-        density: 0.35,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'personality'
       }
     ];
@@ -3577,9 +3577,10 @@ export default function AuraAnalysis() {
                     coords.y >= faceY && coords.y <= faceY + faceHeight;
 
                 if (!inFaceArea) {
-                    const sizeFactor = Math.min(width, height) / 900; // Adaptive sizing
-                    const smokeSize = (60 + seededRandom() * 80) * sizeFactor; // Proportional particle size
-                    const smokeOpacity = 0.04 + seededRandom() * 0.1; // Lower opacity for person visibility
+                    // Fixed consistent sizing for all images regardless of original dimensions
+                    const sizeFactor = 1.0; // Fixed factor for uniform appearance
+                    const smokeSize = 120 + seededRandom() * 60; // Consistent particle size 120-180px
+                    const smokeOpacity = 0.35 + seededRandom() * 0.25; // Higher opacity 0.35-0.60 for better visibility
 
                     drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
                 }
@@ -4169,9 +4170,9 @@ export default function AuraAnalysis() {
             const useSecondary = colorBlend > 0.7;
             const rgb = useSecondary ? secondaryRGB : dominantRGB;
 
-            // Adaptive particle size based on canvas dimensions
-            const sizeFactor = Math.min(width, height) / 900;
-            const particleSize = (6 + seededRandom() * 10) * (energyLevel / 10) * sizeFactor;
+            // Fixed consistent particle size for uniform appearance
+            const sizeFactor = 1.0; // Fixed factor for consistent visualization
+            const particleSize = 144 + seededRandom() * 144; // Consistent size 144-288px for all images
             const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
             const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
 
