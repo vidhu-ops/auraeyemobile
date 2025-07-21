@@ -6991,6 +6991,259 @@ export default function AuraAnalysis() {
                                   <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
                                 </div>
 
+                              </div>
+
+                              {/* Comprehensive Chakra Remedies & Guidance Section */}
+                              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border border-indigo-200">
+                                <h4 className="font-medium text-xl mb-4 text-indigo-800">Chakra Remedies & Healing Guidance</h4>
+                                <p className="text-sm text-gray-600 mb-6">
+                                  Based on your chakra activity levels, here are specific remedies and practices to enhance your energy flow and spiritual balance.
+                                </p>
+
+                                <div className="space-y-6">
+                                  
+                                  {/* Root Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-red-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-red-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-red-800">Root Chakra (Muladhara) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Action, Stability, Security, Passion, Decisions</li>
+                                          <li>• Physical symptoms: Lower back pain, constipation, fatigue</li>
+                                          <li>• Emotional: Financial insecurity, lack of confidence</li>
+                                          <li>• Spiritual: Disconnection from earth energy</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> LAM, Hanuman Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I am full of energy and confident"</li>
+                                          <li>• <strong>Colors:</strong> Bright Red clothing/surroundings</li>
+                                          <li>• <strong>Crystals:</strong> Red Jasper, Red Garnet</li>
+                                          <li>• <strong>Essential Oils:</strong> Cedarwood, Patchouli, Clove</li>
+                                          <li>• <strong>Rudraksha:</strong> 11 Mukhi (main), 3 Mukhi (alternative)</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Sacral Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-orange-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-orange-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-orange-800">Sacral Chakra (Svadhishthana) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Sexuality, Creativity, Balance, Passion, Emotions</li>
+                                          <li>• Physical: Reproductive issues, lower back pain, kidney problems</li>
+                                          <li>• Emotional: Guilt, shame, lack of creative expression</li>
+                                          <li>• Karmic: Feeling guilty when not helping others</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> VAM, Brahma Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I embrace my creativity and emotions"</li>
+                                          <li>• <strong>Colors:</strong> Orange clothing, foods, flowers</li>
+                                          <li>• <strong>Crystals:</strong> Carnelian, Orange Calcite</li>
+                                          <li>• <strong>Essential Oils:</strong> Sandalwood, Orange, Ylang Ylang</li>
+                                          <li>• <strong>Rudraksha:</strong> 6 Mukhi for emotional balance</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Solar Plexus Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-yellow-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-yellow-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-yellow-800">Solar Plexus Chakra (Manipura) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Personal Power, Confidence, Will, Self-esteem</li>
+                                          <li>• Physical: Digestive issues, stomach problems, diabetes</li>
+                                          <li>• Emotional: Low self-worth, lack of confidence</li>
+                                          <li>• Mental: Poor decision-making, lack of willpower</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> RAM, Surya Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I am powerful and confident"</li>
+                                          <li>• <strong>Colors:</strong> Bright Yellow, Golden colors</li>
+                                          <li>• <strong>Crystals:</strong> Citrine, Yellow Topaz, Tiger's Eye</li>
+                                          <li>• <strong>Essential Oils:</strong> Lemon, Ginger, Peppermint</li>
+                                          <li>• <strong>Rudraksha:</strong> 3 Mukhi for confidence</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Heart Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-green-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-green-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-green-800">Heart Chakra (Anahata) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Love, Compassion, Relationships, Forgiveness</li>
+                                          <li>• Physical: Heart problems, lung issues, circulation</li>
+                                          <li>• Emotional: Difficulty loving, relationship issues</li>
+                                          <li>• Social: Problems with giving and receiving love</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> YAM, Krishna Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I give and receive love freely"</li>
+                                          <li>• <strong>Colors:</strong> Green, Pink heart-healing colors</li>
+                                          <li>• <strong>Crystals:</strong> Rose Quartz, Green Aventurine</li>
+                                          <li>• <strong>Essential Oils:</strong> Rose, Lavender, Eucalyptus</li>
+                                          <li>• <strong>Rudraksha:</strong> 4 Mukhi for emotional healing</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Throat Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-blue-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-blue-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-blue-800">Throat Chakra (Vishuddha) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Communication, Truth, Expression, Authenticity</li>
+                                          <li>• Physical: Throat issues, neck pain, thyroid problems</li>
+                                          <li>• Emotional: Fear of speaking truth, suppressed voice</li>
+                                          <li>• Social: Difficulty expressing authentic self</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> HAM, Saraswati Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I speak my truth with clarity"</li>
+                                          <li>• <strong>Colors:</strong> Blue, turquoise communication colors</li>
+                                          <li>• <strong>Crystals:</strong> Blue Lace Agate, Sodalite</li>
+                                          <li>• <strong>Essential Oils:</strong> Eucalyptus, Tea Tree, Chamomile</li>
+                                          <li>• <strong>Rudraksha:</strong> 5 Mukhi for communication</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Third Eye Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-indigo-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-indigo-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-indigo-800">Third Eye Chakra (Ajna) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Intuition, Wisdom, Psychic Abilities, Inner Vision</li>
+                                          <li>• Physical: Headaches, eye problems, sleep issues</li>
+                                          <li>• Mental: Lack of clarity, poor intuition</li>
+                                          <li>• Spiritual: Disconnection from higher guidance</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> OM, Shiva Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I trust my inner wisdom"</li>
+                                          <li>• <strong>Colors:</strong> Indigo, deep purple for insight</li>
+                                          <li>• <strong>Crystals:</strong> Amethyst, Lapis Lazuli</li>
+                                          <li>• <strong>Essential Oils:</strong> Frankincense, Clary Sage</li>
+                                          <li>• <strong>Rudraksha:</strong> 6 Mukhi for intuition</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Crown Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-purple-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-purple-500 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-purple-800">Crown Chakra (Sahasrara) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Spiritual Connection, Divine Wisdom, Enlightenment</li>
+                                          <li>• Physical: Top of head sensitivity, brain fog</li>
+                                          <li>• Mental: Lack of purpose, spiritual emptiness</li>
+                                          <li>• Spiritual: Disconnection from divine source</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> Silence, OM, Divine Gayatri</li>
+                                          <li>• <strong>Affirmation:</strong> "I am connected to divine wisdom"</li>
+                                          <li>• <strong>Colors:</strong> Violet, white, gold spiritual colors</li>
+                                          <li>• <strong>Crystals:</strong> Clear Quartz, Selenite</li>
+                                          <li>• <strong>Essential Oils:</strong> Lotus, Frankincense</li>
+                                          <li>• <strong>Rudraksha:</strong> 1 Mukhi for spiritual connection</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                </div>
+
+                                {/* General Healing Instructions */}
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-200 mt-6">
+                                  <h5 className="font-semibold text-lg text-blue-800 mb-3">Universal Healing Guidelines</h5>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h6 className="font-medium text-sm text-gray-800 mb-2">Affirmation Practice</h6>
+                                      <p className="text-xs text-gray-600">
+                                        Write affirmations with colored pens matching the chakra color. Practice before sleeping for subconscious programming.
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <h6 className="font-medium text-sm text-gray-800 mb-2">Crystal Care</h6>
+                                      <p className="text-xs text-gray-600">
+                                        Cleanse crystals weekly in salt water, sun-dry, and program with healing intentions for maximum effectiveness.
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <h6 className="font-medium text-sm text-gray-800 mb-2">Mantra Timing</h6>
+                                      <p className="text-xs text-gray-600">
+                                        Chant mantras minimum 27 rounds, followed by 5 minutes silence. Set intention to balance chakras before chanting.
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <h6 className="font-medium text-sm text-gray-800 mb-2">Essential Oil Usage</h6>
+                                      <p className="text-xs text-gray-600">
+                                        Dilute with carrier oils, diffuse in aroma lamps, or use as perfume. Consider oil properties for proper timing.
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
 
                               </div>
 
