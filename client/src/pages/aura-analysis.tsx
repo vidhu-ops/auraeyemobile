@@ -2925,7 +2925,7 @@ export default function AuraAnalysis() {
     // ULTRA-SMOOTH GRADIENT BASE LAYERS - Create seamless color transitions
     colorZones.forEach(zone => {
       ctx.save();
-      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalCompositeOperation = 'screen';
       
       let gradient;
       
@@ -3006,7 +3006,7 @@ export default function AuraAnalysis() {
       // LAYER 1: Ultra-large diffused smoke clouds - maximum blur for seamless blending
       ctx.save();
       ctx.filter = 'blur(80px)';
-      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalCompositeOperation = 'source-over';
       
       const particles1 = Math.floor(40 * zone.density);
       for (let i = 0; i < particles1; i++) {
@@ -3053,7 +3053,7 @@ export default function AuraAnalysis() {
       // LAYER 3: Fine detail particles with color-dodge for luminous effect
       ctx.save();
       ctx.filter = 'blur(30px)';
-      ctx.globalCompositeOperation = 'color-dodge';
+      ctx.globalCompositeOperation = 'screen';
       
       const particles3 = Math.floor(25 * zone.density);
       for (let i = 0; i < particles3; i++) {
@@ -3079,10 +3079,10 @@ export default function AuraAnalysis() {
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'multiply', particles: 60, opacity: [0.04, 0.08] },
+      { blur: 100, mode: 'screen', particles: 60, opacity: [0.04, 0.08] },
       { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.03, 0.06] },
       { blur: 50, mode: 'overlay', particles: 40, opacity: [0.02, 0.05] },
-      { blur: 30, mode: 'color-dodge', particles: 30, opacity: [0.01, 0.03] }
+      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.01, 0.03] }
     ];
     
     blendingLayers.forEach(layer => {
@@ -3508,7 +3508,7 @@ export default function AuraAnalysis() {
         const EDGE_DISTANCE = 400;
 
         // Use multiply blend mode for seamless gradient blending
-        ctx.globalCompositeOperation = 'multiply';
+        ctx.globalCompositeOperation = 'screen';
 
         // Top edge gradient - maximum visibility and size 
         const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
@@ -5376,12 +5376,13 @@ export default function AuraAnalysis() {
                                     <div className="flex-1">
                                       <div className="w-full bg-gray-200 rounded-full h-3">
                                         <div 
-                                          className="bg-gradient-to-r from-white to-gold h-3 rounded-full transition-all duration-500"
+                                          className="bg-red-600 h-3 rounded-full transition-all duration-500"
                                           style={{ width: `${Math.round(calculateSoulStarChakra(result)/10) * 10}%` }}
                                         ></div>
                                       </div>
                                     </div>
-                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10</div>
+                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10
+                                    </div>
                                   </div>
                                   
                                   {/* All Chakras in consistent order */}
