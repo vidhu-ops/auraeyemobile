@@ -2895,8 +2895,8 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Person protection area - keep face clear like reference images
-    const personRadius = Math.min(width, height) * 0.22;
+    // Person protection area - enhanced face clearance for better visibility
+    const personRadius = Math.min(width, height) * 0.32; // Increased from 0.22 to 0.32
     
     // Define color zones for proper positioning matching reference images
     const colorZones = [
@@ -3202,11 +3202,11 @@ export default function AuraAnalysis() {
         centerY: number,
         personWidth: number,
         personHeight: number) {
-        // Define comprehensive face clearance area
-        const faceClearanceX = centerX - personWidth * 0.8;
-        const faceClearanceY = centerY - personHeight * 0.5;
-        const faceClearanceWidth = personWidth * 1.0;
-        const faceClearanceHeight = personHeight * 1.2;
+        // Define enhanced face clearance area for better visibility
+        const faceClearanceX = centerX - personWidth * 1.0; // Increased from 0.8 to 1.0
+        const faceClearanceY = centerY - personHeight * 0.7; // Increased from 0.5 to 0.7
+        const faceClearanceWidth = personWidth * 1.4; // Increased from 1.0 to 1.4
+        const faceClearanceHeight = personHeight * 1.6; // Increased from 1.2 to 1.6
 
         // Use destination-over to ensure original image shows through in face area
         ctx.globalCompositeOperation = 'destination-over';
@@ -3241,14 +3241,14 @@ export default function AuraAnalysis() {
         colors: any,
         energyLevel: number,
         seededRandom: () => number): void {
-        // Define comprehensive person protection area to ensure complete person visibility like the reference image
-        const faceX = centerX - personWidth * 0.9;
-        const faceY = centerY - personHeight * 0.8;
-        const faceWidth = personWidth * 1.2;
-        const faceHeight = personHeight * 2.2;
+        // Define enhanced person protection area for maximum face visibility
+        const faceX = centerX - personWidth * 1.1; // Increased from 0.9 to 1.1
+        const faceY = centerY - personHeight * 1.0; // Increased from 0.8 to 1.0
+        const faceWidth = personWidth * 1.6; // Increased from 1.2 to 1.6
+        const faceHeight = personHeight * 2.6; // Increased from 2.2 to 2.6
 
-        // Define person protection radius for smokey field effect
-        const personRadius = Math.min(personWidth, personHeight) * 0.4;
+        // Define enhanced person protection radius for better face visibility
+        const personRadius = Math.min(personWidth, personHeight) * 0.6; // Increased from 0.4 to 0.6
 
         // Create smooth gradient-based aura field like reference image
         // Create smooth gradient-based aura without particle patches
