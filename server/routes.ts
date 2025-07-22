@@ -739,29 +739,21 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   
   // Only approved object colors - restricted to 17 colors (added Gray)
   const objectColorMeanings: Record<string, string> = {
-    'Black': 'Shadow mastery - transformation power, void consciousness, deep inner work, spiritual rebirth',
-    'White': 'Divine purity - spiritual protection, angelic presence, sacred innocence, light energy',
-    'Brown': 'Earth wisdom - grounding energy, material stability, natural healing, physical connection',
-    'Turquoise': 'Healing waters - emotional cleansing, heart-throat bridge, therapeutic communication, soul washing',
-    'Red': 'Life force - passionate power, primal energy, warrior strength, bold manifestation',
-    'Yellow': 'Mental brilliance - intellectual power, solar energy, conscious awakening, wisdom activation',
+    'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
+    'Gray': 'Neutral balance - wisdom through experience, practical spirituality, balanced perspective, grounded insight',
     'Blue': 'Truth crystal - divine wisdom, spiritual insight, celestial knowledge, sacred communication',
     'Green': 'Heart mastery - unconditional love, emotional healing, compassionate wisdom, soul connection',
     'Violet': 'Crown connection - divine consciousness, spiritual mastery, enlightened awareness, cosmic unity',
     'Indigo': 'Third eye wisdom - psychic insight, inner knowing, intuitive mastery, mystical awareness',
-    'Purple': 'Royal mysticism - noble spirituality, regal intuition, aristocratic wisdom, refined consciousness',
+    'White': 'Divine purity - spiritual protection, angelic presence, sacred innocence, light energy',
     'Gold': 'Divine illumination - cosmic consciousness, spiritual mastery, sacred geometry, enlightened awareness',
-    'Silver': 'Lunar wisdom - psychic sensitivity, reflective power, intuitive enhancement, feminine energy',
+    'Yellow': 'Mental brilliance - intellectual power, solar energy, conscious awakening, wisdom activation',
     'Orange': 'Creative fire - artistic inspiration, joyful expression, playful energy, innovative spirit',
-    'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
-    'Gray': 'Neutral balance - wisdom through experience, practical spirituality, balanced perspective, grounded insight',
-
-
-
-    'Pearl': 'Ocean treasure - hidden wisdom, deep mysteries, lunar magic, feminine power',
-    'Opal': 'Rainbow consciousness - multi-dimensional awareness, spectrum energy, prismatic wisdom, colorful insight',
-    'Moonstone': 'Cyclical wisdom - natural rhythms, feminine cycles, intuitive timing, lunar connection',
-    'Crystal': 'Pure amplification - energy enhancement, clarity magnification, spiritual broadcasting, divine transmission'
+    'Purple': 'Royal mysticism - noble spirituality, regal intuition, aristocratic wisdom, refined consciousness',
+    'Silver': 'Lunar wisdom - psychic sensitivity, reflective power, intuitive enhancement, feminine energy',
+    'Black': 'Shadow mastery - transformation power, void consciousness, deep inner work, spiritual rebirth',
+    'Red': 'Life force - passionate power, primal energy, warrior strength, bold manifestation',
+    'Brown': 'Earth wisdom - grounding energy, material stability, natural healing, physical connection'
   };
 
   const colorMeaning = objectColorMeanings[selectedAuraColor] || `${selectedAuraColor} consciousness - divine soul frequency activation and spiritual purpose alignment`;
@@ -2215,55 +2207,67 @@ function calculateDominantSoulChakra(birthDate: string): number {
         personalityColor = colorMapping[personalityColor] || 'Violet'; // Default to violet if not found
       }
       
-      // Color meanings for quick vibe analysis - only 12 approved aura colors
+      // Color meanings for quick vibe analysis - all specified aura colors
       const colorMeanings = {
-        'Red': {
-          positive: 'Passionate, energetic, courageous, and determined. You have strong life force energy.',
-          negative: 'May indicate anger, stress, or being overwhelmed. Could suggest need for grounding.'
+        'Pink': {
+          positive: 'Unconditionally loving, compassionate, nurturing, and emotionally healing. You radiate divine love and tenderness.',
+          negative: 'May show codependency, emotional manipulation, or boundary issues needing attention.'
         },
-        'Orange': {
-          positive: 'Creative, enthusiastic, confident, and joyful. You radiate warmth and optimism.',
-          negative: 'Might show restlessness, impatience, or scattered energy needing focus.'
-        },
-        'Yellow': {
-          positive: 'Intelligent, cheerful, analytical, and mentally active. You have bright mental energy.',
-          negative: 'Could indicate overthinking, anxiety, or mental exhaustion needing rest.'
-        },
-        'Green': {
-          positive: 'Balanced, healing, compassionate, and growth-oriented. You have natural healing abilities.',
-          negative: 'May show jealousy, possessiveness, or feeling stuck in growth patterns.'
+        'Gray': {
+          positive: 'Balanced, diplomatic, wise, and flexible. You bring neutral wisdom and peaceful resolution.',
+          negative: 'Could indicate indecision, uncertainty, or emotional detachment from situations.'
         },
         'Blue': {
-          positive: 'Calm, communicative, trustworthy, and peaceful. You express truth and authenticity.',
-          negative: 'Might indicate sadness, depression, or difficulty with self-expression.'
+          positive: 'Calm, communicative, truthful, and peaceful. You express authenticity and spiritual clarity.',
+          negative: 'Might indicate sadness, depression, or difficulty with self-expression and emotional distance.'
+        },
+        'Green': {
+          positive: 'Balanced, healing, compassionate, and growth-oriented. You have natural healing abilities and harmony.',
+          negative: 'May show jealousy, envy, possessiveness, or feeling stuck in emotional growth patterns.'
         },
         'Violet': {
-          positive: 'Spiritual, intuitive, magical, and visionary. You have strong psychic abilities.',
-          negative: 'Could show disconnection from reality or being too focused on spiritual matters.'
+          positive: 'Spiritual, intuitive, divinely connected, and transformative. You have strong higher consciousness and mystical insight.',
+          negative: 'Could show spiritual pride, disconnection from reality, or escapism from earthly matters.'
         },
         'Indigo': {
-          positive: 'Wise, perceptive, deep-thinking, and spiritually aware. You see beyond the surface.',
-          negative: 'May indicate isolation, depression, or being too serious about life.'
+          positive: 'Psychically gifted, deeply wise, perceptive, and spiritually insightful. You have powerful inner knowing abilities.',
+          negative: 'Might indicate mental confusion, obsession, delusion, or disconnection from practical reality.'
         },
         'White': {
-          positive: 'Pure, protective, enlightened, and spiritually advanced. You radiate divine energy.',
-          negative: 'Might show spiritual bypassing or avoiding earthly responsibilities.'
-        },
-        'Brown': {
-          positive: 'Grounded, practical, reliable, and earth-connected. You provide stable energy.',
-          negative: 'Could indicate being stuck, materialistic, or lacking spiritual connection.'
+          positive: 'Pure, divinely protected, spiritually clear, and angelically connected. You have sacred energy and truth.',
+          negative: 'Could show spiritual bypassing, perfectionism, isolation, or detachment from human experience.'
         },
         'Gold': {
-          positive: 'Divine, illuminated, successful, and spiritually gifted. You have golden light energy.',
-          negative: 'May show ego issues, materialism, or spiritual pride needing humility.'
+          positive: 'Divinely wise, enlightened, successful, and spiritually masterful. You have illuminated consciousness and abundance.',
+          negative: 'May indicate ego inflation, materialism, greed, or superiority complex needing balance.'
+        },
+        'Yellow': {
+          positive: 'Intelligent, optimistic, mentally clear, and joyfully expressive. You have bright personal power and learning abilities.',
+          negative: 'Could indicate over-analysis, criticism, anxiety, or intellectual arrogance needing emotional balance.'
+        },
+        'Orange': {
+          positive: 'Creative, enthusiastic, confident, and emotionally expressive. You radiate warmth, joy, and adventurous spirit.',
+          negative: 'Might show addiction, dependency, superficiality, or emotional instability needing grounding.'
+        },
+        'Purple': {
+          positive: 'Mystically wise, transformative, royally authoritative, and spiritually masterful. You have ancient knowledge and divine mystery.',
+          negative: 'Could show spiritual arrogance, disconnection from reality, or superiority complex needing humility.'
         },
         'Silver': {
-          positive: 'Intuitive, psychic, moon-connected, and emotionally balanced. You have lunar wisdom.',
-          negative: 'Might indicate moodiness, emotional instability, or being too receptive to others.'
+          positive: 'Lunar wise, psychically sensitive, reflective, and emotionally intelligent. You have feminine energy and intuitive healing.',
+          negative: 'May indicate emotional volatility, psychic overwhelm, moodiness, or instability needing grounding.'
         },
         'Black': {
-          positive: 'Protective, mysterious, transformative, and deep. You absorb negative energy.',
-          negative: 'Could show depression, negative thinking, or being overwhelmed by darkness.'
+          positive: 'Protective, grounding, transformative, and deeply wise. You have strong boundaries and shadow integration abilities.',
+          negative: 'Might show negativity, fear, depression, or heavy energy needing release and healing.'
+        },
+        'Red': {
+          positive: 'Passionate, vitally energetic, courageous, and leadership-oriented. You have strong life force and survival strength.',
+          negative: 'May indicate anger, aggression, impulsiveness, or stress needing calm grounding practices.'
+        },
+        'Brown': {
+          positive: 'Earth-connected, practical, stable, and naturally wise. You have grounding energy and reliable strength.',
+          negative: 'Could show stubbornness, materialism, inflexibility, or resistance to change needing flow.'
         }
       };
 
