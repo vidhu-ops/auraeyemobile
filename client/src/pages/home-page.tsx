@@ -85,7 +85,7 @@ export default function HomePage() {
       // Create dense smokey cloud effect around person
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const personRadius = Math.min(canvas.width, canvas.height) * 0.15; // Smaller protection radius for denser effect
+      const personRadius = Math.min(canvas.width, canvas.height) * 0.25; // Enhanced face protection radius for better visibility
       
       // Parse color RGB values
       const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
@@ -105,9 +105,9 @@ export default function HomePage() {
         const x = seededRandom() * canvas.width;
         const y = seededRandom() * canvas.height;
         
-        // Skip if too close to person's face
+        // Skip if too close to person's face - enhanced protection zone
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.1) continue;
+        if (distanceFromCenter < personRadius * 1.5) continue; // Larger clearance for face visibility
         
         const radius = 30 + seededRandom() * 150;
         const opacity = 0.35 + seededRandom() * 0.45;
@@ -128,7 +128,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.05) continue;
+        if (distanceFromCenter < personRadius * 1.4) continue; // Enhanced face protection
         
         const radius = 20 + seededRandom() * 80;
         const opacity = 0.25 + seededRandom() * 0.35;
@@ -149,7 +149,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.08) continue;
+        if (distanceFromCenter < personRadius * 1.3) continue; // Enhanced face protection
         
         const radius = 8 + seededRandom() * 40;
         const opacity = 0.2 + seededRandom() * 0.3;
@@ -170,7 +170,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.05) continue;
+        if (distanceFromCenter < personRadius * 1.3) continue; // Enhanced face protection
         
         const radius = 4 + seededRandom() * 20;
         const opacity = 0.15 + seededRandom() * 0.25;
@@ -189,7 +189,7 @@ export default function HomePage() {
       for (let i = 0; i < 400; i++) {
         // Create concentrated smoke around person's perimeter
         const angle = seededRandom() * Math.PI * 2;
-        const distance = personRadius * 1.1 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
+        const distance = personRadius * 1.6 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3); // Larger face clearance
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance;
         
@@ -215,7 +215,7 @@ export default function HomePage() {
         const y = seededRandom() * canvas.height;
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.05) continue;
+        if (distanceFromCenter < personRadius * 1.2) continue; // Enhanced face protection
         
         const radius = 60 + seededRandom() * 120;
         const opacity = 0.08 + seededRandom() * 0.12;
