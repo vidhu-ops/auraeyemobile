@@ -21,40 +21,54 @@ import { apiRequest } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 
 
-// Color code mapping function - moved outside component for global access
+// Enhanced color code mapping function with all specified colors
 const getAccurateColorCode = (colorName: string): string => {
   const colorCodes: Record<string, string> = {
-    'black': '#000000',
-    'Black': '#000000',
-    'white': '#FFFFFF',
-    'White': '#FFFFFF',
-    'brown': '#A52A2A',
-    'Brown': '#A52A2A',
-    'red': '#FF0000',
-    'Red': '#FF0000',
-    'yellow': '#FFFF00',
-    'Yellow': '#FFFF00',
-    'blue': '#0000FF',
-    'Blue': '#0000FF',
-    'green': '#00FF00',
-    'Green': '#00FF00',
-    'violet': '#8A2BE2',
-    'Violet': '#8A2BE2',
+    // Core spiritual colors with enhanced visibility
+    'Pink': '#FF69B4',      // Hot pink for visibility
+    'pink': '#FF69B4',
+    'Gray': '#A9A9A9',      // Dark gray for visibility
+    'gray': '#A9A9A9',
+    'Grey': '#A9A9A9',      // Alternative spelling
+    'grey': '#A9A9A9',
+    'Blue': '#1E90FF',      // Dodger blue
+    'blue': '#1E90FF',
+    'Green': '#32CD32',     // Lime green for visibility
+    'green': '#32CD32',
+    'Violet': '#9400D3',    // Dark violet
+    'violet': '#9400D3',
+    'Indigo': '#4B0082',    // Indigo
     'indigo': '#4B0082',
-    'Indigo': '#4B0082',
+    'White': '#FFFFFF',     // Pure white
+    'white': '#FFFFFF',
+    'Gold': '#FFD700',      // Gold
     'gold': '#FFD700',
-    'Gold': '#FFD700',
+    'Yellow': '#FFE600',    // Bright yellow
+    'yellow': '#FFE600',
+    'Orange': '#FF8C00',    // Dark orange
+    'orange': '#FF8C00',
+    'Purple': '#8A2BE2',    // Blue violet
+    'purple': '#8A2BE2',
+    'Silver': '#C0C0C0',    // Silver
     'silver': '#C0C0C0',
-    'Silver': '#C0C0C0',
-    'orange': '#FFA500',
-    'Orange': '#FFA500',
-    'pink': '#FFC0CB',
-    'Pink': '#FFC0CB',
-    'gray': '#808080',
-    'Gray': '#808080',
+    'Black': '#2F2F2F',     // Dark gray for visibility (not pure black)
+    'black': '#2F2F2F',
+    'Red': '#FF3232',       // Vibrant red
+    'red': '#FF3232',
+    'Brown': '#A52A2A',     // Brown
+    'brown': '#A52A2A',
+    // Additional color variations for diversity
+    'Turquoise': '#40E0D0',
+    'turquoise': '#40E0D0',
+    'Teal': '#008080',
+    'teal': '#008080',
+    'Magenta': '#FF00FF',
+    'magenta': '#FF00FF',
+    'Cyan': '#00FFFF',
+    'cyan': '#00FFFF'
   };
   
-  return colorCodes[colorName] || '#FFFFFF'; // Default to white if color not found
+  return colorCodes[colorName] || '#1E90FF'; // Default to blue if color not found
 };
 
 // Helper functions for enhanced spiritual guidance
@@ -2458,26 +2472,32 @@ export default function AuraAnalysis() {
                     const dominantColor = auraData.dominantColor || 'Blue';
                     const secondaryColor = auraData.secondaryColor || 'Purple';
 
-                    // Convert color names to RGB
+                    // Enhanced color names to RGB mapping with all specified colors
                     const getColorRGB = (colorName: string) => {
                         const colorMap: Record<string, [number, number, number]> = {
-                            'Red': [255, 0, 0],
-                            'Orange': [255, 165, 0],
-                            'Yellow': [255, 255, 0],
-                            'Green': [0, 255, 0],
-                            'Blue': [0, 100, 255],
-                            'Purple': [128, 0, 128],
-                            'Violet': [148, 0, 211],
-                            'Indigo': [75, 0, 130],
-                            'Pink': [255, 192, 203],
-                            'Gold': [255, 215, 0],
-                            'Silver': [192, 192, 192],
-                            'White': [255, 255, 255],
-                            'Gray': [128, 128, 128],
-                            'Black': [0, 0, 0],
-                            'Brown': [165, 42, 42]
+                            'Red': [255, 50, 50],           // Vibrant red for visibility
+                            'Orange': [255, 140, 0],        // Enhanced orange
+                            'Yellow': [255, 230, 0],        // Bright yellow
+                            'Green': [50, 205, 50],         // Lime green for visibility
+                            'Blue': [30, 144, 255],         // Dodger blue
+                            'Purple': [138, 43, 226],       // Blue violet
+                            'Violet': [148, 0, 211],        // Dark violet
+                            'Indigo': [75, 0, 130],         // Indigo
+                            'Pink': [255, 105, 180],        // Hot pink for visibility
+                            'Gold': [255, 215, 0],          // Gold
+                            'Silver': [192, 192, 192],      // Silver
+                            'White': [255, 255, 255],       // Pure white
+                            'Gray': [169, 169, 169],        // Dark gray for visibility
+                            'Grey': [169, 169, 169],        // Alternative spelling
+                            'Black': [40, 40, 40],          // Dark gray instead of pure black for visibility
+                            'Brown': [165, 42, 42],         // Brown
+                            // Additional color variations
+                            'Turquoise': [64, 224, 208],    // Turquoise
+                            'Teal': [0, 128, 128],          // Teal
+                            'Magenta': [255, 0, 255],       // Magenta
+                            'Cyan': [0, 255, 255]           // Cyan
                         };
-                        return colorMap[colorName] || [0, 100, 255]; // Default to blue
+                        return colorMap[colorName] || [30, 144, 255]; // Default to blue
                     };
 
                     const [dr, dg, db] = getColorRGB(dominantColor);

@@ -644,10 +644,14 @@ export default function HomePage() {
                                     'Blue': 'bg-blue-500',
                                     'Violet': 'bg-violet-500',
                                     'Indigo': 'bg-indigo-900',
+                                    'Purple': 'bg-purple-600',
+                                    'Pink': 'bg-pink-500',
                                     'White': 'bg-white border-2 border-gray-300',
                                     'Brown': 'bg-amber-800',
                                     'Gold': 'bg-yellow-400',
                                     'Silver': 'bg-gray-400',
+                                    'Gray': 'bg-gray-500',
+                                    'Grey': 'bg-gray-500',
                                     'Black': 'bg-gray-800',
                                   };
                                   return borders[vibeResult.dominantColor as keyof typeof borders] || 'bg-violet-500';
