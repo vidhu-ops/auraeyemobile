@@ -941,7 +941,18 @@ export default function AuraAnalysis() {
   };
 
   const downloadComprehensiveAuraPDF = async () => {
-    if (!result) return;
+    if (!result) {
+      console.error('No aura analysis result available for PDF generation');
+      toast({
+        title: "PDF Generation Failed",
+        description: "No analysis data available. Please perform an aura analysis first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log('Starting PDF generation with result:', result);
+    console.log('Processed aura image available:', !!processedAuraImage);
 
     try {
       toast({
@@ -949,11 +960,14 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
+      // Test jsPDF initialization
+      console.log('Initializing jsPDF...');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
+      console.log('jsPDF initialized successfully');
 
       const pageWidth = 190;
       const pageHeight = 277;
@@ -961,26 +975,40 @@ export default function AuraAnalysis() {
       
       // Helper function to add text with automatic page breaks
       const addTextWithPageBreak = (text: string, x: number, y: number, options: any = {}) => {
-        if (y > pageHeight - 20) {
-          pdf.addPage();
-          y = 20;
-        }
-        pdf.text(text, x, y, options);
-        return y;
-      };
-
-      // Helper function to add wrapped text
-      const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number = 6) => {
-        const lines = pdf.splitTextToSize(text, maxWidth);
-        for (let i = 0; i < lines.length; i++) {
+        try {
           if (y > pageHeight - 20) {
             pdf.addPage();
             y = 20;
           }
-          pdf.text(lines[i], x, y);
-          y += lineHeight;
+          pdf.text(text, x, y, options);
+          return y;
+        } catch (error) {
+          console.error('Error in addTextWithPageBreak:', error, 'Text:', text, 'Position:', x, y);
+          throw error;
         }
-        return y;
+      };
+
+      // Helper function to add wrapped text
+      const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number = 6) => {
+        try {
+          if (!text || typeof text !== 'string') {
+            console.warn('Invalid text provided to addWrappedText:', text);
+            return y;
+          }
+          const lines = pdf.splitTextToSize(text, maxWidth);
+          for (let i = 0; i < lines.length; i++) {
+            if (y > pageHeight - 20) {
+              pdf.addPage();
+              y = 20;
+            }
+            pdf.text(lines[i], x, y);
+            y += lineHeight;
+          }
+          return y;
+        } catch (error) {
+          console.error('Error in addWrappedText:', error, 'Text:', text);
+          throw error;
+        }
       };
 
       // PAGE 1: TITLE AND OVERVIEW
@@ -1023,7 +1051,7 @@ export default function AuraAnalysis() {
       yPosition += 15;
 
       // ADD AURA VISUALIZATION IMAGE
-      if (processedImage) {
+      if (processedAuraImage) {
         // Check if we need a new page for the image
         if (yPosition > pageHeight - 120) {
           pdf.addPage();
@@ -1041,7 +1069,7 @@ export default function AuraAnalysis() {
           const imgHeight = 67.5; // Height in mm (maintaining 16:9 aspect ratio)
           const imgX = (pageWidth - imgWidth) / 2; // Center the image
           
-          pdf.addImage(processedImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
+          pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
           yPosition += imgHeight + 15;
 
           pdf.setFontSize(11);
@@ -1065,7 +1093,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const analysis = result.detailedAnalysis || result.analysis || "Your aura reveals unique spiritual patterns that guide your personal development journey. The colors detected in your energy field indicate specific aspects of your personality, emotional state, and spiritual development.";
+      const analysis = result.detailedAnalysis || "Your aura reveals unique spiritual patterns that guide your personal development journey. The colors detected in your energy field indicate specific aspects of your personality, emotional state, and spiritual development.";
       yPosition = addWrappedText(analysis, 20, yPosition, pageWidth - 40);
       yPosition += 10;
 
@@ -1169,7 +1197,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const comprehensiveAnalysis = result.detailedAnalysis || result.analysis || "Your aura analysis reveals a complex spiritual profile with multiple energy layers that indicate your current life phase and growth opportunities.";
+      const comprehensiveAnalysis = result.detailedAnalysis || "Your aura analysis reveals a complex spiritual profile with multiple energy layers that indicate your current life phase and growth opportunities.";
       yPosition = addWrappedText(comprehensiveAnalysis, 20, yPosition, pageWidth - 40);
       yPosition += 15;
 
@@ -1259,9 +1287,12 @@ export default function AuraAnalysis() {
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('PDF Error details:', errorMessage);
+      console.error('PDF Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       toast({
         title: "PDF Generation Failed",
-        description: "Failed to generate comprehensive PDF. Please try again.",
+        description: `Failed to generate comprehensive PDF: ${errorMessage}. Please try again.`,
         variant: "destructive",
       });
     }
@@ -4359,7 +4390,7 @@ export default function AuraAnalysis() {
       1: 'Red', 2: 'Orange', 3: 'Yellow', 4: 'Green', 5: 'Blue', 6: 'Indigo', 7: 'Violet',
       8: 'Gold', 9: 'White', 11: 'Silver', 22: 'Platinum', 33: 'Rainbow'
     };
-    return numberColorMapping[getColorForNumber] || 'Purple';
+    return numberColorMapping[number] || 'Purple';
   };
 
   const getPersonalityTraits = (personalityNumber: number): string => {
@@ -4980,7 +5011,7 @@ export default function AuraAnalysis() {
   
   // These functions are already defined above, so removing duplicates.
 
-  function getTraitExplanation({ }: { trait: string; color: string; }): string {
+  function getTraitExplanation({ trait }: { trait: string; color: string; }): string {
         const traitExplanations: Record<string, string> = {
             "Intuitive": "You perceive information beyond the five senses, receiving guidance directly from higher consciousness.",
             "Empathetic": "You naturally sense and absorb the emotional states of others, making you a compassionate healing presence.",
@@ -5008,7 +5039,7 @@ export default function AuraAnalysis() {
             "Divine": "Your energy field is aligned with divine consciousness, connecting you to the source of all creation.",
         };
 
-        return traitExplanations[getTraitExplanation] || "";
+        return traitExplanations[trait] || "";
     }
 
   const getColorPersonalityInfluence = (color: string): string => {
@@ -5421,11 +5452,11 @@ export default function AuraAnalysis() {
                                         <div className="w-full bg-gray-200 rounded-full h-3">
                                           <div 
                                             className={`h-3 rounded-full transition-all duration-500 ${chakra.color}`}
-                                            style={{ width: `${(result.chakraActivity?.[chakra.key] || 5) * 10}%` }}
+                                            style={{ width: `${(result.chakraActivity?.[chakra.key as keyof typeof result.chakraActivity] || 5) * 10}%` }}
                                           ></div>
                                         </div>
                                       </div>
-                                      <div className="w-12 text-sm text-gray-500">{result.chakraActivity?.[chakra.key] || 5}/10</div>
+                                      <div className="w-12 text-sm text-gray-500">{result.chakraActivity?.[chakra.key as keyof typeof result.chakraActivity] || 5}/10</div>
                                     </div>
                                   ))}
                                   
