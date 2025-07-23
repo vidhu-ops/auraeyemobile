@@ -5568,7 +5568,32 @@ export default function AuraAnalysis() {
                               </div>
 
 
-                             
+                              {/* Aura Layer Analysis */}
+                              {result.auraLayerColors && (
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
+                                  <div className="space-y-3">
+                                    {result.auraLayerColors.inner && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
+                                        <h5 className="font-medium text-sm">Recieving Layer - {result.auraLayerColors.inner}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
+                                      </div>
+                                    )}
+                                    {result.auraLayerColors.middle && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
+                                        <h5 className="font-medium text-sm">Giving Layer - {result.auraLayerColors.middle}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
+                                      </div>
+                                    )}
+                                    {result.auraLayerColors.outer && (
+                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
+                                        <h5 className="font-medium text-sm">Thinking Layer - {result.auraLayerColors.outer}</h5>
+                                        <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Color Harmony Analysis */}
                               <div className="space-y-4">
