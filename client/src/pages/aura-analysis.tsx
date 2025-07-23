@@ -2506,29 +2506,29 @@ export default function AuraAnalysis() {
                     // Enhanced color names to RGB mapping with all specified colors
                     const getColorRGB = (colorName: string) => {
                         const colorMap: Record<string, [number, number, number]> = {
-                            'Red': [255, 50, 50],           // Vibrant red for visibility
-                            'Orange': [255, 140, 0],        // Enhanced orange
-                            'Yellow': [255, 230, 0],        // Bright yellow
-                            'Green': [50, 205, 50],         // Lime green for visibility
-                            'Blue': [30, 144, 255],         // Dodger blue
-                            'Purple': [138, 43, 226],       // Blue violet
-                            'Violet': [148, 0, 211],        // Dark violet
-                            'Indigo': [75, 0, 130],         // Indigo
-                            'Pink': [255, 105, 180],        // Hot pink for visibility
-                            'Gold': [255, 215, 0],          // Gold
-                            'Silver': [192, 192, 192],      // Silver
+                            'Red': [255, 40, 40],           // More saturated red
+                            'Orange': [255, 120, 0],        // More vibrant orange
+                            'Yellow': [255, 220, 0],        // Intense yellow
+                            'Green': [40, 220, 40],         // More saturated green
+                            'Blue': [20, 130, 255],         // More vibrant blue
+                            'Purple': [150, 30, 240],       // More saturated purple
+                            'Violet': [160, 0, 230],        // More intense violet
+                            'Indigo': [90, 0, 150],         // Deeper indigo
+                            'Pink': [255, 90, 170],         // More saturated pink
+                            'Gold': [255, 200, 0],          // More vibrant gold
+                            'Silver': [180, 180, 180],      // Slightly more muted silver
                             'White': [255, 255, 255],       // Pure white
-                            'Gray': [169, 169, 169],        // Dark gray for visibility
-                            'Grey': [169, 169, 169],        // Alternative spelling
-                            'Black': [40, 40, 40],          // Dark gray instead of pure black for visibility
-                            'Brown': [165, 42, 42],         // Brown
+                            'Gray': [150, 150, 150],        // Slightly darker gray for better contrast
+                            'Grey': [150, 150, 150],        // Alternative spelling
+                            'Black': [50, 50, 50],          // Slightly lighter for visibility
+                            'Brown': [180, 60, 60],         // More saturated brown
                             // Additional color variations
-                            'Turquoise': [64, 224, 208],    // Turquoise
-                            'Teal': [0, 128, 128],          // Teal
+                            'Turquoise': [50, 240, 220],    // More vibrant turquoise
+                            'Teal': [0, 150, 150],          // More saturated teal
                             'Magenta': [255, 0, 255],       // Magenta
                             'Cyan': [0, 255, 255]           // Cyan
                         };
-                        return colorMap[colorName] || [30, 144, 255]; // Default to blue
+                        return colorMap[colorName] || [20, 130, 255]; // Default to vibrant blue
                     };
 
                     const [dr, dg, db] = getColorRGB(dominantColor);
@@ -2595,9 +2595,9 @@ export default function AuraAnalysis() {
                     createAuraGlow();
                     createSmokeyAuraEffects();
 
-                    // Add a subtle overall color tint
+                    // Add a more saturated overall color tint
                     ctx.globalCompositeOperation = 'overlay';
-                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.1)`;
+                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.18)`;
                     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
                     ctx.globalCompositeOperation = 'source-over';
 
@@ -2990,11 +2990,11 @@ export default function AuraAnalysis() {
               centerX + offset, centerY * 0.2 + offset, 0, 
               centerX + offset, centerY * 0.2 + offset, height * 0.8
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.15)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.12)`);
-            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.06)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.02)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
+            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
+            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.12)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.04)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3006,11 +3006,11 @@ export default function AuraAnalysis() {
               width * 0.15 + offset, centerY + offset, 0, 
               width * 0.15 + offset, centerY + offset, width * 0.85
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-            gradient.addColorStop(0.35, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
-            gradient.addColorStop(0.65, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.14)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.01)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
+            gradient.addColorStop(0.35, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
+            gradient.addColorStop(0.65, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.03)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3022,11 +3022,11 @@ export default function AuraAnalysis() {
               width * 0.85 - offset, centerY + offset, 0, 
               width * 0.85 - offset, centerY + offset, width * 0.85
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.32)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.16)`);
-            gradient.addColorStop(0.88, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.07)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.02)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.32)`);
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
+            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+            gradient.addColorStop(0.88, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.14)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3038,11 +3038,11 @@ export default function AuraAnalysis() {
               centerX + offset, height * 0.85 - offset, 0, 
               centerX + offset, height * 0.85 - offset, height * 0.7
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.16)`);
-            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.24)`);
-            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.11)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.04)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.01)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.38)`);
+            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
+            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.03)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3069,7 +3069,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.8) continue;
         
         const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
-        const opacity = 0.08 + seededRandom() * 0.12; // Lower opacity for smoother blending
+        const opacity = 0.15 + seededRandom() * 0.20; // Increased opacity for better saturation
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3092,7 +3092,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.6) continue;
         
         const radius = 100 + seededRandom() * 140;
-        const opacity = 0.06 + seededRandom() * 0.10;
+        const opacity = 0.12 + seededRandom() * 0.18;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3115,7 +3115,7 @@ export default function AuraAnalysis() {
         if (distanceFromCenter < personRadius * 1.4) continue;
         
         const radius = 60 + seededRandom() * 80;
-        const opacity = 0.03 + seededRandom() * 0.05; // Very low opacity for subtle luminous effect
+        const opacity = 0.08 + seededRandom() * 0.12; // Increased opacity for more visible luminous effect
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3130,10 +3130,10 @@ export default function AuraAnalysis() {
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 60, opacity: [0.04, 0.08] },
-      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.03, 0.06] },
-      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.02, 0.05] },
-      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.01, 0.03] }
+      { blur: 100, mode: 'screen', particles: 60, opacity: [0.08, 0.15] },
+      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.06, 0.12] },
+      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.04, 0.10] },
+      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.02, 0.06] }
     ];
     
     blendingLayers.forEach(layer => {
