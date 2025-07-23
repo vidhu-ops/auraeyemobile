@@ -2506,29 +2506,29 @@ export default function AuraAnalysis() {
                     // Enhanced color names to RGB mapping with all specified colors
                     const getColorRGB = (colorName: string) => {
                         const colorMap: Record<string, [number, number, number]> = {
-                            'Red': [255, 40, 40],           // More saturated red
-                            'Orange': [255, 120, 0],        // More vibrant orange
-                            'Yellow': [255, 220, 0],        // Intense yellow
-                            'Green': [40, 220, 40],         // More saturated green
-                            'Blue': [20, 130, 255],         // More vibrant blue
-                            'Purple': [150, 30, 240],       // More saturated purple
-                            'Violet': [160, 0, 230],        // More intense violet
-                            'Indigo': [90, 0, 150],         // Deeper indigo
-                            'Pink': [255, 90, 170],         // More saturated pink
-                            'Gold': [255, 200, 0],          // More vibrant gold
-                            'Silver': [180, 180, 180],      // Slightly more muted silver
+                            'Red': [255, 0, 0],             // Pure bright red - no pink tint
+                            'Orange': [255, 165, 0],        // Perfect bright orange - more visible
+                            'Yellow': [255, 255, 0],        // Pure bright yellow
+                            'Green': [0, 255, 0],           // Pure bright green
+                            'Blue': [0, 100, 255],          // Perfect blue
+                            'Purple': [128, 0, 128],        // Classic purple
+                            'Violet': [148, 0, 211],        // Dark violet
+                            'Indigo': [75, 0, 130],         // Traditional indigo
+                            'Pink': [255, 192, 203],        // Classic pink
+                            'Gold': [255, 215, 0],          // Pure gold
+                            'Silver': [192, 192, 192],      // Pure silver
                             'White': [255, 255, 255],       // Pure white
-                            'Gray': [150, 150, 150],        // Slightly darker gray for better contrast
-                            'Grey': [150, 150, 150],        // Alternative spelling
-                            'Black': [50, 50, 50],          // Slightly lighter for visibility
-                            'Brown': [180, 60, 60],         // More saturated brown
+                            'Gray': [128, 128, 128],        // Standard gray
+                            'Grey': [128, 128, 128],        // Alternative spelling
+                            'Black': [0, 0, 0],             // Pure black
+                            'Brown': [165, 42, 42],         // Brown
                             // Additional color variations
-                            'Turquoise': [50, 240, 220],    // More vibrant turquoise
-                            'Teal': [0, 150, 150],          // More saturated teal
+                            'Turquoise': [64, 224, 208],    // Turquoise
+                            'Teal': [0, 128, 128],          // Teal
                             'Magenta': [255, 0, 255],       // Magenta
                             'Cyan': [0, 255, 255]           // Cyan
                         };
-                        return colorMap[colorName] || [20, 130, 255]; // Default to vibrant blue
+                        return colorMap[colorName] || [0, 100, 255]; // Default to blue
                     };
 
                     const [dr, dg, db] = getColorRGB(dominantColor);
