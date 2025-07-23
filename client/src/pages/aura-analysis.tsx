@@ -2926,49 +2926,49 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Person protection area - enhanced face clearance for better visibility
-    const personRadius = Math.min(width, height) * 0.32; // Increased from 0.22 to 0.32
+    // Person protection area - maximum face clearance for crystal clear visibility
+    const personRadius = Math.min(width, height) * 0.40; // Increased from 0.32 to 0.40 for better face visibility
     
-    // Define color zones for proper positioning matching reference images
+    // Define color zones for proper positioning around person - enhanced mapping
     const colorZones = [
       {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.4,
-        startX: 0,
-        endX: width,
-        density: 0.7, // Increased for better visibility
+        endY: height * 0.45, // Extended slightly for better coverage
+        startX: width * 0.1, // Narrow sides to focus around person
+        endX: width * 0.9,
+        density: 0.7,
         name: 'thinking'
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.1,
-        endY: height * 0.9,
+        startY: height * 0.15,
+        endY: height * 0.85,
         startX: 0,
-        endX: width * 0.5,
-        density: 0.7, // Consistent density for uniform appearance
+        endX: width * 0.55, // Extended slightly past center
+        density: 0.7,
         name: 'receiving'
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.1,
-        endY: height * 0.9,
-        startX: width * 0.5,
+        startY: height * 0.15,
+        endY: height * 0.85,
+        startX: width * 0.45, // Start slightly before center
         endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        density: 0.7,
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.6,
+        startY: height * 0.55, // Start higher for better person mapping
         endY: height,
-        startX: 0,
-        endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        startX: width * 0.1, // Narrow sides to focus around person
+        endX: width * 0.9,
+        density: 0.7,
         name: 'personality'
       }
     ];
@@ -3064,9 +3064,9 @@ export default function AuraAnalysis() {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Skip if too close to person's face
+        // Skip if too close to person's face - enhanced protection
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.8) continue;
+        if (distanceFromCenter < personRadius * 2.2) continue;
         
         const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
         const opacity = 0.15 + seededRandom() * 0.20; // Increased opacity for better saturation
@@ -3089,7 +3089,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.6) continue;
+        if (distanceFromCenter < personRadius * 2.0) continue;
         
         const radius = 100 + seededRandom() * 140;
         const opacity = 0.12 + seededRandom() * 0.18;
@@ -3112,7 +3112,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.4) continue;
+        if (distanceFromCenter < personRadius * 1.8) continue;
         
         const radius = 60 + seededRandom() * 80;
         const opacity = 0.08 + seededRandom() * 0.12; // Increased opacity for more visible luminous effect
@@ -3145,9 +3145,9 @@ export default function AuraAnalysis() {
         const x = seededRandom() * width;
         const y = seededRandom() * height;
         
-        // Skip if too close to person's face
+        // Skip if too close to person's face - enhanced protection for cross-zone blending
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.6) continue;
+        if (distanceFromCenter < personRadius * 2.0) continue;
         
         // Create color blending between adjacent zones
         let color;
