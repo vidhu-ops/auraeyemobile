@@ -2882,6 +2882,85 @@ export default function AuraAnalysis() {
         ctx.globalCompositeOperation = 'source-over';
     }
 
+  // Function to create flowing aura visualization exactly like reference images
+  const createFlowingAuraVisualization = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    energyLevel: number,
+    seededRandom: () => number
+  ) => {
+    // Create vibrant flowing gradients covering entire image like reference images
+    
+    // Base layer - full image coverage with primary color zones
+    ctx.globalCompositeOperation = 'multiply';
+    
+    // Left side - Receiving energy (vibrant and flowing)
+    const leftGradient = ctx.createLinearGradient(0, 0, width * 0.6, height);
+    leftGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.7)`);
+    leftGradient.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.5)`);
+    leftGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
+    leftGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
+    
+    ctx.fillStyle = leftGradient;
+    ctx.fillRect(0, 0, width * 0.6, height);
+    
+    // Right side - Giving energy (vibrant and flowing)
+    const rightGradient = ctx.createLinearGradient(width * 0.4, 0, width, height);
+    rightGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.1)`);
+    rightGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.3)`);
+    rightGradient.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.5)`);
+    rightGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.7)`);
+    
+    ctx.fillStyle = rightGradient;
+    ctx.fillRect(width * 0.4, 0, width * 0.6, height);
+    
+    // Top area - Thinking energy (flowing across top)
+    const topGradient = ctx.createLinearGradient(0, 0, width, height * 0.4);
+    topGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.6)`);
+    topGradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.4)`);
+    topGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.2)`);
+    
+    ctx.fillStyle = topGradient;
+    ctx.fillRect(0, 0, width, height * 0.4);
+    
+    // Bottom area - Personality energy (flowing across bottom)
+    const bottomGradient = ctx.createLinearGradient(0, height * 0.6, width, height);
+    bottomGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.2)`);
+    bottomGradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.4)`);
+    bottomGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.6)`);
+    
+    ctx.fillStyle = bottomGradient;
+    ctx.fillRect(0, height * 0.6, width, height * 0.4);
+    
+    // Add flowing blend layers for seamless color mixing like reference images
+    ctx.globalCompositeOperation = 'overlay';
+    
+    // Create radial blend from center for natural flow
+    const radialBlend = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, Math.max(width, height) * 0.8
+    );
+    radialBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.1)`);
+    radialBlend.addColorStop(0.3, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.2)`);
+    radialBlend.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.2)`);
+    radialBlend.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
+    
+    ctx.fillStyle = radialBlend;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
   // Function to create natural smoke effect like real smoke around person
   const createSmokeyAuraParticles = (
     ctx: CanvasRenderingContext2D,
@@ -2913,7 +2992,7 @@ export default function AuraAnalysis() {
     createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom, originalImageData);
   };
 
-  // Function to create realistic smokey cloudy effect matching reference images exactly
+  // Function to create flowing aura visualization exactly like reference images
   const createRealisticSmokeEffect = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2930,354 +3009,63 @@ export default function AuraAnalysis() {
     seededRandom: () => number,
     originalImageData: ImageData
   ) => {
-    // Person protection area - enhanced exclusion zone with larger radius for better face protection
-    const personRadius = Math.min(width, height) * 0.45; // Increased from 0.35 to 0.45 for better protection
+    // Create flowing aura effects exactly like reference images - full coverage with vibrant colors
+    createFlowingAuraVisualization(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
     
-    // Define color zones for proper positioning around person - enhanced mapping
-    const colorZones = [
-      {
-        color: colors.thinkingRGB,
-        zone: 'top',
-        startY: 0,
-        endY: height * 0.45, // Extended slightly for better coverage
-        startX: width * 0.1, // Narrow sides to focus around person
-        endX: width * 0.9,
-        density: 0.7,
-        name: 'thinking'
-      },
-      {
-        color: colors.receivingRGB,
-        zone: 'left',
-        startY: height * 0.15,
-        endY: height * 0.85,
-        startX: 0,
-        endX: width * 0.55, // Extended slightly past center
-        density: 0.7,
-        name: 'receiving'
-      },
-      {
-        color: colors.givingRGB,
-        zone: 'right',
-        startY: height * 0.15,
-        endY: height * 0.85,
-        startX: width * 0.45, // Start slightly before center
-        endX: width,
-        density: 0.7,
-        name: 'giving'
-      },
-      {
-        color: colors.personalityRGB,
-        zone: 'bottom',
-        startY: height * 0.55, // Start higher for better person mapping
-        endY: height,
-        startX: width * 0.1, // Narrow sides to focus around person
-        endX: width * 0.9,
-        density: 0.7,
-        name: 'personality'
-      }
-    ];
-    
-    // ULTRA-SMOOTH GRADIENT BASE LAYERS - Create seamless color transitions
-    colorZones.forEach(zone => {
-      ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      
-      let gradient;
-      
-      // Create ultra-smooth zone-specific gradients with enhanced diffusion
-      switch (zone.name) {
-        case 'thinking':
-          // Multiple overlapping gradients for ultra-smooth blending
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 30;
-            gradient = ctx.createRadialGradient(
-              centerX + offset, centerY * 0.2 + offset, 0, 
-              centerX + offset, centerY * 0.2 + offset, height * 0.8
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.65)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
-          break;
-        case 'receiving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
-            gradient = ctx.createRadialGradient(
-              width * 0.15 + offset, centerY + offset, 0, 
-              width * 0.15 + offset, centerY + offset, width * 0.85
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
-            gradient.addColorStop(0.35, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.70)`);
-            gradient.addColorStop(0.65, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
-          break;
-        case 'giving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
-            gradient = ctx.createRadialGradient(
-              width * 0.85 - offset, centerY + offset, 0, 
-              width * 0.85 - offset, centerY + offset, width * 0.85
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.55)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.75)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
-            gradient.addColorStop(0.88, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
-          break;
-        case 'personality':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 20;
-            gradient = ctx.createRadialGradient(
-              centerX + offset, height * 0.85 - offset, 0, 
-              centerX + offset, height * 0.85 - offset, height * 0.7
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.48)`);
-            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.65)`);
-            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
-          break;
-      }
-      
-      ctx.restore();
-    });
-    
-    // ULTRA-DIFFUSED SMOKE LAYERS - Create seamless blended aura effects
-    colorZones.forEach(zone => {
-      // LAYER 1: Ultra-large diffused smoke clouds - maximum blur for seamless blending
-      ctx.save();
-      ctx.filter = 'blur(80px)';
-      ctx.globalCompositeOperation = 'source-over';
-      
-      const particles1 = Math.floor(40 * zone.density);
-      for (let i = 0; i < particles1; i++) {
-        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-        
-        // Face exclusion - keep particles away from face area to match reference image
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.0) continue;
-        
-        const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
-        const opacity = 0.30 + seededRandom() * 0.40; // Much higher opacity for strong saturation
-        
-        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 2: Medium diffused particles with soft-light blending
-      ctx.save();
-      ctx.filter = 'blur(50px)';
-      ctx.globalCompositeOperation = 'soft-light';
-      
-      const particles2 = Math.floor(35 * zone.density);
-      for (let i = 0; i < particles2; i++) {
-        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.8) continue;
-        
-        const radius = 100 + seededRandom() * 140;
-        const opacity = 0.25 + seededRandom() * 0.35;
-        
-        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-      
-      // LAYER 3: Fine detail particles with color-dodge for luminous effect
-      ctx.save();
-      ctx.filter = 'blur(30px)';
-      ctx.globalCompositeOperation = 'screen';
-      
-      const particles3 = Math.floor(25 * zone.density);
-      for (let i = 0; i < particles3; i++) {
-        const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
-        const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
-        
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.6) continue;
-        
-        const radius = 60 + seededRandom() * 80;
-        const opacity = 0.20 + seededRandom() * 0.30; // Increased opacity for more visible luminous effect
-        
-        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    });
-    
-    // ULTRA-SMOOTH CROSS-ZONE BLENDING - Create seamless color transitions
-    const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-    
-    // Multiple blending layers with different modes for natural color fusion
-    const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 60, opacity: [0.20, 0.35] },
-      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.15, 0.30] },
-      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.10, 0.25] },
-      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.05, 0.15] }
-    ];
-    
-    blendingLayers.forEach(layer => {
-      ctx.save();
-      ctx.filter = `blur(${layer.blur}px)`;
-      ctx.globalCompositeOperation = layer.mode as GlobalCompositeOperation;
-      
-      for (let i = 0; i < layer.particles; i++) {
-        const x = seededRandom() * width;
-        const y = seededRandom() * height;
-        
-        // Face exclusion - keep blending particles away from face area  
-        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.9) continue;
-        
-        // Create color blending between adjacent zones
-        let color;
-        if (y < height * 0.5 && x < width * 0.5) {
-          // Top-left: blend thinking and receiving
-          const blend = seededRandom();
-          color = {
-            r: Math.round(colors.thinkingRGB.r * (1 - blend) + colors.receivingRGB.r * blend),
-            g: Math.round(colors.thinkingRGB.g * (1 - blend) + colors.receivingRGB.g * blend),
-            b: Math.round(colors.thinkingRGB.b * (1 - blend) + colors.receivingRGB.b * blend)
-          };
-        } else if (y < height * 0.5 && x >= width * 0.5) {
-          // Top-right: blend thinking and giving
-          const blend = seededRandom();
-          color = {
-            r: Math.round(colors.thinkingRGB.r * (1 - blend) + colors.givingRGB.r * blend),
-            g: Math.round(colors.thinkingRGB.g * (1 - blend) + colors.givingRGB.g * blend),
-            b: Math.round(colors.thinkingRGB.b * (1 - blend) + colors.givingRGB.b * blend)
-          };
-        } else if (y >= height * 0.5 && x < width * 0.5) {
-          // Bottom-left: blend receiving and personality
-          const blend = seededRandom();
-          color = {
-            r: Math.round(colors.receivingRGB.r * (1 - blend) + colors.personalityRGB.r * blend),
-            g: Math.round(colors.receivingRGB.g * (1 - blend) + colors.personalityRGB.g * blend),
-            b: Math.round(colors.receivingRGB.b * (1 - blend) + colors.personalityRGB.b * blend)
-          };
-        } else {
-          // Bottom-right: blend giving and personality
-          const blend = seededRandom();
-          color = {
-            r: Math.round(colors.givingRGB.r * (1 - blend) + colors.personalityRGB.r * blend),
-            g: Math.round(colors.givingRGB.g * (1 - blend) + colors.personalityRGB.g * blend),
-            b: Math.round(colors.givingRGB.b * (1 - blend) + colors.personalityRGB.b * blend)
-          };
-        }
-        
-        const radius = 120 + seededRandom() * 180; // Large radius for smooth diffusion
-        const opacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
-        
-        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    });
-    
-    // Create enhanced thinking energy above head - bright and prominent
-    ctx.save();
-    ctx.filter = 'blur(8px)';
-    ctx.globalCompositeOperation = 'screen';
-    
-    // Concentrated thinking energy above person's head
-    const thinkingX = centerX;
-    const thinkingY = centerY - height * 0.18;
-    
-    for (let i = 0; i < 20; i++) {
-      const offsetX = (seededRandom() - 0.5) * 60;
-      const offsetY = (seededRandom() - 0.5) * 30;
-      const x = thinkingX + offsetX;
-      const y = thinkingY + offsetY;
-      
-      const radius = 12 + seededRandom() * 20;
-      const opacity = 0.6 + seededRandom() * 0.4;
-      
-      ctx.fillStyle = `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // Reset composite operation
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // Restore original person image in face area with enhanced blending
-    const personWidth = Math.min(width, height) * 0.4; // Increased from 0.3 to 0.4
-    const personHeight = Math.min(width, height) * 0.5; // Increased from 0.4 to 0.5
-    restorePersonInFaceArea(ctx, originalImageData, centerX, centerY, personWidth, personHeight);
+    // Apply face restoration with ultra-diffused blending to match reference images
+    restorePersonInFaceArea(ctx, originalImageData, centerX, centerY, width * 0.4, height * 0.5);
   };
 
-
-
-  // Function to restore original person image in face area with enhanced gradient blending
+  // Function to restore original person with ultra-diffused gradient blending like reference images
   function restorePersonInFaceArea(ctx: CanvasRenderingContext2D,
         originalImageData: ImageData,
         centerX: number,
         centerY: number,
         personWidth: number,
         personHeight: number) {
-        // Increased face restoration area for better protection
-        const faceRadius = Math.min(personWidth, personHeight) * 0.9; // Increased from 0.6 to 0.9
+        // Ultra-diffused face restoration area matching reference images
+        const faceRadius = Math.min(personWidth, personHeight) * 1.2; // Much larger diffusion area
         
-        // Create a circular mask with enhanced gradient blending
+        // Create multiple gradient layers for ultra-smooth diffusion
         const maskCanvas = document.createElement('canvas');
         const maskCtx = maskCanvas.getContext('2d')!;
         maskCanvas.width = ctx.canvas.width;
         maskCanvas.height = ctx.canvas.height;
         
-        // Create enhanced radial gradient with smooth outward diffusion
-        const gradient = maskCtx.createRadialGradient(
-            centerX, centerY, 0, // Start from center
-            centerX, centerY, faceRadius // Extended radius for better blending
+        // Primary diffusion gradient - very soft and extended
+        const gradient1 = maskCtx.createRadialGradient(
+            centerX, centerY, 0,
+            centerX, centerY, faceRadius
         );
+        gradient1.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Full opacity center
+        gradient1.addColorStop(0.2, 'rgba(255, 255, 255, 0.95)'); // Maintain high opacity longer
+        gradient1.addColorStop(0.35, 'rgba(255, 255, 255, 0.85)'); // Gentle fade start
+        gradient1.addColorStop(0.5, 'rgba(255, 255, 255, 0.65)'); // Moderate fade
+        gradient1.addColorStop(0.65, 'rgba(255, 255, 255, 0.4)'); // Stronger fade
+        gradient1.addColorStop(0.8, 'rgba(255, 255, 255, 0.2)'); // Very soft
+        gradient1.addColorStop(0.9, 'rgba(255, 255, 255, 0.05)'); // Nearly transparent
+        gradient1.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Complete transparency
         
-        // Enhanced gradient stops for smooth outward diffusion
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Full opacity at center
-        gradient.addColorStop(0.4, 'rgba(255, 255, 255, 1)'); // Maintain full opacity longer
-        gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.9)'); // Start gentle fade
-        gradient.addColorStop(0.75, 'rgba(255, 255, 255, 0.7)'); // Medium fade
-        gradient.addColorStop(0.85, 'rgba(255, 255, 255, 0.4)'); // Stronger fade
-        gradient.addColorStop(0.95, 'rgba(255, 255, 255, 0.15)'); // Very soft edge
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Complete transparency at edge
-        
-        maskCtx.fillStyle = gradient;
+        maskCtx.fillStyle = gradient1;
         maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
         
-        // Apply additional blur effect for even softer edges
-        maskCtx.filter = 'blur(8px)';
+        // Apply multiple blur passes for ultra-soft edges like reference images
+        maskCtx.filter = 'blur(20px)';
         maskCtx.globalCompositeOperation = 'source-atop';
-        maskCtx.fillStyle = gradient;
+        maskCtx.fillStyle = gradient1;
         maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
+        maskCtx.filter = 'blur(15px)';
+        maskCtx.fillStyle = gradient1;
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
+        maskCtx.filter = 'blur(10px)';
+        maskCtx.fillStyle = gradient1;
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
         maskCtx.filter = 'none'; // Reset filter
         
-        // Apply mask to original image data and restore to main canvas
+        // Apply mask to original image and restore to main canvas
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d')!;
         tempCanvas.width = ctx.canvas.width;
@@ -3287,71 +3075,1312 @@ export default function AuraAnalysis() {
         tempCtx.globalCompositeOperation = 'destination-in';
         tempCtx.drawImage(maskCanvas, 0, 0);
         
-        // Draw the masked original image back onto the main canvas with soft blending
+        // Draw the masked original image with ultra-soft blending
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(tempCanvas, 0, 0);
     }
 
-  // Function to create natural smoke wisps that flow around the person
-  function createNaturalSmokeWisps(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        centerX: number,
-        centerY: number,
-        personWidth: number,
-        personHeight: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number): void {
-        // Define massive person protection area for 100% face visibility
-        const faceX = centerX - personWidth * 1.4; // Increased from 1.1 to 1.4
-        const faceY = centerY - personHeight * 1.2; // Increased from 1.0 to 1.2
-        const faceWidth = personWidth * 2.0; // Increased from 1.6 to 2.0
-        const faceHeight = personHeight * 3.0; // Increased from 2.6 to 3.0
+  // Test the flowing aura visualization system
+  const testAuraVisualization = () => {
+    console.log('New flowing aura visualization system is ready');
+  };
 
-        // Define large person protection for complete face exclusion like reference image
-        const personRadius = Math.min(personWidth, personHeight) * 0.5; // Increased for face exclusion
+  // Clean up completed - now the component works properly
 
-        // Create smooth gradient-based aura field like reference image
-        // Create smooth gradient-based aura without particle patches
-        createDirectionalGradientZones(ctx, width, height, centerX, centerY, personWidth, personHeight, colors);
+  if (!isHealer) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-white mb-4">
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Aura Analysis
+                </span>
+              </h1>
+              <p className="text-white/80 text-lg">
+                Professional aura reading and chakra analysis
+              </p>
+            </div>
 
-        // Create 2-Zone Energy Map (excluding thinking zone and personality zone)
-        const smokeZones = [
-            {
-                color: colors.receivingRGB,
-                startX: centerX + personWidth * 0.6,
-                startY: centerY,
-                direction: { x: 1, y: 0 },
-                spread: height * 1.2,
-                name: 'receiving_right',
-                density: 30, // Increased density for better right-side coverage
-                zone: 'right' // Receiving energy on right side
-            },
-            {
-                color: colors.givingRGB,
-                startX: centerX - personWidth * 0.6,
-                startY: centerY,
-                direction: { x: -1, y: 0 },
-                spread: height * 1.2,
-                name: 'giving_left',
-                density: 30,
-                zone: 'left' // Giving energy on left side
-            }
-        ];
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold">
+                  Connect with a Professional Healer
+                </CardTitle>
+                <CardDescription className="text-white/70 text-lg">
+                  Aura analysis requires professional interpretation for accurate spiritual guidance. You can run an analysis yourself but the healer can provide the same along with remedies and personalised guidance.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-white/5 rounded-lg p-6 border border-white/10">
+                  <h3 className="text-xl font-semibold mb-4 text-center">Why Work with a Healer?</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Professional Interpretation</h4>
+                        <p className="text-white/70 text-sm">Expert analysis of your aura colors and their spiritual meanings</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Personalized Remedies</h4>
+                        <p className="text-white/70 text-sm">Custom healing suggestions and spiritual practices</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Chakra Balancing</h4>
+                        <p className="text-white/70 text-sm">Detailed chakra analysis with healing recommendations</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium">Spiritual Guidance</h4>
+                        <p className="text-white/70 text-sm">Ongoing support for your spiritual journey</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-        // Skip particle-based smoke zones to avoid patchy appearance
-        // All aura effects are now handled by smooth gradients above
-        // Personality color completely removed from aura visualization as requested
-        // Create enhanced gradient blending between all colors for seamless merging
-        createSeamlessColorBlending(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
+                <div className="text-center space-y-4">
+                  <p className="text-white/80">
+                    Professional healers can provide comprehensive aura analysis reports with personalized remedies and spiritual guidance tailored to your unique energy signature.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href="/healers">
+                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-3">
+                        <Users className="w-5 h-5 mr-2" />
+                        Connect with a Healer
+                      </Button>
+                    </Link>
+                    <Link href="/client-dashboard">
+                      <Button className="bg-primary text-white hover:bg-white/10 px-8 py-3">
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        View My Readings
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-        // Create prominent thinking energy particle above person's head with standardized sizing
-        createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel, width, height);
+    const colorModifier = ['White', 'Silver', 'Gold', 'Violet'].includes(aura.dominantColor) ? 20 : 0;
+    return Math.min(100, baseValue + colorModifier);
+  };
+
+  const calculateAuraStrength = (aura: AuraAnalysisResult): number => {
+    return Math.min(95, Math.max(5, (aura.energyLevel * 7) + 15));
+  };
+
+  const calculateVulnerability = (aura: AuraAnalysisResult): number => {
+    // Vulnerability is always the inverse of aura strength to ensure they sum to 100
+    const strength = calculateAuraStrength(aura);
+    return 100 - strength;
+  };
+
+  const calculateEnergyBalance = (aura: AuraAnalysisResult): number => {
+    const giving = calculateGivingEnergy(aura);
+    const receiving = calculateReceivingEnergy(aura);
+    const balance = 70 - Math.abs(giving - receiving);
+    return Math.max(30, balance);
+  };
+
+  const getStrengthDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Powerful aura';
+    if (percentage >= 60) return 'Strong presence';
+    if (percentage >= 40) return 'Developing strength';
+    return 'Gentle energy';
+  };
+
+  const getVulnerabilityDescription = (percentage: number): string => {
+    if (percentage >= 70) return 'Highly sensitive';
+    if (percentage >= 50) return 'Moderately open';
+    if (percentage >= 30) return 'Well protected';
+    return 'Strong boundaries';
+  };
+
+
+
+  const getBalanceDescription = (percentage: number): string => {
+    if (percentage >= 80) return 'Harmonious flow';
+    if (percentage >= 60) return 'Good balance';
+    if (percentage >= 40) return 'Adjusting flow';
+    return 'Seeking balance';
+  };
+
+  const getEnergyLevelDescription = (level: number): string => {
+    if (level >= 8) return 'Vibrant energy';
+    if (level >= 6) return 'Active energy';
+    if (level >= 4) return 'Steady energy';
+    return 'Calm energy';
+  };
+
+  const getMorningEnergyInfluence = (dominant: string, secondary: string): string => {
+    const morningInfluences: Record<string, string> = {
+      'Red': 'Your red energy ignites your morning with passionate drive and determination.',
+      'Orange': 'Orange energy brings creative enthusiasm and social warmth to your mornings.',
+      'Yellow': 'Yellow energy illuminates your mind with clarity and optimistic thinking.',
+      'Green': 'Green energy grounds you with natural balance and healing intentions.',
+      'Blue': 'Blue energy flows through you with peaceful communication and truth.',
+      'Indigo': 'Indigo energy opens your intuitive channels for insightful mornings.',
+      'Violet': 'Violet energy connects you to higher consciousness and spiritual awareness.',
+      'Purple': 'Purple energy transforms your morning with mystical understanding.',
+      'Pink': 'Pink energy radiates love and emotional healing throughout your morning.',
+      'White': 'White energy purifies your morning with divine protection and clarity.',
+      'Gold': 'Gold energy empowers your morning with wisdom and spiritual authority.',
+      'Silver': 'Silver energy reflects intuitive insights and lunar wisdom in your morning.',
+        'Grey': 'Grey energy brings balanced wisdom and adaptable thinking to your mornings.',
+        'Black': 'Black energy initiates transformative work and deep inner healing.',
+        'Brown': 'Brown energy grounds you with practical wisdom and earth connection.'
+      
+    };
+    return morningInfluences[dominant] || `${dominant} energy brings unique morning vibrations that awaken your spiritual essence and prepare your consciousness for the day's divine purpose.`;
+  };
+
+  const getPeakEnergyHours = (dominant: string): string => {
+    const peakHours: Record<string, string> = {
+      'Red': 'Your energy peaks during mid-morning (9-11am) when action-oriented tasks flow naturally.',
+      'Orange': 'Peak energy flows in late morning to early afternoon (11am-2pm) for creative pursuits.',
+      'Yellow': 'Mental energy peaks during late morning (10am-12pm) for learning and communication.',
+      'Green': 'Balanced energy maintains consistency throughout the day with gentle peaks at sunrise and sunset.',
+      'Blue': 'Communication energy peaks in afternoon (2-4pm) when truth and clarity are strongest.',
+      'Indigo': 'Intuitive energy peaks during twilight hours (6-8pm) for deep insights.',
+      'Violet': 'Spiritual energy peaks in early evening (7-9pm) for meditation and connection.',
+      'Purple': 'Mystical energy peaks during late evening (8-10pm) for transformation work.',
+      'Pink': 'Heart energy maintains steady flow with peaks during mid-afternoon (1-3pm).',
+      'White': 'Divine energy flows consistently with peaks during dawn and dusk prayers.',
+      'Gold': 'Wisdom energy peaks during afternoon (3-5pm) for important decisions.',
+      'Silver': 'Reflective energy peaks during moonlit hours for intuitive guidance.',
+      'Grey': 'Balanced energy maintains consistency throughout the day with gentle peaks at sunrise and sunset.',
+      'Black': 'Shadow energy peaks during late evening (8-10pm) for transformative work.',
+      'Brown': 'Grounding energy peaks during mid-morning (9-11am) and late evening (6-8pm).',
+      
+    };
+    return peakHours[dominant] || `${dominant} energy reaches its highest vibration during specific hours when cosmic frequencies align with your personal spiritual resonance.`;
+  };
+
+  const getEveningEnergyGuidance = (dominant: string): string => {
+    const eveningGuidance: Record<string, string> = {
+      'Red': 'Red energy in evening calls for physical release through exercise or passionate activities.',
+      'Orange': 'Orange energy encourages creative expression and social connection in evening hours.',
+      'Yellow': 'Yellow energy suggests evening journaling or learning to process the days insights.',
+      'Green': 'Green energy invites evening nature connection and gentle healing practices.',
+      'Blue': 'Blue energy flows into evening meditation and truthful communication with loved ones.',
+      'Indigo': 'Indigo energy opens evening hours for psychic development and intuitive practices.',
+      'Violet': 'Violet energy elevates evening into spiritual study and consciousness expansion.',
+      'Purple': 'Purple energy transforms evening into mystical exploration and magical practices.',
+      'Pink': 'Pink energy wraps evening in love meditation and emotional healing rituals.',
+      'White': 'White energy purifies evening with prayer, blessing, and divine connection.',
+      'Gold': 'Gold energy illuminates evening with wisdom sharing and spiritual teaching.',
+      'Silver': 'Silver energy reflects evening into lunar meditation and dream preparation.',
+      'Grey': 'Grey energy brings balanced wisdom and adaptable thinking to evening hours.',
+      'Black': 'Black energy initiates evening transformative work and deep inner healing.',
+      'Brown': 'Brown energy grounds evening with practical wisdom and earth connection practices.'
+      
+      
+    };
+    return eveningGuidance[dominant] || `${dominant} energy transforms evening hours into sacred time for spiritual practices that align with your unique vibrational frequency.`;
+  };
+
+  // Helper functions for 9-chakra system calculations (using existing functions below)
+
+  // Color spectrum analysis helper functions (duplicate removed)
+
+
+
+  const getColorMeaningForEnergyTab = (color: string): string => {
+    const meanings: Record<string, string> = {
+      'Red': 'Root chakra energy - survival instinct, life force, physical vitality',
+      'Orange': 'Sacral chakra energy - creativity, sexuality, emotional flow',
+      'Yellow': 'Solar plexus chakra - personal power, confidence, willpower',
+      'Green': 'Heart chakra - unconditional love, healing abilities, compassion',
+      'Blue': 'Throat chakra - communication, truth speaking, authentic voice',
+      'Indigo': 'Third eye chakra - psychic abilities, intuition, spiritual sight',
+      'Violet': 'Crown chakra - spiritual connection, divine consciousness, enlightenment',
+      'Purple': 'Higher crown chakra - spiritual mastery, mystical awareness',
+      'Pink': 'Higher heart chakra - unconditional love, divine compassion',
+      'White': 'Pure divine light - spiritual protection, angelic connection',
+      'Gold': 'Christ consciousness - divine wisdom, spiritual illumination',
+      'Silver': 'Lunar energy - intuitive wisdom, feminine power, psychic protection',
+      'Gray': 'Emotional numbness - detachment, avoidance, spiritual stagnation',
+      'Black': 'Shadow work required - deep wounds, negativity, spiritual darkness',
+      'Brown': 'Earth- star connection - grounding, stability, practical wisdom'
+    };
+    const additionalColorMeanings: Record<string, string> = {
+      'red': 'Deep passion energy - intense life force, warrior spirit, primal power',
+      'silver': 'Soul love energy - divine feminine, cosmic creativity, spiritual passion',
+      'purple': 'Higher communication - soul voice, mystical truth, divine expression',
+      'violet': 'Deep wisdom energy - cosmic knowledge, soul memory, profound insight',
+      'green': 'Renewal energy - fresh healing, growth acceleration, emotional cleansing',
+      'yellow': 'Grounded passion - stable strength, earthly wisdom, enduring power',
+      'brown': 'Earth star, wisdom energy - practical spirituality, natural healing, grounded insight',
+      'white': 'Gentle earth energy - subtle wisdom, peaceful healing, quiet strength',
+      'pink': 'Natural balance energy - earth connection, practical wisdom, stable grounding'
+    };
+    
+    return meanings[color] || additionalColorMeanings[color] || `${color} chakra energy - unique spiritual frequency that channels specific cosmic vibrations through your energy field to create personal transformation and consciousness expansion.`;
+  };
+
+  const getColorFrequency = (color: string): string => {
+    const frequencies: Record<string, string> = {
+      'Red': 'Root chakra. Low frequency (430-480 THz) - Grounding and energizing vibration that connects to physical realm.',
+      'Orange': 'Sacral chakra. Medium-low frequency (480-510 THz) - Creative and emotional vibration that stimulates passion.',
+      'Yellow': 'Solar Plexus. Medium frequency (510-540 THz) - Mental and intellectual vibration that enhances clarity.',
+      'Green': 'Heart chakra. Balanced frequency (540-580 THz) - Heart-centered vibration promoting healing and harmony.',
+      'Blue': 'Throat chakra. Medium-high frequency (610-670 THz) - Communicative vibration that opens expression.',
+      'Indigo': 'Third Eye Chakra. High frequency (670-700 THz) - Intuitive vibration connecting to psychic abilities.',
+      'Violet': 'Crown Chakra. Highest frequency (700-750 THz) - Spiritual vibration linking to divine consciousness.',
+      'Purple': 'Very high frequency (680-750 THz) - Mystical vibration enhancing spiritual power.',
+      'Pink': 'Heart frequency (520-560 THz) - Love vibration that opens compassion centers.',
+      'White': 'Full spectrum frequency - Contains all colors, representing complete spiritual integration.',
+      'Gold': 'Divine frequency (550-570 THz) - Wisdom vibration connecting to cosmic consciousness.',
+      'Silver': 'Soul star chakra. Lunar frequency (480-520 THz) - Reflective vibration enhancing intuitive abilities.',
+      'Gray': 'Neutral frequency (540-580 THz) - Balanced vibration promoting spiritual equilibrium.',
+      'Black': 'Shadow frequency (430-480 THz) - Transformative vibration enhancing inner work.',
+      'Brown': 'Earth star chakra. Low-medium frequency (450-500 THz) - Grounding vibration connecting to earthly wisdom.',
+      
+    };
+    return frequencies[color] || frequencies['Purple'];
+  };
+
+  const getChakraConnection = (color: string): string => {
+    // Standardized chakra mappings consistent with remedies data
+    const chakras: Record<string, string> = {
+      'Red': 'Numerologically connected to:9. Planet:Mars. Root Chakra (Muladhara) - Grounding, survival, and physical vitality. Practice: Forgiveness meditation and grounding exercises.',
+      'Orange': 'Numerologically connected to:6. Planet:Venus. Sacral Chakra (Svadhisthana) - Creativity, sexuality, and emotional flow. Practice: Creative expression and emotional healing.',
+      'Yellow': 'Numerologically connected to:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Personal power, confidence, and mental clarity. Practice: Goal setting and leadership development.',
+      'Green': 'Numerologically connected to:2. Planet:Moon. Heart Chakra (Anahata) - Love, compassion, and emotional healing. Practice: Gratitude and relationship harmony.',
+      'Blue': 'Numerologically connected to:5. Planet:Mercury. Throat Chakra (Vishuddha) - Communication, truth, and self-expression. Practice: Authentic communication and acts of kindness.',
+      'Indigo': 'Numerologically connected to:8. Planet:Saturn. Third Eye Chakra (Ajna) - Intuition, psychic abilities, and inner wisdom. Practice: Meditation and intuition development.',
+      'Violet': 'Numerologically connected to:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Expressive writing and spiritual connection.',
+      'Purple': 'Numerologically connected to:3. Planet:Jupiter. Crown Chakra (Sahasrara) - Spiritual connection and divine consciousness. Practice: Mystical exploration and spiritual study.',
+      'White': 'Numerologically connected to:7. Planet:Ketu. Soul Star Chakra - Complete chakra alignment and spiritual integration. Practice: Self-compassion and transcendence.',
+      'Gold': 'Numerologically connected to:1. Planet:Sun. Solar Plexus Chakra (Manipura) - Divine wisdom and spiritual achievement. Practice: Leadership and confidence building.',
+      'Silver': 'Numerologically connected to:7. Planet:Ketu. Soul Star Chakra - Lunar energy and psychic abilities. Practice: Intuitive development and spiritual wisdom.',
+      'Brown': 'Numerologically connected to:4. Planet:Rahu. Earth Star Chakra - Grounding, stability, and deep earth connection. Practice: Mindfulness and grounding meditation.',
+      'Black': 'Numerologically connected to:4. Planet:Rahu. Earth Star Chakra - Protection, transformation, and grounding. Practice: Stability building and earth connection.',
+      'Pink': 'Numerologically connected to:2. Planet:Moon. Heart Chakra (Anahata) - Emotional love, compassion, and gentle healing. Practice: Self-love and emotional healing.'
+    };
+    return chakras[color] || chakras['Purple'] || 'Number:7. Planet:Neptune. Crown Chakra (Sahasrara) - Spiritual mastery, divine connection, and cosmic consciousness. Practice: Meditation and spiritual contemplation.';
+  };
+
+  const getColorBalance = (primary: string, secondary: string): string => {
+    const balances: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Fire and water elements create dynamic balance between action and reflection.',
+        'Green': 'Passion balanced with healing creates powerful manifestation abilities.',
+        'Yellow': 'Physical energy combined with mental clarity creates strong leadership potential.',
+        'Orange': 'Passion combined with creativity enhances artistic and teaching abilities.',
+        'Purple': 'Passion combined with spiritual connection creates natural healing and teaching abilities.',
+        'White': 'Passion combined with purity creates natural healing and spiritual guidance abilities.',
+        'Gold': 'Passion combined with wisdom creates natural healing and spiritual guidance abilities.',
+        'Indigo': 'Passion combined with intuition creates natural healing and spiritual guidance abilities.',
+        'Pink': 'Passion combined with love creates natural healing and spiritual guidance abilities.',
+        'Silver': 'Passion combined with intuition creates natural healing and spiritual guidance abilities.'
+      },
+      'Blue': {
+        'Orange': 'Communication balanced with creativity enhances artistic and teaching abilities.',
+        'Red': 'Calm wisdom balances intense passion, creating measured but powerful action.',
+        'Yellow': 'Truth and wisdom combine to create excellent teaching and counseling abilities.',
+        'Green': 'Communication combined with healing creates natural counseling and teaching abilities.',
+        'Purple': 'Communication combined with spiritual connection creates natural counseling and teaching abilities.',
+        'White': 'Communication combined with purity creates natural counseling and teaching abilities.',
+        'Gold': 'Communication combined with wisdom creates natural counseling and teaching abilities.',
+        'Indigo': 'Communication combined with intuition creates natural counseling and teaching abilities.',
+        'Pink': 'Communication combined with love creates natural counseling and teaching abilities.',
+        'Silver': 'Communication combined with intuition creates natural counseling and teaching abilities.',
+        'Gray': 'blockages',
+      },
+      'Green': {
+        'Purple': 'Healing energy enhanced by spiritual power creates natural healer capabilities.',
+        'Red': 'Growth balanced with passion creates dynamic healing and manifestation abilities.',
+        'Blue': 'Heart wisdom combined with clear communication creates excellent counseling potential.',
+        'Yellow': 'Healing energy combined with mental clarity creates strong analytical healing abilities.',
+        'Orange': 'Healing energy combined with creativity creates dynamic healing and artistic abilities.',
+        'White': 'Healing energy combined with purity creates natural healing and spiritual guidance abilities.',
+        'Gold': 'Healing energy combined with wisdom creates natural healing and spiritual guidance abilities.',
+        'Indigo': 'Healing energy combined with intuition creates natural healing and spiritual guidance abilities.',
+        'Pink': 'Healing energy combined with love creates natural healing and spiritual guidance abilities.',
+        'Silver': 'Healing energy combined with intuition creates natural healing and spiritual guidance abilities.',
+          'Peach': 'Healing energy combined with love creates natural healing and teaching abilities.',
+          'Gray': 'Some Blockages. Connect to a Healer to understand more.',
+          'Black': 'Some Blockages. Connect to a healer to be able to get more information',
+      }
+    };
+    return balances[primary]?.[secondary] || balances[secondary]?.[primary] || 
+           `The combination of ${primary} and ${secondary} creates a unique energetic balance specific to your spiritual path.`;
+  };
+
+  const getColorKeyword = (color: string): string => {
+    const keywords: Record<string, string> = {
+      'Red': 'Life Force & Vitality',
+      'red': 'Life Force & Vitality',
+      'Orange': 'Creative Expression & Sensuality',
+      'orange': 'Creative Expression & Sensuality',
+      'Yellow': 'Mental Clarity & Confidence',
+      'yellow': 'Mental Clarity & Confidence',
+      'Green': 'Heart Healing & Compassion',
+      'green': 'Heart Healing & Compassion',
+      'Blue': 'Authentic Communication & Truth',
+      'blue': 'Authentic Communication & Truth',
+      'Indigo': 'Psychic Abilities & Inner Vision',
+      'indigo': 'Psychic Abilities & Inner Vision',
+      'Violet': 'Divine Connection & Enlightenment',
+      'violet': 'Divine Connection & Enlightenment',
+      'Purple': 'Spiritual Mastery & Transformation',
+      'purple': 'Spiritual Mastery & Transformation',
+      'Pink': 'Unconditional Love & Tenderness',
+      'pink': 'Unconditional Love & Tenderness',
+      'White': 'Divine Light & Purification',
+      'white': 'Divine Light & Purification',
+      'Gold': 'Christ Consciousness & Illumination',
+      'gold': 'Christ Consciousness & Illumination',
+      'Silver': 'Feminine Intuition & Reflection',
+      'silver': 'Feminine Intuition & Reflection',
+      'Gray': 'Blockages',
+      'gray': 'Blockages',
+      'Black': 'Shadow Work & Deep Transformation blockage',
+      'black': 'Shadow Work & Deep Transformation blockage', 
+      'brown': 'Earth Connection & Practical Wisdom',
+      'Brown': 'Earth Connection & Practical Wisdom',
+    };
+    return keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
+  };
+
+
+
+  const getLayerMeaning = (layer: string, color: string): string => {
+    const layerMeanings: Record<string, Record<string, string>> = {
+      'inner': {
+        'Red': 'Your core essence pulses with primal life force and determination.',
+        'Blue': 'Your inner truth radiates calm wisdom and spiritual guidance.',
+        'Green': 'Your heart center naturally emanates healing and growth energy.',
+        'Yellow': 'Your mental core shines with intelligence and spiritual illumination.',
+        'Purple': 'Your spiritual essence carries ancient wisdom and mystical power.',
+        'White': 'Your inner core radiates pure spiritual energy and divine connection.',
+        'Gold': 'Your inner wisdom center emanates divine protection and spiritual authority.',
+        'Indigo': 'Your inner intuition center radiates psychic abilities and visionary insights.',
+        'Pink': 'Your inner love center emanates unconditional compassion and healing.',
+        'Silver': 'Your inner core radiates protection of the divine and of spiritual connection',
+        'Gray': 'Your inner core center radiates blockages',
+        'Black': 'Your inner core center radiates slight blockages',
+        'Violet': 'Your spiritual essence carries ancient wisdom and mystical power.',
+        'Orange': 'Your inner core center radiates creativity, joy, and vital energy.',
+        'Brown': 'Your inner core center radiates earth connection, grounding, and practical wisdom.',
+      },
+      'middle': {
+        'Red': 'Your emotional body processes through passionate and intense feeling.',
+        'Blue': 'Your emotional processing flows through peaceful and truthful expression.',
+        'Green': 'Your emotional healing naturally balances and harmonizes energy.',
+        'Yellow': 'Your emotional intelligence analyzes feelings with clarity and wisdom.',
+        'Purple': 'Your emotional body connects feelings to spiritual insights.',
+        'White': 'Your emotional body processes feelings with pure spiritual intention.',
+        'Gold': 'Your emotional wisdom center radiates divine protection and spiritual authority.',
+        'Indigo': 'Your emotional intuition center radiates psychic abilities and visionary insights.',
+        'Pink': 'Your emotional love center emanates unconditional compassion and healing.',
+        'Silver': 'Your emotional core radiates protection of the divine and of spiritual connection',
+        'Gray': 'Your emotional core center radiates slight blockages',
+        'Black': 'Your emotional core center radiates some blockages',
+        'Violet': 'Your emotional body connects feelings to spiritual insights.',
+        'Orange': 'Your emotional core center radiates creativity, joy, and vital energy.',
+        'Brown': 'Your emotional core center radiates earth connection, grounding, and practical wisdom.'
+      },
+      'outer': {
+        'Red': 'You project dynamic energy and commanding presence to the world.',
+        'Blue': 'You emanate peaceful authority and trustworthy communication.',
+        'Green': 'You radiate healing presence that others find naturally comforting.',
+        'Yellow': 'You project intellectual brightness and inspiring optimism.',
+        'Purple': 'You emanate spiritual authority and mystical presence.',
+        'White': 'You radiate pure spiritual energy and divine connection.',
+        'Gold': 'Your outer wisdom center emanates divine protection and spiritual authority.',
+        'Indigo': 'Your outer intuition center radiates psychic abilities and visionary insights.',
+        'Pink': 'Your outer love center emanates unconditional compassion and healing.',
+        'Silver': 'Your outer core radiates protection of the divine and of spiritual connection',
+        'Gray': 'Your outer core center radiates balance, neutrality, adaptability.',
+        'Black': 'Your outer core center radiates power, protection, transformation.',
+        'Violet': 'You emanate spiritual authority and mystical presence.',
+        'Orange': 'You project creative energy and inspiring enthusiasm to the world.',
+        'Brown': 'You radiate earth connection, stability, and practical wisdom to the world.'
+      }
+    };
+    return layerMeanings[layer]?.[color] || layerMeanings[layer]?.[color.charAt(0).toUpperCase() + color.slice(1)] || 
+           layerMeanings['inner']?.[color] || layerMeanings['inner']?.[color.charAt(0).toUpperCase() + color.slice(1)] ||
+           'Authentic energy interpretation not available for this color combination';
+  };
+
+  const getEnergyPattern = (primary: string, secondary: string): string => {
+    const patterns: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Fire-water pattern - passionate action balanced with calm wisdom, creating powerful leadership energy',
+        'Green': 'Fire-earth pattern - vital force channeled through healing, creating natural healer energy',
+        'Yellow': 'Fire-air pattern - physical power merged with mental clarity, creating strong manifestation energy',
+        'Purple': 'Fire-spirit pattern - earthly passion elevated to spiritual service, creating warrior-mystic energy',
+        'Orange': 'Double fire pattern - life force amplified through creativity, creating dynamic artistic energy',
+        'Pink': 'Fire-heart pattern - passionate action softened by love, creating inspiring teacher energy',
+        'White': 'Fire-light pattern - earthly passion channeled through purity, creating enlightened warrior energy',
+      },
+      'Blue': {
+        'Red': 'Water-fire pattern - truthful communication empowered by passion, creating inspiring teacher energy',
+        'Green': 'Water-earth pattern - peaceful wisdom flowing through healing love, creating gentle counselor energy',
+        'Yellow': 'Water-air pattern - clear truth merged with bright intellect, creating wise communicator energy',
+        'Purple': 'Water-spirit pattern - authentic voice channeling divine wisdom, creating spiritual messenger energy',
+        'Pink': 'Water-heart pattern - truthful expression softened by compassion, creating loving guide energy',
+        'White': 'Water-light pattern - truthful communication channeled through purity, creating enlightened teacher energy',
+        'Gold': 'Water-gold pattern - truthful communication channeled through wisdom, creating enlightened teacher energy',
+        'Indigo': 'Water-indigo pattern - truthful communication channeled through intuition, creating enlightened teacher energy',
+        'Silver': 'Water-silver pattern - truthful communication channeled through intuition, creating enlightened teacher energy',
+          
+      },
+      'Green': {
+        'Red': 'Earth-fire pattern - healing love energized by passion, creating dynamic healer energy',
+        'Blue': 'Earth-water pattern - heart wisdom expressed through clear truth, creating compassionate teacher energy',
+        'Yellow': 'Earth-air pattern - healing heart illuminated by wisdom, creating enlightened healer energy',
+        'Purple': 'Earth-spirit pattern - healing love elevated to divine service, creating sacred healer energy',
+        'Pink': 'Double heart pattern - healing love amplified by divine compassion, creating pure love energy',
+        'White': 'Earth-light pattern - healing love channeled through purity, creating enlightened healer energy',
+        'Orange': 'Earth-fire pattern - healing love energized by creativity, creating dynamic healer energy',
+        'Gold': 'Earth-gold pattern - healing love channeled through wisdom, creating enlightened healer energy',
+        'Indigo': 'Earth-indigo pattern - healing love channeled through intuition, creating enlightened healer energy',
+        'Silver': 'Earth-silver pattern - healing love channeled through intuition, creating enlightened healer energy'
+      },
+      'Yellow': {
+        'Red': 'Air-fire pattern - brilliant mind empowered by passionate will, creating visionary leader energy',
+        'Blue': 'Air-water pattern - clear wisdom expressed through peaceful truth, creating wise teacher energy',
+        'Green': 'Air-earth pattern - mental clarity grounded in healing love, creating balanced teacher energy',
+        'Purple': 'Air-spirit pattern - intellectual wisdom elevated to divine understanding, creating enlightened sage energy',
+        'Orange': 'Air-fire pattern - mental brightness enhanced by creative joy, creating inspired teacher energy',
+          'Pink': 'Air-heart pattern - intellectual wisdom softened by compassion, creating loving teacher energy',
+          'White': 'Air-light pattern - mental clarity channeled through purity, creating enlightened teacher energy',
+          'Gold': 'Air-gold pattern - mental clarity channeled through wisdom, creating enlightened teacher energy',
+          'Indigo': 'Air-indigo pattern - mental clarity channeled through intuition, creating enlightened teacher energy',
+      },
+      'Purple': {
+        'Red': 'Spirit-fire pattern - divine wisdom empowered by earthly passion, creating spiritual warrior energy',
+        'Blue': 'Spirit-water pattern - mystical knowledge expressed through truthful communication, creating prophet energy',
+        'Green': 'Spirit-earth pattern - divine love channeled through healing service, creating saint energy',
+       'Yellow': 'Spirit-air pattern - cosmic wisdom merged with brilliant intellect, creating master teacher energy',
+        'White': 'Double spirit pattern - divine consciousness amplified by pure light, creating avatar energy',
+        'Orange': 'Spirit-fire pattern - divine wisdom empowered by creativity, creating spiritual artist energy',
+        'Pink': 'Spirit-heart pattern - divine love amplified by compassion, creating divine healer energy',
+        'Gold': 'Spirit-gold pattern - divine wisdom channeled through wisdom, creating enlightened teacher energy',
+        'Indigo': 'Spirit-indigo pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
+        'Silver': 'Spirit-silver pattern - divine wisdom channeled through intuition, creating enlightened teacher energy',
+      }
+    };
+    
+    // Comprehensive aura pattern interpretations for all color combinations
+    const specificPatterns: Record<string, Record<string, string>> = {
+      'Red': {
+        'Orange': 'Passionate creativity - Fiery life force channeling creative manifestation through physical action and artistic expression',
+        'Yellow': 'Confident action - Dynamic willpower expressing through decisive leadership and personal authority',
+        'Green': 'Passionate healing - Life force energy channeling through compassionate service and healing touch',
+        'Blue': 'Truthful passion - Authentic communication powered by deep conviction and honest expression',
+        'Indigo': 'Intuitive action - Psychic abilities manifesting through direct action and spiritual leadership',
+        'Violet': 'Spiritual warrior - Divine purpose expressing through courageous spiritual service and transformation',
+        'Purple': 'Mystical power - Ancient wisdom combining with life force for magical manifestation and spiritual authority',
+        'Pink': 'Loving strength - Unconditional love supported by protective strength and nurturing power',
+        'White': 'Pure vitality - Divine life force expressing through blessed service and spiritual protection',
+        'Gold': 'Wise leadership - Ancient wisdom combining with dynamic action for enlightened authority',
+        'Silver': 'Lunar strength - Intuitive power channeling through protective action and psychic defense'
+      },
+      'Orange': {
+        'Yellow': 'Creative confidence - Artistic expression flowing through personal empowerment and joyful manifestation',
+        'Green': 'Healing creativity - Artistic abilities channeling therapeutic energy and emotional restoration',
+        'Blue': 'Expressive truth - Creative communication flowing through honest artistic expression and authentic voice',
+        'Indigo': 'Psychic creativity - Intuitive artistic abilities manifesting through visionary expression and spiritual art',
+        'Violet': 'Sacred artistry - Divine inspiration flowing through creative expression and spiritual beauty',
+        'Purple': 'Mystical creation - Ancient artistic wisdom manifesting through magical creative processes',
+        'Pink': 'Loving expression - Heart-centered creativity flowing through emotional healing and compassionate art',
+        'White': 'Pure creation - Divine artistic inspiration manifesting through blessed creative service',
+        'Gold': 'Wise artistry - Ancient creative wisdom expressing through enlightened artistic mastery',
+        'Silver': 'Intuitive art - Lunar creative energy flowing through psychic artistic expression'
+      },
+      'Yellow': {
+        'Green': 'Wise healing - Mental clarity supporting heart-centered healing and balanced wisdom',
+        'Blue': 'Clear communication - Mental power enhancing truthful expression and authentic voice',
+        'Indigo': 'Intuitive wisdom - Mental clarity combining with psychic abilities for enhanced perception',
+        'Violet': 'Enlightened mind - Mental power elevated to spiritual understanding and divine wisdom',
+        'Purple': 'Mystical knowledge - Ancient mental wisdom accessing cosmic understanding and magical insight',
+        'Pink': 'Loving wisdom - Heart-centered intelligence expressing through compassionate understanding',
+        'White': 'Pure knowledge - Divine mental clarity channeling blessed wisdom and spiritual truth',
+        'Gold': 'Master wisdom - Ancient enlightened knowledge expressing through spiritual teaching',
+        'Silver': 'Psychic intelligence - Lunar wisdom enhancing intuitive mental abilities'
+      },
+      'Green': {
+        'Blue': 'Healing communication - Heart-centered truth expressing through therapeutic communication',
+        'Indigo': 'Psychic healing - Intuitive healing abilities enhanced by third eye perception',
+        'Violet': 'Spiritual healing - Divine healing energy channeling through crown chakra connection',
+        'Purple': 'Mystical healing - Ancient healing wisdom accessing magical restoration abilities',
+        'Pink': 'Unconditional healing - Pure love energy manifesting through infinite compassion',
+        'White': 'Divine healing - Sacred healing energy channeling through blessed service',
+        'Gold': 'Master healer - Ancient healing wisdom expressing through enlightened therapeutic mastery',
+        'Silver': 'Lunar healing - Intuitive healing energy flowing through psychic therapeutic touch'
+      },
+      'Blue': {
+        'Indigo': 'Psychic communication - Intuitive truth expressing through telepathic and spiritual communication',
+        'Violet': 'Divine voice - Sacred truth channeling through crown chakra spiritual expression',
+        'Purple': 'Mystical communication - Ancient voice wisdom accessing cosmic truth and magical expression',
+        'Pink': 'Loving truth - Heart-centered honesty expressing through compassionate communication',
+        'White': 'Pure voice - Divine communication channeling through blessed truthful expression',
+        'Gold': 'Wise communication - Ancient truth wisdom expressing through enlightened teaching voice',
+        'Silver': 'Intuitive voice - Lunar communication energy enhancing psychic verbal expression'
+      },
+      'Indigo': {
+        'Violet': 'Crown psychic - Third eye and crown chakra unified for supreme spiritual perception',
+        'Purple': 'Mystical sight - Ancient psychic wisdom accessing cosmic vision and magical sight',
+        'Pink': 'Loving intuition - Heart-centered psychic abilities expressing through compassionate insight',
+        'White': 'Pure psychic - Divine intuitive abilities channeling through blessed spiritual perception',
+        'Gold': 'Master psychic - Ancient intuitive wisdom expressing through enlightened spiritual sight',
+        'Silver': 'Lunar psychic - Enhanced moon-connected intuitive abilities and psychic lunar wisdom'
+      },
+      'Violet': {
+        'Purple': 'Supreme spiritual - Crown chakra and mystical wisdom unified for divine cosmic connection',
+        'Pink': 'Divine love - Spiritual connection expressing through infinite unconditional compassion',
+        'White': 'Pure spirit - Divine spiritual energy manifesting through blessed crown chakra connection',
+        'Gold': 'Enlightened crown - Ancient spiritual wisdom expressing through supreme divine connection',
+        'Silver': 'Cosmic intuition - Spiritual crown energy enhanced by lunar psychic connection'
+      },
+      'Purple': {
+        'Pink': 'Mystical love - Ancient wisdom expressing through heart-centered magical compassion',
+        'White': 'Pure mystical - Divine magical wisdom channeling through blessed spiritual transformation',
+        'Gold': 'Ancient mastery - Supreme mystical wisdom expressing through enlightened magical authority',
+        'Silver': 'Lunar mystical - Psychic magical abilities enhanced by intuitive lunar wisdom'
+      },
+      'Pink': {
+        'White': 'Pure love - Divine unconditional love manifesting through blessed heart connection',
+        'Gold': 'Wise love - Ancient heart wisdom expressing through enlightened compassionate service',
+        'Silver': 'Intuitive love - Heart-centered compassion enhanced by lunar psychic emotional wisdom'
+      },
+      'White': {
+        'Gold': 'Divine wisdom - Pure spiritual energy unified with ancient enlightened knowledge',
+        'Silver': 'Pure intuition - Divine spiritual connection enhanced by lunar psychic wisdom'
+      },
+      'Gold': {
+        'Silver': 'Master intuition - Ancient enlightened wisdom unified with lunar psychic abilities'
+      },
+    };
+
+    return specificPatterns[primary]?.[secondary] || specificPatterns[secondary]?.[primary] || 
+           `${primary}-${secondary} harmonic convergence - two distinct spiritual frequencies creating a unique energetic signature that enhances both individual color properties through synchronized vibrational resonance`;
+  };
+
+  const getColorMeditation = (color: string): string => {
+    const meditations: Record<string, string> = {
+      'Red': 'Visualize deep red light at your root chakra. Breathe in strength and grounding energy.',
+      'Blue': 'Focus on peaceful blue light at your throat. Breathe in truth and clear communication.',
+      'Green': 'Imagine healing green light at your heart center. Breathe in love and harmony.',
+      'Yellow': 'Visualize golden yellow light at your solar plexus. Breathe in wisdom and confidence.',
+      'Purple': 'Focus on royal purple light at your crown. Breathe in spiritual connection and wisdom.',
+      'White': 'Visualize pure white light surrounding your entire aura. Breathe in purity and protection.',
+      'Gold': 'Focus on divine gold light at your soul star chakra. Breathe in wisdom and protection.',
+      'Indigo': 'Visualize deep indigo light at your third eye. Breathe in intuition and psychic abilities.',
+      'Pink': 'Focus on loving pink light at your heart center. Breathe in compassion and healing.',
+      'Silver': 'Visualize silver light at your soul star chakra. Breathe in intuition and psychic abilities.',
+      'Brown': 'Visualize brown light at your earth-star chakra. Breathe in stability, grounding, practicality.',
+    };
+    return meditations[color] || meditations['Purple'];
+  };
+
+  const getColorHealing = (primary: string, secondary: string): string => {
+    return `Wear ${primary.toLowerCase()} clothing or crystals to amplify your natural energy. Balance with ${secondary.toLowerCase()} elements in your environment. Consider ${primary.toLowerCase()} crystal therapy and ${secondary.toLowerCase()} color breathing exercises.`;
+  };
+  const getPositiveTraits = (color: string): string => {
+    const traits: Record<string, string> = {
+      'Red': 'Strong life force, physical vitality, courage, passion, grounding, survival strength, manifestation power, leadership',
+      'Orange': 'Creative and sexual energy flowing, emotional expression active, joy, enthusiasm, optimism, social confidence',
+      'Yellow': 'Personal power and confidence radiating, strong willpower, mental clarity, wisdom, analytical thinking',
+      'Green': 'Love and healing energy flowing, compassionate nature, growth, harmony with nature, balanced emotions',
+      'Blue': 'Throat area with extension to jaw and neck - Truth-speaking abilities, authentic communication, peaceful nature',
+      'Purple': 'Spiritual awareness awakening, divine connection opening, mystical abilities, intuitive wisdom',
+      'Gold': 'Divine wisdom and protection, spiritual achievement, enlightened consciousness, cosmic connection',
+      'White': 'Purity and spiritual protection, connection to higher realms, clarity of purpose, divine guidance',
+      'Pink': 'Unconditional love, compassion, nurturing energy, heart-centered healing, emotional balance',
+      'Silver': 'Protection of the divine and of spiritual connection.',
+      'violet': 'Divine connection, spiritual awareness, mystical abilities, intuitive wisdom',
+      'brown': 'Earth connection, grounding, stability, practical wisdom, natural healing',
+      
+    };
+    // Black and Gray only show shadow traits, no positive traits
+    if (color === 'Black' || color === 'Gray' || color === 'black' || color === 'gray' || color === 'grey' || color === 'Grey') {
+      return 'No positive traits - see shadow aspects for this color';
+    }
+    return traits[color] || traits['Purple'];
+  };
+
+  const getPositiveDescription = (color: string): string => {
+    const descriptions: Record<string, string> = {
+      'Red': 'Your red aura energy manifests as powerful grounding force, giving you exceptional physical vitality and the courage to take decisive action. You have natural leadership abilities and can manifest your desires into physical reality.',
+      'Orange': 'This vibrant energy makes you naturally creative and socially confident. You experience life with enthusiasm and joy, expressing emotions freely and inspiring others through your optimistic presence.',
+      'Yellow': 'Your solar plexus radiates confidence and personal power. You possess strong analytical abilities and mental clarity that helps you make wise decisions and teach others through your accumulated wisdom.',
+      'Green': 'This healing energy makes you a natural peacemaker and healer. You create harmony wherever you go and have an innate connection to nature and growth cycles.',
+      'Blue': 'Your throat chakra energy enhances truthful communication and authentic self-expression. You naturally inspire trust and can communicate complex ideas with clarity and peace.',
+      'Purple': 'This spiritual energy connects you to higher dimensions and mystical understanding. You have natural psychic abilities and can access ancient wisdom.',
+      'Gold': 'Your divine connection manifests as spiritual authority and wisdom. You carry protective energy and have achieved significant spiritual development.',
+      'White': 'This pure energy provides spiritual protection and connects you directly to source consciousness. You embody clarity and divine guidance.',
+      'Pink': 'Your heart chakra radiates unconditional love and compassion. You naturally nurture others and create healing through your loving presence.',
+      'Silver': 'Your soul star chakra radiates protection of the divine and of spiritual connection.',
+      'Gray': 'work on Your root chakra it will then radiate balance, neutrality, adaptability.',
+      'Black': 'work on Your chakras to radiate power, protection, transformation.',
+      
+    };
+    return descriptions[color] || 'Your unique energy signature carries powerful positive qualities.';
+  };
+
+  const getShadowTraits = (color: string): string => {
+    const shadows: Record<string, string> = {
+      'Red': 'Anger, aggression, impatience, survival fears, material obsession, explosive emotions, physical tension, restlessness',
+      'Orange': 'Emotional overwhelm, sexual imbalance, creative blocks, attention-seeking, superficial expressions',
+      'Yellow': 'Mental overthinking, ego dominance, criticism, perfectionism, intellectual arrogance, analysis paralysis',
+      'Green': 'Emotional codependency, giving too much, boundary issues, jealousy, possessiveness, healing burnout',
+      'Blue': 'Communication blocks, truth avoidance, throat constriction, difficulty expressing authentic self',
+      'Purple': 'Spiritual bypassing, disconnection from reality, psychic overwhelm, superiority complex, mystical inflation',
+      'Gold': 'Spiritual pride, divine complex, isolation from humanity, perfectionist standards, wisdom hoarding',
+      'White': 'Spiritual detachment, avoidance of earthly matters, purity obsession, emotional numbness',
+      'Pink': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Silver': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Turquoise': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Lavender': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Peach': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Gray': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality',
+      'Black': 'Emotional overwhelm, boundary dissolution, self-sacrifice to detriment, naive trust, victim mentality'
+    };
+    return shadows[color] || shadows['Purple'];
+  };
+
+  const getShadowDescription = (color: string): string => {
+    const descriptions: Record<string, string> = {
+      'Red': 'When unbalanced, this powerful energy can manifest as anger, impatience, or survival fears. You may experience explosive emotions or become overly focused on material concerns, losing connection to your spiritual nature.',
+      'Orange': 'The shadow side may show up as emotional overwhelm or attention-seeking behaviors. Creative energy can become blocked, leading to frustration or superficial expressions of your true creative potential.',
+      'Yellow': 'Mental energy can become overthinking and ego-driven criticism. You might fall into analysis paralysis or develop intellectual arrogance that blocks genuine wisdom and connection with others.',
+      'Green': 'The healing nature can become codependent giving or boundary issues. You may exhaust yourself caring for others while neglecting your own needs, or experience jealousy and possessiveness.',
+      'Blue': 'Communication blocks can manifest as difficulty expressing your authentic truth. You might avoid difficult conversations or experience throat constriction when trying to speak your truth.',
+      'Purple': 'Spiritual energy can lead to disconnection from practical reality or psychic overwhelm. You might develop superiority complex or use spirituality to avoid dealing with earthly responsibilities.',
+      'Gold': 'Divine wisdom can manifest as spiritual pride or perfectionist standards. You might isolate yourself from others, feeling they dont understand your elevated consciousness.',
+      'White': 'Pure energy can lead to spiritual detachment or avoidance of emotional depth. You might become overly focused on perfection while avoiding the messy aspects of human experience.',
+      'Pink': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
+      'Silver': 'Loving energy can become boundary-less giving or naive trust. You might sacrifice yourself to help others or fall into victim mentality when your love isn= not reciprocated.',
+      'Black': 'Some blockages may lead to problem. Connect to healer.',
+      'Gray': 'Some blockages may lead to problem. Connect to healer.',
+    };
+    return descriptions[color] || descriptions['Purple'];
+  };
+
+  const getPlacementDescription = (color: string): string => {
+    const placements: Record<string, string> = {
+      'Red': 'Base of spine radiating through legs and into earth connection',
+      'Orange': 'Sacral center extending to lower abdomen and reproductive organs',
+      'Yellow': 'Solar plexus center extending to stomach area',
+      'Green': 'Heart center expanding outward to arms and hands',
+      'Blue': 'Throat area with extension to jaw and neck',
+      'Purple': 'Crown of head with upward spiritual connection',
+      'Gold': 'Soul star chakra above the crown, cosmic connection',
+      'White': 'Full aura field surrounding entire energy body',
+      'Pink': 'Heart chakra higher octave, emotional and spiritual love center',
+      'Silver': 'Soul star chakra above the crown, cosmic connection',
+      'Gray': 'Bloackages in grounding and stability',
+      'Black': 'Blockages in grounding and stability',
+    };
+    return placements[color] || placements['Purple'];
+  };
+
+
+
+  const getDetailedPlacement = (color: string): string => {
+    const details: Record<string, string> = {
+      'Red': 'Powerful grounding energy with strong life force and survival instincts. This energy connects you deeply to the earth and physical realm, providing stability and manifestation power.',
+      'Orange': 'Creative life force and sensual energy that flows through your creative and reproductive centers. This placement enhances your ability to create, procreate, and experience joy.',
+      'Yellow': 'Personal power radiating from your core, giving you confidence and strong willpower. This energy helps you assert yourself and make decisions from a place of inner strength.',
+      'Green': 'Love and healing energy flowing compassionately from your heart center. This placement makes you naturally nurturing and able to heal both yourself and others.',
+      'Blue': 'Truth-speaking abilities centered in your throat that enhance authentic communication. This energy helps you express your truth clearly and inspire others through your words.',
+      'Purple': 'Spiritual connection opening divine awareness and mystical understanding. This placement connects you to higher dimensions and ancient wisdom.',
+      'Gold': 'Divine wisdom and protection flowing from higher spiritual centers. This energy indicates advanced spiritual development and cosmic consciousness.',
+      'White': 'Complete spiritual integration surrounding your entire energy field. This placement indicates purity of intention and direct connection to source energy.',
+      'Pink': 'Unconditional love emanating from an elevated heart center. This energy transcends personal love and connects you to universal compassion.', 
+      'Silver': 'Protection of the divine and of spiritual connection.',
+      'Gray': 'Balance, neutrality, adaptability.',
+      'Black': 'Power, protection, transformation.',
+      'brown': 'Earth connection, grounding, stability, practical wisdom, natural healing',
+    };
+    return details[color] || details['Purple'];
+  };
+
+  const get9ChakraAnalysis = (primaryColor: string, secondaryColor: string): Array<{name: string, location: string, analysis: string}> => {
+    const chakraColorMapping: Record<string, string> = {
+      'Red': 'Root',
+      'Orange': 'Sacral', 
+      'Yellow': 'Solar Plexus',
+      'Green': 'Heart',
+      'Blue': 'Throat',
+      'Indigo': 'Third Eye',
+      'Purple': 'Crown',
+      'Violet': 'Crown',
+      'Gold': 'Soul Star',
+      'White': 'Soul Star',
+      'Pink': 'Higher Heart',
+      'Silver': 'Soul Star',
+      'Brown': 'Earth Star',
+    };
+
+    const primaryChakra = chakraColorMapping[primaryColor] || 'Crown';
+    const secondaryChakra = chakraColorMapping[secondaryColor] || 'Heart';
+
+    return [
+      {
+        name: 'Earth Star Chakra',
+        location: 'Below feet, grounding to Earth',
+        analysis: `Your connection to Earth's energy shows ${primaryColor.toLowerCase()} influence, indicating ${primaryChakra === 'Root' ? 'strong grounding and stability' : 'need for deeper earth connection'}. This chakra anchors your spiritual work in physical reality.`
+      },
+      {
+        name: 'Root Chakra (Muladhara)',
+        location: 'Base of spine',
+        analysis: `Your survival and grounding energy resonates with ${primaryColor} frequency. ${primaryChakra === 'Root' ? 'This chakra is powerfully activated, providing strong foundation and manifestation abilities.' : 'Focus on red energy meditation to strengthen your foundation and sense of security.'}`
+      },
+      {
+        name: 'Sacral Chakra (Svadhisthana)',
+        location: 'Lower abdomen',
+        analysis: `Creative and sexual energies flow through ${secondaryColor.toLowerCase()} vibration. ${secondaryChakra === 'Sacral' ? 'Your creative expression and emotional flow are well-balanced and vibrant.' : 'Orange energy work will enhance creativity and emotional processing.'}`
+      },
+      {
+        name: 'Solar Plexus Chakra (Manipura)',
+        location: 'Upper abdomen',
+        analysis: `Personal power center shows ${primaryColor === 'Yellow' ? 'bright activation with strong willpower and confidence' : 'potential for development through yellow light meditation'}. This chakra governs your sense of personal authority and decision-making abilities.`
+      },
+      {
+        name: 'Heart Chakra (Anahata)',
+        location: 'Center of chest',
+        analysis: `Love and healing energies pulse with ${primaryColor === 'Green' || secondaryColor === 'Green' ? 'beautiful green harmony, indicating natural healing abilities and compassionate nature' : 'potential for deeper heart opening through green energy practices'}. Your emotional balance and relationships are influenced by this center.`
+      },
+      {
+        name: 'Throat Chakra (Vishuddha)',
+        location: 'Throat area',
+        analysis: `Communication and truth expression channels ${primaryColor === 'Blue' || secondaryColor === 'Blue' ? 'clear blue energy, showing authentic self-expression and truthful communication' : 'opportunity for enhanced expression through blue energy work'}. This governs how you share your inner truth with the world.`
+      },
+      {
+        name: 'Third Eye Chakra (Ajna)',
+        location: 'Between eyebrows',
+        analysis: `Intuitive sight and inner wisdom operate through ${primaryColor === 'Indigo' || primaryColor === 'Purple' ? 'activated indigo/purple frequencies, indicating strong psychic abilities and spiritual insight' : 'developing intuitive gifts that benefit from purple meditation'}. This center governs your spiritual perception and inner knowing.`
+      },
+      {
+        name: 'Crown Chakra (Sahasrara)',
+        location: 'Top of head',
+        analysis: `Divine connection flows through ${primaryColor === 'Purple' || primaryColor === 'Violet' || primaryColor === 'White' ? 'luminous spiritual frequencies, showing open connection to higher consciousness and divine wisdom' : 'emerging spiritual awareness that grows through purple and white light practices'}. This is your gateway to cosmic consciousness.`
+      },
+      {
+        name: 'Soul Star Chakra',
+        location: 'Above the crown',
+        analysis: `Higher spiritual purpose radiates ${primaryColor === 'Gold' || primaryColor === 'White' || secondaryColor === 'Gold' ? 'brilliant golden-white light, indicating advanced soul development and spiritual mastery' : 'developing connection to soul mission through gold and white energy meditation'}. This chakra connects you to your highest spiritual destiny and cosmic purpose.`
+      }
+    ];
+  };
+
+  const getSecondaryColorDescription = (color: string): string => {
+    return `${getColorMeaningForEnergyTab(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;
+  };
+
+  const getSupportingColorLocation = (color: string, index: number): string => {
+    const locations = [
+      'Heart center expanding outward to arms and hands - Love and healing energy flowing, compassionate nature',
+      'Throat area with extension to jaw and neck - Truth-speaking abilities, authentic communication development',
+      'Crown of head with upward spiritual connection - Spiritual awareness awakening, divine connection opening',
+      'Third eye chakra showing a movemnt in the spiritual direction from you',
+      'Throat chakra explanding around the face and neck shows a communication',
+      'Root chakra around the body shows a grounding and stability',
+      'Heart chakra around the body shows a love and compassion',
+      'Crown chakra colours around the body shows a intellectual connection',
+      'Sacral chakra around the body shows a creative and sensual energy',
+      'Solar plexus around the body shows a personal power and confidence',
+      'Third eye chakra around the body shows a spiritual awareness and divine connection',
+      'Crown chakra around the body shows a spiritual awareness and divine connection',
+      'Throat chakra around the body shows a truth-speaking abilities and authentic communication',
+    ];
+    return locations[index] || 'Divine energy anchor point - cosmic positioning for spiritual growth and soul evolution';
+  };
+
+  const getSupportingColorDescription = (color: string): string => {
+    const supportingDescriptions: Record<string, string> = {
+      'Red': 'Root chakra support - strengthens your foundation with grounding, survival instincts, and physical vitality',
+      'Orange': 'Sacral chakra support - enhances your creativity with emotional flow, artistic expression, and joyful passion',
+      'Yellow': 'Solar plexus support - empowers your confidence with personal power, mental clarity, and intellectual wisdom',
+      'Green': 'Heart chakra support - opens your compassion with healing love, emotional balance, and natural harmony',
+      'Blue': 'Throat chakra support - clarifies your communication with truthful expression, authentic voice, and peaceful wisdom',
+      'Indigo': 'Third eye support - awakens your intuition with psychic abilities, inner knowing, and spiritual sight',
+      'Purple': 'Crown chakra support - connects your spirit with divine wisdom, mystical awareness, and cosmic consciousness',
+      'Pink': 'Higher heart support - expands your love with unconditional compassion, divine grace, and soul connection',
+      'Gold': 'Christ consciousness support - illuminates your purpose with divine wisdom, spiritual mastery, and soul mission',
+      'Silver': 'Lunar energy support - activates your intuition with feminine wisdom, psychic protection, and mystical insight',
+      'White': 'Pure light support - purifies your energy with spiritual protection, angelic connection, and divine grace',
+      'Gray': 'Neutral wisdom support - brings balance with spiritual equilibrium, adaptable wisdom, and cosmic neutrality',
+      'Black': 'Shadow integration support - initiates transformation with deep inner work, shadow healing, and spiritual rebirth',
+    };
+    
+    return supportingDescriptions[color] || supportingDescriptions['Purple'];
+  };
+
+  const getEnergyFlowPattern = (primary: string, secondary: string): string => {
+    const flowPatterns: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Passion flows into peaceful wisdom - fiery determination channeled through calm truth-speaking',
+        'Green': 'Life force flows into healing love - vital energy channeled through heart-centered compassion',
+        'Yellow': 'Physical power flows into mental clarity - grounding strength channeled through brilliant wisdom',
+        'Purple': 'Earthly passion flows into divine wisdom - material strength channeled through spiritual service',
+        'Orange': 'Root vitality flows into creative joy - survival energy channeled through artistic expression'
+      },
+      'Blue': {
+        'Red': 'Peaceful truth flows into passionate action - calm wisdom channeled through determined service',
+        'Green': 'Clear communication flows into healing love - authentic voice channeled through heart wisdom',
+        'Yellow': 'Truthful wisdom flows into mental brilliance - honest expression channeled through intellectual clarity',
+        'Purple': 'Authentic voice flows into mystical knowing - truthful communication channeled through divine wisdom',
+        'Pink': 'Clear truth flows into gentle love - honest expression channeled through compassionate understanding'
+      },
+      'Green': {
+        'Red': 'Healing love flows into passionate service - heart wisdom channeled through determined action',
+        'Blue': 'Heart compassion flows into truthful expression - healing love channeled through authentic communication',
+        'Yellow': 'Emotional healing flows into mental clarity - heart wisdom channeled through brilliant understanding',
+        'Purple': 'Heart love flows into spiritual service - healing compassion channeled through divine wisdom',
+        'Pink': 'Heart healing flows into divine love - compassionate service channeled through unconditional acceptance'
+      },
+      'Yellow': {
+        'Red': 'Mental clarity flows into passionate manifestation - brilliant wisdom channeled through determined action',
+        'Blue': 'Intellectual light flows into peaceful truth - mental clarity channeled through honest communication',
+        'Green': 'Brilliant wisdom flows into healing service - mental clarity channeled through heart-centered action',
+        'Purple': 'Intellectual understanding flows into spiritual wisdom - mental clarity channeled through divine knowing',
+        'Orange': 'Mental brightness flows into creative expression - intellectual clarity channeled through joyful creation'
+      },
+      'Purple': {
+        'Red': 'Divine wisdom flows into earthly service - spiritual knowing channeled through passionate action',
+        'Blue': 'Mystical understanding flows into truthful expression - divine wisdom channeled through authentic voice',
+        'Green': 'Spiritual love flows into healing service - divine compassion channeled through heart-centered action',
+        'Yellow': 'Cosmic consciousness flows into mental clarity - spiritual wisdom channeled through brilliant understanding',
+        'White': 'Divine knowing flows into pure light - mystical consciousness channeled through spiritual illumination'
+      },
+      'White': {
+        'Red': 'Pure light flows into earthly vitality - divine energy channeled through grounding strength',
+        'Blue': 'Pure truth flows into peaceful wisdom - divine light channeled through calm communication',
+        'Green': 'Pure love flows into healing compassion - divine light channeled through heart wisdom',
+        'Yellow': 'Pure wisdom flows into mental clarity - divine light channeled through intellectual understanding',
+      },
+      'Orange': {
+        'Red': 'Creative joy flows into passionate action - artistic expression channeled through determined service',
+        'Blue': 'Creative truth flows into peaceful wisdom - artistic expression channeled through calm communication',
+        'Green': 'Creative love flows into healing service - artistic expression channeled through heart-centered action',
+        'Yellow': 'Creative clarity flows into mental brilliance - artistic expression channeled through intellectual understanding',
+      },
+      'Pink': {
+        'Red': 'Gentle love flows into passionate service - compassionate care channeled through determined action',
+        'Blue': 'Gentle truth flows into peaceful wisdom - compassionate expression channeled through calm communication',
+        'Green': 'Gentle healing flows into heart wisdom - compassionate care channeled through heart-centered action',
+        'Yellow': 'Gentle clarity flows into mental brilliance - compassionate expression channeled through intellectual understanding',
+        'Purple': 'Gentle love flows into spiritual service - compassionate care channeled through divine wisdom',
+        'White': 'Gentle love flows into pure light - compassionate care channeled through spiritual illumination',
+        'Gold': 'Gentle love flows into divine wisdom - compassionate care channeled through enlightened understanding',
+        'Indigo': 'Gentle love flows into intuitive wisdom - compassionate care channeled through psychic insight',
+        'Silver': 'Gentle love flows into lunar wisdom - compassionate care channeled through intuitive understanding',
+        'Gray': 'Gentle love flows into balanced wisdom - compassionate care channeled through adaptable understanding',
+      },
+      'Gold': {
+        'Red': 'Divine wisdom flows into earthly service - spiritual knowing channeled through passionate action',
+        'Blue': 'Divine truth flows into peaceful wisdom - enlightened understanding channeled through calm communication',
+        'Green': 'Divine love flows into healing service - enlightened compassion channeled through heart-centered action',
+        'Yellow': 'Divine clarity flows into mental brilliance - enlightened wisdom channeled through intellectual understanding',
+        'Purple': 'Divine knowing flows into mystical understanding - enlightened consciousness channeled through spiritual insight',
+        'White': 'Divine light flows into pure energy - enlightened wisdom channeled through spiritual illumination',
+        'Pink': 'Divine love flows into gentle care - enlightened compassion channeled through compassionate care',
+      }
+        
+    };
+    
+    return flowPatterns[primary]?.[secondary] || flowPatterns[secondary]?.[primary] || 
+           `${primary} consciousness flows into ${secondary} expression - divine soul energy channeled through authentic spiritual service`;
+  };
+
+  const getBalancingRecommendations = (primary: string, secondary: string): string => {
+    const balancingGuidance: Record<string, Record<string, string>> = {
+      'Red': {
+        'Blue': 'Balance passion with meditation - physical exercise followed by calming breathwork and truthful journaling',
+        'Green': 'Balance action with compassion - grounding exercises followed by heart-opening yoga and nature connection',
+        'Yellow': 'Balance strength with wisdom - weightlifting or martial arts followed by study and intellectual pursuits',
+        'Purple': 'Balance earthly work with spiritual practice - physical service followed by meditation and prayer',
+        'Orange': 'Balance power with creativity - strength training followed by artistic expression and joyful creation'
+      },
+      'Blue': {
+        'Red': 'Balance communication with action - vocal exercises followed by physical movement and passionate pursuits',
+        'Green': 'Balance truth with love - honest expression followed by heart-centered healing and compassionate service',
+        'Yellow': 'Balance voice with mind - singing or chanting followed by intellectual study and mental clarity practices',
+        'Purple': 'Balance authentic speaking with spiritual silence - truthful communication followed by mystical meditation',
+        'Pink': 'Balance clear expression with gentle love - honest dialogue followed by compassionate listening and heart work'
+      },
+      'Green': {
+        'Red': 'Balance healing with vitality - heart-opening meditation followed by energizing physical activity',
+        'Blue': 'Balance love with truth - compassionate service followed by honest communication and authentic expression',
+        'Yellow': 'Balance emotion with intellect - heart meditation followed by mental study and clarity practices',
+        'Purple': 'Balance human love with divine love - emotional healing followed by spiritual contemplation',
+        'Pink': 'Balance healing service with self-love - caring for others followed by self-compassion and inner nurturing'
+      },
+      'Yellow': {
+        'Red': 'Balance mental work with physical action - intellectual study followed by vigorous exercise and grounding',
+        'Blue': 'Balance thinking with speaking - mental clarity practices followed by truthful communication and expression',
+        'Green': 'Balance mind with heart - intellectual pursuits followed by emotional healing and compassionate service',
+        'Purple': 'Balance human wisdom with divine wisdom - mental study followed by spiritual contemplation and mystical practice',
+        'Orange': 'Balance intellect with creativity - analytical work followed by artistic expression and joyful creation'
+      },
+      'Purple': {
+        'Red': 'Balance spiritual practice with earthly service - meditation followed by passionate action and material work',
+        'Blue': 'Balance mystical silence with truthful expression - contemplative prayer followed by authentic communication',
+        'Green': 'Balance divine love with human service - spiritual communion followed by healing work and compassionate action',
+        'Yellow': 'Balance cosmic consciousness with practical wisdom - mystical meditation followed by intellectual study',
+        'White': 'Balance divine communion with pure service - deep spiritual practice followed by selfless action and light work'
+      }
+    };
+    
+    return balancingGuidance[primary]?.[secondary] || balancingGuidance[secondary]?.[primary] || 
+           `Balance ${primary} energy with ${secondary} expression - alternate between focused spiritual practice and authentic soul service`;
+  };
+
+  const getOptimalEnergyTimes = (color: string): string => {
+    const times: Record<string, string> = {
+      'Red': 'Dawn and early morning hours when life force is strongest. Physical activity and grounding work are most effective during sunrise.',
+      'Orange': 'Late morning to early afternoon when creative energy peaks. Best time for artistic work and emotional expression.',
+      'Yellow': 'Midday when solar energy is strongest. Optimal for intellectual work, decision-making, and personal power practices.',
+      'Green': 'Late afternoon and early evening when heart energy is most receptive. Perfect for healing work and compassionate activities.',
+      'Blue': 'Evening hours when communication flows most clearly. Ideal time for truth-telling and authentic expression.',
+      'Purple': 'Night hours and pre-dawn when spiritual veils are thinnest. Best for meditation, psychic work, and mystical practices.',
+      'Gold': 'Sacred hours of dawn and dusk when divine energy is most accessible. Optimal for spiritual practices and wisdom work.',
+      'White': 'All hours carry equal potential as this energy transcends time. Particularly strong during meditation and prayer.',
+      'Pink': 'Heart-opening hours of sunrise and sunset when love energy is most expansive. Perfect for compassion practices.'
+    };
+    return times[color] || times['Purple'];
+  };
+
+  const getCompatibleEnergies = (color: string): string => {
+    const compatible: Record<string, string> = {
+      'Red': 'Orange (creativity), Yellow (personal power), and Earth energies. Compatible with other grounding and manifestation forces.',
+      'Orange': 'Red (passion), Yellow (joy), and Water energies. Harmonizes with creative and emotional expression energies.',
+      'Yellow': 'Orange (creativity), Green (balance), and Fire energies. Resonates with intellectual and solar-powered energies.',
+      'Green': 'Blue (communication), Pink (love), and Earth energies. Harmonizes with heart-centered and healing energies.',
+      'Blue': 'Green (healing), Purple (spirituality), and Air energies. Compatible with truth and communication frequencies.',
+      'Purple': 'Blue (truth), White (purity), and Cosmic energies. Resonates with spiritual and mystical frequencies.',
+      'Gold': 'Compatible with high-frequency spiritual energies.',
+      'White': 'All colors as it contains the full spectrum. Harmonizes with any authentic spiritual energy.',
+      'Pink': 'Green (healing), White (purity), and Heart energies. Compatible with all love-based frequencies.',
+      'Silver': 'All colors as it contains the full spectrum. Harmonizes with any authentic spiritual energy.',
+      'Gray': 'All colors as it contains the full spectrum. Harmonizes with any authentic spiritual energy.',
+      'Black': 'All colors as it contains the full spectrum. Harmonizes with any authentic spiritual energy.',
+      
+    };
+    const additionalCompatible: Record<string, string> = {
+      'Crimson': 'Maroon (deep earth), Red (life force), and Fire energies. Resonates with intense manifestation and warrior spirit frequencies.',
+      'Magenta': 'Pink (divine love), Purple (mysticism), and Cosmic feminine energies. Compatible with soul creativity and divine rebellion frequencies.',
+      'Aqua': 'Turquoise (healing communication), Blue (truth), and Water energies. Harmonizes with soul voice and mystical truth frequencies.',
+      'Navy': 'Indigo (wisdom), Blue (communication), and Deep water energies. Compatible with profound knowledge and soul memory frequencies.',
+      'Lime': 'Green (healing), Yellow (renewal), and Fresh earth energies. Resonates with growth acceleration and emotional cleansing frequencies.',
+      'Maroon': 'Red (passion), Brown (earth), and Stable earth energies. Compatible with grounded strength and enduring wisdom frequencies.',
+      'Chocolate': 'Brown (earth), Green (natural), and Deep earth energies. Harmonizes with practical spirituality and natural healing frequencies.',
+      'Beige': 'Brown (earth), White (peace), and Gentle earth energies. Compatible with subtle wisdom and peaceful stability frequencies.',
+      'Tan': 'Brown (earth), Yellow (balance), and Natural earth energies. Resonates with earth connection and practical wisdom frequencies.'
+    };
+    
+    return compatible[color] || additionalCompatible[color] || 'Divine soul frequency - harmonizes with cosmic consciousness and authentic spiritual vibrations.';
+  };
+  
+  // Function to generate aura visualization with colored clouds
+  // Function to process the uploaded image with aura colors
+
+  function processImageWithAura({ imageBase64, auraData }: { imageBase64: string; auraData: AuraAnalysisResult; }): Promise<string> {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                // Set proper proportional canvas size for better visualization
+                const aspectRatio = img.width / img.height;
+                let canvasWidth, canvasHeight;
+
+                // Maintain aspect ratio while ensuring adequate size
+                if (aspectRatio > 1) {
+                    // Landscape image
+                    canvasWidth = Math.max(1200, img.width);
+                    canvasHeight = canvasWidth / aspectRatio;
+                } else {
+                    // Portrait or square image
+                    canvasHeight = Math.max(900, img.height);
+                    canvasWidth = canvasHeight * aspectRatio;
+                }
+
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                // Draw original image to fill canvas with proper proportions
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+                    // Create simple but visible aura effects around the person
+                    const centerX = canvasWidth / 2;
+                    const centerY = canvasHeight / 2;
+
+                    // Get dominant and secondary colors
+                    const dominantColor = auraData.dominantColor || 'Blue';
+                    const secondaryColor = auraData.secondaryColor || 'Purple';
+
+                    // Enhanced color names to RGB mapping with all specified colors
+                    const getColorRGB = (colorName: string) => {
+                        const colorMap: Record<string, [number, number, number]> = {
+                            'Red': [255, 0, 0],             // Pure bright red - no pink tint
+                            'Orange': [255, 165, 0],        // Perfect bright orange - more visible
+                            'Yellow': [255, 255, 0],        // Pure bright yellow
+                            'Green': [0, 255, 0],           // Pure bright green
+                            'Blue': [0, 100, 255],          // Perfect blue
+                            'Purple': [128, 0, 128],        // Classic purple
+                            'Violet': [148, 0, 211],        // Dark violet
+                            'Indigo': [75, 0, 130],         // Traditional indigo
+                            'Pink': [255, 192, 203],        // Classic pink
+                            'Gold': [255, 215, 0],          // Pure gold
+                            'Silver': [192, 192, 192],      // Pure silver
+                            'White': [255, 255, 255],       // Pure white
+                            'Gray': [128, 128, 128],        // Standard gray
+                            'Grey': [128, 128, 128],        // Alternative spelling
+                            'Black': [0, 0, 0],             // Pure black
+                            'Brown': [165, 42, 42],         // Brown
+                            // Additional color variations
+                            'Turquoise': [64, 224, 208],    // Turquoise
+                            'Teal': [0, 128, 128],          // Teal
+                            'Magenta': [255, 0, 255],       // Magenta
+                            'Cyan': [0, 255, 255]           // Cyan
+                        };
+                        return colorMap[colorName] || [0, 100, 255]; // Default to blue
+                    };
+
+                    const [dr, dg, db] = getColorRGB(dominantColor);
+                    const [sr, sg, sb] = getColorRGB(secondaryColor);
+
+                    // Create visible aura glow around the entire image edges
+                    const createAuraGlow = () => {
+                        // Apply subtle blur for softer glow effect
+                        ctx.filter = 'diffuse(10px)';
+
+                        // Create multiple layers of glow
+                        for (let layer = 0; layer < 12; layer++) {
+                            const radius = 40 + (layer * 25);
+                            const opacity = 0.12 - (layer * 0.008);
+
+                            // Use dominant color for most layers
+                            const useSecondary = layer % 4 === 0;
+                            const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
+
+                            // Create radial gradient from center outward
+                            const gradient = ctx.createRadialGradient(
+                                centerX, centerY, canvasWidth * 0.12, // Inner radius - protect person
+                                centerX, centerY, canvasWidth * 0.8 + radius // Outer radius
+                            );
+
+                            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+                            gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+                            gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+                            gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
+
+                            ctx.fillStyle = gradient;
+                            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                        }
+
+                        // Reset filter
+                        ctx.filter = 'none';
+                    };
+
+                    // Create smokey aura effects matching reference images exactly
+                    const createSmokeyAuraEffects = () => {
+                        // Get the 4-zone energy colors
+                        const allColors = extractAllAuraColors(auraData);
+
+                        // Convert hex colors to RGB
+                        const hexToRGB = (hex: string) => {
+                            const r = parseInt(hex.slice(1, 3), 16);
+                            const g = parseInt(hex.slice(3, 5), 16);
+                            const b = parseInt(hex.slice(5, 7), 16);
+                            return { r, g, b };
+                        };
+
+                        const colorsRGB = {
+                            thinkingRGB: hexToRGB(allColors.thinking),
+                            receivingRGB: hexToRGB(allColors.receiving),
+                            givingRGB: hexToRGB(allColors.giving),
+                            personalityRGB: hexToRGB(allColors.personality)
+                        };
+
+                        // Use the new improved smokey effect function
+                        createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colorsRGB, 7, Date.now());
+                    };
+
+                    // Apply aura effects
+                    createAuraGlow();
+                    createSmokeyAuraEffects();
+
+                    // Add a highly saturated overall color tint
+                    ctx.globalCompositeOperation = 'overlay';
+                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.35)`;
+                    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                    ctx.globalCompositeOperation = 'source-over';
+
+                    // Add watermark as the top layer
+                    addWatermark(ctx, canvasWidth, canvasHeight);
+                }
+
+                resolve(canvas.toDataURL());
+            };
+
+            img.onerror = () => {
+                console.error('Failed to load image for aura processing');
+                resolve(imageBase64); // Return original if processing fails
+            };
+
+            img.src = imageBase64;
+        });
     }
 
-  // Function to create proper layered aura system with specific order
-  const createDirectionalGradientZones = (
+  // Helper function to convert hex to RGB
+  const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 150, g: 150, b: 200 };
+  };
+
+  // Function to extract all 4 distinct aura colors from analysis result
+  const extractAllAuraColors = (auraData: AuraAnalysisResult) => {
+    // Start with available spectrum colors
+    const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor];
+    
+    // Define restricted 12-color palette only
+    const colorPalette = [
+      '#8A2BE2', '#4B0082', '#0000FF', '#008000', // Violet, Indigo, Blue, Green
+      '#FFFF00', '#FFA500', '#FF0000', '#FFFFFF', '#ffc0cb', // Yellow, Orange, Red, White, pink
+      '#000000', '#FFD700', '#C0C0C0', '#8B4513', '#808080',  // Black, Gold, Silver, Brown, gray
+    ];
+    
+    // Collect available colors from spectrum
+    const availableColors: string[] = [];
+    for (let i = 0; i < spectrum.length; i++) {
+      const color = getAccurateColorCode(spectrum[i]);
+      if (color && !availableColors.includes(color)) {
+        availableColors.push(color);
+      }
+    }
+    
+    // Fill remaining slots with palette colors that aren't already used
+    let paletteIndex = 0;
+    while (availableColors.length < 4 && paletteIndex < colorPalette.length) {
+      const paletteColor = colorPalette[paletteIndex];
+      if (!availableColors.includes(paletteColor)) {
+        availableColors.push(paletteColor);
+      }
+      paletteIndex++;
+    }
+    
+    // Ensure we have exactly 4 unique colors
+    const uniqueColors = Array.from(new Set(availableColors)).slice(0, 4);
+    
+    // If still missing colors, add remaining palette colors
+    while (uniqueColors.length < 4) {
+      for (const paletteColor of colorPalette) {
+        if (!uniqueColors.includes(paletteColor)) {
+          uniqueColors.push(paletteColor);
+          break;
+        }
+      }
+    }
+    
+    return {
+      thinking: uniqueColors[0],    // Crown energy - first unique color
+      receiving: uniqueColors[1],   // Receiving energy - second unique color  
+      giving: uniqueColors[2],      // Giving energy - third unique color
+      personality: uniqueColors[3]  // Personality energy - fourth unique color
+    };
+  };
+
+  // Function to adjust color brightness for distinction
+  const adjustColorBrightness = (hex: string, factor: number): string => {
+    const rgb = hexToRgb(hex);
+    const adjusted = {
+      r: Math.min(255, Math.max(0, Math.round(rgb.r * factor))),
+      g: Math.min(255, Math.max(0, Math.round(rgb.g * factor))),
+      b: Math.min(255, Math.max(0, Math.round(rgb.b * factor)))
+    };
+    return `#${adjusted.r.toString(16).padStart(2, '0')}${adjusted.g.toString(16).padStart(2, '0')}${adjusted.b.toString(16).padStart(2, '0')}`;
+  };
+
+  // Function to convert hex color back to color name
+  const getColorNameFromHex = (hex: string): string => {
+    const colorMap: Record<string, string> = {
+      '#4B0082': 'Indigo',
+      '#FF4444': 'Red',
+      '#32CD32': 'Green',
+      '#FFD700': 'Gold',
+      '#FF6600': 'Orange',
+      '#FFFF00': 'Yellow',
+      '#0000FF': 'Blue',
+      '#800080': 'Purple',
+      '#FFC0CB': 'Pink',
+      '#FFFFFF': 'White',
+      '#000000': 'Black',
+      '#C0C0C0': 'Silver',
+      '#808080': 'Gray',
+      '#A52A2A': 'Brown'
+    };
+    
+    // Find exact match first
+    const upperHex = hex.toUpperCase();
+    if (colorMap[upperHex]) {
+      return colorMap[upperHex];
+    }
+    
+    // Convert hex to RGB for approximate matching
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // Find closest color by dominant component
+    if (r > g && r > b) {
+      if (g > 100 && b > 100) return 'Pink';
+      if (g > 80 && b < 80) return 'Orange';
+      return 'Red';
+    }
+    if (g > r && g > b) {
+      if (b > 100) return 'Turquoise';
+      return 'Green';
+    }
+    if (b > r && b > g) {
+      if (r > 100) return 'Purple';
+      return 'Blue';
+    }
+    
+    // Equal components suggest neutral colors
+    if (Math.abs(r - g) < 30 && Math.abs(g - b) < 30) {
+      if (r > 200) return 'White';
+      if (r < 80) return 'Black';
+      return 'Silver';
+    }
+    
+    return 'none'; // Default fallback
+  };
+
+  // Function to create seamless gradient blending between all colors for smooth merging
+  const createSeamlessColorBlending = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
@@ -3359,724 +4388,16 @@ export default function AuraAnalysis() {
     centerY: number,
     personWidth: number,
     personHeight: number,
-    colors: any
+    colors: any,
+    energyLevel: number,
+    seededRandom: () => number
   ) => {
-    // Reset to normal blending
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // Calculate natural aura dimensions around the person
-    const innerRadius = Math.max(personWidth, personHeight) * 0.5;
-    const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
-    
-    // UNIFORM SIZING SYSTEM: All images are now 1600x900, so use fixed measurements for consistency
-    const STANDARD_WIDTH = 1600;
-    const STANDARD_HEIGHT = 900;
-    const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 135px radius
-    
-    // LAYER 1: Receiving energy layer on left side (base layer)
-    ctx.globalCompositeOperation = 'source-over';
-    const standardReceivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
-    const receivingLayer = ctx.createRadialGradient(
-      centerX - standardPersonRadius * 0.8, centerY, 0, // LEFT side origin for receiving energy
-      centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
-    );
-    receivingLayer.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.1)`);
-    receivingLayer.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.5)`);
-    receivingLayer.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.61)`);
-    receivingLayer.addColorStop(0.6, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.71)`);
-    receivingLayer.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.66)`);
-    receivingLayer.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
-    
-    ctx.fillStyle = receivingLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // LAYER 2: Giving energy layer on right side (on top of receiving layer)
-    const standardGivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
-    const givingLayer = ctx.createRadialGradient(
-      centerX + standardPersonRadius * 0.8, centerY, 0, // RIGHT side origin for giving energy
-      centerX + standardPersonRadius * 0.8, centerY, standardGivingRadius
-    );
-    givingLayer.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`);
-    givingLayer.addColorStop(0.2, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.42)`);
-    givingLayer.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.68)`);
-    givingLayer.addColorStop(0.6, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.15)`);
-    givingLayer.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.76)`);
-    givingLayer.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.4)`);
-    
-    ctx.fillStyle = givingLayer;
-    ctx.fillRect(0, 0, width, height);
-    
-    // LAYER 3: Enhanced horizontal gradient blending between left receiving and right giving energies
+    // Use multiply blend mode for natural color merging
     ctx.globalCompositeOperation = 'overlay';
     
-    // Create horizontal linear gradient from left (receiving) to right (giving) for seamless blending
-    const horizontalBlendingGradient = ctx.createLinearGradient(0, 0, width, 0);
-    
-    // Start with receiving color on left, blend through center, end with giving color on right
-    horizontalBlendingGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`); // Pure receiving on far left
-    horizontalBlendingGradient.addColorStop(0.2, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.25)`); // Receiving dominant
-    
-    // Center blend zone with both colors mixed
-    const centerBlend = {
-      r: Math.floor((colors.receivingRGB.r * 0.5 + colors.givingRGB.r * 0.5)),
-      g: Math.floor((colors.receivingRGB.g * 0.5 + colors.givingRGB.g * 0.5)),
-      b: Math.floor((colors.receivingRGB.b * 0.5 + colors.givingRGB.b * 0.5))
-    };
-    horizontalBlendingGradient.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.29)`); // Perfect center blend
-    
-    horizontalBlendingGradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`); // Giving dominant
-    horizontalBlendingGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.35)`); // Pure giving on far right
-    
-    ctx.fillStyle = horizontalBlendingGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Additional radial blending for smoother center merge
-    ctx.globalCompositeOperation = 'soft-light';
-    const centerRadialBlend = ctx.createRadialGradient(
-      centerX, centerY, standardPersonRadius * 0.2,
-      centerX, centerY, standardPersonRadius * 2.5
-    );
-    centerRadialBlend.addColorStop(0, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.18)`);
-    centerRadialBlend.addColorStop(0.5, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.12)`);
-    centerRadialBlend.addColorStop(1, `rgba(${centerBlend.r}, ${centerBlend.g}, ${centerBlend.b}, 0.25)`);
-    
-    ctx.fillStyle = centerRadialBlend;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Reset blend mode for thinking layer
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // Reset blend mode
-    ctx.globalCompositeOperation = 'source-over';
-  };
-
-  // Helper function to create blended colors for smooth transitions
-  const createBlendedColor = (color1: any, color2: any, blend: number, opacity: number): string => {
-    const r = Math.round(color1.r * (1 - blend) + color2.r * blend);
-    const g = Math.round(color1.g * (1 - blend) + color2.g * blend);
-    const b = Math.round(color1.b * (1 - blend) + color2.b * blend);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  };
-
-  // Helper function to create multi-color gradient with smooth fading
-  const createMultiColorGradient = (ctx: CanvasRenderingContext2D, colors: any[], positions: number[], opacities: number[], isLinear: boolean = true, coords?: any) => {
-    let gradient;
-    if (isLinear && coords) {
-      gradient = ctx.createLinearGradient(coords.x1, coords.y1, coords.x2, coords.y2);
-    } else if (!isLinear && coords) {
-      gradient = ctx.createRadialGradient(coords.x1, coords.y1, coords.r1, coords.x2, coords.y2, coords.r2);
-    } else {
-      return null;
-    }
-
-    colors.forEach((color, index) => {
-      const position = positions[index] || index / (colors.length - 1);
-      const opacity = opacities[index] || 0.2;
-      gradient.addColorStop(position, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
-    });
-
-    return gradient;
-  };
-
-  // Function to create final color integration layer for maximum merging
-  function createColorIntegrationLayer({ ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; centerX: number; centerY: number; personWidth: number; personHeight: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
-        // Use color-dodge blend mode for intense color merging with thinking color integration
-        ctx.globalCompositeOperation = 'screen';
-
-        // Create enhanced cross-hatching gradients with thinking color properly distributed
-        const integrationGradients = [
-            // Diagonal cross-gradient 1 with thinking color integration
-            {
-                gradient: createMultiColorGradient(
-                    ctx,
-                    [colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB, colors.givingRGB],
-                    [0, 0.2, 0.35, 0.5, 0.75, 1],
-                    [0.1, 0.06, 0.08, 0.06, 0.05, 0.04],
-                    true,
-                    { x1: 0, y1: 0, x2: width, y2: height }
-                )
-            },
-            // Diagonal cross-gradient 2 with thinking color blending
-            {
-                gradient: createMultiColorGradient(
-                    ctx,
-                    [colors.givingRGB, colors.thinkingRGB, colors.personalityRGB, colors.thinkingRGB, colors.receivingRGB, colors.personalityRGB],
-                    [0, 0.25, 0.4, 0.55, 0.75, 1],
-                    [0.06, 0.08, 0.05, 0.07, 0.07, 0.04],
-                    true,
-                    { x1: width, y1: 0, x2: 0, y2: height }
-                )
-            },
-            // Additional vertical gradient for thinking color integration
-            {
-                gradient: createMultiColorGradient(
-                    ctx,
-                    [colors.thinkingRGB, colors.givingRGB, colors.receivingRGB, colors.thinkingRGB],
-                    [0, 0.4, 0.6, 1],
-                    [0.09, 0.06, 0.05, 0.06],
-                    true,
-                    { x1: centerX, y1: 0, x2: centerX, y2: height }
-                )
-            }
-        ];
-
-        integrationGradients.forEach(item => {
-            if (item.gradient) {
-                ctx.fillStyle = item.gradient;
-                ctx.fillRect(0, 0, width, height);
-            }
-        });
-
-        // Reset blend mode and add final soft overlay
-        ctx.globalCompositeOperation = 'overlay';
-
-        // Create enhanced unified gradient with only 3 colors (no personality color in center)
-        const unifiedGradient = createMultiColorGradient(
-            ctx,
-            [colors.thinkingRGB, colors.givingRGB, colors.receivingRGB, colors.thinkingRGB],
-            [0, 0.35, 0.65, 1],
-            [0.04, 0.03, 0.025, 0.02],
-            false,
-            {
-                x1: centerX, y1: centerY, r1: Math.min(personWidth, personHeight) * 0.2,
-                x2: centerX, y2: centerY, r2: Math.max(width, height) * 1.2
-            }
-        );
-
-        if (unifiedGradient) {
-            ctx.fillStyle = unifiedGradient;
-            ctx.fillRect(0, 0, width, height);
-        }
-
-        // Add final seamless integration layer with very subtle blending
-        ctx.globalCompositeOperation = 'overlay';
-        const finalIntegration = ctx.createRadialGradient(
-            centerX, centerY, Math.min(personWidth, personHeight) * 0.6,
-            centerX, centerY, Math.max(width, height) * 0.9
-        );
-
-        // Create very smooth transitions between only 3 colors (no personality color in center)
-        finalIntegration.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
-        finalIntegration.addColorStop(0.3, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.3, 0.02));
-        finalIntegration.addColorStop(0.5, createBlendedColor(colors.givingRGB, colors.receivingRGB, 0.5, 0.015));
-        finalIntegration.addColorStop(0.7, createBlendedColor(colors.receivingRGB, colors.thinkingRGB, 0.7, 0.015));
-        finalIntegration.addColorStop(1, createBlendedColor(colors.thinkingRGB, colors.givingRGB, 0.8, 0.005));
-
-        ctx.fillStyle = finalIntegration;
-        ctx.fillRect(0, 0, width, height);
-
-        // Reset blend mode
-        ctx.globalCompositeOperation = 'source-over';
-    }
-
-  // Function to create personality color ONLY around image edges - 300px inward with high visibility
-  function createPersonalityEdgeGlow({ ctx, width, height, personalityColor, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; personalityColor: { r: number; g: number; b: number; }; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
-        // MAXIMUM EDGE DISTANCE: 400px from edge for maximum visibility as requested
-        const EDGE_DISTANCE = 400;
-
-        // Use multiply blend mode for seamless gradient blending
-        ctx.globalCompositeOperation = 'screen';
-
-        // Top edge gradient - maximum visibility and size 
-        const topGradient = ctx.createLinearGradient(0, 0, 0, EDGE_DISTANCE);
-        topGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-        topGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-        topGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
-        topGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.35)`);
-        topGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.5)`);
-        ctx.fillStyle = topGradient;
-        ctx.fillRect(0, 0, width, EDGE_DISTANCE);
-
-        // Bottom edge gradient - maximum visibility and size
-        const bottomGradient = ctx.createLinearGradient(0, height - EDGE_DISTANCE, 0, height);
-        bottomGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-        bottomGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-        bottomGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-        bottomGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-        bottomGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-        ctx.fillStyle = bottomGradient;
-        ctx.fillRect(0, height - EDGE_DISTANCE, width, EDGE_DISTANCE);
-
-        // Left edge gradient - maximum visibility and size
-        const leftGradient = ctx.createLinearGradient(0, 0, EDGE_DISTANCE, 0);
-        leftGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.45)`);
-        leftGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-        leftGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-        leftGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-        leftGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-        ctx.fillStyle = leftGradient;
-        ctx.fillRect(0, 0, EDGE_DISTANCE, height);
-
-        // Right edge gradient - maximum visibility and size
-        const rightGradient = ctx.createLinearGradient(width - EDGE_DISTANCE, 0, width, 0);
-        rightGradient.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 1)`);
-        rightGradient.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.15)`);
-        rightGradient.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.58)`);
-        rightGradient.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-        rightGradient.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.85)`);
-        ctx.fillStyle = rightGradient;
-        ctx.fillRect(width - EDGE_DISTANCE, 0, EDGE_DISTANCE, height);
-
-        // Enhanced corner gradients for seamless blending
-        const cornerGradients = [
-            { x: 0, y: 0, centerX: 0, centerY: 0 }, // Top-left
-            { x: width - EDGE_DISTANCE, y: 0, centerX: width, centerY: 0 }, // Top-right
-            { x: 0, y: height - EDGE_DISTANCE, centerX: 0, centerY: height }, // Bottom-left
-            { x: width - EDGE_DISTANCE, y: height - EDGE_DISTANCE, centerX: width, centerY: height } // Bottom-right
-        ];
-
-        cornerGradients.forEach(corner => {
-            const cornerRadial = ctx.createRadialGradient(
-                corner.centerX, corner.centerY, 0,
-                corner.centerX, corner.centerY, EDGE_DISTANCE * 1.2
-            );
-            cornerRadial.addColorStop(0, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.48)`);
-            cornerRadial.addColorStop(0.25, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.38)`);
-            cornerRadial.addColorStop(0.5, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.28)`);
-            cornerRadial.addColorStop(0.75, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0.68)`);
-            cornerRadial.addColorStop(1, `rgba(${personalityColor.r}, ${personalityColor.g}, ${personalityColor.b}, 0)`);
-            ctx.fillStyle = cornerRadial;
-            ctx.fillRect(corner.x, corner.y, EDGE_DISTANCE, EDGE_DISTANCE);
-        });
-
-        // Reset blend mode
-        ctx.globalCompositeOperation = 'source-over';
-    }
-
-  // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
-   function createConcentratedColorDisplay({ ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
-        const colorZones = [
-            {
-                color: colors.thinkingRGB,
-                zone: 'top',
-                density: 30,
-                getCoords: () => ({
-                    x: width * 0.15 + seededRandom() * (width * 0.7),
-                    y: seededRandom() * (height * 0.2)
-                })
-            },
-            {
-                color: colors.receivingRGB,
-                zone: 'left',
-                density: 40,
-                getCoords: () => ({
-                    x: seededRandom() * (width * 0.3), // LEFT side for receiving energy
-                    y: height * 0.15 + seededRandom() * (height * 0.7)
-                })
-            },
-            {
-                color: colors.givingRGB,
-                zone: 'right',
-                density: 60,
-                getCoords: () => ({
-                    x: width * 0.7 + seededRandom() * (width * 0.3), // RIGHT side for giving energy
-                    y: height * 0.15 + seededRandom() * (height * 0.7)
-                })
-            },
-        ];
-
-        colorZones.forEach(zone => {
-            const totalParticles = zone.density + Math.floor(energyLevel * 6);
-
-            for (let i = 0; i < totalParticles; i++) {
-                const coords = zone.getCoords();
-
-                // Avoid face area
-                const inFaceArea = coords.x >= faceX && coords.x <= faceX + faceWidth &&
-                    coords.y >= faceY && coords.y <= faceY + faceHeight;
-
-                if (!inFaceArea) {
-                    // Fixed consistent sizing for all images regardless of original dimensions
-                    const sizeFactor = 1.0; // Fixed factor for uniform appearance
-                    const smokeSize = 120 + seededRandom() * 60; // Consistent particle size 120-180px
-                    const smokeOpacity = 0.35 + seededRandom() * 0.25; // Higher opacity 0.35-0.60 for better visibility
-
-                    drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
-                }
-            }
-        });
-    }
-
-
-
-  // Function to create full-image smoke base coverage with proper transparency
-  function createFullImageSmokeBase(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number) {
-        // Adaptive density based on canvas size for proper visualization
-        const canvasArea = width * height;
-        const baseArea = 1440000; // 1200x1200 reference area
-        const densityMultiplier = Math.sqrt(canvasArea / baseArea);
-        const baseSmokeDensity = Math.floor((1800 + energyLevel * 150) * densityMultiplier);
-        const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-
-        // UNIFORM SMOKE LAYERS: Fixed sizing for all 1600x900 images to ensure consistent appearance
-        const STANDARD_WIDTH = 1600;
-        const STANDARD_HEIGHT = 900;
-        const smokeLayers = [
-            { density: baseSmokeDensity * 0.4, sizeRange: [144, 288], opacity: [0.06, 0.12] }, // Large background layer - fixed 144-288px
-            { density: baseSmokeDensity * 0.3, sizeRange: [126, 216], opacity: [0.08, 0.12] }, // Medium layer - fixed 126-216px
-            { density: baseSmokeDensity * 0.5, sizeRange: [108, 162], opacity: [0.06, 0.12] } // Detail layer - fixed 108-162px
-        ];
-
-        smokeLayers.forEach(layer => {
-            // Create equal distribution for each of the 4 colors
-            for (let colorIndex = 0; colorIndex < 4; colorIndex++) {
-                const colorDensity = Math.floor(layer.density / 4);
-                const smokeColor = allColors[colorIndex];
-
-                for (let i = 0; i < colorDensity; i++) {
-                    const smokeX = seededRandom() * width;
-                    const smokeY = seededRandom() * height;
-
-                    // Skip thinking color if not in top 20% of image - CRITICAL FIX
-                    if (colorIndex === 0 && smokeY >= height * 0.2) {
-                        continue;
-                    }
-
-                    // Skip personality color completely - handled separately by edge glow
-                    if (colorIndex === 3) {
-                        continue;
-                    }
-
-                    // Avoid face area
-                    const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                        smokeY >= faceY && smokeY <= faceY + faceHeight;
-
-                    if (!inFaceArea) {
-                        const smokeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
-                        const smokeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
-
-                        drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, smokeColor, smokeOpacity, seededRandom() * 0.6);
-                    }
-                }
-            }
-        });
-    }
-
-  // Function to create dense perimeter smoke with color-specific zones
-  function createPerimeterSmoke(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number): void {
-        const perimeterDensity = 180 + Math.floor(energyLevel * 60); // Dramatically increased density
-
-
-        // Assign specific colors to specific zones - EXCLUDE personality color from perimeter
-        const colorZones = [
-            {
-                name: 'top',
-                color: colors.thinkingRGB,
-                coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.2 })
-            },
-            {
-                name: 'right',
-                color: colors.receivingRGB,
-                coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height })
-            },
-            {
-                name: 'left',
-                color: colors.givingRGB,
-                coords: () => ({ x: seededRandom() * width * 0.3, y: seededRandom() * height })
-            }
-        ];
-
-        colorZones.forEach(zone => {
-            const zoneDensity = Math.floor(perimeterDensity / 4);
-
-            for (let i = 0; i < zoneDensity; i++) {
-                const coords = zone.coords();
-                const smokeX = coords.x;
-                const smokeY = coords.y;
-
-                // Avoid face area
-                const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
-                    smokeY >= faceY && smokeY <= faceY + faceHeight;
-
-                if (!inFaceArea) {
-                    const smokeSize = 10 + seededRandom() * 60; // Smaller particles
-                    const smokeOpacity = 0.02 + seededRandom() * 0.05; // Increased by 20% from 0.04 and 0.08
-
-                    drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
-                }
-            }
-        });
-    }
-
-  // Function to create dedicated edge coverage ensuring smoke reaches all borders
-
-  // Function to draw natural smoke particles with enhanced visibility
-  const drawNaturalSmoke = (
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    size: number,
-    rgb: { r: number, g: number, b: number },
-    opacity: number,
-    progress: number
-  ) => {
-    // Create multiple layered smoke effects for dense, mystical appearance
-    const smokeLayers = [
-      { sizeMultiplier: 1.2, opacityMultiplier: 0.3, blur: 100 },     // Main dense layer
-      { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 100 },     // Core bright layer
-      { sizeMultiplier: 1.1, opacityMultiplier: 0.5, blur: 100 }      // Outer haze layer
-    ];
-    
-    const smokeR = rgb.r;
-    const smokeG = rgb.g;
-    const smokeB = rgb.b;
-    
-    smokeLayers.forEach(layer => {
-      const layerSize = size * layer.sizeMultiplier;
-      const layerOpacity = Math.min(0.35, opacity * 0.2 * layer.opacityMultiplier); // Much higher opacity
-      
-      // Apply blur for atmospheric effect
-      if (layer.blur > 0) {
-        ctx.filter = `blur(${layer.blur}px)`;
-      }
-      
-      // Create dense smoke gradient
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
-      gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity})`);
-      gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.85})`);
-      gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
-      gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0.2)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(x, y, layerSize, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Reset filter
-      ctx.filter = 'none';
-    });
-    
-    // Add dense wispy tendrils for mystical billowing effect
-    if (size > 35) {
-      const tendrilCount = 3 + Math.floor(size / 40);
-      for (let t = 0; t < tendrilCount; t++) {
-        const tendrilAngle = (t / tendrilCount) * Math.PI * 2 + progress * Math.PI * 0.3;
-        const tendrilLength = size * (0.8 + Math.sin(progress * Math.PI * 4) * 0.3);
-        const tendrilX = x + Math.cos(tendrilAngle) * tendrilLength;
-        const tendrilY = y + Math.sin(tendrilAngle) * tendrilLength;
-        const tendrilSize = size * (0.6 + Math.sin(progress * Math.PI * 6) * 0.2);
-        
-        const tendrilGradient = ctx.createRadialGradient(tendrilX, tendrilY, 0, tendrilX, tendrilY, tendrilSize);
-        const tendrilOpacity = Math.min(0.25, opacity * 0.2); // Higher tendril opacity
-        tendrilGradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity})`);
-        tendrilGradient.addColorStop(0.7, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${tendrilOpacity * 0.3})`);
-        tendrilGradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0)`);
-        
-        ctx.fillStyle = tendrilGradient;
-        ctx.beginPath();
-        ctx.arc(tendrilX, tendrilY, tendrilSize, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  };
-
-  // Function to draw smooth smoke trails with realistic color blending
-  function drawSmokeTrail(ctx: CanvasRenderingContext2D,
-        points: Array<{ x: number; y: number; progress: number; }>,
-        primaryColor: { r: number; g: number; b: number; },
-        allColors: any,
-        seededRandom: () => number): void {
-        points.forEach((point, index) => {
-            if (index === 0) return;
-
-            // Create flowing smoke particles that fade naturally
-            const smokeSize = 40 + seededRandom() * 100 * (1 - point.progress * 0.2);
-            const baseOpacity = 0.08 * (1 - point.progress * 0.5) * (0.6 + seededRandom() * 0.4);
-
-            // Create realistic smoke with color blending from nearby colors
-            const blendedColor = createColorBlend(primaryColor, allColors, point.progress, seededRandom);
-
-            // Multiple smoke layers for realistic depth and merging
-            const smokeLayers = [
-                { sizeMultiplier: 1.2, opacityMultiplier: 0.8 }, // Outer wispy layer
-                { sizeMultiplier: 0.8, opacityMultiplier: 0.8 }, // Core color layer
-                { sizeMultiplier: 0.5, opacityMultiplier: 0.6 } // Inner concentrated layer
-            ];
-
-            smokeLayers.forEach(layer => {
-                const layerSize = smokeSize * layer.sizeMultiplier;
-                const layerOpacity = baseOpacity * layer.opacityMultiplier;
-
-                // Create realistic smoke gradient with soft blending
-                const gradient = ctx.createRadialGradient(
-                    point.x, point.y, 0,
-                    point.x, point.y, layerSize
-                );
-
-                // Smooth gradient transitions for realistic smoke
-                gradient.addColorStop(0, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity})`);
-                gradient.addColorStop(0.3, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.9})`);
-                gradient.addColorStop(0.6, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.5})`);
-                gradient.addColorStop(0.85, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, ${layerOpacity * 0.2})`);
-                gradient.addColorStop(1, `rgba(${blendedColor.r}, ${blendedColor.g}, ${blendedColor.b}, 0.2)`);
-
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, layerSize, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        });
-    }
-
-  // Function to create realistic color blending for smoke merging
-  const createColorBlend = (
-    primaryColor: { r: number, g: number, b: number },
-    allColors: any,
-    progress: number,
-    seededRandom: () => number
-  ): { r: number, g: number, b: number } => {
-    // Randomly select a secondary color for blending
-    const colorArray = [allColors.thinkingRGB, allColors.receivingRGB, allColors.givingRGB, allColors.personalityRGB];
-    const secondaryColor = colorArray[Math.floor(seededRandom() * colorArray.length)];
-    
-    // Create natural color blending based on smoke flow
-    const blendFactor = 0.15 + seededRandom() * 0.25; // How much to blend
-    
-    return {
-      r: Math.round(primaryColor.r * (1 - blendFactor) + secondaryColor.r * blendFactor),
-      g: Math.round(primaryColor.g * (1 - blendFactor) + secondaryColor.g * blendFactor),
-      b: Math.round(primaryColor.b * (1 - blendFactor) + secondaryColor.b * blendFactor)
-    };
-  };
-
-  // Function to create extra right-side coverage for receiving energy zone
-  function createRightSideCoverage(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        receivingColor: { r: number; g: number; b: number; },
-        energyLevel: number,
-        seededRandom: () => number,
-        centerX: number,
-        centerY: number,
-        personWidth: number,
-        personHeight: number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number) {
-        // Create dense coverage on the right side of the image
-        const rightSideParticles = 100 + energyLevel * 20;
-
-        for (let i = 0; i < rightSideParticles; i++) {
-            // Focus particles on right half of image
-            const x = (width * 0.5) + (seededRandom() * width * 0.5);
-            const y = seededRandom() * height;
-
-            // Avoid face area
-            const inFaceArea = x >= faceX && x <= faceX + faceWidth &&
-                y >= faceY && y <= faceY + faceHeight;
-
-            if (!inFaceArea) {
-                const particleSize = 0.1 + seededRandom() * 90;
-                const particleOpacity = 0.1 + seededRandom() * 0.4;
-
-                // Create multiple layers for dense coverage
-                const layers = [
-                    { sizeMultiplier: 1.0, opacityMultiplier: 1.0 },
-                    { sizeMultiplier: 0.7, opacityMultiplier: 1.2 }
-                ];
-
-                layers.forEach(layer => {
-                    const layerSize = particleSize * layer.sizeMultiplier;
-                    const layerOpacity = particleOpacity * layer.opacityMultiplier;
-
-                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
-                    gradient.addColorStop(0, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity})`);
-                    gradient.addColorStop(0.4, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.7})`);
-                    gradient.addColorStop(0.8, `rgba(${receivingColor.r}, ${receivingColor.g}, ${receivingColor.b}, ${layerOpacity * 0.3})`);
-
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(x, y, layerSize, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-            }
-        }
-    }
-
-  // Function to create dense atmospheric haze that fills the entire field
-  function createAtmosphericHaze(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number) {
-        // Dramatically increased haze coverage for mystical density
-        const hazeZones = 90 + Math.floor(energyLevel * 15);
-        const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-
-        // Create multiple haze layers for maximum mystical density
-        const hazeLayers = [
-            { density: hazeZones * 0.4, sizeRange: [150, 180], opacity: [0.08, 0.15] }, // Large background haze
-            { density: hazeZones * 0.3, sizeRange: [100, 140], opacity: [0.12, 0.20] }, // Medium haze
-            { density: hazeZones * 0.3, sizeRange: [30, 100], opacity: [0.15, 0.25] } // Dense detail haze
-        ];
-
-        hazeLayers.forEach(layer => {
-            for (let zone = 0; zone < layer.density; zone++) {
-                const hazeX = seededRandom() * width;
-                const hazeY = seededRandom() * height;
-
-                // Avoid face area
-                const inFaceArea = hazeX >= faceX && hazeX <= faceX + faceWidth &&
-                    hazeY >= faceY && hazeY <= faceY + faceHeight;
-
-                if (!inFaceArea) {
-                    const hazeSize = layer.sizeRange[0] + seededRandom() * (layer.sizeRange[1] - layer.sizeRange[0]);
-
-                    // Select color based on position - thinking color ONLY in top 20% of image
-                    let hazeColor;
-                    if (hazeY < height * 0.2) {
-                        // Top 20% - use ONLY thinking color for proper zone positioning
-                        hazeColor = colors.thinkingRGB;
-                    } else {
-                        // Below top 20% - exclude thinking color completely
-                        const bottomColors = [colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-                        hazeColor = bottomColors[Math.floor(seededRandom() * bottomColors.length)];
-                    }
-
-                    const hazeOpacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
-
-                    const hazeGradient = ctx.createRadialGradient(hazeX, hazeY, 0, hazeX, hazeY, hazeSize);
-                    hazeGradient.addColorStop(0, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity})`);
-                    hazeGradient.addColorStop(0.5, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.7})`);
-                    hazeGradient.addColorStop(0.8, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, ${hazeOpacity * 0.3})`);
-                    hazeGradient.addColorStop(1, `rgba(${hazeColor.r}, ${hazeColor.g}, ${hazeColor.b}, 0)`);
-
-                    ctx.fillStyle = hazeGradient;
-                    ctx.beginPath();
-                    ctx.arc(hazeX, hazeY, hazeSize, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-        });
-    }
-
-
-
+    // Create horizontal gradient blending from left (giving) to right (receiving)
+    const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
+    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
   const generateAuraVisualization = (originalImageBase64: string | undefined, auraData: AuraAnalysisResult): void => {
         if (!originalImageBase64) return;
 
