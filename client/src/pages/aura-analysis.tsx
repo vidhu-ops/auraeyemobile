@@ -2930,8 +2930,8 @@ export default function AuraAnalysis() {
     seededRandom: () => number,
     originalImageData: ImageData
   ) => {
-    // Person protection area - large exclusion zone to keep face completely clear like reference image
-    const personRadius = Math.min(width, height) * 0.35; // Increased for complete face exclusion
+    // Person protection area - enhanced exclusion zone with larger radius for better face protection
+    const personRadius = Math.min(width, height) * 0.45; // Increased from 0.35 to 0.45 for better protection
     
     // Define color zones for proper positioning around person - enhanced mapping
     const colorZones = [
@@ -3228,47 +3228,54 @@ export default function AuraAnalysis() {
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
     
-    // Restore original person image in face area to match reference image exactly
-    const personWidth = Math.min(width, height) * 0.3;
-    const personHeight = Math.min(width, height) * 0.4;
+    // Restore original person image in face area with enhanced blending
+    const personWidth = Math.min(width, height) * 0.4; // Increased from 0.3 to 0.4
+    const personHeight = Math.min(width, height) * 0.5; // Increased from 0.4 to 0.5
     restorePersonInFaceArea(ctx, originalImageData, centerX, centerY, personWidth, personHeight);
   };
 
 
 
-  // Function to restore original person image in face area - preserves natural person visibility
+  // Function to restore original person image in face area with enhanced gradient blending
   function restorePersonInFaceArea(ctx: CanvasRenderingContext2D,
         originalImageData: ImageData,
         centerX: number,
         centerY: number,
         personWidth: number,
         personHeight: number) {
-        // Define face restoration area matching reference image
-        const faceRadius = Math.min(personWidth, personHeight) * 0.6; // Generous face area
+        // Increased face restoration area for better protection
+        const faceRadius = Math.min(personWidth, personHeight) * 0.9; // Increased from 0.6 to 0.9
         
-        // Create a circular mask to restore the original person image
+        // Create a circular mask with enhanced gradient blending
         const maskCanvas = document.createElement('canvas');
         const maskCtx = maskCanvas.getContext('2d')!;
         maskCanvas.width = ctx.canvas.width;
         maskCanvas.height = ctx.canvas.height;
         
-        // Draw white circle for face area
-        maskCtx.fillStyle = 'white';
-        maskCtx.beginPath();
-        maskCtx.arc(centerX, centerY, faceRadius, 0, Math.PI * 2);
-        maskCtx.fill();
-        
-        // Create gradient fade at edges for smooth blending
+        // Create enhanced radial gradient with smooth outward diffusion
         const gradient = maskCtx.createRadialGradient(
-            centerX, centerY, faceRadius * 0.7,
-            centerX, centerY, faceRadius
+            centerX, centerY, 0, // Start from center
+            centerX, centerY, faceRadius // Extended radius for better blending
         );
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
         
+        // Enhanced gradient stops for smooth outward diffusion
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Full opacity at center
+        gradient.addColorStop(0.4, 'rgba(255, 255, 255, 1)'); // Maintain full opacity longer
+        gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.9)'); // Start gentle fade
+        gradient.addColorStop(0.75, 'rgba(255, 255, 255, 0.7)'); // Medium fade
+        gradient.addColorStop(0.85, 'rgba(255, 255, 255, 0.4)'); // Stronger fade
+        gradient.addColorStop(0.95, 'rgba(255, 255, 255, 0.15)'); // Very soft edge
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Complete transparency at edge
+        
+        maskCtx.fillStyle = gradient;
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
+        // Apply additional blur effect for even softer edges
+        maskCtx.filter = 'blur(8px)';
         maskCtx.globalCompositeOperation = 'source-atop';
         maskCtx.fillStyle = gradient;
         maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        maskCtx.filter = 'none'; // Reset filter
         
         // Apply mask to original image data and restore to main canvas
         const tempCanvas = document.createElement('canvas');
@@ -3280,7 +3287,7 @@ export default function AuraAnalysis() {
         tempCtx.globalCompositeOperation = 'destination-in';
         tempCtx.drawImage(maskCanvas, 0, 0);
         
-        // Draw the masked original image back onto the main canvas
+        // Draw the masked original image back onto the main canvas with soft blending
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(tempCanvas, 0, 0);
     }
