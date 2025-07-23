@@ -2926,49 +2926,49 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Person protection area - enhanced face clearance for better visibility
-    const personRadius = Math.min(width, height) * 0.32; // Increased from 0.22 to 0.32
+    // Person protection area - significantly enhanced face clearance for maximum visibility
+    const personRadius = Math.min(width, height) * 0.40; // Increased from 0.32 to 0.40 for better face visibility
     
-    // Define color zones for proper positioning matching reference images
+    // Define color zones for proper positioning with clear 4-zone mapping
     const colorZones = [
       {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.4,
-        startX: 0,
-        endX: width,
-        density: 0.7, // Increased for better visibility
+        endY: height * 0.45, // Extended thinking zone for better visibility
+        startX: width * 0.2,
+        endX: width * 0.8, // More focused on center-top area
+        density: 0.8, // Increased for better visibility
         name: 'thinking'
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.1,
-        endY: height * 0.9,
+        startY: height * 0.15,
+        endY: height * 0.85,
         startX: 0,
-        endX: width * 0.5,
-        density: 0.7, // Consistent density for uniform appearance
+        endX: width * 0.45, // Clear left boundary
+        density: 0.8, // Increased density for clear visibility
         name: 'receiving'
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.1,
-        endY: height * 0.9,
-        startX: width * 0.5,
+        startY: height * 0.15,
+        endY: height * 0.85,
+        startX: width * 0.55, // Clear right boundary
         endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        density: 0.8, // Increased density for clear visibility
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.6,
+        startY: height * 0.65, // More focused bottom area
         endY: height,
-        startX: 0,
-        endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        startX: width * 0.15,
+        endX: width * 0.85, // More focused on center-bottom area
+        density: 0.8, // Increased density for clear visibility
         name: 'personality'
       }
     ];
@@ -3064,9 +3064,9 @@ export default function AuraAnalysis() {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Skip if too close to person's face
+        // Skip if too close to person's face - enhanced protection zone
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.8) continue;
+        if (distanceFromCenter < personRadius * 2.2) continue;
         
         const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
         const opacity = 0.15 + seededRandom() * 0.20; // Increased opacity for better saturation
@@ -3089,7 +3089,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.6) continue;
+        if (distanceFromCenter < personRadius * 2.0) continue;
         
         const radius = 100 + seededRandom() * 140;
         const opacity = 0.12 + seededRandom() * 0.18;
@@ -3112,7 +3112,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.4) continue;
+        if (distanceFromCenter < personRadius * 1.8) continue;
         
         const radius = 60 + seededRandom() * 80;
         const opacity = 0.08 + seededRandom() * 0.12; // Increased opacity for more visible luminous effect
@@ -3145,9 +3145,9 @@ export default function AuraAnalysis() {
         const x = seededRandom() * width;
         const y = seededRandom() * height;
         
-        // Skip if too close to person's face
+        // Skip if too close to person's face - enhanced protection zone
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.6) continue;
+        if (distanceFromCenter < personRadius * 2.0) continue;
         
         // Create color blending between adjacent zones
         let color;
@@ -5568,32 +5568,6 @@ export default function AuraAnalysis() {
                               </div>
 
 
-                              {/* Aura Layer Analysis */}
-                              {result.auraLayerColors && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
-                                  <div className="space-y-3">
-                                    {result.auraLayerColors.inner && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
-                                        <h5 className="font-medium text-sm">Recieving Layer - {result.auraLayerColors.inner}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.middle && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
-                                        <h5 className="font-medium text-sm">Giving Layer - {result.auraLayerColors.middle}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.outer && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
-                                        <h5 className="font-medium text-sm">Thinking Layer - {result.auraLayerColors.outer}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
 
                               {/* Color Harmony Analysis */}
                               <div className="space-y-4">
