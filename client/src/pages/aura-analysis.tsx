@@ -2896,6 +2896,9 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seed?: number
   ) => {
+    // Capture original image data before applying any aura effects
+    const originalImageData = ctx.getImageData(0, 0, width, height);
+    
     // Create deterministic seeded random function
     let currentSeed = seed || 12345;
     const seededRandom = () => {
@@ -2907,7 +2910,7 @@ export default function AuraAnalysis() {
     const centerY = height / 2;
     
     // Create realistic smokey cloudy effect matching reference images exactly
-    createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
+    createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom, originalImageData);
   };
 
   // Function to create realistic smokey cloudy effect matching reference images exactly
@@ -2924,7 +2927,8 @@ export default function AuraAnalysis() {
       personalityRGB: { r: number, g: number, b: number }
     },
     energyLevel: number,
-    seededRandom: () => number
+    seededRandom: () => number,
+    originalImageData: ImageData
   ) => {
     // Person protection area - large exclusion zone to keep face completely clear like reference image
     const personRadius = Math.min(width, height) * 0.35; // Increased for complete face exclusion
@@ -3224,43 +3228,61 @@ export default function AuraAnalysis() {
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
     
-    // Apply complete face exclusion to match reference image exactly
+    // Restore original person image in face area to match reference image exactly
     const personWidth = Math.min(width, height) * 0.3;
     const personHeight = Math.min(width, height) * 0.4;
-    createCompleteFactExclusion(ctx, centerX, centerY, personWidth, personHeight);
+    restorePersonInFaceArea(ctx, originalImageData, centerX, centerY, personWidth, personHeight);
   };
 
 
 
-  // Function to create complete face exclusion - removes all aura effects from face area  
-  function createCompleteFactExclusion(ctx: CanvasRenderingContext2D,
+  // Function to restore original person image in face area - preserves natural person visibility
+  function restorePersonInFaceArea(ctx: CanvasRenderingContext2D,
+        originalImageData: ImageData,
         centerX: number,
         centerY: number,
         personWidth: number,
         personHeight: number) {
-        // Define large face exclusion area matching reference image
-        const faceExclusionRadius = Math.min(personWidth, personHeight) * 0.7; // Large exclusion radius
+        // Define face restoration area matching reference image
+        const faceRadius = Math.min(personWidth, personHeight) * 0.6; // Generous face area
         
-        // Complete removal of aura effects in face area using destination-out
-        ctx.globalCompositeOperation = 'destination-out';
-        const faceExclusionGradient = ctx.createRadialGradient(
-            centerX, centerY - personHeight * 0.1, // Face center position
-            0, // Start from center
-            centerX, centerY - personHeight * 0.1, // Face center position  
-            faceExclusionRadius // Complete exclusion radius
+        // Create a circular mask to restore the original person image
+        const maskCanvas = document.createElement('canvas');
+        const maskCtx = maskCanvas.getContext('2d')!;
+        maskCanvas.width = ctx.canvas.width;
+        maskCanvas.height = ctx.canvas.height;
+        
+        // Draw white circle for face area
+        maskCtx.fillStyle = 'white';
+        maskCtx.beginPath();
+        maskCtx.arc(centerX, centerY, faceRadius, 0, Math.PI * 2);
+        maskCtx.fill();
+        
+        // Create gradient fade at edges for smooth blending
+        const gradient = maskCtx.createRadialGradient(
+            centerX, centerY, faceRadius * 0.7,
+            centerX, centerY, faceRadius
         );
-        faceExclusionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Complete removal in center
-        faceExclusionGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.8)'); // Strong removal
-        faceExclusionGradient.addColorStop(0.9, 'rgba(255, 255, 255, 0.3)'); // Light removal
-        faceExclusionGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
-
-        ctx.fillStyle = faceExclusionGradient;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY - personHeight * 0.1, faceExclusionRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Reset composite operation
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        maskCtx.globalCompositeOperation = 'source-atop';
+        maskCtx.fillStyle = gradient;
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        
+        // Apply mask to original image data and restore to main canvas
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d')!;
+        tempCanvas.width = ctx.canvas.width;
+        tempCanvas.height = ctx.canvas.height;
+        
+        tempCtx.putImageData(originalImageData, 0, 0);
+        tempCtx.globalCompositeOperation = 'destination-in';
+        tempCtx.drawImage(maskCanvas, 0, 0);
+        
+        // Draw the masked original image back onto the main canvas
         ctx.globalCompositeOperation = 'source-over';
+        ctx.drawImage(tempCanvas, 0, 0);
     }
 
   // Function to create natural smoke wisps that flow around the person
