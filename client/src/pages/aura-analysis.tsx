@@ -2908,45 +2908,6 @@ export default function AuraAnalysis() {
     
     // Create realistic smokey cloudy effect matching reference images exactly
     createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
-    
-    // Apply circular clear radius around person's face for better visibility
-    createCircularFaceClearance(ctx, width, height, centerX, centerY);
-  };
-
-  // Function to create circular clear radius around person's face
-  const createCircularFaceClearance = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-    centerX: number,
-    centerY: number
-  ) => {
-    // Calculate face clearance radius
-    const faceRadius = Math.min(width, height) * 0.18; // Clear radius around face
-    
-    // Save the current canvas state
-    ctx.save();
-    
-    // Create circular mask to clear aura effects around face
-    ctx.globalCompositeOperation = 'destination-out';
-    
-    // Create radial gradient for smooth edge blending
-    const clearGradient = ctx.createRadialGradient(
-      centerX, centerY, faceRadius * 0.6, // Inner radius (fully clear)
-      centerX, centerY, faceRadius * 1.2  // Outer radius (gradual blend)
-    );
-    clearGradient.addColorStop(0, 'rgba(0, 0, 0, 1)');     // Fully clear center
-    clearGradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.8)'); // Strong clearing
-    clearGradient.addColorStop(0.9, 'rgba(0, 0, 0, 0.3)'); // Gradual blend
-    clearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');     // No clearing at edge
-    
-    ctx.fillStyle = clearGradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, faceRadius * 1.2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Restore canvas state
-    ctx.restore();
   };
 
   // Function to create realistic smokey cloudy effect matching reference images exactly
@@ -5607,32 +5568,7 @@ export default function AuraAnalysis() {
                               </div>
 
 
-                              {/* Aura Layer Analysis */}
-                              {result.auraLayerColors && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
-                                  <div className="space-y-3">
-                                    {result.auraLayerColors.inner && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
-                                        <h5 className="font-medium text-sm">Recieving Layer - {result.auraLayerColors.inner}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.middle && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
-                                        <h5 className="font-medium text-sm">Giving Layer - {result.auraLayerColors.middle}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.outer && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
-                                        <h5 className="font-medium text-sm">Thinking Layer - {result.auraLayerColors.outer}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
+                             
 
                               {/* Color Harmony Analysis */}
                               <div className="space-y-4">
