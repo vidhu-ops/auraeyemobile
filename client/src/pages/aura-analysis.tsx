@@ -3112,7 +3112,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.3) continue;
+        if (distanceFromCenter < personRadius * 1.5) continue;
         
         const radius = 60 + seededRandom() * 80;
         const opacity = 0.20 + seededRandom() * 0.30; // Increased opacity for more visible luminous effect
@@ -3145,9 +3145,9 @@ export default function AuraAnalysis() {
         const x = seededRandom() * width;
         const y = seededRandom() * height;
         
-        // Natural blending - allow particles closer for realistic aura overlay
+        // Enhanced face protection - prevent particles from appearing over face area
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.5) continue;
+        if (distanceFromCenter < personRadius * 2.0) continue;
         
         // Create color blending between adjacent zones
         let color;
@@ -3224,10 +3224,10 @@ export default function AuraAnalysis() {
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
     
-    // Apply natural face blending to preserve original face visibility 
+    // Apply complete face exclusion to ensure 100% face visibility like reference image
     const personWidth = Math.min(width, height) * 0.5;
     const personHeight = Math.min(width, height) * 0.9;
-    createNaturalFaceBlending(ctx, centerX, centerY, personWidth, personHeight);
+    createCompleteFactExclusion(ctx, centerX, centerY, personWidth, personHeight);
   };
 
 
@@ -3280,8 +3280,8 @@ export default function AuraAnalysis() {
         const faceWidth = personWidth * 2.0; // Increased from 1.6 to 2.0
         const faceHeight = personHeight * 3.0; // Increased from 2.6 to 3.0
 
-        // Define moderate person protection for natural aura blending like reference images
-        const personRadius = Math.min(personWidth, personHeight) * 0.3; // Reduced for natural blending
+        // Define large person protection for complete face exclusion like reference images
+        const personRadius = Math.min(personWidth, personHeight) * 0.8; // Large exclusion zone
 
         // Create smooth gradient-based aura field like reference image
         // Create smooth gradient-based aura without particle patches
