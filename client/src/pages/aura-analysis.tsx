@@ -56,16 +56,7 @@ const getAccurateColorCode = (colorName: string): string => {
     'Red': '#FF3232',       // Vibrant red
     'red': '#FF3232',
     'Brown': '#A52A2A',     // Brown
-    'brown': '#A52A2A',
-    // Additional color variations for diversity
-    'Turquoise': '#40E0D0',
-    'turquoise': '#40E0D0',
-    'Teal': '#008080',
-    'teal': '#008080',
-    'Magenta': '#FF00FF',
-    'magenta': '#FF00FF',
-    'Cyan': '#00FFFF',
-    'cyan': '#00FFFF'
+    'brown': '#A52A2A'
   };
   
   return colorCodes[colorName] || '#1E90FF'; // Default to blue if color not found
@@ -81,7 +72,13 @@ const getColorSpiritalMeaning = (color: string): string => {
     'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
     'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
     'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
-    'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
+    "_Pink": 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.',
+    get "Pink"() {
+        return this["_Pink"];
+    },
+    set "Pink"(value) {
+        this["_Pink"] = value;
+    },
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
     'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
@@ -93,24 +90,24 @@ const getColorSpiritalMeaning = (color: string): string => {
   return meanings[color] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
 };
 
-const getColorMeditationFocus = (color: string): string => {
-  const focuses: Record<string, string> = {
-    'Red': 'Focus on root chakra grounding meditations and earth connection practices',
-    'Orange': 'Practice creative visualization and emotional flow meditations',
-    'Yellow': 'Concentrate on solar plexus strengthening and confidence-building meditations',
-    'Green': 'Engage in heart-opening meditations and loving-kindness practices',
-    'Blue': 'Focus on throat chakra activation and truth expression meditations',
-    'Indigo': 'Practice third eye opening and intuitive development meditations',
-    'Violet': 'Engage in crown chakra connection and divine consciousness meditations',
-    'Pink': 'Practice unconditional love and emotional healing meditations',
-    'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
-    'White': 'Focus on pure light meditation and spiritual protection practices',
-    'Silver': 'Practice lunar energy and psychic sensitivity meditations',
-    'Black': 'Requires intensive shadow work, inner healing, and confronting darkness',
-    'gray': 'Meditation to address emotional detachment and spiritual numbness'
-  };
-  return focuses[color] || 'Focus on connecting with your unique aura color energy during meditation';
-};
+function getColorMeditationFocus(color: string): string {
+    const focuses: Record<string, string> = {
+        'Red': 'Focus on root chakra grounding meditations and earth connection practices',
+        'Orange': 'Practice creative visualization and emotional flow meditations',
+        'Yellow': 'Concentrate on solar plexus strengthening and confidence-building meditations',
+        'Green': 'Engage in heart-opening meditations and loving-kindness practices',
+        'Blue': 'Focus on throat chakra activation and truth expression meditations',
+        'Indigo': 'Practice third eye opening and intuitive development meditations',
+        'Violet': 'Engage in crown chakra connection and divine consciousness meditations',
+        'Pink': 'Practice unconditional love and emotional healing meditations',
+        'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
+        'White': 'Focus on pure light meditation and spiritual protection practices',
+        'Silver': 'Practice lunar energy and psychic sensitivity meditations',
+        'Black': 'Requires intensive shadow work, inner healing, and confronting darkness',
+        'gray': 'Meditation to address emotional detachment and spiritual numbness'
+    };
+    return focuses[color] || 'Focus on connecting with your unique aura color energy during meditation';
+}
 
 const getColorEnergyWork = (color: string): string => {
   const practices: Record<string, string> = {
@@ -2542,7 +2539,7 @@ export default function AuraAnalysis() {
                         // Create multiple layers of glow
                         for (let layer = 0; layer < 12; layer++) {
                             const radius = 40 + (layer * 25);
-                            const opacity = 0.12 - (layer * 0.008);
+                            const opacity = 0.32 - (layer * 0.008);
 
                             // Use dominant color for most layers
                             const useSecondary = layer % 4 === 0;
@@ -2555,7 +2552,7 @@ export default function AuraAnalysis() {
                             );
 
                             gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-                            gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+                            gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
                             gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
                             gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
 
@@ -2594,12 +2591,6 @@ export default function AuraAnalysis() {
                     // Apply aura effects
                     createAuraGlow();
                     createSmokeyAuraEffects();
-
-                    // Add a more saturated overall color tint
-                    ctx.globalCompositeOperation = 'overlay';
-                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.18)`;
-                    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                    ctx.globalCompositeOperation = 'source-over';
 
                     // Add watermark as the top layer
                     addWatermark(ctx, canvasWidth, canvasHeight);
@@ -2680,15 +2671,6 @@ export default function AuraAnalysis() {
   };
 
   // Function to adjust color brightness for distinction
-  const adjustColorBrightness = (hex: string, factor: number): string => {
-    const rgb = hexToRgb(hex);
-    const adjusted = {
-      r: Math.min(255, Math.max(0, Math.round(rgb.r * factor))),
-      g: Math.min(255, Math.max(0, Math.round(rgb.g * factor))),
-      b: Math.min(255, Math.max(0, Math.round(rgb.b * factor)))
-    };
-    return `#${adjusted.r.toString(16).padStart(2, '0')}${adjusted.g.toString(16).padStart(2, '0')}${adjusted.b.toString(16).padStart(2, '0')}`;
-  };
 
   // Function to convert hex color back to color name
   const getColorNameFromHex = (hex: string): string => {
@@ -2746,43 +2728,32 @@ export default function AuraAnalysis() {
   };
 
   // Function to create seamless gradient blending between all colors for smooth merging
-  const createSeamlessColorBlending = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-    centerX: number,
-    centerY: number,
-    personWidth: number,
-    personHeight: number,
-    colors: any,
-    energyLevel: number,
-    seededRandom: () => number
-  ) => {
-    // Use multiply blend mode for natural color merging
-    ctx.globalCompositeOperation = 'overlay';
-    
-    // Create horizontal gradient blending from left (giving) to right (receiving)
-    const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-    horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.28)`);
-    horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.08)`);
-    horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.12)`);
-    horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.18)`);
-    
-    ctx.fillStyle = horizontalGradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Create vertical gradient for thinking energy (top 25% of image)
-    const verticalGradient = ctx.createLinearGradient(0, 0, 0, height * 0.25);
-    verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
-    verticalGradient.addColorStop(0.6, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
-    verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.03)`);
-    
-    ctx.fillStyle = verticalGradient;
-    ctx.fillRect(0, 0, width, height * 0.25);
-    
-    // Reset blend mode
-    ctx.globalCompositeOperation = 'source-over';
-  };
+  function createSeamlessColorBlending({ ctx, width, height, centerY, personHeight, colors, energyLevel, seededRandom }: { ctx: CanvasRenderingContext2D; width: number; height: number; centerX: number; centerY: number; personWidth: number; personHeight: number; colors: any; energyLevel: number; seededRandom: () => number; }): void {
+        // Use multiply blend mode for natural color merging
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Create horizontal gradient blending from left (giving) to right (receiving)
+        const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
+        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.48)`);
+        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.48)`);
+        horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
+        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.38)`);
+
+        ctx.fillStyle = horizontalGradient;
+        ctx.fillRect(0, 0, width, height);
+
+        // Create vertical gradient for thinking energy (top 25% of image)
+        const verticalGradient = ctx.createLinearGradient(0, 0, 0, height * 0.25);
+        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
+        verticalGradient.addColorStop(0.6, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
+        verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.33)`);
+
+        ctx.fillStyle = verticalGradient;
+        ctx.fillRect(0, 0, width, height * 0.25);
+
+        // Reset blend mode
+        ctx.globalCompositeOperation = 'source-over';
+    }
 
   // Function to create prominent thinking energy particle above person's head as single glowing ball
   function createThinkingEnergyParticle(ctx: CanvasRenderingContext2D,
@@ -2812,26 +2783,26 @@ export default function AuraAnalysis() {
             particleX, particleY, baseRadius * 6
         );
         ultraGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center for maximum visibility
-        ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-        ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
-        ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
-        ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.5)`);
-        ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.2)`);
+        ultraGlow.addColorStop(0.05, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        ultraGlow.addColorStop(0.15, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        ultraGlow.addColorStop(0.35, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        ultraGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        ultraGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
 
         ctx.fillStyle = ultraGlow;
         ctx.beginPath();
-        ctx.arc(particleX, particleY, baseRadius * 6, 0, Math.PI * 2);
+        ctx.arc(particleX, particleY, baseRadius * 3, 0, Math.PI * 2);
         ctx.fill();
 
         // Bright middle glow layer for enhanced visibility
         const middleGlow = ctx.createRadialGradient(
             particleX, particleY, 0,
-            particleX, particleY, baseRadius * 3
+            particleX, particleY, baseRadius * 1
         );
         middleGlow.addColorStop(0, `rgba(255, 255, 255, 1)`); // Bright white center
-        middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-        middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.6)`);
-        middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+        middleGlow.addColorStop(0.1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        middleGlow.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        middleGlow.addColorStop(0.6, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
         middleGlow.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
 
         ctx.fillStyle = middleGlow;
@@ -2842,12 +2813,12 @@ export default function AuraAnalysis() {
         // Ultra-bright inner core - maximum visibility
         const innerCore = ctx.createRadialGradient(
             particleX, particleY, 0,
-            particleX, particleY, baseRadius * 1.5
+            particleX, particleY, baseRadius * 0.5
         );
         innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Pure white center
         innerCore.addColorStop(0.1, `rgba(255, 255, 255, 1)`); // Extended white core
-        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
-        innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
+        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
         innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
 
         ctx.fillStyle = innerCore;
@@ -2938,7 +2909,7 @@ export default function AuraAnalysis() {
         endY: height * 0.4,
         startX: 0,
         endX: width,
-        density: 0.7, // Increased for better visibility
+        density: 0.9, // Increased for better visibility
         name: 'thinking'
       },
       {
@@ -2976,7 +2947,7 @@ export default function AuraAnalysis() {
     // ULTRA-SMOOTH GRADIENT BASE LAYERS - Create seamless color transitions
     colorZones.forEach(zone => {
       ctx.save();
-      ctx.globalCompositeOperation = 'screen';
+      ctx.globalCompositeOperation = 'source-over';
       
       let gradient;
       
@@ -2991,7 +2962,7 @@ export default function AuraAnalysis() {
               centerX + offset, centerY * 0.2 + offset, height * 0.8
             );
             gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.2, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.15)`);
+            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
             gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
             gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
             gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
@@ -3313,7 +3284,7 @@ export default function AuraAnalysis() {
         // All aura effects are now handled by smooth gradients above
         // Personality color completely removed from aura visualization as requested
         // Create enhanced gradient blending between all colors for seamless merging
-        createSeamlessColorBlending(ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom);
+        createSeamlessColorBlending({ ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom });
 
         // Create prominent thinking energy particle above person's head with standardized sizing
         createThinkingEnergyParticle(ctx, centerX, centerY, personHeight, colors.thinkingRGB, energyLevel, width, height);
