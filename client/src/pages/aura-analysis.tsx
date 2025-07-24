@@ -2506,29 +2506,29 @@ export default function AuraAnalysis() {
                     // Enhanced color names to RGB mapping with all specified colors
                     const getColorRGB = (colorName: string) => {
                         const colorMap: Record<string, [number, number, number]> = {
-                            'Red': [255, 0, 0],             // Pure bright red - no pink tint
-                            'Orange': [255, 165, 0],        // Perfect bright orange - more visible
-                            'Yellow': [255, 255, 0],        // Pure bright yellow
-                            'Green': [0, 255, 0],           // Pure bright green
-                            'Blue': [0, 100, 255],          // Perfect blue
-                            'Purple': [128, 0, 128],        // Classic purple
-                            'Violet': [148, 0, 211],        // Dark violet
-                            'Indigo': [75, 0, 130],         // Traditional indigo
-                            'Pink': [255, 192, 203],        // Classic pink
-                            'Gold': [255, 215, 0],          // Pure gold
-                            'Silver': [192, 192, 192],      // Pure silver
+                            'Red': [255, 40, 40],           // More saturated red
+                            'Orange': [255, 120, 0],        // More vibrant orange
+                            'Yellow': [255, 220, 0],        // Intense yellow
+                            'Green': [40, 220, 40],         // More saturated green
+                            'Blue': [20, 130, 255],         // More vibrant blue
+                            'Purple': [150, 30, 240],       // More saturated purple
+                            'Violet': [160, 0, 230],        // More intense violet
+                            'Indigo': [90, 0, 150],         // Deeper indigo
+                            'Pink': [255, 90, 170],         // More saturated pink
+                            'Gold': [255, 200, 0],          // More vibrant gold
+                            'Silver': [180, 180, 180],      // Slightly more muted silver
                             'White': [255, 255, 255],       // Pure white
-                            'Gray': [128, 128, 128],        // Standard gray
-                            'Grey': [128, 128, 128],        // Alternative spelling
-                            'Black': [0, 0, 0],             // Pure black
-                            'Brown': [165, 42, 42],         // Brown
+                            'Gray': [150, 150, 150],        // Slightly darker gray for better contrast
+                            'Grey': [150, 150, 150],        // Alternative spelling
+                            'Black': [50, 50, 50],          // Slightly lighter for visibility
+                            'Brown': [180, 60, 60],         // More saturated brown
                             // Additional color variations
-                            'Turquoise': [64, 224, 208],    // Turquoise
-                            'Teal': [0, 128, 128],          // Teal
+                            'Turquoise': [50, 240, 220],    // More vibrant turquoise
+                            'Teal': [0, 150, 150],          // More saturated teal
                             'Magenta': [255, 0, 255],       // Magenta
                             'Cyan': [0, 255, 255]           // Cyan
                         };
-                        return colorMap[colorName] || [0, 100, 255]; // Default to blue
+                        return colorMap[colorName] || [20, 130, 255]; // Default to vibrant blue
                     };
 
                     const [dr, dg, db] = getColorRGB(dominantColor);
@@ -2595,9 +2595,9 @@ export default function AuraAnalysis() {
                     createAuraGlow();
                     createSmokeyAuraEffects();
 
-                    // Add a highly saturated overall color tint
+                    // Add a more saturated overall color tint
                     ctx.globalCompositeOperation = 'overlay';
-                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.35)`;
+                    ctx.fillStyle = `rgba(${dr}, ${dg}, ${db}, 0.18)`;
                     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
                     ctx.globalCompositeOperation = 'source-over';
 
@@ -2908,6 +2908,45 @@ export default function AuraAnalysis() {
     
     // Create realistic smokey cloudy effect matching reference images exactly
     createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
+    
+    // Apply circular clear radius around person's face for better visibility
+    createCircularFaceClearance(ctx, width, height, centerX, centerY);
+  };
+
+  // Function to create circular clear radius around person's face
+  const createCircularFaceClearance = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number
+  ) => {
+    // Calculate face clearance radius
+    const faceRadius = Math.min(width, height) * 0.18; // Clear radius around face
+    
+    // Save the current canvas state
+    ctx.save();
+    
+    // Create circular mask to clear aura effects around face
+    ctx.globalCompositeOperation = 'destination-out';
+    
+    // Create radial gradient for smooth edge blending
+    const clearGradient = ctx.createRadialGradient(
+      centerX, centerY, faceRadius * 0.6, // Inner radius (fully clear)
+      centerX, centerY, faceRadius * 1.2  // Outer radius (gradual blend)
+    );
+    clearGradient.addColorStop(0, 'rgba(0, 0, 0, 1)');     // Fully clear center
+    clearGradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.8)'); // Strong clearing
+    clearGradient.addColorStop(0.9, 'rgba(0, 0, 0, 0.3)'); // Gradual blend
+    clearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');     // No clearing at edge
+    
+    ctx.fillStyle = clearGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, faceRadius * 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Restore canvas state
+    ctx.restore();
   };
 
   // Function to create realistic smokey cloudy effect matching reference images exactly
@@ -2926,49 +2965,49 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Person protection area - maximum face clearance for crystal clear visibility
-    const personRadius = Math.min(width, height) * 0.40; // Increased from 0.32 to 0.40 for better face visibility
+    // Person protection area - enhanced face clearance for better visibility
+    const personRadius = Math.min(width, height) * 0.32; // Increased from 0.22 to 0.32
     
-    // Define color zones for proper positioning around person - enhanced mapping
+    // Define color zones for proper positioning matching reference images
     const colorZones = [
       {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.45, // Extended slightly for better coverage
-        startX: width * 0.1, // Narrow sides to focus around person
-        endX: width * 0.9,
-        density: 0.7,
+        endY: height * 0.4,
+        startX: 0,
+        endX: width,
+        density: 0.7, // Increased for better visibility
         name: 'thinking'
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.15,
-        endY: height * 0.85,
+        startY: height * 0.1,
+        endY: height * 0.9,
         startX: 0,
-        endX: width * 0.55, // Extended slightly past center
-        density: 0.7,
+        endX: width * 0.5,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'receiving'
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.15,
-        endY: height * 0.85,
-        startX: width * 0.45, // Start slightly before center
+        startY: height * 0.1,
+        endY: height * 0.9,
+        startX: width * 0.5,
         endX: width,
-        density: 0.7,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.55, // Start higher for better person mapping
+        startY: height * 0.6,
         endY: height,
-        startX: width * 0.1, // Narrow sides to focus around person
-        endX: width * 0.9,
-        density: 0.7,
+        startX: 0,
+        endX: width,
+        density: 0.7, // Consistent density for uniform appearance
         name: 'personality'
       }
     ];
@@ -2990,11 +3029,11 @@ export default function AuraAnalysis() {
               centerX + offset, centerY * 0.2 + offset, 0, 
               centerX + offset, centerY * 0.2 + offset, height * 0.8
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.65)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
+            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
+            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.12)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.04)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3006,11 +3045,11 @@ export default function AuraAnalysis() {
               width * 0.15 + offset, centerY + offset, 0, 
               width * 0.15 + offset, centerY + offset, width * 0.85
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
-            gradient.addColorStop(0.35, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.70)`);
-            gradient.addColorStop(0.65, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
+            gradient.addColorStop(0.35, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
+            gradient.addColorStop(0.65, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.03)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3022,11 +3061,11 @@ export default function AuraAnalysis() {
               width * 0.85 - offset, centerY + offset, 0, 
               width * 0.85 - offset, centerY + offset, width * 0.85
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.55)`);
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.75)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
-            gradient.addColorStop(0.88, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.32)`);
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`);
+            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+            gradient.addColorStop(0.88, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.14)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3038,11 +3077,11 @@ export default function AuraAnalysis() {
               centerX + offset, height * 0.85 - offset, 0, 
               centerX + offset, height * 0.85 - offset, height * 0.7
             );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.48)`);
-            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.65)`);
-            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
+            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.38)`);
+            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
+            gradient.addColorStop(0.9, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.03)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3064,12 +3103,12 @@ export default function AuraAnalysis() {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Allow particles closer to person but avoid direct overlap
+        // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.8) continue;
+        if (distanceFromCenter < personRadius * 1.8) continue;
         
         const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
-        const opacity = 0.30 + seededRandom() * 0.40; // Much higher opacity for strong saturation
+        const opacity = 0.15 + seededRandom() * 0.20; // Increased opacity for better saturation
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3089,10 +3128,10 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.6) continue;
+        if (distanceFromCenter < personRadius * 1.6) continue;
         
         const radius = 100 + seededRandom() * 140;
-        const opacity = 0.25 + seededRandom() * 0.35;
+        const opacity = 0.12 + seededRandom() * 0.18;
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3112,10 +3151,10 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.5) continue;
+        if (distanceFromCenter < personRadius * 1.4) continue;
         
         const radius = 60 + seededRandom() * 80;
-        const opacity = 0.20 + seededRandom() * 0.30; // Increased opacity for more visible luminous effect
+        const opacity = 0.08 + seededRandom() * 0.12; // Increased opacity for more visible luminous effect
         
         ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
         ctx.beginPath();
@@ -3130,10 +3169,10 @@ export default function AuraAnalysis() {
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 60, opacity: [0.20, 0.35] },
-      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.15, 0.30] },
-      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.10, 0.25] },
-      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.05, 0.15] }
+      { blur: 100, mode: 'screen', particles: 60, opacity: [0.08, 0.15] },
+      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.06, 0.12] },
+      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.04, 0.10] },
+      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.02, 0.06] }
     ];
     
     blendingLayers.forEach(layer => {
@@ -3145,9 +3184,9 @@ export default function AuraAnalysis() {
         const x = seededRandom() * width;
         const y = seededRandom() * height;
         
-        // Allow closer blending around person for natural aura effect
+        // Skip if too close to person's face
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.7) continue;
+        if (distanceFromCenter < personRadius * 1.6) continue;
         
         // Create color blending between adjacent zones
         let color;
