@@ -2799,7 +2799,7 @@ export default function AuraAnalysis() {
 
 
         // UNIFORM PARTICLE SIZING: Fixed sizing for all 1600x900 images for consistent appearance
-        const STANDARD_HEIGHT = 800;
+        const STANDARD_HEIGHT = 900;
         const baseRadius = STANDARD_HEIGHT * 0.06; // Fixed 54px radius for all images
 
 
@@ -2846,8 +2846,8 @@ export default function AuraAnalysis() {
         );
         innerCore.addColorStop(0, `rgba(255, 255, 255, 1)`); // Pure white center
         innerCore.addColorStop(0.1, `rgba(255, 255, 255, 1)`); // Extended white core
-        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
-        innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
+        innerCore.addColorStop(0.3, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 1)`);
+        innerCore.addColorStop(0.7, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0.8)`);
         innerCore.addColorStop(1, `rgba(${thinkingColor.r}, ${thinkingColor.g}, ${thinkingColor.b}, 0)`);
 
         ctx.fillStyle = innerCore;
@@ -2926,8 +2926,8 @@ export default function AuraAnalysis() {
     energyLevel: number,
     seededRandom: () => number
   ) => {
-    // Person protection area - moderate protection for natural blending like reference images
-    const personRadius = Math.min(width, height) * 0.25; // Reduced for natural aura blending over face
+    // Person protection area - maximum face clearance for crystal clear visibility
+    const personRadius = Math.min(width, height) * 0.40; // Increased from 0.32 to 0.40 for better face visibility
     
     // Define color zones for proper positioning around person - enhanced mapping
     const colorZones = [
@@ -3064,9 +3064,9 @@ export default function AuraAnalysis() {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
-        // Natural blending - allow particles closer to person like reference images
+        // Allow particles closer to person but avoid direct overlap
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.6) continue;
+        if (distanceFromCenter < personRadius * 0.8) continue;
         
         const radius = 160 + seededRandom() * 200; // Much larger for better diffusion
         const opacity = 0.30 + seededRandom() * 0.40; // Much higher opacity for strong saturation
@@ -3089,7 +3089,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 0.4) continue;
+        if (distanceFromCenter < personRadius * 0.6) continue;
         
         const radius = 100 + seededRandom() * 140;
         const opacity = 0.25 + seededRandom() * 0.35;
@@ -3112,7 +3112,7 @@ export default function AuraAnalysis() {
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
         
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 1.5) continue;
+        if (distanceFromCenter < personRadius * 0.5) continue;
         
         const radius = 60 + seededRandom() * 80;
         const opacity = 0.20 + seededRandom() * 0.30; // Increased opacity for more visible luminous effect
@@ -3145,9 +3145,9 @@ export default function AuraAnalysis() {
         const x = seededRandom() * width;
         const y = seededRandom() * height;
         
-        // Enhanced face protection - prevent particles from appearing over face area
+        // Allow closer blending around person for natural aura effect
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        if (distanceFromCenter < personRadius * 2.0) continue;
+        if (distanceFromCenter < personRadius * 0.7) continue;
         
         // Create color blending between adjacent zones
         let color;
@@ -3223,41 +3223,39 @@ export default function AuraAnalysis() {
     
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
-    
-    // Apply complete face exclusion to ensure 100% face visibility like reference image
-    const personWidth = Math.min(width, height) * 0.5;
-    const personHeight = Math.min(width, height) * 0.9;
-    createCompleteFactExclusion(ctx, centerX, centerY, personWidth, personHeight);
   };
 
 
 
-  // Function to create complete face exclusion - removes all aura effects from face area  
-  function createCompleteFactExclusion(ctx: CanvasRenderingContext2D,
+  // Function to create clear face area ensuring complete visibility of facial features
+  function createFaceClearanceZone(ctx: CanvasRenderingContext2D,
         centerX: number,
         centerY: number,
         personWidth: number,
         personHeight: number) {
-        // Define large face exclusion area matching reference image
-        const faceExclusionRadius = Math.min(personWidth, personHeight) * 0.7; // Large exclusion radius
-        
-        // Complete removal of aura effects in face area using destination-out
-        ctx.globalCompositeOperation = 'destination-out';
-        const faceExclusionGradient = ctx.createRadialGradient(
-            centerX, centerY - personHeight * 0.1, // Face center position
-            0, // Start from center
-            centerX, centerY - personHeight * 0.1, // Face center position  
-            faceExclusionRadius // Complete exclusion radius
-        );
-        faceExclusionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); // Complete removal in center
-        faceExclusionGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.8)'); // Strong removal
-        faceExclusionGradient.addColorStop(0.9, 'rgba(255, 255, 255, 0.3)'); // Light removal
-        faceExclusionGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
+        // Define enhanced face clearance area for better visibility
+        const faceClearanceX = centerX - personWidth * 1.0; // Increased from 0.8 to 1.0
+        const faceClearanceY = centerY - personHeight * 0.7; // Increased from 0.5 to 0.7
+        const faceClearanceWidth = personWidth * 1.4; // Increased from 1.0 to 1.4
+        const faceClearanceHeight = personHeight * 1.6; // Increased from 1.2 to 1.6
 
-        ctx.fillStyle = faceExclusionGradient;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY - personHeight * 0.1, faceExclusionRadius, 0, Math.PI * 2);
-        ctx.fill();
+        // Use destination-over to ensure original image shows through in face area
+        ctx.globalCompositeOperation = 'destination-over';
+
+        // Create a subtle gradient that fades smoke away from face area
+        const clearanceGradient = ctx.createRadialGradient(
+            centerX, centerY - personHeight * 1.4, // Face center
+            Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8, // Inner clear radius
+            centerX, centerY - personHeight * 0.5, // Face center
+            Math.min(faceClearanceWidth, faceClearanceHeight) * 0.5 // Outer fade radius
+        );
+
+        clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
+        clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)'); // Light fade
+        clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
+
+        ctx.fillStyle = clearanceGradient;
+        ctx.fillRect(faceClearanceX, faceClearanceY, faceClearanceWidth, faceClearanceHeight);
 
         // Reset composite operation
         ctx.globalCompositeOperation = 'source-over';
@@ -3274,14 +3272,14 @@ export default function AuraAnalysis() {
         colors: any,
         energyLevel: number,
         seededRandom: () => number): void {
-        // Define massive person protection area for 100% face visibility
-        const faceX = centerX - personWidth * 1.4; // Increased from 1.1 to 1.4
-        const faceY = centerY - personHeight * 1.2; // Increased from 1.0 to 1.2
-        const faceWidth = personWidth * 2.0; // Increased from 1.6 to 2.0
-        const faceHeight = personHeight * 3.0; // Increased from 2.6 to 3.0
+        // Define enhanced person protection area for maximum face visibility
+        const faceX = centerX - personWidth * 1.1; // Increased from 0.9 to 1.1
+        const faceY = centerY - personHeight * 1.0; // Increased from 0.8 to 1.0
+        const faceWidth = personWidth * 1.6; // Increased from 1.2 to 1.6
+        const faceHeight = personHeight * 2.6; // Increased from 2.2 to 2.6
 
-        // Define large person protection for complete face exclusion like reference images
-        const personRadius = Math.min(personWidth, personHeight) * 0.8; // Large exclusion zone
+        // Define enhanced person protection radius for better face visibility
+        const personRadius = Math.min(personWidth, personHeight) * 0.6; // Increased from 0.4 to 0.6
 
         // Create smooth gradient-based aura field like reference image
         // Create smooth gradient-based aura without particle patches
@@ -3336,6 +3334,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'source-over';
     
     // Calculate natural aura dimensions around the person
+    const auraRadius = Math.max(personWidth, personHeight) * 2.2;
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
@@ -3343,6 +3342,7 @@ export default function AuraAnalysis() {
     const STANDARD_WIDTH = 1600;
     const STANDARD_HEIGHT = 900;
     const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 135px radius
+    const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 1360px reach
     
     // LAYER 1: Receiving energy layer on left side (base layer)
     ctx.globalCompositeOperation = 'source-over';
@@ -3450,7 +3450,20 @@ export default function AuraAnalysis() {
   };
 
   // Function to create final color integration layer for maximum merging
-  function createColorIntegrationLayer({ ctx, width, height, centerX, centerY, personWidth, personHeight, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; centerX: number; centerY: number; personWidth: number; personHeight: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
+  function createColorIntegrationLayer(ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        centerX: number,
+        centerY: number,
+        personWidth: number,
+        personHeight: number,
+        colors: any,
+        energyLevel: number,
+        seededRandom: () => number,
+        faceX: number,
+        faceY: number,
+        faceWidth: number,
+        faceHeight: number): void {
         // Use color-dodge blend mode for intense color merging with thinking color integration
         ctx.globalCompositeOperation = 'screen';
 
@@ -3615,7 +3628,16 @@ export default function AuraAnalysis() {
     }
 
   // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
-   function createConcentratedColorDisplay({ ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
+  function createConcentratedColorDisplay(ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        colors: any,
+        energyLevel: number,
+        seededRandom: () => number,
+        faceX: number,
+        faceY: number,
+        faceWidth: number,
+        faceHeight: number) {
         const colorZones = [
             {
                 color: colors.thinkingRGB,
@@ -3778,8 +3800,8 @@ export default function AuraAnalysis() {
                     smokeY >= faceY && smokeY <= faceY + faceHeight;
 
                 if (!inFaceArea) {
-                    const smokeSize = 10 + seededRandom() * 60; // Smaller particles
-                    const smokeOpacity = 0.02 + seededRandom() * 0.05; // Increased by 20% from 0.04 and 0.08
+                    const smokeSize = 15 + seededRandom() * 60; // Smaller particles
+                    const smokeOpacity = 0.022 + seededRandom() * 0.065; // Increased by 20% from 0.04 and 0.08
 
                     drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
                 }
@@ -3788,6 +3810,73 @@ export default function AuraAnalysis() {
     }
 
   // Function to create dedicated edge coverage ensuring smoke reaches all borders
+  function createEdgeCoverage({ ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
+        const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+        const edgeThickness = 80; // How far from edge to create smoke
+
+
+        // Create smoke strips along each edge
+        const edges = [
+            { name: 'top', coords: () => ({ x: seededRandom() * width, y: seededRandom() * edgeThickness }) },
+            { name: 'right', coords: () => ({ x: width - seededRandom() * edgeThickness, y: seededRandom() * height }) },
+            { name: 'bottom', coords: () => ({ x: seededRandom() * width, y: height - seededRandom() * edgeThickness }) },
+            { name: 'left', coords: () => ({ x: seededRandom() * edgeThickness, y: seededRandom() * height }) }
+        ];
+
+        edges.forEach((edge, edgeIndex) => {
+            // Only use first 3 colors, skip personality color (index 3)
+            const availableColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB];
+            const edgeColor = availableColors[edgeIndex % 3];
+            const edgeDensity = 25 + Math.floor(energyLevel * 8);
+
+            for (let i = 0; i < edgeDensity; i++) {
+                const coords = edge.coords();
+                const smokeX = coords.x;
+                const smokeY = coords.y;
+
+                // Check if not in face area
+                const inFaceArea = smokeX >= faceX && smokeX <= faceX + faceWidth &&
+                    smokeY >= faceY && smokeY <= faceY + faceHeight;
+
+                if (!inFaceArea) {
+                    const smokeSize = 10 + seededRandom() * 45;
+                    const smokeOpacity = 0.036 + seededRandom() * 0.072; // Increased by 20% from 0.03 and 0.06
+
+                    drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, edgeColor, smokeOpacity, seededRandom() * 0.5);
+                }
+            }
+        });
+
+        // Add corner coverage to ensure complete border coverage - exclude personality color
+        const corners = [
+            { x: 0, y: 0, color: colors.thinkingRGB },
+            { x: width, y: 0, color: colors.receivingRGB },
+            { x: width, y: height, color: colors.givingRGB },
+            { x: 0, y: height, color: colors.thinkingRGB }
+        ];
+
+        corners.forEach(corner => {
+            const cornerDensity = 15;
+            for (let i = 0; i < cornerDensity; i++) {
+                const smokeX = corner.x + (seededRandom() - 0.5) * 120;
+                const smokeY = corner.y + (seededRandom() - 0.5) * 120;
+
+                // Clamp to image bounds
+                const clampedX = Math.max(0, Math.min(width, smokeX));
+                const clampedY = Math.max(0, Math.min(height, smokeY));
+
+                const inFaceArea = clampedX >= faceX && clampedX <= faceX + faceWidth &&
+                    clampedY >= faceY && clampedY <= faceY + faceHeight;
+
+                if (!inFaceArea) {
+                    const smokeSize = 20 + seededRandom() * 40;
+                    const smokeOpacity = 0.04 + seededRandom() * 0.07;
+
+                    drawNaturalSmoke(ctx, clampedX, clampedY, smokeSize, corner.color, smokeOpacity, seededRandom() * 0.6);
+                }
+            }
+        });
+    }
 
   // Function to draw natural smoke particles with enhanced visibility
   const drawNaturalSmoke = (
@@ -3865,7 +3954,7 @@ export default function AuraAnalysis() {
         points: Array<{ x: number; y: number; progress: number; }>,
         primaryColor: { r: number; g: number; b: number; },
         allColors: any,
-        seededRandom: () => number): void {
+        seededRandom: () => number) {
         points.forEach((point, index) => {
             if (index === 0) return;
 
@@ -3957,8 +4046,8 @@ export default function AuraAnalysis() {
                 y >= faceY && y <= faceY + faceHeight;
 
             if (!inFaceArea) {
-                const particleSize = 0.1 + seededRandom() * 90;
-                const particleOpacity = 0.1 + seededRandom() * 0.4;
+                const particleSize = 50 + seededRandom() * 90;
+                const particleOpacity = 0.3 + seededRandom() * 0.4;
 
                 // Create multiple layers for dense coverage
                 const layers = [
@@ -4725,7 +4814,7 @@ export default function AuraAnalysis() {
     }
 
   // Helper function to get text color class based on aura color
-  function getTextColorClass(color: string): string {
+  function getTextColorClass(color: string) {
         const colorMap: Record<string, string> = {
             purple: "text-purple-500",
             violet: "text-purple-600",
