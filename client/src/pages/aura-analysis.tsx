@@ -2908,45 +2908,6 @@ export default function AuraAnalysis() {
     
     // Create realistic smokey cloudy effect matching reference images exactly
     createRealisticSmokeEffect(ctx, width, height, centerX, centerY, colors, energyLevel, seededRandom);
-    
-    // Apply circular clear radius around person's face for better visibility
-    createCircularFaceClearance(ctx, width, height, centerX, centerY);
-  };
-
-  // Function to create circular clear radius around person's face
-  const createCircularFaceClearance = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-    centerX: number,
-    centerY: number
-  ) => {
-    // Calculate face clearance radius
-    const faceRadius = Math.min(width, height) * 0.18; // Clear radius around face
-    
-    // Save the current canvas state
-    ctx.save();
-    
-    // Create circular mask to clear aura effects around face
-    ctx.globalCompositeOperation = 'destination-out';
-    
-    // Create radial gradient for smooth edge blending
-    const clearGradient = ctx.createRadialGradient(
-      centerX, centerY, faceRadius * 0.6, // Inner radius (fully clear)
-      centerX, centerY, faceRadius * 1.2  // Outer radius (gradual blend)
-    );
-    clearGradient.addColorStop(0, 'rgba(0, 0, 0, 1)');     // Fully clear center
-    clearGradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.8)'); // Strong clearing
-    clearGradient.addColorStop(0.9, 'rgba(0, 0, 0, 0.3)'); // Gradual blend
-    clearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');     // No clearing at edge
-    
-    ctx.fillStyle = clearGradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, faceRadius * 1.2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Restore canvas state
-    ctx.restore();
   };
 
   // Function to create realistic smokey cloudy effect matching reference images exactly
