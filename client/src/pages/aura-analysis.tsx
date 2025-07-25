@@ -3051,7 +3051,7 @@ export default function AuraAnalysis() {
       
       // LAYER 2: Medium diffused particles with soft-light blending
       ctx.save();
-      ctx.filter = 'blur(50px)';
+      ctx.filter = 'blur(30px)';
       ctx.globalCompositeOperation = 'soft-light';
       
       const particles2 = Math.floor(35 * zone.density);
@@ -3101,7 +3101,7 @@ export default function AuraAnalysis() {
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 60, opacity: [0.08, 0.15] },
+      { blur: 100, mode: 'screen', particles: 40, opacity: [0.08, 0.15] },
       { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.06, 0.12] },
       { blur: 50, mode: 'overlay', particles: 40, opacity: [0.04, 0.10] },
       { blur: 30, mode: 'overlay', particles: 30, opacity: [0.02, 0.06] }
@@ -3203,7 +3203,7 @@ export default function AuraAnalysis() {
         centerX: number,
         centerY: number,
         personWidth: number,
-        personHeight: number) {
+        personHeight: number): void {
         // Define enhanced face clearance area for better visibility
         const faceClearanceX = centerX - personWidth * 1.0; // Increased from 0.8 to 1.0
         const faceClearanceY = centerY - personHeight * 0.7; // Increased from 0.5 to 0.7
@@ -3216,13 +3216,13 @@ export default function AuraAnalysis() {
         // Create a subtle gradient that fades smoke away from face area
         const clearanceGradient = ctx.createRadialGradient(
             centerX, centerY - personHeight * 1.4, // Face center
-            Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8, // Inner clear radius
+            Math.min(faceClearanceWidth, faceClearanceHeight) * 1.3, // Inner clear radius
             centerX, centerY - personHeight * 0.5, // Face center
-            Math.min(faceClearanceWidth, faceClearanceHeight) * 0.5 // Outer fade radius
+            Math.min(faceClearanceWidth, faceClearanceHeight) * 0.8 // Outer fade radius
         );
 
         clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)'); // Subtle clearing in center
-        clearanceGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)'); // Light fade
+        clearanceGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)'); // Light fade
         clearanceGradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // No effect at edges
 
         ctx.fillStyle = clearanceGradient;
@@ -3599,16 +3599,7 @@ export default function AuraAnalysis() {
     }
 
   // Function to create concentrated color zones for maximum visibility of all 4 Energy Map colors
-  function createConcentratedColorDisplay(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number) {
+  function createConcentratedColorDisplay({ ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
         const colorZones = [
             {
                 color: colors.thinkingRGB,
@@ -3653,7 +3644,7 @@ export default function AuraAnalysis() {
                     // Fixed consistent sizing for all images regardless of original dimensions
                     const sizeFactor = 1.0; // Fixed factor for uniform appearance
                     const smokeSize = 120 + seededRandom() * 60; // Consistent particle size 120-180px
-                    const smokeOpacity = 0.35 + seededRandom() * 0.25; // Higher opacity 0.35-0.60 for better visibility
+                    const smokeOpacity = 0.01 + seededRandom() * 0.25; // Higher opacity 0.35-0.60 for better visibility
 
                     drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
                 }
@@ -3726,16 +3717,7 @@ export default function AuraAnalysis() {
     }
 
   // Function to create dense perimeter smoke with color-specific zones
-  function createPerimeterSmoke(ctx: CanvasRenderingContext2D,
-        width: number,
-        height: number,
-        colors: any,
-        energyLevel: number,
-        seededRandom: () => number,
-        faceX: number,
-        faceY: number,
-        faceWidth: number,
-        faceHeight: number): void {
+  function createPerimeterSmoke({ ctx, width, height, colors, energyLevel, seededRandom, faceX, faceY, faceWidth, faceHeight }: { ctx: CanvasRenderingContext2D; width: number; height: number; colors: any; energyLevel: number; seededRandom: () => number; faceX: number; faceY: number; faceWidth: number; faceHeight: number; }): void {
         const perimeterDensity = 180 + Math.floor(energyLevel * 60); // Dramatically increased density
 
 
@@ -3771,8 +3753,8 @@ export default function AuraAnalysis() {
                     smokeY >= faceY && smokeY <= faceY + faceHeight;
 
                 if (!inFaceArea) {
-                    const smokeSize = 15 + seededRandom() * 60; // Smaller particles
-                    const smokeOpacity = 0.022 + seededRandom() * 0.065; // Increased by 20% from 0.04 and 0.08
+                    const smokeSize = 1 + seededRandom() * 10; // Smaller particles
+                    const smokeOpacity = 0.002 + seededRandom() * 0.05; // Increased by 20% from 0.04 and 0.08
 
                     drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.4);
                 }
@@ -5539,33 +5521,7 @@ export default function AuraAnalysis() {
                               </div>
 
 
-                              {/* Aura Layer Analysis */}
-                              {result.auraLayerColors && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold text-lg">Aura Layer Breakdown</h4>
-                                  <div className="space-y-3">
-                                    {result.auraLayerColors.inner && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.inner)}}>
-                                        <h5 className="font-medium text-sm">Recieving Layer - {result.auraLayerColors.inner}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('inner', result.auraLayerColors.inner)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.middle && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.middle)}}>
-                                        <h5 className="font-medium text-sm">Giving Layer - {result.auraLayerColors.middle}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('middle', result.auraLayerColors.middle)}</p>
-                                      </div>
-                                    )}
-                                    {result.auraLayerColors.outer && (
-                                      <div className="border-l-4 pl-4" style={{borderColor: getAccurateColorCode(result.auraLayerColors.outer)}}>
-                                        <h5 className="font-medium text-sm">Thinking Layer - {result.auraLayerColors.outer}</h5>
-                                        <p className="text-sm text-gray-700">{getLayerMeaning('outer', result.auraLayerColors.outer)}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
+                             
                               {/* Color Harmony Analysis */}
                               <div className="space-y-4">
                                 <h4 className="font-semibold text-lg">Color Harmony & Energy Flow</h4>
