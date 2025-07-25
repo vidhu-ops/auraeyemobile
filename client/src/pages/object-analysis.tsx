@@ -729,7 +729,7 @@ export default function ObjectAnalysis() {
     };
     
     // Return specific color meaning or generate a meaningful default based on the color name
-    return positiveTraits[color] || `Enhances ${color.toLowerCase()} energy frequencies, promotes spiritual development through unique vibrational qualities, supports personal transformation and consciousness expansion`;
+    return positiveTraits[color] || `Enhances ${getColorPositiveTraits.toLowerCase()} energy frequencies, promotes spiritual development through unique vibrational qualities, supports personal transformation and consciousness expansion`;
   };
 
   const getColorEnergyProperties = (color: string): string => {
@@ -747,27 +747,10 @@ export default function ObjectAnalysis() {
       "Gold": "Divine wisdom frequency, enlightenment energy, spiritual mastery vibration, cosmic intelligence, advanced consciousness",
       "Silver": "Lunar frequency vibration, psychic enhancement energy, emotional intuition, feminine wisdom, dream consciousness"
     };
-    return energyProperties[color] || `${color} energy carries unique vibrational frequencies that activate specific spiritual centers and enhance consciousness through distinctive metaphysical properties and energy field interactions.`;
+    return energyProperties[color] || `${getColorEnergyProperties} energy carries unique vibrational frequencies that activate specific spiritual centers and enhance consciousness through distinctive metaphysical properties and energy field interactions.`;
   };
 
   // Enhanced energy influence functions
-  const getEnvironmentalInfluence = (color: string): string => {
-    const environmentalEffects: Record<string, string> = {
-      "Purple": "Creates a sacred sanctuary atmosphere that elevates spiritual consciousness and transforms ordinary spaces into temples of higher wisdom. The purple energy field generates an electromagnetic frequency that opens portals to divine realms and facilitates deep meditative states.",
-      "Red": "Infuses spaces with powerful life force energy that stimulates physical vitality and grounds scattered energies. Red vibrations create an atmosphere of strength, protection, and material manifestation while anchoring spiritual energies into physical reality.",
-      "Orange": "Transforms environments into creative sanctuaries that inspire artistic expression and emotional healing. Orange energy fields encourage spontaneous creativity, dissolve emotional blockages, and create warm, nurturing atmospheres that support personal transformation.",
-      "Yellow": "Illuminates spaces with solar consciousness that enhances mental clarity and intellectual pursuits. Yellow vibrations create learning environments that stimulate the mind, boost confidence, and facilitate clear communication and decision-making processes.",
-      "Green": "Harmonizes environmental energies to create healing sanctuaries that promote heart-centered living. Green fields generate natural balance, emotional stability, and abundance consciousness while connecting spaces to the healing power of nature.",
-      "Blue": "Establishes peaceful communication zones that promote truth, wisdom, and spiritual teaching. Blue energy creates calming atmospheres that facilitate honest dialogue, meditative contemplation, and connection to divine guidance.",
-      "Indigo": "Opens psychic portals that enhance intuitive abilities and spiritual sight. Indigo vibrations create mystical environments that stimulate third eye activation, facilitate prophetic dreams, and connect spaces to cosmic consciousness.",
-      "Pink": "Generates unconditional love fields that heal emotional wounds and open hearts. Pink energy creates nurturing environments that promote self-love, compassion, and emotional healing while dissolving fear-based patterns.",
-      "White": "Purifies and sanctifies spaces with divine light that clears negative energies and elevates consciousness. White vibrations create temples of purity that facilitate spiritual cleansing, divine connection, and cosmic awareness.",
-      "Black": "Creates heavy energy that drains vitality and manifests spiritual darkness. Black vibrations establish environments of negativity, depression, and spiritual stagnation requiring immediate cleansing and healing work.",
-      "Gold": "Establishes divine wisdom temples that facilitate spiritual teaching and enlightenment. Gold energy creates sacred spaces that enhance spiritual mastery, divine connection, and transmission of cosmic knowledge.",
-      "Silver": "Generates lunar consciousness fields that enhance psychic abilities and emotional intuition. Silver vibrations create mystical environments that support dream work, psychic development, and feminine wisdom activation."
-    };
-    return environmentalEffects[color] || `${color} energy creates a unique atmospheric field that transforms the surrounding environment through specific vibrational frequencies, enhancing the space with distinctive metaphysical properties and energetic influences.`;
-  };
 
   const getChakraInfluence = (color: string): string => {
     const chakraEffects: Record<string, string> = {
@@ -787,23 +770,6 @@ export default function ObjectAnalysis() {
     return chakraEffects[color] || `${color} energy activates specific chakra centers through resonant vibrational frequencies, creating targeted energy vortexes that enhance spiritual development and consciousness expansion through unique color therapy principles.`;
   };
 
-  const getEmotionalInfluence = (color: string): string => {
-    const emotionalEffects: Record<string, string> = {
-      "Purple": "Induces profound spiritual euphoria and transcendent states that elevate consciousness beyond ordinary emotional patterns. Creates feelings of divine connection, cosmic love, and mystical bliss while dissolving ego-based emotional reactions.",
-      "Red": "Generates intense emotional energy that stimulates passion, courage, and vital life force. Enhances emotional strength, survival instincts, and physical confidence while grounding scattered emotional energies into focused action.",
-      "Orange": "Promotes emotional healing and creative expression that dissolves blocked feelings and inspires artistic passion. Enhances emotional flexibility, personal power, and sacred sexuality while balancing masculine and feminine energies.",
-      "Yellow": "Brightens mental outlook and emotional optimism while enhancing self-confidence and personal power. Stimulates joyful emotions, intellectual curiosity, and clear emotional communication while dissolving fear-based thought patterns.",
-      "Green": "Creates emotional balance and heart-centered feelings that promote love, compassion, and healing. Enhances emotional stability, natural harmony, and abundance consciousness while dissolving heart wounds and fear patterns.",
-      "Blue": "Induces peaceful emotional states that promote inner calm, truth, and spiritual serenity. Enhances emotional wisdom, clear communication, and peaceful resolution of conflicts while connecting to divine tranquility.",
-      "Indigo": "Deepens emotional intuition and psychic sensitivity while enhancing spiritual emotional experiences. Promotes mystical feelings, prophetic emotions, and deep inner knowing while connecting to cosmic emotional wisdom.",
-      "Pink": "Generates unconditional love feelings that heal emotional wounds and open hearts to compassion. Enhances self-love, emotional nurturing, and heart-centered living while dissolving fear, anger, and emotional pain.",
-      "White": "Purifies emotional body and creates feelings of divine peace, spiritual clarity, and cosmic love. Enhances emotional purity, spiritual serenity, and connection to divine emotional states while clearing negative emotional patterns.",
-      "Black": "Indicates suppressed emotional trauma, unresolved grief, and deep emotional wounds requiring healing. Creates emotional heaviness, depression, and emotional blockages that need therapeutic intervention and spiritual cleansing.",
-      "Gold": "Elevates emotions to divine wisdom states that transcend ordinary emotional patterns. Enhances feelings of spiritual mastery, divine love, and enlightened emotional expression while connecting to cosmic emotional intelligence.",
-      "Silver": "Enhances emotional intuition and psychic emotional sensitivity while connecting to lunar emotional wisdom. Promotes empathic feelings, dream emotions, and feminine emotional knowing while balancing emotional polarities."
-    };
-    return emotionalEffects[color] || `${color} energy influences emotional states through specific vibrational frequencies, creating unique emotional atmospheres that support healing, transformation, and consciousness expansion through distinctive color therapy interactions.`;
-  };
 
   const getSpiritualInfluence = (color: string): string => {
     const spiritualEffects: Record<string, string> = {
@@ -849,14 +815,17 @@ export default function ObjectAnalysis() {
       "Blue": [
         "Place at throat chakra level for enhanced truthful expression",
         "Combine with blue lace agate or sodalite for enhanced communication"
-      ]
+      ],
+      "Indigo": [
+        "Position at third eye level for psychic activation",
+        "Combine with indigo agate or lapis lazuli for enhanced intuition"
+      ],
+      "Gold": [
+        "position at heart"
+        ]
     };
     return placementTips[color] || [
-      `Place ${color.toLowerCase()} objects in meditation spaces for enhanced spiritual connection`,
-      `Position near windows to amplify ${color.toLowerCase()} energy with natural light`,
-      `Keep in bedrooms for nighttime ${color.toLowerCase()} energy influence`,
-      `Display in study areas to enhance ${color.toLowerCase()} consciousness frequencies`,
-      `Place on altars or sacred spaces for ${color.toLowerCase()} spiritual activation`
+      `Place ${color.toLowerCase()} objects in meditation spaces for enhanced spiritual connection`
     ];
   };
 
