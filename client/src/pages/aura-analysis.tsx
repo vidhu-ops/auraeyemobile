@@ -2732,12 +2732,12 @@ export default function AuraAnalysis() {
         // Use multiply blend mode for natural color merging
         ctx.globalCompositeOperation = 'source-over';
 
-        // Create horizontal gradient blending from left (giving) to right (receiving)
+        // Create horizontal gradient blending from left (receiving) to right (giving) - CORRECTED
         const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-        horizontalGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.48)`);
-        horizontalGradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.48)`);
-        horizontalGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
-        horizontalGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.38)`);
+        horizontalGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.48)`);
+        horizontalGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
+        horizontalGradient.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.48)`);
+        horizontalGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.38)`);
 
         ctx.fillStyle = horizontalGradient;
         ctx.fillRect(0, 0, width, height);

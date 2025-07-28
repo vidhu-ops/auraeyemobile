@@ -24,7 +24,7 @@ export default function About() {
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="font-heading font-bold text-4xl md:text-5xl mb-6">About Aurfy</h1>
+              <h1 className="font-heading font-bold text-4xl md:text-5xl mb-6">About AuraEye</h1>
               <p className="text-xl opacity-90 mb-8">
                 We're on a mission to make spiritual wellness and energy healing accessible to everyone through the power of technology and ancient wisdom.
               </p>
@@ -39,13 +39,13 @@ export default function About() {
               <div>
                 <h2 className="font-heading font-bold text-3xl mb-6">Our Story</h2>
                 <p className="text-gray-600 mb-4">
-                  Aurafy was born from a vision to bridge the gap between ancient spiritual practices and modern technology. Our founder, a spiritual healer with over 20 years of experience, recognized that many people struggled to access quality spiritual guidance and energy healing.
+                  AuraEye was born from a vision to bridge the gap between ancient spiritual practices and modern technology. Our founder, a spiritual healer with over 20 years of experience, recognized that many people struggled to access quality spiritual guidance and energy healing.
                 </p>
                 <p className="text-gray-600 mb-4">
                   By combining traditional metaphysical knowledge with cutting-edge artificial intelligence, we've created a platform that can analyze your energy field, provide personalized spiritual insights, and connect you with certified healers—all from the comfort of your home.
                 </p>
                 <p className="text-gray-600">
-                  Our name, Aurafy, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Fortify" (to strengthen and protect), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
+                  Our name, AuraEye, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Fortify" (to strengthen and protect), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
               </div>
               
@@ -217,7 +217,7 @@ export default function About() {
                     <div>
                       <h3 className="font-heading font-semibold text-2xl mb-4">Our Research Foundation</h3>
                       <p className="text-gray-600 mb-4">
-                        The Aurafy approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
+                        The AuraEye approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
                       </p>
                       <p className="text-gray-600 mb-6">
                         Our team includes not only spiritual practitioners but also data scientists, psychologists, and researchers who work together to create a holistic approach to spiritual wellness that honors tradition while embracing innovation.
@@ -334,7 +334,7 @@ export default function About() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="font-heading font-bold text-3xl md:text-4xl mb-6">Join Our Spiritual Community</h2>
               <p className="text-xl opacity-90 mb-8">
-                Begin your journey of spiritual discovery and energy healing with Aurfy today.
+                Begin your journey of spiritual discovery and energy healing with AuraEye today.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
