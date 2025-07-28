@@ -1008,7 +1008,67 @@ export default function AuraAnalysis() {
         }
       };
 
-      // PAGE 1: TITLE AND OVERVIEW
+      // Add the uploaded image as the first page if available
+      const addUploadedImageAsFirstPage = async () => {
+        try {
+          // Import the uploaded image directly from attached assets  
+          const uploadedImageModule = await import('@assets/WhatsApp Image 2025-07-28 at 10.02.03 PM_1753725795826.jpeg');
+          const uploadedImageSrc = uploadedImageModule.default;
+          
+          // Create image to get dimensions
+          const img = new Image();
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = uploadedImageSrc;
+          });
+          
+          // Calculate dimensions to fit page while maintaining aspect ratio
+          const imgAspectRatio = img.width / img.height;
+          const maxWidth = pageWidth - 40; // Leave margins
+          const maxHeight = pageHeight - 60; // Leave margins
+          
+          let imgWidth, imgHeight;
+          if (imgAspectRatio > maxWidth / maxHeight) {
+            // Image is wider, fit to page width
+            imgWidth = maxWidth;
+            imgHeight = imgWidth / imgAspectRatio;
+          } else {
+            // Image is taller, fit to page height
+            imgHeight = maxHeight;
+            imgWidth = imgHeight * imgAspectRatio;
+          }
+          
+          // Center the image on the page
+          const imgX = (pageWidth - imgWidth) / 2;
+          const imgY = (pageHeight - imgHeight) / 2;
+          
+          // Add the uploaded original image as first page
+          pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+          
+          // Add caption
+          pdf.setFontSize(10);
+          pdf.setTextColor(120, 120, 120);
+          pdf.text('Original Image for Aura Analysis', pageWidth/2, pageHeight - 15, { align: 'center' });
+          
+          console.log('Successfully added uploaded image as first page');
+          return true;
+        } catch (error) {
+          console.warn('Could not load uploaded image for first page:', error);
+          return false;
+        }
+      };
+
+      // Try to add uploaded image as first page
+      const uploadedImageAdded = await addUploadedImageAsFirstPage();
+      
+      // If uploaded image was added, start new page for title
+      if (uploadedImageAdded) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      // PAGE 1 (or 2 if uploaded image was added): TITLE AND OVERVIEW
       pdf.setFontSize(28);
       pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('AURA & CHAKRA ALIGNMENT REPORT', pageWidth/2, yPosition, { align: 'center' });
