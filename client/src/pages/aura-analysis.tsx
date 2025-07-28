@@ -1023,33 +1023,28 @@ export default function AuraAnalysis() {
             img.src = uploadedImageSrc;
           });
           
-          // Calculate dimensions to fit page while maintaining aspect ratio
+          // Calculate dimensions to fill entire page while maintaining aspect ratio
           const imgAspectRatio = img.width / img.height;
-          const maxWidth = pageWidth - 40; // Leave margins
-          const maxHeight = pageHeight - 60; // Leave margins
+          const pageAspectRatio = pageWidth / pageHeight;
           
-          let imgWidth, imgHeight;
-          if (imgAspectRatio > maxWidth / maxHeight) {
-            // Image is wider, fit to page width
-            imgWidth = maxWidth;
-            imgHeight = imgWidth / imgAspectRatio;
-          } else {
-            // Image is taller, fit to page height
-            imgHeight = maxHeight;
+          let imgWidth, imgHeight, imgX, imgY;
+          
+          if (imgAspectRatio > pageAspectRatio) {
+            // Image is wider than page ratio, fit to page height and crop sides
+            imgHeight = pageHeight;
             imgWidth = imgHeight * imgAspectRatio;
+            imgX = (pageWidth - imgWidth) / 2; // Center horizontally
+            imgY = 0;
+          } else {
+            // Image is taller than page ratio, fit to page width and crop top/bottom
+            imgWidth = pageWidth;
+            imgHeight = imgWidth / imgAspectRatio;
+            imgX = 0;
+            imgY = (pageHeight - imgHeight) / 2; // Center vertically
           }
           
-          // Center the image on the page
-          const imgX = (pageWidth - imgWidth) / 2;
-          const imgY = (pageHeight - imgHeight) / 2;
-          
-          // Add the uploaded original image as first page
+          // Add the uploaded original image as full-page first page
           pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-          
-          // Add caption
-          pdf.setFontSize(10);
-          pdf.setTextColor(120, 120, 120);
-          pdf.text('Original Image for Aura Analysis', pageWidth/2, pageHeight - 15, { align: 'center' });
           
           console.log('Successfully added uploaded image as first page');
           return true;
