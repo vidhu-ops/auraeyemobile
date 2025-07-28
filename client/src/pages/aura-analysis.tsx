@@ -1116,9 +1116,30 @@ export default function AuraAnalysis() {
         yPosition += 10;
 
         try {
-          // Add the processed aura image to PDF
-          const imgWidth = 120; // Width in mm
-          const imgHeight = 67.5; // Height in mm (maintaining 16:9 aspect ratio)
+          // Create a new image to get actual dimensions
+          const tempImg = new Image();
+          await new Promise((resolve, reject) => {
+            tempImg.onload = resolve;
+            tempImg.onerror = reject;
+            tempImg.src = processedAuraImage;
+          });
+          
+          // Calculate dimensions to match webapp display (larger, more prominent)
+          const imgAspectRatio = tempImg.width / tempImg.height;
+          const maxWidth = pageWidth - 20; // Use almost full page width with small margins
+          const maxHeight = 120; // Reasonable height limit
+          
+          let imgWidth, imgHeight;
+          if (imgAspectRatio > maxWidth / maxHeight) {
+            // Image is wider, fit to page width
+            imgWidth = maxWidth;
+            imgHeight = imgWidth / imgAspectRatio;
+          } else {
+            // Image is taller, fit to height
+            imgHeight = maxHeight;
+            imgWidth = imgHeight * imgAspectRatio;
+          }
+          
           const imgX = (pageWidth - imgWidth) / 2; // Center the image
           
           pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
@@ -1129,7 +1150,7 @@ export default function AuraAnalysis() {
           yPosition = addTextWithPageBreak('Your personalized aura visualization showing energy patterns and spiritual colors', pageWidth/2, yPosition, { align: 'center' });
           yPosition += 15;
         } catch (imageError) {
-          console.error('Error adding image to PDF:', imageError);
+          console.error('Error adding aura visualization to PDF:', imageError);
           pdf.setFontSize(11);
           pdf.setTextColor(150, 150, 150);
           yPosition = addTextWithPageBreak('Aura visualization image could not be embedded in PDF', 20, yPosition);
@@ -4303,6 +4324,7 @@ export default function AuraAnalysis() {
             // Convert back to base64
             const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
             setEnhancedAuraImage(enhancedImageBase64);
+            setProcessedAuraImage(enhancedImageBase64); // Store for PDF generation
         };
     };
   
