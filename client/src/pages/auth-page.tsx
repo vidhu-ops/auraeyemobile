@@ -91,7 +91,7 @@ export default function AuthPage() {
         <Card className="w-full max-w-md z-10">
           <CardHeader>
             <div className="flex items-center space-x-2 mb-2">
-              <img src="/src/assets/logo.jpeg" alt="Aurfy Logo" className="w-10 h-10 rounded-full object-cover" />
+              <img src="/src/assets/new-logo.jpeg" alt="Aurfy Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="font-heading font-bold text-2xl text-primary">Aurfy</span>
             </div>
             <CardTitle className="text-2xl">Welcome to Aurfy</CardTitle>
