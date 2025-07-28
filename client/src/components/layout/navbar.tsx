@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Menu, User, LogOut, CreditCard } from "lucide-react";
+import logoPath from "@/assets/logo.jpeg";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -56,10 +57,8 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 relative">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-xl">A</span>
-            </div>
-            <span className="font-heading font-bold text-2xl text-primary">AuraEye</span>
+            <img src={logoPath} alt="Aurfy Logo" className="w-10 h-10 rounded-full object-cover" />
+            <span className="font-heading font-bold text-2xl text-primary">Aurfy</span>
           </Link>
 
           {/* Mobile menu button */}
