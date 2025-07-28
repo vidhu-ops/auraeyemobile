@@ -2906,40 +2906,40 @@ export default function AuraAnalysis() {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.4,
-        startX: 0,
-        endX: width,
-        density: 0.9, // Increased for better visibility
+        endY: height * 0.35, // Reduced to prevent overlap with side zones
+        startX: width * 0.1, // Add margins to focus the zone
+        endX: width * 0.9,
+        density: 0.9, // Keep high density for better visibility
         name: 'thinking'
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.1,
-        endY: height * 0.9,
+        startY: height * 0.15, // Start lower to avoid thinking zone
+        endY: height * 0.85, // End higher to avoid personality zone
         startX: 0,
-        endX: width * 0.5,
-        density: 0.7, // Consistent density for uniform appearance
+        endX: width * 0.45, // Strengthen left side restriction
+        density: 0.8, // Increased density for stronger zone presence
         name: 'receiving'
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.1,
-        endY: height * 0.9,
-        startX: width * 0.5,
+        startY: height * 0.15, // Start lower to avoid thinking zone
+        endY: height * 0.85, // End higher to avoid personality zone
+        startX: width * 0.55, // Strengthen right side restriction
         endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        density: 0.8, // Increased density for stronger zone presence
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.6,
+        startY: height * 0.65, // Start lower to avoid side zones
         endY: height,
-        startX: 0,
-        endX: width,
-        density: 0.7, // Consistent density for uniform appearance
+        startX: width * 0.1, // Add margins to focus the zone
+        endX: width * 0.9,
+        density: 0.8, // Increased density for stronger zone presence
         name: 'personality'
       }
     ];
@@ -3096,7 +3096,100 @@ export default function AuraAnalysis() {
       ctx.restore();
     });
     
-    // ULTRA-SMOOTH CROSS-ZONE BLENDING - Create seamless color transitions
+    // ENHANCED ZONE BOUNDARY BLENDING - Create smooth transitions at zone intersections
+    ctx.save();
+    ctx.filter = 'blur(60px)';
+    ctx.globalCompositeOperation = 'soft-light';
+    
+    // Thinking-Receiving boundary blending (top-left intersection)
+    for (let i = 0; i < 25; i++) {
+      const x = width * 0.1 + seededRandom() * (width * 0.35); // Top-left area
+      const y = height * 0.25 + seededRandom() * (height * 0.15); // Mid area between zones
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 2.0) continue;
+      
+      const radius = 80 + seededRandom() * 60;
+      const blendColor = seededRandom() > 0.5 ? colors.thinkingRGB : colors.receivingRGB;
+      const opacity = 0.06 + seededRandom() * 0.08;
+      
+      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Thinking-Giving boundary blending (top-right intersection)
+    for (let i = 0; i < 25; i++) {
+      const x = width * 0.55 + seededRandom() * (width * 0.35); // Top-right area
+      const y = height * 0.25 + seededRandom() * (height * 0.15); // Mid area between zones
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 2.0) continue;
+      
+      const radius = 80 + seededRandom() * 60;
+      const blendColor = seededRandom() > 0.5 ? colors.thinkingRGB : colors.givingRGB;
+      const opacity = 0.06 + seededRandom() * 0.08;
+      
+      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Receiving-Personality boundary blending (bottom-left intersection)
+    for (let i = 0; i < 25; i++) {
+      const x = width * 0.1 + seededRandom() * (width * 0.35); // Bottom-left area
+      const y = height * 0.60 + seededRandom() * (height * 0.15); // Mid area between zones
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 2.0) continue;
+      
+      const radius = 80 + seededRandom() * 60;
+      const blendColor = seededRandom() > 0.5 ? colors.receivingRGB : colors.personalityRGB;
+      const opacity = 0.06 + seededRandom() * 0.08;
+      
+      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Giving-Personality boundary blending (bottom-right intersection)
+    for (let i = 0; i < 25; i++) {
+      const x = width * 0.55 + seededRandom() * (width * 0.35); // Bottom-right area
+      const y = height * 0.60 + seededRandom() * (height * 0.15); // Mid area between zones
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 2.0) continue;
+      
+      const radius = 80 + seededRandom() * 60;
+      const blendColor = seededRandom() > 0.5 ? colors.givingRGB : colors.personalityRGB;
+      const opacity = 0.06 + seededRandom() * 0.08;
+      
+      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Center area blending - where all zones meet around the person
+    for (let i = 0; i < 30; i++) {
+      const x = centerX + (seededRandom() - 0.5) * width * 0.4;
+      const y = centerY + (seededRandom() - 0.5) * height * 0.4;
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 2.5) continue;
+      
+      const radius = 60 + seededRandom() * 40;
+      const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
+      const blendColor = allColors[Math.floor(seededRandom() * allColors.length)];
+      const opacity = 0.04 + seededRandom() * 0.06;
+      
+      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    ctx.restore();
+
+    // ULTRA-SMOOTH CROSS-ZONE BLENDING - Create seamless color transitions  
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Multiple blending layers with different modes for natural color fusion
@@ -3606,8 +3699,8 @@ export default function AuraAnalysis() {
                 zone: 'top',
                 density: 30,
                 getCoords: () => ({
-                    x: width * 0.15 + seededRandom() * (width * 0.7),
-                    y: seededRandom() * (height * 0.2)
+                    x: width * 0.1 + seededRandom() * (width * 0.8), // Match main zone restrictions
+                    y: seededRandom() * (height * 0.35) // Limited to top 35% like main zones
                 })
             },
             {
@@ -3615,8 +3708,8 @@ export default function AuraAnalysis() {
                 zone: 'left',
                 density: 40,
                 getCoords: () => ({
-                    x: seededRandom() * (width * 0.3), // LEFT side for receiving energy
-                    y: height * 0.15 + seededRandom() * (height * 0.7)
+                    x: seededRandom() * (width * 0.45), // LEFT side - strengthened restriction to 45%
+                    y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
                 })
             },
             {
@@ -3624,8 +3717,8 @@ export default function AuraAnalysis() {
                 zone: 'right',
                 density: 60,
                 getCoords: () => ({
-                    x: width * 0.7 + seededRandom() * (width * 0.3), // RIGHT side for giving energy
-                    y: height * 0.15 + seededRandom() * (height * 0.7)
+                    x: width * 0.55 + seededRandom() * (width * 0.45), // RIGHT side - strengthened restriction from 55%
+                    y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
                 })
             },
         ];
@@ -3726,17 +3819,26 @@ export default function AuraAnalysis() {
             {
                 name: 'top',
                 color: colors.thinkingRGB,
-                coords: () => ({ x: seededRandom() * width, y: seededRandom() * height * 0.2 })
+                coords: () => ({ 
+                  x: width * 0.1 + seededRandom() * (width * 0.8), // Match zone restrictions
+                  y: seededRandom() * height * 0.35 // Limited to top 35%
+                })
             },
             {
-                name: 'right',
+                name: 'left', // Note: This was incorrectly labeled 'right' but positioned left
                 color: colors.receivingRGB,
-                coords: () => ({ x: width - seededRandom() * width * 0.3, y: seededRandom() * height })
+                coords: () => ({ 
+                  x: seededRandom() * width * 0.45, // LEFT side - receiving energy, strengthened
+                  y: height * 0.15 + seededRandom() * (height * 0.7) // Match main zone Y range
+                })
             },
             {
-                name: 'left',
+                name: 'right', // Note: This was incorrectly labeled 'left' but positioned right
                 color: colors.givingRGB,
-                coords: () => ({ x: seededRandom() * width * 0.3, y: seededRandom() * height })
+                coords: () => ({ 
+                  x: width * 0.55 + seededRandom() * (width * 0.45), // RIGHT side - giving energy, strengthened
+                  y: height * 0.15 + seededRandom() * (height * 0.7) // Match main zone Y range
+                })
             }
         ];
 
