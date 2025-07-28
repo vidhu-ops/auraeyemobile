@@ -2944,84 +2944,109 @@ export default function AuraAnalysis() {
       }
     ];
     
-    // ULTRA-SMOOTH GRADIENT BASE LAYERS - Create seamless color transitions
+    // ZONE-SPECIFIC GRADIENT LAYERS - Create distinct zones with clear boundaries like reference images
     colorZones.forEach(zone => {
       ctx.save();
       ctx.globalCompositeOperation = 'source-over';
       
-      let gradient;
-      
-      // Create ultra-smooth zone-specific gradients with enhanced diffusion
+      // Create zone-specific masks and gradients to maintain distinct areas
       switch (zone.name) {
         case 'thinking':
-          // Multiple overlapping gradients for ultra-smooth blending
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 30;
-            gradient = ctx.createRadialGradient(
-              centerX + offset, centerY * 0.2 + offset, personRadius, 
-              centerX + offset, centerY * 0.2 + offset, height * 0.8
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
-            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
+          // TOP ZONE - Strong presence in upper area
+          const thinkingGrad = ctx.createLinearGradient(centerX, 0, centerX, height * 0.5);
+          thinkingGrad.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.7)`);
+          thinkingGrad.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          thinkingGrad.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
+          thinkingGrad.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          ctx.fillStyle = thinkingGrad;
+          ctx.fillRect(0, 0, width, height * 0.5);
           break;
+          
         case 'receiving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
-            gradient = ctx.createRadialGradient(
-              width * 0.15 + offset, centerY + offset, personRadius * 0.8, 
-              width * 0.15 + offset, centerY + offset, width * 0.85
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
-            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
+          // LEFT ZONE - Strong presence on left side
+          const receivingGrad = ctx.createLinearGradient(0, centerY, width * 0.6, centerY);
+          receivingGrad.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.7)`);
+          receivingGrad.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          receivingGrad.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
+          receivingGrad.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          ctx.fillStyle = receivingGrad;
+          ctx.fillRect(0, height * 0.1, width * 0.6, height * 0.8);
           break;
+          
         case 'giving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
-            gradient = ctx.createRadialGradient(
-              width * 0.85 - offset, centerY + offset, personRadius * 0.8, 
-              width * 0.85 - offset, centerY + offset, width * 0.85
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
-            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
+          // RIGHT ZONE - Strong presence on right side  
+          const givingGrad = ctx.createLinearGradient(width, centerY, width * 0.4, centerY);
+          givingGrad.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.7)`);
+          givingGrad.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          givingGrad.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
+          givingGrad.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          ctx.fillStyle = givingGrad;
+          ctx.fillRect(width * 0.4, height * 0.1, width * 0.6, height * 0.8);
           break;
+          
         case 'personality':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 20;
-            gradient = ctx.createRadialGradient(
-              centerX + offset, height * 0.85 - offset, personRadius * 0.6, 
-              centerX + offset, height * 0.85 - offset, height * 0.7
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
-            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.15)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.06)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
+          // BOTTOM ZONE - Strong presence in lower area
+          const personalityGrad = ctx.createLinearGradient(centerX, height, centerX, height * 0.5);
+          personalityGrad.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.7)`);
+          personalityGrad.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.5)`);
+          personalityGrad.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.2)`);
+          personalityGrad.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
+          ctx.fillStyle = personalityGrad;
+          ctx.fillRect(0, height * 0.5, width, height * 0.5);
           break;
       }
       
+      // Add face protection mask for each zone
+      ctx.globalCompositeOperation = 'destination-out';
+      const faceGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, personRadius);
+      faceGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
+      faceGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.8)');
+      faceGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = faceGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
       ctx.restore();
     });
+    
+    // ZONE BLENDING LAYER - Create smooth transitions between adjacent zones like reference images
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    
+    // Create blending between thinking-receiving (top-left corner)
+    const topLeftBlend = ctx.createRadialGradient(width * 0.25, height * 0.25, 0, width * 0.25, height * 0.25, width * 0.3);
+    topLeftBlend.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.3)`);
+    topLeftBlend.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
+    topLeftBlend.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = topLeftBlend;
+    ctx.fillRect(0, 0, width * 0.5, height * 0.5);
+    
+    // Create blending between thinking-giving (top-right corner)
+    const topRightBlend = ctx.createRadialGradient(width * 0.75, height * 0.25, 0, width * 0.75, height * 0.25, width * 0.3);
+    topRightBlend.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.3)`);
+    topRightBlend.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.3)`);
+    topRightBlend.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = topRightBlend;
+    ctx.fillRect(width * 0.5, 0, width * 0.5, height * 0.5);
+    
+    // Create blending between personality-receiving (bottom-left corner)
+    const bottomLeftBlend = ctx.createRadialGradient(width * 0.25, height * 0.75, 0, width * 0.25, height * 0.75, width * 0.3);
+    bottomLeftBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.3)`);
+    bottomLeftBlend.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
+    bottomLeftBlend.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = bottomLeftBlend;
+    ctx.fillRect(0, height * 0.5, width * 0.5, height * 0.5);
+    
+    // Create blending between personality-giving (bottom-right corner)
+    const bottomRightBlend = ctx.createRadialGradient(width * 0.75, height * 0.75, 0, width * 0.75, height * 0.75, width * 0.3);
+    bottomRightBlend.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.3)`);
+    bottomRightBlend.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.3)`);
+    bottomRightBlend.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = bottomRightBlend;
+    ctx.fillRect(width * 0.5, height * 0.5, width * 0.5, height * 0.5);
+    
+    ctx.restore();
     
     // ULTRA-DIFFUSED SMOKE LAYERS - Create seamless blended aura effects
     colorZones.forEach(zone => {
@@ -3030,7 +3055,7 @@ export default function AuraAnalysis() {
       ctx.filter = 'blur(80px)';
       ctx.globalCompositeOperation = 'source-over';
       
-      const particles1 = Math.floor(40 * zone.density);
+      const particles1 = Math.floor(15 * zone.density); // Reduced particles to maintain zone distinction
       for (let i = 0; i < particles1; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
@@ -3054,7 +3079,7 @@ export default function AuraAnalysis() {
       ctx.filter = 'blur(30px)';
       ctx.globalCompositeOperation = 'soft-light';
       
-      const particles2 = Math.floor(35 * zone.density);
+      const particles2 = Math.floor(12 * zone.density); // Further reduced for zone distinction
       for (let i = 0; i < particles2; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
@@ -3077,7 +3102,7 @@ export default function AuraAnalysis() {
       ctx.filter = 'blur(30px)';
       ctx.globalCompositeOperation = 'screen';
       
-      const particles3 = Math.floor(25 * zone.density);
+      const particles3 = Math.floor(8 * zone.density); // Minimal particles for zone distinction
       for (let i = 0; i < particles3; i++) {
         const x = zone.startX + seededRandom() * (zone.endX - zone.startX);
         const y = zone.startY + seededRandom() * (zone.endY - zone.startY);
@@ -3101,10 +3126,9 @@ export default function AuraAnalysis() {
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 40, opacity: [0.08, 0.15] },
-      { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.06, 0.12] },
-      { blur: 50, mode: 'overlay', particles: 40, opacity: [0.04, 0.10] },
-      { blur: 30, mode: 'overlay', particles: 30, opacity: [0.02, 0.06] }
+      { blur: 100, mode: 'screen', particles: 10, opacity: [0.03, 0.08] },
+      { blur: 70, mode: 'soft-light', particles: 8, opacity: [0.02, 0.06] },
+      { blur: 50, mode: 'overlay', particles: 6, opacity: [0.01, 0.04] }
     ];
     
     blendingLayers.forEach(layer => {
