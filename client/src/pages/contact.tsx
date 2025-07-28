@@ -55,7 +55,7 @@ export default function Contact() {
                         </div>
                         <div className="flex items-start">
                           <Mail className="mt-1 mr-3 h-5 w-5" />
-                          <p>contact@aurfy.com</p>
+                          <p>contact@auraeye.com</p>
                         </div>
                       </div>
                       
@@ -125,7 +125,7 @@ export default function Contact() {
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <h3 className="font-heading font-semibold text-lg mb-2">Can I use Aurafy for professional spiritual guidance?</h3>
                 <p className="text-gray-600">
-                  While Aurafy provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
+                  While AuraEye provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
                 </p>
               </div>
             </div>
