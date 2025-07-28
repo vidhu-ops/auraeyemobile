@@ -1088,18 +1088,18 @@ export default function AuraAnalysis() {
       // SECTION 1: AURA COLOR ANALYSIS
       pdf.setFontSize(20);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('AURA COLOR ANALYSIS', 20, yPosition);
+      yPosition = addTextWithPageBreak('AURA COLOR ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(14);
       pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
       if (result.secondaryColor) {
-        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, 20, yPosition);
+        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
       }
-      yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 15;
 
       // ADD AURA VISUALIZATION IMAGE
@@ -1112,7 +1112,7 @@ export default function AuraAnalysis() {
 
         pdf.setFontSize(16);
         pdf.setTextColor(75, 0, 130);
-        yPosition = addTextWithPageBreak('AURA VISUALIZATION', 20, yPosition);
+        yPosition = addTextWithPageBreak('AURA VISUALIZATION', pageWidth/2, yPosition, { align: 'center' });
         yPosition += 10;
 
         try {
@@ -1153,7 +1153,7 @@ export default function AuraAnalysis() {
           console.error('Error adding aura visualization to PDF:', imageError);
           pdf.setFontSize(11);
           pdf.setTextColor(150, 150, 150);
-          yPosition = addTextWithPageBreak('Aura visualization image could not be embedded in PDF', 20, yPosition);
+          yPosition = addTextWithPageBreak('Aura visualization image could not be embedded in PDF', pageWidth/2, yPosition, { align: 'center' });
           yPosition += 10;
         }
       }
@@ -1161,7 +1161,7 @@ export default function AuraAnalysis() {
       // SECTION 2: SPIRITUAL ANALYSIS
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('SPIRITUAL ANALYSIS', 20, yPosition);
+      yPosition = addTextWithPageBreak('SPIRITUAL ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(11);
@@ -1178,12 +1178,12 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('ENERGY LEVEL ANALYSIS', 20, yPosition);
+      yPosition = addTextWithPageBreak('ENERGY LEVEL ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(12);
       pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Overall Energy Level: ${result.energyLevel}/10`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Overall Energy Level: ${result.energyLevel}/10`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 6;
       
       const energyDescription = result.energyLevel >= 8 ? 'Very High Energy - Vibrant and Active' :
@@ -1191,7 +1191,7 @@ export default function AuraAnalysis() {
                               result.energyLevel >= 4 ? 'Moderate Energy - Balanced and Steady' :
                               'Low Energy - Calm and Gentle';
       
-      yPosition = addTextWithPageBreak(`Energy Classification: ${energyDescription}`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Energy Classification: ${energyDescription}`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       // SECTION 4: DETAILED COLOR MEANINGS
@@ -1202,13 +1202,13 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('DETAILED COLOR MEANINGS', 20, yPosition);
+      yPosition = addTextWithPageBreak('DETAILED COLOR MEANINGS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       // Dominant Color Analysis
       pdf.setFontSize(14);
       pdf.setTextColor(100, 0, 150);
-      yPosition = addTextWithPageBreak(`Dominant Color - ${result.dominantColor}:`, 20, yPosition);
+      yPosition = addTextWithPageBreak(`Dominant Color - ${result.dominantColor}:`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
@@ -1220,7 +1220,7 @@ export default function AuraAnalysis() {
       if (result.secondaryColor) {
         pdf.setFontSize(14);
         pdf.setTextColor(100, 0, 150);
-        yPosition = addTextWithPageBreak(`Secondary Color - ${result.secondaryColor}:`, 20, yPosition);
+        yPosition = addTextWithPageBreak(`Secondary Color - ${result.secondaryColor}:`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
         pdf.setFontSize(11);
         pdf.setTextColor(60, 60, 60);
@@ -1238,7 +1238,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('SPIRITUAL INSIGHTS & CHARACTERISTICS', 20, yPosition);
+      yPosition = addTextWithPageBreak('SPIRITUAL INSIGHTS & CHARACTERISTICS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(12);
@@ -1265,7 +1265,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('COMPREHENSIVE ANALYSIS & RECOMMENDATIONS', 20, yPosition);
+      yPosition = addTextWithPageBreak('COMPREHENSIVE ANALYSIS & RECOMMENDATIONS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(11);
@@ -1282,7 +1282,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('SPIRITUAL GUIDANCE', 20, yPosition);
+      yPosition = addTextWithPageBreak('SPIRITUAL GUIDANCE', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(11);
@@ -1299,7 +1299,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('CHAKRA SYSTEM ANALYSIS', 20, yPosition);
+      yPosition = addTextWithPageBreak('CHAKRA SYSTEM ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(12);
@@ -1320,7 +1320,7 @@ export default function AuraAnalysis() {
         Object.entries(result.chakraActivity).forEach(([key, value]) => {
           const name = chakraNames[key as keyof typeof chakraNames] || key;
           const percentage = Math.round((value / 10) * 100);
-          yPosition = addTextWithPageBreak(`${name}: ${value}/10 (${percentage}%)`, 20, yPosition);
+          yPosition = addTextWithPageBreak(`${name}: ${value}/10 (${percentage}%)`, pageWidth/2, yPosition, { align: 'center' });
           yPosition += 6;
         });
       } else {
@@ -1336,7 +1336,7 @@ export default function AuraAnalysis() {
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('FINAL SUMMARY & RECOMMENDATIONS', 20, yPosition);
+      yPosition = addTextWithPageBreak('FINAL SUMMARY & RECOMMENDATIONS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(11);
@@ -2594,12 +2594,7 @@ export default function AuraAnalysis() {
                             'Gray': [150, 150, 150],        // Slightly darker gray for better contrast
                             'Grey': [150, 150, 150],        // Alternative spelling
                             'Black': [50, 50, 50],          // Slightly lighter for visibility
-                            'Brown': [180, 60, 60],         // More saturated brown
-                            // Additional color variations
-                            'Turquoise': [50, 240, 220],    // More vibrant turquoise
-                            'Teal': [0, 150, 150],          // More saturated teal
-                            'Magenta': [255, 0, 255],       // Magenta
-                            'Cyan': [0, 255, 255]           // Cyan
+                            'Brown': [180, 60, 60]        // Cyan
                         };
                         return colorMap[colorName] || [20, 130, 255]; // Default to vibrant blue
                     };
@@ -3103,7 +3098,7 @@ export default function AuraAnalysis() {
     colorZones.forEach(zone => {
       // LAYER 1: Ultra-large diffused smoke clouds - maximum blur for seamless blending
       ctx.save();
-      ctx.filter = 'blur(80px)';
+      ctx.filter = 'blur(50px)';
       ctx.globalCompositeOperation = 'source-over';
       
       const particles1 = Math.floor(40 * zone.density);
@@ -3150,7 +3145,7 @@ export default function AuraAnalysis() {
       
       // LAYER 3: Fine detail particles with color-dodge for luminous effect
       ctx.save();
-      ctx.filter = 'blur(30px)';
+      ctx.filter = 'blur(20px)';
       ctx.globalCompositeOperation = 'screen';
       
       const particles3 = Math.floor(25 * zone.density);
@@ -3174,7 +3169,7 @@ export default function AuraAnalysis() {
     
     // ENHANCED ZONE BOUNDARY BLENDING - Create smooth transitions at zone intersections
     ctx.save();
-    ctx.filter = 'blur(60px)';
+    ctx.filter = 'blur(30px)';
     ctx.globalCompositeOperation = 'soft-light';
     
     // Thinking-Receiving boundary blending (top-left intersection)
@@ -3245,32 +3240,13 @@ export default function AuraAnalysis() {
       ctx.fill();
     }
     
-    // Center area blending - where all zones meet around the person
-    for (let i = 0; i < 30; i++) {
-      const x = centerX + (seededRandom() - 0.5) * width * 0.4;
-      const y = centerY + (seededRandom() - 0.5) * height * 0.4;
-      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      if (distanceFromCenter < personRadius * 2.5) continue;
-      
-      const radius = 60 + seededRandom() * 40;
-      const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
-      const blendColor = allColors[Math.floor(seededRandom() * allColors.length)];
-      const opacity = 0.04 + seededRandom() * 0.06;
-      
-      ctx.fillStyle = `rgba(${blendColor.r}, ${blendColor.g}, ${blendColor.b}, ${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    
-    ctx.restore();
 
     // ULTRA-SMOOTH CROSS-ZONE BLENDING - Create seamless color transitions  
     const allColors = [colors.thinkingRGB, colors.receivingRGB, colors.givingRGB, colors.personalityRGB];
     
     // Multiple blending layers with different modes for natural color fusion
     const blendingLayers = [
-      { blur: 100, mode: 'screen', particles: 40, opacity: [0.08, 0.15] },
+      { blur: 50, mode: 'screen', particles: 30, opacity: [0.08, 0.15] },
       { blur: 70, mode: 'soft-light', particles: 50, opacity: [0.06, 0.12] },
       { blur: 50, mode: 'overlay', particles: 40, opacity: [0.04, 0.10] },
       { blur: 30, mode: 'overlay', particles: 30, opacity: [0.02, 0.06] }
@@ -3293,13 +3269,7 @@ export default function AuraAnalysis() {
         let color;
         if (y < height * 0.5 && x < width * 0.5) {
           // Top-left: blend thinking and receiving
-          const blend = seededRandom();
-          color = {
-            r: Math.round(colors.thinkingRGB.r * (1 - blend) + colors.receivingRGB.r * blend),
-            g: Math.round(colors.thinkingRGB.g * (1 - blend) + colors.receivingRGB.g * blend),
-            b: Math.round(colors.thinkingRGB.b * (1 - blend) + colors.receivingRGB.b * blend)
-          };
-        } else if (y < height * 0.5 && x >= width * 0.5) {
+          
           // Top-right: blend thinking and giving
           const blend = seededRandom();
           color = {
@@ -3325,7 +3295,7 @@ export default function AuraAnalysis() {
           };
         }
         
-        const radius = 120 + seededRandom() * 180; // Large radius for smooth diffusion
+        const radius = 80 + seededRandom() * 180; // Large radius for smooth diffusion
         const opacity = layer.opacity[0] + seededRandom() * (layer.opacity[1] - layer.opacity[0]);
         
         ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
@@ -4422,41 +4392,7 @@ export default function AuraAnalysis() {
             ctx.fill();
         }
 
-        // Add flowing aura streams around the outline
-        const streamCount = 8 + Math.floor(energyLevel / 2);
-        ctx.globalCompositeOperation = 'screen';
-
-        for (let s = 0; s < streamCount; s++) {
-            const streamAngle = (s / streamCount) * Math.PI * 2;
-            const streamStartX = centerX + Math.cos(streamAngle) * personWidth * 0.5;
-            const streamStartY = centerY + Math.sin(streamAngle) * personHeight * 0.4;
-
-            // Create flowing curve
-            const controlX = streamStartX + Math.cos(streamAngle) * 50;
-            const controlY = streamStartY + Math.sin(streamAngle) * 30;
-            const endX = streamStartX + Math.cos(streamAngle) * 100;
-            const endY = streamStartY + Math.sin(streamAngle) * 80;
-
-            // Color selection for stream
-            const streamRGB = seededRandom() > 0.5 ? dominantRGB : secondaryRGB;
-            const streamOpacity = 0.2 + seededRandom() * 0.3;
-
-            // Draw stream with gradient
-            const streamGradient = ctx.createLinearGradient(streamStartX, streamStartY, endX, endY);
-            streamGradient.addColorStop(0, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity})`);
-            streamGradient.addColorStop(0.5, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, ${streamOpacity * 0.7})`);
-            streamGradient.addColorStop(1, `rgba(${streamRGB.r}, ${streamRGB.g}, ${streamRGB.b}, 0)`);
-
-            ctx.strokeStyle = streamGradient;
-            const sizeFactor = Math.min(width, height) / 900;
-            ctx.lineWidth = (4 + seededRandom() * 6) * sizeFactor; // Adaptive line width
-            ctx.lineCap = 'round';
-
-            ctx.beginPath();
-            ctx.moveTo(streamStartX, streamStartY);
-            ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-            ctx.stroke();
-        }
+        
 
         // Reset composite operation
         ctx.globalCompositeOperation = 'source-over';
