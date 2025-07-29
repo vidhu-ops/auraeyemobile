@@ -496,6 +496,176 @@ function getSpecificColorTraits(color: string, position: 'personality' | 'giving
   return colorTraits[color]?.[position] || [`${color} ${position} energy`, `${color} spiritual influence`, `${color} cosmic vibration`];
 }
 
+/**
+ * Generates aura visualization with strict zone color restrictions
+ * Ensures giving zone (right side) only shows giving color without bleed from other zones
+ */
+async function generateAuraVisualizationWithZones(
+  imageBase64: string,
+  personalityColor: string,
+  givingColor: string,
+  receivingColor: string,
+  thinkingColor: string
+): Promise<string> {
+  try {
+    const canvas = require('canvas');
+    const { createCanvas, loadImage } = canvas;
+    
+    // Load the original image
+    const img = await loadImage(`data:image/jpeg;base64,${imageBase64}`);
+    const canvas2d = createCanvas(img.width, img.height);
+    const ctx = canvas2d.getContext('2d');
+    
+    // Draw the original image
+    ctx.drawImage(img, 0, 0);
+    
+    // Get color RGB values
+    const getColorRGB = (colorName: string) => {
+      const colorMap: Record<string, {r: number, g: number, b: number}> = {
+        'Red': {r: 255, g: 40, b: 40},
+        'Orange': {r: 255, g: 140, b: 0},
+        'Yellow': {r: 255, g: 230, b: 0},
+        'Green': {r: 45, g: 200, b: 45},
+        'Blue': {r: 20, g: 130, b: 255},
+        'Indigo': {r: 75, g: 0, b: 130},
+        'Violet': {r: 150, g: 30, b: 240},
+        'White': {r: 255, g: 255, b: 255},
+        'Black': {r: 50, g: 50, b: 50},
+        'Gold': {r: 255, g: 215, b: 0},
+        'Silver': {r: 192, g: 192, b: 192},
+        'Brown': {r: 165, g: 42, b: 42}
+      };
+      return colorMap[colorName] || {r: 150, g: 30, b: 240}; // Default violet
+    };
+    
+    const personalityRGB = getColorRGB(personalityColor);
+    const givingRGB = getColorRGB(givingColor);
+    const receivingRGB = getColorRGB(receivingColor);
+    const thinkingRGB = getColorRGB(thinkingColor);
+    
+    const width = img.width;
+    const height = img.height;
+    
+    // Calculate person center (assumed center of image)
+    const personCenterX = width / 2;
+    const personCenterY = height / 2;
+    const personRadius = Math.min(width, height) * 0.40; // Large protection area for face visibility
+    
+    // Enhanced zone boundaries with strict restrictions to prevent color bleeding
+    const zones = {
+      thinking: { // Top zone - above head
+        minX: 0, maxX: width,
+        minY: 0, maxY: height * 0.30, // Restricted to top 30%
+        color: thinkingRGB
+      },
+      receiving: { // Left zone - receiving energy
+        minX: 0, maxX: width * 0.45, // Restricted to left 45% only
+        minY: height * 0.15, maxY: height * 0.85,
+        color: receivingRGB
+      },
+      giving: { // Right zone - giving energy (STRICT RESTRICTION)
+        minX: width * 0.55, maxX: width, // Restricted to right 45% only, starts at 55%
+        minY: height * 0.15, maxY: height * 0.85,
+        color: givingRGB
+      },
+      personality: { // Bottom zone - personality energy
+        minX: width * 0.20, maxX: width * 0.80, // Center bottom area only
+        minY: height * 0.65, maxY: height,
+        color: personalityRGB
+      }
+    };
+    
+    // Generate particles with STRICT zone restrictions
+    Object.entries(zones).forEach(([zoneName, zone]) => {
+      const particleCount = zoneName === 'giving' ? 120 : 100; // More particles for giving zone visibility
+      
+      for (let i = 0; i < particleCount; i++) {
+        // Generate position STRICTLY within zone boundaries
+        const x = zone.minX + Math.random() * (zone.maxX - zone.minX);
+        const y = zone.minY + Math.random() * (zone.maxY - zone.minY);
+        
+        // Calculate distance from person center
+        const distanceFromCenter = Math.sqrt(
+          Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2)
+        );
+        
+        // Skip particles too close to person (face protection)
+        if (distanceFromCenter < personRadius) continue;
+        
+        // Ensure particle stays within zone boundaries (NO BLEEDING)
+        if (x < zone.minX || x > zone.maxX || y < zone.minY || y > zone.maxY) continue;
+        
+        // Enhanced particle size and opacity for giving zone
+        const baseSize = zoneName === 'giving' ? 180 : 160; // Larger particles for giving zone
+        const particleSize = baseSize + Math.random() * 120;
+        const opacity = zoneName === 'giving' ? 0.12 + Math.random() * 0.15 : 0.08 + Math.random() * 0.12;
+        
+        // Create radial gradient for smokey effect
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+        gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`);
+        gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
+        
+        // Apply blend modes for natural smokey appearance
+        ctx.globalCompositeOperation = i % 3 === 0 ? 'multiply' : 
+                                      i % 3 === 1 ? 'soft-light' : 'overlay';
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x - particleSize, y - particleSize, particleSize * 2, particleSize * 2);
+      }
+    });
+    
+    // Add zone-specific gradient base layers with NO CROSS-ZONE BLEEDING
+    ctx.globalCompositeOperation = 'multiply';
+    
+    // Thinking energy gradient (top only)
+    const thinkingGrad = ctx.createLinearGradient(0, 0, 0, height * 0.30);
+    thinkingGrad.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.25)`);
+    thinkingGrad.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
+    ctx.fillStyle = thinkingGrad;
+    ctx.fillRect(0, 0, width, height * 0.30); // Restricted to top 30% only
+    
+    // Receiving energy gradient (left only)
+    const receivingGrad = ctx.createLinearGradient(0, 0, width * 0.45, 0);
+    receivingGrad.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.30)`);
+    receivingGrad.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
+    ctx.fillStyle = receivingGrad;
+    ctx.fillRect(0, height * 0.15, width * 0.45, height * 0.70); // Left 45% only
+    
+    // Giving energy gradient (right only - STRICT BOUNDARY)
+    const givingGrad = ctx.createLinearGradient(width * 0.55, 0, width, 0);
+    givingGrad.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
+    givingGrad.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.35)`);
+    ctx.fillStyle = givingGrad;
+    ctx.fillRect(width * 0.55, height * 0.15, width * 0.45, height * 0.70); // Right 45% only, starts at 55%
+    
+    // Personality energy gradient (bottom center only)
+    const personalityGrad = ctx.createLinearGradient(0, height * 0.65, 0, height);
+    personalityGrad.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+    personalityGrad.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.20)`);
+    ctx.fillStyle = personalityGrad;
+    ctx.fillRect(width * 0.20, height * 0.65, width * 0.60, height * 0.35); // Center bottom only
+    
+    // Reset composite operation
+    ctx.globalCompositeOperation = 'source-over';
+    
+    // Add "AuraEye" watermark
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.font = 'bold 100px Arial';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.fillText('AuraEye', width / 2, height / 2);
+    
+    // Convert canvas to base64
+    const processedImage = canvas2d.toBuffer('image/jpeg', { quality: 0.9 }).toString('base64');
+    return processedImage;
+    
+  } catch (error) {
+    console.error('Error generating aura visualization:', error);
+    return imageBase64; // Return original image if processing fails
+  }
+}
+
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: string) {
   // Create deterministic seed from image content and optional URL for versatility
   const generateHash = (buffer: Buffer, urlSeed?: string): number => {
@@ -1264,6 +1434,16 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       let auraAnalysis: any;
       try {
         auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer, urlSeed);
+        
+        // Generate aura visualization with strict zone color restrictions
+        auraAnalysis.processedAuraImage = await generateAuraVisualizationWithZones(
+          imageData, 
+          auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
+          auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
+          auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+          auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor
+        );
+        
         console.log("Aura analysis generated successfully");
       } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
