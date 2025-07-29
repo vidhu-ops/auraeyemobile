@@ -977,7 +977,12 @@ export default function AuraAnalysis() {
             pdf.addPage();
             y = 20;
           }
-          pdf.text(text, x, y, options);
+          // Ensure center alignment is properly set
+          if (options.align === 'center') {
+            pdf.text(text, x, y, { align: 'center' });
+          } else {
+            pdf.text(text, x, y, options);
+          }
           return y;
         } catch (error) {
           console.error('Error in addTextWithPageBreak:', error, 'Text:', text, 'Position:', x, y);
@@ -1043,17 +1048,11 @@ export default function AuraAnalysis() {
             imgY = (pageHeight - imgHeight) / 2; // Center vertically
           }
           
-          // Ensure image covers full page - scale up if needed
-          if (imgWidth < pageWidth || imgHeight < pageHeight) {
-            const scaleX = pageWidth / imgWidth;
-            const scaleY = pageHeight / imgHeight;
-            const scale = Math.max(scaleX, scaleY); // Use larger scale to ensure full coverage
-            
-            imgWidth *= scale;
-            imgHeight *= scale;
-            imgX = (pageWidth - imgWidth) / 2;
-            imgY = (pageHeight - imgHeight) / 2;
-          }
+          // Force full page coverage - ensure image fills entire page with zero margins
+          imgWidth = pageWidth;
+          imgHeight = pageHeight;
+          imgX = 0;
+          imgY = 0;
           
           // Add the uploaded original image as full-page first page covering entire surface
           pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
