@@ -966,8 +966,8 @@ export default function AuraAnalysis() {
       });
       console.log('jsPDF initialized successfully');
 
-      const pageWidth = 190;
-      const pageHeight = 277;
+      const pageWidth = 210;
+      const pageHeight = 297;
       let yPosition = 20;
       
       // Helper function to add text with automatic page breaks
