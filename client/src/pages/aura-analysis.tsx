@@ -4997,52 +4997,144 @@ export default function AuraAnalysis() {
       return colorMap[color] || "White";
     },
     
-    // Get energy cycle pattern
+    // Enhanced energy cycle pattern with full 1-10 range
     getEnergyCycle: (energyLevel: number, color: string): string => {
-      const highEnergy = energyLevel >= 8;
-      const mediumEnergy = energyLevel >= 6 && energyLevel < 7;
-      
       const colorLower = color.toLowerCase();
       
-      if (["red", "orange", "yellow" ].includes(colorLower)) {
-        return highEnergy ? "rapid and intense" : mediumEnergy ? "steady and consistent" : "slow-building";
-      } else if (["green", "blue", "turquoise", "cyan" ].includes(colorLower)) {
-        return highEnergy ? "flowing and wave-like" : mediumEnergy ? "rhythmic and balanced" : "gentle and steady";
-      } else if (["purple", "violet", "indigo", "pink", "lavender" ].includes(colorLower)) {
-        return highEnergy ? "pulsating and dynamic" : mediumEnergy ? "cyclical and intuitive" : "subtle and intermittent";
-      } else {
-        return mediumEnergy ? "moderate and balanced" : "variable";
+      // Fire/Earth energy colors (Red, Orange, Yellow, Brown)
+      if (["red", "orange", "yellow", "brown"].includes(colorLower)) {
+        if (energyLevel >= 9) return "explosive and transformative";
+        if (energyLevel >= 8) return "rapid and intensely dynamic";
+        if (energyLevel >= 7) return "strong and consistent";
+        if (energyLevel >= 5) return "steady and building";
+        if (energyLevel >= 3) return "slow-burning and persistent";
+        return "dormant with potential for awakening";
       }
+      
+      // Water/Air energy colors (Green, Blue, Silver)
+      if (["green", "blue", "silver"].includes(colorLower)) {
+        if (energyLevel >= 9) return "torrential and overwhelming";
+        if (energyLevel >= 8) return "flowing and wave-like";
+        if (energyLevel >= 7) return "rhythmic and tidal";
+        if (energyLevel >= 5) return "gentle streams and eddies";
+        if (energyLevel >= 3) return "calm pools with occasional ripples";
+        return "still waters with deep undercurrents";
+      }
+      
+      // Spiritual energy colors (Violet, Indigo, Purple, White, Gold)
+      if (["violet", "indigo", "purple", "white", "gold"].includes(colorLower)) {
+        if (energyLevel >= 9) return "lightning-like and transcendent";
+        if (energyLevel >= 8) return "pulsating and mystical";
+        if (energyLevel >= 7) return "cyclical and intuitive";
+        if (energyLevel >= 5) return "subtle waves of insight";
+        if (energyLevel >= 3) return "intermittent spiritual downloads";
+        return "quiet inner knowing and contemplation";
+      }
+      
+      // Shadow/Transformative colors (Black)
+      if (colorLower === "black") {
+        if (energyLevel >= 9) return "volcanic and revolutionary";
+        if (energyLevel >= 7) return "deep and transformative";
+        if (energyLevel >= 5) return "steady inner work";
+        if (energyLevel >= 3) return "quiet shadow integration";
+        return "patient inner alchemy";
+      }
+      
+      // Default for any other colors
+      return energyLevel >= 7 ? "dynamic and variable" : energyLevel >= 4 ? "moderate and balanced" : "gentle and conserved";
     },
     
-    // Get energy level text
+    // Enhanced energy level text with full 1-10 range
     getEnergyLevelText: (level: number): string => {
-      if (level >= 9) return "Extremely High";
-      if (level >= 7) return "Very High";
-      if (level >= 6) return "Above Average";
-      if (level >= 3) return "Moderate";
-      return "Reserved";
+      if (level === 10) return "Maximum Intensity";
+      if (level === 9) return "Extremely High";
+      if (level === 8) return "Very High";
+      if (level === 7) return "High";
+      if (level === 6) return "Above Average";
+      if (level === 5) return "Moderate";
+      if (level === 4) return "Below Average";
+      if (level === 3) return "Low";
+      if (level === 2) return "Very Low";
+      return "Minimal";
     },
     
-    // Get energy advice
+    // Enhanced energy advice with full 1-10 range and color-specific guidance
     getEnergyAdvice: (level: number, color: string): string => {
       const colorLower = color.toLowerCase();
       
+      // Maximum energy levels (9-10)
       if (level >= 9) {
-        return ` Your energy appears intensely vibrant in your aura photograph. Consider grounding practices to balance this powerful energy.`;
-      } else if (level >= 7) {
-        if (["purple", "blue", "indigo", "violet", "lavender" ].includes(colorLower)) {
-          return ` This high spiritual energy visible in your aura field suggests focusing on channeling your intuitive gifts.`;
-        } else if (["red", "orange", "yellow" ].includes(colorLower)) {
-          return ` The high physical/emotional energy visible in your aura suggests finding healthy outlets for expression.`;
-        } else {
-          return ` Your aura shows vibrant energy flow that could benefit from regular creative or spiritual practices.`;
+        if (["red", "orange", "yellow"].includes(colorLower)) {
+          return level === 10 
+            ? "Your energy is at maximum intensity. Immediate grounding and energy distribution practices are essential to prevent burnout."
+            : "This extremely high physical energy requires careful channeling through vigorous exercise, creative projects, or leadership activities.";
         }
-      } else if (level >= 5) {
-        return ` This balanced energy state visible in your aura photograph indicates a good equilibrium of giving and receiving energy.`;
-      } else {
-        return ` The calmer energy visible in your aura field suggests a period of energy conservation. Gentle energy practices may be beneficial.`;
+        if (["violet", "indigo", "purple", "white", "gold"].includes(colorLower)) {
+          return level === 10
+            ? "Maximum spiritual energy activation detected. Focus on service to others and sharing your divine gifts to balance this intensity."
+            : "This exceptional spiritual energy suggests you're receiving powerful downloads. Regular meditation and energy clearing are vital.";
+        }
+        if (["green", "blue", "silver"].includes(colorLower)) {
+          return "Your emotional/healing energy is extremely elevated. Channel this through helping others or artistic expression.";
+        }
+        return "Intense energy activation requires immediate grounding practices and conscious energy management.";
       }
+      
+      // High energy levels (7-8)
+      if (level >= 7) {
+        if (["red", "orange", "yellow", "brown"].includes(colorLower)) {
+          return "High physical/creative energy is excellent for manifesting goals. Focus on structured action and creative expression.";
+        }
+        if (["violet", "indigo", "purple", "white", "gold"].includes(colorLower)) {
+          return "Strong spiritual energy indicates active psychic development. Regular spiritual practices will enhance your gifts.";
+        }
+        if (["green", "blue", "silver"].includes(colorLower)) {
+          return "Elevated emotional/healing energy suggests your heart center is very active. Perfect time for relationship work and healing practices.";
+        }
+        return "Your vibrant energy flow indicates an active manifestation period. Focus on purposeful activities.";
+      }
+      
+      // Moderate energy levels (5-6)
+      if (level >= 5) {
+        if (["red", "orange", "yellow"].includes(colorLower)) {
+          return "Balanced physical energy provides steady foundation for consistent progress. Maintain regular routines.";
+        }
+        if (["violet", "indigo", "purple"].includes(colorLower)) {
+          return "Moderate spiritual energy indicates steady inner development. Perfect for establishing regular meditation practice.";
+        }
+        if (["green", "blue"].includes(colorLower)) {
+          return "Harmonious emotional energy shows good balance between giving and receiving. Continue current practices.";
+        }
+        return "Well-balanced energy state indicates healthy equilibrium. Maintain current spiritual and self-care practices.";
+      }
+      
+      // Low energy levels (3-4)
+      if (level >= 3) {
+        if (["red", "orange", "yellow"].includes(colorLower)) {
+          return "Lower physical energy suggests need for rest and gentle rebuilding. Focus on nutrition, sleep, and gentle movement.";
+        }
+        if (["violet", "indigo", "purple"].includes(colorLower)) {
+          return "Quiet spiritual energy indicates an introspective phase. This is perfect for inner work and contemplation.";
+        }
+        if (["green", "blue"].includes(colorLower)) {
+          return "Gentle emotional energy suggests a healing period. Practice self-compassion and emotional nurturing.";
+        }
+        return "Lower energy indicates a natural conservation phase. Honor your need for rest and gentle self-care.";
+      }
+      
+      // Very low energy levels (1-2)
+      if (level >= 1) {
+        if (colorLower === "black") {
+          return level === 1 
+            ? "Deep transformative energy is dormant but powerful. This is a profound inner alchemy period requiring patience."
+            : "Very low energy in shadow work indicates deep healing is occurring. Trust the process and be gentle with yourself.";
+        }
+        return level === 1
+          ? "Minimal energy suggests a deep regeneration phase. Focus entirely on rest, healing, and basic self-care."
+          : "Very low energy indicates recovery period. Gentle practices like meditation, light walks, and nurturing activities are ideal.";
+      }
+      
+      return "Energy assessment indicates need for personalized spiritual guidance.";
     }
   };
 
@@ -8338,13 +8430,13 @@ export default function AuraAnalysis() {
                                   
                                   <h4 className="font-medium text-sm text-secondary mb-2">Energy Flow Analysis</h4>
                                   <div className="p-3 bg-white rounded-lg shadow-sm mb-4">
-                                    <div className="flex items-center mb-2">
+                                    <div className="flex items-center mb-3">
                                       <div className="relative w-20 h-20 mr-4 flex-shrink-0">
                                         <div 
                                           className="absolute inset-0 rounded-full animate-ping" 
                                           style={{
                                             background: `radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)`,
-                                            animation: `ping ${7 - result.energyLevel}s cubic-bezier(0, 0, 0.2, 1) infinite`
+                                            animation: `ping ${Math.max(1, 11 - result.energyLevel)}s cubic-bezier(0, 0, 0.2, 1) infinite`
                                           }}
                                         ></div>
                                         <div className="absolute inset-0 rounded-full flex items-center justify-center">
@@ -8365,9 +8457,89 @@ export default function AuraAnalysis() {
                                       </div>
                                     </div>
                                     
-                                    <div className="text-xs text-gray-700 mt-2">
-                                      <strong>Energy Cycles:</strong> Your aura indicates a {auraHelpers.getEnergyCycle(result.energyLevel, result.dominantColor)} energy cycle currently. 
-                                      Pay attention to how your energy fluctuates throughout the day and week.
+                                    <div className="space-y-2 mb-3">
+                                      <div className="text-xs text-gray-700">
+                                        <strong>Energy Cycles:</strong> Your aura indicates a {auraHelpers.getEnergyCycle(result.energyLevel, result.dominantColor)} energy cycle currently. 
+                                        Pay attention to how your energy fluctuates throughout the day and week.
+                                      </div>
+                                      
+                                      {/* Multi-color energy flow analysis */}
+                                      <div className="text-xs text-gray-700">
+                                        <strong>4-Zone Energy Flow Pattern:</strong>
+                                        <div className="grid grid-cols-2 gap-2 mt-2">
+                                          <div className="flex items-center space-x-2">
+                                            <div 
+                                              className="w-3 h-3 rounded-full" 
+                                              style={{ backgroundColor: getAccurateColorCode(result.personalityColor || result.dominantColor) }}
+                                            ></div>
+                                            <span className="text-xs">Core: {(() => {
+                                              const color = result.personalityColor || result.dominantColor;
+                                              const level = result.energyLevel;
+                                              if (level >= 8) return `${color} energy radiating strongly`;
+                                              if (level >= 6) return `${color} energy flowing steadily`;
+                                              if (level >= 4) return `${color} energy gently pulsing`;
+                                              return `${color} energy quietly present`;
+                                            })()}</span>
+                                          </div>
+                                          
+                                          <div className="flex items-center space-x-2">
+                                            <div 
+                                              className="w-3 h-3 rounded-full" 
+                                              style={{ backgroundColor: getAccurateColorCode(result.givingColor || result.secondaryColor || result.dominantColor) }}
+                                            ></div>
+                                            <span className="text-xs">Giving: {(() => {
+                                              const color = result.givingColor || result.secondaryColor || result.dominantColor;
+                                              const level = result.energyLevel;
+                                              if (level >= 8) return `${color} generously sharing`;
+                                              if (level >= 6) return `${color} actively expressing`;
+                                              if (level >= 4) return `${color} selectively offering`;
+                                              return `${color} conserving energy`;
+                                            })()}</span>
+                                          </div>
+                                          
+                                          <div className="flex items-center space-x-2">
+                                            <div 
+                                              className="w-3 h-3 rounded-full" 
+                                              style={{ backgroundColor: getAccurateColorCode(result.receivingColor || result.secondaryColor || result.dominantColor) }}
+                                            ></div>
+                                            <span className="text-xs">Receiving: {(() => {
+                                              const color = result.receivingColor || result.secondaryColor || result.dominantColor;
+                                              const level = result.energyLevel;
+                                              if (level >= 8) return `${color} highly receptive`;
+                                              if (level >= 6) return `${color} openly accepting`;
+                                              if (level >= 4) return `${color} cautiously receiving`;
+                                              return `${color} protective boundaries`;
+                                            })()}</span>
+                                          </div>
+                                          
+                                          <div className="flex items-center space-x-2">
+                                            <div 
+                                              className="w-3 h-3 rounded-full" 
+                                              style={{ backgroundColor: getAccurateColorCode(result.thinkingColor || result.dominantColor) }}
+                                            ></div>
+                                            <span className="text-xs">Mental: {(() => {
+                                              const color = result.thinkingColor || result.dominantColor;
+                                              const level = result.energyLevel;
+                                              if (level >= 8) return `${color} rapid processing`;
+                                              if (level >= 6) return `${color} clear thinking`;
+                                              if (level >= 4) return `${color} contemplative`;
+                                              return `${color} quiet reflection`;
+                                            })()}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Energy flow integration */}
+                                      <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
+                                        <strong>Integration Pattern:</strong> {(() => {
+                                          const level = result.energyLevel;
+                                          if (level >= 9) return "All energy centers highly synchronized with intense circulation throughout your entire field.";
+                                          if (level >= 7) return "Strong integration between all four energy zones with active communication and balanced flow.";
+                                          if (level >= 5) return "Moderate integration with steady communication between core, mental, giving, and receiving energies.";
+                                          if (level >= 3) return "Gentle integration with subtle energy exchange between your four primary energy zones.";
+                                          return "Quiet integration phase with energy consolidating in core areas for deeper development.";
+                                        })()}
+                                      </div>
                                     </div>
                                   </div>
                                   
