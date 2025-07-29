@@ -130,7 +130,7 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer, urlSeed?: string) {
   ];
   
   const auraColorSpectrum = spectrumColors.map(color => color.name);
-  const energyLevel = 5 + Math.floor(seededRandom() * 6);
+  const energyLevel = Math.floor(seededRandom() * 10) + 1; // 1-10 full range
   
   return {
     dominantColor: dominantColor.name,
@@ -591,7 +591,7 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: strin
   const receivingTraits = getSpecificColorTraits(auraColors[2].name, 'receiving');
   const thinkingTraits = getSpecificColorTraits(auraColors[3].name, 'thinking');
   
-  const energyLevel = Math.floor(seededRandom() * 3) + 7; // 7-10 range
+  const energyLevel = Math.floor(seededRandom() * 10) + 1; // 1-10 full range
   const auraColorSpectrum = auraColors.map(color => color.name);
   
   const auraLayerColors = {
@@ -727,7 +727,7 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   let auraColorIndex = Math.abs(complexSeed2) % nonBlackColors.length;
   let energyIndex = Math.abs(complexSeed3) % energyQualities.length;
   
-  const energyLevel = 3 + (Math.abs(complexSeed1 + complexSeed2) % 8); // Energy level between 3-10
+  const energyLevel = 1 + (Math.abs(complexSeed1 + complexSeed2) % 10); // Energy level between 1-10
   
   const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
   const selectedAuraColor = nonBlackColors[auraColorIndex] || "Purple";

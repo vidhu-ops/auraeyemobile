@@ -4999,8 +4999,8 @@ export default function AuraAnalysis() {
     
     // Get energy cycle pattern
     getEnergyCycle: (energyLevel: number, color: string): string => {
-      const highEnergy = energyLevel >= 7;
-      const mediumEnergy = energyLevel >= 4 && energyLevel < 7;
+      const highEnergy = energyLevel >= 8;
+      const mediumEnergy = energyLevel >= 6 && energyLevel < 7;
       
       const colorLower = color.toLowerCase();
       
@@ -5017,10 +5017,10 @@ export default function AuraAnalysis() {
     
     // Get energy level text
     getEnergyLevelText: (level: number): string => {
-      if (level >= 8) return "Extremely High";
-      if (level >= 6) return "Very High";
-      if (level >= 4) return "Above Average";
-      if (level >= 2) return "Moderate";
+      if (level >= 9) return "Extremely High";
+      if (level >= 7) return "Very High";
+      if (level >= 6) return "Above Average";
+      if (level >= 3) return "Moderate";
       return "Reserved";
     },
     
@@ -5028,9 +5028,9 @@ export default function AuraAnalysis() {
     getEnergyAdvice: (level: number, color: string): string => {
       const colorLower = color.toLowerCase();
       
-      if (level >= 8) {
+      if (level >= 9) {
         return ` Your energy appears intensely vibrant in your aura photograph. Consider grounding practices to balance this powerful energy.`;
-      } else if (level >= 6) {
+      } else if (level >= 7) {
         if (["purple", "blue", "indigo", "violet", "lavender" ].includes(colorLower)) {
           return ` This high spiritual energy visible in your aura field suggests focusing on channeling your intuitive gifts.`;
         } else if (["red", "orange", "yellow" ].includes(colorLower)) {
@@ -5038,7 +5038,7 @@ export default function AuraAnalysis() {
         } else {
           return ` Your aura shows vibrant energy flow that could benefit from regular creative or spiritual practices.`;
         }
-      } else if (level >= 3) {
+      } else if (level >= 5) {
         return ` This balanced energy state visible in your aura photograph indicates a good equilibrium of giving and receiving energy.`;
       } else {
         return ` The calmer energy visible in your aura field suggests a period of energy conservation. Gentle energy practices may be beneficial.`;
@@ -8225,7 +8225,7 @@ export default function AuraAnalysis() {
                                           // Add additional spectrum colors if available, avoiding duplicates
                                           if (result.auraColorSpectrum) {
                                             result.auraColorSpectrum.forEach(color => {
-                                              if (!uniqueColors.has(color) && colorTiles.length < 8) {
+                                              if (!uniqueColors.has(color) && colorTiles.length < 5) {
                                                 uniqueColors.add(color);
                                                 colorTiles.push({
                                                   color: color,
