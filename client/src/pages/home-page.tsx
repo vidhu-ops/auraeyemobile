@@ -57,7 +57,7 @@ export default function HomePage() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('Aurafy', centerX, centerY);
+    ctx.fillText('AuraEye', centerX, centerY);
     
     ctx.restore();
   };
@@ -868,7 +868,7 @@ export default function HomePage() {
               
               <TestimonialCard 
                 rating={5}
-                testimonial="I was skeptical at first, but the numerology reading was eye-opening. The insights about my life path number explained challenges I've faced and provided clarity about my purpose. I've recommended Aurfy to all my friends."
+                testimonial="I was skeptical at first, but the numerology reading was eye-opening. The insights about my life path number explained challenges I've faced and provided clarity about my purpose. I've recommended AuraEye to all my friends."
                 name="James T."
                 title="Business Consultant"
                 initials="JT"

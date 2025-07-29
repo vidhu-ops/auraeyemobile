@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: `Welcome to Aurfy, ${user.username}!`,
+        description: `Welcome to AuraEye, ${user.username}!`,
       });
     },
     onError: (error: Error) => {

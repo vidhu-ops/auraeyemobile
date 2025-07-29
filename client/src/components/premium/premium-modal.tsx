@@ -49,7 +49,7 @@ const featureDetails = {
     ]
   },
   general: {
-    title: "Aurfy Premium Membership",
+    title: "AuraEye Premium Membership",
     description: "Elevate your spiritual journey with full access to all premium features.",
     benefits: [
       "Unlimited access to all premium readings and analyses",

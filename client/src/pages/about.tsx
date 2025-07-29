@@ -59,7 +59,7 @@ export default function About() {
                   <p className="text-gray-600 italic">
                     "Every person carries a unique energy signature that holds the key to their spiritual growth and well-being."
                   </p>
-                  <p className="text-right text-gray-500 mt-2">— Aurafy Founder</p>
+                  <p className="text-right text-gray-500 mt-2">— AuraEye Founder</p>
                 </div>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function About() {
                   <h3 className="font-heading font-semibold text-xl mb-1">Nishant Sharma</h3>
                   <p className="text-primary mb-3">Founder & Lead Healer</p>
                   <p className="text-gray-600 text-sm">
-                    A certified Reiki Master with 20+ years of experience in energy healing, Maya founded Aurfy to bring spiritual wellness to the digital age.
+                    A certified Reiki Master with 20+ years of experience in energy healing, Maya founded AuraEye to bring spiritual wellness to the digital age.
                   </p>
                 </CardContent>
               </Card>

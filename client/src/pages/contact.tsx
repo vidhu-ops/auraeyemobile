@@ -123,7 +123,7 @@ export default function Contact() {
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">Can I use Aurafy for professional spiritual guidance?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2">Can I use AuraEye for professional spiritual guidance?</h3>
                 <p className="text-gray-600">
                   While AuraEye provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
                 </p>
