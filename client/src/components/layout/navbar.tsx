@@ -57,8 +57,8 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 relative">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <img src={logoPath} alt="Aurfy Logo" className="w-10 h-10 rounded-full object-cover" />
-            <span className="font-heading font-bold text-2xl text-primary">Aurfy</span>
+            <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
+            <span className="font-heading font-bold text-2xl text-primary">AuraEye</span>
           </Link>
 
           {/* Mobile menu button */}

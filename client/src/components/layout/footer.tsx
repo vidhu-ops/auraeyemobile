@@ -11,8 +11,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src={logoPath} alt="Aurfy Logo" className="w-10 h-10 rounded-full object-cover" />
-              <span className="font-heading font-bold text-2xl text-black">Aurfy</span>
+              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
+              <span className="font-heading font-bold text-2xl text-black">AuraEye</span>
             </div>
             <p className="text-black/70 mb-4">Empowering spiritual growth through modern metaphysical tools and enhanced aura analysis.</p>
             <div className="flex space-x-4">
@@ -66,7 +66,7 @@ export default function Footer() {
         <hr className="border-dark-light mb-6" />
         
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-black/70 text-sm mb-4 md:mb-0">© 2025 Aurfy ™. All rights reserved.</p>
+          <p className="text-black/70 text-sm mb-4 md:mb-0">© 2025 AuraEye ™. All rights reserved.</p>
           <div className="flex space-x-4 text-sm">
             <Link href="/privacy" className="text-black/70 hover:text-gray transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="text-black/70 hover:text-white transition-colors">Terms of Service</Link>
