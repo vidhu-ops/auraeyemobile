@@ -2803,24 +2803,36 @@ export default function AuraAnalysis() {
         // Use multiply blend mode for natural color merging
         ctx.globalCompositeOperation = 'source-over';
 
-        // Create horizontal gradient blending from left (receiving) to right (giving) - CORRECTED
+        // ENHANCED horizontal gradient - RECEIVING (left) to GIVING (right) with stronger zone presence
         const horizontalGradient = ctx.createLinearGradient(0, 0, width, 0);
-        horizontalGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.48)`);
-        horizontalGradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.42)`);
-        horizontalGradient.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.48)`);
-        horizontalGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.38)`);
+        horizontalGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.55)`); // Stronger receiving energy on LEFT
+        horizontalGradient.addColorStop(0.25, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.45)`);
+        horizontalGradient.addColorStop(0.50, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.20)`); // Transition zone
+        horizontalGradient.addColorStop(0.75, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.45)`);
+        horizontalGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.55)`); // Stronger giving energy on RIGHT
 
         ctx.fillStyle = horizontalGradient;
         ctx.fillRect(0, 0, width, height);
 
-        // Create vertical gradient for thinking energy (top 25% of image)
-        const verticalGradient = ctx.createLinearGradient(0, 0, 0, height * 0.25);
-        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.22)`);
-        verticalGradient.addColorStop(0.6, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.12)`);
-        verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.33)`);
+        // ENHANCED vertical gradient for thinking energy (focused at top)
+        const verticalGradient = ctx.createLinearGradient(0, 0, 0, height * 0.35);
+        verticalGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.50)`); // Stronger thinking energy ABOVE
+        verticalGradient.addColorStop(0.4, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.35)`);
+        verticalGradient.addColorStop(0.8, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.15)`);
+        verticalGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.05)`);
 
         ctx.fillStyle = verticalGradient;
-        ctx.fillRect(0, 0, width, height * 0.25);
+        ctx.fillRect(0, 0, width, height * 0.35);
+
+        // ENHANCED vertical gradient for personality energy (focused at bottom)  
+        const personalityGradient = ctx.createLinearGradient(0, height * 0.65, 0, height);
+        personalityGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.05)`);
+        personalityGradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.20)`);
+        personalityGradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.40)`);
+        personalityGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.55)`); // Stronger personality energy at BOTTOM
+
+        ctx.fillStyle = personalityGradient;
+        ctx.fillRect(0, height * 0.65, width, height * 0.35);
 
         // Reset blend mode
         ctx.globalCompositeOperation = 'source-over';
@@ -2971,46 +2983,46 @@ export default function AuraAnalysis() {
     // Person protection area - maximum face clearance for 100% visibility
     const personRadius = Math.min(width, height) * 0.40; // Significantly increased for complete face protection
     
-    // Define color zones for proper positioning matching reference images
+    // Define color zones for proper positioning - CORRECTED ENERGY PLACEMENT
     const colorZones = [
       {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.35, // Reduced to prevent overlap with side zones
-        startX: width * 0.1, // Add margins to focus the zone
-        endX: width * 0.9,
-        density: 0.9, // Keep high density for better visibility
+        endY: height * 0.30, // More focused thinking zone above head
+        startX: width * 0.2, // Narrower focus for thinking energy
+        endX: width * 0.8,
+        density: 1.0, // Maximum density for clear thinking energy visibility
         name: 'thinking'
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.15, // Start lower to avoid thinking zone
-        endY: height * 0.85, // End higher to avoid personality zone
+        startY: height * 0.10, // Start higher for better coverage
+        endY: height * 0.90, // End lower for full left side coverage
         startX: 0,
-        endX: width * 0.45, // Strengthen left side restriction
-        density: 0.8, // Increased density for stronger zone presence
+        endX: width * 0.50, // Stronger left side boundary - receiving energy on LEFT
+        density: 1.0, // Maximum density for clear receiving energy visibility
         name: 'receiving'
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.15, // Start lower to avoid thinking zone
-        endY: height * 0.85, // End higher to avoid personality zone
-        startX: width * 0.55, // Strengthen right side restriction
+        startY: height * 0.10, // Start higher for better coverage
+        endY: height * 0.90, // End lower for full right side coverage
+        startX: width * 0.50, // Stronger right side boundary - giving energy on RIGHT
         endX: width,
-        density: 0.8, // Increased density for stronger zone presence
+        density: 1.0, // Maximum density for clear giving energy visibility
         name: 'giving'
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.65, // Start lower to avoid side zones
+        startY: height * 0.70, // More focused personality zone at bottom
         endY: height,
-        startX: width * 0.1, // Add margins to focus the zone
-        endX: width * 0.9,
-        density: 0.8, // Increased density for stronger zone presence
+        startX: width * 0.2, // Narrower focus for personality energy
+        endX: width * 0.8,
+        density: 1.0, // Maximum density for clear personality energy visibility
         name: 'personality'
       }
     ];
