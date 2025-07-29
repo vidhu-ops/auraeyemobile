@@ -1345,6 +1345,38 @@ export default function AuraAnalysis() {
       yPosition = addWrappedText(finalSummary, 20, yPosition, pageWidth - 40);
       yPosition += 15;
 
+      // PROFESSIONAL HEALER NOTES SECTION
+      if (healerNotes && healerNotes.trim() && isHealer) {
+        // Add new page if needed
+        if (yPosition > pageHeight - 60) {
+          pdf.addPage();
+          yPosition = 30;
+        }
+
+        pdf.setFontSize(18);
+        pdf.setTextColor(147, 51, 234);
+        yPosition = addTextWithPageBreak('PROFESSIONAL HEALER NOTES', pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 20;
+
+        // Add styled box background for notes
+        pdf.setFillColor(254, 252, 232); // Light yellow background
+        pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'F'); // Filled rectangle
+        pdf.setDrawColor(251, 191, 36); // Golden border
+        pdf.setLineWidth(1);
+        pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'S'); // Stroked rectangle
+
+        pdf.setFontSize(12);
+        pdf.setTextColor(55, 65, 81);
+        yPosition = addWrappedText(healerNotes.trim(), 20, yPosition + 5, pageWidth - 40);
+        yPosition += 60;
+
+        // Add healer attribution
+        pdf.setFontSize(10);
+        pdf.setTextColor(107, 114, 128);
+        yPosition = addTextWithPageBreak(`Professional insights provided by: ${user?.username || 'Certified Healer'}`, 20, yPosition);
+        yPosition += 15;
+      }
+
       // Add footer
       pdf.setFontSize(10);
       pdf.setTextColor(150, 150, 150);
