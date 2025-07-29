@@ -1023,30 +1023,42 @@ export default function AuraAnalysis() {
             img.src = uploadedImageSrc;
           });
           
-          // Calculate dimensions to fill entire page while maintaining aspect ratio
+          // Calculate dimensions to cover the full page (no margins)
           const imgAspectRatio = img.width / img.height;
           const pageAspectRatio = pageWidth / pageHeight;
           
           let imgWidth, imgHeight, imgX, imgY;
           
           if (imgAspectRatio > pageAspectRatio) {
-            // Image is wider than page ratio, fit to page height and crop sides
+            // Image is wider than page ratio, fit to page height and extend beyond page width
             imgHeight = pageHeight;
             imgWidth = imgHeight * imgAspectRatio;
             imgX = (pageWidth - imgWidth) / 2; // Center horizontally
             imgY = 0;
           } else {
-            // Image is taller than page ratio, fit to page width and crop top/bottom
+            // Image is taller than page ratio, fit to page width and extend beyond page height
             imgWidth = pageWidth;
             imgHeight = imgWidth / imgAspectRatio;
             imgX = 0;
             imgY = (pageHeight - imgHeight) / 2; // Center vertically
           }
           
-          // Add the uploaded original image as full-page first page
+          // Ensure image covers full page - scale up if needed
+          if (imgWidth < pageWidth || imgHeight < pageHeight) {
+            const scaleX = pageWidth / imgWidth;
+            const scaleY = pageHeight / imgHeight;
+            const scale = Math.max(scaleX, scaleY); // Use larger scale to ensure full coverage
+            
+            imgWidth *= scale;
+            imgHeight *= scale;
+            imgX = (pageWidth - imgWidth) / 2;
+            imgY = (pageHeight - imgHeight) / 2;
+          }
+          
+          // Add the uploaded original image as full-page first page covering entire surface
           pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
           
-          console.log('Successfully added uploaded image as first page');
+          console.log('Successfully added uploaded image as full-page first page');
           return true;
         } catch (error) {
           console.warn('Could not load uploaded image for first page:', error);
@@ -4511,8 +4523,7 @@ export default function AuraAnalysis() {
       3: 'creative expression and inspiring communication', 4: 'practical wisdom and foundational strength',
       5: 'adventurous spirit and dynamic communication', 6: 'nurturing care and healing presence',
       7: 'mystical insight and spiritual depth', 8: 'executive ability and material mastery',
-      9: 'humanitarian service and universal compassion', 11: 'intuitive guidance and inspirational vision',
-      22: 'master building and transformational leadership', 33: 'master teaching and unconditional love'
+      9: 'humanitarian service and universal compassion'
     };
     return traits[personalityNumber] || 'unique spiritual gifts and authentic expression';
   };
