@@ -508,11 +508,12 @@ async function generateAuraVisualizationWithZones(
   thinkingColor: string
 ): Promise<string> {
   try {
-    const canvas = require('canvas');
-    const { createCanvas, loadImage } = canvas;
+    console.log(`Starting zone-restricted aura visualization for colors: P:${personalityColor}, G:${givingColor}, R:${receivingColor}, T:${thinkingColor}`);
+    const { createCanvas, loadImage } = require('canvas');
     
     // Load the original image
     const img = await loadImage(`data:image/jpeg;base64,${imageBase64}`);
+    console.log(`Image loaded: ${img.width}x${img.height}`);
     const canvas2d = createCanvas(img.width, img.height);
     const ctx = canvas2d.getContext('2d');
     
@@ -658,10 +659,12 @@ async function generateAuraVisualizationWithZones(
     
     // Convert canvas to base64
     const processedImage = canvas2d.toBuffer('image/jpeg', { quality: 0.9 }).toString('base64');
+    console.log(`Zone-restricted aura visualization completed successfully. Output size: ${Math.round(processedImage.length * 0.75 / 1024)}KB`);
     return processedImage;
     
   } catch (error) {
     console.error('Error generating aura visualization:', error);
+    console.error('Canvas error details:', error.message);
     return imageBase64; // Return original image if processing fails
   }
 }
@@ -1436,13 +1439,21 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer, urlSeed);
         
         // Generate aura visualization with strict zone color restrictions
-        auraAnalysis.processedAuraImage = await generateAuraVisualizationWithZones(
-          imageData, 
-          auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
-          auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
-          auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
-          auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor
-        );
+        try {
+          console.log("Generating aura visualization with zone restrictions...");
+          auraAnalysis.processedAuraImage = await generateAuraVisualizationWithZones(
+            imageData, 
+            auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
+            auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
+            auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+            auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor
+          );
+          console.log("Aura visualization with zone restrictions completed successfully");
+        } catch (vizError) {
+          console.error("Aura visualization failed:", vizError);
+          // Fallback to original image if Canvas processing fails
+          auraAnalysis.processedAuraImage = imageData;
+        }
         
         console.log("Aura analysis generated successfully");
       } catch (analysisError) {
