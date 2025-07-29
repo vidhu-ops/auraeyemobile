@@ -212,14 +212,20 @@ Respond with valid JSON containing:
       energyLevel: 6,
       personalityTraits: ["Intuitive", "Healing", "Compassionate", "Balanced"],
       spiritualGuidance: "Your aura indicates a strong connection to your intuition and higher guidance. Continue to develop your spiritual practices and trust your inner wisdom.",
-      chakraActivity: {
-        root: 5,
-        sacral: 6,
-        solarPlexus: 5,
-        heart: 7,
-        throat: 6,
-        thirdEye: 8,
-        crown: 7
+      _chakraActivity: {
+          root: 5,
+          sacral: 6,
+          solarPlexus: 5,
+          heart: 7,
+          throat: 6,
+          thirdEye: 8,
+          crown: 7
+      },
+      get chakraActivity() {
+          return this._chakraActivity;
+      },
+      set chakraActivity(value) {
+          this._chakraActivity = value;
       },
       detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
         };
