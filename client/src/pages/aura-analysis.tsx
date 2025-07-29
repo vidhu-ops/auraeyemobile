@@ -6348,7 +6348,16 @@ export default function AuraAnalysis() {
                                           ></div>
                                           <div>
                                             <div className="font-medium text-sm">{result.dominantColor} - Dominant</div>
-                                            <div className="text-xs text-gray-600">{getChakraConnection(result.dominantColor).split('.')[0]}</div>
+                                            <div className="text-xs text-gray-600">
+                                              {(() => {
+                                                const connection = getChakraConnection(result.dominantColor);
+                                                const parts = connection.split('. ');
+                                                const numerologyPart = parts[0].replace('Numerologically connected to:', '');
+                                                const planetPart = parts[1].replace('Planet:', '');
+                                                const chakraPart = parts[2].split(' - ')[0];
+                                                return `This color is connected to the number ${numerologyPart} and also connected to the ${chakraPart}.`;
+                                              })()}
+                                            </div>
                                           </div>
                                         </div>
                                         {result.secondaryColor && (
@@ -6361,7 +6370,16 @@ export default function AuraAnalysis() {
                                             ></div>
                                             <div>
                                               <div className="font-medium text-sm">{result.secondaryColor} - Secondary</div>
-                                              <div className="text-xs text-gray-600">{getChakraConnection(result.secondaryColor).split('.')[0]}</div>
+                                              <div className="text-xs text-gray-600">
+                                                {(() => {
+                                                  const connection = getChakraConnection(result.secondaryColor);
+                                                  const parts = connection.split('. ');
+                                                  const numerologyPart = parts[0].replace('Numerologically connected to:', '');
+                                                  const planetPart = parts[1].replace('Planet:', '');
+                                                  const chakraPart = parts[2].split(' - ')[0];
+                                                  return `This color is connected to the number ${numerologyPart} and also connected to the ${chakraPart}.`;
+                                                })()}
+                                              </div>
                                             </div>
                                           </div>
                                         )}
