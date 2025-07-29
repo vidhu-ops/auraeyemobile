@@ -7364,6 +7364,66 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
 
+                                  {/* Earth Star Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-gray-400">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-gray-600 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-gray-800">Earth Star Chakra (Prithvi) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Grounding, Earth Connection, Physical Stability, Ancestral Wisdom</li>
+                                          <li>• Physical: Leg/foot problems, low energy, immune issues</li>
+                                          <li>• Emotional: Feeling ungrounded, disconnected from nature</li>
+                                          <li>• Spiritual: Lack of earth connection, ancestral blockages</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> "Prithvi Shaktya" (Earth Power)</li>
+                                          <li>• <strong>Affirmation:</strong> "I am deeply rooted in Earth's wisdom"</li>
+                                          <li>• <strong>Colors:</strong> Black, brown, deep earth tones</li>
+                                          <li>• <strong>Crystals:</strong> Hematite, Black Tourmaline, Smoky Quartz</li>
+                                          <li>• <strong>Essential Oils:</strong> Vetiver, Patchouli, Cedarwood</li>
+                                          <li>• <strong>Practices:</strong> Walking barefoot, gardening, nature meditation</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Soul Star Chakra Remedies */}
+                                  <div className="bg-white rounded-lg p-5 border border-pink-200">
+                                    <div className="flex items-center mb-4">
+                                      <div className="w-6 h-6 rounded-full bg-pink-300 mr-3"></div>
+                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Stella Anima) Healing</h5>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Core Lessons & Symptoms</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• Soul Purpose, Divine Mission, Cosmic Connection, Higher Self</li>
+                                          <li>• Physical: Top of head tingling, light sensitivity</li>
+                                          <li>• Mental: Confusion about life purpose, spiritual overwhelm</li>
+                                          <li>• Spiritual: Disconnection from soul mission, cosmic isolation</li>
+                                        </ul>
+                                      </div>
+                                      <div>
+                                        <h6 className="font-medium text-sm text-gray-800 mb-2">Remedies & Practices</h6>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          <li>• <strong>Mantra:</strong> "So Hum" (I am that I am)</li>
+                                          <li>• <strong>Affirmation:</strong> "I am aligned with my soul's purpose"</li>
+                                          <li>• <strong>Colors:</strong> Brilliant white, magenta, cosmic silver</li>
+                                          <li>• <strong>Crystals:</strong> Moldavite, Phenakite, Clear Quartz</li>
+                                          <li>• <strong>Essential Oils:</strong> White Lotus, Sandalwood, Rose</li>
+                                          <li>• <strong>Practices:</strong> Star gazing, soul retrieval meditation, past-life healing</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+
                                 </div>
 
                                 {/* General Healing Instructions */}
