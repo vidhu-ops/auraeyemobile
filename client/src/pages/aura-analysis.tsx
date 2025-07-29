@@ -4821,9 +4821,7 @@ export default function AuraAnalysis() {
               setIsAnalyzing(false);
               // Set active tab to analysis to show results including visualization
               setActiveTab("analysis");
-              // Reset name input for next analysis
-              setNameEntered(false);
-              setAnalysisName('');
+              // Keep name entered state - user must refresh for new analysis
             }, 200);
           } catch (error) {
             console.error("Error in aura analysis:", error);
@@ -5264,7 +5262,7 @@ export default function AuraAnalysis() {
             <div className="max-w-5xl mx-auto">
               <div className="space-y-10">
                 {/* Name input or Upload section */}
-                {!nameEntered ? (
+                {!nameEntered && !result ? (
                   <div className="flex justify-center">
                     <NameInput
                       onNameSubmit={(name) => {
@@ -5280,7 +5278,12 @@ export default function AuraAnalysis() {
                   <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
                     <div className="w-full">
                       <h2 className="font-heading font-semibold text-lg md:text-xl mb-3">Upload Your Photo</h2>
-                      <p className="text-sm text-gray-600 mb-3">Analysis for: <span className="font-medium">{analysisName}</span></p>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm text-gray-600">Analysis for: <span className="font-medium">{analysisName}</span></p>
+                        {result && (
+                          <p className="text-xs text-gray-500 italic">Refresh page for new name analysis</p>
+                        )}
+                      </div>
                       <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
                     </div>
                   
