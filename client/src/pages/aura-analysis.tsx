@@ -3026,47 +3026,51 @@ export default function AuraAnalysis() {
     // Person protection area - maximum face clearance for 100% visibility
     const personRadius = Math.min(width, height) * 0.40; // Significantly increased for complete face protection
     
-    // Define color zones for proper positioning - CORRECTED ENERGY PLACEMENT
+    // ENHANCED COLOR ZONES - Strengthened boundaries with proper overlap for seamless blending
     const colorZones = [
       {
         color: colors.thinkingRGB,
         zone: 'top',
         startY: 0,
-        endY: height * 0.30, // More focused thinking zone above head
-        startX: width * 0.2, // Narrower focus for thinking energy
-        endX: width * 0.8,
+        endY: height * 0.35, // Extended thinking zone for better coverage
+        startX: width * 0.15, // Slightly wider for better blending
+        endX: width * 0.85,
         density: 1.0, // Maximum density for clear thinking energy visibility
-        name: 'thinking'
+        name: 'thinking',
+        primary: true // Mark as primary zone for this color
       },
       {
         color: colors.receivingRGB,
         zone: 'left',
-        startY: height * 0.10, // Start higher for better coverage
-        endY: height * 0.90, // End lower for full left side coverage
+        startY: height * 0.05, // Start even higher for complete left coverage
+        endY: height * 0.95, // Full left side coverage
         startX: 0,
-        endX: width * 0.50, // Stronger left side boundary - receiving energy on LEFT
+        endX: width * 0.55, // Extended left side boundary with overlap - receiving energy on LEFT
         density: 1.0, // Maximum density for clear receiving energy visibility
-        name: 'receiving'
+        name: 'receiving',
+        primary: true // Mark as primary zone for this color
       },
       {
         color: colors.givingRGB,
         zone: 'right',
-        startY: height * 0.10, // Start higher for better coverage
-        endY: height * 0.90, // End lower for full right side coverage
-        startX: width * 0.50, // Stronger right side boundary - giving energy on RIGHT
+        startY: height * 0.05, // Start even higher for complete right coverage
+        endY: height * 0.95, // Full right side coverage
+        startX: width * 0.45, // Extended right side boundary with overlap - giving energy on RIGHT
         endX: width,
         density: 1.0, // Maximum density for clear giving energy visibility
-        name: 'giving'
+        name: 'giving',
+        primary: true // Mark as primary zone for this color
       },
       {
         color: colors.personalityRGB,
         zone: 'bottom',
-        startY: height * 0.70, // More focused personality zone at bottom
+        startY: height * 0.65, // Extended personality zone at bottom
         endY: height,
-        startX: width * 0.2, // Narrower focus for personality energy
-        endX: width * 0.8,
+        startX: width * 0.15, // Slightly wider for better blending
+        endX: width * 0.85,
         density: 1.0, // Maximum density for clear personality energy visibility
-        name: 'personality'
+        name: 'personality',
+        primary: true // Mark as primary zone for this color
       }
     ];
     
@@ -3077,69 +3081,76 @@ export default function AuraAnalysis() {
       
       let gradient;
       
-      // Create ultra-smooth zone-specific gradients with enhanced diffusion
+      // Create ultra-smooth zone-specific gradients with ENHANCED positioning and saturation
       switch (zone.name) {
         case 'thinking':
-          // Multiple overlapping gradients for ultra-smooth blending
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 30;
+          // THINKING ENERGY: Multiple focused gradients at top with stronger presence
+          for (let layer = 0; layer < 4; layer++) {
+            const offsetX = (layer - 1.5) * 20; // Distribute across top
+            const offsetY = layer * 15;
             gradient = ctx.createRadialGradient(
-              centerX + offset, centerY * 0.2 + offset, personRadius, 
-              centerX + offset, centerY * 0.2 + offset, height * 0.8
+              centerX + offsetX, height * 0.15 + offsetY, personRadius * 0.6, 
+              centerX + offsetX, height * 0.15 + offsetY, height * 0.9
             );
             gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`);
-            gradient.addColorStop(0.4, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.30)`);
-            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.50)`); // Stronger thinking energy
+            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
+            gradient.addColorStop(0.7, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
           break;
         case 'receiving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
+          // RECEIVING ENERGY: Strong LEFT side presence with enhanced saturation
+          for (let layer = 0; layer < 4; layer++) {
+            const offsetX = layer * 15;
+            const offsetY = (layer - 1.5) * 30;
             gradient = ctx.createRadialGradient(
-              width * 0.15 + offset, centerY + offset, personRadius * 0.8, 
-              width * 0.15 + offset, centerY + offset, width * 0.85
+              width * 0.12 + offsetX, centerY + offsetY, personRadius * 0.7, 
+              width * 0.12 + offsetX, centerY + offsetY, width * 0.9
             );
             gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
-            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
-            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.05)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
-          break;
-        case 'giving':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 25;
-            gradient = ctx.createRadialGradient(
-              width * 0.85 - offset, centerY + offset, personRadius * 0.8, 
-              width * 0.85 - offset, centerY + offset, width * 0.85
-            );
-            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
+            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.45)`); // Enhanced receiving energy on LEFT
             gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.40)`);
-            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
+            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.22)`);
             gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
           break;
-        case 'personality':
-          for (let layer = 0; layer < 3; layer++) {
-            const offset = layer * 20;
+        case 'giving':
+          // GIVING ENERGY: Strong RIGHT side presence with enhanced saturation
+          for (let layer = 0; layer < 4; layer++) {
+            const offsetX = layer * -15; // Negative offset for right side
+            const offsetY = (layer - 1.5) * 30;
             gradient = ctx.createRadialGradient(
-              centerX + offset, height * 0.85 - offset, personRadius * 0.6, 
-              centerX + offset, height * 0.85 - offset, height * 0.7
+              width * 0.88 + offsetX, centerY + offsetY, personRadius * 0.7, 
+              width * 0.88 + offsetX, centerY + offsetY, width * 0.9
             );
             gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
-            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.18)`);
-            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.28)`);
-            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.15)`);
-            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.06)`);
+            gradient.addColorStop(0.25, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.48)`); // Enhanced giving energy on RIGHT
+            gradient.addColorStop(0.5, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.42)`);
+            gradient.addColorStop(0.8, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.25)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.10)`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+          }
+          break;
+        case 'personality':
+          // PERSONALITY ENERGY: Strong BOTTOM presence with enhanced saturation
+          for (let layer = 0; layer < 4; layer++) {
+            const offsetX = (layer - 1.5) * 20; // Distribute across bottom
+            const offsetY = layer * -12; // Negative offset for bottom positioning
+            gradient = ctx.createRadialGradient(
+              centerX + offsetX, height * 0.88 + offsetY, personRadius * 0.5, 
+              centerX + offsetX, height * 0.88 + offsetY, height * 0.8
+            );
+            gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`); // Clear center for face
+            gradient.addColorStop(0.3, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.42)`); // Enhanced personality energy at BOTTOM
+            gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.35)`);
+            gradient.addColorStop(0.85, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.20)`);
+            gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0.08)`);
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
           }
@@ -3219,6 +3230,47 @@ export default function AuraAnalysis() {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
+    });
+    
+    // ENHANCED ZONE REINFORCEMENT - Strengthen each zone's primary color presence
+    colorZones.forEach(zone => {
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      
+      // Create zone-specific reinforcement particles to maintain distinct color areas
+      const reinforcementParticles = Math.floor(20 * zone.density);
+      for (let i = 0; i < reinforcementParticles; i++) {
+        // Generate position within zone with bias toward zone center
+        const zoneCenterX = (zone.startX + zone.endX) / 2;
+        const zoneCenterY = (zone.startY + zone.endY) / 2;
+        
+        // Create position with 70% bias toward zone center for stronger color presence
+        const biasedX = seededRandom() < 0.7 
+          ? zoneCenterX + (seededRandom() - 0.5) * (zone.endX - zone.startX) * 0.4
+          : zone.startX + seededRandom() * (zone.endX - zone.startX);
+        const biasedY = seededRandom() < 0.7 
+          ? zoneCenterY + (seededRandom() - 0.5) * (zone.endY - zone.startY) * 0.4
+          : zone.startY + seededRandom() * (zone.endY - zone.startY);
+        
+        // Ensure particle stays within zone boundaries
+        const x = Math.max(zone.startX, Math.min(zone.endX, biasedX));
+        const y = Math.max(zone.startY, Math.min(zone.endY, biasedY));
+        
+        // Skip particles too close to person's face
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 2.0) continue;
+        
+        const radius = 70 + seededRandom() * 90; // Medium-sized reinforcement particles
+        const opacity = 0.12 + seededRandom() * 0.18; // Enhanced opacity for zone reinforcement
+        
+        ctx.fillStyle = `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
       ctx.restore();
     });
     
