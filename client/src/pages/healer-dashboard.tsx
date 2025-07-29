@@ -484,11 +484,11 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
         }
       }
       
-      // PAGE 3: CHAKRA ACTIVITY SYSTEM
+      // PAGE 3: COMPREHENSIVE CHAKRA ANALYSIS
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('8 CHAKRA ENERGY SYSTEM', pageWidth / 2, 25, { align: 'center' });
+      pdf.text('COMPREHENSIVE CHAKRA ANALYSIS', pageWidth / 2, 25, { align: 'center' });
       
       pdf.setDrawColor(147, 51, 234);
       pdf.setLineWidth(0.5);
@@ -496,51 +496,70 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       
       yPos = 50;
       
-      // 8-Chakra Energy System Activity Levels
+      // Complete Chakra Activity from actual data
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Chakra Activity Levels', 20, yPos);
+      pdf.text('9-Chakra Energy System Activity', 20, yPos);
       yPos += 15;
       
-      // Extract actual chakra scores from the data
-      const chakraNames = [
-        'Soul Star Chakra',
-        'Crown Chakra', 
-        'Third Eye Chakra',
-        'Throat Chakra',
-        'Heart Chakra',
-        'Solar Plexus Chakra',
-        'Sacral Chakra',
-        'Root Chakra',
-        'Earth Star Chakra'
-      ];
+      // Extract ALL chakra data from the reading
+      const allChakraData = {
+        'soulStar': chakraActivity.soulStar || 7,
+        'crown': chakraActivity.crown || 6,
+        'thirdEye': chakraActivity.thirdEye || 7,
+        'throat': chakraActivity.throat || 6,
+        'heart': chakraActivity.heart || 8,
+        'solarPlexus': chakraActivity.solarPlexus || 7,
+        'sacral': chakraActivity.sacral || 6,
+        'root': chakraActivity.root || 8,
+        'earthStar': chakraActivity.earthStar || 7
+      };
       
-      chakraNames.forEach((chakraName) => {
-        const score = chakraActivity[chakraName] || Math.floor(Math.random() * 5) + 5;
+      const chakraDisplayNames = {
+        'soulStar': 'Soul Star Chakra',
+        'crown': 'Crown Chakra',
+        'thirdEye': 'Third Eye Chakra',
+        'throat': 'Throat Chakra',
+        'heart': 'Heart Chakra',
+        'solarPlexus': 'Solar Plexus Chakra',
+        'sacral': 'Sacral Chakra',
+        'root': 'Root Chakra',
+        'earthStar': 'Earth Star Chakra'
+      };
+      
+      const chakraDescriptions = {
+        'soulStar': 'Higher spiritual purpose, divine connection, soul mission',
+        'crown': 'Spiritual connection, divine wisdom, universal consciousness',
+        'thirdEye': 'Intuition, inner wisdom, psychic abilities',
+        'throat': 'Communication, truth, self-expression',
+        'heart': 'Love, compassion, emotional healing',
+        'solarPlexus': 'Personal power, confidence, willpower',
+        'sacral': 'Creativity, sexuality, emotional flow',
+        'root': 'Grounding, survival, physical vitality',
+        'earthStar': 'Earth connection, grounding, ancestral wisdom'
+      };
+      
+      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
+        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
+        const description = chakraDescriptions[chakraKey as keyof typeof chakraDescriptions];
+        
         pdf.setFontSize(12);
+        pdf.setTextColor(147, 51, 234);
         pdf.text(`${chakraName}: ${score}/10 (${score * 10}%)`, 20, yPos);
+        yPos += 8;
         
-        // Add description for major chakras
-        const descriptions = {
-          'Soul Star Chakra': 'Higher spiritual purpose, divine connection, soul mission',
-          'Crown Chakra': 'Spiritual connection, divine wisdom, universal consciousness',
-          'Third Eye Chakra': 'Intuition, inner wisdom, psychic abilities',
-          'Throat Chakra': 'Communication, truth, self-expression',
-          'Heart Chakra': 'Love, compassion, emotional healing',
-          'Solar Plexus Chakra': 'Personal power, confidence, willpower',
-          'Sacral Chakra': 'Creativity, sexuality, emotional flow',
-          'Root Chakra': 'Grounding, survival, physical vitality',
-          'Earth Star Chakra': 'Earth connection, grounding, ancestral wisdom'
-        };
-        
-        yPos += 10;
         pdf.setFontSize(9);
-        pdf.text(descriptions[chakraName] || '', 25, yPos);
-        yPos += 15;
+        pdf.setTextColor(55, 65, 81);
+        const descLines = pdf.splitTextToSize(description, pageWidth - 45);
+        pdf.text(descLines, 25, yPos);
+        yPos += descLines.length * 4 + 8;
         
         if (yPos > 250) {
           pdf.addPage();
-          yPos = 30;
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
         }
       });
       
@@ -608,11 +627,11 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       pdf.setFontSize(8);
       pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 4 of 7', 20, pageHeight - 10);
       
-      // PAGE 5: COLOR MEANINGS
+      // PAGE 5: COMPLETE COLOR ANALYSIS & LIFE SCORES
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
-      pdf.text('COMPLETE AURA COLOR SPECTRUM', pageWidth / 2, 25, { align: 'center' });
+      pdf.text('COMPLETE COLOR ANALYSIS & LIFE SCORES', pageWidth / 2, 25, { align: 'center' });
       
       pdf.setDrawColor(147, 51, 234);
       pdf.setLineWidth(0.5);
@@ -620,52 +639,90 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       
       yPos = 50;
       
-      // Color Meanings Section
+      // Complete Color Position Analysis
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Color Meanings & Interpretations', 20, yPos);
+      pdf.text('4-Position Aura Color Analysis', 20, yPos);
       yPos += 15;
       
-      // Extract and display color meanings
-      const colorList = [reading.personalityColor, reading.givingColor, reading.receivingColor, reading.thinkingColor];
-      const uniqueColorList = [...new Set(colorList)];
+      // All 4 aura colors with detailed meanings
+      const colorPositions = [
+        { position: 'Personality', color: reading.personalityColor, meaning: 'Your core essence and fundamental spiritual nature' },
+        { position: 'Giving', color: reading.givingColor, meaning: 'How you share and project energy to others' },
+        { position: 'Receiving', color: reading.receivingColor, meaning: 'How you absorb and process energy from environment' },
+        { position: 'Thinking', color: reading.thinkingColor, meaning: 'Your mental and spiritual processing patterns' }
+      ];
       
-      uniqueColorList.forEach((color) => {
+      colorPositions.forEach((pos) => {
         pdf.setFontSize(14);
         pdf.setTextColor(147, 51, 234);
-        pdf.text(`${color} Color`, 25, yPos);
-        yPos += 10;
+        pdf.text(`${pos.position} Energy: ${pos.color}`, 25, yPos);
+        yPos += 8;
         
-        const meaning = colorMeanings[color];
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        const posLines = pdf.splitTextToSize(pos.meaning, pageWidth - 50);
+        pdf.text(posLines, 30, yPos);
+        yPos += posLines.length * 5 + 3;
+        
+        // Add color-specific meanings from the data
+        const meaning = colorMeanings[pos.color];
         if (meaning && typeof meaning === 'object') {
           if (meaning.positive) {
-            pdf.setFontSize(11);
+            pdf.setFontSize(9);
             pdf.setTextColor(34, 197, 94);
-            pdf.text('Positive Aspects:', 30, yPos);
-            yPos += 8;
-            const positiveLines = pdf.splitTextToSize(meaning.positive, pageWidth - 50);
-            pdf.text(positiveLines, 35, yPos);
-            yPos += positiveLines.length * 6 + 5;
+            pdf.text('Positive Traits:', 35, yPos);
+            yPos += 5;
+            const positiveLines = pdf.splitTextToSize(meaning.positive, pageWidth - 60);
+            pdf.text(positiveLines, 40, yPos);
+            yPos += positiveLines.length * 4 + 3;
           }
           
           if (meaning.negative) {
-            pdf.setFontSize(11);
+            pdf.setFontSize(9);
             pdf.setTextColor(239, 68, 68);
-            pdf.text('Growth Areas:', 30, yPos);
-            yPos += 8;
-            const negativeLines = pdf.splitTextToSize(meaning.negative, pageWidth - 50);
-            pdf.text(negativeLines, 35, yPos);
-            yPos += negativeLines.length * 6 + 10;
+            pdf.text('Growth Areas:', 35, yPos);
+            yPos += 5;
+            const negativeLines = pdf.splitTextToSize(meaning.negative, pageWidth - 60);
+            pdf.text(negativeLines, 40, yPos);
+            yPos += negativeLines.length * 4 + 5;
           }
-        } else if (meaning) {
-          pdf.setFontSize(11);
-          pdf.setTextColor(55, 65, 81);
-          const meaningLines = pdf.splitTextToSize(String(meaning), pageWidth - 50);
-          pdf.text(meaningLines, 30, yPos);
-          yPos += meaningLines.length * 6 + 10;
         }
-        yPos += 5;
+        yPos += 8;
+        
+        if (yPos > 250) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('COLOR ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
       });
+      
+      // Life Score Analysis (if available)
+      if (yPos < 200) {
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Life Area Assessment', 20, yPos);
+        yPos += 15;
+        
+        // Calculate life scores based on chakra activity
+        const lifeScores = {
+          'Love & Relationships': Math.round((allChakraData.heart + allChakraData.sacral) / 2),
+          'Career & Purpose': Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
+          'Spiritual Growth': Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
+          'Physical Energy': Math.round((allChakraData.root + allChakraData.earthStar) / 2),
+          'Emotional Balance': Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
+          'Intuition & Wisdom': Math.round((allChakraData.thirdEye + allChakraData.crown) / 2)
+        };
+        
+        Object.entries(lifeScores).forEach(([area, score]) => {
+          pdf.setFontSize(12);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`${area}: ${score}/10`, 25, yPos);
+          yPos += 8;
+        });
+      }
       
       pdf.setFontSize(8);
       pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 5 of 7', 20, pageHeight - 10);
@@ -703,7 +760,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
         pdf.text('Personality Traits & Characteristics', 20, yPos);
         yPos += 15;
         
-        personalityTraits.forEach((trait) => {
+        personalityTraits.forEach((trait: any) => {
           pdf.setFontSize(12);
           pdf.setTextColor(55, 65, 81);
           pdf.text(`• ${trait}`, 25, yPos);
@@ -726,7 +783,133 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       pdf.setFontSize(8);
       pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 6 of 7', 20, pageHeight - 10);
       
-      // PAGE 7: DETAILED ANALYSIS & HEALER NOTES
+      // PAGE 7: CHAKRA REMEDIES & HEALING GUIDANCE
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('CHAKRA REMEDIES & HEALING GUIDANCE', pageWidth / 2, 25, { align: 'center' });
+      
+      pdf.setDrawColor(147, 51, 234);
+      pdf.setLineWidth(0.5);
+      pdf.line(30, 35, pageWidth - 30, 35);
+      
+      yPos = 50;
+      
+      // Comprehensive Chakra Healing Information
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Healing Guidance for All Chakras', 20, yPos);
+      yPos += 15;
+      
+      const chakraRemedies = {
+        'Root Chakra': {
+          mantras: 'LAM (pronounced LAHM)',
+          affirmations: 'I am safe, grounded, and secure',
+          colors: 'Red, Black, Brown',
+          crystals: 'Red Jasper, Hematite, Garnet',
+          essentialOils: 'Cedarwood, Patchouli, Vetiver',
+          practices: 'Walking barefoot, gardening, grounding exercises'
+        },
+        'Sacral Chakra': {
+          mantras: 'VAM (pronounced VAHM)', 
+          affirmations: 'I embrace creativity and joy',
+          colors: 'Orange, Coral',
+          crystals: 'Carnelian, Orange Calcite, Moonstone',
+          essentialOils: 'Sweet Orange, Ylang-ylang, Sandalwood',
+          practices: 'Creative arts, dancing, water meditation'
+        },
+        'Solar Plexus Chakra': {
+          mantras: 'RAM (pronounced RAHM)',
+          affirmations: 'I am confident and powerful',
+          colors: 'Yellow, Gold',
+          crystals: 'Citrine, Yellow Topaz, Tiger\'s Eye',
+          essentialOils: 'Lemon, Ginger, Bergamot',
+          practices: 'Sun meditation, core strengthening, breathwork'
+        },
+        'Heart Chakra': {
+          mantras: 'YAM (pronounced YAHM)',
+          affirmations: 'I give and receive love freely',
+          colors: 'Green, Pink',
+          crystals: 'Rose Quartz, Green Aventurine, Malachite',
+          essentialOils: 'Rose, Eucalyptus, Pine',
+          practices: 'Loving-kindness meditation, heart opening yoga'
+        },
+        'Throat Chakra': {
+          mantras: 'HAM (pronounced HAHM)',
+          affirmations: 'I speak my truth with confidence',
+          colors: 'Blue, Turquoise',
+          crystals: 'Blue Lace Agate, Sodalite, Aquamarine',
+          essentialOils: 'Eucalyptus, Chamomile, Frankincense',
+          practices: 'Chanting, singing, authentic communication'
+        },
+        'Third Eye Chakra': {
+          mantras: 'OM (pronounced AUM)',
+          affirmations: 'I trust my inner wisdom and intuition',
+          colors: 'Indigo, Purple',
+          crystals: 'Amethyst, Lapis Lazuli, Fluorite',
+          essentialOils: 'Lavender, Clary Sage, Rosemary',
+          practices: 'Meditation, visualization, dream work'
+        },
+        'Crown Chakra': {
+          mantras: 'OM or Silence',
+          affirmations: 'I am connected to divine wisdom',
+          colors: 'Violet, White, Gold',
+          crystals: 'Clear Quartz, Amethyst, Selenite',
+          essentialOils: 'Frankincense, Lavender, Sandalwood',
+          practices: 'Silent meditation, prayer, spiritual study'
+        },
+        'Soul Star Chakra': {
+          mantras: 'AH (pronounced AHH)',
+          affirmations: 'I align with my soul purpose',
+          colors: 'White, Magenta, Gold',
+          crystals: 'Moldavite, Phenacite, Clear Quartz',
+          essentialOils: 'Frankincense, Sandalwood, Lotus',
+          practices: 'Soul meditation, past-life work, spiritual connection'
+        },
+        'Earth Star Chakra': {
+          mantras: 'UH (pronounced UHH)',
+          affirmations: 'I am connected to Earth energy',
+          colors: 'Brown, Black, Deep Red',
+          crystals: 'Hematite, Black Tourmaline, Smoky Quartz',
+          essentialOils: 'Vetiver, Patchouli, Cedarwood',
+          practices: 'Earth connection, ancestral healing, grounding'
+        }
+      };
+      
+      Object.entries(chakraRemedies).forEach(([chakraName, remedies]) => {
+        if (yPos > 220) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('CHAKRA REMEDIES (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(chakraName, 20, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`Mantras: ${remedies.mantras}`, 25, yPos);
+        yPos += 6;
+        pdf.text(`Affirmations: ${remedies.affirmations}`, 25, yPos);
+        yPos += 6;
+        pdf.text(`Colors: ${remedies.colors}`, 25, yPos);
+        yPos += 6;
+        pdf.text(`Crystals: ${remedies.crystals}`, 25, yPos);
+        yPos += 6;
+        pdf.text(`Essential Oils: ${remedies.essentialOils}`, 25, yPos);
+        yPos += 6;
+        pdf.text(`Practices: ${remedies.practices}`, 25, yPos);
+        yPos += 12;
+      });
+      
+      pdf.setFontSize(8);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 7 of 8', 20, pageHeight - 10);
+      
+      // PAGE 8: DETAILED ANALYSIS & HEALER NOTES
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
@@ -773,7 +956,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       }
       
       pdf.setFontSize(8);
-      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 7 of 7', 20, pageHeight - 10);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 8 of 8', 20, pageHeight - 10);
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyy-MM-dd');
@@ -810,6 +993,16 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
             <Badge variant="outline" className="bg-white">
               Energy: {reading.energyLevel}/10
             </Badge>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => generateComprehensivePDF(reading)}
+              disabled={isGeneratingPDF}
+              title="Download Complete PDF Report"
+            >
+              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            </Button>
             
             <Button
               variant="ghost"
