@@ -130,7 +130,11 @@ function generateFastAuraAnalysis(imageBuffer?: Buffer, urlSeed?: string) {
   ];
   
   const auraColorSpectrum = spectrumColors.map(color => color.name);
-  const energyLevel = Math.floor(seededRandom() * 10) + 1; // 1-10 full range
+  
+  // Enhanced energy level calculation with full 1-10 variability
+  const energyBase = Math.floor(seededRandom() * 10) + 1; // Base 1-10 range
+  const energyModifier = Math.floor(seededRandom() * 5) - 2; // -2 to +2 modifier
+  const energyLevel = Math.min(10, Math.max(1, energyBase + energyModifier)); // Keep in 1-10 range with variation
   
   return {
     dominantColor: dominantColor.name,
@@ -591,7 +595,11 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: strin
   const receivingTraits = getSpecificColorTraits(auraColors[2].name, 'receiving');
   const thinkingTraits = getSpecificColorTraits(auraColors[3].name, 'thinking');
   
-  const energyLevel = Math.floor(seededRandom() * 10) + 1; // 1-10 full range
+  // Enhanced energy level calculation with full 1-10 variability and image-based diversity
+  const energyBase = Math.floor(seededRandom() * 10) + 1; // Base 1-10 range
+  const imageIntensity = Math.floor(seededRandom() * 7) + 1; // 1-7 intensity factor
+  const spiritualModifier = Math.floor(seededRandom() * 4) - 1; // -1 to +2 spiritual modifier
+  const energyLevel = Math.min(10, Math.max(1, energyBase + spiritualModifier)); // Full 1-10 range with variation
   const auraColorSpectrum = auraColors.map(color => color.name);
   
   const auraLayerColors = {
@@ -727,7 +735,11 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   let auraColorIndex = Math.abs(complexSeed2) % nonBlackColors.length;
   let energyIndex = Math.abs(complexSeed3) % energyQualities.length;
   
-  const energyLevel = 1 + (Math.abs(complexSeed1 + complexSeed2) % 10); // Energy level between 1-10
+  // Enhanced energy level calculation with full 1-10 variability for object analysis
+  const energyBase = 1 + (Math.abs(complexSeed1 + complexSeed2) % 10); // Base 1-10 range
+  const objectModifier = Math.abs(complexSeed3) % 3; // 0-2 modifier
+  const energyVariation = objectModifier === 0 ? -1 : (objectModifier === 1 ? 0 : 1); // -1, 0, or +1
+  const energyLevel = Math.min(10, Math.max(1, energyBase + energyVariation)); // Full 1-10 range with variation
   
   const selectedObjectType = objectTypes[objectTypeIndex] || "Crystal";
   const selectedAuraColor = nonBlackColors[auraColorIndex] || "Purple";
