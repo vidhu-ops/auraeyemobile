@@ -9,6 +9,11 @@ export interface AuraAnalysisResult {
   name?: string; // Added for PDF generation
   dominantColor: string;
   secondaryColor: string;
+  // Four individual aura colors for visualization
+  personalityColor: string;
+  givingColor: string;
+  receivingColor: string;
+  thinkingColor: string;
   // Extended color spectrum for more detailed aura analysis
   auraColorSpectrum?: string[]; // Array of 4-5 colors in order of prominence
   auraLayerColors?: {
