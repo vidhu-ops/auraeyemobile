@@ -509,7 +509,10 @@ async function generateAuraVisualizationWithZones(
 ): Promise<string> {
   try {
     console.log(`Starting zone-restricted aura visualization for colors: P:${personalityColor}, G:${givingColor}, R:${receivingColor}, T:${thinkingColor}`);
-    const { createCanvas, loadImage } = require('canvas');
+    
+    // Import Canvas using dynamic import to avoid require issues
+    const Canvas = await import('canvas');
+    const { createCanvas, loadImage } = Canvas;
     
     // Load the original image
     const img = await loadImage(`data:image/jpeg;base64,${imageBase64}`);
@@ -552,99 +555,76 @@ async function generateAuraVisualizationWithZones(
     const personCenterY = height / 2;
     const personRadius = Math.min(width, height) * 0.40; // Large protection area for face visibility
     
-    // Enhanced zone boundaries with strict restrictions to prevent color bleeding
-    const zones = {
-      thinking: { // Top zone - above head
-        minX: 0, maxX: width,
-        minY: 0, maxY: height * 0.30, // Restricted to top 30%
-        color: thinkingRGB
-      },
-      receiving: { // Left zone - receiving energy
-        minX: 0, maxX: width * 0.45, // Restricted to left 45% only
-        minY: height * 0.15, maxY: height * 0.85,
-        color: receivingRGB
-      },
-      giving: { // Right zone - giving energy (STRICT RESTRICTION)
-        minX: width * 0.55, maxX: width, // Restricted to right 45% only, starts at 55%
-        minY: height * 0.15, maxY: height * 0.85,
-        color: givingRGB
-      },
-      personality: { // Bottom zone - personality energy
-        minX: width * 0.20, maxX: width * 0.80, // Center bottom area only
-        minY: height * 0.65, maxY: height,
-        color: personalityRGB
-      }
-    };
+    // Create DISTINCT color zones with NO MIXING (matching reference images exactly)
+    console.log("Creating distinct color zones without mixing...");
     
-    // Generate particles with STRICT zone restrictions
-    Object.entries(zones).forEach(([zoneName, zone]) => {
-      const particleCount = zoneName === 'giving' ? 120 : 100; // More particles for giving zone visibility
-      
-      for (let i = 0; i < particleCount; i++) {
-        // Generate position STRICTLY within zone boundaries
-        const x = zone.minX + Math.random() * (zone.maxX - zone.minX);
-        const y = zone.minY + Math.random() * (zone.maxY - zone.minY);
-        
-        // Calculate distance from person center
-        const distanceFromCenter = Math.sqrt(
-          Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2)
-        );
-        
-        // Skip particles too close to person (face protection)
-        if (distanceFromCenter < personRadius) continue;
-        
-        // Ensure particle stays within zone boundaries (NO BLEEDING)
-        if (x < zone.minX || x > zone.maxX || y < zone.minY || y > zone.maxY) continue;
-        
-        // Enhanced particle size and opacity for giving zone
-        const baseSize = zoneName === 'giving' ? 180 : 160; // Larger particles for giving zone
-        const particleSize = baseSize + Math.random() * 120;
-        const opacity = zoneName === 'giving' ? 0.12 + Math.random() * 0.15 : 0.08 + Math.random() * 0.12;
-        
-        // Create radial gradient for smokey effect
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-        gradient.addColorStop(0, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity})`);
-        gradient.addColorStop(0.6, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, ${opacity * 0.6})`);
-        gradient.addColorStop(1, `rgba(${zone.color.r}, ${zone.color.g}, ${zone.color.b}, 0)`);
-        
-        // Apply blend modes for natural smokey appearance
-        ctx.globalCompositeOperation = i % 3 === 0 ? 'multiply' : 
-                                      i % 3 === 1 ? 'soft-light' : 'overlay';
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x - particleSize, y - particleSize, particleSize * 2, particleSize * 2);
-      }
-    });
+    // Reset to normal composition for pure color zones
+    ctx.globalCompositeOperation = 'source-over';
     
-    // Add zone-specific gradient base layers with NO CROSS-ZONE BLEEDING
-    ctx.globalCompositeOperation = 'multiply';
+    // LEFT SIDE: Pure receiving color (NO MIXING)
+    console.log(`Applying pure receiving color (${receivingColor}) to left side`);
+    const receivingGrad = ctx.createLinearGradient(0, 0, width * 0.5, 0);
+    receivingGrad.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.7)`);
+    receivingGrad.addColorStop(0.7, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.4)`);
+    receivingGrad.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
+    ctx.fillStyle = receivingGrad;
+    ctx.fillRect(0, 0, width * 0.5, height); // ONLY left half
     
-    // Thinking energy gradient (top only)
-    const thinkingGrad = ctx.createLinearGradient(0, 0, 0, height * 0.30);
-    thinkingGrad.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.25)`);
+    // RIGHT SIDE: Pure giving color (NO MIXING)  
+    console.log(`Applying pure giving color (${givingColor}) to right side`);
+    const givingGrad = ctx.createLinearGradient(width * 0.5, 0, width, 0);
+    givingGrad.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
+    givingGrad.addColorStop(0.3, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.4)`);
+    givingGrad.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.7)`);
+    ctx.fillStyle = givingGrad;
+    ctx.fillRect(width * 0.5, 0, width * 0.5, height); // ONLY right half
+    
+    // TOP AREA: Pure thinking color overlay (subtle)
+    console.log(`Applying thinking color (${thinkingColor}) to top area`);
+    const thinkingGrad = ctx.createLinearGradient(0, 0, 0, height * 0.3);
+    thinkingGrad.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.4)`);
     thinkingGrad.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
     ctx.fillStyle = thinkingGrad;
-    ctx.fillRect(0, 0, width, height * 0.30); // Restricted to top 30% only
+    ctx.fillRect(0, 0, width, height * 0.3); // Top 30% only
     
-    // Receiving energy gradient (left only)
-    const receivingGrad = ctx.createLinearGradient(0, 0, width * 0.45, 0);
-    receivingGrad.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.30)`);
-    receivingGrad.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
-    ctx.fillStyle = receivingGrad;
-    ctx.fillRect(0, height * 0.15, width * 0.45, height * 0.70); // Left 45% only
+    // Add subtle texture without particles to maintain pure color zones
+    console.log("Adding subtle texture while maintaining zone purity...");
     
-    // Giving energy gradient (right only - STRICT BOUNDARY)
-    const givingGrad = ctx.createLinearGradient(width * 0.55, 0, width, 0);
-    givingGrad.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
-    givingGrad.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.35)`);
-    ctx.fillStyle = givingGrad;
-    ctx.fillRect(width * 0.55, height * 0.15, width * 0.45, height * 0.70); // Right 45% only, starts at 55%
+    // Left side texture (receiving color only)
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * width * 0.5; // Only left half
+      const y = Math.random() * height;
+      const size = 20 + Math.random() * 40;
+      
+      // Only if not too close to person center
+      const distanceFromCenter = Math.sqrt(Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2));
+      if (distanceFromCenter < personRadius) continue;
+      
+      ctx.globalCompositeOperation = 'soft-light';
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+      gradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
+      gradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x - size, y - size, size * 2, size * 2);
+    }
     
-    // Personality energy gradient (bottom center only)
-    const personalityGrad = ctx.createLinearGradient(0, height * 0.65, 0, height);
-    personalityGrad.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
-    personalityGrad.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.20)`);
-    ctx.fillStyle = personalityGrad;
-    ctx.fillRect(width * 0.20, height * 0.65, width * 0.60, height * 0.35); // Center bottom only
+    // Right side texture (giving color only)
+    for (let i = 0; i < 50; i++) {
+      const x = width * 0.5 + Math.random() * width * 0.5; // Only right half
+      const y = Math.random() * height;
+      const size = 20 + Math.random() * 40;
+      
+      // Only if not too close to person center
+      const distanceFromCenter = Math.sqrt(Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2));
+      if (distanceFromCenter < personRadius) continue;
+      
+      ctx.globalCompositeOperation = 'soft-light';
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+      gradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
+      gradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x - size, y - size, size * 2, size * 2);
+    }
     
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
@@ -664,7 +644,7 @@ async function generateAuraVisualizationWithZones(
     
   } catch (error) {
     console.error('Error generating aura visualization:', error);
-    console.error('Canvas error details:', error.message);
+    console.error('Canvas error details:', error instanceof Error ? error.message : 'Unknown error');
     return imageBase64; // Return original image if processing fails
   }
 }
