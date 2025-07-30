@@ -124,11 +124,6 @@ function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalcu
         birthDate: birthDate
       });
       
-      console.log("Numerology API Response:", response);
-      console.log("Response keys:", Object.keys(response));
-      console.log("lifePath value:", response.lifePath);
-      console.log("destiny value:", response.destiny);
-      
       onResultGenerated(response);
       
       toast({
