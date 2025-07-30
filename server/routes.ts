@@ -2766,15 +2766,39 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const decisionMakingChakra = calculateDecisionMakingChakra(birthDate);
       const dominantSoulChakra = calculateDominantSoulChakra(birthDate);
 
-      // Generate AI interpretations using Gemini to avoid OpenAI quota issues
-      const aiResponse = await generateGeminiNumerologyAnalysis({
-        lifePath,
-        destiny,
-        soulUrge,
-        personality,
-        decisionMakingChakra,
-        dominantSoulChakra
-      });
+      // First ensure we have the core numbers working
+      console.log(`Calculated numbers: lifePath=${lifePath}, destiny=${destiny}, soulUrge=${soulUrge}, personality=${personality}`);
+      
+      let interpretations = {
+        lifePathInterpretation: `Life Path ${lifePath} represents your journey through life and core purpose.`,
+        destinyInterpretation: `Destiny ${destiny} shows your life's mission and what you're meant to accomplish.`,
+        soulUrgeInterpretation: `Soul Urge ${soulUrge} reveals your inner desires and motivations.`,
+        personalityInterpretation: `Personality ${personality} shows how others perceive you and your outer expression.`
+      };
+
+      try {
+        // Try to get AI interpretations, but don't let failure block the core functionality
+        const aiResponse = await generateGeminiNumerologyAnalysis({
+          lifePath,
+          destiny,
+          soulUrge,
+          personality,
+          decisionMakingChakra,
+          dominantSoulChakra
+        });
+        
+        if (aiResponse && aiResponse.lifePathInterpretation) {
+          interpretations = {
+            lifePathInterpretation: aiResponse.lifePathInterpretation,
+            destinyInterpretation: aiResponse.destinyInterpretation,
+            soulUrgeInterpretation: aiResponse.soulUrgeInterpretation,
+            personalityInterpretation: aiResponse.personalityInterpretation
+          };
+        }
+      } catch (aiError) {
+        console.error("AI interpretation failed, using fallback:", aiError);
+        // Keep the fallback interpretations defined above
+      }
 
       // Return live result without saving to database
       const result = {
@@ -2786,11 +2810,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
         personality,
         decisionMakingChakra,
         dominantSoulChakra,
-        lifePathInterpretation: aiResponse.lifePathInterpretation,
-        destinyInterpretation: aiResponse.destinyInterpretation,
-        soulUrgeInterpretation: aiResponse.soulUrgeInterpretation,
-        personalityInterpretation: aiResponse.personalityInterpretation
+        lifePathInterpretation: interpretations.lifePathInterpretation,
+        destinyInterpretation: interpretations.destinyInterpretation,
+        soulUrgeInterpretation: interpretations.soulUrgeInterpretation,
+        personalityInterpretation: interpretations.personalityInterpretation
       };
+
+      console.log(`Result object created:`, Object.keys(result));
 
       console.log(`Live numerology reading generated successfully for ${name}`);
       res.json(result);

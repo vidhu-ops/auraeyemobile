@@ -75,168 +75,158 @@ async function createSmokeyAuraVisualization(
       const centerY = height / 2;
       const personRadius = Math.min(width, height) * 0.18; // Smaller protection area for dense coverage
       
-      console.log('Creating ultra-dense atmospheric aura visualization matching reference images...');
+      console.log('Creating 4-color zone aura visualization with all colors clearly visible...');
       
-      // BASE ATMOSPHERIC LAYERS - Create full image coverage like reference images
+      // PERSONALITY COLOR: Bottom area base layer (subtle background throughout)
       ctx.globalCompositeOperation = 'multiply';
-      
-      // Full image personality color base (very subtle)
-      for (let i = 0; i < 600; i++) {
+      for (let i = 0; i < 400; i++) {
         const x = Math.random() * width;
-        const y = Math.random() * height;
+        const y = (height * 0.6) + Math.random() * (height * 0.4); // Bottom 40% focused
         
         const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-        if (distanceFromCenter < personRadius * 1.2) continue;
+        if (distanceFromCenter < personRadius * 1.1) continue;
         
-        const size = 60 + Math.random() * 120;
-        const opacity = 0.02 + Math.random() * 0.08;
+        const size = 40 + Math.random() * 80;
+        const opacity = 0.08 + Math.random() * 0.15; // Increased opacity for visibility
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
         gradient.addColorStop(0, `rgba(${personalityRGB[0]}, ${personalityRGB[1]}, ${personalityRGB[2]}, ${opacity})`);
-        gradient.addColorStop(0.3, `rgba(${personalityRGB[0]}, ${personalityRGB[1]}, ${personalityRGB[2]}, ${opacity * 0.7})`);
-        gradient.addColorStop(0.7, `rgba(${personalityRGB[0]}, ${personalityRGB[1]}, ${personalityRGB[2]}, ${opacity * 0.3})`);
+        gradient.addColorStop(0.4, `rgba(${personalityRGB[0]}, ${personalityRGB[1]}, ${personalityRGB[2]}, ${opacity * 0.7})`);
         gradient.addColorStop(1, `rgba(${personalityRGB[0]}, ${personalityRGB[1]}, ${personalityRGB[2]}, 0)`);
         
         ctx.fillStyle = gradient;
-        ctx.filter = 'blur(40px)';
+        ctx.filter = 'blur(25px)';
         ctx.fillRect(x - size, y - size, size * 2, size * 2);
       }
       
-      // LEFT ZONE: Ultra-dense receiving color (like reference images)
+      // LEFT ZONE: RECEIVING COLOR (left side clearly visible)
       ctx.globalCompositeOperation = 'screen';
-      for (let i = 0; i < 800; i++) { // Ultra-dense for rich atmospheric effect
-        const x = Math.random() * (width * 0.6); // Extend slightly past center for natural blending
+      for (let i = 0; i < 600; i++) {
+        const x = Math.random() * (width * 0.5); // Strict left half
         const y = Math.random() * height;
         
         const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
         if (distanceFromCenter < personRadius) continue;
         
-        const size = 20 + Math.random() * 100; // Varied particle sizes
-        const opacity = 0.03 + Math.random() * 0.15; // Higher opacity for visible effect
+        const size = 30 + Math.random() * 70;
+        const opacity = 0.12 + Math.random() * 0.25; // Higher opacity for clear visibility
         
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 3);
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
         gradient.addColorStop(0, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity})`);
-        gradient.addColorStop(0.2, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity * 0.8})`);
-        gradient.addColorStop(0.5, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity * 0.4})`);
+        gradient.addColorStop(0.3, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity * 0.8})`);
+        gradient.addColorStop(0.7, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity * 0.4})`);
         gradient.addColorStop(1, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, 0)`);
         
         ctx.fillStyle = gradient;
-        ctx.filter = 'blur(35px)'; // Heavy atmospheric blur
+        ctx.filter = 'blur(20px)';
         ctx.fillRect(x - size, y - size, size * 2, size * 2);
       }
       
-      // RIGHT ZONE: Ultra-dense giving color
-      for (let i = 0; i < 800; i++) { 
-        const x = (width * 0.4) + Math.random() * (width * 0.6); // Start from slightly left of center
+      // RIGHT ZONE: GIVING COLOR (right side clearly visible)
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 600; i++) {
+        const x = (width * 0.5) + Math.random() * (width * 0.5); // Strict right half
         const y = Math.random() * height;
         
         const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
         if (distanceFromCenter < personRadius) continue;
         
-        const size = 20 + Math.random() * 100;
-        const opacity = 0.03 + Math.random() * 0.15;
+        const size = 30 + Math.random() * 70;
+        const opacity = 0.12 + Math.random() * 0.25; // Higher opacity for clear visibility
         
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 3);
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
         gradient.addColorStop(0, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity})`);
-        gradient.addColorStop(0.2, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity * 0.8})`);
-        gradient.addColorStop(0.5, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity * 0.4})`);
+        gradient.addColorStop(0.3, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity * 0.8})`);
+        gradient.addColorStop(0.7, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity * 0.4})`);
         gradient.addColorStop(1, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, 0)`);
         
         ctx.fillStyle = gradient;
-        ctx.filter = 'blur(35px)';
+        ctx.filter = 'blur(20px)';
         ctx.fillRect(x - size, y - size, size * 2, size * 2);
       }
       
-      // TOP ZONE: Dense thinking color (top 20% as requested)
+      // TOP ZONE: THINKING COLOR (top 20% clearly visible)
       ctx.globalCompositeOperation = 'overlay';
-      for (let i = 0; i < 600; i++) { 
+      for (let i = 0; i < 500; i++) {
         const x = Math.random() * width;
         const y = Math.random() * (height * 0.2); // Exactly top 20% as requested
         
         const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
         if (distanceFromCenter < personRadius) continue;
         
-        const size = 25 + Math.random() * 80;
-        const opacity = 0.04 + Math.random() * 0.18;
+        const size = 35 + Math.random() * 60;
+        const opacity = 0.15 + Math.random() * 0.25; // High opacity for clear visibility
         
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
         gradient.addColorStop(0, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, ${opacity})`);
-        gradient.addColorStop(0.3, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, ${opacity * 0.7})`);
+        gradient.addColorStop(0.4, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, ${opacity * 0.7})`);
         gradient.addColorStop(1, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.filter = 'blur(18px)';
+        ctx.fillRect(x - size, y - size, size * 2, size * 2);
+      }
+      
+      // ZONE REINFORCEMENT: Make each color zone more distinct and visible
+      ctx.globalCompositeOperation = 'color-dodge';
+      
+      // Reinforce LEFT zone (Receiving color)
+      for (let i = 0; i < 200; i++) {
+        const x = Math.random() * (width * 0.45); // Strict left zone
+        const y = Math.random() * height;
+        
+        const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        if (distanceFromCenter < personRadius * 1.2) continue;
+        
+        const size = 50 + Math.random() * 100;
+        const opacity = 0.08 + Math.random() * 0.15;
+        
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
+        gradient.addColorStop(0, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, ${opacity})`);
+        gradient.addColorStop(1, `rgba(${receivingRGB[0]}, ${receivingRGB[1]}, ${receivingRGB[2]}, 0)`);
         
         ctx.fillStyle = gradient;
         ctx.filter = 'blur(30px)';
         ctx.fillRect(x - size, y - size, size * 2, size * 2);
       }
       
-      // ATMOSPHERIC BLENDING LAYERS - Create natural color transitions like reference images
-      ctx.globalCompositeOperation = 'soft-light';
-      
-      // Cross-zone blending particles for natural atmospheric effect
-      const blendingZones = [
-        { colors: [receivingRGB, thinkingRGB], area: { x: 0, y: 0, w: width * 0.5, h: height * 0.3 } },
-        { colors: [givingRGB, thinkingRGB], area: { x: width * 0.5, y: 0, w: width * 0.5, h: height * 0.3 } },
-        { colors: [receivingRGB, personalityRGB], area: { x: 0, y: height * 0.4, w: width * 0.5, h: height * 0.6 } },
-        { colors: [givingRGB, personalityRGB], area: { x: width * 0.5, y: height * 0.4, w: width * 0.5, h: height * 0.6 } }
-      ];
-      
-      blendingZones.forEach(zone => {
-        for (let i = 0; i < 300; i++) {
-          const x = zone.area.x + Math.random() * zone.area.w;
-          const y = zone.area.y + Math.random() * zone.area.h;
-          
-          const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-          if (distanceFromCenter < personRadius * 1.3) continue;
-          
-          const blendRatio = Math.random();
-          const color1 = zone.colors[0];
-          const color2 = zone.colors[1];
-          
-          const blendedColor = [
-            Math.round(color1[0] * (1 - blendRatio) + color2[0] * blendRatio),
-            Math.round(color1[1] * (1 - blendRatio) + color2[1] * blendRatio),
-            Math.round(color1[2] * (1 - blendRatio) + color2[2] * blendRatio)
-          ];
-          
-          const size = 40 + Math.random() * 80;
-          const opacity = 0.02 + Math.random() * 0.10;
-          
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
-          gradient.addColorStop(0, `rgba(${blendedColor[0]}, ${blendedColor[1]}, ${blendedColor[2]}, ${opacity})`);
-          gradient.addColorStop(1, `rgba(${blendedColor[0]}, ${blendedColor[1]}, ${blendedColor[2]}, 0)`);
-          
-          ctx.fillStyle = gradient;
-          ctx.filter = 'blur(45px)'; // Ultra-soft blending
-          ctx.fillRect(x - size, y - size, size * 2, size * 2);
-        }
-      });
-      
-      // Final atmospheric enhancement for edge-to-edge coverage
-      ctx.globalCompositeOperation = 'color-dodge';
+      // Reinforce RIGHT zone (Giving color)
       for (let i = 0; i < 200; i++) {
-        const x = Math.random() * width;
+        const x = (width * 0.55) + Math.random() * (width * 0.45); // Strict right zone
         const y = Math.random() * height;
         
         const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-        if (distanceFromCenter < personRadius * 1.5) continue;
+        if (distanceFromCenter < personRadius * 1.2) continue;
         
-        // Choose color based on position for natural zoning
-        let selectedColor;
-        if (x < width * 0.5) selectedColor = receivingRGB;
-        else if (x >= width * 0.5) selectedColor = givingRGB;
-        else selectedColor = thinkingRGB;
+        const size = 50 + Math.random() * 100;
+        const opacity = 0.08 + Math.random() * 0.15;
         
-        if (y < height * 0.2) selectedColor = thinkingRGB;
-        
-        const size = 100 + Math.random() * 150;
-        const opacity = 0.01 + Math.random() * 0.05;
-        
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 4);
-        gradient.addColorStop(0, `rgba(${selectedColor[0]}, ${selectedColor[1]}, ${selectedColor[2]}, ${opacity})`);
-        gradient.addColorStop(1, `rgba(${selectedColor[0]}, ${selectedColor[1]}, ${selectedColor[2]}, 0)`);
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
+        gradient.addColorStop(0, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, ${opacity})`);
+        gradient.addColorStop(1, `rgba(${givingRGB[0]}, ${givingRGB[1]}, ${givingRGB[2]}, 0)`);
         
         ctx.fillStyle = gradient;
-        ctx.filter = 'blur(60px)'; // Maximum atmospheric diffusion
+        ctx.filter = 'blur(30px)';
+        ctx.fillRect(x - size, y - size, size * 2, size * 2);
+      }
+      
+      // Reinforce TOP zone (Thinking color)
+      for (let i = 0; i < 150; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * (height * 0.25); // Top 25%
+        
+        const distanceFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        if (distanceFromCenter < personRadius * 1.2) continue;
+        
+        const size = 40 + Math.random() * 80;
+        const opacity = 0.1 + Math.random() * 0.2;
+        
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
+        gradient.addColorStop(0, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, ${opacity})`);
+        gradient.addColorStop(1, `rgba(${thinkingRGB[0]}, ${thinkingRGB[1]}, ${thinkingRGB[2]}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.filter = 'blur(25px)';
         ctx.fillRect(x - size, y - size, size * 2, size * 2);
       }
       
