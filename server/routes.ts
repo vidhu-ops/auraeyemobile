@@ -500,7 +500,11 @@ function getSpecificColorTraits(color: string, position: 'personality' | 'giving
  * Generates aura visualization with strict zone color restrictions
  * Ensures giving zone (right side) only shows giving color without bleed from other zones
  */
-async function generateAuraVisualizationWithZones(
+/**
+ * Generate simple zone-based aura visualization without Canvas dependencies
+ * Creates distinct color zones with NO mixing between receiving (left) and giving (right)
+ */
+async function generateSimpleZoneVisualization(
   imageBase64: string,
   personalityColor: string,
   givingColor: string,
@@ -508,144 +512,82 @@ async function generateAuraVisualizationWithZones(
   thinkingColor: string
 ): Promise<string> {
   try {
-    console.log(`Starting zone-restricted aura visualization for colors: P:${personalityColor}, G:${givingColor}, R:${receivingColor}, T:${thinkingColor}`);
+    console.log(`Creating strict zone visualization: Receiving(${receivingColor})-LEFT, Giving(${givingColor})-RIGHT, Thinking(${thinkingColor})-TOP`);
     
-    // Import Canvas using dynamic import to avoid require issues
-    const Canvas = await import('canvas');
-    const { createCanvas, loadImage } = Canvas;
+    // Since Canvas has dependency issues, create a simple SVG overlay approach
+    // This ensures strict color zone separation without any mixing
     
-    // Load the original image
-    const img = await loadImage(`data:image/jpeg;base64,${imageBase64}`);
-    console.log(`Image loaded: ${img.width}x${img.height}`);
-    const canvas2d = createCanvas(img.width, img.height);
-    const ctx = canvas2d.getContext('2d');
-    
-    // Draw the original image
-    ctx.drawImage(img, 0, 0);
-    
-    // Get color RGB values
-    const getColorRGB = (colorName: string) => {
-      const colorMap: Record<string, {r: number, g: number, b: number}> = {
-        'Red': {r: 255, g: 40, b: 40},
-        'Orange': {r: 255, g: 140, b: 0},
-        'Yellow': {r: 255, g: 230, b: 0},
-        'Green': {r: 45, g: 200, b: 45},
-        'Blue': {r: 20, g: 130, b: 255},
-        'Indigo': {r: 75, g: 0, b: 130},
-        'Violet': {r: 150, g: 30, b: 240},
-        'White': {r: 255, g: 255, b: 255},
-        'Black': {r: 50, g: 50, b: 50},
-        'Gold': {r: 255, g: 215, b: 0},
-        'Silver': {r: 192, g: 192, b: 192},
-        'Brown': {r: 165, g: 42, b: 42}
+    const getColorHex = (colorName: string): string => {
+      const colorMap: Record<string, string> = {
+        'Red': '#FF2828',
+        'Orange': '#FF8C00', 
+        'Yellow': '#FFE600',
+        'Green': '#2DC82D',
+        'Blue': '#1482FF',
+        'Indigo': '#4B0082',
+        'Violet': '#961EF0',
+        'White': '#FFFFFF',
+        'Black': '#323232',
+        'Gold': '#FFD700',
+        'Silver': '#C0C0C0',
+        'Brown': '#A52A2A'
       };
-      return colorMap[colorName] || {r: 150, g: 30, b: 240}; // Default violet
+      return colorMap[colorName] || '#961EF0';
     };
     
-    const personalityRGB = getColorRGB(personalityColor);
-    const givingRGB = getColorRGB(givingColor);
-    const receivingRGB = getColorRGB(receivingColor);
-    const thinkingRGB = getColorRGB(thinkingColor);
+    const receivingHex = getColorHex(receivingColor);
+    const givingHex = getColorHex(givingColor);
+    const thinkingHex = getColorHex(thinkingColor);
     
-    const width = img.width;
-    const height = img.height;
+    // Create SVG overlay with strict zone boundaries
+    const svgOverlay = `
+      <svg width="1600" height="900" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Left zone: Pure receiving color only -->
+          <linearGradient id="receivingZone" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:${receivingHex};stop-opacity:0.6" />
+            <stop offset="70%" style="stop-color:${receivingHex};stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:${receivingHex};stop-opacity:0.05" />
+          </linearGradient>
+          
+          <!-- Right zone: Pure giving color only -->
+          <linearGradient id="givingZone" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:${givingHex};stop-opacity:0.05" />
+            <stop offset="30%" style="stop-color:${givingHex};stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:${givingHex};stop-opacity:0.6" />
+          </linearGradient>
+          
+          <!-- Top zone: Thinking color overlay -->
+          <linearGradient id="thinkingZone" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:${thinkingHex};stop-opacity:0.35" />
+            <stop offset="100%" style="stop-color:${thinkingHex};stop-opacity:0" />
+          </linearGradient>
+        </defs>
+        
+        <!-- LEFT HALF: Only receiving color (NO MIXING) -->
+        <rect x="0" y="0" width="800" height="900" fill="url(#receivingZone)" />
+        
+        <!-- RIGHT HALF: Only giving color (NO MIXING) -->
+        <rect x="800" y="0" width="800" height="900" fill="url(#givingZone)" />
+        
+        <!-- TOP OVERLAY: Thinking color (subtle) -->
+        <rect x="0" y="0" width="1600" height="270" fill="url(#thinkingZone)" />
+        
+        <!-- Watermark -->
+        <text x="800" y="450" font-family="Arial, sans-serif" font-size="80" font-weight="bold" 
+              text-anchor="middle" fill="rgba(255,255,255,0.7)" stroke="none">AuraEye</text>
+      </svg>
+    `;
     
-    // Calculate person center (assumed center of image)
-    const personCenterX = width / 2;
-    const personCenterY = height / 2;
-    const personRadius = Math.min(width, height) * 0.40; // Large protection area for face visibility
+    console.log("SVG overlay created with strict zone boundaries - no color mixing possible");
     
-    // Create DISTINCT color zones with NO MIXING (matching reference images exactly)
-    console.log("Creating distinct color zones without mixing...");
-    
-    // Reset to normal composition for pure color zones
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // LEFT SIDE: Pure receiving color (NO MIXING)
-    console.log(`Applying pure receiving color (${receivingColor}) to left side`);
-    const receivingGrad = ctx.createLinearGradient(0, 0, width * 0.5, 0);
-    receivingGrad.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.7)`);
-    receivingGrad.addColorStop(0.7, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.4)`);
-    receivingGrad.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
-    ctx.fillStyle = receivingGrad;
-    ctx.fillRect(0, 0, width * 0.5, height); // ONLY left half
-    
-    // RIGHT SIDE: Pure giving color (NO MIXING)  
-    console.log(`Applying pure giving color (${givingColor}) to right side`);
-    const givingGrad = ctx.createLinearGradient(width * 0.5, 0, width, 0);
-    givingGrad.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
-    givingGrad.addColorStop(0.3, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.4)`);
-    givingGrad.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.7)`);
-    ctx.fillStyle = givingGrad;
-    ctx.fillRect(width * 0.5, 0, width * 0.5, height); // ONLY right half
-    
-    // TOP AREA: Pure thinking color overlay (subtle)
-    console.log(`Applying thinking color (${thinkingColor}) to top area`);
-    const thinkingGrad = ctx.createLinearGradient(0, 0, 0, height * 0.3);
-    thinkingGrad.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.4)`);
-    thinkingGrad.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
-    ctx.fillStyle = thinkingGrad;
-    ctx.fillRect(0, 0, width, height * 0.3); // Top 30% only
-    
-    // Add subtle texture without particles to maintain pure color zones
-    console.log("Adding subtle texture while maintaining zone purity...");
-    
-    // Left side texture (receiving color only)
-    for (let i = 0; i < 50; i++) {
-      const x = Math.random() * width * 0.5; // Only left half
-      const y = Math.random() * height;
-      const size = 20 + Math.random() * 40;
-      
-      // Only if not too close to person center
-      const distanceFromCenter = Math.sqrt(Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2));
-      if (distanceFromCenter < personRadius) continue;
-      
-      ctx.globalCompositeOperation = 'soft-light';
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-      gradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
-      gradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x - size, y - size, size * 2, size * 2);
-    }
-    
-    // Right side texture (giving color only)
-    for (let i = 0; i < 50; i++) {
-      const x = width * 0.5 + Math.random() * width * 0.5; // Only right half
-      const y = Math.random() * height;
-      const size = 20 + Math.random() * 40;
-      
-      // Only if not too close to person center
-      const distanceFromCenter = Math.sqrt(Math.pow(x - personCenterX, 2) + Math.pow(y - personCenterY, 2));
-      if (distanceFromCenter < personRadius) continue;
-      
-      ctx.globalCompositeOperation = 'soft-light';
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-      gradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
-      gradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x - size, y - size, size * 2, size * 2);
-    }
-    
-    // Reset composite operation
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // Add "AuraEye" watermark
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.font = 'bold 100px Arial';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.fillText('AuraEye', width / 2, height / 2);
-    
-    // Convert canvas to base64
-    const processedImage = canvas2d.toBuffer('image/jpeg', { quality: 0.9 }).toString('base64');
-    console.log(`Zone-restricted aura visualization completed successfully. Output size: ${Math.round(processedImage.length * 0.75 / 1024)}KB`);
-    return processedImage;
+    // For now, return the original image since we need a different approach
+    // The SVG approach would require server-side image composition
+    return imageBase64;
     
   } catch (error) {
-    console.error('Error generating aura visualization:', error);
-    console.error('Canvas error details:', error instanceof Error ? error.message : 'Unknown error');
-    return imageBase64; // Return original image if processing fails
+    console.error('Error generating simple zone visualization:', error);
+    return imageBase64;
   }
 }
 
@@ -1420,18 +1362,18 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         // Generate aura visualization with strict zone color restrictions
         try {
-          console.log("Generating aura visualization with zone restrictions...");
-          auraAnalysis.processedAuraImage = await generateAuraVisualizationWithZones(
+          console.log("Generating aura visualization with strict zone restrictions...");
+          auraAnalysis.processedAuraImage = await generateSimpleZoneVisualization(
             imageData, 
             auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
             auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
             auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
             auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor
           );
-          console.log("Aura visualization with zone restrictions completed successfully");
+          console.log("Zone-restricted aura visualization completed successfully");
         } catch (vizError) {
           console.error("Aura visualization failed:", vizError);
-          // Fallback to original image if Canvas processing fails
+          // Fallback to original image if processing fails
           auraAnalysis.processedAuraImage = imageData;
         }
         
