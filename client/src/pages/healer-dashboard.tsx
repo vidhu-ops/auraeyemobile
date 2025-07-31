@@ -124,7 +124,6 @@ function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalcu
         birthDate: birthDate
       });
       
-      console.log("Numerology API response:", response);
       onResultGenerated(response);
       
       toast({
@@ -1930,9 +1929,7 @@ export default function HealerDashboard() {
                   <h3 className="font-semibold text-lg mb-4 text-purple-800">
                     Complete Numerology Analysis for {liveNumerologyResult.name}
                   </h3>
-                  <div className="mb-2 text-xs text-gray-600">
-                    Debug: {JSON.stringify(liveNumerologyResult, null, 2)}
-                  </div>
+
                   
                   {/* Birth Information */}
                   <div className="mb-6 p-4 bg-white rounded-lg border">
@@ -1983,7 +1980,7 @@ export default function HealerDashboard() {
                       <div className="p-4 bg-white rounded-lg border shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">{liveNumerologyResult.decisionMakingChakra}</span>
+                            <span className="text-black font-bold text-lg">{liveNumerologyResult.decisionMakingChakra}</span>
                           </div>
                           <div>
                             <div className="font-medium text-gray-700">Decision Making Chakra</div>

@@ -2996,11 +2996,157 @@ export default function AuraAnalysis() {
     const centerX = width / 2;
     const centerY = height / 2;
     
-    // Create distinct zone visualization with NO mixing between colors
-    createDistinctColorZones(ctx, width, height, centerX, centerY, colors, energyLevel);
+    // Create dense, cloudy, non-transparent aura visualization
+    createDenseCloudyAura(ctx, width, height, centerX, centerY, colors, energyLevel);
   };
 
-  // Function to create DISTINCT color zones with NO mixing between colors
+  // Function to create DENSE, CLOUDY, NON-TRANSPARENT aura visualization
+  const createDenseCloudyAura = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    centerX: number,
+    centerY: number,
+    colors: {
+      thinkingRGB: { r: number, g: number, b: number },
+      receivingRGB: { r: number, g: number, b: number },
+      givingRGB: { r: number, g: number, b: number },
+      personalityRGB: { r: number, g: number, b: number }
+    },
+    energyLevel: number
+  ) => {
+    // Person protection area - face should be clearly visible
+    const personRadius = Math.min(width, height) * 0.25;
+    
+    console.log("Creating dense, cloudy, non-transparent aura visualization...");
+    
+    // Create dense cloudy layers for each zone with HIGH OPACITY (non-transparent)
+    // Zone boundaries: Left = Receiving, Right = Giving, Top = Thinking, Bottom = Personality
+    
+    // DENSE LEFT ZONE - RECEIVING COLOR (Non-transparent cloudy effect)
+    ctx.save();
+    const leftRect = new Path2D();
+    leftRect.rect(0, 0, width * 0.5, height);
+    ctx.clip(leftRect);
+    
+    // Create multiple dense cloudy particles for LEFT zone
+    for (let i = 0; i < 60; i++) {
+      const x = Math.random() * width * 0.5;
+      const y = Math.random() * height;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      
+      // Skip if too close to person (face protection)
+      if (distance < personRadius) continue;
+      
+      const radius = 40 + Math.random() * 80; // Large cloudy particles
+      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // DENSE RIGHT ZONE - GIVING COLOR (Non-transparent cloudy effect)
+    ctx.save();
+    const rightRect = new Path2D();
+    rightRect.rect(width * 0.5, 0, width * 0.5, height);
+    ctx.clip(rightRect);
+    
+    // Create multiple dense cloudy particles for RIGHT zone
+    for (let i = 0; i < 60; i++) {
+      const x = width * 0.5 + Math.random() * width * 0.5;
+      const y = Math.random() * height;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      
+      // Skip if too close to person (face protection)
+      if (distance < personRadius) continue;
+      
+      const radius = 40 + Math.random() * 80; // Large cloudy particles
+      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // DENSE TOP ZONE - THINKING COLOR (Non-transparent cloudy effect)
+    ctx.save();
+    const topRect = new Path2D();
+    topRect.rect(0, 0, width, height * 0.4);
+    ctx.clip(topRect);
+    
+    // Create multiple dense cloudy particles for TOP zone
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height * 0.4;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      
+      // Skip if too close to person (face protection)
+      if (distance < personRadius) continue;
+      
+      const radius = 35 + Math.random() * 70; // Large cloudy particles
+      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // DENSE BOTTOM ZONE - PERSONALITY COLOR (Non-transparent cloudy effect)
+    ctx.save();
+    const bottomRect = new Path2D();
+    bottomRect.rect(0, height * 0.6, width, height * 0.4);
+    ctx.clip(bottomRect);
+    
+    // Create multiple dense cloudy particles for BOTTOM zone
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * width;
+      const y = height * 0.6 + Math.random() * height * 0.4;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      
+      // Skip if too close to person (face protection)
+      if (distance < personRadius) continue;
+      
+      const radius = 35 + Math.random() * 70; // Large cloudy particles
+      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    console.log("Dense, cloudy, non-transparent aura visualization completed");
+  };
+
+  // Function to create DISTINCT color zones with NO mixing between colors (OLD VERSION - for reference)
   const createDistinctColorZones = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3015,62 +3161,7 @@ export default function AuraAnalysis() {
     },
     energyLevel: number
   ) => {
-    // Person protection area - maximum face clearance for 100% visibility
-    const personRadius = Math.min(width, height) * 0.35;
-    
-    console.log("Creating 4-color zone aura visualization with all colors clearly visible...");
-    
-    // Create DISTINCT zones with NO blending between colors
-    // LEFT SIDE: Pure receiving color ONLY
-    ctx.save();
-    ctx.globalCompositeOperation = 'source-over';
-    const leftGradient = ctx.createLinearGradient(0, 0, width * 0.5, 0);
-    leftGradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.65)`);
-    leftGradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.3)`);
-    leftGradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0.05)`);
-    ctx.fillStyle = leftGradient;
-    ctx.fillRect(0, 0, width * 0.5, height); // ONLY left half
-    ctx.restore();
-    
-    // RIGHT SIDE: Pure giving color ONLY  
-    ctx.save();
-    ctx.globalCompositeOperation = 'source-over';
-    const rightGradient = ctx.createLinearGradient(width * 0.5, 0, width, 0);
-    rightGradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.05)`);
-    rightGradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.3)`);
-    rightGradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0.65)`);
-    ctx.fillStyle = rightGradient;
-    ctx.fillRect(width * 0.5, 0, width * 0.5, height); // ONLY right half
-    ctx.restore();
-    
-    // TOP AREA: Pure thinking color overlay (subtle)
-    ctx.save();
-    ctx.globalCompositeOperation = 'source-over';
-    const topGradient = ctx.createLinearGradient(0, 0, 0, height * 0.35);
-    topGradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0.4)`);
-    topGradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
-    ctx.fillStyle = topGradient;
-    ctx.fillRect(0, 0, width, height * 0.35); // Top area only
-    ctx.restore();
-    
-    // BOTTOM AREA: Pure personality color (subtle)
-    ctx.save();
-    ctx.globalCompositeOperation = 'source-over';
-    const bottomGradient = ctx.createLinearGradient(0, height * 0.65, 0, height);
-    bottomGradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-    bottomGradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0.3)`);
-    ctx.fillStyle = bottomGradient;
-    ctx.fillRect(0, height * 0.65, width, height * 0.35); // Bottom area only
-    ctx.restore();
-    
-    // Clear face area to ensure 100% visibility
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out'; // This removes color from face area
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-    
+    // This function is kept for reference but not used anymore
     console.log("Distinct zone aura visualization completed - no blending between colors");
   };
 
