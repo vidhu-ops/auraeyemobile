@@ -112,17 +112,14 @@ function NumerologyInputForm() {
       return;
     }
 
-    // Store the numerology data in sessionStorage and navigate to numerology page
-    const numerologyData = {
-      name: fullName.trim(),
-      birthDate: birthDate,
-      fromHealer: true
-    };
+    // Navigate to numerology page with URL parameters
+    const params = new URLSearchParams({
+      healerName: fullName.trim(),
+      healerBirthDate: birthDate,
+      fromHealer: 'true'
+    });
     
-    sessionStorage.setItem('healerNumerologyData', JSON.stringify(numerologyData));
-    
-    // Navigate to numerology page
-    window.location.href = '/numerology';
+    window.location.href = `/numerology?${params.toString()}`;
   };
 
   return (
