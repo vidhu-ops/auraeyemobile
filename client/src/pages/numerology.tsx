@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -96,24 +96,45 @@ export default function NumerologyPage() {
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
 
+  // Check for healer-provided numerology data
+  const [healerData, setHealerData] = useState<any>(null);
+  
+  useEffect(() => {
+    const healerNumerologyData = sessionStorage.getItem('healerNumerologyData');
+    if (healerNumerologyData) {
+      try {
+        const parsedData = JSON.parse(healerNumerologyData);
+        setHealerData(parsedData);
+        // Clear the data from sessionStorage after use
+        sessionStorage.removeItem('healerNumerologyData');
+      } catch (error) {
+        console.error('Error parsing healer numerology data:', error);
+      }
+    }
+  }, []);
+
+  // Use healer data if available, otherwise use user data
+  const targetName = healerData?.name || user?.username || "";
+  const targetBirthDate = healerData?.birthDate || user?.birthDate || "";
+
   const form = useForm<NumerologyFormData>({
     resolver: zodResolver(numerologySchema),
     defaultValues: {
-      name: user?.username || "",
-      birthDate: user?.birthDate || "",
+      name: targetName,
+      birthDate: targetBirthDate,
     },
   });
 
-  // Get numerology analysis
+  // Get numerology analysis - use healer data if available
   const {
     data: numerology,
     isLoading: isLoadingNumerology,
     error: numerologyError,
     refetch: refetchNumerology
   } = useQuery<NumerologyResult>({
-    queryKey: ["/api/numerology", user?.username, user?.birthDate],
-    queryFn: () => calculateNumerology(user?.username || "", user?.birthDate || ""),
-    enabled: !!(user?.birthDate && user?.username),
+    queryKey: ["/api/numerology", targetName, targetBirthDate],
+    queryFn: () => calculateNumerology(targetName, targetBirthDate),
+    enabled: !!(targetBirthDate && targetName),
   });
 
   const onSubmit = async (data: NumerologyFormData) => {
