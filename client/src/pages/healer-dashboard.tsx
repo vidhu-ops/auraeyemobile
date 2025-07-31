@@ -124,6 +124,7 @@ function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalcu
         birthDate: birthDate
       });
       
+      console.log("Numerology API response:", response);
       onResultGenerated(response);
       
       toast({
@@ -1929,6 +1930,9 @@ export default function HealerDashboard() {
                   <h3 className="font-semibold text-lg mb-4 text-purple-800">
                     Complete Numerology Analysis for {liveNumerologyResult.name}
                   </h3>
+                  <div className="mb-2 text-xs text-gray-600">
+                    Debug: {JSON.stringify(liveNumerologyResult, null, 2)}
+                  </div>
                   
                   {/* Birth Information */}
                   <div className="mb-6 p-4 bg-white rounded-lg border">
