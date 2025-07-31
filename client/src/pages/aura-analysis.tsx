@@ -2876,8 +2876,8 @@ export default function AuraAnalysis() {
     },
     energyLevel: number
   ) => {
-    // Person protection area - face should be clearly visible
-    const personRadius = Math.min(width, height) * 0.18;
+    // Person protection area - face should be clearly visible (increased for better visibility)
+    const personRadius = Math.min(width, height) * 0.25;
     
     console.log("Creating zone-specific dense smokey aura with proper energy positioning...");
     
