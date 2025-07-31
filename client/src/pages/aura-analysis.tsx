@@ -2582,145 +2582,6 @@ export default function AuraAnalysis() {
   // Function to generate aura visualization with colored clouds
   // Function to process the uploaded image with aura colors
 
-  function processImageWithAura({ imageBase64, auraData }: { imageBase64: string; auraData: AuraAnalysisResult; }): Promise<string> {
-        return new Promise((resolve) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-
-            img.onload = () => {
-                // Set proper proportional canvas size for better visualization
-                const aspectRatio = img.width / img.height;
-                let canvasWidth, canvasHeight;
-
-                // Maintain aspect ratio while ensuring adequate size
-                if (aspectRatio > 1) {
-                    // Landscape image
-                    canvasWidth = Math.max(1200, img.width);
-                    canvasHeight = canvasWidth / aspectRatio;
-                } else {
-                    // Portrait or square image
-                    canvasHeight = Math.max(900, img.height);
-                    canvasWidth = canvasHeight * aspectRatio;
-                }
-
-                canvas.width = canvasWidth;
-                canvas.height = canvasHeight;
-
-                // Draw original image to fill canvas with proper proportions
-                if (ctx) {
-                    ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
-
-                    // Create simple but visible aura effects around the person
-                    const centerX = canvasWidth / 2;
-                    const centerY = canvasHeight / 2;
-
-                    // Get dominant and secondary colors
-                    const dominantColor = auraData.dominantColor || 'Blue';
-                    const secondaryColor = auraData.secondaryColor || 'Purple';
-
-                    // Enhanced color names to RGB mapping with all specified colors
-                    const getColorRGB = (colorName: string) => {
-                        const colorMap: Record<string, [number, number, number]> = {
-                            'Red': [255, 40, 40],           // More saturated red
-                            'Orange': [255, 120, 0],        // More vibrant orange
-                            'Yellow': [255, 220, 0],        // Intense yellow
-                            'Green': [40, 220, 40],         // More saturated green
-                            'Blue': [20, 130, 255],         // More vibrant blue
-                            'Purple': [150, 30, 240],       // More saturated purple
-                            'Violet': [160, 0, 230],        // More intense violet
-                            'Indigo': [90, 0, 150],         // Deeper indigo
-                            'Pink': [255, 90, 170],         // More saturated pink
-                            'Gold': [255, 200, 0],          // More vibrant gold
-                            'Silver': [180, 180, 180],      // Slightly more muted silver
-                            'White': [255, 255, 255],       // Pure white
-                            'Gray': [150, 150, 150],        // Slightly darker gray for better contrast
-                            'Grey': [150, 150, 150],        // Alternative spelling
-                            'Black': [50, 50, 50],          // Slightly lighter for visibility
-                            'Brown': [180, 60, 60]        // Cyan
-                        };
-                        return colorMap[colorName] || [20, 130, 255]; // Default to vibrant blue
-                    };
-
-                    const [dr, dg, db] = getColorRGB(dominantColor);
-                    const [sr, sg, sb] = getColorRGB(secondaryColor);
-
-                    // Create visible aura glow around the entire image edges
-                    const createAuraGlow = () => {
-                        // Apply subtle blur for softer glow effect
-                        ctx.filter = 'diffuse(10px)';
-
-                        // Create multiple layers of glow
-                        for (let layer = 0; layer < 12; layer++) {
-                            const radius = 40 + (layer * 25);
-                            const opacity = 0.32 - (layer * 0.008);
-
-                            // Use dominant color for most layers
-                            const useSecondary = layer % 4 === 0;
-                            const [r, g, b] = useSecondary ? [sr, sg, sb] : [dr, dg, db];
-
-                            // Create radial gradient from center outward
-                            const gradient = ctx.createRadialGradient(
-                                centerX, centerY, canvasWidth * 0.12, // Inner radius - protect person
-                                centerX, centerY, canvasWidth * 0.8 + radius // Outer radius
-                            );
-
-                            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
-                            gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
-                            gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-                            gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${opacity * 1.8})`);
-
-                            ctx.fillStyle = gradient;
-                            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        }
-
-                        // Reset filter
-                        ctx.filter = 'none';
-                    };
-
-                    // Create smokey aura effects matching reference images exactly
-                    const createSmokeyAuraEffects = () => {
-                        // Get the 4-zone energy colors
-                        const allColors = extractAllAuraColors(auraData);
-
-                        // Convert hex colors to RGB
-                        const hexToRGB = (hex: string) => {
-                            const r = parseInt(hex.slice(1, 3), 16);
-                            const g = parseInt(hex.slice(3, 5), 16);
-                            const b = parseInt(hex.slice(5, 7), 16);
-                            return { r, g, b };
-                        };
-
-                        const colorsRGB = {
-                            thinkingRGB: hexToRGB(allColors.thinking),
-                            receivingRGB: hexToRGB(allColors.receiving),
-                            givingRGB: hexToRGB(allColors.giving),
-                            personalityRGB: hexToRGB(allColors.personality)
-                        };
-
-                        // Use the new improved smokey effect function
-                        createSmokeyAuraParticles(ctx, canvasWidth, canvasHeight, colorsRGB, 7, Date.now());
-                    };
-
-                    // Apply aura effects
-                    createAuraGlow();
-                    createSmokeyAuraEffects();
-
-                    // Add watermark as the top layer
-                    addWatermark(ctx, canvasWidth, canvasHeight);
-                }
-
-                resolve(canvas.toDataURL());
-            };
-
-            img.onerror = () => {
-                console.error('Failed to load image for aura processing');
-                resolve(imageBase64); // Return original if processing fails
-            };
-
-            img.src = imageBase64;
-        });
-    }
 
   // Helper function to convert hex to RGB
   const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
@@ -2842,7 +2703,7 @@ export default function AuraAnalysis() {
   };
 
   // Function to create seamless gradient blending between all colors for smooth merging
-  function createSeamlessColorBlending({ ctx, width, height, centerY, personHeight, colors, energyLevel, seededRandom }: { ctx: CanvasRenderingContext2D; width: number; height: number; centerX: number; centerY: number; personWidth: number; personHeight: number; colors: any; energyLevel: number; seededRandom: () => number; }): void {
+  function createSeamlessColorBlending({ ctx, width, height, colors, energyLevel, seededRandom }: { ctx: CanvasRenderingContext2D; width: number; height: number; centerX: number; centerY: number; personWidth: number; personHeight: number; colors: any; energyLevel: number; seededRandom: () => number; }): void {
         // Use multiply blend mode for natural color merging
         ctx.globalCompositeOperation = 'source-over';
 
@@ -3000,7 +2861,7 @@ export default function AuraAnalysis() {
     createDenseCloudyAura(ctx, width, height, centerX, centerY, colors, energyLevel);
   };
 
-  // Function to create NATURAL SMOKEY AURA with large blurred particles
+  // Function to create SEAMLESS SMOKEY AURA flowing naturally around person
   const createDenseCloudyAura = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3015,173 +2876,100 @@ export default function AuraAnalysis() {
     },
     energyLevel: number
   ) => {
-    // Person protection area - face should be clearly visible
-    const personRadius = Math.min(width, height) * 0.20; // Smaller protection for more aura coverage
+    // Person protection area - face should be clearly visible (NO BLACK DOT)
+    const personRadius = Math.min(width, height) * 0.18; // Smaller protection for more natural flow
     
-    console.log("Creating natural smokey aura with large blurred particles...");
+    console.log("Creating seamless smokey aura flowing naturally around person...");
     
-    // Set global blur for smokey effect
-    ctx.filter = 'blur(25px)'; // Heavy blur for natural smokey look
+    // Create natural flowing smokey aura around entire person
+    // NO HARSH BOUNDARIES - colors blend naturally
     
-    // Create large smokey coverage for each zone
-    // Zone boundaries: Left = Receiving, Right = Giving, Top = Thinking, Bottom = Personality
-    
-    // LARGE SMOKEY LEFT ZONE - RECEIVING COLOR
+    // Base smokey layer covering entire image
     ctx.save();
-    const leftRect = new Path2D();
-    leftRect.rect(0, 0, width * 0.5, height);
-    ctx.clip(leftRect);
+    ctx.filter = 'blur(30px)'; // Heavy blur for ultra-smooth effect
     
-    // Create fewer but MUCH LARGER smokey particles for LEFT zone
-    for (let i = 0; i < 25; i++) {
-      const x = Math.random() * width * 0.6; // Extend slightly beyond boundary for natural flow
+    // Create multiple overlapping smokey layers for natural blending
+    const allColors = [colors.receivingRGB, colors.givingRGB, colors.thinkingRGB, colors.personalityRGB];
+    const totalParticles = 80; // More particles for denser coverage
+    
+    for (let i = 0; i < totalParticles; i++) {
+      // Random position anywhere in image
+      const x = Math.random() * width;
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
-      // Skip if too close to person (face protection)
+      // Skip if too close to person's face (NO BLACK DOT - just skip particle)
       if (distance < personRadius) continue;
       
-      const radius = 120 + Math.random() * 200; // MUCH LARGER particles (120-320px)
-      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
+      // Choose color based on position for natural energy flow
+      let selectedColor;
+      if (x < width * 0.5) {
+        // Left side - more receiving color
+        selectedColor = Math.random() < 0.7 ? colors.receivingRGB : colors.thinkingRGB;
+      } else {
+        // Right side - more giving color  
+        selectedColor = Math.random() < 0.7 ? colors.givingRGB : colors.personalityRGB;
+      }
       
+      // Very large smokey particles for natural cloud effect
+      const radius = 80 + Math.random() * 240; // 80-320px particles
+      const opacity = 0.15 + Math.random() * 0.35; // Lower opacity for natural blending
+      
+      // Create smooth radial gradient for each particle
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
+      gradient.addColorStop(0, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity})`);
+      gradient.addColorStop(0.4, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.6})`);
+      gradient.addColorStop(0.8, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.2})`);
+      gradient.addColorStop(1, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.restore();
     
-    // LARGE SMOKEY RIGHT ZONE - GIVING COLOR
-    ctx.save();
-    const rightRect = new Path2D();
-    rightRect.rect(width * 0.4, 0, width * 0.6, height); // Overlap slightly for natural flow
-    ctx.clip(rightRect);
-    
-    // Create fewer but MUCH LARGER smokey particles for RIGHT zone
-    for (let i = 0; i < 25; i++) {
-      const x = width * 0.4 + Math.random() * width * 0.6;
-      const y = Math.random() * height;
-      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+    // Add secondary layer for extra density around person
+    for (let i = 0; i < 40; i++) {
+      // Position particles around person in a natural ring
+      const angle = Math.random() * Math.PI * 2;
+      const distance = personRadius + 20 + Math.random() * 150; // Ring around person
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
       
-      // Skip if too close to person (face protection)
-      if (distance < personRadius) continue;
+      // Keep particles within image bounds
+      if (x < 0 || x > width || y < 0 || y > height) continue;
       
-      const radius = 120 + Math.random() * 200; // MUCH LARGER particles (120-320px)
-      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
+      // Mix colors naturally based on position
+      const colorMix = Math.random();
+      let selectedColor;
+      if (colorMix < 0.3) selectedColor = colors.receivingRGB;
+      else if (colorMix < 0.6) selectedColor = colors.givingRGB;
+      else if (colorMix < 0.8) selectedColor = colors.thinkingRGB;
+      else selectedColor = colors.personalityRGB;
+      
+      const radius = 60 + Math.random() * 120; // Medium particles for ring effect
+      const opacity = 0.2 + Math.random() * 0.3;
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+      gradient.addColorStop(0, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
     }
+    
     ctx.restore();
     
-    // LARGE SMOKEY TOP ZONE - THINKING COLOR
-    ctx.save();
-    const topRect = new Path2D();
-    topRect.rect(0, 0, width, height * 0.5); // Extend coverage downward
-    ctx.clip(topRect);
+    // IMPORTANT: NO BLACK DOT - face area stays completely transparent
+    // The person's face is naturally visible through the gaps between particles
     
-    // Create fewer but MUCH LARGER smokey particles for TOP zone
-    for (let i = 0; i < 20; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height * 0.5;
-      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      
-      // Skip if too close to person (face protection)  
-      if (distance < personRadius) continue;
-      
-      const radius = 100 + Math.random() * 180; // LARGE particles (100-280px)
-      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
-      
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.7, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // LARGE SMOKEY BOTTOM ZONE - PERSONALITY COLOR
-    ctx.save();
-    const bottomRect = new Path2D();
-    bottomRect.rect(0, height * 0.5, width, height * 0.5); // Extend coverage upward
-    ctx.clip(bottomRect);
-    
-    // Create fewer but MUCH LARGER smokey particles for BOTTOM zone
-    for (let i = 0; i < 20; i++) {
-      const x = Math.random() * width;
-      const y = height * 0.5 + Math.random() * height * 0.5;
-      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-      
-      // Skip if too close to person (face protection)
-      if (distance < personRadius) continue;
-      
-      const radius = 100 + Math.random() * 180; // LARGE particles (100-280px)
-      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
-      
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.7})`);
-      gradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    
-    // Reset filter for non-blurred elements
-    ctx.filter = 'none';
-    
-    // Clear face area to ensure person is completely visible
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-    
-    console.log("Natural smokey aura with large blurred particles completed");
+    console.log("Seamless smokey aura flowing naturally around person completed");
   };
 
   // Function to create DISTINCT color zones with NO mixing between colors (OLD VERSION - for reference)
-  const createDistinctColorZones = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-    centerX: number,
-    centerY: number,
-    colors: {
-      thinkingRGB: { r: number, g: number, b: number },
-      receivingRGB: { r: number, g: number, b: number },
-      givingRGB: { r: number, g: number, b: number },
-      personalityRGB: { r: number, g: number, b: number }
-    },
-    energyLevel: number
-  ) => {
-    // This function is kept for reference but not used anymore
-    console.log("Distinct zone aura visualization completed - no blending between colors");
-  };
 
 
 
