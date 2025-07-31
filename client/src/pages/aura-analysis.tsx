@@ -2881,8 +2881,8 @@ export default function AuraAnalysis() {
     
     console.log("Creating zone-specific dense smokey aura with proper energy positioning...");
     
-    // Set heavy blur for natural smokey effect
-    ctx.filter = 'blur(25px)';
+    // Set heavy blur for natural smokey effect (slightly more blurred)
+    ctx.filter = 'blur(30px)';
     
     // LEFT ZONE - RECEIVING COLOR ONLY (dense smokey effect to edges)
     ctx.save();
@@ -2912,10 +2912,10 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // RIGHT ZONE - GIVING COLOR ONLY (dense smokey effect to edges)
+    // RIGHT ZONE - GIVING COLOR ONLY (dense smokey effect to edges, more to the right)
     ctx.save();
     for (let i = 0; i < 60; i++) {
-      const x = width * 0.5 + Math.random() * width * 0.5; // Strictly right half
+      const x = width * 0.65 + Math.random() * width * 0.35; // More to the right side (65%-100%)
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
@@ -2923,7 +2923,7 @@ export default function AuraAnalysis() {
       if (distance < personRadius) continue;
       
       // Larger particles near edges for dense coverage
-      const edgeDistance = Math.min(x - width * 0.5, width - x);
+      const edgeDistance = Math.min(x - width * 0.65, width - x);
       const radius = 60 + Math.random() * 200 + (edgeDistance < 50 ? 80 : 0); // Extra large near edges
       const opacity = 0.3 + Math.random() * 0.4; // Dense opacity
       
