@@ -2861,7 +2861,7 @@ export default function AuraAnalysis() {
     createDenseCloudyAura(ctx, width, height, centerX, centerY, colors, energyLevel);
   };
 
-  // Function to create SEAMLESS SMOKEY AURA flowing naturally around person
+  // Function to create ZONE-SPECIFIC DENSE SMOKEY AURA with proper energy positioning
   const createDenseCloudyAura = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -2876,84 +2876,110 @@ export default function AuraAnalysis() {
     },
     energyLevel: number
   ) => {
-    // Person protection area - face should be clearly visible (NO BLACK DOT)
-    const personRadius = Math.min(width, height) * 0.18; // Smaller protection for more natural flow
+    // Person protection area - face should be clearly visible
+    const personRadius = Math.min(width, height) * 0.18;
     
-    console.log("Creating seamless smokey aura flowing naturally around person...");
+    console.log("Creating zone-specific dense smokey aura with proper energy positioning...");
     
-    // Create natural flowing smokey aura around entire person
-    // NO HARSH BOUNDARIES - colors blend naturally
+    // Set heavy blur for natural smokey effect
+    ctx.filter = 'blur(25px)';
     
-    // Base smokey layer covering entire image
+    // LEFT ZONE - RECEIVING COLOR ONLY (dense smokey effect to edges)
     ctx.save();
-    ctx.filter = 'blur(30px)'; // Heavy blur for ultra-smooth effect
-    
-    // Create multiple overlapping smokey layers for natural blending
-    const allColors = [colors.receivingRGB, colors.givingRGB, colors.thinkingRGB, colors.personalityRGB];
-    const totalParticles = 80; // More particles for denser coverage
-    
-    for (let i = 0; i < totalParticles; i++) {
-      // Random position anywhere in image
-      const x = Math.random() * width;
+    for (let i = 0; i < 60; i++) {
+      const x = Math.random() * width * 0.5; // Strictly left half
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
-      // Skip if too close to person's face (NO BLACK DOT - just skip particle)
+      // Skip if too close to person's face
       if (distance < personRadius) continue;
       
-      // Choose color based on position for natural energy flow
-      let selectedColor;
-      if (x < width * 0.5) {
-        // Left side - more receiving color
-        selectedColor = Math.random() < 0.7 ? colors.receivingRGB : colors.thinkingRGB;
-      } else {
-        // Right side - more giving color  
-        selectedColor = Math.random() < 0.7 ? colors.givingRGB : colors.personalityRGB;
-      }
+      // Larger particles near edges for dense coverage
+      const edgeDistance = Math.min(x, width * 0.5 - x);
+      const radius = 60 + Math.random() * 200 + (edgeDistance < 50 ? 80 : 0); // Extra large near edges
+      const opacity = 0.3 + Math.random() * 0.4; // Dense opacity
       
-      // Very large smokey particles for natural cloud effect
-      const radius = 80 + Math.random() * 240; // 80-320px particles
-      const opacity = 0.15 + Math.random() * 0.35; // Lower opacity for natural blending
-      
-      // Create smooth radial gradient for each particle
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity})`);
-      gradient.addColorStop(0.4, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.6})`);
-      gradient.addColorStop(0.8, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, 0)`);
+      gradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.4, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.8, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.restore();
     
-    // Add secondary layer for extra density around person
+    // RIGHT ZONE - GIVING COLOR ONLY (dense smokey effect to edges)
+    ctx.save();
+    for (let i = 0; i < 60; i++) {
+      const x = width * 0.5 + Math.random() * width * 0.5; // Strictly right half
+      const y = Math.random() * height;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      
+      // Skip if too close to person's face
+      if (distance < personRadius) continue;
+      
+      // Larger particles near edges for dense coverage
+      const edgeDistance = Math.min(x - width * 0.5, width - x);
+      const radius = 60 + Math.random() * 200 + (edgeDistance < 50 ? 80 : 0); // Extra large near edges
+      const opacity = 0.3 + Math.random() * 0.4; // Dense opacity
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.4, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.8, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // TOP ZONE - THINKING COLOR ONLY (dense smokey effect to top edge)
+    ctx.save();
     for (let i = 0; i < 40; i++) {
-      // Position particles around person in a natural ring
-      const angle = Math.random() * Math.PI * 2;
-      const distance = personRadius + 20 + Math.random() * 150; // Ring around person
-      const x = centerX + Math.cos(angle) * distance;
-      const y = centerY + Math.sin(angle) * distance;
+      const x = Math.random() * width;
+      const y = Math.random() * height * 0.4; // Top 40% of image
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
-      // Keep particles within image bounds
-      if (x < 0 || x > width || y < 0 || y > height) continue;
+      // Skip if too close to person's face
+      if (distance < personRadius) continue;
       
-      // Mix colors naturally based on position
-      const colorMix = Math.random();
-      let selectedColor;
-      if (colorMix < 0.3) selectedColor = colors.receivingRGB;
-      else if (colorMix < 0.6) selectedColor = colors.givingRGB;
-      else if (colorMix < 0.8) selectedColor = colors.thinkingRGB;
-      else selectedColor = colors.personalityRGB;
+      // Larger particles near top edge for dense coverage
+      const radius = 60 + Math.random() * 180 + (y < 50 ? 100 : 0); // Extra large near top edge
+      const opacity = 0.3 + Math.random() * 0.4; // Dense opacity
       
-      const radius = 60 + Math.random() * 120; // Medium particles for ring effect
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.4, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.8, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // EDGE ZONES - PERSONALITY COLOR ONLY (around all edges of image)
+    ctx.save();
+    // Top edge
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * 80; // Top edge only
+      const radius = 80 + Math.random() * 120;
       const opacity = 0.2 + Math.random() * 0.3;
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, ${opacity * 0.5})`);
-      gradient.addColorStop(1, `rgba(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b}, 0)`);
+      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
@@ -2961,12 +2987,65 @@ export default function AuraAnalysis() {
       ctx.fill();
     }
     
+    // Bottom edge
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * width;
+      const y = height - Math.random() * 80; // Bottom edge only
+      const radius = 80 + Math.random() * 120;
+      const opacity = 0.2 + Math.random() * 0.3;
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Left edge
+    for (let i = 0; i < 10; i++) {
+      const x = Math.random() * 80; // Left edge only
+      const y = Math.random() * height;
+      const radius = 80 + Math.random() * 120;
+      const opacity = 0.2 + Math.random() * 0.3;
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Right edge
+    for (let i = 0; i < 10; i++) {
+      const x = width - Math.random() * 80; // Right edge only
+      const y = Math.random() * height;
+      const radius = 80 + Math.random() * 120;
+      const opacity = 0.2 + Math.random() * 0.3;
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.restore();
     
-    // IMPORTANT: NO BLACK DOT - face area stays completely transparent
-    // The person's face is naturally visible through the gaps between particles
+    // Reset filter
+    ctx.filter = 'none';
     
-    console.log("Seamless smokey aura flowing naturally around person completed");
+    console.log("Zone-specific dense smokey aura with proper energy positioning completed");
   };
 
   // Function to create DISTINCT color zones with NO mixing between colors (OLD VERSION - for reference)
