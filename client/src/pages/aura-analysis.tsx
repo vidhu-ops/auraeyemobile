@@ -3000,7 +3000,7 @@ export default function AuraAnalysis() {
     createDenseCloudyAura(ctx, width, height, centerX, centerY, colors, energyLevel);
   };
 
-  // Function to create DENSE, CLOUDY, NON-TRANSPARENT aura visualization
+  // Function to create NATURAL SMOKEY AURA with large blurred particles
   const createDenseCloudyAura = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -3016,34 +3016,38 @@ export default function AuraAnalysis() {
     energyLevel: number
   ) => {
     // Person protection area - face should be clearly visible
-    const personRadius = Math.min(width, height) * 0.25;
+    const personRadius = Math.min(width, height) * 0.20; // Smaller protection for more aura coverage
     
-    console.log("Creating dense, cloudy, non-transparent aura visualization...");
+    console.log("Creating natural smokey aura with large blurred particles...");
     
-    // Create dense cloudy layers for each zone with HIGH OPACITY (non-transparent)
+    // Set global blur for smokey effect
+    ctx.filter = 'blur(25px)'; // Heavy blur for natural smokey look
+    
+    // Create large smokey coverage for each zone
     // Zone boundaries: Left = Receiving, Right = Giving, Top = Thinking, Bottom = Personality
     
-    // DENSE LEFT ZONE - RECEIVING COLOR (Non-transparent cloudy effect)
+    // LARGE SMOKEY LEFT ZONE - RECEIVING COLOR
     ctx.save();
     const leftRect = new Path2D();
     leftRect.rect(0, 0, width * 0.5, height);
     ctx.clip(leftRect);
     
-    // Create multiple dense cloudy particles for LEFT zone
-    for (let i = 0; i < 60; i++) {
-      const x = Math.random() * width * 0.5;
+    // Create fewer but MUCH LARGER smokey particles for LEFT zone
+    for (let i = 0; i < 25; i++) {
+      const x = Math.random() * width * 0.6; // Extend slightly beyond boundary for natural flow
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
       // Skip if too close to person (face protection)
       if (distance < personRadius) continue;
       
-      const radius = 40 + Math.random() * 80; // Large cloudy particles
-      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      const radius = 120 + Math.random() * 200; // MUCH LARGER particles (120-320px)
+      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
       gradient.addColorStop(0, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(0.3, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.7, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, ${opacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${colors.receivingRGB.r}, ${colors.receivingRGB.g}, ${colors.receivingRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -3053,27 +3057,28 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // DENSE RIGHT ZONE - GIVING COLOR (Non-transparent cloudy effect)
+    // LARGE SMOKEY RIGHT ZONE - GIVING COLOR
     ctx.save();
     const rightRect = new Path2D();
-    rightRect.rect(width * 0.5, 0, width * 0.5, height);
+    rightRect.rect(width * 0.4, 0, width * 0.6, height); // Overlap slightly for natural flow
     ctx.clip(rightRect);
     
-    // Create multiple dense cloudy particles for RIGHT zone
-    for (let i = 0; i < 60; i++) {
-      const x = width * 0.5 + Math.random() * width * 0.5;
+    // Create fewer but MUCH LARGER smokey particles for RIGHT zone
+    for (let i = 0; i < 25; i++) {
+      const x = width * 0.4 + Math.random() * width * 0.6;
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
       // Skip if too close to person (face protection)
       if (distance < personRadius) continue;
       
-      const radius = 40 + Math.random() * 80; // Large cloudy particles
-      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      const radius = 120 + Math.random() * 200; // MUCH LARGER particles (120-320px)
+      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
       gradient.addColorStop(0, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(0.3, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.7, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, ${opacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${colors.givingRGB.r}, ${colors.givingRGB.g}, ${colors.givingRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -3083,27 +3088,28 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // DENSE TOP ZONE - THINKING COLOR (Non-transparent cloudy effect)
+    // LARGE SMOKEY TOP ZONE - THINKING COLOR
     ctx.save();
     const topRect = new Path2D();
-    topRect.rect(0, 0, width, height * 0.4);
+    topRect.rect(0, 0, width, height * 0.5); // Extend coverage downward
     ctx.clip(topRect);
     
-    // Create multiple dense cloudy particles for TOP zone
-    for (let i = 0; i < 50; i++) {
+    // Create fewer but MUCH LARGER smokey particles for TOP zone
+    for (let i = 0; i < 20; i++) {
       const x = Math.random() * width;
-      const y = Math.random() * height * 0.4;
+      const y = Math.random() * height * 0.5;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
-      // Skip if too close to person (face protection)
+      // Skip if too close to person (face protection)  
       if (distance < personRadius) continue;
       
-      const radius = 35 + Math.random() * 70; // Large cloudy particles
-      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      const radius = 100 + Math.random() * 180; // LARGE particles (100-280px)
+      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
       gradient.addColorStop(0, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(0.3, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.7, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, ${opacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${colors.thinkingRGB.r}, ${colors.thinkingRGB.g}, ${colors.thinkingRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -3113,27 +3119,28 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // DENSE BOTTOM ZONE - PERSONALITY COLOR (Non-transparent cloudy effect)
+    // LARGE SMOKEY BOTTOM ZONE - PERSONALITY COLOR
     ctx.save();
     const bottomRect = new Path2D();
-    bottomRect.rect(0, height * 0.6, width, height * 0.4);
+    bottomRect.rect(0, height * 0.5, width, height * 0.5); // Extend coverage upward
     ctx.clip(bottomRect);
     
-    // Create multiple dense cloudy particles for BOTTOM zone
-    for (let i = 0; i < 50; i++) {
+    // Create fewer but MUCH LARGER smokey particles for BOTTOM zone
+    for (let i = 0; i < 20; i++) {
       const x = Math.random() * width;
-      const y = height * 0.6 + Math.random() * height * 0.4;
+      const y = height * 0.5 + Math.random() * height * 0.5;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
       // Skip if too close to person (face protection)
       if (distance < personRadius) continue;
       
-      const radius = 35 + Math.random() * 70; // Large cloudy particles
-      const opacity = 0.6 + Math.random() * 0.4; // HIGH opacity (0.6-1.0) for dense look
+      const radius = 100 + Math.random() * 180; // LARGE particles (100-280px)
+      const opacity = 0.4 + Math.random() * 0.5; // High opacity for dense smokey look
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
       gradient.addColorStop(0, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.8})`);
+      gradient.addColorStop(0.3, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.7})`);
+      gradient.addColorStop(0.7, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, ${opacity * 0.3})`);
       gradient.addColorStop(1, `rgba(${colors.personalityRGB.r}, ${colors.personalityRGB.g}, ${colors.personalityRGB.b}, 0)`);
       
       ctx.fillStyle = gradient;
@@ -3143,7 +3150,18 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    console.log("Dense, cloudy, non-transparent aura visualization completed");
+    // Reset filter for non-blurred elements
+    ctx.filter = 'none';
+    
+    // Clear face area to ensure person is completely visible
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, personRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    
+    console.log("Natural smokey aura with large blurred particles completed");
   };
 
   // Function to create DISTINCT color zones with NO mixing between colors (OLD VERSION - for reference)
