@@ -2876,18 +2876,18 @@ export default function AuraAnalysis() {
     },
     energyLevel: number
   ) => {
-    // Person protection area - face should be clearly visible (increased further for maximum visibility)
-    const personRadius = Math.min(width, height) * 0.32;
+    // Person protection area - face should be clearly visible (increased for better visibility)
+    const personRadius = Math.min(width, height) * 0.25;
     
     console.log("Creating zone-specific dense smokey aura with proper energy positioning...");
     
     // Set heavy blur for natural smokey effect
     ctx.filter = 'blur(25px)';
     
-    // LEFT ZONE - RECEIVING COLOR ONLY (dense smokey effect to edges with slight merge)
+    // LEFT ZONE - RECEIVING COLOR ONLY (dense smokey effect to edges)
     ctx.save();
     for (let i = 0; i < 60; i++) {
-      const x = Math.random() * width * 0.55; // Slightly overlap for natural merging
+      const x = Math.random() * width * 0.5; // Strictly left half
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
@@ -2912,10 +2912,10 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // RIGHT ZONE - GIVING COLOR ONLY (dense smokey effect to edges with slight merge)
+    // RIGHT ZONE - GIVING COLOR ONLY (dense smokey effect to edges)
     ctx.save();
     for (let i = 0; i < 60; i++) {
-      const x = width * 0.45 + Math.random() * width * 0.55; // Slightly overlap for natural merging
+      const x = width * 0.5 + Math.random() * width * 0.5; // Strictly right half
       const y = Math.random() * height;
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
@@ -2940,11 +2940,11 @@ export default function AuraAnalysis() {
     }
     ctx.restore();
     
-    // TOP ZONE - THINKING COLOR ONLY (dense smokey effect to top edge with slight merge)
+    // TOP ZONE - THINKING COLOR ONLY (dense smokey effect to top edge)
     ctx.save();
     for (let i = 0; i < 40; i++) {
       const x = Math.random() * width;
-      const y = Math.random() * height * 0.45; // Top 45% with slight overlap for merging
+      const y = Math.random() * height * 0.4; // Top 40% of image
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       
       // Skip if too close to person's face
