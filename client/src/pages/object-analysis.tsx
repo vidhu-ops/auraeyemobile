@@ -170,22 +170,24 @@ export default function ObjectAnalysis() {
       
       // Enhanced color mapping for object auras with comprehensive color palette
       const objectColorMap: Record<string, string> = {
-        
-        
-        'Yellow': '#FFFF00',
-        'Violet': '#8A2BE2',
-        'Indigo': '#4B0082',
-        'Gold': '#FFD700',
-        'Pink': '#FFC0CB',
-        'Silver': '#C0C0C0',
         'Red': '#FF0000',
-        'Green': '#008000',
+        'Orange': '#FF8C00', 
+        'Yellow': '#FFFF00',
+        'Green': '#00FF00',
         'Blue': '#0000FF',
+        'Indigo': '#4B0082',
+        'Violet': '#8B00FF',
         'Purple': '#800080',
+        'Pink': '#FFC0CB',
         'White': '#FFFFFF',
         'Black': '#000000',
+        'Gold': '#FFD700',
+        'Silver': '#C0C0C0',
+        'Turquoise': '#40E0D0',
+        'Magenta': '#FF00FF',
+        'Brown': '#8B4513',
         'Gray': '#808080',
-        'Brown': '#A52A2A'
+        'Grey': '#808080'
       };
       const auraHex = objectColorMap[auraColor] || '#9370DB';
       const auraRgb = hexToRgb(auraHex);
@@ -378,10 +380,11 @@ export default function ObjectAnalysis() {
   const getAuraColorHex = (auraColor: string): string => {
     const colorMap: { [key: string]: string } = {
       'red': '#FF0000', 'blue': '#0000FF', 'green': '#00FF00',
-      'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FFA500',
-      'pink': '#FFC0CB', 'violet': '#8A2BE2', 'indigo': '#4B0082',
+      'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FF8C00',
+      'pink': '#FFC0CB', 'violet': '#8B00FF', 'indigo': '#4B0082',
       'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
-      'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF'
+      'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF',
+      'brown': '#8B4513', 'gray': '#808080', 'grey': '#808080'
     };
     return colorMap[auraColor.toLowerCase()] || '#800080';
   };
@@ -821,8 +824,9 @@ export default function ObjectAnalysis() {
         "Combine with indigo agate or lapis lazuli for enhanced intuition"
       ],
       "Gold": [
-        "position at heart"
-        ]
+        "Position at heart chakra level for enhanced divine connection",
+        "Combine with golden citrine or yellow sapphire for amplified abundance energy"
+      ]
     };
     return placementTips[color] || [
       `Place ${color.toLowerCase()} objects in meditation spaces for enhanced spiritual connection`
