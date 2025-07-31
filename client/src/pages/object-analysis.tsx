@@ -634,7 +634,8 @@ export default function ObjectAnalysis() {
       setAnalysisProgress(100);
       setActiveTab("basic");
       
-      // Invalidate credits cache to update the display
+      // Invalidate queries to refresh user's reading history immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/object-analyses'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       
       // Reset review system for new analysis and set current analysis ID

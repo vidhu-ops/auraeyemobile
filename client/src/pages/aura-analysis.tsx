@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, Crown, Sparkles, Zap, Star, MessageSquare, CheckCircle2, Users, Download } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 
 
@@ -4500,6 +4500,10 @@ export default function AuraAnalysis() {
             if (analysisResult.id) {
               setCurrentAnalysisId(analysisResult.id);
             }
+            
+            // Invalidate queries to refresh user's reading history immediately
+            queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
             
             // Generate aura visualization using canvas overlay
             if (base64String) {

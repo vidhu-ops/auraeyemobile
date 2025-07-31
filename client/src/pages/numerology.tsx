@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Loader2, Calculator, Sparkles } from "lucide-react";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
+import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -165,6 +166,11 @@ export default function NumerologyPage() {
       // Trigger a refetch with the new data
       refetchNumerology();
       setShowForm(false);
+      
+      // Invalidate queries to refresh user's reading history immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      
       toast({
         title: "Analysis Complete",
         description: "Your numerology analysis has been updated.",
