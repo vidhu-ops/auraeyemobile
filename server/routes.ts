@@ -1695,7 +1695,37 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         });
       }
       
-      res.json(numerologyProfile);
+      // Create comprehensive response structure for healer dashboard
+      const comprehensiveResponse = {
+        // Basic info
+        name,
+        birthDate,
+        // Core numbers (what healer dashboard expects)
+        lifePath: numerologyProfile.lifePathNumber,
+        destiny: numerologyProfile.destinyNumber,
+        soulUrge: numerologyProfile.soulUrgeNumber,
+        personality: numerologyProfile.personalityNumber,
+        // Chakra calculations
+        decisionMakingChakra: calculateDecisionMakingChakra(birthDate),
+        dominantSoulChakra: calculateDominantSoulChakra(birthDate),
+        // Detailed interpretations for healer dashboard display
+        lifePathInterpretation: getNumberInterpretation(numerologyProfile.lifePathNumber, 'lifePath'),
+        destinyInterpretation: getNumberInterpretation(numerologyProfile.destinyNumber, 'destiny'),
+        soulUrgeInterpretation: getNumberInterpretation(numerologyProfile.soulUrgeNumber, 'soulUrge'),
+        personalityInterpretation: getNumberInterpretation(numerologyProfile.personalityNumber, 'personality'),
+        // Legacy fields for compatibility
+        lifePathNumber: numerologyProfile.lifePathNumber,
+        destinyNumber: numerologyProfile.destinyNumber,
+        soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+        personalityNumber: numerologyProfile.personalityNumber,
+        interpretation: numerologyProfile.interpretation || `Your numerology profile reveals unique insights about your spiritual path and personal development.`,
+        // Enhanced properties from original profile
+        colorAssociations: numerologyProfile.colorAssociations,
+        strengths: numerologyProfile.strengths,
+        challenges: numerologyProfile.challenges
+      };
+      
+      res.json(comprehensiveResponse);
     } catch (error) {
       console.error("Healer numerology error:", error);
       res.status(500).json({ message: "Error generating numerology reading" });
@@ -1970,6 +2000,59 @@ function calculatePersonality(birthDate: string): number {
   }
   
   return reduceNumber(sum);
+}
+
+// Helper function to get detailed interpretation for each number type
+function getNumberInterpretation(number: number, type: string): string {
+  const interpretations = {
+    lifePath: {
+      1: "You are a natural-born leader with strong independence and pioneering spirit. Your life path is about developing leadership skills and learning to stand on your own while inspiring others.",
+      2: "Your path involves cooperation, partnership, and bringing harmony to relationships. You excel at diplomacy and have a natural ability to work well with others.",
+      3: "Creative self-expression and communication are central to your life path. You're meant to inspire others through your artistic talents and joyful nature.",
+      4: "Your journey focuses on building solid foundations through hard work, organization, and practical solutions. You bring stability and reliability to everything you do.",
+      5: "Freedom, adventure, and variety define your path. You're here to experience life fully and help others embrace change and new possibilities.",
+      6: "Your life revolves around nurturing, healing, and taking care of others. Family, home, and community are central themes in your journey.",
+      7: "Your path is one of spiritual seeking, analysis, and inner wisdom. You're meant to develop your intuitive abilities and seek deeper truths.",
+      8: "Material success and achievement in the business world are key themes. You have natural executive abilities and the power to manifest abundance.",
+      9: "Your path involves humanitarian service and universal love. You're here to give back to the world and help heal humanity through compassion."
+    },
+    destiny: {
+      1: "Your destiny involves taking initiative and becoming a leader in your chosen field. You're meant to be original, independent, and pioneering in your approach.",
+      2: "Your mission is to bring people together and create harmony. You're destined to be a peacemaker, counselor, or someone who facilitates cooperation.",
+      3: "You're destined to communicate, create, and inspire others through your artistic abilities. Your gift to the world is joy, creativity, and optimism.",
+      4: "Your destiny involves building lasting structures and systems. You're meant to be practical, reliable, and create security for yourself and others.",
+      5: "Your mission is to promote freedom, progress, and new ideas. You're destined to be a catalyst for change and help others embrace new experiences.",
+      6: "Your destiny centers on healing, nurturing, and serving others. You're meant to create harmony in family and community situations.",
+      7: "Your mission involves seeking truth, developing wisdom, and sharing spiritual insights. You're destined to be a teacher of metaphysical knowledge.",
+      8: "Your destiny is to achieve material success and use your power responsibly. You're meant to build empires and create abundance for yourself and others.",
+      9: "Your mission involves serving humanity through compassion and understanding. You're destined to be a humanitarian and heal the world's pain."
+    },
+    soulUrge: {
+      1: "Deep inside, you crave independence and leadership. Your soul yearns to be first, to pioneer, and to stand out as a unique individual.",
+      2: "Your soul desires peace, partnership, and cooperation. You internally crave harmony and feel fulfilled when bringing people together.",
+      3: "Your inner self is driven by creativity and self-expression. Your soul needs outlets for artistic pursuits and joyful communication.",
+      4: "Deep down, you desire security, order, and practical accomplishment. Your soul finds satisfaction in building solid foundations.",
+      5: "Your soul craves freedom, adventure, and variety. You internally desire to experience everything life has to offer without restrictions.",
+      6: "Your inner nature is driven by love, family, and service to others. Your soul finds fulfillment in nurturing and healing roles.",
+      7: "Deep inside, you yearn for spiritual understanding and inner wisdom. Your soul seeks truth, knowledge, and mystical experiences.",
+      8: "Your soul desires material success and recognition. You internally crave power, achievement, and the ability to make things happen.",
+      9: "Your inner self is driven by compassion and the desire to serve humanity. Your soul yearns to make the world a better place."
+    },
+    personality: {
+      1: "Others see you as confident, independent, and original. You appear to be a natural leader who isn't afraid to take charge and make decisions.",
+      2: "People perceive you as gentle, cooperative, and diplomatic. You come across as someone who values harmony and works well with others.",
+      3: "Others see you as creative, optimistic, and entertaining. You appear charming, artistic, and someone who brings joy to social situations.",
+      4: "People perceive you as reliable, practical, and hardworking. You come across as someone who is dependable and gets things done efficiently.",
+      5: "Others see you as adventurous, freedom-loving, and dynamic. You appear to be someone who embraces change and new experiences.",
+      6: "People perceive you as caring, responsible, and nurturing. You come across as someone who puts family and home first.",
+      7: "Others see you as mysterious, wise, and analytical. You appear to be someone who thinks deeply and has profound insights.",
+      8: "People perceive you as ambitious, successful, and authoritative. You come across as someone who has natural executive abilities.",
+      9: "Others see you as compassionate, generous, and understanding. You appear to be someone who cares deeply about humanity and global issues."
+    }
+  };
+
+  const typeInterpretations = interpretations[type as keyof typeof interpretations];
+  return typeInterpretations?.[number as keyof typeof typeInterpretations] || `Your ${type} number ${number} indicates unique spiritual qualities and personal characteristics.`;
 }
 
 // Decision-making chakra (Personality) number - sum of the two digits of birth date

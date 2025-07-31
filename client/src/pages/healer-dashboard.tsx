@@ -95,7 +95,7 @@ interface NumerologyReading {
 }
 
 // Healer Numerology Input Component
-// Live Numerology Calculator Component (no saving to database)
+// Complete Numerology Calculator Component (saves to database for "My Readings")
 function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalculating }: {
   onResultGenerated: (result: any) => void;
   isCalculating: boolean;
@@ -104,6 +104,7 @@ function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalcu
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const generateNumerology = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,19 +120,24 @@ function LiveNumerologyCalculator({ onResultGenerated, isCalculating, setIsCalcu
 
     setIsCalculating(true);
     try {
-      const response = await apiRequest("POST", "/api/numerology-live", {
+      // Use the healer-numerology endpoint to save results to "My Readings"
+      const response = await apiRequest("POST", "/api/healer-numerology", {
         name: fullName.trim(),
         birthDate: birthDate
       });
       
       onResultGenerated(response);
       
+      // Refresh the readings list in "My Readings" tab
+      queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+      
       toast({
         title: "Success",
-        description: "Live numerology reading generated!",
+        description: `Numerology reading generated and saved for ${fullName}!`,
         variant: "default"
       });
     } catch (error) {
+      console.error("Numerology generation error:", error);
       toast({
         title: "Error",
         description: "Failed to generate numerology reading. Please try again.",
