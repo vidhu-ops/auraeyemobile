@@ -733,7 +733,7 @@ export default function ObjectAnalysis() {
     };
     
     // Return specific color meaning or generate a meaningful default based on the color name
-    return positiveTraits[color] || `Enhances ${getColorPositiveTraits.toLowerCase()} energy frequencies, promotes spiritual development through unique vibrational qualities, supports personal transformation and consciousness expansion`;
+    return positiveTraits[color] || `Enhances ${color.toLowerCase()} energy frequencies, promotes spiritual development through unique vibrational qualities, supports personal transformation and consciousness expansion`;
   };
 
   const getColorEnergyProperties = (color: string): string => {
