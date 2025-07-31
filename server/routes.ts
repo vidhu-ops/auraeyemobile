@@ -2786,11 +2786,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
         personality,
         decisionMakingChakra,
         dominantSoulChakra,
-        lifePathInterpretation: aiResponse.lifePathInterpretation,
-        destinyInterpretation: aiResponse.destinyInterpretation,
-        soulUrgeInterpretation: aiResponse.soulUrgeInterpretation,
-        personalityInterpretation: aiResponse.personalityInterpretation
+        lifePathInterpretation: aiResponse?.lifePathInterpretation || `Life Path ${lifePath} represents your life's journey and primary purpose. This number influences your natural abilities and the lessons you're here to learn.`,
+        destinyInterpretation: aiResponse?.destinyInterpretation || `Destiny ${destiny} represents your life's mission and what you're meant to accomplish. This number shows your potential achievements and contributions.`,
+        soulUrgeInterpretation: aiResponse?.soulUrgeInterpretation || `Soul Urge ${soulUrge} represents your inner desires and what truly motivates you from within. This number reveals your deepest aspirations and spiritual needs.`,
+        personalityInterpretation: aiResponse?.personalityInterpretation || `Personality ${personality} represents how others see you and your outer expression. This number influences your social interactions and public image.`
       };
+
+      console.log(`Live numerology result:`, JSON.stringify(result, null, 2));
 
       console.log(`Live numerology reading generated successfully for ${name}`);
       res.json(result);
