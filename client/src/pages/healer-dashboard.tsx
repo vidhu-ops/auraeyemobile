@@ -94,7 +94,78 @@ interface NumerologyReading {
   createdAt: string;
 }
 
-// Removed LiveNumerologyCalculator component as numerology analysis was removed from Spiritual Tools tab
+// Numerology Input Form Component for Spiritual Tools
+function NumerologyInputForm() {
+  const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!fullName.trim() || !birthDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both full name and birth date.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Store the numerology data in sessionStorage and navigate to numerology page
+    const numerologyData = {
+      name: fullName.trim(),
+      birthDate: birthDate,
+      fromHealer: true
+    };
+    
+    sessionStorage.setItem('healerNumerologyData', JSON.stringify(numerologyData));
+    
+    // Navigate to numerology page
+    window.location.href = '/numerology';
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name
+          </label>
+          <Input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Enter client's full name"
+            className="w-full"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Birth Date
+          </label>
+          <Input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="w-full"
+            required
+          />
+        </div>
+      </div>
+      
+      <Button 
+        type="submit" 
+        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+      >
+        <Calculator className="w-4 h-4 mr-2" />
+        Generate Numerology Analysis
+      </Button>
+    </form>
+  );
+}
 
 function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
@@ -1809,6 +1880,20 @@ export default function HealerDashboard() {
 
         {/* Spiritual Tools Tab */}
         <TabsContent value="tools" className="space-y-6">
+          {/* Numerology Analysis Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-blue-500" />
+                Numerology Analysis
+              </CardTitle>
+              <CardDescription>Generate comprehensive numerology readings by entering client information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NumerologyInputForm />
+            </CardContent>
+          </Card>
+
           {/* Spiritual Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="hover:shadow-lg transition-shadow">
