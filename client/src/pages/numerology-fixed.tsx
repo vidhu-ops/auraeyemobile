@@ -122,15 +122,9 @@ export default function NumerologyPage() {
     const month = date.getMonth() + 1;
     const currentYear = 2025; // Current year for forecast
     
-    // Step 1: Add day + month
-    const dayMonthSum = day + month;
-    const dayMonthReduced = reduceToSingleDigit(dayMonthSum);
-    
-    // Step 2: Add current year digits
-    const yearSum = currentYear.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-    
-    // Step 3: Combine and reduce
-    const personalYear = reduceToSingleDigit(dayMonthReduced + yearSum);
+    // Correct calculation: current year + day + month, then reduce to single digit
+    const totalSum = currentYear + day + month;
+    const personalYear = reduceToSingleDigit(totalSum);
     return personalYear;
   };
 
