@@ -8,6 +8,14 @@ const twilioClient = twilio(accountSid, authToken);
 // WhatsApp phone number (Twilio sandbox number)
 const twilioWhatsAppNumber = 'whatsapp:+14155238886';
 
+// Important: For Twilio sandbox, users must first join by sending 'join' message to the sandbox number
+console.log('\n=== TWILIO WHATSAPP SANDBOX SETUP ===');
+console.log('Important: For users to receive WhatsApp messages via Twilio sandbox:');
+console.log('1. Users must first send "join palace-stuck" to +1 415 523 8886 on WhatsApp');
+console.log('2. They will receive a confirmation message');
+console.log('3. Then they can receive OTP messages');
+console.log('========================================\n');
+
 // Initialize WhatsApp (now using Twilio)
 export function initializeWhatsApp() {
   console.log('WhatsApp service initialized with Twilio');

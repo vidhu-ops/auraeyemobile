@@ -18,7 +18,7 @@ import { hashPassword } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, gt } from "drizzle-orm";
 
 // Credit checking middleware
 async function checkCredits(req: any, res: any, next: any) {
@@ -3302,8 +3302,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       if (otpResult.success) {
         res.json({ 
-          message: "OTP sent successfully via WhatsApp",
-          validationMessage: otpResult.message 
+          message: otpResult.message || "OTP sent successfully",
+          validationMessage: otpResult.message,
+          instructions: "If you don't receive the WhatsApp message, check the server console for the OTP code during development, or ensure you've joined the Twilio WhatsApp sandbox by sending 'join palace-stuck' to +1 415 523 8886"
         });
       } else {
         res.status(500).json({ 
@@ -3314,6 +3315,44 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error sending OTP:", error);
       res.status(500).json({ message: "Failed to send OTP" });
+    }
+  });
+
+  // Development helper: Get current OTP for a mobile number (for testing)
+  app.get('/api/get-otp/:mobileNumber', async (req, res) => {
+    try {
+      if (process.env.NODE_ENV !== 'development') {
+        return res.status(404).json({ message: "Endpoint not available in production" });
+      }
+      
+      const { mobileNumber } = req.params;
+      
+      // Get the latest unverified OTP for this number
+      const [latestOtp] = await db
+        .select()
+        .from(otpVerifications)
+        .where(
+          and(
+            eq(otpVerifications.mobileNumber, mobileNumber),
+            eq(otpVerifications.verified, false),
+            gt(otpVerifications.expiresAt, new Date())
+          )
+        )
+        .orderBy(otpVerifications.createdAt)
+        .limit(1);
+      
+      if (latestOtp) {
+        res.json({ 
+          otp: latestOtp.otp,
+          expiresAt: latestOtp.expiresAt,
+          message: `Current OTP for ${mobileNumber}: ${latestOtp.otp}`
+        });
+      } else {
+        res.status(404).json({ message: "No valid OTP found for this number" });
+      }
+    } catch (error) {
+      console.error("Error getting OTP:", error);
+      res.status(500).json({ message: "Failed to get OTP" });
     }
   });
 
