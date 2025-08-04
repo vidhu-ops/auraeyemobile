@@ -147,23 +147,6 @@ const getColorChakraGuidance = (color: string): string => {
   return guidance[color] || 'Work with your corresponding chakra system for optimal energy alignment';
 };
 
-const getColorDailyPractice = (color: string): string => {
-  const practices: Record<string, string> = {
-    'Red': 'Morning grounding visualization, wear red colors, practice physical exercise',
-    'Orange': 'Creative expression time, emotional check-ins, wear orange accents',
-    'Yellow': 'Confidence affirmations, mental clarity exercises, wear yellow accessories',
-    'Green': 'Heart-opening gratitude practice, nature connection, wear green clothing',
-    'Blue': 'Truth-telling practice, clear communication, wear blue jewelry',
-    'Indigo': 'Intuitive journaling, third eye meditation, wear indigo or dark blue',
-    'Violet': 'Spiritual study, divine connection prayer, wear violet or purple',
-    'Purple': 'Mystical awareness practice, spiritual wisdom study, wear purple accessories',
-    'Pink': 'Loving-kindness meditation, emotional nurturing, wear pink or rose colors',
-    'Gold': 'Divine wisdom contemplation, enlightened service, wear gold jewelry',
-    'White': 'Light protection visualization, spiritual cleansing, wear white clothing',
-    'Silver': 'Psychic sensitivity practice, lunar awareness, wear silver accessories'
-  };
-  return practices[color] || 'Incorporate your aura color into daily spiritual practices and clothing choices';
-};
 
 export default function AuraAnalysis() {
   const { user } = useAuth();
@@ -501,8 +484,8 @@ export default function AuraAnalysis() {
     ctx.save();
     
     // Apply watermark with pure white text and no background interference
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 0.5; // High opacity for visibility
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 0.32; // High opacity for visibility
     ctx.fillStyle = 'white';
     ctx.font = 'bold 100px Arial, sans-serif';
     ctx.textAlign = 'center';
@@ -1414,45 +1397,45 @@ export default function AuraAnalysis() {
     }
   };
 
-  const getPersonalityColorInterpretation = (color: string): string => {
-    const personalityInterpretations: Record<string, string> = {
-      'Red': 'Your core essence pulses with primal life force and determination. You approach life with passion, courage, and a strong survival instinct. This indicates a powerful connection to earth energy and physical vitality.',
-      'Orange': 'Your personality radiates creativity, joy, and emotional expressiveness. You have a natural ability to inspire others and bring enthusiasm to any situation. This suggests strong creative abilities and emotional intelligence.',
-      'Yellow': 'Your mental energy shines bright with intelligence, optimism, and personal power. You naturally take leadership roles and approach challenges with confidence and analytical thinking.',
-      'Green': 'Your heart-centered nature embodies healing, compassion, and natural wisdom. You have an innate ability to nurture others and create harmony in your environment.',
-      'Blue': 'Your essence flows with truth, communication, and peaceful wisdom. You naturally express authenticity and help others find their voice through your calming presence.',
-      'Indigo': 'Your intuitive nature connects deeply to spiritual wisdom and psychic insight. You have natural abilities to see beyond the physical realm and understand deeper truths.',
-      'Violet': 'Your spiritual essence connects to divine consciousness and transformative energy. You naturally channel higher wisdom and help others in their spiritual development.',
-      'Gold': 'Your enlightened nature embodies divine wisdom and spiritual mastery. You carry ancient knowledge and naturally inspire others toward their highest potential.',
-      'Silver': 'Your psychic sensitivity attunes to lunar wisdom and emotional depths. You have natural healing abilities and deep empathy for others\' experiences.',
-      'White': 'Your pure essence embodies divine light and spiritual protection. You naturally channel healing energy and provide spiritual clarity to others.',
-      'Black': 'Your depth indicates powerful transformation and shadow integration. You have the ability to help others through difficult transitions and deep healing work.',
-      'Brown': 'Your grounded nature provides stability, practicality, and earth wisdom. You naturally create security and help others feel stable and supported.'
-    };
-    return personalityInterpretations[color] || `Your ${color.toLowerCase()} personality energy reflects unique spiritual qualities that guide your life path and personal development.`;
-  };
+  function getPersonalityColorInterpretation(color: string): string {
+        const personalityInterpretations: Record<string, string> = {
+            'Red': 'Highly energized, action-focused, experiencing dynamic transformation. Your core essence pulses with primal life force and determination. You approach life with passion, courage, and a strong survival instinct. This indicates a powerful connection to earth energy and physical vitality.',
+            'Orange': 'Your personality radiates creativity, joy, and emotional expressiveness. You have a natural ability to inspire others and bring enthusiasm to any situation. This suggests strong creative abilities and emotional intelligence.',
+            'Yellow': 'Your mental energy shines bright with intelligence, optimism, and personal power. You naturally take leadership roles and approach challenges with confidence and analytical thinking.',
+            'Green': 'Your heart-centered nature embodies healing, compassion, and natural wisdom. You have an innate ability to nurture others and create harmony in your environment.',
+            'Blue': 'Your essence flows with truth, communication, and peaceful wisdom. You naturally express authenticity and help others find their voice through your calming presence.',
+            'Indigo': 'Your intuitive nature connects deeply to spiritual wisdom and psychic insight. You have natural abilities to see beyond the physical realm and understand deeper truths.',
+            'Violet': 'Your spiritual essence connects to divine consciousness and transformative energy. You naturally channel higher wisdom and help others in their spiritual development.',
+            'Gold': 'Your enlightened nature embodies divine wisdom and spiritual mastery. You carry ancient knowledge and naturally inspire others toward their highest potential.',
+            'Silver': 'Your psychic sensitivity attunes to lunar wisdom and emotional depths. You have natural healing abilities and deep empathy for others\' experiences.',
+            'White': 'Your pure essence embodies divine light and spiritual protection. You naturally channel healing energy and provide spiritual clarity to others.',
+            'Black': 'Your depth indicates powerful transformation and shadow integration. You have the ability to help others through difficult transitions and deep healing work.',
+            'Brown': 'Your grounded nature provides stability, practicality, and earth wisdom. You naturally create security and help others feel stable and supported.'
+        };
+        return personalityInterpretations[color] || `Your ${color.toLowerCase()} personality energy reflects unique spiritual qualities that guide your life path and personal development.`;
+    }
 
-  const getColorSpiritalMeaning = (color: string): string => {
-    const spiritualMeanings: Record<string, string> = {
-      'Red': 'Represents life force, grounding, passion, and physical vitality. Connected to survival instincts and material world mastery.',
-      'Orange': 'Embodies creativity, emotional expression, joy, and sexual energy. Associated with artistic abilities and emotional intelligence.',
-      'Yellow': 'Symbolizes mental clarity, personal power, confidence, and intellectual abilities. Connected to leadership and analytical thinking.',
-      'Green': 'Represents healing, compassion, heart-centered wisdom, and natural harmony. Associated with nurturing and emotional balance.',
-      'Blue': 'Embodies truth, communication, peace, and authentic expression. Connected to clarity of thought and peaceful wisdom.',
-      'Indigo': 'Represents intuition, psychic abilities, spiritual insight, and deep knowing. Associated with seeing beyond the physical realm.',
-      'Violet': 'Symbolizes spiritual connection, divine consciousness, and transformation. Connected to higher wisdom and spiritual development.',
-      'Gold': 'Represents enlightenment, divine wisdom, spiritual mastery, and cosmic consciousness. Associated with ancient knowledge and spiritual teaching.',
-      'Silver': 'Embodies psychic sensitivity, lunar wisdom, and emotional depths. Connected to healing abilities and empathic understanding.',
-      'White': 'Represents purity, divine light, spiritual protection, and cosmic consciousness. Associated with healing energy and spiritual clarity.',
-      'Black': 'Symbolizes transformation, shadow integration, and deep healing work. Connected to helping others through difficult transitions.',
-      'Brown': 'Represents grounding, stability, earth wisdom, and practical guidance. Associated with creating security and foundational support.'
-    };
-    return spiritualMeanings[color] || `${color} energy carries unique spiritual vibrations that contribute to your overall energetic signature and spiritual development.`;
-  };
+  function getColorSpiritalMeaning(color: string): string {
+        const spiritualMeanings: Record<string, string> = {
+            'Red': 'Represents life force, grounding, passion, and physical vitality. Connected to survival instincts and material world mastery.',
+            'Orange': 'Embodies creativity, emotional expression, joy, and sexual energy. Associated with artistic abilities and emotional intelligence.',
+            'Yellow': 'Symbolizes mental clarity, personal power, confidence, and intellectual abilities. Connected to leadership and analytical thinking.',
+            'Green': 'Represents healing, compassion, heart-centered wisdom, and natural harmony. Associated with nurturing and emotional balance.',
+            'Blue': 'Embodies truth, communication, peace, and authentic expression. Connected to clarity of thought and peaceful wisdom.',
+            'Indigo': 'Represents intuition, psychic abilities, spiritual insight, and deep knowing. Associated with seeing beyond the physical realm.',
+            'Violet': 'Symbolizes spiritual connection, divine consciousness, and transformation. Connected to higher wisdom and spiritual development.',
+            'Gold': 'Represents enlightenment, divine wisdom, spiritual mastery, and cosmic consciousness. Associated with ancient knowledge and spiritual teaching.',
+            'Silver': 'Embodies psychic sensitivity, lunar wisdom, and emotional depths. Connected to healing abilities and empathic understanding.',
+            'White': 'Represents purity, divine light, spiritual protection, and cosmic consciousness. Associated with healing energy and spiritual clarity.',
+            'Black': 'Symbolizes transformation, shadow integration, and deep healing work. Connected to helping others through difficult transitions.',
+            'Brown': 'Represents grounding, stability, earth wisdom, and practical guidance. Associated with creating security and foundational support.'
+        };
+        return spiritualMeanings[color] || `${color} energy carries unique spiritual vibrations that contribute to your overall energetic signature and spiritual development.`;
+    }
 
   const getGivingEnergyInterpretation = (color: string): string => {
     const givingInterpretations: Record<string, string> = {
-      'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. When balanced, you feel grounded and responsible. When imbalanced, you may have suppressed anger, burnout, aggressive behavior, or hyper-competitiveness.',
+      'Red': 'Actively working hard, expressing passion or dealing with anger. When balanced, you feel grounded and responsible. When imbalanced, you may have suppressed anger, burnout, aggressive behavior, or hyper-competitiveness.',
       'Yellow': 'Intelligent, optimistic, joyful, confident, creative, constantly learning new things. When balanced, you feel challenged to lead or perform. When imbalanced, you may struggle with overconfidence, fear mental challenges, or have self-worth issues.',
       'Blue': 'Clear communication, honest expression, authenticity, speaking truth with peace. When balanced, you receive kindness and emotional requests from others. When imbalanced, you may have difficulty expressing authentic truth, fear confrontation, or avoid honest conversations.',
       'Green': 'Compassionate, healer energy, emotionally balanced and nurturing. When balanced, you give healing and receive appreciation or emotional guidance. When imbalanced, you may experience overwhelming energy depletion or put others before self harmfully.',
@@ -1473,8 +1456,8 @@ export default function AuraAnalysis() {
     const receivingInterpretations: Record<string, string> = {
       'Black': 'Receiving Zone Black - You may be unconsciously absorbing unresolved emotions, psychic debris, or ancestral burdens from others or your environment.You tend to take in energy that doesnt belong to you, especially from close relationships. This creates emotional heaviness and energetic fatigue.',
       'White': 'Receiving Zone White - You receive divine protection and pure spiritual energy, attracting sacred blessings that provide spiritual protection.',
-      'Brown': 'Receiving Zone Brown - You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
-      'Red': 'Taking action with purpose, guiding or mentoring others. You master healer energy, a teacher and guide on a mission. Acting from innocence, vulnerability, or spiritual ideals.',
+      'Brown': 'Receiving Zone Brown - Receiving grounding or responsibilities from others. You receive practical grounding and earthly wisdom, attracting stability and natural stability support.',
+      'Red': 'Receiving urgent energy, competition or stress from environment.',
       'Yellow': 'Actively exploring creativity, finding your voice and authentic expression. You manifest consistent change and meaningful creative self-transformation.',
       'Blue': 'Receiving kindness, appreciation or emotional requests from others. You have healer presence with calm and heart-centered frequency, giving others openness and genuine presence, generous attention.',
       'Green': 'Recieving healing, nurturing others, or working in service roles. You have healer presence with calm and heart-centered frequency, giving others presence and attention through compassionate service.',
@@ -1491,7 +1474,7 @@ export default function AuraAnalysis() {
 
   const getThinkingEnergyInterpretation = (color: string): string => {
     const thinkingInterpretations: Record<string, string> = {
-      'Red': 'Thinking Zone Red - Taking action with purpose, guiding or mentoring others, acting from innocence, vulnerability or spiritual ideals. Your mental processes focus on purposeful action and spiritual guidance through direct engagement.',
+      'Red': 'Thinking Zone Red - Thinking about taking action, reacting to pressure, or inner drive.',
       'Orange': 'Thinking Zone Orange - Channeling energy, guiding others, or practicing intuition, thinking about creativity, sexuality, relationships or passion. Your thought patterns flow with creative energy and relationship wisdom, generating passionate solutions.',
       'Yellow': 'Thinking Zone Yellow - Taking leadership action, pushing forward with confidence, actively processing problems, taking charge or being assertive. Your mental processes shine with leadership clarity and confident problem-solving through assertive thinking.',
       'Green': 'Thinking Zone Green - Giving healing, nurturing others, or working in service roles, thinking about how to help others, nurturing, guiding or teaching. Your mental energy flows through healing wisdom and nurturing insight, generating compassionate service solutions.',
@@ -5079,7 +5062,7 @@ export default function AuraAnalysis() {
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-sm text-gray-600">Analysis for: <span className="font-medium">{analysisName}</span></p>
                         {result && (
-                          <p className="text-xs text-gray-500 italic">Refresh page for new name analysis</p>
+                          <p className="text-xs text-gray-500 italic">Refresh page for new analysis</p>
                         )}
                       </div>
                       <ImageUpload onImageSelect={handleImageSelect} isLoading={isAnalyzing} />
@@ -5088,7 +5071,7 @@ export default function AuraAnalysis() {
                   <div>
               <div className="h-full p-4 bg-white/70 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-800 mb-2">
-                        YOUR AURA READING MIGHT TAKE UPTO 60-90 SECONDS </h3>
+                        YOUR AURA READING MIGHT TAKE UPTO 30-60 SECONDS </h3>
                 <h3 className="font-medium text-gray-800 mb-2">
                   Tips for the best aura reading: </h3>
                       <ul className="space-y-2 text-sm text-gray-600">
@@ -6558,7 +6541,7 @@ export default function AuraAnalysis() {
                                           ></div>
                                           <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
-                                              <div className="text-xs text-gray-500">Dominant Aura</div>
+                                              <div className="text-xs text-gray-500">Dominant Aura (Thinking Colour)</div>
                                               <div className="text-base font-bold">{result.dominantColor}</div>
                                             </div>
                                             {(() => {
@@ -6590,7 +6573,7 @@ export default function AuraAnalysis() {
                                             ></div>
                                             <div className="flex-1">
                                               <div className="flex items-center gap-2 mb-2">
-                                                <div className="text-xs text-gray-500">Overall Energy</div>
+                                                <div className="text-xs text-gray-500">receiving  Energy</div>
                                                 <div className="text-base font-bold">{result.secondaryColor}</div>
                                               </div>
                                               {(() => {
@@ -7014,6 +6997,7 @@ export default function AuraAnalysis() {
                                           <li>• Physical: Reproductive issues, lower back pain, kidney problems</li>
                                           <li>• Emotional: Guilt, shame, lack of creative expression</li>
                                           <li>• Karmic: Feeling guilty when not helping others</li>
+                                          <li>• Spiritual: Imbalanced creative and sexual energy </li>
                                         </ul>
                                       </div>
                                       <div>
@@ -7044,6 +7028,7 @@ export default function AuraAnalysis() {
                                           <li>• Physical: Digestive issues, stomach problems, diabetes</li>
                                           <li>• Emotional: Low self-worth, lack of confidence</li>
                                           <li>• Mental: Poor decision-making, lack of willpower</li>
+                                          <li>• Spiritual: Confidance Imbalance</li>
                                         </ul>
                                       </div>
                                       <div>
@@ -7074,6 +7059,7 @@ export default function AuraAnalysis() {
                                           <li>• Physical: Heart problems, lung issues, circulation</li>
                                           <li>• Emotional: Difficulty loving, relationship issues</li>
                                           <li>• Social: Problems with giving and receiving love</li>
+                                          <li>• Spiritual: Imbalanced Relationships </li>
                                         </ul>
                                       </div>
                                       <div>
@@ -7103,7 +7089,8 @@ export default function AuraAnalysis() {
                                           <li>• Communication, Truth, Expression, Authenticity</li>
                                           <li>• Physical: Throat issues, neck pain, thyroid problems</li>
                                           <li>• Emotional: Fear of speaking truth, suppressed voice</li>
-                                          <li>• Social: Difficulty expressing authentic self</li>
+                                    
+                                          <li>• Spiritual: Self Expression Problems</li>
                                         </ul>
                                       </div>
                                       <div>
@@ -7214,7 +7201,7 @@ export default function AuraAnalysis() {
                                   <div className="bg-white rounded-lg p-5 border border-pink-200">
                                     <div className="flex items-center mb-4">
                                       <div className="w-6 h-6 rounded-full bg-pink-300 mr-3"></div>
-                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Stella Anima) Healing</h5>
+                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Anthakarma) Healing</h5>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
@@ -7602,24 +7589,24 @@ export default function AuraAnalysis() {
                                         style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
                                       ></div>
                                       <div>
-                                        <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Dominant)</p>
+                                        <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
                                           {(() => {
                                             const meanings: Record<string, string> = {
                                               'Black': 'Shadow integration and transformation energy representing deep inner work, void consciousness, and spiritual rebirth through darkness.',
-                                              'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-                                              'Brown': 'Earth connection energy representing material stability, physical grounding, and natural wisdom through earthly connections.',
-                                              'Red': 'Root chakra energy representing grounding, survival instincts, and life force. This color indicates strong willpower, passion, and connection to earth energy.',
-                                              'Yellow': 'Solar plexus energy radiating personal power, confidence, and mental clarity. This golden light strengthens willpower and intellectual abilities.',
-                                              'Blue': 'Throat chakra energy facilitating communication, truth, and spiritual expression. This calming frequency enhances authentic self-expression.',
-                                              'Green': 'Heart chakra energy emanating love, healing, and compassion. This healing frequency promotes emotional balance and natural healing abilities.',
-                                              'Violet': 'Crown chakra energy connecting to divine consciousness and spiritual enlightenment. This highest frequency represents spiritual mastery.',
-                                              'Indigo': 'Third eye chakra energy opening intuition, psychic abilities, and spiritual insight. This mystical frequency develops inner wisdom and perception.',
+                                              'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection.	Energetically vulnerable, escapist tendencies, difficulty being grounded.	Learning to protect energy and feel safe in the physical world.',
+                                              'Brown': 'Humble, grounded, connected to nature and body, down-to-earth wisdom.	Stagnation, lack of ambition, heaviness, resistance to change.	Bringing movement into life while staying rooted.',
+                                              'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. Could indicate Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.	Balancing drive with emotional regulation.',
+                                              'Yellow': 'Confident, radiant, strong leadership energy, optimistic and intelligent.	Perfectionist, controlling, rigid expectations, critical of self and others.	Letting go of control and embracing flow.',
+                                              'Blue': 'Peaceful communicator, emotionally calm, expressive and serene presence.	Lethargy, emotional shutdown, fear of speaking up, hidden sadness.	Learning to express needs clearly and calmly.',
+                                              'Green': 'Compassionate, healer energy, emotionally balanced and nurturing.	Overgiving, energy depletion, putting others before self to a harmful degree.	Setting boundaries while nurturing others.',
+                                              'Violet': 'Highly spiritual, visionary, deeply connected to purpose and divine calling.	Disconnected from higher self, confusion about life purpose, escapism or spiritual bypassing.	Difficulty balancing spiritual connection with everyday life.',
+                                              'Indigo': 'Strong intuitive abilities, psychic insight, deep inner knowing and truth-seeking.	Overwhelmed by inner visions, escapism, fear of trusting intuition or self-doubt.	Trusting one’s psychic abilities and grounding insights..',
                                               'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
-                                              'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
-                                              'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
-                                              'Orange': 'Sacral chakra energy embodying creativity, sexuality, and emotional flow. This vibrant frequency enhances artistic expression and emotional healing.',
-                                              'Pink': 'Divine love and emotional healing. This gentle frequency promotes unconditional love and emotional nurturing.'
+                                              'Gold': 'Divinely protected, powerful soul guide, radiant and healed presence.	Ego inflation, spiritual superiority, loneliness from being different.	Staying humble while embracing one’s light.',
+                                              'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul.	Energetic overload, anxiety, unclear boundaries, difficulty being in the body.	Grounding spiritual gifts with practical living.',
+                                              'Orange': 'Creative, joyful, playful, sensually alive, loves experiencing pleasure and life.	Restlessness, overindulgence, scattered energy, addicted to stimulation.	Channeling creativity in consistent and meaningful ways.',
+                                              'Pink': 'Loving, emotionally open, romantic, deeply caring and affectionate.	Over-sensitive, emotionally dependent, fear of rejection or abandonment.	Balancing love with self-worth and independence.'
                                             };
                                             return meanings[result.dominantColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
                                           })()}
@@ -7634,7 +7621,7 @@ export default function AuraAnalysis() {
                                           style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
                                         ></div>
                                         <div>
-                                          <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Secondary)</p>
+                                          <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
                                             {(() => {
                                               const meanings: Record<string, string> = {
@@ -7642,7 +7629,7 @@ export default function AuraAnalysis() {
                                                 'White': 'Secondary purification support cleansing and protecting your spiritual energy field.',
                                                 'Brown': 'Secondary grounding support adding earthly stability and material wisdom to your spiritual expression.',
                                                 'Turquoise': 'Secondary communication healing support blending emotional wisdom with clear authentic expression.',
-                                                'Red': 'Secondary passion energy adding drive and determination to your spiritual path.',
+                                                'Red': 'Action-oriented, passionate, driven, energized and grounded in goals.	Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.	Balancing drive with emotional regulation.',
                                                 'Yellow': 'Secondary mental clarity enhancement bringing intellectual wisdom to complement your dominant frequency.',
                                                 'Blue': 'Secondary communication enhancement supporting truth and authentic expression in all interactions.',
                                                 'Green': 'Secondary healing support energy that nurtures and balances your primary spiritual expression.',

@@ -391,6 +391,7 @@ function getColorRGB(colorName: string): { r: number, g: number, b: number } {
     'Silver': { r: 192, g: 192, b: 192 },
     'Purple': { r: 128, g: 0, b: 128 },
     'brown': { r: 165, g: 42, b: 42 },
+    'Gray': { r: 128, g: 128, b: 128 },
   };
   
   return colorMap[colorName] || colorMap['Blue'];
