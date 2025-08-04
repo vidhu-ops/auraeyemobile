@@ -13,11 +13,19 @@ export async function storeOTP(mobileNumber: string): Promise<string> {
   const otp = generateOTP();
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
   
+  console.log(`\n=== STORING OTP IN DATABASE ===`);
+  console.log(`Mobile Number: ${mobileNumber}`);
+  console.log(`Generated OTP: ${otp}`);
+  console.log(`Expires At: ${expiresAt.toLocaleString()}`);
+  
   await db.insert(otpVerifications).values({
     mobileNumber,
     otp,
     expiresAt
   });
+  
+  console.log('OTP stored successfully in database');
+  console.log('===============================\n');
   
   return otp;
 }
@@ -25,6 +33,11 @@ export async function storeOTP(mobileNumber: string): Promise<string> {
 // Verify OTP and mark as verified
 export async function verifyOTP(mobileNumber: string, otp: string): Promise<boolean> {
   const now = new Date();
+  
+  console.log(`\n=== OTP VERIFICATION PROCESS ===`);
+  console.log(`Mobile Number: ${mobileNumber}`);
+  console.log(`OTP to verify: ${otp}`);
+  console.log(`Current time: ${now.toLocaleString()}`);
   
   // Find valid OTP
   const [otpRecord] = await db
@@ -40,14 +53,30 @@ export async function verifyOTP(mobileNumber: string, otp: string): Promise<bool
     );
   
   if (!otpRecord) {
+    console.log('OTP verification failed: No valid OTP record found');
+    console.log('Possible reasons:');
+    console.log('- OTP does not match');
+    console.log('- OTP has expired');
+    console.log('- OTP has already been verified');
+    console.log('- Mobile number does not match');
+    console.log('===============================\n');
     return false;
   }
+  
+  console.log('Valid OTP record found!');
+  console.log(`OTP ID: ${otpRecord.id}`);
+  console.log(`Expires at: ${otpRecord.expiresAt.toLocaleString()}`);
+  console.log(`Created at: ${otpRecord.createdAt.toLocaleString()}`);
   
   // Mark OTP as verified
   await db
     .update(otpVerifications)
     .set({ verified: true })
     .where(eq(otpVerifications.id, otpRecord.id));
+  
+  console.log('OTP marked as verified in database');
+  console.log('OTP verification successful!');
+  console.log('===============================\n');
   
   return true;
 }
