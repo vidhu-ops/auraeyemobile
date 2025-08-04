@@ -58,7 +58,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
             <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
-            <span className="font-heading font-bold text-2xl text-primary">AuraEye</span>
+            <span className="font-heading font-bold text-2xl text-primary">AuraEye™</span>
           </Link>
 
           {/* Mobile menu button */}
