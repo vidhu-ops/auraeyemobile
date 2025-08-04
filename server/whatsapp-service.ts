@@ -14,6 +14,7 @@ console.log('Important: For users to receive WhatsApp messages via Twilio sandbo
 console.log('1. Users must first send "join palace-stuck" to +1 415 523 8886 on WhatsApp');
 console.log('2. They will receive a confirmation message');
 console.log('3. Then they can receive OTP messages');
+console.log('4. If users are not getting messages, they need to complete step 1 first');
 console.log('========================================\n');
 
 // Initialize WhatsApp (now using Twilio)
