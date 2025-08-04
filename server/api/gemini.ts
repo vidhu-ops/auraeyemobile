@@ -5,60 +5,192 @@ import { AuraAnalysisResult } from "../../client/src/lib/openai";
 // const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 /**
- * Generates aura visualization using external AI image generation service
+ * Generates standardized aura visualization with consistent dimensions and zone positioning
  */
 export async function generateAuraVisualization(
   originalImageBase64: string, 
   auraAnalysis: any
 ): Promise<string> {
   try {
-    // For now, return the original image with metadata indicating processing should happen client-side
-    // This ensures the image is displayed while we work on the visualization
-    console.log(`Processing aura visualization with colors: ${auraAnalysis.dominantColor}, ${auraAnalysis.secondaryColor}`);
+    const { createCanvas, loadImage } = require('canvas');
     
-    // Return the original image - the frontend will handle the visualization overlay
-    return originalImageBase64;
+    console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
+    console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
+    console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
+    console.log(`Processing with standardized dimensions: 1200x2000px`);
+    
+    // Standardized dimensions as requested: 1200px width × 2000px height
+    const STANDARD_WIDTH = 1200;
+    const STANDARD_HEIGHT = 2000;
+    
+    // Create canvas with standardized dimensions
+    const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
+    const ctx = canvas.getContext('2d');
+    
+    // Load and process the original image
+    const imageData = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+    const imgBuffer = Buffer.from(imageData, 'base64');
+    const originalImage = await loadImage(imgBuffer);
+    
+    // Calculate scaling to fit the image properly while maintaining aspect ratio
+    const imgAspectRatio = originalImage.width / originalImage.height;
+    const canvasAspectRatio = STANDARD_WIDTH / STANDARD_HEIGHT;
+    
+    let drawWidth, drawHeight, offsetX, offsetY;
+    
+    if (imgAspectRatio > canvasAspectRatio) {
+      // Image is wider - fit by width
+      drawWidth = STANDARD_WIDTH;
+      drawHeight = STANDARD_WIDTH / imgAspectRatio;
+      offsetX = 0;
+      offsetY = (STANDARD_HEIGHT - drawHeight) / 2;
+    } else {
+      // Image is taller - fit by height
+      drawHeight = STANDARD_HEIGHT;
+      drawWidth = STANDARD_HEIGHT * imgAspectRatio;
+      offsetX = (STANDARD_WIDTH - drawWidth) / 2;
+      offsetY = 0;
+    }
+    
+    // Fill background with black to ensure consistent background
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
+    
+    // Draw the original image centered and scaled
+    ctx.drawImage(originalImage, offsetX, offsetY, drawWidth, drawHeight);
+    
+    // Add standardized aura effects with consistent zone positioning
+    addStandardizedAuraEffects(
+      ctx, 
+      STANDARD_WIDTH, 
+      STANDARD_HEIGHT, 
+      auraAnalysis.dominantColor, 
+      auraAnalysis.secondaryColor,
+      auraAnalysis.auraLayerColors || {},
+      offsetX,
+      offsetY,
+      drawWidth,
+      drawHeight
+    );
+    
+    // Convert canvas to base64
+    const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
+    
+    console.log(`Aura visualization completed successfully`);
+    console.log(`Output dimensions: ${STANDARD_WIDTH}x${STANDARD_HEIGHT}px`);
+    console.log(`======================================\n`);
+    
+    return processedImageBase64;
     
   } catch (error) {
     console.error("Error generating aura visualization:", error);
+    console.log("Falling back to original image");
     return originalImageBase64;
   }
 }
 
-function addAuraEffects(ctx: any, width: number, height: number, dominantColor: string, secondaryColor: string) {
-  // Get color values for aura rendering
-  const primaryRGB = getColorRGB(dominantColor);
+/**
+ * Adds standardized aura effects with distinct zone positioning 
+ * Based on user requirements: left=receiving, right=giving, top=thinking, edges=personality
+ */
+function addStandardizedAuraEffects(
+  ctx: any, 
+  canvasWidth: number, 
+  canvasHeight: number, 
+  dominantColor: string, 
+  secondaryColor: string,
+  auraLayerColors: any,
+  imageOffsetX: number,
+  imageOffsetY: number,
+  imageWidth: number,
+  imageHeight: number
+) {
+  // Get color values for all zones
+  const dominantRGB = getColorRGB(dominantColor);
   const secondaryRGB = getColorRGB(secondaryColor);
+  const receivingRGB = getColorRGB(auraLayerColors.receiving || dominantColor);
+  const givingRGB = getColorRGB(auraLayerColors.giving || secondaryColor);
+  const thinkingRGB = getColorRGB(auraLayerColors.thinking || dominantColor);
+  const personalityRGB = getColorRGB(auraLayerColors.personality || secondaryColor);
   
-  // Create multiple aura layers for depth
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const maxRadius = Math.min(width, height) * 0.6;
+  // Calculate person center based on image positioning
+  const personCenterX = imageOffsetX + imageWidth / 2;
+  const personCenterY = imageOffsetY + imageHeight / 2;
   
-  // Outer aura layer (more transparent)
-  const outerGradient = ctx.createRadialGradient(centerX, centerY, maxRadius * 0.3, centerX, centerY, maxRadius);
-  outerGradient.addColorStop(0, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0)`);
-  outerGradient.addColorStop(0.7, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0.15)`);
-  outerGradient.addColorStop(1, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0.05)`);
+  console.log(`Person center: ${personCenterX}, ${personCenterY}`);
+  console.log(`Image bounds: ${imageOffsetX}, ${imageOffsetY}, ${imageWidth}, ${imageHeight}`);
   
+  // Set blend mode for smooth aura effects
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = outerGradient;
-  ctx.fillRect(0, 0, width, height);
   
-  // Inner aura layer (more visible)
-  const innerGradient = ctx.createRadialGradient(centerX, centerY, maxRadius * 0.2, centerX, centerY, maxRadius * 0.8);
-  innerGradient.addColorStop(0, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0)`);
-  innerGradient.addColorStop(0.5, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0.2)`);
-  innerGradient.addColorStop(1, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0.1)`);
+  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Purple/Violet zones in examples)
+  console.log('Drawing receiving zone (left)...');
+  const receivingGradient = ctx.createLinearGradient(0, 0, canvasWidth / 2, 0);
+  receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.4)`);
+  receivingGradient.addColorStop(0.7, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.2)`);
+  receivingGradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
   
-  ctx.fillStyle = innerGradient;
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = receivingGradient;
+  ctx.fillRect(0, 0, canvasWidth / 2, canvasHeight);
   
-  // Add energy wisps/particles
-  addEnergyWisps(ctx, width, height, primaryRGB, secondaryRGB);
+  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Green zones in examples)
+  console.log('Drawing giving zone (right)...');
+  const givingGradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth / 2, 0);
+  givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.4)`);
+  givingGradient.addColorStop(0.7, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.2)`);
+  givingGradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
+  
+  ctx.fillStyle = givingGradient;
+  ctx.fillRect(canvasWidth / 2, 0, canvasWidth / 2, canvasHeight);
+  
+  // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
+  console.log('Drawing thinking zone (top)...');
+  const thinkingGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight / 3);
+  thinkingGradient.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.35)`);
+  thinkingGradient.addColorStop(0.8, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0.15)`);
+  thinkingGradient.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
+  
+  ctx.fillStyle = thinkingGradient;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight / 3);
+  
+  // ZONE 4: EDGES - PERSONALITY ENERGY (Outer rim effect)
+  console.log('Drawing personality zone (edges)...');
+  
+  // Top edge
+  const topEdgeGradient = ctx.createLinearGradient(0, 0, 0, 100);
+  topEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.3)`);
+  topEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+  ctx.fillStyle = topEdgeGradient;
+  ctx.fillRect(0, 0, canvasWidth, 100);
+  
+  // Bottom edge
+  const bottomEdgeGradient = ctx.createLinearGradient(0, canvasHeight, 0, canvasHeight - 100);
+  bottomEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.3)`);
+  bottomEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+  ctx.fillStyle = bottomEdgeGradient;
+  ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+  
+  // Left edge
+  const leftEdgeGradient = ctx.createLinearGradient(0, 0, 100, 0);
+  leftEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.25)`);
+  leftEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+  ctx.fillStyle = leftEdgeGradient;
+  ctx.fillRect(0, 0, 100, canvasHeight);
+  
+  // Right edge
+  const rightEdgeGradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth - 100, 0);
+  rightEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0.25)`);
+  rightEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+  ctx.fillStyle = rightEdgeGradient;
+  ctx.fillRect(canvasWidth - 100, 0, 100, canvasHeight);
+  
+  // Add subtle energy wisps for more natural look
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB);
   
   // Reset composite operation
   ctx.globalCompositeOperation = 'source-over';
+  
+  console.log('All aura zones applied successfully');
 }
 
 function addEnergyWisps(ctx: any, width: number, height: number, primaryRGB: any, secondaryRGB: any) {
@@ -257,8 +389,12 @@ Respond with valid JSON containing:
       auraColorSpectrum: ["Indigo", "Violet", "Purple", "Blue", "White"],
       auraLayerColors: {
         inner: "Indigo",
-        middle: "Violet",
-        outer: "Blue"
+        middle: "Violet", 
+        outer: "Blue",
+        receiving: "Purple",
+        giving: "Green",
+        thinking: "Yellow",
+        personality: "Red"
       },
       energyLevel: 7,
       personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Sensitive"],
