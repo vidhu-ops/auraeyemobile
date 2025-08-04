@@ -5488,7 +5488,52 @@ export default function AuraAnalysis() {
                               </div>
 
                               <div className="space-y-6">
-                                {/* 4-Zone Energy Visualization */}
+                                {/* Visual Energy Map */}
+                                    <div className="bg-black rounded-lg p-6 relative overflow-hidden">
+                                      <h4 className="text-white font-semibold text-lg mb-4">Your Personal Energy Signature</h4>
+                                      <div className="flex justify-center items-center space-x-8">
+                                        <div className="relative">
+                                          {/* Dominant Energy Visualization */}
+                                          <div 
+                                            className="w-24 h-24 rounded-full opacity-90 animate-pulse"
+                                            style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
+                                          ></div>
+                                          <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-white font-bold text-sm">Dominant</span>
+                                          </div>
+                                        </div>
+
+                                        {/* Secondary Energy */}
+                                        <div className="relative">
+                                          <div 
+                                            className="w-16 h-16 rounded-full opacity-75 animate-pulse"
+                                            style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.secondaryColor)} 0%, ${getAccurateColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
+                                          ></div>
+                                          <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-white font-medium text-xs">Overall</span>
+                                          </div>
+                                        </div>
+
+                                        {/* Supporting energies */}
+                                        {result.auraColorSpectrum && result.auraColorSpectrum.slice(2, 4).map((color, index) => (
+                                          <div key={index} className="relative">
+                                            <div 
+                                              className="w-12 h-12 rounded-full opacity-60 animate-pulse"
+                                              style={{
+                                                background: `radial-gradient(circle, ${getAccurateColorCode(color)} 0%, ${getAccurateColorCode(color)}40 50%, transparent 100%)`,
+                                                animationDelay: `${1 + index * 0.5}s`
+                                              }}
+                                            ></div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-center mt-4">
+                                        <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {/* 4-Zone Energy Visualization */}
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
                                   <h4 className="font-semibold text-lg mb-4 text-center">Your 4-Zone Energy Map</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
