@@ -1362,17 +1362,29 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       try {
         auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer, urlSeed);
         
-        // Generate aura visualization with strict zone color restrictions
+        // Generate standardized aura visualization with consistent dimensions and zone positioning
         try {
-          console.log("Generating aura visualization with strict zone restrictions...");
-          auraAnalysis.processedAuraImage = await generateSimpleZoneVisualization(
-            imageData, 
-            auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
-            auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
-            auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
-            auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor
+          console.log("Generating standardized aura visualization with 1200x2000px dimensions...");
+          
+          // Ensure aura analysis has zone-specific colors for the new visualization system
+          if (!auraAnalysis.auraLayerColors) {
+            auraAnalysis.auraLayerColors = {
+              inner: auraAnalysis.dominantColor,
+              middle: auraAnalysis.secondaryColor,
+              outer: auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+              receiving: auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+              giving: auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
+              thinking: auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.dominantColor,
+              personality: auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.secondaryColor
+            };
+          }
+          
+          // Use the standardized aura visualization system
+          auraAnalysis.processedAuraImage = await generateAuraVisualization(
+            `data:image/jpeg;base64,${imageData}`,
+            auraAnalysis
           );
-          console.log("Zone-restricted aura visualization completed successfully");
+          console.log("Standardized aura visualization completed successfully with consistent dimensions");
         } catch (vizError) {
           console.error("Aura visualization failed:", vizError);
           // Fallback to original image if processing fails
