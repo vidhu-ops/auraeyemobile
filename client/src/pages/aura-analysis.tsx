@@ -1013,14 +1013,14 @@ export default function AuraAnalysis() {
         }
       };
 
-      // Add the uploaded image as the first page with enhanced quality
+      // Add the uploaded image as the first page if available
       const addUploadedImageAsFirstPage = async () => {
         try {
           // Import the uploaded image directly from attached assets  
           const uploadedImageModule = await import('@assets/WhatsApp Image 2025-07-28 at 10.02.03 PM_1753725795826.jpeg');
           const uploadedImageSrc = uploadedImageModule.default;
           
-          // Create a canvas to process and enhance the image for better PDF quality
+          // Create image to get dimensions
           const img = new Image();
           await new Promise((resolve, reject) => {
             img.onload = resolve;
@@ -1028,49 +1028,36 @@ export default function AuraAnalysis() {
             img.src = uploadedImageSrc;
           });
           
-          // Create canvas for high-quality image processing
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          // Set canvas dimensions for high resolution (2x scale for better quality)
-          const scale = 2;
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          
-          // Enable high-quality image rendering
-          ctx!.imageSmoothingEnabled = true;
-          ctx!.imageSmoothingQuality = 'high';
-          
-          // Draw the image with enhanced quality
-          ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
-          
-          // Convert to high-quality data URL
-          const enhancedImageData = canvas.toDataURL('image/jpeg', 0.95); // 95% quality
-          
-          // Calculate dimensions to cover the full page (maintain aspect ratio but fill page)
+          // Calculate dimensions to cover the full page (no margins)
           const imgAspectRatio = img.width / img.height;
           const pageAspectRatio = pageWidth / pageHeight;
           
           let imgWidth, imgHeight, imgX, imgY;
           
           if (imgAspectRatio > pageAspectRatio) {
-            // Image is wider, fit to page height and center horizontally
+            // Image is wider than page ratio, fit to page height and extend beyond page width
             imgHeight = pageHeight;
             imgWidth = imgHeight * imgAspectRatio;
-            imgX = (pageWidth - imgWidth) / 2;
+            imgX = (pageWidth - imgWidth) / 2; // Center horizontally
             imgY = 0;
           } else {
-            // Image is taller, fit to page width and center vertically
+            // Image is taller than page ratio, fit to page width and extend beyond page height
             imgWidth = pageWidth;
             imgHeight = imgWidth / imgAspectRatio;
             imgX = 0;
-            imgY = (pageHeight - imgHeight) / 2;
+            imgY = (pageHeight - imgHeight) / 2; // Center vertically
           }
           
-          // Add the high-quality enhanced image as full-page first page
-          pdf.addImage(enhancedImageData, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+          // Force full page coverage - ensure image fills entire page with zero margins
+          imgWidth = pageWidth;
+          imgHeight = pageHeight;
+          imgX = 0;
+          imgY = 0;
           
-          console.log('Successfully added enhanced high-quality uploaded image as full-page first page');
+          // Add the uploaded original image as full-page first page covering entire surface
+          pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+          
+          console.log('Successfully added uploaded image as full-page first page');
           return true;
         } catch (error) {
           console.warn('Could not load uploaded image for first page:', error);
@@ -1081,90 +1068,49 @@ export default function AuraAnalysis() {
       // Try to add uploaded image as first page
       const uploadedImageAdded = await addUploadedImageAsFirstPage();
       
-      // If uploaded image was added, start new page for enhanced title
+      // If uploaded image was added, start new page for title
       if (uploadedImageAdded) {
         pdf.addPage();
         yPosition = 20;
-        
-        // Add decorative border for title page
-        pdf.setDrawColor(147, 51, 234);
-        pdf.setLineWidth(3);
-        pdf.rect(10, 10, pageWidth - 20, pageHeight - 20, 'S');
-        
-        // Inner decorative border
-        pdf.setDrawColor(199, 125, 255);
-        pdf.setLineWidth(1);
-        pdf.rect(15, 15, pageWidth - 30, pageHeight - 30, 'S');
-        
-        yPosition = 40;
       }
 
-      // ENHANCED TITLE PAGE WITH UI/UX STYLING
+      // PAGE 1 (or 2 if uploaded image was added): TITLE AND OVERVIEW
       pdf.setFontSize(28);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('✨ COMPREHENSIVE AURA ANALYSIS ✨', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 12;
-      
+      yPosition = addTextWithPageBreak('AURA & CHAKRA ALIGNMENT REPORT', pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 15;
+
+      pdf.setFontSize(16);
+      pdf.setTextColor(80, 80, 80);
+      const nameToUse = analysisName || result?.name || 'Unnamed Analysis';
+      yPosition = addTextWithPageBreak(`Client: ${nameToUse}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 8;
+      yPosition = addTextWithPageBreak(`Report created by: ${user?.username || 'Anonymous User'}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 8;
+      yPosition = addTextWithPageBreak(`Analysis Date: ${new Date().toLocaleDateString()}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 20;
+
+      // Add decorative line
+      pdf.setLineWidth(0.5);
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(20, yPosition, pageWidth, yPosition);
+      yPosition += 15;
+
+      // SECTION 1: AURA COLOR ANALYSIS
       pdf.setFontSize(20);
-      pdf.setTextColor(120, 60, 180);
-      yPosition = addTextWithPageBreak('🌟 SPIRITUAL ENERGY REPORT 🌟', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 25;
-
-      // Client information in styled box
-      const nameToUse = analysisName || result?.name || 'Valued Client';
-      pdf.setFillColor(250, 245, 255); // Very light purple background
-      pdf.rect(25, yPosition - 5, pageWidth - 50, 40, 'F');
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(1);
-      pdf.rect(25, yPosition - 5, pageWidth - 50, 40, 'S');
-      
-      pdf.setFontSize(16);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak(`👤 Analysis for: ${nameToUse}`, pageWidth/2, yPosition + 8, { align: 'center' });
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`👨‍⚕️ Analyzed by: ${user?.username || 'Certified Practitioner'}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      
-      pdf.setFontSize(12);
-      pdf.setTextColor(100, 100, 100);
-      yPosition = addTextWithPageBreak(`📅 Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`⏰ Time: ${new Date().toLocaleTimeString()}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 30;
+      yPosition = addTextWithPageBreak('AURA COLOR ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 10;
 
-      // Energy level summary in styled box
-      pdf.setFillColor(255, 248, 220); // Light gold background
-      pdf.rect(20, yPosition - 5, pageWidth - 40, 25, 'F');
-      pdf.setDrawColor(255, 215, 0);
-      pdf.setLineWidth(2);
-      pdf.rect(20, yPosition - 5, pageWidth - 40, 25, 'S');
-      
-      pdf.setFontSize(16);
-      pdf.setTextColor(184, 134, 11);
-      yPosition = addTextWithPageBreak(`⚡ Energy Level: ${result.energyLevel}/10 - ${result.energyLevel >= 8 ? 'Highly Vibrant' : result.energyLevel >= 6 ? 'Strong & Focused' : result.energyLevel >= 4 ? 'Balanced' : 'Gentle & Calm'}`, pageWidth/2, yPosition + 8, { align: 'center' });
-      yPosition += 35;
-
-      // Dominant colors summary in styled box
-      pdf.setFillColor(245, 255, 245); // Light green background
-      pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'F');
-      pdf.setDrawColor(34, 197, 94);
-      pdf.setLineWidth(1);
-      pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'S');
-      
       pdf.setFontSize(14);
-      pdf.setTextColor(22, 163, 74);
-      yPosition = addTextWithPageBreak(`🎨 Dominant Aura Color: ${result.dominantColor}`, pageWidth/2, yPosition + 10, { align: 'center' });
+      pdf.setTextColor(50, 50, 50);
+      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
       if (result.secondaryColor) {
-        yPosition = addTextWithPageBreak(`🌈 Secondary Color: ${result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
+        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
       }
-      yPosition += 25;
-      
-      // Add decorative separator
-      pdf.setLineWidth(2);
-      pdf.setDrawColor(147, 51, 234);
-      pdf.line(50, yPosition, pageWidth - 50, yPosition);
+      yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 15;
 
       // ADD AURA VISUALIZATION IMAGE
@@ -1223,52 +1169,17 @@ export default function AuraAnalysis() {
         }
       }
 
-      // COMPREHENSIVE SPIRITUAL ANALYSIS SECTION WITH UI/UX STYLING
-      if (yPosition > pageHeight - 80) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-      
-      pdf.setFontSize(20);
+      // SECTION 2: SPIRITUAL ANALYSIS
+      pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('🔮 SPIRITUAL ANALYSIS & INSIGHTS 🔮', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
+      yPosition = addTextWithPageBreak('SPIRITUAL ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 10;
 
-      // Add comprehensive analysis in styled box
-      pdf.setFillColor(248, 250, 252); // Light blue-gray background
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 80, 'F');
-      pdf.setDrawColor(99, 102, 241);
-      pdf.setLineWidth(1);
-      pdf.rect(15, yPosition - 5, pageWidth - 30, 80, 'S');
-      
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
       const analysis = result.detailedAnalysis || "Your aura reveals unique spiritual patterns that guide your personal development journey. The colors detected in your energy field indicate specific aspects of your personality, emotional state, and spiritual development.";
-      yPosition = addWrappedText(analysis, 20, yPosition + 5, pageWidth - 40, 5);
-      yPosition += 90;
-
-      // Add personality traits section with icons
-      if (result.personalityTraits && result.personalityTraits.length > 0) {
-        pdf.setFontSize(16);
-        pdf.setTextColor(139, 69, 19);
-        yPosition = addTextWithPageBreak('🌟 KEY PERSONALITY TRAITS 🌟', pageWidth/2, yPosition, { align: 'center' });
-        yPosition += 12;
-        
-        pdf.setFillColor(255, 250, 240); // Light orange background
-        const traitsHeight = result.personalityTraits.length * 8 + 15;
-        pdf.rect(20, yPosition - 5, pageWidth - 40, traitsHeight, 'F');
-        pdf.setDrawColor(251, 146, 60);
-        pdf.setLineWidth(1);
-        pdf.rect(20, yPosition - 5, pageWidth - 40, traitsHeight, 'S');
-        
-        pdf.setFontSize(11);
-        pdf.setTextColor(92, 62, 25);
-        result.personalityTraits.forEach((trait: string, index: number) => {
-          yPosition = addTextWithPageBreak(`✨ ${trait}`, 25, yPosition + 3, {});
-          yPosition += 6;
-        });
-        yPosition += 15;
-      }
+      yPosition = addWrappedText(analysis, 20, yPosition, pageWidth - 40);
+      yPosition += 10;
 
       // SECTION 3: ENERGY LEVEL ANALYSIS  
       if (yPosition > pageHeight - 60) {
@@ -1391,64 +1302,40 @@ export default function AuraAnalysis() {
       yPosition = addWrappedText(spiritualGuidance, 20, yPosition, pageWidth - 40);
       yPosition += 15;
 
-      // ENHANCED CHAKRA SYSTEM ANALYSIS WITH VISUAL ELEMENTS
+      // SECTION 8: CHAKRA SYSTEM ANALYSIS
       if (yPosition > pageHeight - 100) {
         pdf.addPage();
         yPosition = 20;
       }
 
-      pdf.setFontSize(20);
+      pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('🌈 CHAKRA SYSTEM ANALYSIS 🌈', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
+      yPosition = addTextWithPageBreak('CHAKRA SYSTEM ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 10;
 
+      pdf.setFontSize(12);
+      pdf.setTextColor(50, 50, 50);
+      
       if (result.chakraActivity) {
-        const chakraData = [
-          { key: 'soulStar', name: '✨ Soul Star Chakra', color: [238, 130, 238] },
-          { key: 'crown', name: '👑 Crown Chakra', color: [147, 51, 234] },
-          { key: 'thirdEye', name: '👁️ Third Eye Chakra', color: [79, 70, 229] },
-          { key: 'throat', name: '🗣️ Throat Chakra', color: [59, 130, 246] },
-          { key: 'heart', name: '💚 Heart Chakra', color: [34, 197, 94] },
-          { key: 'solarPlexus', name: '☀️ Solar Plexus Chakra', color: [251, 191, 36] },
-          { key: 'sacral', name: '🧡 Sacral Chakra', color: [249, 115, 22] },
-          { key: 'root', name: '🌍 Root Chakra', color: [239, 68, 68] }
-        ];
+        const chakraNames = {
+          soulStar: 'Soul Star Chakra',
+          crown: 'Crown Chakra',
+          thirdEye: 'Third Eye Chakra',
+          throat: 'Throat Chakra',
+          heart: 'Heart Chakra',
+          solarPlexus: 'Solar Plexus Chakra',
+          sacral: 'Sacral Chakra',
+          root: 'Root Chakra'
+        };
 
-        chakraData.forEach((chakra, index) => {
-          const value = result.chakraActivity[chakra.key] || 5;
+        Object.entries(result.chakraActivity).forEach(([key, value]) => {
+          const name = chakraNames[key as keyof typeof chakraNames] || key;
           const percentage = Math.round((value / 10) * 100);
-          
-          // Create progress bar visualization
-          pdf.setFillColor(245, 245, 245); // Light gray background
-          pdf.rect(25, yPosition - 2, pageWidth - 50, 12, 'F');
-          
-          // Fill progress bar with chakra color
-          pdf.setFillColor(chakra.color[0], chakra.color[1], chakra.color[2]);
-          const progressWidth = ((pageWidth - 50) * percentage) / 100;
-          pdf.rect(25, yPosition - 2, progressWidth, 12, 'F');
-          
-          // Add border
-          pdf.setDrawColor(200, 200, 200);
-          pdf.setLineWidth(0.5);
-          pdf.rect(25, yPosition - 2, pageWidth - 50, 12, 'S');
-          
-          // Add chakra name and percentage
-          pdf.setFontSize(11);
-          pdf.setTextColor(50, 50, 50);
-          yPosition = addTextWithPageBreak(`${chakra.name}: ${value}/10 (${percentage}%)`, 30, yPosition + 6, {});
-          yPosition += 18;
+          yPosition = addTextWithPageBreak(`${name}: ${value}/10 (${percentage}%)`, pageWidth/2, yPosition, { align: 'center' });
+          yPosition += 6;
         });
       } else {
-        pdf.setFillColor(255, 248, 220);
-        pdf.rect(20, yPosition - 5, pageWidth - 40, 25, 'F');
-        pdf.setDrawColor(255, 215, 0);
-        pdf.setLineWidth(1);
-        pdf.rect(20, yPosition - 5, pageWidth - 40, 25, 'S');
-        
-        pdf.setFontSize(11);
-        pdf.setTextColor(120, 120, 120);
-        yPosition = addWrappedText("Chakra analysis shows balanced energy flow across all seven main energy centers, supporting overall spiritual well-being.", 25, yPosition + 5, pageWidth - 50);
-        yPosition += 30;
+        yPosition = addWrappedText("Chakra analysis shows balanced energy flow across all seven main energy centers, supporting overall spiritual well-being.", 20, yPosition, pageWidth - 40);
       }
       yPosition += 15;
 
@@ -1501,150 +1388,14 @@ export default function AuraAnalysis() {
         yPosition += 15;
       }
 
-      // COMPREHENSIVE COLOR SPECTRUM ANALYSIS
-      if (yPosition > pageHeight - 80) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('🎭 COMPLETE AURA COLOR SPECTRUM 🎭', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
-
-      if (result.auraColors && result.auraColors.length > 0) {
-        pdf.setFillColor(252, 245, 255); // Very light purple background
-        const spectrumHeight = result.auraColors.length * 10 + 20;
-        pdf.rect(15, yPosition - 5, pageWidth - 30, spectrumHeight, 'F');
-        pdf.setDrawColor(147, 51, 234);
-        pdf.setLineWidth(1);
-        pdf.rect(15, yPosition - 5, pageWidth - 30, spectrumHeight, 'S');
-        
-        pdf.setFontSize(12);
-        pdf.setTextColor(55, 65, 81);
-        yPosition = addTextWithPageBreak('Colors detected in your aura energy field:', 20, yPosition + 5, {});
-        yPosition += 10;
-        
-        result.auraColors.forEach((color: string, index: number) => {
-          pdf.setFontSize(11);
-          pdf.setTextColor(75, 0, 130);
-          yPosition = addTextWithPageBreak(`🌈 ${color}: ${getColorMeaningForPDF(color).substring(0, 80)}...`, 20, yPosition, {});
-          yPosition += 8;
-        });
-        yPosition += 15;
-      }
-
-      // ENERGY ZONES SUMMARY (matching UI layout)
-      if (yPosition > pageHeight - 100) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('🗺️ ENERGY ZONES MAPPING 🗺️', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
-
-      // Create four quadrant boxes for energy zones (matching the UI)
-      const boxWidth = (pageWidth - 50) / 2;
-      const boxHeight = 35;
-      const leftX = 20;
-      const rightX = leftX + boxWidth + 10;
-      
-      // Receiving Energy (Left Zone)
-      pdf.setFillColor(240, 248, 255); // Light blue
-      pdf.rect(leftX, yPosition, boxWidth, boxHeight, 'F');
-      pdf.setDrawColor(59, 130, 246);
-      pdf.setLineWidth(1);
-      pdf.rect(leftX, yPosition, boxWidth, boxHeight, 'S');
-      pdf.setFontSize(12);
-      pdf.setTextColor(59, 130, 246);
-      pdf.text('⬅️ RECEIVING ENERGY', leftX + boxWidth/2, yPosition + 12, { align: 'center' });
+      // Add footer
       pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('(Left Side of Aura)', leftX + boxWidth/2, yPosition + 20, { align: 'center' });
-      pdf.text(`Color: ${result.auraColors?.[1] || result.dominantColor}`, leftX + boxWidth/2, yPosition + 28, { align: 'center' });
-      
-      // Giving Energy (Right Zone)
-      pdf.setFillColor(240, 253, 244); // Light green
-      pdf.rect(rightX, yPosition, boxWidth, boxHeight, 'F');
-      pdf.setDrawColor(34, 197, 94);
-      pdf.setLineWidth(1);
-      pdf.rect(rightX, yPosition, boxWidth, boxHeight, 'S');
-      pdf.setFontSize(12);
-      pdf.setTextColor(34, 197, 94);
-      pdf.text('➡️ GIVING ENERGY', rightX + boxWidth/2, yPosition + 12, { align: 'center' });
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('(Right Side of Aura)', rightX + boxWidth/2, yPosition + 20, { align: 'center' });
-      pdf.text(`Color: ${result.auraColors?.[2] || result.secondaryColor || result.dominantColor}`, rightX + boxWidth/2, yPosition + 28, { align: 'center' });
-      
-      yPosition += boxHeight + 10;
-      
-      // Thinking Energy (Top Zone)
-      pdf.setFillColor(255, 251, 235); // Light yellow
-      pdf.rect(leftX, yPosition, boxWidth, boxHeight, 'F');
-      pdf.setDrawColor(245, 158, 11);
-      pdf.setLineWidth(1);
-      pdf.rect(leftX, yPosition, boxWidth, boxHeight, 'S');
-      pdf.setFontSize(12);
-      pdf.setTextColor(245, 158, 11);
-      pdf.text('⬆️ THINKING ENERGY', leftX + boxWidth/2, yPosition + 12, { align: 'center' });
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('(Top Area of Aura)', leftX + boxWidth/2, yPosition + 20, { align: 'center' });
-      pdf.text(`Color: ${result.auraColors?.[0] || result.dominantColor}`, leftX + boxWidth/2, yPosition + 28, { align: 'center' });
-      
-      // Personality Energy (Edges)
-      pdf.setFillColor(254, 242, 242); // Light red
-      pdf.rect(rightX, yPosition, boxWidth, boxHeight, 'F');
-      pdf.setDrawColor(239, 68, 68);
-      pdf.setLineWidth(1);
-      pdf.rect(rightX, yPosition, boxWidth, boxHeight, 'S');
-      pdf.setFontSize(12);
-      pdf.setTextColor(239, 68, 68);
-      pdf.text('🔄 PERSONALITY ENERGY', rightX + boxWidth/2, yPosition + 12, { align: 'center' });
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('(Outer Edges)', rightX + boxWidth/2, yPosition + 20, { align: 'center' });
-      pdf.text(`Color: ${result.auraColors?.[3] || result.secondaryColor || result.dominantColor}`, rightX + boxWidth/2, yPosition + 28, { align: 'center' });
-      
-      yPosition += boxHeight + 25;
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(`Generated by AuraEye - Spiritual Wellness Platform | ${new Date().toLocaleDateString()}`, pageWidth/2, pageHeight - 10, { align: 'center' });
 
-      // COMPREHENSIVE SUMMARY BOX
-      if (yPosition > pageHeight - 60) {
-        pdf.addPage();
-        yPosition = 20;
-      }
-
-      pdf.setFillColor(250, 245, 255); // Very light purple
-      pdf.rect(15, yPosition - 10, pageWidth - 30, 50, 'F');
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(2);
-      pdf.rect(15, yPosition - 10, pageWidth - 30, 50, 'S');
-      
-      pdf.setFontSize(14);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('✨ COMPLETE ANALYSIS SUMMARY ✨', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      const completeSummary = `This comprehensive analysis reveals your unique spiritual energy signature with ${result.dominantColor.toLowerCase()} dominant frequency at ${result.energyLevel}/10 energy level. Your aura shows ${result.auraColors?.length || 2} distinct color layers representing different aspects of your consciousness. The chakra system displays ${Object.keys(result.chakraActivity || {}).length} energy centers with varying activation levels. This report captures the complete spiritual blueprint as visualized in your aura field.`;
-      yPosition = addWrappedText(completeSummary, 20, yPosition, pageWidth - 40, 4);
-      yPosition += 35;
-
-      // Enhanced footer with complete branding
-      pdf.setFontSize(8);
-      pdf.setTextColor(120, 120, 120);
-      pdf.text(`Generated by AuraEye - Advanced Spiritual Wellness Platform | ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, pageWidth/2, pageHeight - 15, { align: 'center' });
-      pdf.text(`Comprehensive Human Aura Analysis Report | All Rights Reserved`, pageWidth/2, pageHeight - 10, { align: 'center' });
-      pdf.text(`This report contains ${pdf.internal.getNumberOfPages()} pages of detailed spiritual insights`, pageWidth/2, pageHeight - 5, { align: 'center' });
-
-      // Download the PDF with enhanced naming
+      // Download the PDF
       const currentDate = new Date().toISOString().split('T')[0];
-      const currentTime = new Date().toTimeString().slice(0, 5).replace(':', '');
-      pdf.save(`comprehensive-aura-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}-${currentTime}.pdf`);
+      pdf.save(`aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`);
 
       toast({
         title: "PDF Downloaded Successfully",
