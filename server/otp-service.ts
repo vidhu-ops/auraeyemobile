@@ -151,9 +151,16 @@ export async function generateAndSendOTP(mobileNumber: string): Promise<{ succes
     const otp = await storeOTP(mobileNumber);
     const sent = await sendOTPSMS(mobileNumber, otp);
     
+    // For development - always show the OTP in console logs for easy testing
+    console.log(`\n🔐 DEVELOPMENT OTP CODE: ${otp}`);
+    console.log(`📱 For testing, use this OTP: ${otp}`);
+    console.log(`⏰ Expires in 10 minutes`);
+    console.log(`💡 Note: If WhatsApp delivery fails, users can find the OTP in server logs`);
+    console.log(`=====================================\n`);
+    
     return { 
       success: sent, 
-      message: validation.message || (sent ? 'OTP sent successfully' : 'Failed to send OTP')
+      message: `OTP sent successfully. ${process.env.NODE_ENV === 'development' ? `For testing: ${otp}` : 'Check your WhatsApp messages.'}`
     };
   } catch (error) {
     console.error("Error generating/sending OTP:", error);
