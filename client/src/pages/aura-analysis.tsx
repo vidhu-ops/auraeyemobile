@@ -8029,13 +8029,7 @@ export default function AuraAnalysis() {
                                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-1 flex items-center">
-                                        <span 
-                                          className="inline-block w-3 h-3 rounded-full mr-2" 
-                                          style={{ 
-                                            backgroundColor: result.dominantColor.toLowerCase(),
-                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
-                                          }}
-                                        ></span>
+                                       
                                         Physical Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
@@ -8044,13 +8038,7 @@ export default function AuraAnalysis() {
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-1 flex items-center">
-                                        <span 
-                                          className="inline-block w-3 h-3 rounded-full mr-2" 
-                                          style={{ 
-                                            backgroundColor: result.dominantColor.toLowerCase(),
-                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
-                                          }}
-                                        ></span>
+                                        
                                        
                                         Emotional Layer
                                       </h5>
@@ -8060,13 +8048,7 @@ export default function AuraAnalysis() {
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-1 flex items-center">
-                                        <span 
-                                          className="inline-block w-3 h-3 rounded-full mr-2" 
-                                          style={{ 
-                                            backgroundColor: result.dominantColor.toLowerCase(),
-                                            boxShadow: `0 0 5px ${result.dominantColor.toLowerCase()}80` 
-                                          }}
-                                        ></span>
+                                       
                                         Mental Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
@@ -8075,14 +8057,7 @@ export default function AuraAnalysis() {
                                     </div>
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
                                       <h5 className="text-sm font-medium mb-1 flex items-center">
-                                        <span 
-                                          className="inline-block w-3 h-3 rounded-full mr-2" 
-                                          style={{ 
-                                            backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
-                                            boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
-                                          }}
-                                          
-                                        ></span>
+                                       
                                         Astral Layer
                                           </h5>
                                           <p className="text-xs text-gray-600">
@@ -8091,13 +8066,7 @@ export default function AuraAnalysis() {
                                         </div>
                                         <div className="p-3 bg-white rounded-lg shadow-sm">
                                           <h5 className="text-sm font-medium mb-1 flex items-center">
-                                            <span 
-                                              className="inline-block w-3 h-3 rounded-full mr-2" 
-                                              style={{ 
-                                                backgroundColor: result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase(),
-                                                boxShadow: `0 0 5px ${result.secondaryColor?.toLowerCase() || result.dominantColor.toLowerCase()}80` 
-                                              }}
-                                            ></span>
+                                            
                                         Spiritual Layer
                                       </h5>
                                       <p className="text-xs text-gray-600">
@@ -8142,71 +8111,7 @@ export default function AuraAnalysis() {
                                         Pay attention to how your energy fluctuates throughout the day and week.
                                       </div>
                                       
-                                      {/* Multi-color energy flow analysis */}
-                                      <div className="text-xs text-gray-700">
-                                        <strong>4-Zone Energy Flow Pattern:</strong>
-                                        <div className="grid grid-cols-2 gap-2 mt-2">
-                                          <div className="flex items-center space-x-2">
-                                            <div 
-                                              className="w-3 h-3 rounded-full" 
-                                              style={{ backgroundColor: getAccurateColorCode(result.personalityColor || result.dominantColor) }}
-                                            ></div>
-                                            <span className="text-xs">Core: {(() => {
-                                              const color = result.personalityColor || result.dominantColor;
-                                              const level = result.energyLevel;
-                                              if (level >= 8) return `${color} energy radiating strongly`;
-                                              if (level >= 6) return `${color} energy flowing steadily`;
-                                              if (level >= 4) return `${color} energy gently pulsing`;
-                                              return `${color} energy quietly present`;
-                                            })()}</span>
-                                          </div>
-                                          
-                                          <div className="flex items-center space-x-2">
-                                            <div 
-                                              className="w-3 h-3 rounded-full" 
-                                              style={{ backgroundColor: getAccurateColorCode(result.givingColor || result.secondaryColor || result.dominantColor) }}
-                                            ></div>
-                                            <span className="text-xs">Giving: {(() => {
-                                              const color = result.givingColor || result.secondaryColor || result.dominantColor;
-                                              const level = result.energyLevel;
-                                              if (level >= 8) return `${color} generously sharing`;
-                                              if (level >= 6) return `${color} actively expressing`;
-                                              if (level >= 4) return `${color} selectively offering`;
-                                              return `${color} conserving energy`;
-                                            })()}</span>
-                                          </div>
-                                          
-                                          <div className="flex items-center space-x-2">
-                                            <div 
-                                              className="w-3 h-3 rounded-full" 
-                                              style={{ backgroundColor: getAccurateColorCode(result.receivingColor || result.secondaryColor || result.dominantColor) }}
-                                            ></div>
-                                            <span className="text-xs">Receiving: {(() => {
-                                              const color = result.receivingColor || result.secondaryColor || result.dominantColor;
-                                              const level = result.energyLevel;
-                                              if (level >= 8) return `${color} highly receptive`;
-                                              if (level >= 6) return `${color} openly accepting`;
-                                              if (level >= 4) return `${color} cautiously receiving`;
-                                              return `${color} protective boundaries`;
-                                            })()}</span>
-                                          </div>
-                                          
-                                          <div className="flex items-center space-x-2">
-                                            <div 
-                                              className="w-3 h-3 rounded-full" 
-                                              style={{ backgroundColor: getAccurateColorCode(result.thinkingColor || result.dominantColor) }}
-                                            ></div>
-                                            <span className="text-xs">Mental: {(() => {
-                                              const color = result.thinkingColor || result.dominantColor;
-                                              const level = result.energyLevel;
-                                              if (level >= 8) return `${color} rapid processing`;
-                                              if (level >= 6) return `${color} clear thinking`;
-                                              if (level >= 4) return `${color} contemplative`;
-                                              return `${color} quiet reflection`;
-                                            })()}</span>
-                                          </div>
-                                        </div>
-                                      </div>
+                                     
                                       
                                       {/* Energy flow integration */}
                                       <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
