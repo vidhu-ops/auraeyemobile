@@ -75,6 +75,19 @@ export async function seedHealers() {
         rating: 5,
         experience: "10+ years",
         location: "Austin, TX"
+      },
+      {
+        name: "Test Healer",
+        username: "test healer",
+        password: await hashPassword("healer123"),
+        specialty: "Testing & Development",
+        description: "Test healer account for development and testing purposes. Provides full access to healer dashboard functionality.",
+        email: "test.healer@spiritualwellness.com",
+        phone: "+1-555-9999",
+        imageUrl: "/api/placeholder/300/300",
+        rating: 5,
+        experience: "Testing",
+        location: "Development Server"
       }
     ];
 
