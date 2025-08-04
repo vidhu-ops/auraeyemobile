@@ -15,8 +15,10 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 // Credit checking middleware
 async function checkCredits(req: any, res: any, next: any) {
@@ -3320,20 +3322,43 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       const { mobileNumber, otp } = req.body;
       
+      console.log(`\n=== OTP VERIFICATION REQUEST ===`);
+      console.log(`Mobile Number: ${mobileNumber}`);
+      console.log(`OTP Received: ${otp}`);
+      console.log(`Time: ${new Date().toLocaleString()}`);
+      
       if (!mobileNumber || !otp) {
+        console.log('Validation failed: Missing mobile number or OTP');
         return res.status(400).json({ message: "Mobile number and OTP are required" });
       }
+
+      // Check if OTP exists in database first (for debugging)
+      const existingOtps = await db
+        .select()
+        .from(otpVerifications)
+        .where(eq(otpVerifications.mobileNumber, mobileNumber))
+        .orderBy(otpVerifications.createdAt);
+      
+      console.log(`Found ${existingOtps.length} OTP records for this number:`);
+      existingOtps.forEach((record, index) => {
+        console.log(`  ${index + 1}. OTP: ${record.otp}, Verified: ${record.verified}, Expires: ${record.expiresAt}, Created: ${record.createdAt}`);
+      });
 
       // Verify OTP
       const isValid = await verifyOTP(mobileNumber, otp);
       
       if (isValid) {
+        console.log('OTP verification successful!');
+        console.log('================================\n');
         res.json({ message: "OTP verified successfully", verified: true });
       } else {
+        console.log('OTP verification failed - Invalid or expired OTP');
+        console.log('================================\n');
         res.status(400).json({ message: "Invalid or expired OTP", verified: false });
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
+      console.log('================================\n');
       res.status(500).json({ message: "Failed to verify OTP" });
     }
   });
