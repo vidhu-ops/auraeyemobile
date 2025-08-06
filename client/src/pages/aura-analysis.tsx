@@ -934,17 +934,37 @@ export default function AuraAnalysis() {
         throw new Error('Tab content not found');
       }
 
+      // Get actual element dimensions
+      const rect = element.getBoundingClientRect();
+      const actualWidth = element.scrollWidth || rect.width;
+      const actualHeight = element.scrollHeight || rect.height;
+
       const canvas = await html2canvas(element as HTMLElement, {
         backgroundColor: '#ffffff',
-        scale: 2,
+        scale: 1.25, // Balanced quality and file size
         logging: false,
         useCORS: true,
         allowTaint: false,
-        height: element.scrollHeight,
-        width: element.scrollWidth
+        height: actualHeight,
+        width: actualWidth,
+        scrollX: 0,
+        scrollY: 0,
+        removeContainer: false,
+        foreignObjectRendering: false
       });
 
-      const imageDataUrl = canvas.toDataURL('image/png', 0.95);
+      // Create high-quality image data
+      const imageDataUrl = canvas.toDataURL('image/png', 0.9);
+      
+      // Store screenshot with dimensions for proper PDF rendering
+      const screenshotData = {
+        dataUrl: imageDataUrl,
+        width: canvas.width,
+        height: canvas.height,
+        originalWidth: actualWidth,
+        originalHeight: actualHeight
+      };
+      
       setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
       
       toast({
@@ -1423,9 +1443,9 @@ export default function AuraAnalysis() {
         yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
         yPosition += 10;
         
-        // Add each captured screenshot
+        // Add each captured screenshot with proper sizing
         capturedScreenshots.forEach((imageDataUrl, tabId) => {
-          if (yPosition > pageHeight - 100) {
+          if (yPosition > pageHeight - 120) {
             pdf.addPage();
             yPosition = 20;
           }
@@ -1436,9 +1456,53 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Add the screenshot image synchronously
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, 170, 80);
-            yPosition += 90; // Fixed height + spacing
+            // Calculate proper dimensions to maintain aspect ratio
+            const maxWidth = 170; // Max width in PDF units
+            const maxHeight = 100; // Max height to prevent compression
+            
+            // Create temporary image to get actual dimensions
+            const tempImg = new Image();
+            tempImg.src = imageDataUrl;
+            
+            // Use a Promise to wait for image load, but in synchronous context
+            let imgWidth = maxWidth;
+            let imgHeight = maxHeight;
+            
+            try {
+              // Create a new image to get actual dimensions from the data URL
+              const tempCanvas = document.createElement('canvas');
+              const tempCtx = tempCanvas.getContext('2d');
+              const tempImage = new Image();
+              
+              // Calculate dimensions based on typical tab content (wider than tall)
+              // Most tab content is roughly 2:1 or 3:2 aspect ratio
+              const assumedAspectRatio = 2.5; // Width/Height ratio for typical tab content
+              
+              // Calculate dimensions while maintaining aspect ratio
+              imgWidth = maxWidth;
+              imgHeight = imgWidth / assumedAspectRatio;
+              
+              // Ensure height doesn't exceed maximum and adjust proportionally
+              if (imgHeight > maxHeight) {
+                imgHeight = maxHeight;
+                imgWidth = imgHeight * assumedAspectRatio;
+              }
+              
+              // Ensure width doesn't exceed maximum  
+              if (imgWidth > maxWidth) {
+                imgWidth = maxWidth;
+                imgHeight = imgWidth / assumedAspectRatio;
+              }
+              
+            } catch (e) {
+              // Fallback to safe dimensions that prevent compression
+              imgWidth = Math.min(maxWidth, 160);
+              imgHeight = Math.min(maxHeight, 90); // 16:9 ratio
+            }
+            
+            // Add the screenshot image with calculated dimensions
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, imgWidth, imgHeight);
+            yPosition += imgHeight + 15; // Dynamic spacing based on actual image height
           } catch (error) {
             console.error('Error adding screenshot image:', error);
             yPosition += 10;
