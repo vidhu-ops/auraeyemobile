@@ -6343,7 +6343,7 @@ export default function AuraAnalysis() {
                                     
                                     <Button 
                                       className="w-full"
-                                      onClick={() => calculateNumerology(numerologyName, numerologyBirthDate)}
+                                      onClick={() => calculateNumerologyData(numerologyName, numerologyBirthDate)}
                                       disabled={isCalculatingNumerology}
                                     >
                                       {isCalculatingNumerology ? (
@@ -6378,6 +6378,14 @@ export default function AuraAnalysis() {
                                     <div className="bg-sky-50 rounded-lg p-4 text-center border border-sky-100">
                                       <div className="text-3xl font-bold text-sky-800">{numerologyResult.personalityNumber}</div>
                                       <div className="text-sm text-gray-600 mt-1">Personality Number</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 gap-4">
+                                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-4 text-center border border-emerald-100">
+                                      <div className="text-3xl font-bold text-emerald-800">{numerologyResult.personalYearNumber}</div>
+                                      <div className="text-sm text-gray-600 mt-1">Personal Year Number ({new Date().getFullYear()})</div>
+                                      <div className="text-xs text-gray-500 mt-1">Based on birth month + day + current year</div>
                                     </div>
                                   </div>
                                   
@@ -6840,6 +6848,9 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Soul Star Chakra connects you to your soul's purpose, divine guidance, and highest spiritual potential beyond the physical realm.
                                     </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Remembering your soul purpose & Connection with your soul
+                                    </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Soul Star Chakra</span>
                                       <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
@@ -6853,6 +6864,9 @@ export default function AuraAnalysis() {
                                   <div className="mb-2">
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Reconnecting with Source beyond and trusting the divine timing
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Crown Chakra</span>
@@ -6868,6 +6882,9 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.
                                     </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Breaking illusions and mental control to trust intuition and remove self doubt
+                                    </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Third Eye Chakra</span>
                                       <span className="text-indigo-600">{result.chakraActivity?.thirdEye || 5}/10 ({(result.chakraActivity?.thirdEye || 5) * 10}%)</span>
@@ -6881,6 +6898,11 @@ export default function AuraAnalysis() {
                                   <div className="mb-2">
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Healing silenced expression from past lifetimes and speaking your truth
+                                      and sharing what you feel
+
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Throat Chakra</span>
@@ -6896,6 +6918,10 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Heart Chakra controls love, compassion, emotional healing, relationships, and your ability to give and receive love.
                                     </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Releasing fear of vulnerability and being able to give and receive with balanced boundaries
+
+                                    </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Heart Chakra</span>
                                       <span className="text-green-600">{result.chakraActivity?.heart || 5}/10 ({(result.chakraActivity?.heart || 5) * 10}%)</span>
@@ -6909,6 +6935,9 @@ export default function AuraAnalysis() {
                                   <div className="mb-2">
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Solar Plexus Chakra governs personal power, confidence, willpower, and your sense of identity and self-worth.
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Stepping into your personal power & confidence to letting go of the self-sacrificial nature
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Solar Plexus Chakra</span>
@@ -6924,6 +6953,10 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Sacral Chakra influences creativity, sexuality, emotional flow, pleasure, and your capacity for joy and passion.
                                     </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Reclaiming emotional freedom and self-worth and letting go of guilt, shame, unworthiness around pleasure and emotional feelings
+
+                                    </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Sacral Chakra</span>
                                       <span className="text-orange-600">{result.chakraActivity?.sacral || 5}/10 ({(result.chakraActivity?.sacral || 5) * 10}%)</span>
@@ -6938,6 +6971,10 @@ export default function AuraAnalysis() {
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Root Chakra provides grounding, survival instincts, physical vitality, and your connection to earth energy and stability.
                                     </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Ability to trust life decisions, take actions to create stability & security in life
+
+                                    </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Root Chakra</span>
                                       <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({(result.chakraActivity?.root || 5) * 10}%)</span>
@@ -6951,6 +6988,9 @@ export default function AuraAnalysis() {
                                   <div className="mb-2">
                                     <p className="text-sm text-gray-600 mb-3">
                                       The Earth Star Chakra anchors you to earth energy and ansectral energy, creates a support system nad monetary stability.
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      Karmic Lesson: Ancestral karmic inheritance, Money, Support from your blood line and Living your life as per your soul contract
                                     </p>
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Earth Star Chakra</span>
@@ -7054,7 +7094,7 @@ export default function AuraAnalysis() {
                                     <div className="space-y-4">
                                       {(() => {
                                         const chakras = [
-                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'white' },
+                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'pink' },
                                           { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'violet' },
                                           { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'indigo' },
                                           { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'blue' },
@@ -7062,7 +7102,7 @@ export default function AuraAnalysis() {
                                           { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'yellow' },
                                           { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'orange' },
                                           { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'red' },
-                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'amber' },
+                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'gray' },
                                         ];
 
                                         const getAlignmentLevel = (score: number) => {

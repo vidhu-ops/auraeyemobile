@@ -665,6 +665,36 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     
     return sum;
   };
+
+  // Calculate Personal Year Number: month digits + day digits + current year digits
+  const calculatePersonalYear = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5; // Default fallback
+    
+    const month = parts[1]; // MM
+    const day = parts[2];   // DD
+    const currentYear = new Date().getFullYear().toString(); // Current year
+    
+    let sum = 0;
+    
+    // Sum all digits from month
+    for (const digit of month) {
+      sum += parseInt(digit);
+    }
+    
+    // Sum all digits from day
+    for (const digit of day) {
+      sum += parseInt(digit);
+    }
+    
+    // Sum all digits from current year
+    for (const digit of currentYear) {
+      sum += parseInt(digit);
+    }
+    
+    // Reduce to single digit
+    return reduceNumber(sum);
+  };
   
   // Calculate all numbers
   const lifePathNumber = calculateLifePath(birthDate);
@@ -672,6 +702,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
   const soulUrgeNumber = calculateSoulUrge(name);
   const personalityNumber = calculatePersonality(birthDate);
   const soulChakraNumber = calculateDominantSoulChakra(birthDate);
+  const personalYearNumber = calculatePersonalYear(birthDate);
   
   // Generate interpretation based on calculated numbers
   let interpretation = generateInterpretation(lifePathNumber, destinyNumber, soulUrgeNumber, personalityNumber);
@@ -682,6 +713,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     soulUrgeNumber,
     personalityNumber,
     soulChakraNumber,
+    personalYearNumber,
     interpretation
   };
 }

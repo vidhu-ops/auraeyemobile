@@ -113,6 +113,7 @@ export interface NumerologyResult {
   soulUrgeNumber: number;
   personalityNumber: number;
   soulChakraNumber: number;
+  personalYearNumber: number;
   interpretation: string;
   // Enhanced properties from AI analysis
   colorAssociations?: {
