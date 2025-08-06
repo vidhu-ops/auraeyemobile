@@ -1457,24 +1457,24 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Add the screenshot at full captured size to preserve original quality and dimensions
-            // Use the maximum available width on the PDF page (190mm - margins = 170mm)
-            const availableWidth = 170;
+            // Add screenshot using maximum PDF width and proportional height
+            // This maintains the original aspect ratio while using full available width
+            const maxPdfWidth = 170; // Maximum width in PDF units
             
-            // Add image without resizing - let jsPDF handle the scaling automatically
-            // This preserves the original aspect ratio and prevents compression
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, availableWidth);
+            // Use a standard aspect ratio for UI screenshots (typically wider than tall)
+            // Most tab content has roughly 1.4:1 to 1.8:1 aspect ratio
+            const estimatedAspectRatio = 1.6; // width/height ratio
+            const proportionalHeight = maxPdfWidth / estimatedAspectRatio;
             
-            // Calculate spacing based on the image aspect ratio
-            // Since we're using full width, estimate height for proper spacing
-            const estimatedHeight = availableWidth * 0.7; // Conservative estimate for UI screenshots
-            yPosition += estimatedHeight + 20;
+            console.log(`Adding full-size screenshot for ${tabId} at ${maxPdfWidth}x${proportionalHeight}`);
             
-            console.log(`Added full-size screenshot for ${tabId} at width: ${availableWidth}`);
+            // Add the screenshot image with full width and proportional height
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, maxPdfWidth, proportionalHeight);
+            yPosition += proportionalHeight + 25; // Extra spacing for readability
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            yPosition += 20;
+            yPosition += 25;
           }
         });
       }
