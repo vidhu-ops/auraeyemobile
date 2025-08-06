@@ -408,32 +408,23 @@ function generateYearlyReading(sign: string, signData: any, currentYear: number,
  * Uses a cache to reduce API calls, refreshing every 12 hours
  */
 export async function getHoroscopeForSign(sign: string): Promise<HoroscopeResult> {
-  const now = Date.now();
-  const currentDate = getCurrentDateString();
-  const cacheKey = `${sign}-${currentDate}`;
+  // Use the new horoscope scraper service
+  const { fetchDailyHoroscope, getCachedHoroscope } = await import('../horoscope-scraper');
   
-  // Check cache first - validate both expiry and date to ensure daily refresh
-  const cached = horoscopeCache.get(cacheKey);
-  if (cached && cached.dateGenerated === currentDate && now - cached.timestamp < CACHE_EXPIRY) {
-    return cached.data;
+  // Try cached version first for speed
+  const cached = getCachedHoroscope(sign);
+  if (cached) {
+    return cached;
   }
   
-  // If not cached or expired, generate a new horoscope
+  // Fetch fresh horoscope using the scraper service
   try {
-    const horoscope = await generateHoroscope(sign);
-    
-    // Cache the result with current date
-    horoscopeCache.set(cacheKey, {
-      data: horoscope,
-      timestamp: now,
-      dateGenerated: currentDate
-    });
-    
+    const horoscope = await fetchDailyHoroscope(sign);
     return horoscope;
   } catch (error) {
     console.error(`Error getting horoscope for ${sign}:`, error);
     
-    // Return fallback horoscope if API fails
+    // Return fallback horoscope if everything fails
     return getFallbackHoroscope(sign);
   }
 }
