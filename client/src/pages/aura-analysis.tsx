@@ -7054,13 +7054,15 @@ export default function AuraAnalysis() {
                                     <div className="space-y-4">
                                       {(() => {
                                         const chakras = [
-                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'red' },
-                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'orange' },
-                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'yellow' },
-                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'green' },
-                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'blue' },
-                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'indigo' },
+                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'white' },
                                           { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'violet' },
+                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'indigo' },
+                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'blue' },
+                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'green' },
+                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'yellow' },
+                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'orange' },
+                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'red' },
+                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'amber' },
                                         ];
 
                                         const getAlignmentLevel = (score: number) => {
@@ -7109,13 +7111,15 @@ export default function AuraAnalysis() {
                                     <div className="space-y-3">
                                       {(() => {
                                         const chakras = [
-                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
-                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
-                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
-                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
-                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
-                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
+                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10) },
                                           { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5 },
+                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
+                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
+                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
+                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
+                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
+                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
+                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
                                         ];
 
                                         // Sort chakras by score (lowest first for healing priority)
