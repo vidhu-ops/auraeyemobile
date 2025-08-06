@@ -5388,7 +5388,25 @@ export default function AuraAnalysis() {
                                 </p>
                               </div>
 
-
+                              {/* Complete Spectrum Visualization - Moved to Top */}
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">Your Complete Aura Spectrum</h4>
+                                <div className="bg-black rounded-lg p-6 relative overflow-hidden">
+                                  <div className="flex justify-center items-center space-x-4">
+                                    <div className="relative">
+                                      <div className="w-32 h-32 rounded-full bg-gradient-to-r opacity-80" 
+                                           style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.secondaryColor)} 70%, transparent 100%)`}}>
+                                      </div>
+                                      <div className="absolute inset-0 w-32 h-32 rounded-full animate-pulse" 
+                                           style={{background: `radial-gradient(circle, transparent 40%, ${getAccurateColorCode(result.dominantColor)}40 60%, transparent 80%)`}}>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-center mt-4">
+                                    <p className="text-white text-sm">Your unique aura signature combining {result.dominantColor} and {result.secondaryColor} energies</p>
+                                  </div>
+                                </div>
+                              </div>
 
                               {/* Primary Color Analysis */}
                               <div className="space-y-4">
@@ -5456,25 +5474,7 @@ export default function AuraAnalysis() {
 
 
 
-                              {/* Complete Spectrum Visualization */}
-                              <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Your Complete Aura Spectrum</h4>
-                                <div className="bg-black rounded-lg p-6 relative overflow-hidden">
-                                  <div className="flex justify-center items-center space-x-4">
-                                    <div className="relative">
-                                      <div className="w-32 h-32 rounded-full bg-gradient-to-r opacity-80" 
-                                           style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.secondaryColor)} 70%, transparent 100%)`}}>
-                                      </div>
-                                      <div className="absolute inset-0 w-32 h-32 rounded-full animate-pulse" 
-                                           style={{background: `radial-gradient(circle, transparent 40%, ${getAccurateColorCode(result.dominantColor)}40 60%, transparent 80%)`}}>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="text-center mt-4">
-                                    <p className="text-white text-sm">Your unique aura signature combining {result.dominantColor} and {result.secondaryColor} energies</p>
-                                  </div>
-                                </div>
-                              </div>
+
                             </div>
                           </TabsContent>
                           
@@ -5485,6 +5485,50 @@ export default function AuraAnalysis() {
                                 <p className="text-sm text-gray-600">
                                   Complete breakdown of your dominant energy and supporting color influences
                                 </p>
+                              </div>
+
+                              {/* Visual Energy Map - Moved to Top */}
+                              <div className="bg-black rounded-lg p-6 relative overflow-hidden">
+                                <h4 className="text-white font-semibold text-lg mb-4">Your Personal Energy Signature</h4>
+                                <div className="flex justify-center items-center space-x-8">
+                                  <div className="relative">
+                                    {/* Dominant Energy Visualization */}
+                                    <div 
+                                      className="w-24 h-24 rounded-full opacity-90 animate-pulse"
+                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
+                                    ></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-white font-bold text-sm">Dominant</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Secondary Energy */}
+                                  <div className="relative">
+                                    <div 
+                                      className="w-16 h-16 rounded-full opacity-75 animate-pulse"
+                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.secondaryColor)} 0%, ${getAccurateColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
+                                    ></div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-white font-medium text-xs">Overall</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Supporting energies */}
+                                  {result.auraColorSpectrum && result.auraColorSpectrum.slice(2, 4).map((color, index) => (
+                                    <div key={index} className="relative">
+                                      <div 
+                                        className="w-12 h-12 rounded-full opacity-60 animate-pulse"
+                                        style={{
+                                          background: `radial-gradient(circle, ${getAccurateColorCode(color)} 0%, ${getAccurateColorCode(color)}40 50%, transparent 100%)`,
+                                          animationDelay: `${1 + index * 0.5}s`
+                                        }}
+                                      ></div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="text-center mt-4">
+                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
+                                </div>
                               </div>
 
                               <div className="space-y-6">
@@ -5933,49 +5977,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
-                              {/* Visual Energy Map */}
-                              <div className="bg-black rounded-lg p-6 relative overflow-hidden">
-                                <h4 className="text-white font-semibold text-lg mb-4">Your Personal Energy Signature</h4>
-                                <div className="flex justify-center items-center space-x-8">
-                                  <div className="relative">
-                                    {/* Dominant Energy Visualization */}
-                                    <div 
-                                      className="w-24 h-24 rounded-full opacity-90 animate-pulse"
-                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.dominantColor)} 0%, ${getAccurateColorCode(result.dominantColor)}80 50%, transparent 100%)`}}
-                                    ></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-white font-bold text-sm">Dominant</span>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Secondary Energy */}
-                                  <div className="relative">
-                                    <div 
-                                      className="w-16 h-16 rounded-full opacity-75 animate-pulse"
-                                      style={{background: `radial-gradient(circle, ${getAccurateColorCode(result.secondaryColor)} 0%, ${getAccurateColorCode(result.secondaryColor)}60 50%, transparent 100%)`, animationDelay: '0.5s'}}
-                                    ></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-white font-medium text-xs">Overall</span>
-                                    </div>
-                                  </div>
 
-                                  {/* Supporting energies */}
-                                  {result.auraColorSpectrum && result.auraColorSpectrum.slice(2, 4).map((color, index) => (
-                                    <div key={index} className="relative">
-                                      <div 
-                                        className="w-12 h-12 rounded-full opacity-60 animate-pulse"
-                                        style={{
-                                          background: `radial-gradient(circle, ${getAccurateColorCode(color)} 0%, ${getAccurateColorCode(color)}40 50%, transparent 100%)`,
-                                          animationDelay: `${1 + index * 0.5}s`
-                                        }}
-                                      ></div>
-                                    </div>
-                                  ))}
-                                </div>
-                                <div className="text-center mt-4">
-                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
-                                </div>
-                              </div>
                             </div>
                           </div>
                           </TabsContent>
