@@ -15,10 +15,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Star, MessageSquare, CheckCircle2, Users, Download } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Star, MessageSquare, CheckCircle2, Users, Download, Camera } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 
 // Enhanced color code mapping function with all specified colors
@@ -181,6 +182,10 @@ export default function AuraAnalysis() {
   
   // Check if user is a healer (password healer123)
   const isHealer = user?.userType === 'healer' || false;
+
+  // Screenshot functionality
+  const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
+  const [isCapturingScreenshot, setIsCapturingScreenshot] = useState<string | null>(null);
 
   // If user is a client (not a healer), show locked state
   if (!isHealer) {
@@ -920,6 +925,59 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
+  // Screenshot capture function
+  const captureTabScreenshot = async (tabId: string) => {
+    setIsCapturingScreenshot(tabId);
+    try {
+      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      if (!element) {
+        throw new Error('Tab content not found');
+      }
+
+      const canvas = await html2canvas(element as HTMLElement, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: false,
+        height: element.scrollHeight,
+        width: element.scrollWidth
+      });
+
+      const imageDataUrl = canvas.toDataURL('image/png', 0.95);
+      setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
+      
+      toast({
+        title: "Screenshot Captured",
+        description: `Screenshot of ${getTabDisplayName(tabId)} tab saved for PDF.`,
+      });
+    } catch (error) {
+      console.error('Screenshot capture failed:', error);
+      toast({
+        title: "Screenshot Failed",
+        description: "Could not capture screenshot. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCapturingScreenshot(null);
+    }
+  };
+
+  // Helper function to get display names for tabs
+  const getTabDisplayName = (tabId: string): string => {
+    const names: Record<string, string> = {
+      'analysis': 'Analysis',
+      'energy-reading': 'Chakra Score',
+      'chakras': 'Detailed Chakras',
+      'guidance': 'Guidance',
+      'spectrum': 'Color Spectrum',
+      'energy-map': 'Energy Map',
+      'detailed': 'Detailed Analysis',
+      'combined': 'Combined Analysis'
+    };
+    return names[tabId] || tabId;
+  };
+
   const downloadComprehensiveAuraPDF = async () => {
     if (!result) {
       console.error('No aura analysis result available for PDF generation');
@@ -993,6 +1051,29 @@ export default function AuraAnalysis() {
         } catch (error) {
           console.error('Error in addWrappedText:', error, 'Text:', text);
           throw error;
+        }
+      };
+
+      // Helper function to add screenshot images
+      const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
+        try {
+          if (y + maxHeight > pageHeight - 20) {
+            pdf.addPage();
+            y = 20;
+          }
+          
+          // Calculate dimensions to fit within maxWidth and maxHeight while maintaining aspect ratio
+          const img = new Image();
+          img.src = imageDataUrl;
+          
+          const imgWidth = Math.min(maxWidth, img.width * (maxHeight / img.height));
+          const imgHeight = Math.min(maxHeight, img.height * (maxWidth / img.width));
+          
+          pdf.addImage(imageDataUrl, 'PNG', x, y, imgWidth, imgHeight);
+          return y + imgHeight + 5;
+        } catch (error) {
+          console.error('Error adding screenshot image:', error);
+          return y + 10;
         }
       };
 
@@ -1321,6 +1402,39 @@ export default function AuraAnalysis() {
         yPosition = addWrappedText("Chakra analysis shows balanced energy flow across all seven main energy centers, supporting overall spiritual well-being.", 20, yPosition, pageWidth - 40);
       }
       yPosition += 15;
+
+      // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
+      if (capturedScreenshots.size > 0) {
+        pdf.addPage();
+        yPosition = 20;
+        
+        pdf.setFontSize(18);
+        pdf.setTextColor(75, 0, 130);
+        yPosition = addTextWithPageBreak('CAPTURED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 15;
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(60, 60, 60);
+        yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
+        yPosition += 10;
+        
+        // Add each captured screenshot
+        for (const [tabId, imageDataUrl] of capturedScreenshots) {
+          if (yPosition > pageHeight - 100) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          
+          pdf.setFontSize(14);
+          pdf.setTextColor(75, 0, 130);
+          yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, 20, yPosition);
+          yPosition += 10;
+          
+          // Add the screenshot image
+          yPosition = addScreenshotImage(imageDataUrl, 20, yPosition, 170, 80);
+          yPosition += 15;
+        }
+      }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
       if (yPosition > pageHeight - 80) {
@@ -5104,7 +5218,14 @@ export default function AuraAnalysis() {
                 {/* Results section - full width */}
                 <div>
                   <div className="flex items-center justify-between mb-7">
-                    <h2 className="font-heading font-semibold text-xl">Your Aura Reading</h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="font-heading font-semibold text-xl">Your Aura Reading</h2>
+                      {capturedScreenshots.size > 0 && (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full border border-green-200">
+                          {capturedScreenshots.size} screenshot{capturedScreenshots.size !== 1 ? 's' : ''} captured
+                        </span>
+                      )}
+                    </div>
                     
                     {result && !isAnalyzing && (
                       <div className="flex space-x-2">
@@ -5150,6 +5271,17 @@ export default function AuraAnalysis() {
                           <Download className="w-4 h-4 mr-1" />
                           Download PDF
                         </Button>
+                        {capturedScreenshots.size > 0 && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="flex items-center text-sm bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                            onClick={downloadComprehensiveAuraPDF}
+                          >
+                            <Camera className="w-4 h-4 mr-1" />
+                            PDF + Screenshots ({capturedScreenshots.size})
+                          </Button>
+                        )}
 
                       </div>
                     )}
@@ -5243,8 +5375,25 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsList>
                           
-                          <TabsContent value="energy-reading" data-tab="energy">
+                          <TabsContent value="energy-reading" data-tab="energy-reading">
                             <div className="space-y-6">
+                              {/* Screenshot Button */}
+                              <div className="flex justify-end mb-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => captureTabScreenshot('energy-reading')}
+                                  disabled={isCapturingScreenshot === 'energy-reading'}
+                                  className="flex items-center gap-2"
+                                >
+                                  {isCapturingScreenshot === 'energy-reading' ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Camera className="h-4 w-4" />
+                                  )}
+                                  {isCapturingScreenshot === 'energy-reading' ? 'Capturing...' : 'Capture Screenshot'}
+                                </Button>
+                              </div>
                               {/* Energy Reading Content */}
                               <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-6 border border-slate-200">
 
@@ -5379,7 +5528,24 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
 
-                          <TabsContent value="spectrum" data-tab="meanings">
+                          <TabsContent value="spectrum" data-tab="spectrum">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('spectrum')}
+                                disabled={isCapturingScreenshot === 'spectrum'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'spectrum' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'spectrum' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
@@ -5479,6 +5645,23 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="energy-map" data-tab="energy-map">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('energy-map')}
+                                disabled={isCapturingScreenshot === 'energy-map'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'energy-map' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'energy-map' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Energy Map & Color Analysis</h3>
@@ -5983,6 +6166,23 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="combined" data-tab="combined">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('combined')}
+                                disabled={isCapturingScreenshot === 'combined'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'combined' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'combined' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               {!numerologyResult ? (
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
@@ -6437,7 +6637,24 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="analysis" data-tab="basic">
+                          <TabsContent value="analysis" data-tab="analysis">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('analysis')}
+                                disabled={isCapturingScreenshot === 'analysis'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'analysis' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'analysis' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-10">
 
 
@@ -6839,6 +7056,23 @@ export default function AuraAnalysis() {
                           </TabsContent>
                           
                           <TabsContent value="chakras" data-tab="chakras">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('chakras')}
+                                disabled={isCapturingScreenshot === 'chakras'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'chakras' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'chakras' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
@@ -7815,6 +8049,23 @@ export default function AuraAnalysis() {
                         </TabsContent>
                           
                           <TabsContent value="guidance" data-tab="guidance">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('guidance')}
+                                disabled={isCapturingScreenshot === 'guidance'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'guidance' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'guidance' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
                                 <h3 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
@@ -8021,7 +8272,24 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="detailed" data-tab="insights">
+                          <TabsContent value="detailed" data-tab="detailed">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('detailed')}
+                                disabled={isCapturingScreenshot === 'detailed'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'detailed' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'detailed' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div>
                               <div className="mb-6 relative">
                                 <div className="absolute -top-3 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-17 mb-5">
