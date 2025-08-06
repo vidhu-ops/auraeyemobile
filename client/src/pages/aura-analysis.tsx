@@ -6443,14 +6443,19 @@ export default function AuraAnalysis() {
                                       backgroundColor: getAccurateColorCode(result.dominantColor)
                                     }}
                                   ></span>
-                                  {result.secondaryColor && (
-                                    <span 
-                                      className="inline-block w-6 h-6 rounded-full border border-gray-200" 
-                                      style={{ 
-                                        backgroundColor: getAccurateColorCode(result.secondaryColor)
-                                      }}
-                                    ></span>
-                                  )}
+                                  {(() => {
+                                    // Show personality color instead of secondary color
+                                    const detectedColors = extractAllAuraColors(result);
+                                    const personalityColor = getColorNameFromHex(detectedColors.personality);
+                                    return personalityColor && (
+                                      <span 
+                                        className="inline-block w-6 h-6 rounded-full border border-gray-200" 
+                                        style={{ 
+                                          backgroundColor: getAccurateColorCode(personalityColor)
+                                        }}
+                                      ></span>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                               
@@ -6505,7 +6510,11 @@ export default function AuraAnalysis() {
                                       style={{
                                         background: `radial-gradient(circle at center, 
                                           ${getAccurateColorCode(result.dominantColor)} 80%, 
-                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)} 70%)`
+                                          ${(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            const personalityColor = getColorNameFromHex(detectedColors.personality);
+                                            return getAccurateColorCode(personalityColor || result.dominantColor);
+                                          })()} 70%)`
                                       }}
                                     ></div>
                                     <div 
@@ -6513,7 +6522,11 @@ export default function AuraAnalysis() {
                                       style={{
                                         background: `radial-gradient(circle at center, 
                                           ${getAccurateColorCode(result.dominantColor)}99 90%, 
-                                          ${getAccurateColorCode(result.secondaryColor || result.dominantColor)}99 80%)`,
+                                          ${(() => {
+                                            const detectedColors = extractAllAuraColors(result);
+                                            const personalityColor = getColorNameFromHex(detectedColors.personality);
+                                            return getAccurateColorCode(personalityColor || result.dominantColor);
+                                          })()}99 80%)`,
                                         opacity: 0.8
                                       }}
                                     ></div>
@@ -6562,38 +6575,43 @@ export default function AuraAnalysis() {
                                         </div>
                                       </div>
                                       
-                                      {result.secondaryColor && (
-                                        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                                          <div className="flex items-start gap-4">
-                                            <div 
-                                              className="w-12 h-12 rounded-full flex-shrink-0" 
-                                              style={{ 
-                                                backgroundColor: getAccurateColorCode(result.secondaryColor)
-                                              }}
-                                            ></div>
-                                            <div className="flex-1">
-                                              <div className="flex items-center gap-2 mb-2">
-                                                <div className="text-xs text-gray-500">receiving  Energy</div>
-                                                <div className="text-base font-bold">{result.secondaryColor}</div>
+                                      {(() => {
+                                        // Get personality color from energy map instead of secondary color
+                                        const detectedColors = extractAllAuraColors(result);
+                                        const personalityColor = getColorNameFromHex(detectedColors.personality);
+                                        return personalityColor && (
+                                          <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                                            <div className="flex items-start gap-4">
+                                              <div 
+                                                className="w-12 h-12 rounded-full flex-shrink-0" 
+                                                style={{ 
+                                                  backgroundColor: getAccurateColorCode(personalityColor)
+                                                }}
+                                              ></div>
+                                              <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                  <div className="text-xs text-gray-500">Personality Color</div>
+                                                  <div className="text-base font-bold">{personalityColor}</div>
+                                                </div>
+                                                {(() => {
+                                                  const colorInfo = getColorCompleteInfo(personalityColor);
+                                                  return (
+                                                    <div className="space-y-2">
+                                                      <div className="text-xs text-gray-600">
+                                                        <span className="font-medium">POSITIVE </span> {colorInfo.chakra} | 
+                                                        <span className="font-medium ml-2">Meaning: </span> {colorInfo.number}
+                                                      </div>
+                                                      <div className="text-xs text-gray-700 leading-relaxed">
+                                                        {colorInfo.shadowMeaning}
+                                                      </div>
+                                                    </div>
+                                                  );
+                                                })()}
                                               </div>
-                                              {(() => {
-                                                const colorInfo = getColorCompleteInfo(result.secondaryColor);
-                                                return (
-                                                  <div className="space-y-2">
-                                                    <div className="text-xs text-gray-600">
-                                                      <span className="font-medium">POSITIVE </span> {colorInfo.chakra} | 
-                                                      <span className="font-medium ml-2">Meaning: </span> {colorInfo.number}
-                                                    </div>
-                                                    <div className="text-xs text-gray-700 leading-relaxed">
-                                                      {colorInfo.shadowMeaning}
-                                                    </div>
-                                                  </div>
-                                                );
-                                              })()}
                                             </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        );
+                                      })()}
                                     </div>
                                   </div>
                                 </div>
@@ -7388,7 +7406,7 @@ export default function AuraAnalysis() {
                                   <div className="bg-white rounded-lg p-5 border border-pink-200">
                                     <div className="flex items-center mb-4">
                                       <div className="w-6 h-6 rounded-full bg-pink-300 mr-3"></div>
-                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Anthakarma) Healing</h5>
+                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Antahkarana) Healing</h5>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
