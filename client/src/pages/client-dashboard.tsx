@@ -386,16 +386,18 @@ export default function ClientDashboard() {
     refetchInterval: 3000, // Auto-refresh every 3 seconds to show healer responses
   });
   
-  // Get daily horoscope for the selected sign
+  // Get daily horoscope for the selected sign with daily cache invalidation
   const {
     data: horoscope,
     isLoading: isLoadingHoroscope,
     error: horoscopeError,
     refetch: refetchHoroscope
   } = useQuery<HoroscopeResult>({
-    queryKey: ["/api/horoscope", selectedSign],
+    queryKey: ["/api/horoscope", selectedSign, new Date().toISOString().split('T')[0]], // Include date for daily refresh
     queryFn: () => getDailyHoroscope(selectedSign),
     enabled: false, // Don't fetch automatically, wait for user to select sign
+    staleTime: 1000 * 60 * 60 * 12, // 12 hours stale time
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours garbage collection
   });
 
   // Get numerology analysis if user has birth date
