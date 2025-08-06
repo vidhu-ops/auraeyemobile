@@ -1663,6 +1663,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           destinyNumber: numerologyProfile.destinyNumber,
           soulUrgeNumber: numerologyProfile.soulUrgeNumber,
           personalityNumber: numerologyProfile.personalityNumber,
+          personalYearNumber: numerologyProfile.personalYearNumber,
           interpretation: numerologyProfile.interpretation
         });
       } catch (apiError) {
@@ -1775,6 +1776,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             destinyNumber: numerologyProfile.destinyNumber,
             soulUrgeNumber: numerologyProfile.soulUrgeNumber,
             personalityNumber: numerologyProfile.personalityNumber,
+            personalYearNumber: numerologyProfile.personalYearNumber || 5,
             interpretation: numerologyProfile.interpretation
           });
         }
@@ -1899,6 +1901,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             destinyNumber: numerologyProfile.destinyNumber,
             soulUrgeNumber: numerologyProfile.soulUrgeNumber,
             personalityNumber: numerologyProfile.personalityNumber,
+            personalYearNumber: numerologyProfile.personalYearNumber || 5,
             interpretation: numerologyProfile.interpretation
           });
         }
@@ -1907,11 +1910,28 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.error("Numerology error:", apiError);
         
         // Create a fallback in case the API function completely fails
+        const calculatePersonalYear = (birthDate: string): number => {
+          const parts = birthDate.split('-');
+          if (parts.length !== 3) return 5;
+          const month = parts[1];
+          const day = parts[2];
+          const currentYear = "2025";
+          let sum = 0;
+          for (const digit of month) sum += parseInt(digit);
+          for (const digit of day) sum += parseInt(digit);
+          for (const digit of currentYear) sum += parseInt(digit);
+          while (sum > 9) {
+            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+          }
+          return sum;
+        };
+        
         numerologyProfile = {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
           personalityNumber: calculatePersonality(birthDate),
+          personalYearNumber: calculatePersonalYear(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
           interpretation: "Based on your name and birth date, your numerological profile shows a balanced blend of energies. Your life path guides you toward personal growth and fulfillment."
         };
@@ -1922,7 +1942,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
-            ...numerologyProfile
+            lifePathNumber: numerologyProfile.lifePathNumber,
+            destinyNumber: numerologyProfile.destinyNumber,
+            soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+            personalityNumber: numerologyProfile.personalityNumber,
+            personalYearNumber: numerologyProfile.personalYearNumber || 5,
+            interpretation: numerologyProfile.interpretation
           });
         }
       }

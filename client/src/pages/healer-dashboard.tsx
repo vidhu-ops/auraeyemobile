@@ -90,6 +90,7 @@ interface NumerologyReading {
   destinyNumber: number;
   soulUrgeNumber: number;
   personalityNumber: number;
+  personalYearNumber: number;
   interpretation: string;
   createdAt: string;
 }
@@ -1533,7 +1534,7 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
       
       <CardContent className="p-6 space-y-6">
         {/* Core Numbers */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="text-center p-3 bg-blue-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">{reading.lifePathNumber}</div>
             <p className="text-sm font-medium">Life Path</p>
@@ -1549,6 +1550,10 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
           <div className="text-center p-3 bg-blue-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">{reading.personalityNumber}</div>
             <p className="text-sm font-medium">Personality</p>
+          </div>
+          <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
+            <p className="text-sm font-medium text-emerald-700">Personal Year 2025</p>
           </div>
         </div>
 
@@ -2115,14 +2120,15 @@ export default function HealerDashboard() {
                                     pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
                                     pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
                                     pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
+                                    pdf.text(`Personal Year 2025: ${reading.personalYearNumber}`, 20, 135);
                                     
                                     // Interpretation
                                     pdf.setFontSize(14);
-                                    pdf.text("Complete Interpretation", 20, 145);
+                                    pdf.text("Complete Interpretation", 20, 155);
                                     
                                     pdf.setFontSize(10);
                                     const splitText = pdf.splitTextToSize(reading.interpretation, 170);
-                                    pdf.text(splitText, 20, 155);
+                                    pdf.text(splitText, 20, 165);
                                     
                                     // Save the PDF
                                     pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
@@ -2133,7 +2139,7 @@ export default function HealerDashboard() {
                                 </Button>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
                                 <div className="text-center p-3 bg-white rounded-lg border">
                                     <div className="text-2xl font-bold text-purple-600">{reading.lifePathNumber}</div>
                                     <div className="text-xs text-gray-500">Life Path</div>
@@ -2149,6 +2155,10 @@ export default function HealerDashboard() {
                                 <div className="text-center p-3 bg-white rounded-lg border">
                                     <div className="text-2xl font-bold text-orange-600">{reading.personalityNumber}</div>
                                     <div className="text-xs text-gray-500">Personality</div>
+                                </div>
+                                <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+                                    <div className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
+                                    <div className="text-xs text-emerald-700">Personal 2025</div>
                                 </div>
                             </div>
 
