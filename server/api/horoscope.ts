@@ -671,29 +671,35 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     const parts = birthDate.split('-');
     if (parts.length !== 3) return 5; // Default fallback
     
-    const month = parts[1]; // MM
-    const day = parts[2];   // DD
-    const currentYear = new Date().getFullYear().toString(); // Current year
+    const month = parts[1]; // MM (birth month)
+    const day = parts[2];   // DD (birth day)
+    const currentYear = "2025"; // Current year 2025
+    
+    console.log(`calculatePersonalYear debug: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
     let sum = 0;
     
-    // Sum all digits from month
+    // Sum all digits from birth month
     for (const digit of month) {
       sum += parseInt(digit);
     }
     
-    // Sum all digits from day
+    // Sum all digits from birth day
     for (const digit of day) {
       sum += parseInt(digit);
     }
     
-    // Sum all digits from current year
+    // Sum all digits from current year (2025)
     for (const digit of currentYear) {
       sum += parseInt(digit);
     }
     
+    console.log(`calculatePersonalYear debug: total sum before reduction=${sum}`);
+    
     // Reduce to single digit
-    return reduceNumber(sum);
+    const result = reduceNumber(sum);
+    console.log(`calculatePersonalYear debug: final result=${result}`);
+    return result;
   };
   
   // Calculate all numbers
