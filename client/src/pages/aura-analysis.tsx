@@ -1445,7 +1445,8 @@ export default function AuraAnalysis() {
         
         // Add each captured screenshot with proper sizing
         capturedScreenshots.forEach((imageDataUrl, tabId) => {
-          if (yPosition > pageHeight - 120) {
+          // Ensure enough space for screenshot (at least 140 units for image + title + spacing)
+          if (yPosition > pageHeight - 140) {
             pdf.addPage();
             yPosition = 20;
           }
@@ -1456,56 +1457,43 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Calculate proper dimensions to maintain aspect ratio
-            const maxWidth = 170; // Max width in PDF units
-            const maxHeight = 100; // Max height to prevent compression
-            
-            // Create temporary image to get actual dimensions
+            // Create a temporary image to get the actual dimensions from the data URL
             const tempImg = new Image();
             tempImg.src = imageDataUrl;
             
-            // Use a Promise to wait for image load, but in synchronous context
-            let imgWidth = maxWidth;
-            let imgHeight = maxHeight;
+            // Use synchronous approach with fallback dimensions based on typical screenshot sizes
+            const maxPdfWidth = 170; // Maximum width in PDF units
+            const maxPdfHeight = 200; // Increased maximum height to prevent compression
             
-            try {
-              // Create a new image to get actual dimensions from the data URL
-              const tempCanvas = document.createElement('canvas');
-              const tempCtx = tempCanvas.getContext('2d');
-              const tempImage = new Image();
-              
-              // Calculate dimensions based on typical tab content (wider than tall)
-              // Most tab content is roughly 2:1 or 3:2 aspect ratio
-              const assumedAspectRatio = 2.5; // Width/Height ratio for typical tab content
-              
-              // Calculate dimensions while maintaining aspect ratio
-              imgWidth = maxWidth;
-              imgHeight = imgWidth / assumedAspectRatio;
-              
-              // Ensure height doesn't exceed maximum and adjust proportionally
-              if (imgHeight > maxHeight) {
-                imgHeight = maxHeight;
-                imgWidth = imgHeight * assumedAspectRatio;
-              }
-              
-              // Ensure width doesn't exceed maximum  
-              if (imgWidth > maxWidth) {
-                imgWidth = maxWidth;
-                imgHeight = imgWidth / assumedAspectRatio;
-              }
-              
-            } catch (e) {
-              // Fallback to safe dimensions that prevent compression
-              imgWidth = Math.min(maxWidth, 160);
-              imgHeight = Math.min(maxHeight, 90); // 16:9 ratio
+            // Since we can't wait for image load synchronously, use typical screenshot proportions
+            // Most tab screenshots are landscape oriented with roughly 3:2 or 4:3 aspect ratio
+            const typicalScreenshotAspectRatio = 1.6; // Width/Height for typical UI screenshots
+            
+            // Start with full width and calculate proportional height
+            let pdfWidth = maxPdfWidth;
+            let pdfHeight = pdfWidth / typicalScreenshotAspectRatio;
+            
+            // If the calculated height is too large, scale down proportionally
+            if (pdfHeight > maxPdfHeight) {
+              pdfHeight = maxPdfHeight;
+              pdfWidth = pdfHeight * typicalScreenshotAspectRatio;
             }
             
-            // Add the screenshot image with calculated dimensions
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, imgWidth, imgHeight);
-            yPosition += imgHeight + 15; // Dynamic spacing based on actual image height
+            // Ensure we have reasonable minimum dimensions for visibility
+            if (pdfHeight < 60) {
+              pdfHeight = 60;
+              pdfWidth = pdfHeight * typicalScreenshotAspectRatio;
+            }
+            
+            console.log(`Adding screenshot with dimensions: ${pdfWidth}x${pdfHeight}`);
+            
+            // Add the screenshot image with calculated dimensions that preserve aspect ratio
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, pdfWidth, pdfHeight);
+            yPosition += pdfHeight + 20; // Add spacing based on actual image height
+            
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            yPosition += 10;
+            yPosition += 15;
           }
         });
       }
