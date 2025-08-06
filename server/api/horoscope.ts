@@ -2,8 +2,13 @@ import { generateHoroscope, generateNumerologyReading } from "./openai";
 import { HoroscopeResult, NumerologyResult } from "../../client/src/lib/openai";
 
 // Cache for horoscopes to reduce API calls
-const horoscopeCache = new Map<string, { data: HoroscopeResult; timestamp: number }>();
-const CACHE_EXPIRY = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+const horoscopeCache = new Map<string, { data: HoroscopeResult; timestamp: number; dateGenerated: string }>();
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// Helper function to get current date string for cache invalidation
+function getCurrentDateString(): string {
+  return new Date().toISOString().split('T')[0];
+}
 
 // Extended horoscope types for comprehensive readings
 export interface ExtendedHoroscopeResult {
@@ -71,19 +76,21 @@ export async function getPersonalizedHoroscope(birthDate: string): Promise<Exten
   const today = new Date();
   const cacheKey = `extended-${sign}-${today.toISOString().split('T')[0]}`;
   
-  // Check cache first
+  // Check cache first - validate both expiry and date
   const cached = horoscopeCache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+  const currentDate = getCurrentDateString();
+  if (cached && cached.dateGenerated === currentDate && Date.now() - cached.timestamp < CACHE_EXPIRY) {
     return cached.data as any;
   }
 
   // Generate comprehensive horoscope
   const result = await generateComprehensiveHoroscope(sign, birthDate);
   
-  // Cache the result
+  // Cache the result with current date
   horoscopeCache.set(cacheKey, {
     data: result as any,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    dateGenerated: currentDate
   });
   
   return result;
@@ -402,11 +409,12 @@ function generateYearlyReading(sign: string, signData: any, currentYear: number,
  */
 export async function getHoroscopeForSign(sign: string): Promise<HoroscopeResult> {
   const now = Date.now();
-  const cacheKey = `${sign}-${new Date().toISOString().split('T')[0]}`;
+  const currentDate = getCurrentDateString();
+  const cacheKey = `${sign}-${currentDate}`;
   
-  // Check cache first
+  // Check cache first - validate both expiry and date to ensure daily refresh
   const cached = horoscopeCache.get(cacheKey);
-  if (cached && now - cached.timestamp < CACHE_EXPIRY) {
+  if (cached && cached.dateGenerated === currentDate && now - cached.timestamp < CACHE_EXPIRY) {
     return cached.data;
   }
   
@@ -414,10 +422,11 @@ export async function getHoroscopeForSign(sign: string): Promise<HoroscopeResult
   try {
     const horoscope = await generateHoroscope(sign);
     
-    // Cache the result
+    // Cache the result with current date
     horoscopeCache.set(cacheKey, {
       data: horoscope,
-      timestamp: now
+      timestamp: now,
+      dateGenerated: currentDate
     });
     
     return horoscope;

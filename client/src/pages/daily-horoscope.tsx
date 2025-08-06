@@ -19,15 +19,17 @@ export default function DailyHoroscope() {
   const [email, setEmail] = useState("");
   const [emailSign, setEmailSign] = useState("");
   
-  // Get daily horoscope for the selected sign
+  // Get daily horoscope for the selected sign with daily cache invalidation
   const {
     data: horoscope,
     isLoading,
     error,
     refetch
   } = useQuery<HoroscopeResult>({
-    queryKey: ["/api/horoscope", selectedSign],
+    queryKey: ["/api/horoscope", selectedSign, new Date().toISOString().split('T')[0]], // Include date for daily refresh
     queryFn: () => getDailyHoroscope(selectedSign),
+    staleTime: 1000 * 60 * 60 * 12, // 12 hours stale time
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours garbage collection
   });
 
   // Fetch horoscope when sign changes

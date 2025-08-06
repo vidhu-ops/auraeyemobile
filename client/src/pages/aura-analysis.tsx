@@ -7594,19 +7594,19 @@ export default function AuraAnalysis() {
                                           {(() => {
                                             const meanings: Record<string, string> = {
                                               'Black': 'Shadow integration and transformation energy representing deep inner work, void consciousness, and spiritual rebirth through darkness.',
-                                              'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection.	Energetically vulnerable, escapist tendencies, difficulty being grounded.	Learning to protect energy and feel safe in the physical world.',
-                                              'Brown': 'Humble, grounded, connected to nature and body, down-to-earth wisdom.	Stagnation, lack of ambition, heaviness, resistance to change.	Bringing movement into life while staying rooted.',
-                                              'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. Could indicate Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.	Balancing drive with emotional regulation.',
-                                              'Yellow': 'Confident, radiant, strong leadership energy, optimistic and intelligent.	Perfectionist, controlling, rigid expectations, critical of self and others.	Letting go of control and embracing flow.',
-                                              'Blue': 'Peaceful communicator, emotionally calm, expressive and serene presence.	Lethargy, emotional shutdown, fear of speaking up, hidden sadness.	Learning to express needs clearly and calmly.',
-                                              'Green': 'Compassionate, healer energy, emotionally balanced and nurturing.	Overgiving, energy depletion, putting others before self to a harmful degree.	Setting boundaries while nurturing others.',
-                                              'Violet': 'Highly spiritual, visionary, deeply connected to purpose and divine calling.	Disconnected from higher self, confusion about life purpose, escapism or spiritual bypassing.	Difficulty balancing spiritual connection with everyday life.',
-                                              'Indigo': 'Strong intuitive abilities, psychic insight, deep inner knowing and truth-seeking.	Overwhelmed by inner visions, escapism, fear of trusting intuition or self-doubt.	Trusting one’s psychic abilities and grounding insights..',
+                                              'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. Energetically vulnerable, escapist tendencies, difficulty being grounded.       Learning to protect energy and feel safe in the physical world.',
+                                              'Brown': 'Humble, grounded, connected to nature and body, down-to-earth wisdom.   Stagnation, lack of ambition, heaviness, resistance to change.  Bringing movement into life while staying rooted.',
+                                              'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. Could indicate Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.   Balancing drive with emotional regulation.',
+                                              'Yellow': 'Confident, radiant, strong leadership energy, optimistic and intelligent.      Perfectionist, controlling, rigid expectations, critical of self and others.    Letting go of control and embracing flow.',
+                                              'Blue': 'Peaceful communicator, emotionally calm, expressive and serene presence. Lethargy, emotional shutdown, fear of speaking up, hidden sadness.      Learning to express needs clearly and calmly.',
+                                              'Green': 'Compassionate, healer energy, emotionally balanced and nurturing.       Overgiving, energy depletion, putting others before self to a harmful degree.   Setting boundaries while nurturing others.',
+                                              'Violet': 'Highly spiritual, visionary, deeply connected to purpose and divine calling.   Disconnected from higher self, confusion about life purpose, escapism or spiritual bypassing.   Difficulty balancing spiritual connection with everyday life.',
+                                              'Indigo': 'Strong intuitive abilities, psychic insight, deep inner knowing and truth-seeking.     Overwhelmed by inner visions, escapism, fear of trusting intuition or self-doubt.       Trusting one’s psychic abilities and grounding insights..',
                                               'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
-                                              'Gold': 'Divinely protected, powerful soul guide, radiant and healed presence.	Ego inflation, spiritual superiority, loneliness from being different.	Staying humble while embracing one’s light.',
-                                              'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul.	Energetic overload, anxiety, unclear boundaries, difficulty being in the body.	Grounding spiritual gifts with practical living.',
-                                              'Orange': 'Creative, joyful, playful, sensually alive, loves experiencing pleasure and life.	Restlessness, overindulgence, scattered energy, addicted to stimulation.	Channeling creativity in consistent and meaningful ways.',
-                                              'Pink': 'Loving, emotionally open, romantic, deeply caring and affectionate.	Over-sensitive, emotionally dependent, fear of rejection or abandonment.	Balancing love with self-worth and independence.'
+                                              'Gold': 'Divinely protected, powerful soul guide, radiant and healed presence.    Ego inflation, spiritual superiority, loneliness from being different.  Staying humble while embracing one’s light.',
+                                              'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul.       Energetic overload, anxiety, unclear boundaries, difficulty being in the body.  Grounding spiritual gifts with practical living.',
+                                              'Orange': 'Creative, joyful, playful, sensually alive, loves experiencing pleasure and life.      Restlessness, overindulgence, scattered energy, addicted to stimulation.        Channeling creativity in consistent and meaningful ways.',
+                                              'Pink': 'Loving, emotionally open, romantic, deeply caring and affectionate.      Over-sensitive, emotionally dependent, fear of rejection or abandonment.        Balancing love with self-worth and independence.'
                                             };
                                             return meanings[result.dominantColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
                                           })()}
@@ -7629,7 +7629,7 @@ export default function AuraAnalysis() {
                                                 'White': 'Secondary purification support cleansing and protecting your spiritual energy field.',
                                                 'Brown': 'Secondary grounding support adding earthly stability and material wisdom to your spiritual expression.',
                                                 'Turquoise': 'Secondary communication healing support blending emotional wisdom with clear authentic expression.',
-                                                'Red': 'Action-oriented, passionate, driven, energized and grounded in goals.	Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.	Balancing drive with emotional regulation.',
+                                                'Red': 'Action-oriented, passionate, driven, energized and grounded in goals.   Suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness.      Balancing drive with emotional regulation.',
                                                 'Yellow': 'Secondary mental clarity enhancement bringing intellectual wisdom to complement your dominant frequency.',
                                                 'Blue': 'Secondary communication enhancement supporting truth and authentic expression in all interactions.',
                                                 'Green': 'Secondary healing support energy that nurtures and balances your primary spiritual expression.',
@@ -7862,7 +7862,72 @@ export default function AuraAnalysis() {
                                 
                                 <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
                                   <h4 className="font-medium text-base mb-3">Specialized Aura Interpretation</h4>
-                                  <p className="text-gray-700 whitespace-pre-line mb-5">{result.detailedAnalysis}</p>
+                                  <div className="text-gray-700 mb-5 space-y-3">
+                                    {(() => {
+                                      // Parse the detailed analysis to separate different aspects
+                                      const analysisText = result.detailedAnalysis;
+                                      const aspects = ['Personality:', 'Giving:', 'Receiving:', 'Thinking:'];
+                                      const lines: Array<{type: string, content: string}> = [];
+                                      
+                                      // Split by common patterns
+                                      let currentText = analysisText;
+                                      aspects.forEach(aspect => {
+                                        if (currentText.includes(aspect)) {
+                                          const parts = currentText.split(aspect);
+                                          if (parts.length > 1) {
+                                            const nextAspectIndex = parts[1].search(/\b(Personality|Giving|Receiving|Thinking):/);
+                                            const aspectContent = nextAspectIndex > -1 ? parts[1].substring(0, nextAspectIndex) : parts[1];
+                                            lines.push({
+                                              type: aspect.replace(':', ''),
+                                              content: aspectContent.trim()
+                                            });
+                                            currentText = nextAspectIndex > -1 ? parts[1].substring(nextAspectIndex) : '';
+                                          }
+                                        }
+                                      });
+                                      
+                                      // If no specific aspects found, try to parse by sentences
+                                      if (lines.length === 0) {
+                                        const sentences = analysisText.split('. ').filter(s => s.length > 20);
+                                        const aspectKeywords = {
+                                          'Personality': ['personality', 'leader', 'magnetic', 'presence', 'nature'],
+                                          'Giving': ['giving', 'gives', 'shares', 'offers', 'provides'],
+                                          'Receiving': ['receiving', 'receives', 'draws', 'attracts', 'gains'],
+                                          'Thinking': ['thinking', 'thoughts', 'mental', 'wisdom', 'mind']
+                                        };
+                                        
+                                        Object.entries(aspectKeywords).forEach(([aspect, keywords]) => {
+                                          const matchingSentence = sentences.find(sentence => 
+                                            keywords.some(keyword => sentence.toLowerCase().includes(keyword.toLowerCase()))
+                                          );
+                                          if (matchingSentence) {
+                                            lines.push({
+                                              type: aspect,
+                                              content: matchingSentence + '.'
+                                            });
+                                          }
+                                        });
+                                      }
+                                      
+                                      // If still no lines, show the original text as fallback
+                                      if (lines.length === 0) {
+                                        return (
+                                          <p className="text-gray-700">{analysisText}</p>
+                                        );
+                                      }
+                                      
+                                      return lines.map((line, index) => (
+                                        <div key={index} className="border-l-4 border-purple-300 pl-4 py-2 bg-white/50 rounded-r">
+                                          <div className="font-semibold text-purple-800 mb-1">
+                                            {line.type}:
+                                          </div>
+                                          <p className="text-gray-700 text-sm leading-relaxed">
+                                            {line.content}
+                                          </p>
+                                        </div>
+                                      ));
+                                    })()}
+                                  </div>
                                   
                                   {/* Comprehensive Aura Color Spectrum */}
                                   <div className="mb-6">
