@@ -1,6 +1,6 @@
 import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken } from "../shared/schema";
 import { db } from "./db";
-import { eq, and, gt } from "drizzle-orm";
+import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -170,7 +170,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAuraReadingsByPerformedBy(performedBy: number): Promise<AuraReading[]> {
-    return await db.select().from(auraReadings).where(eq(auraReadings.performedBy, performedBy));
+    return await db.select().from(auraReadings).where(eq(auraReadings.performedBy, performedBy)).orderBy(desc(auraReadings.createdAt));
   }
 
   async getAuraReading(id: number): Promise<AuraReading | undefined> {
@@ -228,7 +228,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNumerologyReadingsByPerformedBy(performedBy: number): Promise<NumerologyReading[]> {
-    return await db.select().from(numerologyReadings).where(eq(numerologyReadings.performedBy, performedBy));
+    return await db.select().from(numerologyReadings).where(eq(numerologyReadings.performedBy, performedBy)).orderBy(desc(numerologyReadings.createdAt));
   }
 
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {
