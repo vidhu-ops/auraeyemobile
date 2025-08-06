@@ -1445,8 +1445,8 @@ export default function AuraAnalysis() {
         
         // Add each captured screenshot with proper sizing
         capturedScreenshots.forEach((imageDataUrl, tabId) => {
-          // Ensure enough space for screenshot (at least 140 units for image + title + spacing)
-          if (yPosition > pageHeight - 140) {
+          // Ensure enough space for full-size screenshot (at least 150 units for image + title + spacing)
+          if (yPosition > pageHeight - 150) {
             pdf.addPage();
             yPosition = 20;
           }
@@ -1457,43 +1457,24 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Create a temporary image to get the actual dimensions from the data URL
-            const tempImg = new Image();
-            tempImg.src = imageDataUrl;
+            // Add the screenshot at full captured size to preserve original quality and dimensions
+            // Use the maximum available width on the PDF page (190mm - margins = 170mm)
+            const availableWidth = 170;
             
-            // Use synchronous approach with fallback dimensions based on typical screenshot sizes
-            const maxPdfWidth = 170; // Maximum width in PDF units
-            const maxPdfHeight = 200; // Increased maximum height to prevent compression
+            // Add image without resizing - let jsPDF handle the scaling automatically
+            // This preserves the original aspect ratio and prevents compression
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, availableWidth);
             
-            // Since we can't wait for image load synchronously, use typical screenshot proportions
-            // Most tab screenshots are landscape oriented with roughly 3:2 or 4:3 aspect ratio
-            const typicalScreenshotAspectRatio = 1.6; // Width/Height for typical UI screenshots
+            // Calculate spacing based on the image aspect ratio
+            // Since we're using full width, estimate height for proper spacing
+            const estimatedHeight = availableWidth * 0.7; // Conservative estimate for UI screenshots
+            yPosition += estimatedHeight + 20;
             
-            // Start with full width and calculate proportional height
-            let pdfWidth = maxPdfWidth;
-            let pdfHeight = pdfWidth / typicalScreenshotAspectRatio;
-            
-            // If the calculated height is too large, scale down proportionally
-            if (pdfHeight > maxPdfHeight) {
-              pdfHeight = maxPdfHeight;
-              pdfWidth = pdfHeight * typicalScreenshotAspectRatio;
-            }
-            
-            // Ensure we have reasonable minimum dimensions for visibility
-            if (pdfHeight < 60) {
-              pdfHeight = 60;
-              pdfWidth = pdfHeight * typicalScreenshotAspectRatio;
-            }
-            
-            console.log(`Adding screenshot with dimensions: ${pdfWidth}x${pdfHeight}`);
-            
-            // Add the screenshot image with calculated dimensions that preserve aspect ratio
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, pdfWidth, pdfHeight);
-            yPosition += pdfHeight + 20; // Add spacing based on actual image height
+            console.log(`Added full-size screenshot for ${tabId} at width: ${availableWidth}`);
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            yPosition += 15;
+            yPosition += 20;
           }
         });
       }
