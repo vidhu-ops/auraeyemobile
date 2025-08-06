@@ -6,7 +6,7 @@ import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
-import ImageUpload from "@/components/for ms/image-upload";
+import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PremiumFeature } from "@/components/premium/premium-feature";
