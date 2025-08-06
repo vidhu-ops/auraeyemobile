@@ -464,11 +464,18 @@ export default function ClientDashboard() {
                 <CardDescription>Access your most used spiritual tools</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                   <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2">
                     <Link href="/aura-analysis">
                       <Camera className="h-6 w-6 text-primary" />
                       <span>Scan Aura</span>
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2 border-violet-300 bg-gradient-to-br from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100">
+                    <Link href="/#vibe-check-section">
+                      <Sparkles className="h-6 w-6 text-violet-500" />
+                      <span className="text-xs text-center">What's My Vibe?</span>
                     </Link>
                   </Button>
                   
@@ -567,8 +574,8 @@ export default function ClientDashboard() {
               </CardHeader>
               <CardContent>
                 <Tabs value={activeBookingsTab} onValueChange={setActiveBookingsTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
-                    
+                  <TabsList className="grid w-full grid-cols-4 mb-4">
+                    <TabsTrigger value="aura">Aura Readings</TabsTrigger>
                     <TabsTrigger value="object">Object Analysis</TabsTrigger>
                     <TabsTrigger value="numerology">Numerology</TabsTrigger>
                     <TabsTrigger value="bookings">My Bookings</TabsTrigger>
