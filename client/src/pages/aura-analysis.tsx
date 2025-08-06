@@ -1014,17 +1014,23 @@ export default function AuraAnalysis() {
       // Helper function to add text with automatic page breaks
       const addTextWithPageBreak = (text: string, x: number, y: number, options: any = {}) => {
         try {
+          // Ensure y is a valid number
+          if (typeof y !== 'number' || isNaN(y) || y < 0) {
+            y = 20; // Default to top of page if invalid
+          }
+          
           if (y > pageHeight - 20) {
             pdf.addPage();
             y = 20;
           }
+          
           // Ensure center alignment is properly set
           if (options.align === 'center') {
             pdf.text(text, x, y, { align: 'center' });
           } else {
             pdf.text(text, x, y, options);
           }
-          return y;
+          return y + 5; // Return next y position
         } catch (error) {
           console.error('Error in addTextWithPageBreak:', error, 'Text:', text, 'Position:', x, y);
           throw error;
@@ -1054,23 +1060,22 @@ export default function AuraAnalysis() {
         }
       };
 
-      // Helper function to add screenshot images
+      // Helper function to add screenshot images (simplified for synchronous use)
       const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
         try {
+          // Ensure y is a valid number
+          if (typeof y !== 'number' || isNaN(y) || y < 0) {
+            y = 20;
+          }
+          
           if (y + maxHeight > pageHeight - 20) {
             pdf.addPage();
             y = 20;
           }
           
-          // Calculate dimensions to fit within maxWidth and maxHeight while maintaining aspect ratio
-          const img = new Image();
-          img.src = imageDataUrl;
-          
-          const imgWidth = Math.min(maxWidth, img.width * (maxHeight / img.height));
-          const imgHeight = Math.min(maxHeight, img.height * (maxWidth / img.width));
-          
-          pdf.addImage(imageDataUrl, 'PNG', x, y, imgWidth, imgHeight);
-          return y + imgHeight + 5;
+          // Add image with fixed dimensions for consistent layout
+          pdf.addImage(imageDataUrl, 'PNG', x, y, maxWidth, maxHeight);
+          return y + maxHeight + 5;
         } catch (error) {
           console.error('Error adding screenshot image:', error);
           return y + 10;
@@ -1419,7 +1424,7 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot
-        for (const [tabId, imageDataUrl] of capturedScreenshots) {
+        capturedScreenshots.forEach((imageDataUrl, tabId) => {
           if (yPosition > pageHeight - 100) {
             pdf.addPage();
             yPosition = 20;
@@ -1430,10 +1435,15 @@ export default function AuraAnalysis() {
           yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, 20, yPosition);
           yPosition += 10;
           
-          // Add the screenshot image
-          yPosition = addScreenshotImage(imageDataUrl, 20, yPosition, 170, 80);
-          yPosition += 15;
-        }
+          try {
+            // Add the screenshot image synchronously
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, 170, 80);
+            yPosition += 90; // Fixed height + spacing
+          } catch (error) {
+            console.error('Error adding screenshot image:', error);
+            yPosition += 10;
+          }
+        });
       }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
