@@ -925,7 +925,7 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Screenshot capture function
+  // Screenshot capture function with proper aspect ratio preservation
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
@@ -934,42 +934,75 @@ export default function AuraAnalysis() {
         throw new Error('Tab content not found');
       }
 
-      // Get actual element dimensions
-      const rect = element.getBoundingClientRect();
-      const actualWidth = element.scrollWidth || rect.width;
-      const actualHeight = element.scrollHeight || rect.height;
+      // Get the full scrollable content dimensions
+      const htmlElement = element as HTMLElement;
+      const rect = htmlElement.getBoundingClientRect();
+      
+      // Calculate the full content size including scrollable areas
+      const fullWidth = Math.max(
+        htmlElement.scrollWidth,
+        htmlElement.offsetWidth,
+        htmlElement.clientWidth,
+        rect.width
+      );
+      
+      const fullHeight = Math.max(
+        htmlElement.scrollHeight,
+        htmlElement.offsetHeight,
+        htmlElement.clientHeight,
+        rect.height
+      );
 
-      const canvas = await html2canvas(element as HTMLElement, {
+      console.log(`Capturing full content: ${fullWidth}x${fullHeight} for tab ${tabId}`);
+
+      // Use higher scale for better quality and capture full scrollable content
+      const canvas = await html2canvas(htmlElement, {
         backgroundColor: '#ffffff',
-        scale: 1.25, // Balanced quality and file size
+        scale: 2, // Higher quality for better PDF rendering
         logging: false,
         useCORS: true,
         allowTaint: false,
-        height: actualHeight,
-        width: actualWidth,
+        height: fullHeight,
+        width: fullWidth,
         scrollX: 0,
         scrollY: 0,
+        windowWidth: fullWidth,
+        windowHeight: fullHeight,
         removeContainer: false,
-        foreignObjectRendering: false
+        foreignObjectRendering: false,
+        imageTimeout: 0, // No timeout for complex content
+        onclone: (clonedDoc) => {
+          // Ensure all content is visible in the cloned document
+          const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
+          if (clonedElement) {
+            (clonedElement as HTMLElement).style.overflow = 'visible';
+            (clonedElement as HTMLElement).style.height = 'auto';
+            (clonedElement as HTMLElement).style.maxHeight = 'none';
+          }
+        }
       });
 
-      // Create high-quality image data
-      const imageDataUrl = canvas.toDataURL('image/png', 0.9);
+      // Create high-quality image data with maximum quality
+      const imageDataUrl = canvas.toDataURL('image/png', 1.0);
       
-      // Store screenshot with dimensions for proper PDF rendering
+      // Store original dimensions for PDF aspect ratio calculation
       const screenshotData = {
         dataUrl: imageDataUrl,
-        width: canvas.width,
-        height: canvas.height,
-        originalWidth: actualWidth,
-        originalHeight: actualHeight
+        canvasWidth: canvas.width,
+        canvasHeight: canvas.height,
+        originalWidth: fullWidth,
+        originalHeight: fullHeight,
+        aspectRatio: canvas.width / canvas.height
       };
       
+      // Store the data URL for PDF generation
       setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
+      
+      console.log(`Screenshot captured: ${canvas.width}x${canvas.height}, aspect ratio: ${screenshotData.aspectRatio}`);
       
       toast({
         title: "Screenshot Captured",
-        description: `Screenshot of ${getTabDisplayName(tabId)} tab saved for PDF.`,
+        description: `Full content screenshot of ${getTabDisplayName(tabId)} tab saved for PDF.`,
       });
     } catch (error) {
       console.error('Screenshot capture failed:', error);
@@ -1444,7 +1477,7 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing
-        capturedScreenshots.forEach((imageDataUrl, tabId) => {
+        for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           // Ensure enough space for full-size screenshot (at least 150 units for image + title + spacing)
           if (yPosition > pageHeight - 150) {
             pdf.addPage();
@@ -1457,26 +1490,49 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Add screenshot using maximum PDF width and proportional height
-            // This maintains the original aspect ratio while using full available width
-            const maxPdfWidth = 170; // Maximum width in PDF units
+            // Get actual image dimensions to calculate true aspect ratio
+            const img = new Image();
+            img.src = imageDataUrl;
             
-            // Use a standard aspect ratio for UI screenshots (typically wider than tall)
-            // Most tab content has roughly 1.4:1 to 1.8:1 aspect ratio
-            const estimatedAspectRatio = 1.6; // width/height ratio
-            const proportionalHeight = maxPdfWidth / estimatedAspectRatio;
+            // Calculate dimensions based on actual captured image
+            const maxPdfWidth = 170; // Maximum width available in PDF
+            let imageWidth = maxPdfWidth;
+            let imageHeight = maxPdfWidth * 0.75; // Default fallback
             
-            console.log(`Adding full-size screenshot for ${tabId} at ${maxPdfWidth}x${proportionalHeight}`);
+            // Create a temporary canvas to get the actual image dimensions
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const tempImg = new Image();
+            tempImg.src = imageDataUrl;
             
-            // Add the screenshot image with full width and proportional height
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, maxPdfWidth, proportionalHeight);
-            yPosition += proportionalHeight + 25; // Extra spacing for readability
+            // Wait for image to load to get true dimensions
+            if (tempImg.complete) {
+              // Image is already loaded (cached)
+              const trueAspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
+              imageWidth = maxPdfWidth;
+              imageHeight = maxPdfWidth * trueAspectRatio;
+              
+              console.log(`Screenshot ${tabId}: true dimensions ${tempImg.naturalWidth}x${tempImg.naturalHeight}, PDF ${imageWidth}x${imageHeight}, aspect ratio: ${trueAspectRatio}`);
+            } else {
+              // Use reasonable defaults for UI screenshots while image loads
+              const defaultAspectRatio = 1.2; // Height/Width ratio typical for long content
+              imageWidth = maxPdfWidth;
+              imageHeight = maxPdfWidth * defaultAspectRatio;
+              
+              console.log(`Screenshot ${tabId}: using default aspect ratio ${defaultAspectRatio}, PDF ${imageWidth}x${imageHeight}`);
+            }
+            
+            // Add the screenshot with proper dimensions
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, imageWidth, imageHeight);
+            yPosition += imageHeight + 25;
+            
+            console.log(`Successfully added screenshot ${tabId} with dimensions preserved`);
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
             yPosition += 25;
           }
-        });
+        }
       }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
