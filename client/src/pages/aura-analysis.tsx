@@ -1891,41 +1891,41 @@ export default function AuraAnalysis() {
            `The combination of ${primary} and ${secondary} creates a unique energetic balance specific to your spiritual path.`;
   };
 
-  const getColorKeyword = (color: string): string => {
-    const keywords: Record<string, string> = {
-      'Red': 'Life Force & Vitality',
-      'red': 'Life Force & Vitality',
-      'Orange': 'Creative Expression & Sensuality',
-      'orange': 'Creative Expression & Sensuality',
-      'Yellow': 'Mental Clarity & Confidence',
-      'yellow': 'Mental Clarity & Confidence',
-      'Green': 'Heart Healing & Compassion',
-      'green': 'Heart Healing & Compassion',
-      'Blue': 'Authentic Communication & Truth',
-      'blue': 'Authentic Communication & Truth',
-      'Indigo': 'Psychic Abilities & Inner Vision',
-      'indigo': 'Psychic Abilities & Inner Vision',
-      'Violet': 'Divine Connection & Enlightenment',
-      'violet': 'Divine Connection & Enlightenment',
-      'Purple': 'Spiritual Mastery & Transformation',
-      'purple': 'Spiritual Mastery & Transformation',
-      'Pink': 'Unconditional Love & Tenderness',
-      'pink': 'Unconditional Love & Tenderness',
-      'White': 'Divine Light & Purification',
-      'white': 'Divine Light & Purification',
-      'Gold': 'Christ Consciousness & Illumination',
-      'gold': 'Christ Consciousness & Illumination',
-      'Silver': 'Feminine Intuition & Reflection',
-      'silver': 'Feminine Intuition & Reflection',
-      'Gray': 'Blockages',
-      'gray': 'Blockages',
-      'Black': 'Shadow Work & Deep Transformation blockage',
-      'black': 'Shadow Work & Deep Transformation blockage', 
-      'brown': 'Earth Connection & Practical Wisdom',
-      'Brown': 'Earth Connection & Practical Wisdom',
-    };
-    return keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
-  };
+  function getColorKeyword(color: string): string {
+        const keywords: Record<string, string> = {
+            'Red': 'Life Force & Vitality',
+            'red': 'Life Force & Vitality',
+            'Orange': 'Creative Expression & Sensuality',
+            'orange': 'Creative Expression & Sensuality',
+            'Yellow': 'Mental Clarity & Confidence',
+            'yellow': 'Mental Clarity & Confidence',
+            'Green': 'Heart Healing & Compassion',
+            'green': 'Heart Healing & Compassion',
+            'Blue': 'Authentic Communication & Truth',
+            'blue': 'Authentic Communication & Truth',
+            'Indigo': 'Psychic Abilities & Inner Vision',
+            'indigo': 'Psychic Abilities & Inner Vision',
+            'Violet': 'Divine Connection & Enlightenment',
+            'violet': 'Divine Connection & Enlightenment',
+            'Purple': 'Spiritual Mastery & Transformation',
+            'purple': 'Spiritual Mastery & Transformation',
+            'Pink': 'Unconditional Love & Tenderness',
+            'pink': 'Unconditional Love & Tenderness',
+            'White': 'Divine Light & Purification',
+            'white': 'Divine Light & Purification',
+            'Gold': 'Christ Consciousness & Illumination',
+            'gold': 'Christ Consciousness & Illumination',
+            'Silver': 'Feminine Intuition & Reflection',
+            'silver': 'Feminine Intuition & Reflection',
+            'Gray': 'Blockages',
+            'gray': 'Blockages',
+            'Black': 'Shadow Work & Deep Transformation blockage',
+            'black': 'Shadow Work & Deep Transformation blockage',
+            'brown': 'Earth Connection & Practical Wisdom',
+            'Brown': 'Earth Connection & Practical Wisdom',
+        };
+        return keywords[color] || keywords[color.toLowerCase()] || keywords[color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()] || 'Unique Spiritual Energy';
+    }
 
 
 
@@ -2284,74 +2284,74 @@ export default function AuraAnalysis() {
     return details[color] || details['Purple'];
   };
 
-  const get9ChakraAnalysis = (primaryColor: string, secondaryColor: string): Array<{name: string, location: string, analysis: string}> => {
-    const chakraColorMapping: Record<string, string> = {
-      'Red': 'Root',
-      'Orange': 'Sacral', 
-      'Yellow': 'Solar Plexus',
-      'Green': 'Heart',
-      'Blue': 'Throat',
-      'Indigo': 'Third Eye',
-      'Purple': 'Crown',
-      'Violet': 'Crown',
-      'Gold': 'Soul Star',
-      'White': 'Soul Star',
-      'Pink': 'Higher Heart',
-      'Silver': 'Soul Star',
-      'Brown': 'Earth Star',
-    };
+  function get9ChakraAnalysis(primaryColor: string, secondaryColor: string): Array<{ name: string; location: string; analysis: string; }> {
+        const chakraColorMapping: Record<string, string> = {
+            'Red': 'Root',
+            'Orange': 'Sacral',
+            'Yellow': 'Solar Plexus',
+            'Green': 'Heart',
+            'Blue': 'Throat',
+            'Indigo': 'Third Eye',
+            'Purple': 'Crown',
+            'Violet': 'Crown',
+            'Gold': 'Soul Star',
+            'White': 'Soul Star',
+            'Pink': 'Higher Heart',
+            'Silver': 'Soul Star',
+            'Brown': 'Earth Star',
+        };
 
-    const primaryChakra = chakraColorMapping[primaryColor] || 'Crown';
-    const secondaryChakra = chakraColorMapping[secondaryColor] || 'Heart';
+        const primaryChakra = chakraColorMapping[primaryColor] || 'Crown';
+        const secondaryChakra = chakraColorMapping[secondaryColor] || 'Heart';
 
-    return [
-      {
-        name: 'Earth Star Chakra',
-        location: 'Below feet, grounding to Earth',
-        analysis: `Your connection to Earth's energy shows ${primaryColor.toLowerCase()} influence, indicating ${primaryChakra === 'Root' ? 'strong grounding and stability' : 'need for deeper earth connection'}. This chakra anchors your spiritual work in physical reality.`
-      },
-      {
-        name: 'Root Chakra (Muladhara)',
-        location: 'Base of spine',
-        analysis: `Your survival and grounding energy resonates with ${primaryColor} frequency. ${primaryChakra === 'Root' ? 'This chakra is powerfully activated, providing strong foundation and manifestation abilities.' : 'Focus on red energy meditation to strengthen your foundation and sense of security.'}`
-      },
-      {
-        name: 'Sacral Chakra (Svadhisthana)',
-        location: 'Lower abdomen',
-        analysis: `Creative and sexual energies flow through ${secondaryColor.toLowerCase()} vibration. ${secondaryChakra === 'Sacral' ? 'Your creative expression and emotional flow are well-balanced and vibrant.' : 'Orange energy work will enhance creativity and emotional processing.'}`
-      },
-      {
-        name: 'Solar Plexus Chakra (Manipura)',
-        location: 'Upper abdomen',
-        analysis: `Personal power center shows ${primaryColor === 'Yellow' ? 'bright activation with strong willpower and confidence' : 'potential for development through yellow light meditation'}. This chakra governs your sense of personal authority and decision-making abilities.`
-      },
-      {
-        name: 'Heart Chakra (Anahata)',
-        location: 'Center of chest',
-        analysis: `Love and healing energies pulse with ${primaryColor === 'Green' || secondaryColor === 'Green' ? 'beautiful green harmony, indicating natural healing abilities and compassionate nature' : 'potential for deeper heart opening through green energy practices'}. Your emotional balance and relationships are influenced by this center.`
-      },
-      {
-        name: 'Throat Chakra (Vishuddha)',
-        location: 'Throat area',
-        analysis: `Communication and truth expression channels ${primaryColor === 'Blue' || secondaryColor === 'Blue' ? 'clear blue energy, showing authentic self-expression and truthful communication' : 'opportunity for enhanced expression through blue energy work'}. This governs how you share your inner truth with the world.`
-      },
-      {
-        name: 'Third Eye Chakra (Ajna)',
-        location: 'Between eyebrows',
-        analysis: `Intuitive sight and inner wisdom operate through ${primaryColor === 'Indigo' || primaryColor === 'Purple' ? 'activated indigo/purple frequencies, indicating strong psychic abilities and spiritual insight' : 'developing intuitive gifts that benefit from purple meditation'}. This center governs your spiritual perception and inner knowing.`
-      },
-      {
-        name: 'Crown Chakra (Sahasrara)',
-        location: 'Top of head',
-        analysis: `Divine connection flows through ${primaryColor === 'Purple' || primaryColor === 'Violet' || primaryColor === 'White' ? 'luminous spiritual frequencies, showing open connection to higher consciousness and divine wisdom' : 'emerging spiritual awareness that grows through purple and white light practices'}. This is your gateway to cosmic consciousness.`
-      },
-      {
-        name: 'Soul Star Chakra',
-        location: 'Above the crown',
-        analysis: `Higher spiritual purpose radiates ${primaryColor === 'Gold' || primaryColor === 'White' || secondaryColor === 'Gold' ? 'brilliant golden-white light, indicating advanced soul development and spiritual mastery' : 'developing connection to soul mission through gold and white energy meditation'}. This chakra connects you to your highest spiritual destiny and cosmic purpose.`
-      }
-    ];
-  };
+        return [
+            {
+                name: 'Earth Star Chakra',
+                location: 'Below feet, grounding to Earth',
+                analysis: `Your connection to Earth's energy shows ${primaryColor.toLowerCase()} influence, indicating ${primaryChakra === 'Root' ? 'strong grounding and stability' : 'need for deeper earth connection'}. This chakra anchors your spiritual work in physical reality.`
+            },
+            {
+                name: 'Root Chakra (Muladhara)',
+                location: 'Base of spine',
+                analysis: `Your survival and grounding energy resonates with ${primaryColor} frequency. ${primaryChakra === 'Root' ? 'This chakra is powerfully activated, providing strong foundation and manifestation abilities.' : 'Focus on red energy meditation to strengthen your foundation and sense of security.'}`
+            },
+            {
+                name: 'Sacral Chakra (Svadhisthana)',
+                location: 'Lower abdomen',
+                analysis: `Creative and sexual energies flow through ${secondaryColor.toLowerCase()} vibration. ${secondaryChakra === 'Sacral' ? 'Your creative expression and emotional flow are well-balanced and vibrant.' : 'Orange energy work will enhance creativity and emotional processing.'}`
+            },
+            {
+                name: 'Solar Plexus Chakra (Manipura)',
+                location: 'Upper abdomen',
+                analysis: `Personal power center shows ${primaryColor === 'Yellow' ? 'bright activation with strong willpower and confidence' : 'potential for development through yellow light meditation'}. This chakra governs your sense of personal authority and decision-making abilities.`
+            },
+            {
+                name: 'Heart Chakra (Anahata)',
+                location: 'Center of chest',
+                analysis: `Love and healing energies pulse with ${primaryColor === 'Green' || secondaryColor === 'Green' ? 'beautiful green harmony, indicating natural healing abilities and compassionate nature' : 'potential for deeper heart opening through green energy practices'}. Your emotional balance and relationships are influenced by this center.`
+            },
+            {
+                name: 'Throat Chakra (Vishuddha)',
+                location: 'Throat area',
+                analysis: `Communication and truth expression channels ${primaryColor === 'Blue' || secondaryColor === 'Blue' ? 'clear blue energy, showing authentic self-expression and truthful communication' : 'opportunity for enhanced expression through blue energy work'}. This governs how you share your inner truth with the world.`
+            },
+            {
+                name: 'Third Eye Chakra (Ajna)',
+                location: 'Between eyebrows',
+                analysis: `Intuitive sight and inner wisdom operate through ${primaryColor === 'Indigo' || primaryColor === 'Purple' ? 'activated indigo/purple frequencies, indicating strong psychic abilities and spiritual insight' : 'developing intuitive gifts that benefit from purple meditation'}. This center governs your spiritual perception and inner knowing.`
+            },
+            {
+                name: 'Crown Chakra (Sahasrara)',
+                location: 'Top of head',
+                analysis: `Divine connection flows through ${primaryColor === 'Purple' || primaryColor === 'Violet' || primaryColor === 'White' ? 'luminous spiritual frequencies, showing open connection to higher consciousness and divine wisdom' : 'emerging spiritual awareness that grows through purple and white light practices'}. This is your gateway to cosmic consciousness.`
+            },
+            {
+                name: 'Soul Star Chakra',
+                location: 'Above the crown',
+                analysis: `Higher spiritual purpose radiates ${primaryColor === 'Gold' || primaryColor === 'White' || secondaryColor === 'Gold' ? 'brilliant golden-white light, indicating advanced soul development and spiritual mastery' : 'developing connection to soul mission through gold and white energy meditation'}. This chakra connects you to your highest spiritual destiny and cosmic purpose.`
+            }
+        ];
+    }
 
   const getSecondaryColorDescription = (color: string): string => {
     return `${getColorMeaningForEnergyTab(color)} This secondary energy creates a supportive foundation that balances and enhances your dominant energy pattern.`;

@@ -117,8 +117,16 @@ app.use((req, res, next) => {
     port: Number(port),
     host,
     reusePort: true,
-  }, () => {
+  }, async () => {
     log(`serving on host ${host} port ${port}`);
+    
+    // Start daily horoscope cron job after server starts
+    try {
+      const { startDailyHoroscopeCron } = await import('./horoscope-scraper');
+      startDailyHoroscopeCron();
+    } catch (error: any) {
+      console.error('Failed to start horoscope cron job:', error?.message || error);
+    }
   });
 
   // Add timeout handling for server startup
