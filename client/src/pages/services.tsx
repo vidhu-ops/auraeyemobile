@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 const services = [
   {
     id: "aura-analysis",
-    title: "Aura Analysis",
+    title: "Aura & Chakra Analysis",
     description: "Discover your energy patterns and spiritual traits through advanced aura scanning technology.",
     icon: <Camera className="h-6 w-6 text-primary" />,
     path: "/aura-analysis",
@@ -19,7 +19,7 @@ const services = [
   },
   {
     id: "object-analysis",
-    title: "Object Analysis",
+    title: "Object & Space Analysis",
     description: "Uncover the hidden energies and spiritual properties of objects in your environment.",
     icon: <Box className="h-6 w-6 text-purple-500" />,
     path: "/object-analysis",

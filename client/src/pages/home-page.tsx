@@ -475,12 +475,12 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
               <Button asChild size="lg" className="bg-primary hover:pink border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/aura-analysis">
-                  <Camera className="mr-2 h-5 w-5" /> Human Aura Analysis
+                  <Camera className="mr-2 h-5 w-5" /> Human Aura & Chakra Analysis
                 </Link>
               </Button>
               <Button asChild size="lg" className="bg-pink-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/object-analysis">
-                  <Box className="mr-2 h-5 w-5" /> Object Aura Analysis
+                  <Box className="mr-2 h-5 w-5" /> Object & Space Aura Analysis
                 </Link>
               </Button>
               <Button 
