@@ -265,7 +265,7 @@ function getSignAstrologicalData(sign: string) {
       strengths: ['Innovation', 'Humanitarianism', 'Independence', 'Vision'],
       challenges: ['Detachment', 'Rebellion', 'Unpredictability'],
       luckyNumbers: [4, 7, 11, 22, 29],
-      luckyColor: 'Turquoise',
+      luckyColor: 'Electric Blue',
       keywords: ['Innovator', 'Humanitarian', 'Rebel', 'Visionary']
     },
     pisces: {

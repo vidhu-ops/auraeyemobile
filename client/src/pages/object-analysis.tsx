@@ -183,8 +183,6 @@ export default function ObjectAnalysis() {
         'Black': '#000000',
         'Gold': '#FFD700',
         'Silver': '#C0C0C0',
-        'Turquoise': '#40E0D0',
-        'Magenta': '#FF00FF',
         'Brown': '#8B4513',
         'Gray': '#808080',
         'Grey': '#808080'
@@ -383,7 +381,7 @@ export default function ObjectAnalysis() {
       'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FF8C00',
       'pink': '#FFC0CB', 'violet': '#8B00FF', 'indigo': '#4B0082',
       'gold': '#FFD700', 'silver': '#C0C0C0', 'white': '#FFFFFF',
-      'black': '#000000', 'turquoise': '#40E0D0', 'magenta': '#FF00FF',
+      'black': '#000000',
       'brown': '#8B4513', 'gray': '#808080', 'grey': '#808080'
     };
     return colorMap[auraColor.toLowerCase()] || '#800080';
@@ -751,7 +749,7 @@ export default function ObjectAnalysis() {
       "Gold": "Divine wisdom frequency, enlightenment energy, spiritual mastery vibration, cosmic intelligence, advanced consciousness",
       "Silver": "Lunar frequency vibration, psychic enhancement energy, emotional intuition, feminine wisdom, dream consciousness"
     };
-    return energyProperties[color] || `${getColorEnergyProperties} energy carries unique vibrational frequencies that activate specific spiritual centers and enhance consciousness through distinctive metaphysical properties and energy field interactions.`;
+    return energyProperties[color] || `${color} energy carries unique vibrational frequencies that activate specific spiritual centers and enhance consciousness through distinctive metaphysical properties and energy field interactions.`;
   };
 
   // Enhanced energy influence functions
@@ -851,8 +849,6 @@ export default function ObjectAnalysis() {
       "Black": "#000000",
       "Gold": "#FFD700",
       "Silver": "#C0C0C0",
-      "Turquoise": "#40E0D0",
-      "Magenta": "#FF00FF",
       "Brown": "#8B4513",
       "Gray": "#808080",
       "Grey": "#808080"
@@ -860,36 +856,35 @@ export default function ObjectAnalysis() {
     return colorMap[color] || "#808080";
   };
 
-  const getColorClass = (color: string): string => {
-    const colorMap: Record<string, string> = {
-      "Red": "bg-red-500",
-      "Orange": "bg-orange-500",
-      "Yellow": "bg-yellow-400",
-      "Green": "bg-green-500",
-      "Blue": "bg-blue-500",
-      "Indigo": "bg-indigo-500",
-      "Purple": "bg-purple-500",
-      "Pink": "bg-pink-500",
-      "Brown": "bg-amber-700",
-      "White": "bg-gray-100",
-      "Black": "bg-gray-900",
-      "Silver": "bg-gray-300",
-      "Gold": "bg-yellow-600",
-      "Violet": "bg-violet-500",
-      "Gray": "bg-gray-500"
-    };
+  function getColorClass(color: string): string {
+        const colorMap: Record<string, string> = {
+            "Red": "bg-red-500",
+            "Orange": "bg-orange-500",
+            "Yellow": "bg-yellow-400",
+            "Green": "bg-green-500",
+            "Blue": "bg-blue-500",
+            "Indigo": "bg-indigo-500",
+            "Purple": "bg-purple-500",
+            "Pink": "bg-pink-500",
+            "Brown": "bg-amber-700",
+            "White": "bg-gray-100",
+            "Black": "bg-gray-900",
+            "Silver": "bg-gray-300",
+            "Gold": "bg-yellow-600",
+            "Violet": "bg-violet-500",
+            "Gray": "bg-gray-500"
+        };
 
-    // Default fallback color or try to match parts of the color name
-    if (!colorMap[color]) {
-      const colorKeys = Object.keys(colorMap);
-      const matchedColor = colorKeys.find(key => 
-        color.toLowerCase().includes(key.toLowerCase())
-      );
-      return matchedColor ? colorMap[matchedColor] : "bg-gray-400";
+        // Default fallback color or try to match parts of the color name
+        if (!colorMap[color]) {
+            const colorKeys = Object.keys(colorMap);
+            const matchedColor = colorKeys.find(key => color.toLowerCase().includes(key.toLowerCase())
+            );
+            return matchedColor ? colorMap[matchedColor] : "bg-gray-400";
+        }
+
+        return colorMap[color];
     }
-
-    return colorMap[color];
-  };
 
   // Check if user is a healer
   const isHealer = user?.userType === 'healer' || false;

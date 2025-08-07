@@ -796,9 +796,9 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
     "Bowl", "Plate", "Cup", "Vase", "Statue", "Mask", "Box"
   ];
   
-  // Only approved aura colors - restricted to 17 colors (added Gray)
+  // Only approved aura colors - restricted to 15 colors (removed Turquoise and Magenta)
   const auraColors = [
-    "White", "Brown", "Turquoise", "Red", "Yellow", "Blue", "Green", 
+    "White", "Brown", "Red", "Yellow", "Blue", "Green", 
     "Violet", "Indigo", "Purple", "Gold", "Silver", "Orange", "Pink", "Gray", "Black"
   ];
   
@@ -846,7 +846,7 @@ function generateDeterministicObjectAnalysis(imageBuffer: Buffer) {
   const primaryQuality = selectedQualities[0] || "Calming";
   const qualitiesText = selectedQualities.length > 0 ? selectedQualities.join(', ') : "Calming, Protective";
   
-  // Only approved object colors - restricted to 17 colors (added Gray)
+  // Only approved object colors - restricted to 15 colors (removed Turquoise and Magenta)
   const objectColorMeanings: Record<string, string> = {
     'Pink': 'Divine love - unconditional acceptance, heart opening, compassionate healing, soul recognition',
     'Gray': 'Neutral balance - wisdom through experience, practical spirituality, balanced perspective, grounded insight',
@@ -1592,7 +1592,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       console.error("Error processing image for Gemini analysis:", error);
       // Even if everything fails, still return a result
       const emergencyFallback = {
-        dominantColor: "Turquoise",
+        dominantColor: "Blue",
         secondaryColor: "Pink",
         energyLevel: 3,
         personalityTraits: ["Intuitive", "Healing", "Compassionate", "Balanced"],
@@ -1606,7 +1606,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           thirdEye: 6,
           crown: 5
         },
-        detailedAnalysis: "The combination of turquoise and pink in your aura reveals someone with both healing abilities and a compassionate heart. You naturally tune into others' emotional states and may often find yourself in supportive, nurturing roles. Your strong heart chakra suggests that love and connection are important values for you. Balance your giving nature with self-care practices that replenish your energy."
+        detailedAnalysis: "The combination of blue and pink in your aura reveals someone with both clear communication abilities and a compassionate heart. You naturally tune into others' emotional states and may often find yourself in supportive, nurturing roles. Your strong heart chakra suggests that love and connection are important values for you. Balance your giving nature with self-care practices that replenish your energy."
       };
       res.json(emergencyFallback);
     }
