@@ -455,7 +455,7 @@ function generateFallbackAuraAnalysis(): AuraAnalysisResult {
     "Red": "You possess strong life force energy and determination. Ground this powerful energy through physical activity and connection with the earth. Practice root chakra meditations to maintain stability.",
     "Indigo": "Your intuitive and psychic abilities are extraordinarily developed. Set aside regular time for spiritual practice to further enhance these gifts. Consider keeping a dream journal to track insights from your subconscious.",
     "Violet": "You have a profound connection to universal wisdom and spiritual transformation. Continue your spiritual studies and share your insights with others who may benefit from your guidance.",
-    "Turquoise": "You bridge the physical and spiritual realms with ease. Your healing abilities are powerful, particularly when working with others. Develop these gifts through study and practice.",
+
     "Gold": "Your spiritual development is advanced, reflecting wisdom accumulated over many lifetimes. Share your knowledge with others but remember to maintain energetic boundaries."
   };
 
@@ -470,7 +470,7 @@ function generateFallbackAuraAnalysis(): AuraAnalysisResult {
       "Red": "grounding energy and vitality",
       "Indigo": "deep intuition and third-eye perception",
       "Violet": "connection to higher consciousness",
-      "Turquoise": "healing communication and clarity",
+
       "Gold": "divine wisdom and spiritual protection",
       "Pink": "unconditional love and compassion",
       "White": "purification and spiritual ascension"

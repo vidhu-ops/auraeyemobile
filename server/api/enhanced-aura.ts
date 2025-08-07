@@ -154,28 +154,7 @@ const enhancedColorMeanings = {
     vibrationFrequency: 'Grounding, protective',
     personalityInsight: 'You have natural protective abilities and deep transformative power.'
   },
-  turquoise: {
-    rgba: 'rgba(64, 224, 208, 0.3)',
-    positive: ['Communication', 'Clarity', 'Emotional healing', 'Self-expression', 'Truth'],
-    negative: ['Emotional overwhelm', 'Scattered thinking', 'Communication blocks'],
-    numerologyConnection: [3, 5], // Expression and freedom
-    chakraAssociation: ['Throat Chakra', 'Heart Chakra'],
-    spiritualMeaning: 'Clear communication and emotional healing energy.',
-    elementalConnection: 'Water/Air',
-    vibrationFrequency: 'Clarifying, healing',
-    personalityInsight: 'You express truth with emotional clarity and healing presence.'
-  },
-  magenta: {
-    rgba: 'rgba(255, 0, 255, 0.3)',
-    positive: ['Spiritual love', 'Universal compassion', 'Higher consciousness', 'Divine feminine'],
-    negative: ['Spiritual bypassing', 'Unrealistic expectations', 'Emotional intensity'],
-    numerologyConnection: [6, 9], // Love and universal completion
-    chakraAssociation: ['Crown Chakra', 'Soul Star Chakra'],
-    spiritualMeaning: 'Divine love and spiritual transformation energy.',
-    elementalConnection: 'Spirit/Water',
-    vibrationFrequency: 'Divine, transformative',
-    personalityInsight: 'You channel divine love and spiritual wisdom for universal healing.'
-  },
+
   coral: {
     rgba: 'rgba(255, 127, 80, 0.3)',
     positive: ['Warmth', 'Nurturing', 'Emotional balance', 'Gentle strength', 'Healing'],

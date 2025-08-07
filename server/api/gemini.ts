@@ -492,7 +492,7 @@ Respond with valid JSON containing:
       dominantColor: "Blue",
       secondaryColor: "Green", 
       // Extended spectrum with multiple colors
-      auraColorSpectrum: ["Blue", "Green", "Indigo", "Turquoise", "Purple"],
+      auraColorSpectrum: ["Blue", "Green", "Indigo", "Violet", "Purple"],
       auraLayerColors: {
         inner: "Blue",
         middle: "Green",
