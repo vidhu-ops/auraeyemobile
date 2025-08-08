@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -58,7 +58,12 @@ export const auraReadings = pgTable("aura_readings", {
   reviewText: text("review_text"), // Optional review text
   healerNotes: text("healer_notes"), // Professional healer notes
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  // Performance indexes for faster healer dashboard queries
+  performedByCreatedAtIdx: index("aura_readings_performed_by_created_at_idx").on(table.performedBy, table.createdAt),
+  userIdCreatedAtIdx: index("aura_readings_user_id_created_at_idx").on(table.userId, table.createdAt),
+  createdAtIdx: index("aura_readings_created_at_idx").on(table.createdAt),
+}));
 
 export const insertAuraReadingSchema = createInsertSchema(auraReadings).omit({
   id: true,
