@@ -503,7 +503,7 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 0;
     
     // Draw watermark text as pure white overlay
-    ctx.fillText('AuraEye', centerX-2, centerY);
+    ctx.fillText('L  AuraEye  R', centerX-2, centerY);
     
     ctx.restore();
   };
@@ -2081,21 +2081,21 @@ export default function AuraAnalysis() {
 
   const getColorMeaningForEnergyTab = (color: string): string => {
     const meanings: Record<string, string> = {
-      'Red': 'Root chakra energy - survival instinct, life force, physical vitality',
-      'Orange': 'Sacral chakra energy - creativity, sexuality, emotional flow',
-      'Yellow': 'Solar plexus chakra - personal power, confidence, willpower',
-      'Green': 'Heart chakra - unconditional love, healing abilities, compassion',
-      'Blue': 'Throat chakra - communication, truth speaking, authentic voice',
-      'Indigo': 'Third eye chakra - psychic abilities, intuition, spiritual sight',
-      'Violet': 'Crown chakra - spiritual connection, divine consciousness, enlightenment',
-      'Purple': 'Higher crown chakra - spiritual mastery, mystical awareness',
-      'Pink': 'Higher heart chakra - unconditional love, divine compassion',
-      'White': 'Pure divine light - spiritual protection, angelic connection',
-      'Gold': 'Christ consciousness - divine wisdom, spiritual illumination',
-      'Silver': 'Lunar energy - intuitive wisdom, feminine power, psychic protection',
-      'Gray': 'Emotional numbness - detachment, avoidance, spiritual stagnation',
-      'Black': 'Shadow work required - deep wounds, negativity, spiritual darkness',
-      'Brown': 'Earth- star connection - grounding, stability, practical wisdom'
+      'Red': 'How It makes you feel - survival instinct, life force, physical vitality',
+      'Orange': 'How It makes you feel - creativity, sexuality, emotional flow',
+      'Yellow': 'How It makes you feel - personal power, confidence, willpower',
+      'Green': 'How It makes you feel - unconditional love, healing abilities, compassion',
+      'Blue': 'How It makes you feel - communication, truth speaking, authentic voice',
+      'Indigo': 'How It makes you feel - psychic abilities, intuition, spiritual sight',
+      'Violet': 'How It makes you feel - spiritual connection, divine consciousness, enlightenment',
+      'Purple': 'How It makes you feel - spiritual mastery, mystical awareness',
+      'Pink': 'How It makes you feel - unconditional love, divine compassion',
+      'White': 'How It makes you feel - spiritual protection, angelic connection',
+      'Gold': 'How It makes you feel - divine wisdom, spiritual illumination',
+      'Silver': 'How It makes you feel - intuitive wisdom, feminine power, psychic protection',
+      'Gray': 'How It makes you feel: Emotional numbness - detachment, avoidance, spiritual stagnation',
+      'Black': 'How It makes you feel: Shadow work required - deep wounds, negativity, spiritual darkness',
+      'Brown': 'How It makes you feel - grounding, stability, practical wisdom'
     };
     const additionalColorMeanings: Record<string, string> = {
       'red': 'Deep passion energy - intense life force, warrior spirit, primal power',
@@ -2689,19 +2689,19 @@ export default function AuraAnalysis() {
 
   const getSupportingColorDescription = (color: string): string => {
     const supportingDescriptions: Record<string, string> = {
-      'Red': 'Root chakra support - strengthens your foundation with grounding, survival instincts, and physical vitality',
-      'Orange': 'Sacral chakra support - enhances your creativity with emotional flow, artistic expression, and joyful passion',
-      'Yellow': 'Solar plexus support - empowers your confidence with personal power, mental clarity, and intellectual wisdom',
-      'Green': 'Heart chakra support - opens your compassion with healing love, emotional balance, and natural harmony',
-      'Blue': 'Throat chakra support - clarifies your communication with truthful expression, authentic voice, and peaceful wisdom',
-      'Indigo': 'Third eye support - awakens your intuition with psychic abilities, inner knowing, and spiritual sight',
-      'Purple': 'Crown chakra support - connects your spirit with divine wisdom, mystical awareness, and cosmic consciousness',
-      'Pink': 'Higher heart support - expands your love with unconditional compassion, divine grace, and soul connection',
-      'Gold': 'Christ consciousness support - illuminates your purpose with divine wisdom, spiritual mastery, and soul mission',
-      'Silver': 'Lunar energy support - activates your intuition with feminine wisdom, psychic protection, and mystical insight',
-      'White': 'Pure light support - purifies your energy with spiritual protection, angelic connection, and divine grace',
-      'Gray': 'Neutral wisdom support - brings balance with spiritual equilibrium, adaptable wisdom, and cosmic neutrality',
-      'Black': 'Shadow integration support - initiates transformation with deep inner work, shadow healing, and spiritual rebirth',
+      'Red': 'How It makes you feel - strengthens your foundation with grounding, survival instincts, and physical vitality',
+      'Orange': 'How It makes you feel - enhances your creativity with emotional flow, artistic expression, and joyful passion',
+      'Yellow': 'How It makes you feel - empowers your confidence with personal power, mental clarity, and intellectual wisdom',
+      'Green': 'How It makes you feel - opens your compassion with healing love, emotional balance, and natural harmony',
+      'Blue': 'How It makes you feel - clarifies your communication with truthful expression, authentic voice, and peaceful wisdom',
+      'Indigo': 'How It makes you feel - awakens your intuition with psychic abilities, inner knowing, and spiritual sight',
+      'Purple': 'How It makes you feel - connects your spirit with divine wisdom, mystical awareness, and cosmic consciousness',
+      'Pink': 'How It makes you feel - expands your love with unconditional compassion, divine grace, and soul connection',
+      'Gold': 'How It makes you feel - illuminates your purpose with divine wisdom, spiritual mastery, and soul mission',
+      'Silver': 'How It makes you feel - activates your intuition with feminine wisdom, psychic protection, and mystical insight',
+      'White': 'How It makes you feel: Pure light support - purifies your energy with spiritual protection, angelic connection, and divine grace',
+      'Gray': 'How It makes you feel - brings balance with spiritual equilibrium, adaptable wisdom, and cosmic neutrality',
+      'Black': 'How It makes you feel: Shadow integration support - initiates transformation with deep inner work, shadow healing, and spiritual rebirth',
     };
     
     return supportingDescriptions[color] || supportingDescriptions['Purple'];
@@ -4518,6 +4518,7 @@ export default function AuraAnalysis() {
 
   // Function to generate combined insights from aura and numerology
   const getCombinedInsights = (aura: AuraAnalysisResult, numerology: NumerologyResult) => {
+    
     // Enhanced color-to-chakra-number mapping based on remedies data
     const colorToChakraMapping: Record<string, {
       number: number, 
@@ -5441,6 +5442,10 @@ export default function AuraAnalysis() {
                           <span className="text-primary mr-2">•</span>
                           The recommendations provided in the analysis are generic. Please connect to a healer for personalized recommendations
                         </li>
+                        <li className="flex items-start">
+                          <span className="text-primary font-bold text-red mr-2">•</span>
+                          Raise Your right hand and take the picture. Make sure your right hand is on the right side of the image for an accurate reading.
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -6340,7 +6345,7 @@ export default function AuraAnalysis() {
                                       ></div>
                                       <div>
                                         <h5 className="font-medium">{result.secondaryColor}</h5>
-                                        <p className="text-xs text-gray-600">Right side of lower abdomen, 2 inches below navel</p>
+                                        <p className="text-xs text-gray-600">Location: Right side of lower abdomen, 2 inches below navel</p>
                                       </div>
                                     </div>
                                     <p className="text-sm text-gray-700">
@@ -8731,86 +8736,17 @@ export default function AuraAnalysis() {
                                   
                                   {/* Comprehensive Aura Color Spectrum */}
                                   <div className="mb-6">
-                                    <h4 className="font-medium text-sm text-secondary mb-3">Complete Aura Color Spectrum</h4>
-                                    <div className="relative h-14 bg-gradient-to-r from-red-500 via-orange-500 via-yellow-400 via-green-500 via-blue-500 via-indigo-500 to-violet-600 rounded-md mb-2 overflow-hidden">
-                                      {/* Frequency markers */}
-                                      
-                                      
-                                      {/* Primary and secondary colors */}
-                                      {auraHelpers.getColorPosition(result.dominantColor) !== null && (
-                                        <div 
-                                          className="absolute top-0 bottom-0 w-6 border-2 border-white rounded-sm" 
-                                          style={{ 
-                                            left: `${auraHelpers.getColorPosition(result.dominantColor)}%`,
-                                            transform: 'translateX(-50%)',
-                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)' 
-                                          }}
-                                        ></div>
-                                      )}
-                                      
-                                      {result.secondaryColor && auraHelpers.getColorPosition(result.secondaryColor) !== null && (
-                                        <div 
-                                          className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm opacity-80" 
-                                          style={{ 
-                                            left: `${auraHelpers.getColorPosition(result.secondaryColor)}%`,
-                                            transform: 'translateX(-50%)',
-                                            boxShadow: '0 0 8px rgba(255, 255, 255, 0.6)' 
-                                          }}
-                                        ></div>
-                                      )}
-                                      
-                                     
-                                      
-                                      {/* Additional aura colors from the spectrum (if available) */}
-                                      
-                                    </div>
+                                    
+                                  
                                     
                                     {/* Frequency labels */}
-                                    <div className="flex justify-between text-xs text-gray-500 mb-4">
-                                      <span>Physical (Lower Hz)</span>
-                                      <span>Emotional</span>
-                                      <span>Mental</span>
-                                      <span>Spiritual (Higher Hz)</span>
-                                    </div>
+                                    
                                     
                                     {/* Secondary Purple to Green Spectrum */}
-                                    <div className="relative h-12 bg-gradient-to-r from-purple-600 via-indigo-500 via-blue-500 via-cyan-400 via-green-500 to-green-400 rounded-md mb-2 overflow-hidden">
-                                      {/* Primary and secondary color indicators on purple-green spectrum */}
-                                      {auraHelpers.getColorPosition(result.dominantColor) !== null && (
-                                        <div 
-                                          className="absolute top-0 bottom-0 w-5 border-2 border-white rounded-sm" 
-                                          style={{ 
-                                            left: `${auraHelpers.getColorPosition(result.dominantColor)}%`,
-                                            transform: 'translateX(-50%)',
-                                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.9)' 
-                                          }}
-                                        ></div>
-                                      )}
-                                      
-                                      {result.secondaryColor && auraHelpers.getColorPosition(result.secondaryColor) !== null && (
-                                        <div 
-                                          className="absolute top-0 bottom-0 w-4 border-2 border-white rounded-sm opacity-80" 
-                                          style={{ 
-                                            left: `${auraHelpers.getColorPosition(result.secondaryColor)}%`,
-                                            transform: 'translateX(-50%)',
-                                            boxShadow: '0 0 8px rgba(255, 255, 255, 0.7)' 
-                                          }}
-                                        ></div>
-                                      )}
-                                      
-                                      {/* Fixed position markers for Purple, Violet, Indigo, Blue, Green */}
-                                     
-                                     
-                                     
-                                     
-                                     
-                                    </div>
+                                    
                                     
                                     {/* Purple to Green spectrum labels */}
-                                    <div className="flex justify-between text-xs text-gray-500 mb-6">
-                                      <span>Purple</span>
-                                      <span>Green</span>
-                                    </div>
+                                    
                                     
                                     {/* Aura color spectrum display */}
                                     <div className="p-3 bg-white rounded-lg shadow-sm">
