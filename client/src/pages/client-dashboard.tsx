@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 import {
   Camera,
   Star,
@@ -22,7 +23,9 @@ import {
   Loader2,
   Compass,
   Lightbulb,
-  Zap
+  Zap,
+  Download,
+  Palette
 } from "lucide-react";
 
 interface UserBooking {
@@ -46,7 +49,17 @@ interface AuraReading {
   analysis: string;
   spiritualGuidance?: string;
   personalityTraits?: string;
+  personalityColor?: string;
+  givingColor?: string;
+  receivingColor?: string;
+  thinkingColor?: string;
   chakraActivity?: string;
+  zones?: string;
+  colorMeanings?: string;
+  detailedAnalysis?: string;
+  auraColorSpectrum?: string;
+  processedAuraImage?: string;
+  imageUrl?: string;
   createdAt: string;
 }
 
@@ -57,6 +70,348 @@ interface JournalEntry {
   reflections: string;
   gratitude: string;
   createdAt: string;
+}
+
+// AuraReadingCard component for displaying individual aura readings
+function AuraReadingCard({ reading }: { reading: AuraReading }) {
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Parse JSON fields safely
+  const parseJsonField = (field: string) => {
+    try {
+      return JSON.parse(field || '{}');
+    } catch {
+      return {};
+    }
+  };
+
+  const chakraActivity = parseJsonField(reading.chakraActivity);
+  const zones = parseJsonField(reading.zones);
+  const colorMeanings = parseJsonField(reading.colorMeanings);
+  const personalityTraits = parseJsonField(reading.personalityTraits);
+  const auraColorSpectrum = parseJsonField(reading.auraColorSpectrum);
+
+  // Color mapping for visualization
+  const getColorClass = (color: string) => {
+    const colorMap: { [key: string]: string } = {
+      'Red': 'from-red-400 to-red-600',
+      'Orange': 'from-orange-400 to-orange-600',
+      'Yellow': 'from-yellow-400 to-yellow-600',
+      'Green': 'from-green-400 to-green-600',
+      'Blue': 'from-blue-400 to-blue-600',
+      'Indigo': 'from-indigo-400 to-indigo-600',
+      'Violet': 'from-violet-400 to-violet-600',
+      'White': 'from-gray-100 to-gray-300',
+      'Black': 'from-gray-800 to-gray-900',
+      'Gold': 'from-yellow-300 to-yellow-500',
+      'Silver': 'from-gray-300 to-gray-500',
+      'Brown': 'from-amber-600 to-amber-800'
+    };
+    return colorMap[color] || 'from-gray-400 to-gray-600';
+  };
+
+  const generateComprehensivePDF = async () => {
+    setIsGeneratingPDF(true);
+    
+    try {
+      const { jsPDF } = await import('jspdf');
+      const { format } = await import('date-fns');
+      
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const clientName = user?.username || 'Valued Client';
+      
+      // Parse all data fields
+      const spiritualGuidance = reading.spiritualGuidance || 'Your aura reveals unique energy patterns representing spiritual growth and development.';
+      const detailedAnalysis = reading.detailedAnalysis || 'Advanced spiritual development with balanced energy flow.';
+      
+      // PAGE 1: COVER PAGE & OVERVIEW
+      pdf.setFontSize(24);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('PERSONAL AURA ANALYSIS REPORT', pageWidth / 2, 40, { align: 'center' });
+      
+      pdf.setFontSize(16);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Client: ${reading.name}`, pageWidth / 2, 60, { align: 'center' });
+      pdf.text(`Report Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 75, { align: 'center' });
+      
+      pdf.setDrawColor(147, 51, 234);
+      pdf.setLineWidth(1);
+      pdf.line(30, 90, pageWidth - 30, 90);
+      
+      // Aura Color Analysis
+      pdf.setFontSize(18);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Aura Color Analysis', 20, 110);
+      
+      let yPos = 125;
+      if (reading.personalityColor) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`Personality Color: ${reading.personalityColor}`, 25, yPos);
+        yPos += 6;
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('Your core essence and fundamental nature', 30, yPos);
+        yPos += 15;
+      }
+      
+      if (reading.givingColor) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`Giving Color: ${reading.givingColor}`, 25, yPos);
+        yPos += 6;
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('How you share energy with others', 30, yPos);
+        yPos += 15;
+      }
+      
+      if (reading.receivingColor) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`Receiving Color: ${reading.receivingColor}`, 25, yPos);
+        yPos += 6;
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('How you absorb energy from your environment', 30, yPos);
+        yPos += 15;
+      }
+      
+      if (reading.thinkingColor) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`Thinking Color: ${reading.thinkingColor}`, 25, yPos);
+        yPos += 6;
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('Your mental and spiritual processing patterns', 30, yPos);
+        yPos += 20;
+      }
+      
+      // Energy Level Assessment
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Energy Assessment', 20, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 25, yPos);
+      
+      pdf.setFontSize(8);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 1 of 4', 20, pageHeight - 10);
+
+      // PAGE 2: AURA VISUALIZATION (if available)
+      if (reading.processedAuraImage || reading.imageUrl) {
+        try {
+          pdf.addPage();
+          
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
+          
+          // Add image centered with proper aspect ratio
+          const imgWidth = 160;
+          const imgHeight = 90; // 16:9 aspect ratio
+          const imgX = (pageWidth - imgWidth) / 2;
+          
+          // Try to add the processed aura image, fall back to original if needed
+          const imageToAdd = reading.processedAuraImage || reading.imageUrl;
+          pdf.addImage(imageToAdd, 'JPEG', imgX, 35, imgWidth, imgHeight);
+          
+          pdf.setFontSize(12);
+          pdf.setTextColor(107, 114, 128);
+          pdf.text('Your Personal Aura Analysis Visualization', pageWidth / 2, 135, { align: 'center' });
+          
+          pdf.setFontSize(10);
+          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 150, { align: 'center' });
+          
+          pdf.setFontSize(8);
+          pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 2 of 4', 20, pageHeight - 10);
+          
+        } catch (error) {
+          console.error('Error adding aura image to PDF:', error);
+          // Add a page explaining the visualization issue
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
+          
+          pdf.setFontSize(12);
+          pdf.setTextColor(107, 114, 128);
+          pdf.text('Aura visualization processing in progress...', pageWidth / 2, 100, { align: 'center' });
+          pdf.text('Your aura analysis is complete but visualization is being processed.', pageWidth / 2, 120, { align: 'center' });
+        }
+      }
+
+      // PAGE 3: DETAILED ANALYSIS
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('DETAILED SPIRITUAL ANALYSIS', pageWidth / 2, 25, { align: 'center' });
+      
+      yPos = 45;
+      
+      // Analysis text
+      pdf.setFontSize(14);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Analysis', 20, yPos);
+      yPos += 10;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const analysisText = reading.analysis || 'Your aura displays a beautiful balance of energies.';
+      const splitAnalysis = pdf.splitTextToSize(analysisText, pageWidth - 40);
+      pdf.text(splitAnalysis, 20, yPos);
+      yPos += splitAnalysis.length * 5 + 10;
+      
+      // Spiritual guidance
+      if (spiritualGuidance) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Spiritual Guidance', 20, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(55, 65, 81);
+        const splitGuidance = pdf.splitTextToSize(spiritualGuidance, pageWidth - 40);
+        pdf.text(splitGuidance, 20, yPos);
+        yPos += splitGuidance.length * 5 + 10;
+      }
+
+      // PAGE 4: FINAL SUMMARY
+      pdf.addPage();
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('PERSONAL INSIGHTS & RECOMMENDATIONS', pageWidth / 2, 25, { align: 'center' });
+      
+      yPos = 45;
+      
+      pdf.setFontSize(11);
+      pdf.setTextColor(60, 60, 60);
+      const finalSummary = `Your aura analysis reveals a ${reading.dominantColor?.toLowerCase() || 'vibrant'} dominant energy with an energy level of ${reading.energyLevel}/10. This indicates a ${reading.energyLevel >= 7 ? 'highly active' : reading.energyLevel >= 5 ? 'balanced' : 'gentle'} spiritual presence. Continue developing your spiritual awareness through meditation, energy work, and conscious living practices. Your unique energy signature offers valuable gifts to the world - embrace your authentic spiritual self and share your light with others.`;
+      
+      const splitSummary = pdf.splitTextToSize(finalSummary, pageWidth - 40);
+      pdf.text(splitSummary, 20, yPos);
+      yPos += splitSummary.length * 5 + 20;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('Continue Your Spiritual Journey', 20, yPos);
+      yPos += 10;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      const recommendations = [
+        '• Practice daily meditation to strengthen your energy field',
+        '• Keep a spiritual journal to track your energy patterns',
+        '• Connect with like-minded spiritual communities',
+        '• Consider working with a professional healer for deeper guidance',
+        '• Trust your intuition and follow your spiritual path'
+      ];
+      
+      recommendations.forEach(rec => {
+        pdf.text(rec, 25, yPos);
+        yPos += 7;
+      });
+      
+      pdf.setFontSize(8);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 4 of 4', 20, pageHeight - 10);
+      
+      // Save the PDF
+      pdf.save(`aura-analysis-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
+      
+      toast({
+        title: "PDF Downloaded",
+        description: "Your complete aura analysis report has been downloaded successfully.",
+      });
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Download Error",
+        description: "There was an error downloading your report. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  return (
+    <Card className="border-2 border-purple-100">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg font-bold text-purple-800">{reading.name}</CardTitle>
+            <CardDescription className="text-purple-600">
+              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-white">
+              Energy: {reading.energyLevel}/10
+            </Badge>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={generateComprehensivePDF}
+              disabled={isGeneratingPDF}
+              title="Download Complete PDF Report"
+            >
+              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="p-4">
+        {/* Aura Colors Display */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          {reading.personalityColor && (
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full mx-auto mb-1 bg-gradient-to-br ${getColorClass(reading.personalityColor)}`}></div>
+              <p className="text-xs font-medium">Personality</p>
+              <p className="text-xs text-gray-600">{reading.personalityColor}</p>
+            </div>
+          )}
+          {reading.givingColor && (
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full mx-auto mb-1 bg-gradient-to-br ${getColorClass(reading.givingColor)}`}></div>
+              <p className="text-xs font-medium">Giving</p>
+              <p className="text-xs text-gray-600">{reading.givingColor}</p>
+            </div>
+          )}
+          {reading.receivingColor && (
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full mx-auto mb-1 bg-gradient-to-br ${getColorClass(reading.receivingColor)}`}></div>
+              <p className="text-xs font-medium">Receiving</p>
+              <p className="text-xs text-gray-600">{reading.receivingColor}</p>
+            </div>
+          )}
+          {reading.thinkingColor && (
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full mx-auto mb-1 bg-gradient-to-br ${getColorClass(reading.thinkingColor)}`}></div>
+              <p className="text-xs font-medium">Thinking</p>
+              <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Quick Analysis Preview */}
+        <div className="p-3 bg-gray-50 rounded-lg">
+          <p className="text-sm text-gray-700 line-clamp-2">
+            {reading.analysis || reading.spiritualGuidance || 'Your aura displays beautiful energy patterns representing spiritual growth and balance.'}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function ClientDashboard() {
@@ -466,12 +821,44 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
 
-            {/* Your Reading History - My Bookings Only */}
+            {/* My Aura Readings Section */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5 text-purple-500" />
+                  My Aura Readings
+                </CardTitle>
+                <CardDescription>Your personal spiritual energy analysis collection</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingAura ? (
+                  <div className="flex justify-center items-center h-[200px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : auraReadings.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Palette className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p className="mb-4">No aura readings yet</p>
+                    <Link to="/aura-analysis">
+                      <Button>Get Your First Reading</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[300px] overflow-y-auto">
+                    {auraReadings.map((reading: AuraReading) => (
+                      <AuraReadingCard key={reading.id} reading={reading} />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Your Booking History */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
-                  Your Reading History
+                  Your Booking History
                 </CardTitle>
                 <CardDescription>View your healer booking history</CardDescription>
               </CardHeader>
