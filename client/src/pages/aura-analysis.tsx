@@ -1535,7 +1535,8 @@ export default function AuraAnalysis() {
           heart: 'Heart Chakra',
           solarPlexus: 'Solar Plexus Chakra',
           sacral: 'Sacral Chakra',
-          root: 'Root Chakra'
+          root: 'Root Chakra',
+          earthStar: 'Earth Star Chakra'
         };
 
         Object.entries(result.chakraActivity).forEach(([key, value]) => {
