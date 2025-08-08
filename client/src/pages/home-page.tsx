@@ -461,7 +461,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center text-center">
             <div className="mb-8 animate-fade-in-down">
               <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Discover Your <span className="text-secondary to primary">Aura</span> <br />
+                Your Energy made <span className="text-secondary to primary">Visible</span> <br />
                 Embrace Your <span className="text-emerald-300">Energy</span>
               </h1>
             </div>
@@ -473,7 +473,7 @@ export default function HomePage() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
-              <Button asChild size="lg" className="bg-primary hover:pink border-0 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" className="bg-blue-600 hover:pink border-0 text-white px-8 py-6 rounded-full">
                 <Link href="/aura-analysis">
                   <Camera className="mr-2 h-5 w-5" /> Human Aura & Chakra Analysis
                 </Link>
