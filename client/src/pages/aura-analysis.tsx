@@ -925,7 +925,7 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Screenshot capture function with proper aspect ratio preservation
+  // Screenshot capture function with proper sizing and 16:9 aspect ratio for long content
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
@@ -934,76 +934,176 @@ export default function AuraAnalysis() {
         throw new Error('Tab content not found');
       }
 
-      // Get the full scrollable content dimensions
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
       
-      // Calculate the full content size including scrollable areas
-      const fullWidth = Math.max(
+      // Get viewport dimensions for proper sizing reference
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate the full scrollable content size
+      const contentWidth = Math.max(
         htmlElement.scrollWidth,
         htmlElement.offsetWidth,
         htmlElement.clientWidth,
         rect.width
       );
       
-      const fullHeight = Math.max(
+      const contentHeight = Math.max(
         htmlElement.scrollHeight,
         htmlElement.offsetHeight,
         htmlElement.clientHeight,
         rect.height
       );
 
-      console.log(`Capturing full content: ${fullWidth}x${fullHeight} for tab ${tabId}`);
+      // Use screen width as base for consistent readability, ensure minimum width
+      const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      
+      // Determine if content needs multi-section capture for long content
+      const maxSingleCaptureHeight = viewportHeight * 2; // 2 screen heights max per section
+      const needsMultiSection = contentHeight > maxSingleCaptureHeight;
+      
+      console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
+      console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
-      // Use higher scale for better quality and capture full scrollable content
-      const canvas = await html2canvas(htmlElement, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality for better PDF rendering
-        logging: false,
-        useCORS: true,
-        allowTaint: false,
-        height: fullHeight,
-        width: fullWidth,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: fullWidth,
-        windowHeight: fullHeight,
-        removeContainer: false,
-        foreignObjectRendering: false,
-        imageTimeout: 0, // No timeout for complex content
-        onclone: (clonedDoc) => {
-          // Ensure all content is visible in the cloned document
-          const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
-          if (clonedElement) {
-            (clonedElement as HTMLElement).style.overflow = 'visible';
-            (clonedElement as HTMLElement).style.height = 'auto';
-            (clonedElement as HTMLElement).style.maxHeight = 'none';
+      if (needsMultiSection) {
+        // Capture long content in 16:9 sections for optimal PDF display
+        const screenshots: string[] = [];
+        const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
+        const sectionHeight = Math.floor(captureWidth / targetAspectRatio);
+        const totalSections = Math.ceil(contentHeight / sectionHeight);
+        
+        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (16:9 ratio)`);
+        
+        for (let section = 0; section < totalSections; section++) {
+          const startY = section * sectionHeight;
+          const endY = Math.min(startY + sectionHeight, contentHeight);
+          const actualSectionHeight = endY - startY;
+          
+          // Scroll element to show this section
+          if (htmlElement.scrollTo) {
+            htmlElement.scrollTo(0, startY);
+          } else {
+            // Fallback to window scroll
+            const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo(0, elementTop + startY);
           }
+          
+          // Wait for scroll to complete and content to render
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          const sectionCanvas = await html2canvas(htmlElement, {
+            backgroundColor: '#ffffff',
+            scale: 2.5, // High quality for crisp text and details
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
+            x: 0,
+            y: startY,
+            width: captureWidth,
+            height: actualSectionHeight,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: captureWidth,
+            windowHeight: actualSectionHeight,
+            removeContainer: false,
+            foreignObjectRendering: false,
+            imageTimeout: 1000,
+            onclone: (clonedDoc) => {
+              const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
+              if (clonedElement) {
+                const elem = clonedElement as HTMLElement;
+                elem.style.overflow = 'visible';
+                elem.style.height = 'auto';
+                elem.style.maxHeight = 'none';
+                elem.style.width = 'auto';
+                elem.style.maxWidth = 'none';
+              }
+            }
+          });
+          
+          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0));
+          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
         }
-      });
+        
+        // Reset scroll position
+        if (htmlElement.scrollTo) {
+          htmlElement.scrollTo(0, 0);
+        } else {
+          window.scrollTo(0, 0);
+        }
+        
+        // Combine all sections into one long image for PDF
+        const combinedCanvas = document.createElement('canvas');
+        const ctx = combinedCanvas.getContext('2d')!;
+        
+        // Calculate combined dimensions (account for scale factor)
+        const finalWidth = captureWidth * 2.5;
+        const finalHeight = screenshots.length * (sectionHeight * 2.5);
+        
+        combinedCanvas.width = finalWidth;
+        combinedCanvas.height = finalHeight;
+        
+        // Draw each section onto the combined canvas
+        for (let i = 0; i < screenshots.length; i++) {
+          const img = new Image();
+          img.src = screenshots[i];
+          await new Promise((resolve) => {
+            img.onload = () => {
+              ctx.drawImage(img, 0, i * (sectionHeight * 2.5));
+              resolve(true);
+            };
+          });
+        }
+        
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
+        
+        console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
+        
+      } else {
+        // Single capture for shorter content with optimal sizing
+        console.log(`Single capture: ${captureWidth}x${contentHeight}`);
 
-      // Create high-quality image data with maximum quality
-      const imageDataUrl = canvas.toDataURL('image/png', 1.0);
-      
-      // Store original dimensions for PDF aspect ratio calculation
-      const screenshotData = {
-        dataUrl: imageDataUrl,
-        canvasWidth: canvas.width,
-        canvasHeight: canvas.height,
-        originalWidth: fullWidth,
-        originalHeight: fullHeight,
-        aspectRatio: canvas.width / canvas.height
-      };
-      
-      // Store the data URL for PDF generation
-      setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
-      
-      console.log(`Screenshot captured: ${canvas.width}x${canvas.height}, aspect ratio: ${screenshotData.aspectRatio}`);
+        const canvas = await html2canvas(htmlElement, {
+          backgroundColor: '#ffffff',
+          scale: 2.5, // High quality for crisp text
+          logging: false,
+          useCORS: true,
+          allowTaint: false,
+          width: captureWidth,
+          height: contentHeight,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: captureWidth,
+          windowHeight: contentHeight,
+          removeContainer: false,
+          foreignObjectRendering: false,
+          imageTimeout: 1000,
+          onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
+            if (clonedElement) {
+              const elem = clonedElement as HTMLElement;
+              elem.style.overflow = 'visible';
+              elem.style.height = 'auto';
+              elem.style.maxHeight = 'none';
+              elem.style.width = 'auto';
+              elem.style.maxWidth = 'none';
+            }
+          }
+        });
+
+        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
+        
+        console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
+      }
       
       toast({
         title: "Screenshot Captured",
-        description: `Full content screenshot of ${getTabDisplayName(tabId)} tab saved for PDF.`,
+        description: `High-quality screenshot of ${getTabDisplayName(tabId)} captured with proper dimensions.`,
       });
+      
     } catch (error) {
       console.error('Screenshot capture failed:', error);
       toast({
@@ -1114,26 +1214,26 @@ export default function AuraAnalysis() {
       };
 
       // Helper function to add screenshot images (simplified for synchronous use)
-      const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
-        try {
-          // Ensure y is a valid number
-          if (typeof y !== 'number' || isNaN(y) || y < 0) {
-            y = 20;
-          }
-          
-          if (y + maxHeight > pageHeight - 20) {
-            pdf.addPage();
-            y = 20;
-          }
-          
-          // Add image with fixed dimensions for consistent layout
-          pdf.addImage(imageDataUrl, 'PNG', x, y, maxWidth, maxHeight);
-          return y + maxHeight + 5;
-        } catch (error) {
-          console.error('Error adding screenshot image:', error);
-          return y + 10;
+      function addScreenshotImage(imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
+            try {
+                // Ensure y is a valid number
+                if (typeof y !== 'number' || isNaN(y) || y < 0) {
+                    y = 20;
+                }
+
+                if (y + maxHeight > pageHeight - 20) {
+                    pdf.addPage();
+                    y = 20;
+                }
+
+                // Add image with fixed dimensions for consistent layout
+                pdf.addImage(imageDataUrl, 'PNG', x, y, maxWidth, maxHeight);
+                return y + maxHeight + 5;
+            } catch (error) {
+                console.error('Error adding screenshot image:', error);
+                return y + 10;
+            }
         }
-      };
 
       // Add the uploaded image as the first page if available
       const addUploadedImageAsFirstPage = async () => {
@@ -1290,18 +1390,6 @@ export default function AuraAnalysis() {
           yPosition += 10;
         }
       }
-
-      // SECTION 2: SPIRITUAL ANALYSIS
-      pdf.setFontSize(18);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('SPIRITUAL ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 10;
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      const analysis = result.detailedAnalysis || "Your aura reveals unique spiritual patterns that guide your personal development journey. The colors detected in your energy field indicate specific aspects of your personality, emotional state, and spiritual development.";
-      yPosition = addWrappedText(analysis, 20, yPosition, pageWidth - 40);
-      yPosition += 10;
 
       // SECTION 3: ENERGY LEVEL ANALYSIS  
       if (yPosition > pageHeight - 60) {
@@ -1490,43 +1578,52 @@ export default function AuraAnalysis() {
           yPosition += 10;
           
           try {
-            // Get actual image dimensions to calculate true aspect ratio
-            const img = new Image();
-            img.src = imageDataUrl;
-            
-            // Calculate dimensions based on actual captured image
-            const maxPdfWidth = 170; // Maximum width available in PDF
-            let imageWidth = maxPdfWidth;
-            let imageHeight = maxPdfWidth * 0.75; // Default fallback
-            
-            // Create a temporary canvas to get the actual image dimensions
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
+            // Create a temporary image to get exact dimensions
             const tempImg = new Image();
             tempImg.src = imageDataUrl;
             
-            // Wait for image to load to get true dimensions
-            if (tempImg.complete) {
-              // Image is already loaded (cached)
-              const trueAspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
-              imageWidth = maxPdfWidth;
-              imageHeight = maxPdfWidth * trueAspectRatio;
-              
-              console.log(`Screenshot ${tabId}: true dimensions ${tempImg.naturalWidth}x${tempImg.naturalHeight}, PDF ${imageWidth}x${imageHeight}, aspect ratio: ${trueAspectRatio}`);
-            } else {
-              // Use reasonable defaults for UI screenshots while image loads
-              const defaultAspectRatio = 1.2; // Height/Width ratio typical for long content
-              imageWidth = maxPdfWidth;
-              imageHeight = maxPdfWidth * defaultAspectRatio;
-              
-              console.log(`Screenshot ${tabId}: using default aspect ratio ${defaultAspectRatio}, PDF ${imageWidth}x${imageHeight}`);
+            // Wait for image to load and get true dimensions
+            await new Promise((resolve, reject) => {
+              tempImg.onload = resolve;
+              tempImg.onerror = reject;
+            });
+            
+            const originalWidth = tempImg.naturalWidth;
+            const originalHeight = tempImg.naturalHeight;
+            const trueAspectRatio = originalHeight / originalWidth;
+            
+            // Calculate optimal PDF dimensions while preserving readability
+            const maxPdfWidth = 170; // Maximum width for PDF
+            const maxPdfHeight = 240; // Maximum height per page section
+            
+            let imageWidth = maxPdfWidth;
+            let imageHeight = maxPdfWidth * trueAspectRatio;
+            
+            // If image would be too tall for readability, scale down appropriately
+            if (imageHeight > maxPdfHeight) {
+              imageHeight = maxPdfHeight;
+              imageWidth = maxPdfHeight / trueAspectRatio;
             }
             
-            // Add the screenshot with proper dimensions
-            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, imageWidth, imageHeight);
-            yPosition += imageHeight + 25;
+            // Ensure minimum readability dimensions
+            if (imageWidth < 120) {
+              imageWidth = 120;
+              imageHeight = 120 * trueAspectRatio;
+            }
             
-            console.log(`Successfully added screenshot ${tabId} with dimensions preserved`);
+            console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${imageWidth.toFixed(1)}x${imageHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
+            
+            // Check if screenshot would exceed page height
+            if (yPosition + imageHeight > pageHeight - 40) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            
+            // Add the screenshot with preserved aspect ratio and optimal sizing
+            pdf.addImage(imageDataUrl, 'PNG', 20, yPosition, imageWidth, imageHeight);
+            yPosition += imageHeight + 15;
+            
+            console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
@@ -8552,8 +8649,7 @@ export default function AuraAnalysis() {
                                     <h4 className="font-medium text-sm text-secondary mb-3">Complete Aura Color Spectrum</h4>
                                     <div className="relative h-14 bg-gradient-to-r from-red-500 via-orange-500 via-yellow-400 via-green-500 via-blue-500 via-indigo-500 to-violet-600 rounded-md mb-2 overflow-hidden">
                                       {/* Frequency markers */}
-                                      <div className="absolute inset-0 flex justify-between px-1">
-                                      </div>
+                                      
                                       
                                       {/* Primary and secondary colors */}
                                       {auraHelpers.getColorPosition(result.dominantColor) !== null && (
@@ -8581,19 +8677,7 @@ export default function AuraAnalysis() {
                                      
                                       
                                       {/* Additional aura colors from the spectrum (if available) */}
-                                      {result.auraColorSpectrum && result.auraColorSpectrum.slice(2).filter(color => color !== 'Blue' && color !== 'Green').map((color, index) => 
-                                        auraHelpers.getColorPosition(color) !== null && (
-                                          <div 
-                                            key={`spectrum-${index}`}
-                                            className="absolute top-0 bottom-0 w-4 border border-white rounded-sm opacity-40" 
-                                            style={{ 
-                                              left: `${auraHelpers.getColorPosition(color)}%`,
-                                              transform: 'translateX(-50%)',
-                                              boxShadow: '0 0 8px rgba(255, 255, 255, 0.4)' 
-                                            }}
-                                          ></div>
-                                        )
-                                      )}
+                                      
                                     </div>
                                     
                                     {/* Frequency labels */}
@@ -8634,15 +8718,7 @@ export default function AuraAnalysis() {
                                      
                                      
                                      
-                                      <div 
-                                        className="absolute top-0 bottom-0 w-3 border border-white rounded-sm opacity-60" 
-                                        style={{ 
-                                          left: '90%',
-                                          transform: 'translateX(-50%)',
-                                          boxShadow: '0 0 6px rgba(0, 255, 0, 0.7)',
-                                          backgroundColor: 'rgba(0, 255, 0, 0.2)' 
-                                        }}
-                                      ></div>
+                                     
                                     </div>
                                     
                                     {/* Purple to Green spectrum labels */}
