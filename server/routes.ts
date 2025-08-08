@@ -1364,7 +1364,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         // Generate standardized aura visualization with consistent dimensions and zone positioning
         try {
-          console.log("Generating standardized aura visualization with 1200x2000px dimensions...");
+          console.log("Generating standardized aura visualization with 1600x900px dimensions...");
           
           // Ensure aura analysis has zone-specific colors for the new visualization system
           if (!auraAnalysis.auraLayerColors) {
@@ -1384,7 +1384,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             `data:image/jpeg;base64,${imageData}`,
             auraAnalysis
           );
-          console.log("Standardized aura visualization completed successfully with consistent dimensions");
+          console.log("Standardized aura visualization completed successfully with 1600x900px dimensions");
         } catch (vizError) {
           console.error("Aura visualization failed:", vizError);
           // Fallback to original image if processing fails
