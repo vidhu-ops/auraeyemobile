@@ -17,11 +17,11 @@ export async function generateAuraVisualization(
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 1200x2000px`);
+    console.log(`Processing with standardized dimensions: 1600x900px`);
     
-    // Standardized dimensions as requested: 1200px width × 2000px height
-    const STANDARD_WIDTH = 1200;
-    const STANDARD_HEIGHT = 2000;
+    // Standardized dimensions as requested: 1600px width × 900px height
+    const STANDARD_WIDTH = 1600;
+    const STANDARD_HEIGHT = 900;
     
     // Create canvas with standardized dimensions
     const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
