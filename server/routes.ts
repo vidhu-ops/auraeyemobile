@@ -2689,7 +2689,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Get healer's aura readings (only readings performed by the healer)
+  // Get healer's aura readings (only readings performed by the healer) with pagination
   app.get("/api/healer-aura-readings", isAuthenticated, async (req, res) => {
     try {
       // Check if user is a healer by checking userType
@@ -2697,11 +2697,20 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(403).json({ message: "Access denied: Not a healer" });
       }
 
-      console.log(`Fetching aura readings for healer: ${req.user.username} (ID: ${req.user.id})`);
-      const auraReadings = await storage.getAuraReadingsByPerformedBy(req.user.id);
+      const limit = parseInt(req.query.limit as string) || 25; // Default to 25 readings for faster loading
+      console.log(`Fetching ${limit} aura readings for healer: ${req.user.username} (ID: ${req.user.id})`);
+      const auraReadings = await storage.getAuraReadingsByPerformedBy(req.user.id, limit);
       console.log(`Found ${auraReadings.length} aura readings performed by healer ${req.user.username}`);
-      console.log(`Healer aura readings data:`, auraReadings.map(r => ({ id: r.id, name: r.name, userId: r.userId, performedBy: r.performedBy, createdAt: r.createdAt })));
-      res.json(auraReadings);
+      
+      // Return minimal data for faster loading - remove large fields for initial load
+      const optimizedReadings = auraReadings.map(reading => ({
+        ...reading,
+        // Keep essential fields for display, minimize large text fields
+        analysis: reading.analysis ? reading.analysis.substring(0, 200) + '...' : '',
+        spiritualGuidance: reading.spiritualGuidance ? reading.spiritualGuidance.substring(0, 200) + '...' : ''
+      }));
+      
+      res.json(optimizedReadings);
     } catch (error) {
       console.error("Error retrieving healer aura readings:", error);
       res.status(500).json({ message: "Failed to retrieve healer aura readings" });

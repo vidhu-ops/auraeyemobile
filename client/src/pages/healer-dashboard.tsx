@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
@@ -271,7 +271,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
 }
 
 // Comprehensive Aura Reading Card Component with Full Analysis
-function DetailedAuraReadingCard({ reading }: { reading: any }) {
+const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading }: { reading: any }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedNotes, setEditedNotes] = useState(reading.healerNotes || "");
   const [activeTab, setActiveTab] = useState("overview");
@@ -296,20 +296,26 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
     updateReadingMutation.mutate(editedNotes);
   };
 
-  // Parse JSON fields safely
-  const parseJsonField = (field: string) => {
-    try {
-      return JSON.parse(field || '{}');
-    } catch {
-      return {};
-    }
-  };
+  // Memoize JSON parsing for better performance
+  const parsedData = useMemo(() => {
+    const parseJsonField = (field: string) => {
+      try {
+        return JSON.parse(field || '{}');
+      } catch {
+        return {};
+      }
+    };
 
-  const chakraActivity = parseJsonField(reading.chakraActivity);
-  const zones = parseJsonField(reading.zones);
-  const colorMeanings = parseJsonField(reading.colorMeanings);
-  const personalityTraits = parseJsonField(reading.personalityTraits);
-  const auraColorSpectrum = parseJsonField(reading.auraColorSpectrum);
+    return {
+      chakraActivity: parseJsonField(reading.chakraActivity),
+      zones: parseJsonField(reading.zones),
+      colorMeanings: parseJsonField(reading.colorMeanings),
+      personalityTraits: parseJsonField(reading.personalityTraits),
+      auraColorSpectrum: parseJsonField(reading.auraColorSpectrum)
+    };
+  }, [reading.chakraActivity, reading.zones, reading.colorMeanings, reading.personalityTraits, reading.auraColorSpectrum]);
+
+  const { chakraActivity, zones, colorMeanings, personalityTraits, auraColorSpectrum } = parsedData;
 
   // Color mapping for visualization
   const getColorClass = (color: string) => {
@@ -1423,7 +1429,7 @@ function DetailedAuraReadingCard({ reading }: { reading: any }) {
       </CardContent>
     </Card>
   );
-}
+});
 
 // Detailed Numerology Reading Card Component
 function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
@@ -1639,10 +1645,12 @@ export default function HealerDashboard() {
     refetchInterval: 60000, // Refresh every minute
   });
 
-  // Fetch healer's own aura readings
-  const { data: healerAuraReadings = [] } = useQuery<AuraReading[]>({
+  // Fetch healer's own aura readings with optimized loading
+  const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent unnecessary requests
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   // Fetch healer's own numerology readings
@@ -2049,7 +2057,16 @@ export default function HealerDashboard() {
                 <CardDescription>Your personal spiritual energy analysis</CardDescription>
               </CardHeader>
               <CardContent>
-                {healerAuraReadings.length === 0 ? (
+                {isLoadingAuraReadings ? (
+                  <div className="space-y-4">
+                    {/* Loading skeleton */}
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : healerAuraReadings.length === 0 ? (
                   <div className="text-center py-8">
                     <Palette className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                     <p className="text-gray-500 mb-4">No aura readings yet</p>
@@ -2058,9 +2075,16 @@ export default function HealerDashboard() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[800px] overflow-y-auto">
+                    <div className="text-sm text-gray-600 mb-2">
+                      Showing latest {healerAuraReadings.length} readings
+                    </div>
                     {healerAuraReadings.map((reading) => (
-                      <DetailedAuraReadingCard key={reading.id} reading={reading} />
+                      <Suspense key={reading.id} fallback={
+                        <div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
+                      }>
+                        <DetailedAuraReadingCard reading={reading} />
+                      </Suspense>
                     ))}
                   </div>
                 )}
