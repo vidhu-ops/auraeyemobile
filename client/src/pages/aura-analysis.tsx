@@ -82,7 +82,7 @@ const getColorSpiritalMeaning = (color: string): string => {
     },
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
+    'Silver': 'Lunar energy and sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
     'black': 'Shadow work and transformative energy. This deep frequency represents deep spiritual integration and shadow healing.',
     'grey': 'Neutral balance and adaptable wisdom. This balanced frequency indicates wise neutrality and peaceful resolution.',
     'brown': 'Earth connection and grounding stability. This practical frequency represents natural wisdom and earth-based spiritual growth.',
@@ -8346,7 +8346,7 @@ export default function AuraAnalysis() {
                                     <div className="text-center mb-3">
                                       <div className="text-2xl font-bold text-red-600">
                                         {(() => {
-                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras
+                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras including Earth Star
                                           const soulStarScore = calculateSoulStarChakra(result);
                                           const crownScore = result.chakraActivity?.crown || 5;
                                           const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
@@ -8355,8 +8355,9 @@ export default function AuraAnalysis() {
                                           const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
                                           const sacralScore = result.chakraActivity?.sacral || 5;
                                           const rootScore = result.chakraActivity?.root || 5;
+                                          const earthStarScore = calculateEarthStarChakra(result);
                                           
-                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
+                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore) + (10 - earthStarScore);
                                           return negativeInfluence.toFixed(1);
                                         })()}
                                       </div>
@@ -8364,7 +8365,7 @@ export default function AuraAnalysis() {
                                     </div>
                                     <div className="text-xs text-gray-600">
                                       {(() => {
-                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras
+                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras including Earth Star
                                         const soulStarScore = calculateSoulStarChakra(result);
                                         const crownScore = result.chakraActivity?.crown || 5;
                                         const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
@@ -8373,13 +8374,14 @@ export default function AuraAnalysis() {
                                         const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
                                         const sacralScore = result.chakraActivity?.sacral || 5;
                                         const rootScore = result.chakraActivity?.root || 5;
+                                        const earthStarScore = calculateEarthStarChakra(result);
                                         
-                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
+                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore) + (10 - earthStarScore);
                                         
-                                        if (negativeInfluence <= 10) return "Very low negative influence, excellent energetic state";
-                                        if (negativeInfluence <= 20) return "Low negative influence, good energetic balance";
-                                        if (negativeInfluence <= 30) return "Moderate negative influence, some clearing recommended";
-                                        if (negativeInfluence <= 40) return "High negative influence, energy cleansing needed";
+                                        if (negativeInfluence <= 15) return "Very low negative influence, excellent energetic state";
+                                        if (negativeInfluence <= 30) return "Low negative influence, good energetic balance";
+                                        if (negativeInfluence <= 45) return "Moderate negative influence, some clearing recommended";
+                                        if (negativeInfluence <= 60) return "High negative influence, energy cleansing needed";
                                         return "Very high negative influence, urgent spiritual protection required";
                                       })()}
                                     </div>
