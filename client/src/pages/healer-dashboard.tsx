@@ -72,12 +72,28 @@ interface BookingTrend {
 interface AuraReading {
   id: number;
   userId: number;
+  performedBy?: number;
   name: string;
   imageUrl: string;
   dominantColor: string;
-  secondaryColor: string;
+  secondaryColor?: string;
   energyLevel: number;
   analysis: string;
+  personalityColor?: string;
+  givingColor?: string;
+  receivingColor?: string;
+  thinkingColor?: string;
+  spiritualGuidance?: string;
+  personalityTraits?: string;
+  chakraActivity?: string;
+  zones?: string;
+  colorMeanings?: string;
+  detailedAnalysis?: string;
+  auraColorSpectrum?: string;
+  processedAuraImage?: string;
+  rating?: number;
+  reviewText?: string;
+  healerNotes?: string;
   createdAt: string;
 }
 
@@ -98,7 +114,7 @@ interface NumerologyReading {
 // Archive Reading Card Component - Shows complete reading in internet archive style
 function ArchiveReadingCard({ reading, index }: { reading: AuraReading; index: number }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("analysis");
   
   // Parse JSON fields safely
   const parseJsonField = (field: string | null | undefined) => {
@@ -150,7 +166,7 @@ function ArchiveReadingCard({ reading, index }: { reading: AuraReading; index: n
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                generateHealerPDF(reading);
+                generatePDF(reading);
               }}
             >
               <Download className="h-4 w-4 mr-1" />
@@ -166,197 +182,220 @@ function ArchiveReadingCard({ reading, index }: { reading: AuraReading; index: n
       {/* Full Archive Content - Expandable */}
       {isExpanded && (
         <div className="border-t bg-gray-50">
-          {/* Archive Navigation Tabs */}
-          <div className="bg-white border-b">
-            <nav className="flex space-x-8 px-6" aria-label="Archive Tabs">
-              {[
-                { id: 'overview', name: 'Overview', icon: Eye },
-                { id: 'zones', name: 'Energy Zones', icon: BarChart3 },
-                { id: 'chakras', name: 'Chakras', icon: Activity },
-                { id: 'traits', name: 'Traits', icon: User },
-                { id: 'spectrum', name: 'Color Spectrum', icon: Palette },
-                { id: 'guidance', name: 'Spiritual Guidance', icon: MessageSquare }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`${
-                    activeTab === tab.id
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
-                >
-                  <tab.icon className="h-4 w-4" />
-                  {tab.name}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Tab Content - Exactly as in original analysis */}
           <div className="p-6">
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {reading.imageUrl && (
-                    <div>
-                      <h4 className="font-semibold mb-3">Original Image</h4>
-                      <img 
-                        src={reading.imageUrl} 
-                        alt="Original" 
-                        className="w-full h-48 object-cover rounded-lg border"
-                      />
+            <div className="bg-white rounded-lg p-6 border border-gray-200">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-rows-4 gap-3 w-full h-30 p-2 mb-11">
+                  <div className="grid grid-cols-2 gap-20">
+                    <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-2">Analysis</TabsTrigger>
+                    <TabsTrigger value="energy-reading" className="text-sm whitespace-nowrap px-2 relative">
+                      Chakra Score
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 items-center justify-center">
+                          <span className="text-[8px] text-white font-bold">●</span>
+                        </span>
+                      </span>
+                    </TabsTrigger>
+                  </div>
+                  <div className="grid grid-cols-2 gap-10">
+                    <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-2">Detailed Chakras Analysis</TabsTrigger>
+                    <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-2">Guidance</TabsTrigger>
+                  </div>
+                  <div className="grid grid-cols-2 gap-15">
+                    <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-2 relative">
+                      Color Spectrum
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 items-center justify-center">
+                          <Eye className="h-2 w-2 text-white" />
+                        </span>
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger value="energy-map" className="text-sm whitespace-nowrap px-2 relative">
+                      Energy Map
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 items-center justify-center">
+                          <BarChart3 className="h-2 w-2 text-white" />
+                        </span>
+                      </span>
+                    </TabsTrigger>
+                  </div>
+                  <div className="grid grid-cols-2 gap-10">
+                    <TabsTrigger value="detailed" className="relative">
+                      Detailed Analysis
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 mb-5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
+                          <Plus className="h-2 w-2 text-white" />
+                        </span>
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-2 relative">
+                      Combined Analysis
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500 items-center justify-center">
+                          <span className="text-[8px] text-white font-bold">●</span>
+                        </span>
+                      </span>
+                    </TabsTrigger>
+                  </div>
+                </TabsList>
+
+                {/* Tab Content - Analysis Tab */}
+                <TabsContent value="analysis">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <h3 className="font-semibold text-xl text-gray-800 mb-2">Aura Analysis Complete</h3>
+                      <p className="text-gray-600">Spiritual energy field has been analyzed and visualized</p>
                     </div>
-                  )}
-                  {reading.processedAuraImage && (
-                    <div>
-                      <h4 className="font-semibold mb-3">Aura Visualization</h4>
-                      <img 
-                        src={reading.processedAuraImage} 
-                        alt="Aura visualization" 
-                        className="w-full h-48 object-cover rounded-lg border"
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-white rounded-lg border">
-                    <div className="text-2xl font-bold text-purple-600">{reading.dominantColor}</div>
-                    <div className="text-sm text-gray-500">Dominant</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border">
-                    <div className="text-2xl font-bold text-indigo-600">{reading.secondaryColor}</div>
-                    <div className="text-sm text-gray-500">Secondary</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border">
-                    <div className="text-2xl font-bold text-green-600">{reading.energyLevel}/10</div>
-                    <div className="text-sm text-gray-500">Energy Level</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border">
-                    <div className="text-2xl font-bold text-orange-600">{reading.personalityColor}</div>
-                    <div className="text-sm text-gray-500">Personality</div>
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {activeTab === 'zones' && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Energy Zone Analysis</h4>
-                {Object.entries(zonesData).map(([zoneName, zoneData]: [string, any]) => (
-                  <div key={zoneName} className="bg-white p-4 rounded-lg border">
-                    <h5 className="font-semibold capitalize text-purple-600 mb-2">{zoneName} Zone</h5>
-                    {zoneData?.colors && (
-                      <div className="mb-2">
-                        <span className="text-sm font-medium">Colors: </span>
-                        {zoneData.colors.map((color: string, i: number) => (
-                          <Badge key={i} className="ml-1">{color}</Badge>
-                        ))}
-                      </div>
-                    )}
-                    {zoneData?.interpretation && (
-                      <p className="text-sm text-gray-700">{zoneData.interpretation}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Aura Image */}
+                      {reading.processedAuraImage ? (
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-lg">Aura Visualization</h4>
+                          <div className="bg-black rounded-lg p-4">
+                            <img 
+                              src={reading.processedAuraImage} 
+                              alt="Processed aura visualization"
+                              className="w-full rounded-lg border border-gray-600"
+                            />
+                          </div>
+                          <p className="text-sm text-gray-600 text-center">
+                            AI-processed visualization showing energy field and aura colors
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-lg">Original Image</h4>
+                          <div className="bg-gray-100 rounded-lg p-4">
+                            <img 
+                              src={reading.imageUrl} 
+                              alt="Original uploaded image"
+                              className="w-full rounded-lg"
+                            />
+                          </div>
+                        </div>
+                      )}
 
-            {activeTab === 'chakras' && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Chakra Activity Levels</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(chakraData).map(([chakra, level]: [string, any]) => (
-                    <div key={chakra} className="bg-white p-4 rounded-lg border">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1')}</span>
-                        <span className="text-lg font-bold text-purple-600">{level}/10</span>
+                      {/* Basic Analysis Results */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-lg">Energy Analysis Summary</h4>
+                        
+                        <div className="space-y-3">
+                          <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                            <div className="font-medium text-sm mb-1">Overall Energy Level</div>
+                            <div className="text-2xl font-bold text-purple-600">{reading.energyLevel}/10</div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+                              <div className="font-medium text-xs mb-1">Personality</div>
+                              <span className="text-sm font-medium">{reading.personalityColor || reading.dominantColor}</span>
+                            </div>
+                            
+                            <div className="p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                              <div className="font-medium text-xs mb-1">Giving</div>
+                              <span className="text-sm font-medium">{reading.givingColor || reading.secondaryColor || 'N/A'}</span>
+                            </div>
+                            
+                            <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                              <div className="font-medium text-xs mb-1">Receiving</div>
+                              <span className="text-sm font-medium">{reading.receivingColor || 'N/A'}</span>
+                            </div>
+                            
+                            <div className="p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-200">
+                              <div className="font-medium text-xs mb-1">Thinking</div>
+                              <span className="text-sm font-medium">{reading.thinkingColor || 'N/A'}</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full" 
-                          style={{ width: `${(level / 10) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'traits' && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Personality Traits</h4>
-                <div className="bg-white p-4 rounded-lg border">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {Array.isArray(personalityTraits) ? personalityTraits.map((trait: string, i: number) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">{trait}</span>
-                      </div>
-                    )) : (
-                      <p className="text-gray-500">No traits data available</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'spectrum' && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Complete Aura Color Spectrum</h4>
-                <div className="bg-white p-4 rounded-lg border">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {Array.isArray(auraSpectrum) ? auraSpectrum.map((color: string, i: number) => (
-                      <Badge key={i} className="bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-800">
-                        {color}
-                      </Badge>
-                    )) : (
-                      <p className="text-gray-500">No spectrum data available</p>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    {Object.entries(colorMeanings).map(([color, meaning]: [string, any]) => (
-                      <div key={color} className="border-l-4 border-purple-300 pl-4">
-                        <h6 className="font-medium text-purple-700">{color}</h6>
-                        <p className="text-sm text-gray-600">{meaning}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'guidance' && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Spiritual Guidance</h4>
-                <div className="bg-white p-4 rounded-lg border">
-                  <p className="text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
-                </div>
-                {reading.detailedAnalysis && (
-                  <div>
-                    <h5 className="font-semibold mb-2">Detailed Analysis</h5>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <p className="text-gray-700 leading-relaxed">{reading.detailedAnalysis}</p>
                     </div>
                   </div>
-                )}
-                {reading.healerNotes && (
-                  <div>
-                    <h5 className="font-semibold mb-2">Healer Notes</h5>
-                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                      <p className="text-blue-900">{reading.healerNotes}</p>
+                </TabsContent>
+
+                {/* Other tabs will be added */}
+                <TabsContent value="energy-reading">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Chakra Score analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="chakras">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Detailed chakra analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="guidance">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <h3 className="font-semibold text-xl text-gray-800 mb-2">Spiritual Guidance</h3>
+                      <p className="text-gray-600">Personalized guidance based on aura analysis</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {reading.spiritualGuidance && (
+                        <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+                          <h4 className="font-medium text-lg mb-3 text-purple-800">Personal Spiritual Guidance</h4>
+                          <p className="text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
+                        </div>
+                      )}
+                      
+                      {reading.detailedAnalysis && (
+                        <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                          <h4 className="font-medium text-lg mb-3 text-green-800">Detailed Analysis</h4>
+                          <p className="text-gray-700 leading-relaxed">{reading.detailedAnalysis}</p>
+                        </div>
+                      )}
+
+                      {reading.healerNotes && (
+                        <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+                          <h4 className="font-medium text-lg mb-3 text-orange-800">Healer Notes</h4>
+                          <p className="text-gray-700 leading-relaxed">{reading.healerNotes}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
+                </TabsContent>
+
+                <TabsContent value="spectrum">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Color spectrum analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="energy-map">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Energy map analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="detailed">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Detailed analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="combined">
+                  <div className="text-center p-8">
+                    <p className="text-gray-600">Combined analysis coming soon</p>
+                  </div>
+                </TabsContent>
+
+              </Tabs>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
 
 // Numerology Input Form Component for Spiritual Tools
 function NumerologyInputForm() {
