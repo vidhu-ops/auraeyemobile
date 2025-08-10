@@ -290,6 +290,9 @@ export default function ObjectAnalysis() {
 
     // Reset composite operation
     ctx.globalCompositeOperation = 'source-over';
+    
+    // Add "AuraEye" watermark in the center
+    addAuraEyeWatermark(ctx, width, height);
   };
 
   // Function to draw advanced smoke particles with natural flow
@@ -329,6 +332,38 @@ export default function ObjectAnalysis() {
       
       ctx.filter = 'none';
     });
+  };
+
+  // Function to add AuraEye watermark to object analysis
+  const addAuraEyeWatermark = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number
+  ) => {
+    // Save the current context
+    ctx.save();
+    
+    // Calculate center position
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Set font properties - responsive to image size
+    const fontSize = Math.max(20, Math.min(width, height) / 25);
+    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Add text shadow/outline for better visibility
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.lineWidth = 3;
+    ctx.strokeText('AuraEye', centerX, centerY);
+    
+    // Add main watermark text in white
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillText('AuraEye', centerX, centerY);
+    
+    // Restore the context
+    ctx.restore();
   };
 
   // Function to draw energy wisps around object
