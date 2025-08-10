@@ -34,6 +34,7 @@ export interface IStorage {
   // Aura readings
   saveAuraReading(reading: InsertAuraReading): Promise<AuraReading>;
   getAuraReadingsByUser(userId: number): Promise<AuraReading[]>;
+  getAuraReadingsByPerformedBy(performedBy: number, limit?: number): Promise<AuraReading[]>;
   getAuraReading(id: number): Promise<AuraReading | undefined>;
   updateAuraReadingReview(id: number, rating: number, reviewText?: string): Promise<AuraReading | undefined>;
   updateAuraReadingNotes(id: number, healerNotes: string): Promise<AuraReading | undefined>;
@@ -46,6 +47,7 @@ export interface IStorage {
   // Numerology readings
   saveNumerologyReading(reading: InsertNumerologyReading): Promise<NumerologyReading>;
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
+  getNumerologyReadingsByPerformedBy(performedBy: number): Promise<NumerologyReading[]>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
   updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined>;
   
