@@ -8346,22 +8346,41 @@ export default function AuraAnalysis() {
                                     <div className="text-center mb-3">
                                       <div className="text-2xl font-bold text-red-600">
                                         {(() => {
-                                          const negativeScore = 100 - (0.3 * (result.chakraActivity?.root || 5) + 0.3 * (result.chakraActivity?.sacral || 5) + 0.2 * (result.chakraActivity?.solarPlexus || 5) + 0.2 * (result.chakraActivity?.thirdEye || 5)) * 10;
-                                          const finalScore = Math.max(0, Math.min(100, negativeScore));
-                                          return finalScore.toFixed(1);
-                                        })()}%
+                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras
+                                          const soulStarScore = calculateSoulStarChakra(result);
+                                          const crownScore = result.chakraActivity?.crown || 5;
+                                          const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
+                                          const throatScore = result.chakraActivity?.throat || 5;
+                                          const heartScore = result.chakraActivity?.heart || 5;
+                                          const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
+                                          const sacralScore = result.chakraActivity?.sacral || 5;
+                                          const rootScore = result.chakraActivity?.root || 5;
+                                          
+                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
+                                          return negativeInfluence.toFixed(1);
+                                        })()}
                                       </div>
                                       <div className="text-xs text-gray-500">Psychic overload & energetic contamination</div>
                                     </div>
                                     <div className="text-xs text-gray-600">
                                       {(() => {
-                                        const negativeScore = 100 - (0.3 * (result.chakraActivity?.root || 5) + 0.3 * (result.chakraActivity?.sacral || 5) + 0.2 * (result.chakraActivity?.solarPlexus || 5) + 0.2 * (result.chakraActivity?.thirdEye || 5)) * 10;
-                                        const finalScore = Math.max(0, Math.min(100, negativeScore));
-                                        if (finalScore <= 20) return "Low interference, aura is clear";
-                                        if (finalScore <= 40) return "Mild energetic interference, some clearing needed";
-                                        if (finalScore <= 60) return "Moderate psychic overload, cleansing recommended";
-                                        if (finalScore <= 80) return "High energetic contamination, urgent clearing needed";
-                                        return "Severe psychic overload, immediate spiritual protection required";
+                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras
+                                        const soulStarScore = calculateSoulStarChakra(result);
+                                        const crownScore = result.chakraActivity?.crown || 5;
+                                        const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
+                                        const throatScore = result.chakraActivity?.throat || 5;
+                                        const heartScore = result.chakraActivity?.heart || 5;
+                                        const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
+                                        const sacralScore = result.chakraActivity?.sacral || 5;
+                                        const rootScore = result.chakraActivity?.root || 5;
+                                        
+                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
+                                        
+                                        if (negativeInfluence <= 10) return "Very low negative influence, excellent energetic state";
+                                        if (negativeInfluence <= 20) return "Low negative influence, good energetic balance";
+                                        if (negativeInfluence <= 30) return "Moderate negative influence, some clearing recommended";
+                                        if (negativeInfluence <= 40) return "High negative influence, energy cleansing needed";
+                                        return "Very high negative influence, urgent spiritual protection required";
                                       })()}
                                     </div>
                                   </div>
