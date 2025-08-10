@@ -95,6 +95,269 @@ interface NumerologyReading {
   createdAt: string;
 }
 
+// Archive Reading Card Component - Shows complete reading in internet archive style
+function ArchiveReadingCard({ reading, index }: { reading: AuraReading; index: number }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  
+  // Parse JSON fields safely
+  const parseJsonField = (field: string | null | undefined) => {
+    if (!field) return {};
+    try {
+      return JSON.parse(field);
+    } catch {
+      return {};
+    }
+  };
+
+  const analysisData = parseJsonField(reading.analysis);
+  const zonesData = parseJsonField(reading.zones);
+  const chakraData = parseJsonField(reading.chakraActivity);
+  const colorMeanings = parseJsonField(reading.colorMeanings);
+  const personalityTraits = parseJsonField(reading.personalityTraits);
+  const auraSpectrum = parseJsonField(reading.auraColorSpectrum);
+
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "MMM d, yyyy 'at' h:mm a");
+  };
+
+  return (
+    <div className="border-l-4 border-l-purple-500 bg-white">
+      {/* Archive Entry Header - Always Visible */}
+      <div className="p-4 cursor-pointer hover:bg-gray-50" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-bold text-lg">
+                {index + 1}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900">{reading.name}</h3>
+              <p className="text-sm text-gray-600">
+                {formatDate(reading.createdAt)} • {reading.dominantColor} & {reading.secondaryColor}
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge className="bg-purple-100 text-purple-800">{reading.dominantColor}</Badge>
+                <Badge className="bg-indigo-100 text-indigo-800">{reading.secondaryColor}</Badge>
+                <span className="text-xs text-gray-500">Energy: {reading.energyLevel}/10</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                generateHealerPDF(reading);
+              }}
+            >
+              <Download className="h-4 w-4 mr-1" />
+              PDF
+            </Button>
+            <div className="text-2xl text-gray-400">
+              {isExpanded ? '−' : '+'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Full Archive Content - Expandable */}
+      {isExpanded && (
+        <div className="border-t bg-gray-50">
+          {/* Archive Navigation Tabs */}
+          <div className="bg-white border-b">
+            <nav className="flex space-x-8 px-6" aria-label="Archive Tabs">
+              {[
+                { id: 'overview', name: 'Overview', icon: Eye },
+                { id: 'zones', name: 'Energy Zones', icon: BarChart3 },
+                { id: 'chakras', name: 'Chakras', icon: Activity },
+                { id: 'traits', name: 'Traits', icon: User },
+                { id: 'spectrum', name: 'Color Spectrum', icon: Palette },
+                { id: 'guidance', name: 'Spiritual Guidance', icon: MessageSquare }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${
+                    activeTab === tab.id
+                      ? 'border-purple-500 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Tab Content - Exactly as in original analysis */}
+          <div className="p-6">
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {reading.imageUrl && (
+                    <div>
+                      <h4 className="font-semibold mb-3">Original Image</h4>
+                      <img 
+                        src={reading.imageUrl} 
+                        alt="Original" 
+                        className="w-full h-48 object-cover rounded-lg border"
+                      />
+                    </div>
+                  )}
+                  {reading.processedAuraImage && (
+                    <div>
+                      <h4 className="font-semibold mb-3">Aura Visualization</h4>
+                      <img 
+                        src={reading.processedAuraImage} 
+                        alt="Aura visualization" 
+                        className="w-full h-48 object-cover rounded-lg border"
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-white rounded-lg border">
+                    <div className="text-2xl font-bold text-purple-600">{reading.dominantColor}</div>
+                    <div className="text-sm text-gray-500">Dominant</div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-lg border">
+                    <div className="text-2xl font-bold text-indigo-600">{reading.secondaryColor}</div>
+                    <div className="text-sm text-gray-500">Secondary</div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-lg border">
+                    <div className="text-2xl font-bold text-green-600">{reading.energyLevel}/10</div>
+                    <div className="text-sm text-gray-500">Energy Level</div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-lg border">
+                    <div className="text-2xl font-bold text-orange-600">{reading.personalityColor}</div>
+                    <div className="text-sm text-gray-500">Personality</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'zones' && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Energy Zone Analysis</h4>
+                {Object.entries(zonesData).map(([zoneName, zoneData]: [string, any]) => (
+                  <div key={zoneName} className="bg-white p-4 rounded-lg border">
+                    <h5 className="font-semibold capitalize text-purple-600 mb-2">{zoneName} Zone</h5>
+                    {zoneData?.colors && (
+                      <div className="mb-2">
+                        <span className="text-sm font-medium">Colors: </span>
+                        {zoneData.colors.map((color: string, i: number) => (
+                          <Badge key={i} className="ml-1">{color}</Badge>
+                        ))}
+                      </div>
+                    )}
+                    {zoneData?.interpretation && (
+                      <p className="text-sm text-gray-700">{zoneData.interpretation}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'chakras' && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Chakra Activity Levels</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(chakraData).map(([chakra, level]: [string, any]) => (
+                    <div key={chakra} className="bg-white p-4 rounded-lg border">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1')}</span>
+                        <span className="text-lg font-bold text-purple-600">{level}/10</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div 
+                          className="bg-purple-600 h-2 rounded-full" 
+                          style={{ width: `${(level / 10) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'traits' && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Personality Traits</h4>
+                <div className="bg-white p-4 rounded-lg border">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {Array.isArray(personalityTraits) ? personalityTraits.map((trait: string, i: number) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span className="text-sm">{trait}</span>
+                      </div>
+                    )) : (
+                      <p className="text-gray-500">No traits data available</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'spectrum' && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Complete Aura Color Spectrum</h4>
+                <div className="bg-white p-4 rounded-lg border">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {Array.isArray(auraSpectrum) ? auraSpectrum.map((color: string, i: number) => (
+                      <Badge key={i} className="bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-800">
+                        {color}
+                      </Badge>
+                    )) : (
+                      <p className="text-gray-500">No spectrum data available</p>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {Object.entries(colorMeanings).map(([color, meaning]: [string, any]) => (
+                      <div key={color} className="border-l-4 border-purple-300 pl-4">
+                        <h6 className="font-medium text-purple-700">{color}</h6>
+                        <p className="text-sm text-gray-600">{meaning}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'guidance' && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Spiritual Guidance</h4>
+                <div className="bg-white p-4 rounded-lg border">
+                  <p className="text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
+                </div>
+                {reading.detailedAnalysis && (
+                  <div>
+                    <h5 className="font-semibold mb-2">Detailed Analysis</h5>
+                    <div className="bg-white p-4 rounded-lg border">
+                      <p className="text-gray-700 leading-relaxed">{reading.detailedAnalysis}</p>
+                    </div>
+                  </div>
+                )}
+                {reading.healerNotes && (
+                  <div>
+                    <h5 className="font-semibold mb-2">Healer Notes</h5>
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <p className="text-blue-900">{reading.healerNotes}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Numerology Input Form Component for Spiritual Tools
 function NumerologyInputForm() {
   const [fullName, setFullName] = useState("");
@@ -2044,48 +2307,75 @@ export default function HealerDashboard() {
           </div>
         </TabsContent>
 
-        {/* My Readings Tab */}
+        {/* My Readings Tab - Enhanced Archive System */}
         <TabsContent value="readings" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Aura Readings */}
-            <Card>
-              <CardHeader>
+          {/* Archive Header */}
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <FileText className="h-6 w-6 text-purple-600" />
+                  Reading Archive
+                </h2>
+                <p className="text-gray-600">Complete archive of all aura readings performed</p>
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-purple-600">{healerAuraReadings.length}</div>
+                <div className="text-sm text-gray-500">Total Readings</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6">
+            {/* Enhanced Aura Readings Archive */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
                 <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5 text-purple-500" />
-                  My Aura Readings
+                  <Palette className="h-5 w-5" />
+                  Aura Reading Archive
                 </CardTitle>
-                <CardDescription>Your personal spiritual energy analysis</CardDescription>
+                <CardDescription className="text-purple-100">
+                  Complete archive with full analysis details, all tabs preserved exactly as generated
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {isLoadingAuraReadings ? (
-                  <div className="space-y-4">
-                    {/* Loading skeleton */}
+                  <div className="p-6 space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
+                        <div className="bg-gray-200 rounded-lg h-64 mb-4"></div>
                       </div>
                     ))}
                   </div>
                 ) : healerAuraReadings.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Palette className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-500 mb-4">No aura readings yet</p>
+                  <div className="text-center py-12">
+                    <Palette className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Readings in Archive</h3>
+                    <p className="text-gray-500 mb-6">Perform your first aura analysis to start building your archive</p>
                     <Link to="/aura-analysis">
-                      <Button>Get Your First Reading</Button>
+                      <Button className="bg-purple-600 hover:bg-purple-700">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Perform First Reading
+                      </Button>
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-[800px] overflow-y-auto">
-                    <div className="text-sm text-gray-600 mb-2">
-                      Showing latest {healerAuraReadings.length} readings
+                  <div className="max-h-[1000px] overflow-y-auto">
+                    <div className="bg-gray-50 px-6 py-3 border-b">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">
+                          Archive: {healerAuraReadings.length} readings stored with complete analysis
+                        </span>
+                        <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                          {healerAuraReadings.filter(r => r.createdAt && new Date(r.createdAt) > new Date(Date.now() - 7*24*60*60*1000)).length} this week
+                        </Badge>
+                      </div>
                     </div>
-                    {healerAuraReadings.map((reading) => (
-                      <Suspense key={reading.id} fallback={
-                        <div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
-                      }>
-                        <DetailedAuraReadingCard reading={reading} />
-                      </Suspense>
-                    ))}
+                    <div className="divide-y">
+                      {healerAuraReadings.map((reading, index) => (
+                        <ArchiveReadingCard key={reading.id} reading={reading} index={index} />
+                      ))}
+                    </div>
                   </div>
                 )}
               </CardContent>
