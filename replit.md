@@ -43,7 +43,7 @@ Preferred communication style: Simple, everyday language.
 - **User Management**: Session-based authentication, distinct client and healer roles, subscription-based premium features. New users default to client type; healers are manually added and managed via database.
 - **Image Processing**: Dual-system image processing - standardized resizing (1600x900) and compression (target 150KB) for AI analysis, plus dedicated aura visualization system creating consistent 1600px × 900px output images with standardized zone positioning and black backgrounds. Includes robust human detection for specific analysis types.
 - **PDF Generation**: Comprehensive PDF reports for aura analysis (for clients) and detailed reports (for healers), including original and processed images, chakra analysis, spiritual guidance, and healer notes.
-- **Credit System**: Users consume credits for services (e.g., aura analysis, object analysis, healer bookings). New users receive default credits.
+- **Credit System**: Dynamic pricing based on user type. Clients: Object scan (3), Connect with healer (3), Human aura scan (15), What's my vibe (1), Numerology (5). Healers: Object scan (1), Human aura scan (5), What's my vibe (1), Healer booking (1), Numerology (3). New clients receive 30 initial credits, new healers receive 100 initial credits.
 - **User Verification**: WhatsApp OTP for mobile verification (via Twilio), and email validation (via AbstractAPI) during registration.
 - **Branding**: Dynamic branding updates, currently using "AuraEye" with a user-provided image logo.
 

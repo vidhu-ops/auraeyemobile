@@ -31,6 +31,9 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   
+  // Credit costs based on user type
+  getCreditCost(userId: number, serviceType: string): Promise<number>;
+  
   // Aura readings
   saveAuraReading(reading: InsertAuraReading): Promise<AuraReading>;
   getAuraReadingsByUser(userId: number): Promise<AuraReading[]>;
@@ -123,22 +126,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    // Set credits based on user type: clients get 30, healers get 100
+    const userType = insertUser.userType || "client";
+    const isHealer = userType === 'healer';
+    const initialCredits = isHealer ? 100 : 30;
+    
     const [user] = await db
       .insert(users)
       .values({
         ...insertUser,
-        userType: insertUser.userType || "client",
-        credits: insertUser.credits || 10 // Ensure new users get 10 credits
+        userType,
+        credits: insertUser.credits || initialCredits
       })
       .returning();
     
     // Log the initial credit grant
     await this.createCreditTransaction({
       userId: user.id,
-      amount: 10,
+      amount: initialCredits,
       transactionType: "registration",
-      description: "Welcome bonus - 10 free credits",
-      balanceAfter: 10,
+      description: `Welcome bonus - ${initialCredits} free credits (${isHealer ? 'healer' : 'client'} account)`,
+      balanceAfter: initialCredits,
     });
     
     return user;
@@ -515,6 +523,39 @@ export class DatabaseStorage implements IStorage {
       .values(transaction)
       .returning();
     return creditTransaction;
+  }
+
+  // Get credit cost based on user type and service
+  async getCreditCost(userId: number, serviceType: string): Promise<number> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error('User not found for credit cost calculation');
+    }
+    
+    const isHealer = user.userType === 'healer';
+    
+    // Define credit costs for different service types
+    const creditCosts = {
+      // Client costs
+      client: {
+        'vibe_check': 1,
+        'object_analysis': 3,
+        'aura_analysis': 15,
+        'healer_booking': 3,
+        'numerology': 5,
+      },
+      // Healer costs (subscription-based lower rates)
+      healer: {
+        'vibe_check': 1,
+        'object_analysis': 1,
+        'aura_analysis': 5,
+        'healer_booking': 1,
+        'numerology': 3,
+      }
+    };
+    
+    const userTypeCosts = isHealer ? creditCosts.healer : creditCosts.client;
+    return userTypeCosts[serviceType as keyof typeof userTypeCosts] || 1;
   }
 
   // Password reset tokens
