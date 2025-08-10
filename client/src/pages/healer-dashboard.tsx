@@ -32,6 +32,7 @@ import {
   Plus,
   FileText
 } from "lucide-react";
+import { PdfManagement } from "@/components/PdfManagement";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
@@ -1813,12 +1814,13 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
+          <TabsTrigger value="pdfs">My PDFs</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -2242,6 +2244,11 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* PDF Management Tab */}
+        <TabsContent value="pdfs" className="space-y-6">
+          <PdfManagement />
         </TabsContent>
       </Tabs>
 

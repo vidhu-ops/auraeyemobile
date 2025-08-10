@@ -3465,6 +3465,46 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // PDF management routes
+  app.get("/api/user-pdfs", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const pdfs = await storage.getUserPdfs(req.user.id);
+      res.json(pdfs);
+    } catch (error) {
+      console.error("Error retrieving user PDFs:", error);
+      res.status(500).json({ message: "Failed to retrieve PDFs" });
+    }
+  });
+
+  app.get("/api/pdf/download/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const pdfId = parseInt(req.params.id);
+      const pdf = await storage.getUserPdf(pdfId);
+      
+      if (!pdf || pdf.userId !== req.user.id) {
+        return res.status(404).json({ message: "PDF not found or access denied" });
+      }
+
+      // Import ObjectStorageService dynamically
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorage = new ObjectStorageService();
+      
+      const file = await objectStorage.getPdfFile(pdf.pdfPath);
+      await objectStorage.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      res.status(500).json({ message: "Failed to download PDF" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   
