@@ -123,7 +123,7 @@ const getColorEnergyWork = (color: string): string => {
     'Pink': 'Focus on unconditional love practices, emotional healing, and nurturing energy',
     'Gold': 'Work on divine wisdom integration, spiritual mastery, and enlightened service',
     'White': 'Practice light work, spiritual protection, and angelic connection',
-    'Silver': 'Develop lunar sensitivity, psychic protection, and emotional attunement'
+    'Silver': 'Develop moon related sensitivity, intutive protection, and emotional attunement'
   };
   return practices[color] || 'Work with your unique aura energy through specialized spiritual practices';
 };
@@ -437,7 +437,7 @@ export default function AuraAnalysis() {
       'Indigo': 'Develop psychic abilities through meditation and trust your intuitive insights',
       'Violet': 'Deepen spiritual practices and align with your higher purpose and divine mission',
       'Gold': 'Share your wisdom through teaching and guide others on their spiritual journey',
-      'Silver': 'Enhance psychic sensitivity and learn to channel divine guidance effectively',
+      'Silver': 'Enhance intutive sensitivity and learn to channel divine guidance effectively',
       'White': 'Practice spiritual purification and maintain high vibrational energy alignment',
       'Black': 'Embrace shadow work and transform limiting beliefs through deep inner exploration',
       'Gray': 'Cultivate emotional balance and learn to remain centered during challenging times',
@@ -1689,11 +1689,33 @@ export default function AuraAnalysis() {
 
       // Download the PDF
       const currentDate = new Date().toISOString().split('T')[0];
-      pdf.save(`aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`);
+      const fileName = `aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`;
+      pdf.save(fileName);
+
+      // Save PDF to database for re-download access
+      try {
+        const pdfBlob = pdf.output('blob');
+        const formData = new FormData();
+        formData.append('pdf', pdfBlob, fileName);
+        formData.append('analysisType', 'aura_reading');
+        formData.append('analysisId', String(result.id || 0));
+        formData.append('analysisName', nameToUse);
+        
+        await fetch('/api/pdfs/save', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        // Invalidate PDF queries to refresh dashboard
+        queryClient.invalidateQueries({ queryKey: ['/api/pdfs'] });
+      } catch (saveError) {
+        console.error('Error saving PDF to database:', saveError);
+        // Continue with success message even if save fails
+      }
 
       toast({
         title: "PDF Downloaded Successfully",
-        description: "Your comprehensive aura analysis report has been downloaded with all sections and analysis data.",
+        description: "Your comprehensive aura analysis report has been downloaded and saved to your dashboard.",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);

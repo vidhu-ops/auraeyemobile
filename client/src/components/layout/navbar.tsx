@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, User, LogOut, CreditCard } from "lucide-react";
+import { Menu, User, LogOut, CreditCard, FileText } from "lucide-react";
 import logoPath from "@/assets/new-logo.jpeg";
 
 export default function Navbar() {
@@ -96,6 +96,15 @@ export default function Navbar() {
                         >
                           My Dashboard
                         </Link>
+                        {user.userType === 'client' && (
+                          <Link 
+                            href="/my-readings" 
+                            onClick={closeSheet}
+                            className="block py-2 px-2 rounded-lg text-primary font-medium"
+                          >
+                            My Readings
+                          </Link>
+                        )}
                         <Button 
                           variant="ghost" 
                           className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2"
@@ -176,6 +185,14 @@ export default function Navbar() {
                       <User className="mr-2 h-4 w-4" />
                       <span>{user.username}</span>
                     </DropdownMenuItem>
+                    {user.userType === 'client' && (
+                      <Link href="/my-readings">
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          <span>My Readings</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
                     <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Logout</span>
