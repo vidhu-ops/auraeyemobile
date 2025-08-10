@@ -20,24 +20,30 @@ import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
 
-// Credit checking middleware
-async function checkCredits(req: any, res: any, next: any) {
-  if (!req.user || !req.user.id) {
-    return res.status(401).json({ error: "Authentication required" });
-  }
-  
-  const userId = req.user.id;
-  const userCredits = await storage.getUserCredits(userId);
-  
-  if (userCredits < 1) {
-    return res.status(402).json({ 
-      error: "Insufficient credits",
-      message: "You need at least 1 credit to use this service. Please purchase credits to continue.",
-      credits: userCredits 
-    });
-  }
-  
-  next();
+// Credit checking middleware with dynamic pricing
+function checkCredits(serviceType: string) {
+  return async (req: any, res: any, next: any) => {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    
+    const userId = req.user.id;
+    const userCredits = await storage.getUserCredits(userId);
+    const requiredCredits = await storage.getCreditCost(userId, serviceType);
+    
+    if (userCredits < requiredCredits) {
+      return res.status(402).json({ 
+        error: "Insufficient credits",
+        message: `You need ${requiredCredits} credits to use this service. You have ${userCredits} credits.`,
+        credits: userCredits,
+        required: requiredCredits
+      });
+    }
+    
+    // Store the required credits in the request for later use
+    req.creditCost = requiredCredits;
+    next();
+  };
 }
 
 
@@ -1040,7 +1046,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // API routes
   // Object Analysis API endpoint
-  app.post("/api/analyze-object", isAuthenticated, checkCredits, upload.single("image"), async (req, res) => {
+  app.post("/api/analyze-object", isAuthenticated, checkCredits('object_analysis'), upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imgBuffer: Buffer;
@@ -1100,8 +1106,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             detailedAnalysis: deterministicResult.detailedAnalysis
           });
           
-          // Deduct 1 credit for successful analysis
-          const creditDeducted = await storage.deductCredits(req.user.id, 1, 'object_analysis', `Object analysis for ${analysisName}`);
+          // Deduct credits for successful analysis
+          const creditDeducted = await storage.deductCredits(req.user.id, req.creditCost, 'object_analysis', `Object analysis for ${analysisName}`);
           console.log('Object analysis credit deduction result:', creditDeducted);
         } catch (saveError) {
           console.error("Error saving object analysis:", saveError);
@@ -1318,7 +1324,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 }
 
   // Aura Analysis API endpoint
-  app.post("/api/analyze-aura", isAuthenticated, checkCredits, upload.single("image"), async (req, res) => {
+  app.post("/api/analyze-aura", isAuthenticated, checkCredits('aura_analysis'), upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
@@ -1502,8 +1508,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           // Add the saved reading ID to the response
           auraAnalysis.id = savedReading.id;
           
-          // Deduct 1 credit for successful analysis
-          await storage.deductCredits(req.user.id, 1, 'aura_analysis', `Aura analysis for ${analysisName}`);
+          // Deduct credits for successful analysis
+          await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
           console.log("Aura reading saved successfully");
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
@@ -1635,7 +1641,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 
   // Numerology calculation endpoints
   // Healer numerology endpoint - creates readings for healer's private use
-  app.post("/api/healer-numerology", isAuthenticated, async (req, res) => {
+  app.post("/api/healer-numerology", isAuthenticated, checkCredits('numerology'), async (req, res) => {
     try {
       const { name, birthDate } = req.body;
       
@@ -1666,6 +1672,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           personalYearNumber: numerologyProfile.personalYearNumber,
           interpretation: numerologyProfile.interpretation
         });
+        
+        // Deduct credits for successful numerology reading
+        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
       } catch (apiError) {
         console.error("Healer numerology API error, using fallback:", apiError);
         
@@ -1708,6 +1717,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           personalityNumber: numerologyProfile.personalityNumber,
           interpretation: numerologyProfile.interpretation
         });
+        
+        // Deduct credits for successful numerology reading
+        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
       }
       
       // Create comprehensive response structure for healer dashboard
@@ -2155,24 +2167,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Healer booking API endpoint with email notification
-  app.post("/api/book-session", async (req, res) => {
+  app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
       const user = req.user as any;
-      if (!user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-
       const { healerId, message } = req.body;
-      
-      // Check if user has enough credits (1 credit required)
-      const userCredits = await storage.getUserCredits(user.id);
-      if (userCredits < 1) {
-        return res.status(400).json({ 
-          message: "Insufficient credits. You need 1 credit to book a healer session.",
-          requiredCredits: 1,
-          currentCredits: userCredits
-        });
-      }
 
       // Get healer details
       const healer = await storage.getHealer(healerId);
@@ -2180,10 +2178,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "Healer not found" });
       }
 
-      // Deduct 1 credit for the booking
+      // Deduct credits for the booking
       const creditDeducted = await storage.deductCredits(
         user.id,
-        1,
+        req.creditCost,
         "healer_booking",
         `Healer booking with ${healer.name}`
       );
@@ -2191,8 +2189,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
       if (!creditDeducted) {
         return res.status(400).json({ 
           message: "Failed to deduct credits. Please try again.",
-          requiredCredits: 1,
-          currentCredits: userCredits
+          requiredCredits: req.creditCost,
+          currentCredits: await storage.getUserCredits(user.id)
         });
       }
 
@@ -2221,8 +2219,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         message: "Booking request sent successfully",
         booking: booking,
         emailSent: emailSent,
-        creditsDeducted: 1,
-        remainingCredits: userCredits - 1
+        creditsDeducted: req.creditCost,
+        remainingCredits: await storage.getUserCredits(user.id)
       });
     } catch (error) {
       console.error("Error processing booking:", error);
@@ -2409,7 +2407,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Quick vibe check - simplified aura analysis for home page
-  app.post("/api/quick-vibe", isAuthenticated, checkCredits, upload.single('image'), async (req, res) => {
+  app.post("/api/quick-vibe", isAuthenticated, checkCredits('vibe_check'), upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No image file provided" });
@@ -2523,9 +2521,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
         negative: 'Your energy may need balancing and harmonizing.'
       };
 
-      // Deduct 1 credit for successful analysis
+      // Deduct credits for successful analysis
       if (req.user) {
-        await storage.deductCredits(req.user.id, 1, 'quick_vibe', 'Quick vibe analysis');
+        await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
       }
 
       res.json({
@@ -2781,7 +2779,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Live numerology calculation endpoint (no saving to database) - for healers only
-  app.post("/api/numerology-live", isAuthenticated, async (req, res) => {
+  app.post("/api/numerology-live", isAuthenticated, checkCredits('numerology'), async (req, res) => {
     try {
       if (req.user.userType !== 'healer') {
         return res.status(403).json({ message: "Access denied: Not a healer" });
@@ -2925,6 +2923,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       console.log(`Live numerology result:`, JSON.stringify(result, null, 2));
 
+      // Deduct credits for live numerology reading
+      await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
+      
       console.log(`Live numerology reading generated successfully for ${name}`);
       res.json(result);
     } catch (error) {
