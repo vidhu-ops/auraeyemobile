@@ -514,7 +514,7 @@ export default function HomePage() {
       
       {/* What's My Vibe? Section */}
       <section id="vibe-check-section" className="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-7">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
               <Sparkles className="h-8 w-8 text-violet-500 mr-3" />
@@ -528,7 +528,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-8xl border-white p-19 mx-auto">
             <Card className="bg-white backdrop-blur-sm">
               <CardContent className="p-1">
                 {!imagePreview ? (
@@ -650,21 +650,15 @@ export default function HomePage() {
                               </p>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
                               {/* Left Column - Aura Visualization (keeping existing) */}
                               <div className="flex justify-center">
                                 <div className="relative max-w-sm w-full">
-                                  <img
-                                    src={processedImage || imagePreview}
-                                    alt="Your aura visualization"
-                                    className="w-full rounded-lg shadow-lg"
-                                  />
+                                 
                                   {vibeResult && !processedImage && (
                                     <div className={`absolute inset-0 rounded-lg bg-gradient-radial ${getColorGradient(vibeResult.dominantColor)} pointer-events-none`}></div>
                                   )}
-                                  <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                                    Preview only - Watermark visible on all reports
-                                  </div>
+                                 
                                 </div>
                               </div>
 
@@ -699,24 +693,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Additional Info Cards in 2x2 grid */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="bg-gray-100 rounded-lg p-3 text-center">
-                                    <div className="text-sm font-medium text-gray-600 mb-1">5th Aura Service</div>
-                                    <div className="text-xs text-gray-500">Premium - Pay by Session</div>
-                                  </div>
-                                  <div className="bg-gray-100 rounded-lg p-3 text-center">
-                                    <div className="text-sm font-medium text-gray-600 mb-1">Mindmapping Service</div>
-                                    <div className="text-xs text-gray-500">Premium - Pay by Session</div>
-                                  </div>
-                                  <div className="bg-gray-100 rounded-lg p-3 text-center">
-                                    <div className="text-sm font-medium text-gray-600 mb-1">Reading</div>
-                                    <div className="text-xs text-gray-500">Premium - Pay by Session</div>
-                                  </div>
-                                  <div className="bg-gray-100 rounded-lg p-3 text-center">
-                                    <div className="text-sm font-medium text-gray-600 mb-1">1 Day Energy Trend</div>
-                                    <div className="text-xs text-gray-500">Premium - Pay by Session</div>
-                                  </div>
-                                </div>
+                               
                               </div>
                             </div>
 
