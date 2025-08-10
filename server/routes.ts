@@ -3466,6 +3466,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // PDF management routes
+  app.post("/api/pdfs/save", upload.single('pdf'), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const { analysisType, analysisId, analysisName } = req.body;
+      const pdfFile = req.file;
+      
+      if (!analysisType || !analysisName || !pdfFile) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Save PDF to storage with correct field names
+      const savedPdf = await storage.saveUserPdf({
+        userId: req.user.id,
+        pdfName: analysisName,
+        pdfPath: pdfFile.buffer.toString('base64'), // Store as base64 for now
+        pdfType: analysisType,
+        screenshotData: null,
+        auraReadingId: analysisId ? parseInt(analysisId) : null
+      });
+
+      res.json(savedPdf);
+    } catch (error) {
+      console.error("Error saving PDF:", error);
+      res.status(500).json({ message: "Failed to save PDF" });
+    }
+  });
+
   app.get("/api/user-pdfs", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Authentication required" });
@@ -3480,7 +3510,34 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  app.get("/api/pdf/download/:id", async (req, res) => {
+  app.get("/api/pdfs", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const pdfs = await storage.getUserPdfs(req.user.id);
+      
+      // Map database fields to frontend expected fields
+      const mappedPdfs = pdfs.map(pdf => ({
+        id: pdf.id,
+        userId: pdf.userId,
+        fileName: pdf.pdfName,
+        filePath: pdf.pdfPath,
+        analysisType: pdf.pdfType,
+        analysisId: pdf.auraReadingId || 0,
+        analysisName: pdf.pdfName,
+        createdAt: pdf.createdAt
+      }));
+      
+      res.json(mappedPdfs);
+    } catch (error) {
+      console.error("Error retrieving PDFs:", error);
+      res.status(500).json({ message: "Failed to retrieve PDFs" });
+    }
+  });
+
+  app.get("/api/pdfs/:id/download", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Authentication required" });
     }
@@ -3493,12 +3550,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "PDF not found or access denied" });
       }
 
-      // Import ObjectStorageService dynamically
-      const { ObjectStorageService } = await import("./objectStorage");
-      const objectStorage = new ObjectStorageService();
+      // Convert base64 back to buffer and send as PDF
+      const pdfBuffer = Buffer.from(pdf.pdfPath, 'base64');
       
-      const file = await objectStorage.getPdfFile(pdf.pdfPath);
-      await objectStorage.downloadObject(file, res);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${pdf.pdfName}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length);
+      
+      res.send(pdfBuffer);
     } catch (error) {
       console.error("Error downloading PDF:", error);
       res.status(500).json({ message: "Failed to download PDF" });
