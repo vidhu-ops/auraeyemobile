@@ -16,7 +16,6 @@ import DailyHoroscope from "@/pages/daily-horoscope";
 import PersonalizedHoroscope from "@/pages/personalized-horoscope";
 import Numerology from "@/pages/numerology";
 import Journal from "@/pages/journal";
-import MyReadings from "@/pages/my-readings";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Services from "@/pages/services";
@@ -43,7 +42,6 @@ function Router() {
       <ProtectedRoute path="/personalized-horoscope" component={PersonalizedHoroscope} />
       <ProtectedRoute path="/numerology" component={Numerology} />
       <ProtectedRoute path="/journal" component={Journal} />
-      <ProtectedRoute path="/my-readings" component={MyReadings} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/pricing" component={PricingPage} />

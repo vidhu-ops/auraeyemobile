@@ -82,7 +82,7 @@ const getColorSpiritalMeaning = (color: string): string => {
     },
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-    'Silver': 'Lunar energy and sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
+    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
     'black': 'Shadow work and transformative energy. This deep frequency represents deep spiritual integration and shadow healing.',
     'grey': 'Neutral balance and adaptable wisdom. This balanced frequency indicates wise neutrality and peaceful resolution.',
     'brown': 'Earth connection and grounding stability. This practical frequency represents natural wisdom and earth-based spiritual growth.',
@@ -123,7 +123,7 @@ const getColorEnergyWork = (color: string): string => {
     'Pink': 'Focus on unconditional love practices, emotional healing, and nurturing energy',
     'Gold': 'Work on divine wisdom integration, spiritual mastery, and enlightened service',
     'White': 'Practice light work, spiritual protection, and angelic connection',
-    'Silver': 'Develop moon related sensitivity, intutive protection, and emotional attunement'
+    'Silver': 'Develop lunar sensitivity, psychic protection, and emotional attunement'
   };
   return practices[color] || 'Work with your unique aura energy through specialized spiritual practices';
 };
@@ -437,7 +437,7 @@ export default function AuraAnalysis() {
       'Indigo': 'Develop psychic abilities through meditation and trust your intuitive insights',
       'Violet': 'Deepen spiritual practices and align with your higher purpose and divine mission',
       'Gold': 'Share your wisdom through teaching and guide others on their spiritual journey',
-      'Silver': 'Enhance intutive sensitivity and learn to channel divine guidance effectively',
+      'Silver': 'Enhance psychic sensitivity and learn to channel divine guidance effectively',
       'White': 'Practice spiritual purification and maintain high vibrational energy alignment',
       'Black': 'Embrace shadow work and transform limiting beliefs through deep inner exploration',
       'Gray': 'Cultivate emotional balance and learn to remain centered during challenging times',
@@ -1689,33 +1689,11 @@ export default function AuraAnalysis() {
 
       // Download the PDF
       const currentDate = new Date().toISOString().split('T')[0];
-      const fileName = `aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`;
-      pdf.save(fileName);
-
-      // Save PDF to database for re-download access
-      try {
-        const pdfBlob = pdf.output('blob');
-        const formData = new FormData();
-        formData.append('pdf', pdfBlob, fileName);
-        formData.append('analysisType', 'aura_reading');
-        formData.append('analysisId', String(result.id || 0));
-        formData.append('analysisName', nameToUse);
-        
-        await fetch('/api/pdfs/save', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        // Invalidate PDF queries to refresh dashboard
-        queryClient.invalidateQueries({ queryKey: ['/api/pdfs'] });
-      } catch (saveError) {
-        console.error('Error saving PDF to database:', saveError);
-        // Continue with success message even if save fails
-      }
+      pdf.save(`aura-chakra-analysis-${nameToUse.replace(/[^a-zA-Z0-9]/g, '-')}-${currentDate}.pdf`);
 
       toast({
         title: "PDF Downloaded Successfully",
-        description: "Your comprehensive aura analysis report has been downloaded and saved to your dashboard.",
+        description: "Your comprehensive aura analysis report has been downloaded with all sections and analysis data.",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -8368,7 +8346,7 @@ export default function AuraAnalysis() {
                                     <div className="text-center mb-3">
                                       <div className="text-2xl font-bold text-red-600">
                                         {(() => {
-                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras including Earth Star
+                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras
                                           const soulStarScore = calculateSoulStarChakra(result);
                                           const crownScore = result.chakraActivity?.crown || 5;
                                           const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
@@ -8377,9 +8355,8 @@ export default function AuraAnalysis() {
                                           const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
                                           const sacralScore = result.chakraActivity?.sacral || 5;
                                           const rootScore = result.chakraActivity?.root || 5;
-                                          const earthStarScore = calculateEarthStarChakra(result);
                                           
-                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore) + (10 - earthStarScore);
+                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
                                           return negativeInfluence.toFixed(1);
                                         })()}
                                       </div>
@@ -8387,7 +8364,7 @@ export default function AuraAnalysis() {
                                     </div>
                                     <div className="text-xs text-gray-600">
                                       {(() => {
-                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras including Earth Star
+                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras
                                         const soulStarScore = calculateSoulStarChakra(result);
                                         const crownScore = result.chakraActivity?.crown || 5;
                                         const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
@@ -8396,14 +8373,13 @@ export default function AuraAnalysis() {
                                         const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
                                         const sacralScore = result.chakraActivity?.sacral || 5;
                                         const rootScore = result.chakraActivity?.root || 5;
-                                        const earthStarScore = calculateEarthStarChakra(result);
                                         
-                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore) + (10 - earthStarScore);
+                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
                                         
-                                        if (negativeInfluence <= 15) return "Very low negative influence, excellent energetic state";
-                                        if (negativeInfluence <= 30) return "Low negative influence, good energetic balance";
-                                        if (negativeInfluence <= 45) return "Moderate negative influence, some clearing recommended";
-                                        if (negativeInfluence <= 60) return "High negative influence, energy cleansing needed";
+                                        if (negativeInfluence <= 10) return "Very low negative influence, excellent energetic state";
+                                        if (negativeInfluence <= 20) return "Low negative influence, good energetic balance";
+                                        if (negativeInfluence <= 30) return "Moderate negative influence, some clearing recommended";
+                                        if (negativeInfluence <= 40) return "High negative influence, energy cleansing needed";
                                         return "Very high negative influence, urgent spiritual protection required";
                                       })()}
                                     </div>

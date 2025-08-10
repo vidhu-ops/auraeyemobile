@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, userPdfs, type UserPdf, type InsertUserPdf } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -92,11 +92,6 @@ export interface IStorage {
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
   validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
-
-  // PDF management
-  saveUserPdf(pdf: InsertUserPdf): Promise<UserPdf>;
-  getUserPdfs(userId: number): Promise<UserPdf[]>;
-  getUserPdf(id: number): Promise<UserPdf | undefined>;
 
   // Session store
   sessionStore: any;
@@ -607,31 +602,6 @@ export class DatabaseStorage implements IStorage {
       .update(passwordResetTokens)
       .set({ used: true })
       .where(eq(passwordResetTokens.id, tokenId));
-  }
-
-  // PDF management
-  async saveUserPdf(pdf: InsertUserPdf): Promise<UserPdf> {
-    const [savedPdf] = await db
-      .insert(userPdfs)
-      .values(pdf)
-      .returning();
-    return savedPdf;
-  }
-
-  async getUserPdfs(userId: number): Promise<UserPdf[]> {
-    return await db
-      .select()
-      .from(userPdfs)
-      .where(eq(userPdfs.userId, userId))
-      .orderBy(desc(userPdfs.createdAt));
-  }
-
-  async getUserPdf(id: number): Promise<UserPdf | undefined> {
-    const [pdf] = await db
-      .select()
-      .from(userPdfs)
-      .where(eq(userPdfs.id, id));
-    return pdf || undefined;
   }
 }
 

@@ -228,25 +228,6 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
-export const userPdfs = pgTable("user_pdfs", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  auraReadingId: integer("aura_reading_id").references(() => auraReadings.id),
-  pdfName: text("pdf_name").notNull(),
-  pdfPath: text("pdf_path").notNull(), // Object storage path
-  pdfType: text("pdf_type").notNull(), // "aura_analysis", "numerology", etc.
-  screenshotData: text("screenshot_data"), // JSON array of screenshot data
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => ({
-  userIdCreatedAtIdx: index("user_pdfs_user_id_created_at_idx").on(table.userId, table.createdAt),
-  createdAtIdx: index("user_pdfs_created_at_idx").on(table.createdAt),
-}));
-
-export const insertUserPdfSchema = createInsertSchema(userPdfs).omit({
-  id: true,
-  createdAt: true,
-});
-
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -269,5 +250,3 @@ export type OtpVerification = typeof otpVerifications.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
-export type UserPdf = typeof userPdfs.$inferSelect;
-export type InsertUserPdf = z.infer<typeof insertUserPdfSchema>;
