@@ -692,7 +692,53 @@ export default function HomePage() {
                                   </ul>
                                 </div>
 
-                                {/* Additional Info Cards in 2x2 grid */}
+                                {/* Blurred Premium Content Preview */}
+                                <div className="space-y-3">
+                                  {/* Main Blurred Section */}
+                                  <div className="relative bg-gray-100 rounded-lg p-4 overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-gray-400/80 to-gray-500/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                                      <div className="text-center">
+                                        <div className="text-sm font-semibold text-white mb-1">🔒 Premium Content</div>
+                                        <div className="text-xs text-white/90">Upgrade to unlock detailed insights</div>
+                                      </div>
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-700 mb-2">Chakra & Aura Analysis</div>
+                                    <div className="text-xs text-gray-600 mb-2">📍 Premium - Pay by Session</div>
+                                    <div className="text-xs text-gray-500">
+                                      Your {vibeResult.dominantColor.toLowerCase()} aura indicates specific chakra imbalances that require attention. 
+                                      The crown chakra shows elevated activity while your root chakra may need grounding. 
+                                      Detailed energy mapping reveals 3 primary areas for spiritual development...
+                                    </div>
+                                  </div>
+
+                                  {/* 2x2 Grid of Blurred Services */}
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
+                                      <div className="text-sm font-medium text-gray-600 mb-1">5th Aura Service</div>
+                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
+                                      <div className="text-xs text-gray-500">Deep energy field analysis beyond basic aura reading...</div>
+                                    </div>
+                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
+                                      <div className="text-sm font-medium text-gray-600 mb-1">Mindmapping Service</div>
+                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
+                                      <div className="text-xs text-gray-500">Spiritual journey mapping and energy pathway visualization...</div>
+                                    </div>
+                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
+                                      <div className="text-sm font-medium text-gray-600 mb-1">Reading</div>
+                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
+                                      <div className="text-xs text-gray-500">Comprehensive spiritual reading with karmic patterns...</div>
+                                    </div>
+                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
+                                      <div className="text-sm font-medium text-gray-600 mb-1">1 Day Energy Trend</div>
+                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
+                                      <div className="text-xs text-gray-500">Daily energy fluctuation tracking and prediction...</div>
+                                    </div>
+                                  </div>
+                                </div>
                                
                               </div>
                             </div>
