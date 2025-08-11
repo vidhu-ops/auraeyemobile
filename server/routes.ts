@@ -3464,13 +3464,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // PDF upload endpoint for healer dashboard
   app.post('/api/upload-pdf', isAuthenticated, upload.single('pdf'), async (req, res) => {
     try {
+      console.log('PDF upload request received from user:', req.user.id);
+      console.log('File info:', req.file ? { name: req.file.originalname, size: req.file.size } : 'No file');
+      console.log('Body data:', req.body);
+      
       if (!req.file) {
+        console.log('No PDF file uploaded');
         return res.status(400).json({ message: "No PDF file uploaded" });
       }
 
       const { clientUserId, analysisType, analysisId, originalFileName } = req.body;
       
       if (!clientUserId || !analysisType || !analysisId) {
+        console.log('Missing required fields:', { clientUserId, analysisType, analysisId });
         return res.status(400).json({ message: "Missing required fields" });
       }
 
@@ -3479,17 +3485,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const fileName = `${analysisType}-${timestamp}-${req.file.originalname}`;
       const filePath = `uploads/pdfs/${fileName}`;
       
+      console.log('Creating file at path:', filePath);
+      
       // Create the uploads/pdfs directory if it doesn't exist
       const fs = await import('fs');
       const path = await import('path');
       const uploadsDir = path.join(process.cwd(), 'uploads', 'pdfs');
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
+        console.log('Created uploads directory');
       }
       
       // Save the file to the uploads directory
       const fullPath = path.join(uploadsDir, fileName);
       fs.writeFileSync(fullPath, req.file.buffer);
+      console.log('File saved to:', fullPath);
 
       // Save download record with file path
       const download = await storage.saveDownload({
@@ -3503,10 +3513,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
         originalFileName: originalFileName || fileName
       });
 
+      console.log('Download record saved:', download.id);
       res.json({ success: true, download });
     } catch (error) {
       console.error("Error uploading PDF:", error);
-      res.status(500).json({ message: "Failed to upload PDF" });
+      res.status(500).json({ message: "Failed to upload PDF", error: error.message });
     }
   });
 
