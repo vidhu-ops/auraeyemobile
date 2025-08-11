@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import crypto from "crypto";
 import sharp from "sharp";
+import path from "path";
+import fs from "fs";
 import { setupAuth, isAuthenticated } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
@@ -3614,6 +3616,106 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error serving PDF:", error);
       res.status(500).json({ message: "Failed to serve PDF" });
+    }
+  });
+
+  // PDF upload endpoint for healer downloads archive
+  app.post('/api/upload-pdf', isAuthenticated, async (req: any, res) => {
+    console.log('PDF UPLOAD SERVER DEBUG - Endpoint called, user:', req.user?.username);
+    
+    try {
+      // Configure multer for PDF files
+      const pdfStorage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          const uploadDir = path.join(process.cwd(), 'uploads', 'pdfs');
+          // Create directory if it doesn't exist
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+            console.log('PDF UPLOAD DEBUG - Created uploads/pdfs directory');
+          }
+          cb(null, uploadDir);
+        },
+        filename: function (req, file, cb) {
+          // Generate unique filename
+          const timestamp = Date.now();
+          const cleanName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '-');
+          const filename = `${timestamp}-${cleanName}`;
+          console.log('PDF UPLOAD DEBUG - Generated filename:', filename);
+          cb(null, filename);
+        }
+      });
+
+      const pdfFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+        console.log('PDF UPLOAD DEBUG - File filter check:', file.mimetype, file.originalname);
+        
+        // Accept PDF files
+        if (file.mimetype === 'application/pdf') {
+          cb(null, true);
+        } else {
+          console.log('PDF UPLOAD DEBUG - Rejected file type:', file.mimetype);
+          cb(new Error('Only PDF files are allowed for downloads archive'));
+        }
+      };
+
+      const uploadPdf = multer({ 
+        storage: pdfStorage,
+        fileFilter: pdfFilter,
+        limits: {
+          fileSize: 50 * 1024 * 1024, // 50MB max for PDF files
+        }
+      }).single('pdf');
+
+      uploadPdf(req, res, async (err) => {
+        if (err) {
+          console.error('PDF UPLOAD ERROR - Multer error:', err);
+          return res.status(400).json({ message: err.message });
+        }
+
+        if (!req.file) {
+          console.error('PDF UPLOAD ERROR - No file uploaded');
+          return res.status(400).json({ message: "No PDF file uploaded" });
+        }
+
+        console.log('PDF UPLOAD DEBUG - File uploaded successfully:', req.file.filename, 'Size:', req.file.size);
+
+        try {
+          // Save download record to database
+          const downloadRecord = await storage.createDownload({
+            healerId: req.user.id,
+            fileName: req.body.originalFileName || req.file.originalname,
+            fileData: `uploads/pdfs/${req.file.filename}`, // Store file path
+            analysisType: req.body.analysisType || 'aura',
+            clientName: req.body.clientName || 'Unknown Client',
+            downloadedAt: new Date(),
+            originalFileName: req.body.originalFileName || req.file.originalname
+          });
+
+          console.log('PDF UPLOAD DEBUG - Download record created:', downloadRecord.id);
+
+          res.json({ 
+            success: true, 
+            message: "PDF uploaded and archived successfully",
+            downloadId: downloadRecord.id,
+            fileName: downloadRecord.fileName
+          });
+
+        } catch (dbError) {
+          console.error('PDF UPLOAD ERROR - Database error:', dbError);
+          
+          // Clean up uploaded file on database error
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (cleanupError) {
+            console.error('PDF UPLOAD ERROR - Failed to cleanup file:', cleanupError);
+          }
+          
+          res.status(500).json({ message: "Failed to save PDF to archive" });
+        }
+      });
+
+    } catch (error) {
+      console.error('PDF UPLOAD ERROR - General error:', error);
+      res.status(500).json({ message: "Failed to process PDF upload" });
     }
   });
 
