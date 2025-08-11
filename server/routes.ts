@@ -600,20 +600,14 @@ async function generateSimpleZoneVisualization(
 }
 
 function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: string) {
-  // Create deterministic seed from image content and optional URL for versatility
-  const generateHash = (buffer: Buffer, urlSeed?: string): number => {
+  // Create deterministic seed ONLY from image content to ensure same image = same results
+  const generateHash = (buffer: Buffer): number => {
     const hasher = crypto.createHash('md5').update(buffer);
-    
-    // Add URL diversity factor if provided to create different combinations for different sources
-    if (urlSeed) {
-      hasher.update(urlSeed);
-    }
-    
     const hash = hasher.digest('hex');
     return parseInt(hash.substring(0, 8), 16);
   };
   
-  let seed = generateHash(imageBuffer, imageUrl);
+  let seed = generateHash(imageBuffer);
   const seededRandom = () => {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
@@ -1360,14 +1354,43 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Get the name from request body
       const analysisName = req.body.name || 'Unnamed';
 
-      // Use deterministic analysis with specific traits for all 4 colors
-      // Create URL diversity seed from original filename, timestamp, and request details
-      const urlSeed = req.file?.originalname || req.body.filename || Date.now().toString();
+      // Generate image hash for consistency checking
+      const imageHash = crypto.createHash('md5').update(compressedBuffer).digest('hex');
+      
+      // Check if we already have analysis for this exact image content
+      const existingReading = await storage.findAuraReadingByImageHash(imageHash);
       
       let auraAnalysis: any;
-      try {
-        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer, urlSeed);
-        
+      let useExistingAnalysis = false;
+      
+      if (existingReading) {
+        console.log("Found existing analysis for this image content, using consistent results");
+        // Use the existing analysis data to ensure consistency
+        try {
+          auraAnalysis = {
+            dominantColor: existingReading.dominantColor,
+            secondaryColor: existingReading.secondaryColor,
+            energyLevel: existingReading.energyLevel,
+            personalityTraits: JSON.parse(existingReading.personalityTraits || '[]'),
+            spiritualGuidance: existingReading.spiritualGuidance,
+            chakraActivity: JSON.parse(existingReading.chakraActivity || '{}'),
+            detailedAnalysis: existingReading.detailedAnalysis,
+            zones: JSON.parse(existingReading.zones || '{}'),
+            colorMeanings: JSON.parse(existingReading.colorMeanings || '{}'),
+            auraColorSpectrum: JSON.parse(existingReading.auraColorSpectrum || '[]'),
+            processedAuraImage: existingReading.processedAuraImage
+          };
+          useExistingAnalysis = true;
+        } catch (parseError) {
+          console.error("Error parsing existing analysis, generating new one:", parseError);
+          auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
+        }
+      } else {
+        // Generate new deterministic analysis based ONLY on image content
+        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
+      }
+
+      if (!useExistingAnalysis) {
         // Generate standardized aura visualization with consistent dimensions and zone positioning
         try {
           console.log("Generating standardized aura visualization with 1600x900px dimensions...");
@@ -1429,6 +1452,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           }
         };
       }
+    }
 
       // Ensure analysis has all required fields with specific traits
       if (!auraAnalysis.dominantColor) auraAnalysis.dominantColor = "Indigo";
@@ -1468,17 +1492,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         };
       }
 
-      // Save the aura reading to database if user is authenticated
-      if (req.isAuthenticated() && req.user) {
+      // Save the aura reading to database if user is authenticated and this is a new analysis
+      if (req.isAuthenticated() && req.user && !useExistingAnalysis) {
         try {
-          // Create a temporary image URL (in production, you'd upload to cloud storage)
-          const imageUrl = `data:image/jpeg;base64,${imageData}`;
-          
           const savedReading = await storage.saveAuraReading({
             userId: req.user.id,
             performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name: analysisName,
-            imageUrl,
+            imageUrl: imageHash, // Use image hash for consistency
             dominantColor: auraAnalysis.dominantColor,
             secondaryColor: auraAnalysis.secondaryColor,
             energyLevel: auraAnalysis.energyLevel,
@@ -1507,13 +1528,19 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           
           // Add the saved reading ID to the response
           auraAnalysis.id = savedReading.id;
-          
-          // Deduct credits for successful analysis
-          await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
           console.log("Aura reading saved successfully");
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
           // Don't fail the whole request if saving fails
+        }
+      }
+
+      // Deduct credits only for new analyses (not for existing ones)
+      if (req.isAuthenticated() && req.user && !useExistingAnalysis) {
+        try {
+          await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
+        } catch (creditError) {
+          console.error("Error deducting credits:", creditError);
         }
       }
 

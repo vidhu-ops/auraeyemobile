@@ -36,6 +36,7 @@ export interface IStorage {
   
   // Aura readings
   saveAuraReading(reading: InsertAuraReading): Promise<AuraReading>;
+  findAuraReadingByImageHash(imageHash: string): Promise<AuraReading | undefined>;
   getAuraReadingsByUser(userId: number): Promise<AuraReading[]>;
   getAuraReading(id: number): Promise<AuraReading | undefined>;
   updateAuraReadingReview(id: number, rating: number, reviewText?: string): Promise<AuraReading | undefined>;
@@ -171,6 +172,16 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return auraReading;
+  }
+
+  async findAuraReadingByImageHash(imageHash: string): Promise<AuraReading | undefined> {
+    // Look for existing analysis with the same image hash
+    const [reading] = await db
+      .select()
+      .from(auraReadings)
+      .where(eq(auraReadings.imageUrl, imageHash))
+      .limit(1);
+    return reading;
   }
 
   async getAuraReadingsByUser(userId: number): Promise<AuraReading[]> {
