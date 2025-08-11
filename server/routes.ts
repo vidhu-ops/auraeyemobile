@@ -3461,6 +3461,55 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // PDF upload endpoint for healer dashboard
+  app.post('/api/upload-pdf', isAuthenticated, upload.single('pdf'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No PDF file uploaded" });
+      }
+
+      const { clientUserId, analysisType, analysisId, originalFileName } = req.body;
+      
+      if (!clientUserId || !analysisType || !analysisId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Create a unique filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const fileName = `${analysisType}-${timestamp}-${req.file.originalname}`;
+      const filePath = `uploads/pdfs/${fileName}`;
+      
+      // Create the uploads/pdfs directory if it doesn't exist
+      const fs = await import('fs');
+      const path = await import('path');
+      const uploadsDir = path.join(process.cwd(), 'uploads', 'pdfs');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      
+      // Save the file to the uploads directory
+      const fullPath = path.join(uploadsDir, fileName);
+      fs.writeFileSync(fullPath, req.file.buffer);
+
+      // Save download record with file path
+      const download = await storage.saveDownload({
+        healerId: req.user.id,
+        clientUserId: parseInt(clientUserId),
+        analysisType,
+        analysisId: parseInt(analysisId),
+        downloadType: 'pdf',
+        fileName: fileName,
+        fileData: filePath, // Store file path instead of base64
+        originalFileName: originalFileName || fileName
+      });
+
+      res.json({ success: true, download });
+    } catch (error) {
+      console.error("Error uploading PDF:", error);
+      res.status(500).json({ message: "Failed to upload PDF" });
+    }
+  });
+
   // Downloads endpoints for healer dashboard
   app.post('/api/downloads', isAuthenticated, async (req, res) => {
     try {
@@ -3510,6 +3559,50 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error fetching download:", error);
       res.status(500).json({ message: "Failed to fetch download" });
+    }
+  });
+
+  // Serve PDF files for healer dashboard
+  app.get('/api/pdf/:id', isAuthenticated, async (req, res) => {
+    try {
+      const download = await storage.getDownload(parseInt(req.params.id));
+      
+      if (!download || download.healerId !== req.user.id) {
+        return res.status(404).json({ message: "PDF not found" });
+      }
+
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check if it's a file path or base64 data
+      if (download.fileData && download.fileData.startsWith('uploads/')) {
+        // It's a file path
+        const fullPath = path.join(process.cwd(), download.fileData);
+        
+        if (!fs.existsSync(fullPath)) {
+          return res.status(404).json({ message: "PDF file not found on server" });
+        }
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${download.fileName}"`);
+        
+        const fileStream = fs.createReadStream(fullPath);
+        fileStream.pipe(res);
+      } else {
+        // It's base64 data (legacy support)
+        if (!download.fileData) {
+          return res.status(404).json({ message: "No PDF data available" });
+        }
+        
+        const pdfBuffer = Buffer.from(download.fileData, 'base64');
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${download.fileName}"`);
+        res.send(pdfBuffer);
+      }
+    } catch (error) {
+      console.error("Error serving PDF:", error);
+      res.status(500).json({ message: "Failed to serve PDF" });
     }
   });
 
