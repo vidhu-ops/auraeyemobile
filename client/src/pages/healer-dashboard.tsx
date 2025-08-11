@@ -278,6 +278,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const updateReadingMutation = useMutation({
     mutationFn: async (notes: string) => {
@@ -1226,7 +1227,24 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyy-MM-dd');
-      pdf.save(`aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`);
+      const fileName = `aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`;
+      pdf.save(fileName);
+      
+      // Track download in healer dashboard
+      try {
+        await apiRequest("POST", "/api/downloads", {
+          clientUserId: reading.userId,
+          analysisType: 'aura',
+          analysisId: reading.id,
+          downloadType: 'pdf',
+          fileName: fileName,
+          originalFileName: `Aura Analysis Report - ${reading.name}`
+        });
+        // Refresh downloads list
+        queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
+      } catch (error) {
+        console.log('Download tracking failed:', error);
+      }
       
       toast({
         title: "PDF Generated",
@@ -1495,7 +1513,24 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
     }
     
     // Save the PDF
-    pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
+    const fileName = `numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`;
+    pdf.save(fileName);
+    
+    // Track download in healer dashboard
+    try {
+      apiRequest("POST", "/api/downloads", {
+        clientUserId: reading.userId,
+        analysisType: 'numerology',
+        analysisId: reading.id,
+        downloadType: 'pdf',
+        fileName: fileName,
+        originalFileName: `Numerology Reading - ${reading.name}`
+      });
+      // Refresh downloads list
+      queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
+    } catch (error) {
+      console.log('Download tracking failed:', error);
+    }
   };
 
   return (
