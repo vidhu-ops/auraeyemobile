@@ -228,6 +228,29 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
+// Downloads table for healer dashboard to track saved PDFs and screenshots
+export const downloads = pgTable("downloads", {
+  id: serial("id").primaryKey(),
+  healerId: integer("healer_id").notNull().references(() => users.id),
+  clientUserId: integer("client_user_id").notNull().references(() => users.id),
+  analysisType: text("analysis_type").notNull(), // "aura", "numerology", "object"
+  analysisId: integer("analysis_id").notNull(), // ID of the related analysis record
+  downloadType: text("download_type").notNull(), // "pdf", "screenshot"
+  fileName: text("file_name").notNull(),
+  fileData: text("file_data"), // Base64 encoded file data
+  originalFileName: text("original_file_name"), // For client reference
+  downloadedAt: timestamp("downloaded_at").defaultNow().notNull(),
+}, (table) => ({
+  // Performance indexes for healer dashboard queries
+  healerIdDownloadedAtIdx: index("downloads_healer_id_downloaded_at_idx").on(table.healerId, table.downloadedAt),
+  analysisTypeIdIdx: index("downloads_analysis_type_id_idx").on(table.analysisType, table.analysisId),
+}));
+
+export const insertDownloadSchema = createInsertSchema(downloads).omit({
+  id: true,
+  downloadedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -250,3 +273,5 @@ export type OtpVerification = typeof otpVerifications.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+export type Download = typeof downloads.$inferSelect;
+export type InsertDownload = z.infer<typeof insertDownloadSchema>;
