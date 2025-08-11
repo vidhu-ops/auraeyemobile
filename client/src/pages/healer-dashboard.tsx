@@ -1245,15 +1245,33 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         formData.append('analysisId', reading.id.toString());
         formData.append('originalFileName', `Aura Analysis Report - ${reading.name}`);
         
+        console.log('Uploading PDF to server...', fileName);
         const uploadResponse = await fetch('/api/upload-pdf', {
           method: 'POST',
           body: formData,
           credentials: 'include'
         });
         
+        console.log('Upload response status:', uploadResponse.status);
+        const responseData = await uploadResponse.json();
+        console.log('Upload response data:', responseData);
+        
         if (uploadResponse.ok) {
+          console.log('PDF uploaded successfully, refreshing downloads list');
           // Refresh downloads list
           queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
+          
+          toast({
+            title: "PDF Saved",
+            description: "PDF has been saved to your downloads archive",
+          });
+        } else {
+          console.error('Upload failed:', responseData);
+          toast({
+            title: "Upload Failed",
+            description: "PDF generated but failed to save to archive",
+            variant: "destructive"
+          });
         }
       } catch (error) {
         console.log('PDF upload and tracking failed:', error);
@@ -1543,15 +1561,33 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
       formData.append('analysisId', reading.id.toString());
       formData.append('originalFileName', `Numerology Reading - ${reading.name}`);
       
+      console.log('Uploading numerology PDF to server...', fileName);
       const uploadResponse = await fetch('/api/upload-pdf', {
         method: 'POST',
         body: formData,
         credentials: 'include'
       });
       
+      console.log('Numerology upload response status:', uploadResponse.status);
+      const responseData = await uploadResponse.json();
+      console.log('Numerology upload response data:', responseData);
+      
       if (uploadResponse.ok) {
+        console.log('Numerology PDF uploaded successfully, refreshing downloads list');
         // Refresh downloads list
         queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
+        
+        toast({
+          title: "PDF Saved",
+          description: "Numerology PDF has been saved to your downloads archive",
+        });
+      } else {
+        console.error('Numerology upload failed:', responseData);
+        toast({
+          title: "Upload Failed", 
+          description: "PDF generated but failed to save to archive",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.log('PDF upload and tracking failed:', error);
@@ -1727,7 +1763,7 @@ const DownloadsSection = memo(function DownloadsSection() {
               </h4>
               
               <p className="text-sm text-gray-600 mb-3">
-                Downloaded: {format(new Date(download.downloadedAt), 'MMM dd, yyyy HH:mm')}
+                Downloaded: {format(new Date(download.downloadedAt || download.createdAt), 'MMM dd, yyyy HH:mm')}
               </p>
               
               <div className="space-y-2">
