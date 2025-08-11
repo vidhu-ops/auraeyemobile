@@ -3462,7 +3462,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Downloads endpoints for healer dashboard
-  app.post('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+  app.post('/api/downloads', isAuthenticated, async (req, res) => {
     try {
       const { clientUserId, analysisType, analysisId, downloadType, fileName, fileData, originalFileName } = req.body;
       
@@ -3488,7 +3488,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  app.get('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+  app.get('/api/downloads', isAuthenticated, async (req, res) => {
     try {
       const downloads = await storage.getDownloadsByHealer(req.user.id);
       res.json(downloads);
@@ -3498,7 +3498,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  app.get('/api/downloads/:id', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+  app.get('/api/downloads/:id', isAuthenticated, async (req, res) => {
     try {
       const download = await storage.getDownload(parseInt(req.params.id));
       
