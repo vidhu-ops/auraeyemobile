@@ -1421,38 +1421,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
         
         console.log("Aura analysis generated successfully");
-      } catch (analysisError) {
-        console.error("Analysis generation failed:", analysisError);
-        // Provide guaranteed fallback analysis with specific traits
-        const personalityTraits = getSpecificColorTraits("Indigo", "personality");
-        const givingTraits = getSpecificColorTraits("Violet", "giving");
-        const receivingTraits = getSpecificColorTraits("Blue", "receiving");
-        const thinkingTraits = getSpecificColorTraits("Gold", "thinking");
-        
-        auraAnalysis = {
-          dominantColor: "Indigo",
-          secondaryColor: "Violet",
-          energyLevel: 7,
-          personalityTraits: personalityTraits,
-          spiritualGuidance: "Your spiritual energy radiates wisdom and intuition. Continue developing your inner awareness.",
-          chakraActivity: {
-            root: 7, sacral: 6, solarPlexus: 8, heart: 9, throat: 7, thirdEye: 8, crown: 9
-          },
-          zones: {
-            giving: { colors: ["Violet"], interpretation: `Violet giving energy: ${givingTraits.join(', ')}` },
-            receiving: { colors: ["Blue"], interpretation: `Blue receiving energy: ${receivingTraits.join(', ')}` },
-            thinking: { colors: ["Gold"], interpretation: `Gold thinking energy: ${thinkingTraits.join(', ')}` },
-            overall: { colors: ["Indigo"], interpretation: `Indigo personality: ${personalityTraits.join(', ')}` }
-          },
-          colorMeanings: {
-            "Indigo": `Indigo personality: ${personalityTraits.join(', ')}`,
-            "Violet": `Violet giving: ${givingTraits.join(', ')}`,
-            "Blue": `Blue receiving: ${receivingTraits.join(', ')}`,
-            "Gold": `Gold thinking: ${thinkingTraits.join(', ')}`
-          }
-        };
       }
-    }
 
       // Ensure analysis has all required fields with specific traits
       if (!auraAnalysis.dominantColor) auraAnalysis.dominantColor = "Indigo";
@@ -3489,6 +3458,58 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error checking mobile verification:", error);
       res.status(500).json({ message: "Failed to check mobile verification" });
+    }
+  });
+
+  // Downloads endpoints for healer dashboard
+  app.post('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+    try {
+      const { clientUserId, analysisType, analysisId, downloadType, fileName, fileData, originalFileName } = req.body;
+      
+      if (!clientUserId || !analysisType || !analysisId || !downloadType || !fileName) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const download = await storage.saveDownload({
+        healerId: req.user.id,
+        clientUserId,
+        analysisType,
+        analysisId,
+        downloadType,
+        fileName,
+        fileData: fileData || '',
+        originalFileName: originalFileName || fileName
+      });
+
+      res.json(download);
+    } catch (error) {
+      console.error("Error saving download:", error);
+      res.status(500).json({ message: "Failed to save download" });
+    }
+  });
+
+  app.get('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+    try {
+      const downloads = await storage.getDownloadsByHealer(req.user.id);
+      res.json(downloads);
+    } catch (error) {
+      console.error("Error fetching downloads:", error);
+      res.status(500).json({ message: "Failed to fetch downloads" });
+    }
+  });
+
+  app.get('/api/downloads/:id', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
+    try {
+      const download = await storage.getDownload(parseInt(req.params.id));
+      
+      if (!download || download.healerId !== req.user.id) {
+        return res.status(404).json({ message: "Download not found" });
+      }
+
+      res.json(download);
+    } catch (error) {
+      console.error("Error fetching download:", error);
+      res.status(500).json({ message: "Failed to fetch download" });
     }
   });
 
