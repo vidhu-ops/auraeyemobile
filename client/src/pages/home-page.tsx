@@ -7,12 +7,13 @@ import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
-import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
+import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard, Play, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -35,6 +36,7 @@ export default function HomePage() {
   const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -342,6 +344,7 @@ export default function HomePage() {
     setVibeResult(null);
     setFeedbackSubmitted(false);
     setSelectedFeedback(null);
+    setIsVideoModalOpen(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -788,7 +791,37 @@ export default function HomePage() {
                                 <CardContent className="p-4">
                                   <div className="text-center">
                                     <h4 className="font-semibold text-green-800 mb-2">Thank you for your feedback!</h4>
-                                    <p className="text-sm text-green-700">Your input helps us improve our spiritual analysis accuracy.</p>
+                                    <p className="text-sm text-green-700 mb-3">Your input helps us improve our spiritual analysis accuracy.</p>
+                                    
+                                    {/* Video Button for Negative Feedback */}
+                                    {selectedFeedback === 'no' && (
+                                      <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+                                        <DialogTrigger asChild>
+                                          <Button 
+                                            size="sm" 
+                                            className="bg-blue-500 hover:bg-blue-600 text-white"
+                                          >
+                                            <Play className="h-4 w-4 mr-2" />
+                                            Watch Guidance Video
+                                          </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-4xl w-full">
+                                          <DialogHeader>
+                                            <DialogTitle>Spiritual Guidance Video</DialogTitle>
+                                          </DialogHeader>
+                                          <div className="w-full">
+                                            <video 
+                                              controls 
+                                              className="w-full h-auto rounded-lg"
+                                              poster=""
+                                            >
+                                              <source src="/api/video/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754937929770.mp4" type="video/mp4" />
+                                              Your browser does not support the video tag.
+                                            </video>
+                                          </div>
+                                        </DialogContent>
+                                      </Dialog>
+                                    )}
                                   </div>
                                 </CardContent>
                               </Card>

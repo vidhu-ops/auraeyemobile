@@ -42,10 +42,10 @@ export default function About() {
                   AuraEye was born from a vision to bridge the gap between ancient spiritual practices and modern technology. Our founder, a spiritual healer with over 20 years of experience, recognized that many people struggled to access quality spiritual guidance and energy healing.
                 </p>
                 <p className="text-gray-600 mb-4">
-                  By combining traditional metaphysical knowledge with cutting-edge artificial intelligence, we've created a platform that can analyze your energy field, provide personalized spiritual insights, and connect you with certified healers—all from the comfort of your home.
+                  By combining traditional metaphysical knowledge with cutting-edge cloud computing, we've created a platform that can analyze your energy field, provide personalized spiritual insights, and connect you with certified healers—all from the comfort of your home.
                 </p>
                 <p className="text-gray-600">
-                  Our name, AuraEye, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Fortify" (to strengthen and protect), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
+                  Our name, AuraEye, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Eye" (to see), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
               </div>
               
@@ -57,9 +57,9 @@ export default function About() {
                 />
                 <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg max-w-xs">
                   <p className="text-gray-600 italic">
-                    "Every person carries a unique energy signature that holds the key to their spiritual growth and well-being."
+                    ""Our aura is not just limited to positive or negative vibes, infact it is the blueprint of our soul"
                   </p>
-                  <p className="text-right text-gray-500 mt-2">— AuraEye Founder</p>
+                  <p className="text-right text-gray-500 mt-2"> - AuraEye (TM) founder."</p>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function About() {
             <div className="max-w-4xl mx-auto">
               <Tabs defaultValue="ai" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-8">
-                  <TabsTrigger value="ai">AI Analysis</TabsTrigger>
+                  <TabsTrigger value="ai">Aura Analysis</TabsTrigger>
                   <TabsTrigger value="healing">Energy Healing</TabsTrigger>
                   <TabsTrigger value="research">Our Research</TabsTrigger>
                 </TabsList>
@@ -189,23 +189,35 @@ export default function About() {
                     <div className="order-1 md:order-2">
                       <h3 className="font-heading font-semibold text-2xl mb-4">Virtual Energy Healing</h3>
                       <p className="text-gray-600 mb-4">
-                        Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
+                        Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
+
+                        
                       </p>
                       <p className="text-gray-600 mb-6">
                         Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
+
+                        
                       </p>
                       <ul className="space-y-2">
                         <li className="flex items-start">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                          <span>Verified and experienced energy healers</span>
+                          <span>Certified AuraEye Readers, trained to pin point exact blocks in your aura & chakras
+                         </span>
                         </li>
                         <li className="flex items-start">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                          <span>Multiple healing modalities to choose from</span>
+                          <span> Verified and experienced energy healers with specific expertise
+                          </span>
                         </li>
                         <li className="flex items-start">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                          <span>Convenient scheduling for sessions from anywhere</span>
+                          <span>Convenient scheduling for sessions from anywhere
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                          <span>
+                          Get complete clarity about your aura with digital reports and remedies</span>
                         </li>
                       </ul>
                     </div>
@@ -265,12 +277,12 @@ export default function About() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-5xl mx-auto">
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
                     <img 
-                      src="https://C:/Users/weewee/Downloads/WhatsApp%20Image%202025-06-16%20at%205.50.48%20PM.jpeg" 
+                      src="file:///C:/Users/weewee/Downloads/WhatsApp%20Image%202025-08-11%20at%203.52.01%20AM.jpeg" 
                       alt="Nishant Sharma" 
                       className="w-full h-full object-cover"
                     />
@@ -278,44 +290,14 @@ export default function About() {
                   <h3 className="font-heading font-semibold text-xl mb-1">Nishant Sharma</h3>
                   <p className="text-primary mb-3">Founder & Lead Healer</p>
                   <p className="text-gray-600 text-sm">
-                    A certified Reiki Master with 20+ years of experience in energy healing, Maya founded AuraEye to bring spiritual wellness to the digital age.
+                  An IT Engineer with a Master’s in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer, AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.
                   </p>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
-                    <img 
-                      src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                      alt="David Chen" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-heading font-semibold text-xl mb-1">David Chen</h3>
-                  <p className="text-secondary mb-3">Chief Technology Officer</p>
-                  <p className="text-gray-600 text-sm">
-                    With a background in AI and a personal passion for meditation, David leads our tech team in developing our aura analysis algorithms.
-                  </p>
-                </CardContent>
-              </Card>
+             
               
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
-                    <img 
-                      src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                      alt="Sophia Rivera" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-heading font-semibold text-xl mb-1">Sophia Rivera</h3>
-                  <p className="text-accent mb-3">Research Director</p>
-                  <p className="text-gray-600 text-sm">
-                    A PhD in Consciousness Studies, Sophia bridges the gap between scientific research and spiritual practices in our development process.
-                  </p>
-                </CardContent>
-              </Card>
+              
             </div>
             
             <div className="text-center mt-12">

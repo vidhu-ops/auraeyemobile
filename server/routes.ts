@@ -3617,6 +3617,53 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Serve attached video assets for homepage guidance videos
+  app.get('/api/video/:filename', async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const path = await import('path');
+      const fs = await import('fs');
+      const filePath = path.join(process.cwd(), 'attached_assets', filename);
+      
+      if (fs.existsSync(filePath)) {
+        // Set appropriate headers for video streaming
+        res.setHeader('Content-Type', 'video/mp4');
+        res.setHeader('Accept-Ranges', 'bytes');
+        
+        const stat = fs.statSync(filePath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+        
+        if (range) {
+          // Handle video streaming with range requests
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          
+          const chunksize = (end - start) + 1;
+          const file = fs.createReadStream(filePath, { start, end });
+          
+          res.status(206);
+          res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+          res.setHeader('Content-Length', chunksize);
+          
+          file.pipe(res);
+        } else {
+          // Send entire video file
+          res.setHeader('Content-Length', fileSize);
+          const file = fs.createReadStream(filePath);
+          file.pipe(res);
+        }
+      } else {
+        console.log(`Video file not found at: ${filePath}`);
+        res.status(404).json({ message: "Video file not found" });
+      }
+    } catch (error) {
+      console.error("Error serving video:", error);
+      res.status(500).json({ message: "Failed to serve video" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   
