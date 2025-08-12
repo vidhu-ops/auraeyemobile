@@ -228,7 +228,7 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
-// Downloads table for healer dashboard to track generated PDF links and screenshots
+// Downloads table for healer dashboard to track saved PDFs and screenshots
 export const downloads = pgTable("downloads", {
   id: serial("id").primaryKey(),
   healerId: integer("healer_id").notNull().references(() => users.id),
@@ -237,8 +237,7 @@ export const downloads = pgTable("downloads", {
   analysisId: integer("analysis_id").notNull(), // ID of the related analysis record
   downloadType: text("download_type").notNull(), // "pdf", "screenshot"
   fileName: text("file_name").notNull(),
-  downloadUrl: text("download_url").notNull(), // Generated PDF download URL/link
-  clientName: text("client_name"), // Client name for display purposes
+  fileData: text("file_data"), // Base64 encoded file data
   originalFileName: text("original_file_name"), // For client reference
   downloadedAt: timestamp("downloaded_at").defaultNow().notNull(),
 }, (table) => ({

@@ -7,13 +7,12 @@ import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
-import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard, Play, X } from "lucide-react";
+import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -36,8 +35,6 @@ export default function HomePage() {
   const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -314,49 +311,6 @@ export default function HomePage() {
     }
   };
 
-  const handleFileFromSource = (file: File) => {
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid File Type",
-        description: "Please upload an image file (JPG, PNG, etc.)",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setSelectedImage(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-    setVibeResult(null); // Clear previous results
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFileFromSource(files[0]);
-    }
-  };
-
   const analyzeVibe = () => {
     if (!user) {
       toast({
@@ -388,7 +342,6 @@ export default function HomePage() {
     setVibeResult(null);
     setFeedbackSubmitted(false);
     setSelectedFeedback(null);
-    setIsVideoModalOpen(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -581,57 +534,32 @@ export default function HomePage() {
                 {!imagePreview ? (
                   /* Upload Section */
                   <div className="text-center">
-                    <div 
-                      className={`border-2 border-dashed rounded-xl p-12 transition-all duration-200 cursor-pointer ${
-                        isDragOver 
-                          ? 'border-violet-500 bg-violet-100/70 scale-105' 
-                          : 'border-violet-300 bg-violet-50/50 hover:bg-violet-50 hover:border-violet-400'
-                      }`}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
+                    <div className=" border-violet-300 rounded-xl p-12 bg-violet-50/50 hover:bg-violet-50 transition-colors">
                       <div className="flex flex-col items-center">
-                        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-all duration-200 ${
-                          isDragOver
-                            ? 'bg-gradient-to-br from-violet-600 to-indigo-700 scale-110'
-                            : 'bg-gradient-to-br from-violet-500 to-indigo-600'
-                        }`}>
+                        <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
                           <Camera className="h-10 w-10 text-white" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          {isDragOver ? 'Drop Your Photo Here' : 'Upload Your Photo'}
+                          Upload Your Photo
                         </h3>
                         <p className="text-gray-600 mb-6 max-w-md">
-                          {isDragOver 
-                            ? 'Release to upload your image for aura analysis'
-                            : 'Drag and drop your photo here, or click to browse and choose a clear photo of yourself to discover your dominant aura color and energy signature.'
-                          }
+                          Choose a clear photo of yourself to discover your dominant aura color and energy signature.
                         </p>
                         <input
                           ref={fileInputRef}
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleFileFromSource(file);
-                          }}
+                          onChange={handleImageSelect}
                           className="hidden"
                         />
-                        {!isDragOver && (
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              fileInputRef.current?.click();
-                            }}
-                            size="lg"
-                            className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
-                          >
-                            <Upload className="mr-2 h-5 w-5" />
-                            Choose Photo
-                          </Button>
-                        )}
+                        <Button
+                          onClick={() => fileInputRef.current?.click()}
+                          size="lg"
+                          className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
+                        >
+                          <Upload className="mr-2 h-5 w-5" />
+                          Choose Photo
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -860,37 +788,7 @@ export default function HomePage() {
                                 <CardContent className="p-4">
                                   <div className="text-center">
                                     <h4 className="font-semibold text-green-800 mb-2">Thank you for your feedback!</h4>
-                                    <p className="text-sm text-green-700 mb-3">Your input helps us improve our spiritual analysis accuracy.</p>
-                                    
-                                    {/* Video Button for Negative Feedback */}
-                                    {selectedFeedback === 'no' && (
-                                      <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
-                                        <DialogTrigger asChild>
-                                          <Button 
-                                            size="sm" 
-                                            className="bg-blue-500 hover:bg-blue-600 text-white"
-                                          >
-                                            <Play className="h-4 w-4 mr-2" />
-                                            Watch Guidance Video
-                                          </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-w-4xl w-full">
-                                          <DialogHeader>
-                                            <DialogTitle>Spiritual Guidance Video</DialogTitle>
-                                          </DialogHeader>
-                                          <div className="w-full">
-                                            <video 
-                                              controls 
-                                              className="w-full h-auto rounded-lg"
-                                              poster=""
-                                            >
-                                              <source src="/api/video/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754937929770.mp4" type="video/mp4" />
-                                              Your browser does not support the video tag.
-                                            </video>
-                                          </div>
-                                        </DialogContent>
-                                      </Dialog>
-                                    )}
+                                    <p className="text-sm text-green-700">Your input helps us improve our spiritual analysis accuracy.</p>
                                   </div>
                                 </CardContent>
                               </Card>

@@ -3,8 +3,6 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import crypto from "crypto";
 import sharp from "sharp";
-import path from "path";
-import fs from "fs";
 import { setupAuth, isAuthenticated } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
@@ -3463,10 +3461,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // PDF upload endpoint removed - now using archive-pdf-download link-based system
-
   // Downloads endpoints for healer dashboard
-  app.post('/api/downloads', isAuthenticated, async (req, res) => {
+  app.post('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
     try {
       const { clientUserId, analysisType, analysisId, downloadType, fileName, fileData, originalFileName } = req.body;
       
@@ -3492,7 +3488,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  app.get('/api/downloads', isAuthenticated, async (req, res) => {
+  app.get('/api/downloads', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
     try {
       const downloads = await storage.getDownloadsByHealer(req.user.id);
       res.json(downloads);
@@ -3502,7 +3498,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  app.get('/api/downloads/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/downloads/:id', isAuthenticated, checkCredits('healer_only'), async (req, res) => {
     try {
       const download = await storage.getDownload(parseInt(req.params.id));
       
@@ -3514,209 +3510,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error fetching download:", error);
       res.status(500).json({ message: "Failed to fetch download" });
-    }
-  });
-
-  // Serve PDF files for healer dashboard
-  app.get('/api/pdf/:id', isAuthenticated, async (req, res) => {
-    try {
-      const download = await storage.getDownload(parseInt(req.params.id));
-      
-      if (!download || download.healerId !== req.user.id) {
-        return res.status(404).json({ message: "PDF not found" });
-      }
-
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      // Check if it's a file path or base64 data
-      if (download.fileData && download.fileData.startsWith('uploads/')) {
-        // It's a file path
-        const fullPath = path.join(process.cwd(), download.fileData);
-        
-        if (!fs.existsSync(fullPath)) {
-          return res.status(404).json({ message: "PDF file not found on server" });
-        }
-        
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${download.fileName}"`);
-        
-        const fileStream = fs.createReadStream(fullPath);
-        fileStream.pipe(res);
-      } else {
-        // It's base64 data (legacy support)
-        if (!download.fileData) {
-          return res.status(404).json({ message: "No PDF data available" });
-        }
-        
-        const pdfBuffer = Buffer.from(download.fileData, 'base64');
-        
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${download.fileName}"`);
-        res.send(pdfBuffer);
-      }
-    } catch (error) {
-      console.error("Error serving PDF:", error);
-      res.status(500).json({ message: "Failed to serve PDF" });
-    }
-  });
-
-  // Archive PDF download link for healer dashboard - SIMPLIFIED VERSION
-  app.post('/api/archive-pdf-download', isAuthenticated, async (req: any, res) => {
-    console.log('PDF ARCHIVE - Creating download link record, user:', req.user?.username);
-    
-    try {
-      const { 
-        analysisType, 
-        analysisId, 
-        clientUserId, 
-        clientName, 
-        fileName
-        // NO pdfBlob - we don't store the actual PDF anymore
-      } = req.body;
-
-      if (!analysisType || !analysisId || !clientUserId) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      // Create a simple download record without storing the PDF file
-      const timestamp = Date.now();
-      const displayFileName = fileName || `${analysisType}-analysis-${new Date().toISOString().split('T')[0]}.pdf`;
-      
-      // Create regeneration URL (no file storage)
-      const downloadUrl = `/api/regenerate-pdf/${analysisType}/${analysisId}`;
-
-      console.log('PDF ARCHIVE - Saving download record:', { analysisType, analysisId, clientName });
-      
-      const downloadRecord = await storage.createDownload({
-        healerId: req.user.id,
-        clientUserId: parseInt(clientUserId),
-        analysisType,
-        analysisId: parseInt(analysisId),
-        downloadType: 'pdf',
-        fileName: displayFileName,
-        downloadUrl,
-        clientName,
-        originalFileName: fileName
-      });
-
-      console.log('PDF ARCHIVE - Record saved successfully:', downloadRecord.id);
-
-      res.json({ 
-        success: true, 
-        message: "PDF download link archived successfully",
-        downloadId: downloadRecord.id,
-        downloadUrl,
-        fileName: downloadRecord.fileName
-      });
-
-    } catch (error) {
-      console.error('PDF ARCHIVE ERROR:', error);
-      res.status(500).json({ 
-        message: `Failed to archive PDF download link: ${error?.message || String(error)}` 
-      });
-    }
-  });
-
-  // Regenerate PDF for download (replaces file serving)
-  app.get('/api/regenerate-pdf/:analysisType/:analysisId', isAuthenticated, async (req: any, res) => {
-    try {
-      const { analysisType, analysisId } = req.params;
-      
-      // For now, redirect back to the analysis page where they can generate the PDF again
-      // In the future, this could be enhanced to automatically regenerate the PDF
-      res.redirect(`/healer-dashboard?tab=my-readings&analysis=${analysisType}&id=${analysisId}`);
-    } catch (error) {
-      console.error('PDF regeneration error:', error);
-      res.status(500).json({ message: "Failed to regenerate PDF" });
-    }
-  });
-
-  // Legacy: Serve archived PDF downloads for healers (for existing files)
-  app.get('/api/download-pdf/:filename', isAuthenticated, async (req: any, res) => {
-    try {
-      const filename = req.params.filename;
-      const filePath = path.join(process.cwd(), 'uploads', 'pdfs', filename);
-      
-      console.log('PDF DOWNLOAD DEBUG - Requested file:', filename, 'Path:', filePath);
-      
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        console.log('PDF DOWNLOAD DEBUG - File not found:', filePath);
-        return res.status(404).json({ message: "PDF file not found" });
-      }
-
-      // Verify this healer has access to this PDF by checking the downloads table
-      const downloads = await storage.getDownloadsByHealer(req.user.id);
-      const hasAccess = downloads.some(download => 
-        download.downloadUrl === `/api/download-pdf/${filename}`
-      );
-
-      if (!hasAccess) {
-        console.log('PDF DOWNLOAD DEBUG - Access denied for user:', req.user.username, 'file:', filename);
-        return res.status(403).json({ message: "Access denied to this PDF" });
-      }
-
-      // Set appropriate headers for PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-      
-      // Stream the file
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-      
-      console.log('PDF DOWNLOAD DEBUG - File served successfully:', filename);
-      
-    } catch (error) {
-      console.error('PDF DOWNLOAD ERROR:', error);
-      res.status(500).json({ message: "Failed to serve PDF" });
-    }
-  });
-
-  // Serve attached video assets for homepage guidance videos
-  app.get('/api/video/:filename', async (req, res) => {
-    try {
-      const filename = req.params.filename;
-      const path = await import('path');
-      const fs = await import('fs');
-      const filePath = path.join(process.cwd(), 'attached_assets', filename);
-      
-      if (fs.existsSync(filePath)) {
-        // Set appropriate headers for video streaming
-        res.setHeader('Content-Type', 'video/mp4');
-        res.setHeader('Accept-Ranges', 'bytes');
-        
-        const stat = fs.statSync(filePath);
-        const fileSize = stat.size;
-        const range = req.headers.range;
-        
-        if (range) {
-          // Handle video streaming with range requests
-          const parts = range.replace(/bytes=/, "").split("-");
-          const start = parseInt(parts[0], 10);
-          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-          
-          const chunksize = (end - start) + 1;
-          const file = fs.createReadStream(filePath, { start, end });
-          
-          res.status(206);
-          res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
-          res.setHeader('Content-Length', chunksize);
-          
-          file.pipe(res);
-        } else {
-          // Send entire video file
-          res.setHeader('Content-Length', fileSize);
-          const file = fs.createReadStream(filePath);
-          file.pipe(res);
-        }
-      } else {
-        console.log(`Video file not found at: ${filePath}`);
-        res.status(404).json({ message: "Video file not found" });
-      }
-    } catch (error) {
-      console.error("Error serving video:", error);
-      res.status(500).json({ message: "Failed to serve video" });
     }
   });
 
