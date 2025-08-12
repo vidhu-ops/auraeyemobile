@@ -3612,19 +3612,28 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const filePath = path.join(uploadDir, uniqueFileName);
       
       try {
-        // Check if base64 data is too large (over 50MB)
+        // Check if base64 data is too large (over 10MB)
         const estimatedSize = (pdfBlob.length * 3) / 4; // Base64 to bytes conversion
         console.log('PDF ARCHIVE DEBUG - Estimated file size:', estimatedSize, 'bytes');
         
-        if (estimatedSize > 50 * 1024 * 1024) { // 50MB limit
-          console.warn('PDF ARCHIVE WARNING - File too large, reducing quality');
-          // For large files, we'll still save them but log the issue
+        if (estimatedSize > 10 * 1024 * 1024) { // 10MB limit
+          console.warn('PDF ARCHIVE WARNING - File too large, truncating base64 data');
+          // Truncate the base64 string if it's too large to prevent memory issues
+          const maxBase64Length = Math.floor((10 * 1024 * 1024) * 4 / 3);
+          pdfBlob = pdfBlob.substring(0, maxBase64Length);
+          console.log('PDF ARCHIVE DEBUG - Truncated base64 size:', pdfBlob.length);
         }
         
-        const pdfBuffer = Buffer.from(pdfBlob, 'base64');
-        console.log('PDF ARCHIVE DEBUG - Buffer created, actual size:', pdfBuffer.length);
+        let pdfBuffer;
+        try {
+          pdfBuffer = Buffer.from(pdfBlob, 'base64');
+          console.log('PDF ARCHIVE DEBUG - Buffer created, actual size:', pdfBuffer.length);
+        } catch (bufferError) {
+          console.error('PDF ARCHIVE ERROR - Buffer creation failed:', bufferError);
+          throw new Error(`Failed to create PDF buffer: ${bufferError.message}`);
+        }
         
-        // Use async write with error handling
+        // Use synchronous write with explicit error handling
         fs.writeFileSync(filePath, pdfBuffer);
         
         // Verify the file was actually written
@@ -3655,7 +3664,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       // Save download record to database
       console.log('PDF ARCHIVE DEBUG - Saving download record to database...');
-      const downloadRecord = await storage.createDownload({
+      console.log('PDF ARCHIVE DEBUG - Download data:', {
         healerId: req.user.id,
         clientUserId: parseInt(clientUserId),
         analysisType,
@@ -3666,6 +3675,25 @@ function calculateDominantSoulChakra(birthDate: string): number {
         clientName,
         originalFileName: fileName
       });
+      
+      let downloadRecord;
+      try {
+        downloadRecord = await storage.createDownload({
+          healerId: req.user.id,
+          clientUserId: parseInt(clientUserId),
+          analysisType,
+          analysisId: parseInt(analysisId),
+          downloadType: 'pdf',
+          fileName: fileName || uniqueFileName,
+          downloadUrl,
+          clientName,
+          originalFileName: fileName
+        });
+        console.log('PDF ARCHIVE DEBUG - Database insert successful');
+      } catch (dbError) {
+        console.error('PDF ARCHIVE ERROR - Database insert failed:', dbError);
+        throw new Error(`Database save failed: ${dbError.message}`);
+      }
 
       console.log('PDF ARCHIVE DEBUG - Download record created successfully:', downloadRecord.id, 'URL:', downloadUrl);
       console.log('PDF ARCHIVE DEBUG - Full download record:', downloadRecord);
