@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, downloads, type Download, type InsertDownload } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -93,11 +93,6 @@ export interface IStorage {
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
   validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
-
-  // Downloads for healer dashboard
-  saveDownload(download: InsertDownload): Promise<Download>;
-  getDownloadsByHealer(healerId: number): Promise<Download[]>;
-  getDownload(id: number): Promise<Download | undefined>;
 
   // Session store
   sessionStore: any;
@@ -618,31 +613,6 @@ export class DatabaseStorage implements IStorage {
       .update(passwordResetTokens)
       .set({ used: true })
       .where(eq(passwordResetTokens.id, tokenId));
-  }
-
-  // Downloads for healer dashboard
-  async saveDownload(download: InsertDownload): Promise<Download> {
-    const [newDownload] = await db
-      .insert(downloads)
-      .values(download)
-      .returning();
-    return newDownload;
-  }
-
-  async getDownloadsByHealer(healerId: number): Promise<Download[]> {
-    return await db
-      .select()
-      .from(downloads)
-      .where(eq(downloads.healerId, healerId))
-      .orderBy(desc(downloads.downloadedAt));
-  }
-
-  async getDownload(id: number): Promise<Download | undefined> {
-    const [download] = await db
-      .select()
-      .from(downloads)
-      .where(eq(downloads.id, id));
-    return download || undefined;
   }
 }
 

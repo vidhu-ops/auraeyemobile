@@ -1260,7 +1260,15 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
               Energy: {reading.energyLevel}/10
             </Badge>
             
-           
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => generateComprehensivePDF(reading)}
+              disabled={isGeneratingPDF}
+              title="Download Complete PDF Report"
+            >
+              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            </Button>
             
             <Button
               variant="ghost"
@@ -1607,118 +1615,6 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   );
 }
 
-// Downloads Section Component for healer dashboard
-const DownloadsSection = memo(function DownloadsSection() {
-  const { data: downloads, isLoading } = useQuery({
-    queryKey: ['/api/downloads'],
-    enabled: true,
-  });
-
-  const downloadFileMutation = useMutation({
-    mutationFn: async (downloadId: number) => {
-      const response = await apiRequest("GET", `/api/downloads/${downloadId}`);
-      return response;
-    },
-    onSuccess: (downloadData) => {
-      if (downloadData.fileData) {
-        // Create a blob from the base64 data and trigger download
-        const byteCharacters = atob(downloadData.fileData);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { 
-          type: downloadData.downloadType === 'pdf' ? 'application/pdf' : 'image/png' 
-        });
-        
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = downloadData.fileName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        <span className="ml-2 text-gray-600">Loading downloads...</span>
-      </div>
-    );
-  }
-
-  if (!downloads || downloads.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <Download className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">No Downloads Yet</h3>
-          <p className="text-gray-500">
-            Downloads from client analyses will appear here once you start generating PDFs and screenshots.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {downloads.map((download: any) => (
-          <Card key={download.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  {download.downloadType === 'pdf' ? (
-                    <FileText className="h-5 w-5 text-red-600" />
-                  ) : (
-                    <Download className="h-5 w-5 text-blue-600" />
-                  )}
-                  <span className="text-sm font-medium text-gray-700">
-                    {download.downloadType.toUpperCase()}
-                  </span>
-                </div>
-                <Badge variant={download.analysisType === 'aura' ? 'default' : 
-                       download.analysisType === 'numerology' ? 'secondary' : 'outline'}>
-                  {download.analysisType}
-                </Badge>
-              </div>
-              
-              <h4 className="font-semibold text-gray-800 mb-2 truncate">
-                {download.originalFileName || download.fileName}
-              </h4>
-              
-              <p className="text-sm text-gray-600 mb-3">
-                Downloaded: {format(new Date(download.downloadedAt), 'MMM dd, yyyy HH:mm')}
-              </p>
-              
-              <Button 
-                onClick={() => downloadFileMutation.mutate(download.id)}
-                disabled={downloadFileMutation.isPending}
-                className="w-full text-sm"
-                size="sm"
-              >
-                {downloadFileMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <Download className="h-4 w-4 mr-2" />
-                )}
-                Download Again
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-});
-
 export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
@@ -1917,13 +1813,12 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
-          <TabsTrigger value="downloads">Downloads</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -2347,18 +2242,6 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        {/* Downloads Tab */}
-        <TabsContent value="downloads" className="space-y-6">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Downloads Archive</h2>
-            <p className="text-gray-600 mb-4">
-              Track and manage all your downloaded PDFs and screenshots from client analyses
-            </p>
-          </div>
-
-          <DownloadsSection />
         </TabsContent>
       </Tabs>
 
