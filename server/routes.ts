@@ -2646,6 +2646,54 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // API endpoint to serve images for PDF generation
+  app.get('/api/image/:hash', async (req, res) => {
+    const imageHash = req.params.hash;
+    
+    try {
+      // Find aura reading with this image hash
+      const reading = await storage.findAuraReadingByImageHash(imageHash);
+      
+      if (!reading) {
+        return res.status(404).json({ message: 'Image not found' });
+      }
+      
+      let imageData = '';
+      
+      // First try to get processed aura image
+      if (reading.processedAuraImage) {
+        imageData = reading.processedAuraImage;
+      } else {
+        // Try to get image from analysis data
+        try {
+          const analysisData = JSON.parse(reading.analysis || '{}');
+          if (analysisData.imageData) {
+            imageData = analysisData.imageData;
+          }
+        } catch (e) {
+          console.error('Could not parse analysis data for image');
+        }
+      }
+      
+      if (!imageData) {
+        return res.status(404).json({ message: 'Image data not found' });
+      }
+      
+      // Convert base64 to buffer
+      const imageBuffer = Buffer.from(imageData, 'base64');
+      
+      res.set({
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=86400' // Cache for 1 day
+      });
+      
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error('Error serving image:', error);
+      res.status(500).json({ message: 'Failed to serve image' });
+    }
+  });
+
   // Get user's aura readings
   app.get("/api/aura-readings", async (req, res) => {
     if (!req.isAuthenticated()) {
