@@ -12,7 +12,9 @@ import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import videoSrc from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754998851112.mp4";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -36,6 +38,7 @@ export default function HomePage() {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -434,6 +437,11 @@ export default function HomePage() {
     if (!vibeResult) return;
     
     setSelectedFeedback(feedback);
+    
+    // Show video popup if feedback is negative
+    if (feedback === 'no') {
+      setShowVideoModal(true);
+    }
     
     const feedbackData = {
       personalityColor: vibeResult.dominantColor,
@@ -856,7 +864,15 @@ export default function HomePage() {
                                 <CardContent className="p-4">
                                   <div className="text-center">
                                     <h4 className="font-semibold text-green-800 mb-2">Thank you for your feedback!</h4>
-                                    <p className="text-sm text-green-700">Your input helps us improve our spiritual analysis accuracy.</p>
+                                    <p className="text-sm text-green-700 mb-3">Your input helps us improve our spiritual analysis accuracy.</p>
+                                    <Button
+                                      onClick={() => setShowVideoModal(true)}
+                                      size="sm"
+                                      className="bg-violet-500 hover:bg-violet-600 text-white"
+                                    >
+                                      <Sparkles className="mr-2 h-4 w-4" />
+                                      Watch Spiritual Guidance Video
+                                    </Button>
                                   </div>
                                 </CardContent>
                               </Card>
@@ -1079,6 +1095,33 @@ export default function HomePage() {
       </section>
       
       <Footer />
+
+      {/* Video Modal */}
+      <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
+        <DialogContent className="max-w-4xl w-[90vw] h-[80vh] p-6">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-semibold text-violet-600 mb-4">
+              Spiritual Guidance & Energy Healing
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 flex items-center justify-center">
+            <video
+              controls
+              autoPlay
+              className="w-full h-full max-w-full max-h-full rounded-lg shadow-lg"
+              style={{ objectFit: 'contain' }}
+            >
+              <source src={videoSrc} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              This spiritual guidance video provides insights for energy healing and aura balance.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
