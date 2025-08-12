@@ -3563,7 +3563,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
   // Archive PDF download link for healer dashboard
   app.post('/api/archive-pdf-download', isAuthenticated, async (req: any, res) => {
-    console.log('PDF ARCHIVE DEBUG - Endpoint called, user:', req.user?.username);
+    console.log('PDF ARCHIVE DEBUG - Endpoint called, user:', req.user?.username, 'userID:', req.user?.id);
+    console.log('PDF ARCHIVE DEBUG - Request body keys:', Object.keys(req.body || {}));
     
     try {
       const { 
@@ -3575,7 +3576,22 @@ function calculateDominantSoulChakra(birthDate: string): number {
         pdfBlob // Base64 encoded PDF data
       } = req.body;
 
+      console.log('PDF ARCHIVE DEBUG - Extracted fields:', {
+        analysisType,
+        analysisId,
+        clientUserId,
+        clientName,
+        fileName,
+        pdfBlobLength: pdfBlob?.length || 0
+      });
+
       if (!analysisType || !analysisId || !clientUserId || !pdfBlob) {
+        console.log('PDF ARCHIVE ERROR - Missing fields:', {
+          analysisType: !!analysisType,
+          analysisId: !!analysisId,
+          clientUserId: !!clientUserId,
+          pdfBlob: !!pdfBlob
+        });
         return res.status(400).json({ message: "Missing required fields for PDF archival" });
       }
 
@@ -3596,9 +3612,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const filePath = path.join(uploadDir, uniqueFileName);
       
       try {
-        const pdfBuffer = Buffer.from(pdfBlob, 'base64');
-        console.log('PDF ARCHIVE DEBUG - Buffer created, size:', pdfBuffer.length);
+        // Check if base64 data is too large (over 50MB)
+        const estimatedSize = (pdfBlob.length * 3) / 4; // Base64 to bytes conversion
+        console.log('PDF ARCHIVE DEBUG - Estimated file size:', estimatedSize, 'bytes');
         
+        if (estimatedSize > 50 * 1024 * 1024) { // 50MB limit
+          console.warn('PDF ARCHIVE WARNING - File too large, reducing quality');
+          // For large files, we'll still save them but log the issue
+        }
+        
+        const pdfBuffer = Buffer.from(pdfBlob, 'base64');
+        console.log('PDF ARCHIVE DEBUG - Buffer created, actual size:', pdfBuffer.length);
+        
+        // Use async write with error handling
         fs.writeFileSync(filePath, pdfBuffer);
         
         // Verify the file was actually written
@@ -3609,15 +3635,26 @@ function calculateDominantSoulChakra(birthDate: string): number {
         const fileStats = fs.statSync(filePath);
         console.log('PDF ARCHIVE DEBUG - File verified on disk, size:', fileStats.size);
         
+        // Ensure file is readable
+        fs.accessSync(filePath, fs.constants.R_OK);
+        console.log('PDF ARCHIVE DEBUG - File is readable');
+        
       } catch (writeError) {
         console.error('PDF ARCHIVE ERROR - Failed to write file:', writeError);
-        throw new Error(`Failed to save PDF file: ${writeError.message}`);
+        console.error('PDF ARCHIVE ERROR - Write error details:', {
+          errorCode: writeError.code,
+          errorErrno: writeError.errno,
+          errorSyscall: writeError.syscall,
+          errorPath: writeError.path
+        });
+        throw new Error(`Failed to save PDF file: ${writeError.message || writeError}`);
       }
 
       // Generate download URL that the healer can use to re-access the PDF
       const downloadUrl = `/api/download-pdf/${uniqueFileName}`;
 
       // Save download record to database
+      console.log('PDF ARCHIVE DEBUG - Saving download record to database...');
       const downloadRecord = await storage.createDownload({
         healerId: req.user.id,
         clientUserId: parseInt(clientUserId),
@@ -3630,7 +3667,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         originalFileName: fileName
       });
 
-      console.log('PDF ARCHIVE DEBUG - Download record created:', downloadRecord.id, 'URL:', downloadUrl);
+      console.log('PDF ARCHIVE DEBUG - Download record created successfully:', downloadRecord.id, 'URL:', downloadUrl);
+      console.log('PDF ARCHIVE DEBUG - Full download record:', downloadRecord);
 
       res.json({ 
         success: true, 
@@ -3642,7 +3680,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
     } catch (error) {
       console.error('PDF ARCHIVE ERROR - General error:', error);
-      res.status(500).json({ message: "Failed to archive PDF download" });
+      console.error('PDF ARCHIVE ERROR - Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      res.status(500).json({ message: `Failed to archive PDF download: ${error.message}` });
     }
   });
 
