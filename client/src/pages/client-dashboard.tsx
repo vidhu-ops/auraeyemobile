@@ -821,37 +821,7 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
 
-            {/* My Aura Readings Section */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5 text-purple-500" />
-                  My Aura Readings
-                </CardTitle>
-                <CardDescription>Your personal spiritual energy analysis collection</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoadingAura ? (
-                  <div className="flex justify-center items-center h-[200px]">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  </div>
-                ) : auraReadings.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Palette className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p className="mb-4">No aura readings yet</p>
-                    <Link to="/aura-analysis">
-                      <Button>Get Your First Reading</Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4 max-h-[300px] overflow-y-auto">
-                    {auraReadings.map((reading: AuraReading) => (
-                      <AuraReadingCard key={reading.id} reading={reading} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+           
 
             {/* Your Booking History */}
             <Card>
