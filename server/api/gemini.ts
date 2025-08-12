@@ -73,6 +73,9 @@ export async function generateAuraVisualization(
       drawHeight
     );
     
+    // Add watermark to bottom left at 50% opacity
+    addWatermark(ctx, STANDARD_WIDTH, STANDARD_HEIGHT);
+    
     // Convert canvas to base64
     const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
     
@@ -373,6 +376,38 @@ function addDenseSmokeyClouds(
     ctx.arc(x, y, cloudRadius, 0, Math.PI * 2);
     ctx.fill();
   }
+}
+
+function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
+  // Reset composite operation to normal for watermark
+  ctx.globalCompositeOperation = 'source-over';
+  
+  // Set watermark text properties
+  const watermarkText = "AuraEye";
+  const fontSize = Math.floor(canvasWidth * 0.025); // Responsive font size based on canvas width
+  const x = 30; // 30px from left edge
+  const y = canvasHeight - 30; // 30px from bottom edge
+  
+  // Configure text styling
+  ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White text at 50% opacity
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  
+  // Add text shadow for better visibility
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+  ctx.shadowOffsetX = 1;
+  ctx.shadowOffsetY = 1;
+  ctx.shadowBlur = 2;
+  
+  // Draw the watermark text
+  ctx.fillText(watermarkText, x, y);
+  
+  // Reset shadow settings
+  ctx.shadowColor = 'transparent';
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.shadowBlur = 0;
 }
 
 function getColorRGB(colorName: string): { r: number, g: number, b: number } {
