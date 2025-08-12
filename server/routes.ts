@@ -3519,6 +3519,48 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // PDF History endpoints for healers
+  app.post("/api/pdf-history", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied - healer account required" });
+      }
+
+      const { auraReadingId, fileName, downloadUrl, clientName } = req.body;
+      
+      if (!auraReadingId || !fileName || !downloadUrl || !clientName) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const pdfRecord = await storage.savePdfHistory({
+        healerId: req.user.id,
+        auraReadingId,
+        fileName,
+        downloadUrl,
+        clientName
+      });
+
+      res.status(201).json(pdfRecord);
+    } catch (error) {
+      console.error("Error saving PDF history:", error);
+      res.status(500).json({ message: "Failed to save PDF history" });
+    }
+  });
+
+  app.get("/api/pdf-history", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied - healer account required" });
+      }
+
+      const pdfHistory = await storage.getPdfHistoryByHealer(req.user.id);
+      res.json(pdfHistory);
+    } catch (error) {
+      console.error("Error retrieving PDF history:", error);
+      res.status(500).json({ message: "Failed to retrieve PDF history" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   
