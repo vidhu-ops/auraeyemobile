@@ -391,12 +391,33 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const pageHeight = pdf.internal.pageSize.getHeight();
       const healerName = user?.username || 'Professional Healer';
       
-      // Parse all data fields
-      const spiritualGuidance = reading.spiritualGuidance || 'Your aura reveals unique energy patterns representing spiritual growth and development.';
-      const detailedAnalysis = reading.detailedAnalysis || 'Advanced spiritual development with balanced energy flow.';
-      const colorMeanings = parseJsonField(reading.colorMeanings) || {};
-      const personalityTraits = parseJsonField(reading.personalityTraits) || [];
-      const chakraActivity = parseJsonField(reading.chakraActivity) || {};
+      // Helper function to parse JSON fields safely
+      const parseJsonField = (field: string) => {
+        try {
+          return JSON.parse(field || '{}');
+        } catch {
+          return {};
+        }
+      };
+      
+      // Parse all data fields with error handling
+      let spiritualGuidance, detailedAnalysis, colorMeanings, personalityTraits, chakraActivity;
+      
+      try {
+        spiritualGuidance = reading.spiritualGuidance || 'Your aura reveals unique energy patterns representing spiritual growth and development.';
+        detailedAnalysis = reading.detailedAnalysis || 'Advanced spiritual development with balanced energy flow.';
+        colorMeanings = parseJsonField(reading.colorMeanings) || {};
+        personalityTraits = parseJsonField(reading.personalityTraits) || [];
+        chakraActivity = parseJsonField(reading.chakraActivity) || {};
+      } catch (parseError) {
+        console.error('Error parsing reading data:', parseError);
+        // Use default values if parsing fails
+        spiritualGuidance = 'Your aura reveals unique energy patterns representing spiritual growth and development.';
+        detailedAnalysis = 'Advanced spiritual development with balanced energy flow.';
+        colorMeanings = {};
+        personalityTraits = [];
+        chakraActivity = {};
+      }
       
       // PAGE 1: COVER PAGE & OVERVIEW
       pdf.setFontSize(24);
@@ -1268,7 +1289,14 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const fileName = `aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`;
       
       // Get PDF as base64 string for storage
-      const pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
+      let pdfData;
+      try {
+        pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
+        console.log('PDF generated successfully, size:', pdfData.length, 'characters');
+      } catch (pdfError) {
+        console.error('Error converting PDF to base64:', pdfError);
+        throw new Error('Failed to convert PDF to base64: ' + pdfError.message);
+      }
       
       // Store the PDF in database for exact retrieval later
       try {
@@ -1301,9 +1329,13 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
     } catch (error) {
       console.error('PDF generation error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Full error details:', errorMessage);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      
       toast({
         title: "PDF Generation Failed",
-        description: "Please try again.",
+        description: `Error: ${errorMessage}. Please check console for details.`,
         variant: "destructive"
       });
     } finally {
