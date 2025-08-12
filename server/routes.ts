@@ -1391,8 +1391,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       }
 
       if (!useExistingAnalysis) {
-        // Generate standardized aura visualization with consistent dimensions and zone positioning
         try {
+          // Generate standardized aura visualization with consistent dimensions and zone positioning
           console.log("Generating standardized aura visualization with 1600x900px dimensions...");
           
           // Ensure aura analysis has zone-specific colors for the new visualization system
@@ -1414,14 +1414,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             auraAnalysis
           );
           console.log("Standardized aura visualization completed successfully with 1600x900px dimensions");
-        } catch (vizError) {
-          console.error("Aura visualization failed:", vizError);
-          // Fallback to original image if processing fails
-          auraAnalysis.processedAuraImage = imageData;
-        }
-        
-        console.log("Aura analysis generated successfully");
-      } catch (analysisError) {
+          console.log("Aura analysis generated successfully");
+        } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
         // Provide guaranteed fallback analysis with specific traits
         const personalityTraits = getSpecificColorTraits("Indigo", "personality");
