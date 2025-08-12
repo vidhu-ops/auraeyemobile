@@ -594,6 +594,7 @@ export default function ClientDashboard() {
                     <Link href="/aura-analysis">
                       <Camera className="h-6 w-6 text-primary" />
                       <span>Scan Aura</span>
+                      <span className="text-xs text-orange-600">15 credits</span>
                     </Link>
                   </Button>
                   
@@ -601,6 +602,7 @@ export default function ClientDashboard() {
                     <Link href="/#vibe-check-section">
                       <Sparkles className="h-6 w-6 text-violet-500" />
                       <span className="text-xs text-center">What's My Vibe?</span>
+                      <span className="text-xs text-orange-600">1 credit</span>
                     </Link>
                   </Button>
                   
@@ -612,6 +614,7 @@ export default function ClientDashboard() {
                         </svg>
                       </span>
                       <span>Object Analysis</span>
+                      <span className="text-xs text-orange-600">5 credits</span>
                     </Link>
                   </Button>
                   
@@ -619,6 +622,7 @@ export default function ClientDashboard() {
                     <Link href="/daily-horoscope">
                       <Star className="h-6 w-6 text-secondary" />
                       <span>Daily Horoscope</span>
+                      <span className="text-xs text-green-600">free</span>
                     </Link>
                   </Button>
                   
@@ -626,6 +630,7 @@ export default function ClientDashboard() {
                     <Link href="/personalized-horoscope">
                       <Target className="h-6 w-6 text-primary" />
                       <span className="text-xs text-center">Personal Horoscope</span>
+                      <span className="text-xs text-green-600">free</span>
                     </Link>
                   </Button>
                   
@@ -633,6 +638,8 @@ export default function ClientDashboard() {
                     <Link href="/journal">
                       <Book className="h-6 w-6 text-accent" />
                       <span>Journal Entry</span>
+                      
+                      <span className="text-xs text-green-600">free</span>
                     </Link>
                   </Button>
                 </div>

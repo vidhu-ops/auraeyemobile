@@ -503,7 +503,8 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 0;
     
     // Draw watermark text as pure white overlay
-    ctx.fillText('L  AuraEye  R', centerX-2, centerY);
+    ctx.fillText('AuraEyeTM', centerX-2, centerY);
+   
     
     ctx.restore();
   };
