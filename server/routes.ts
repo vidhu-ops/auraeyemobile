@@ -46,6 +46,34 @@ function checkCredits(serviceType: string) {
   };
 }
 
+// Optional credit checking middleware - allows unauthenticated access but checks credits if authenticated
+function optionalCheckCredits(serviceType: string) {
+  return async (req: any, res: any, next: any) => {
+    // If user is not authenticated, allow access
+    if (!req.user || !req.user.id) {
+      req.creditCost = 0; // No credits required for unauthenticated users
+      return next();
+    }
+    
+    const userId = req.user.id;
+    const userCredits = await storage.getUserCredits(userId);
+    const requiredCredits = await storage.getCreditCost(userId, serviceType);
+    
+    if (userCredits < requiredCredits) {
+      return res.status(402).json({ 
+        error: "Insufficient credits",
+        message: `You need ${requiredCredits} credits to use this service. You have ${userCredits} credits.`,
+        credits: userCredits,
+        required: requiredCredits
+      });
+    }
+    
+    // Store the required credits in the request for later use
+    req.creditCost = requiredCredits;
+    next();
+  };
+}
+
 
 
 // Only approved aura colors - restricted to 12 colors as per requirements
@@ -1317,8 +1345,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
   }
 }
 
-  // Aura Analysis API endpoint
-  app.post("/api/analyze-aura", isAuthenticated, checkCredits('aura_analysis'), upload.single("image"), async (req, res) => {
+  // Aura Analysis API endpoint - now open to all users but deducts credits for authenticated users
+  app.post("/api/analyze-aura", optionalCheckCredits('aura_analysis'), upload.single("image"), async (req, res) => {
     try {
       // Get image data either from file or base64 string
       let imageData: string;
@@ -1529,13 +1557,16 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
       }
 
-      // Deduct credits only for new analyses (not for existing ones)
-      if (req.isAuthenticated() && req.user && !useExistingAnalysis) {
+      // Deduct credits only for authenticated users and new analyses (not for existing ones)
+      if (req.user && req.user.id && req.creditCost > 0 && !useExistingAnalysis) {
         try {
           await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
+          console.log(`Deducted ${req.creditCost} credits for aura analysis`);
         } catch (creditError) {
           console.error("Error deducting credits:", creditError);
         }
+      } else if (!req.user || !req.user.id) {
+        console.log("Aura analysis provided without credit deduction (unauthenticated user)");
       }
 
       // Add the name to the response

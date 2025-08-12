@@ -10,7 +10,7 @@ export const users = pgTable("users", {
   birthDate: text("birth_date"),
   email: text("email"),
   mobileNumber: text("mobile_number"),
-  credits: integer("credits").default(10),
+  credits: integer("credits").default(0), // Will be set programmatically based on user type
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

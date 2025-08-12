@@ -12,7 +12,7 @@ export default function PricingPage() {
       id: "healer",
       name: "Healer Package",
       price: "3500",
-      credits: 50,
+      credits: 100,
       icon: Crown,
       popular: false,
       features: ["Monthly, Quarterly, and Annual Plans Available",
@@ -57,10 +57,13 @@ export default function PricingPage() {
   ];
 
   const creditValues = [
-    { service: "Aura Analysis", credits: 1, description: "Complete aura reading with chakra analysis" },
-    { service: "Object Analysis", credits: 1, description: "Spiritual analysis of objects and their energy" },
+    { service: "Aura Analysis(healers)", credits: 5, description: "Complete aura reading with chakra analysis" },
+    { service: "Aura Analysis(user)", credits: 15, description: "Complete aura reading with chakra analysis" },
+    { service: "Object Analysis(healers)", credits: 1, description: "Spiritual analysis of objects and their energy" },
+    { service: "Object Analysis(user)", credits: 5, description: "Spiritual analysis of objects and their energy" },
     { service: "What's My Vibe", credits: 1, description: "Quick personality color analysis" },
-    { service: "Numerology", credits: 0, description: "Life path and destiny calculations" },
+    { service: "Numerology(healer)", credits: 3, description: "Unlimited Life path and destiny calculations" },
+     { service: "Numerology(user)", credits: 1, description: "1 Life path and destiny calculation" },
     { service: "Horoscope", credits: 0, description: "Daily, monthly, and yearly readings" },
     { service: "Spiritual Journaling", credits: 0, description: "Personal growth tracking" }
   ];
