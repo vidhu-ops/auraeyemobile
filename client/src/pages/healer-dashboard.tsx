@@ -1788,11 +1788,11 @@ const DownloadsSection = memo(function DownloadsSection() {
               
               <div className="space-y-2">
                 <div className="text-xs text-gray-500 font-mono break-all bg-gray-50 p-2 rounded">
-                  {window.location.origin}/api/pdf/{download.id}
+                  {window.location.origin}{download.downloadUrl || `/api/pdf/${download.id}`}
                 </div>
                 <div className="flex gap-2">
                   <Button 
-                    onClick={() => window.open(`/api/pdf/${download.id}`, '_blank')}
+                    onClick={() => window.open(download.downloadUrl || `/api/pdf/${download.id}`, '_blank')}
                     className="flex-1 text-sm"
                     size="sm"
                   >
@@ -1803,7 +1803,7 @@ const DownloadsSection = memo(function DownloadsSection() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const downloadUrl = `${window.location.origin}/api/pdf/${download.id}`;
+                      const downloadUrl = `${window.location.origin}${download.downloadUrl || `/api/pdf/${download.id}`}`;
                       navigator.clipboard.writeText(downloadUrl).then(() => {
                         toast({
                           title: "Link copied!",

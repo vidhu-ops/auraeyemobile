@@ -3579,6 +3579,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "Missing required fields for PDF archival" });
       }
 
+      console.log('PDF ARCHIVE DEBUG - Base64 size:', pdfBlob.length);
+
       // Generate unique filename for the PDF
       const timestamp = Date.now();
       const uniqueFileName = `${analysisType}-${analysisId}-${timestamp}.pdf`;
@@ -3590,12 +3592,27 @@ function calculateDominantSoulChakra(birthDate: string): number {
         console.log('PDF ARCHIVE DEBUG - Created uploads/pdfs directory');
       }
 
-      // Save the PDF file to disk
+      // Save the PDF file to disk with proper error handling
       const filePath = path.join(uploadDir, uniqueFileName);
-      const pdfBuffer = Buffer.from(pdfBlob, 'base64');
-      fs.writeFileSync(filePath, pdfBuffer);
       
-      console.log('PDF ARCHIVE DEBUG - PDF saved to disk:', uniqueFileName, 'Size:', pdfBuffer.length);
+      try {
+        const pdfBuffer = Buffer.from(pdfBlob, 'base64');
+        console.log('PDF ARCHIVE DEBUG - Buffer created, size:', pdfBuffer.length);
+        
+        fs.writeFileSync(filePath, pdfBuffer);
+        
+        // Verify the file was actually written
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File was not written to disk: ${filePath}`);
+        }
+        
+        const fileStats = fs.statSync(filePath);
+        console.log('PDF ARCHIVE DEBUG - File verified on disk, size:', fileStats.size);
+        
+      } catch (writeError) {
+        console.error('PDF ARCHIVE ERROR - Failed to write file:', writeError);
+        throw new Error(`Failed to save PDF file: ${writeError.message}`);
+      }
 
       // Generate download URL that the healer can use to re-access the PDF
       const downloadUrl = `/api/download-pdf/${uniqueFileName}`;
