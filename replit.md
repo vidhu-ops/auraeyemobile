@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **PDF Generation**: Comprehensive PDF reports for aura analysis (for clients) and detailed reports (for healers), including original and processed images, chakra analysis, spiritual guidance, and healer notes.
 - **Credit System**: Dynamic pricing based on user type. Clients: Object scan (3), Connect with healer (3), Human aura scan (15), What's my vibe (1), Numerology (5). Healers: Object scan (1), Human aura scan (5), What's my vibe (1), Healer booking (1), Numerology (3). New clients receive 30 initial credits, new healers receive 100 initial credits.
 - **User Verification**: WhatsApp OTP for mobile verification (via Twilio), and email validation (via AbstractAPI) during registration.
-- **Branding**: Dynamic branding updates, currently using "AuraEye" with a user-provided image logo.
+- **Branding**: Dynamic branding updates, currently using "AuraEye" with custom eye logo design provided by user (eye-logo.png). Logo features modern geometric eye design with concentric patterns.
 
 ## External Dependencies
 
