@@ -1697,14 +1697,14 @@ export default function AuraAnalysis() {
           const pdfBase64 = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
           console.log('PDF ARCHIVE DEBUG - Base64 size:', pdfBase64.length);
           
-          // Archive PDF download link to server
+          // Archive PDF download link to server (no file data - just the link)
           const archiveData = {
             analysisType: 'aura',
             analysisId: currentAuraId,
-            clientUserId: auraAnalysisData?.userId || 0, // Use analysis user ID if available
+            clientUserId: auraAnalysisData?.userId || 0,
             clientName: nameToUse,
-            fileName,
-            pdfBlob: pdfBase64
+            fileName
+            // No pdfBlob - we don't send the massive PDF file anymore
           };
           
           console.log('PDF ARCHIVE DEBUG - Archiving PDF download link...');

@@ -3561,10 +3561,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Archive PDF download link for healer dashboard
+  // Archive PDF download link for healer dashboard - SIMPLIFIED VERSION
   app.post('/api/archive-pdf-download', isAuthenticated, async (req: any, res) => {
-    console.log('PDF ARCHIVE DEBUG - Endpoint called, user:', req.user?.username, 'userID:', req.user?.id);
-    console.log('PDF ARCHIVE DEBUG - Request body keys:', Object.keys(req.body || {}));
+    console.log('PDF ARCHIVE - Creating download link record, user:', req.user?.username);
     
     try {
       const { 
@@ -3572,152 +3571,68 @@ function calculateDominantSoulChakra(birthDate: string): number {
         analysisId, 
         clientUserId, 
         clientName, 
-        fileName,
-        pdfBlob // Base64 encoded PDF data
+        fileName
+        // NO pdfBlob - we don't store the actual PDF anymore
       } = req.body;
 
-      console.log('PDF ARCHIVE DEBUG - Extracted fields:', {
-        analysisType,
-        analysisId,
-        clientUserId,
-        clientName,
-        fileName,
-        pdfBlobLength: pdfBlob?.length || 0
-      });
-
-      if (!analysisType || !analysisId || !clientUserId || !pdfBlob) {
-        console.log('PDF ARCHIVE ERROR - Missing fields:', {
-          analysisType: !!analysisType,
-          analysisId: !!analysisId,
-          clientUserId: !!clientUserId,
-          pdfBlob: !!pdfBlob
-        });
-        return res.status(400).json({ message: "Missing required fields for PDF archival" });
+      if (!analysisType || !analysisId || !clientUserId) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
 
-      console.log('PDF ARCHIVE DEBUG - Base64 size:', pdfBlob.length);
-
-      // Generate unique filename for the PDF
+      // Create a simple download record without storing the PDF file
       const timestamp = Date.now();
-      const uniqueFileName = `${analysisType}-${analysisId}-${timestamp}.pdf`;
+      const displayFileName = fileName || `${analysisType}-analysis-${new Date().toISOString().split('T')[0]}.pdf`;
       
-      // Create the uploads/pdfs directory if it doesn't exist
-      const uploadDir = path.join(process.cwd(), 'uploads', 'pdfs');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-        console.log('PDF ARCHIVE DEBUG - Created uploads/pdfs directory');
-      }
+      // Create regeneration URL (no file storage)
+      const downloadUrl = `/api/regenerate-pdf/${analysisType}/${analysisId}`;
 
-      // Save the PDF file to disk with proper error handling
-      const filePath = path.join(uploadDir, uniqueFileName);
+      console.log('PDF ARCHIVE - Saving download record:', { analysisType, analysisId, clientName });
       
-      try {
-        // Check if base64 data is too large (over 10MB)
-        const estimatedSize = (pdfBlob.length * 3) / 4; // Base64 to bytes conversion
-        console.log('PDF ARCHIVE DEBUG - Estimated file size:', estimatedSize, 'bytes');
-        
-        if (estimatedSize > 10 * 1024 * 1024) { // 10MB limit
-          console.warn('PDF ARCHIVE WARNING - File too large, truncating base64 data');
-          // Truncate the base64 string if it's too large to prevent memory issues
-          const maxBase64Length = Math.floor((10 * 1024 * 1024) * 4 / 3);
-          pdfBlob = pdfBlob.substring(0, maxBase64Length);
-          console.log('PDF ARCHIVE DEBUG - Truncated base64 size:', pdfBlob.length);
-        }
-        
-        let pdfBuffer;
-        try {
-          pdfBuffer = Buffer.from(pdfBlob, 'base64');
-          console.log('PDF ARCHIVE DEBUG - Buffer created, actual size:', pdfBuffer.length);
-        } catch (bufferError) {
-          console.error('PDF ARCHIVE ERROR - Buffer creation failed:', bufferError);
-          throw new Error(`Failed to create PDF buffer: ${bufferError.message}`);
-        }
-        
-        // Use synchronous write with explicit error handling
-        fs.writeFileSync(filePath, pdfBuffer);
-        
-        // Verify the file was actually written
-        if (!fs.existsSync(filePath)) {
-          throw new Error(`File was not written to disk: ${filePath}`);
-        }
-        
-        const fileStats = fs.statSync(filePath);
-        console.log('PDF ARCHIVE DEBUG - File verified on disk, size:', fileStats.size);
-        
-        // Ensure file is readable
-        fs.accessSync(filePath, fs.constants.R_OK);
-        console.log('PDF ARCHIVE DEBUG - File is readable');
-        
-      } catch (writeError) {
-        console.error('PDF ARCHIVE ERROR - Failed to write file:', writeError);
-        console.error('PDF ARCHIVE ERROR - Write error details:', {
-          errorCode: writeError.code,
-          errorErrno: writeError.errno,
-          errorSyscall: writeError.syscall,
-          errorPath: writeError.path
-        });
-        throw new Error(`Failed to save PDF file: ${writeError.message || writeError}`);
-      }
-
-      // Generate download URL that the healer can use to re-access the PDF
-      const downloadUrl = `/api/download-pdf/${uniqueFileName}`;
-
-      // Save download record to database
-      console.log('PDF ARCHIVE DEBUG - Saving download record to database...');
-      console.log('PDF ARCHIVE DEBUG - Download data:', {
+      const downloadRecord = await storage.createDownload({
         healerId: req.user.id,
         clientUserId: parseInt(clientUserId),
         analysisType,
         analysisId: parseInt(analysisId),
         downloadType: 'pdf',
-        fileName: fileName || uniqueFileName,
+        fileName: displayFileName,
         downloadUrl,
         clientName,
         originalFileName: fileName
       });
-      
-      let downloadRecord;
-      try {
-        downloadRecord = await storage.createDownload({
-          healerId: req.user.id,
-          clientUserId: parseInt(clientUserId),
-          analysisType,
-          analysisId: parseInt(analysisId),
-          downloadType: 'pdf',
-          fileName: fileName || uniqueFileName,
-          downloadUrl,
-          clientName,
-          originalFileName: fileName
-        });
-        console.log('PDF ARCHIVE DEBUG - Database insert successful');
-      } catch (dbError) {
-        console.error('PDF ARCHIVE ERROR - Database insert failed:', dbError);
-        throw new Error(`Database save failed: ${dbError.message}`);
-      }
 
-      console.log('PDF ARCHIVE DEBUG - Download record created successfully:', downloadRecord.id, 'URL:', downloadUrl);
-      console.log('PDF ARCHIVE DEBUG - Full download record:', downloadRecord);
+      console.log('PDF ARCHIVE - Record saved successfully:', downloadRecord.id);
 
       res.json({ 
         success: true, 
-        message: "PDF archived successfully",
+        message: "PDF download link archived successfully",
         downloadId: downloadRecord.id,
         downloadUrl,
         fileName: downloadRecord.fileName
       });
 
     } catch (error) {
-      console.error('PDF ARCHIVE ERROR - General error:', error);
-      console.error('PDF ARCHIVE ERROR - Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
+      console.error('PDF ARCHIVE ERROR:', error);
+      res.status(500).json({ 
+        message: `Failed to archive PDF download link: ${error?.message || String(error)}` 
       });
-      res.status(500).json({ message: `Failed to archive PDF download: ${error.message}` });
     }
   });
 
-  // Serve archived PDF downloads for healers
+  // Regenerate PDF for download (replaces file serving)
+  app.get('/api/regenerate-pdf/:analysisType/:analysisId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { analysisType, analysisId } = req.params;
+      
+      // For now, redirect back to the analysis page where they can generate the PDF again
+      // In the future, this could be enhanced to automatically regenerate the PDF
+      res.redirect(`/healer-dashboard?tab=my-readings&analysis=${analysisType}&id=${analysisId}`);
+    } catch (error) {
+      console.error('PDF regeneration error:', error);
+      res.status(500).json({ message: "Failed to regenerate PDF" });
+    }
+  });
+
+  // Legacy: Serve archived PDF downloads for healers (for existing files)
   app.get('/api/download-pdf/:filename', isAuthenticated, async (req: any, res) => {
     try {
       const filename = req.params.filename;
