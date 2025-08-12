@@ -1557,16 +1557,18 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
       }
 
-      // Deduct credits only for authenticated users and new analyses (not for existing ones)
-      if (req.user && req.user.id && req.creditCost > 0 && !useExistingAnalysis) {
+      // Deduct credits for authenticated users (regardless of whether analysis is cached for consistency)
+      console.log(`Credit deduction check: user=${!!req.user}, userId=${req.user?.id}, creditCost=${req.creditCost}`);
+      
+      if (req.user && req.user.id && req.creditCost > 0) {
         try {
-          await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
-          console.log(`Deducted ${req.creditCost} credits for aura analysis`);
+          const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
+          console.log(`Credit deduction result: ${deductionResult}, deducted ${req.creditCost} credits for aura analysis`);
         } catch (creditError) {
           console.error("Error deducting credits:", creditError);
         }
-      } else if (!req.user || !req.user.id) {
-        console.log("Aura analysis provided without credit deduction (unauthenticated user)");
+      } else {
+        console.log(`Credit deduction skipped: unauthenticated user or no credit cost`);
       }
 
       // Add the name to the response
