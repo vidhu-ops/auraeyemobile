@@ -523,6 +523,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // PAGE 2: AURA VISUALIZATION
       console.log('Starting PDF generation with result:', reading);
       console.log('Processed aura image available:', !!reading.processedAuraImage);
+      console.log('Image URL:', reading.imageUrl);
+      console.log('Name:', reading.name);
       
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
