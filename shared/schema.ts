@@ -130,23 +130,6 @@ export const insertObjectAnalysisSchema = createInsertSchema(objectAnalyses).omi
   createdAt: true,
 });
 
-export const pdfHistory = pgTable("pdf_history", {
-  id: serial("id").primaryKey(),
-  healerId: integer("healer_id").notNull().references(() => users.id),
-  auraReadingId: integer("aura_reading_id").notNull().references(() => auraReadings.id),
-  fileName: text("file_name").notNull(),
-  downloadUrl: text("download_url").notNull(),
-  clientName: text("client_name").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => ({
-  healerIdCreatedAtIdx: index("pdf_history_healer_id_created_at_idx").on(table.healerId, table.createdAt),
-}));
-
-export const insertPdfHistorySchema = createInsertSchema(pdfHistory).omit({
-  id: true,
-  createdAt: true,
-});
-
 export const healers = pgTable("healers", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

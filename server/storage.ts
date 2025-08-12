@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfHistory } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -93,10 +93,6 @@ export interface IStorage {
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
   validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
-
-  // PDF History
-  savePdfHistory(pdfData: any): Promise<any>;
-  getPdfHistoryByHealer(healerId: number): Promise<any[]>;
 
   // Session store
   sessionStore: any;
@@ -617,24 +613,6 @@ export class DatabaseStorage implements IStorage {
       .update(passwordResetTokens)
       .set({ used: true })
       .where(eq(passwordResetTokens.id, tokenId));
-  }
-
-  // PDF History methods
-  async savePdfHistory(pdfData: any): Promise<any> {
-    const [record] = await db
-      .insert(pdfHistory)
-      .values(pdfData)
-      .returning();
-    return record;
-  }
-
-  async getPdfHistoryByHealer(healerId: number): Promise<any[]> {
-    const records = await db
-      .select()
-      .from(pdfHistory)
-      .where(eq(pdfHistory.healerId, healerId))
-      .orderBy(desc(pdfHistory.createdAt));
-    return records;
   }
 }
 
