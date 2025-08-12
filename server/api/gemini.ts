@@ -383,7 +383,7 @@ function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
   ctx.globalCompositeOperation = 'source-over';
   
   // Set watermark text properties
-  const watermarkText = "AuraEye";
+  const watermarkText = "left";
   const fontSize = Math.floor(canvasWidth * 0.025); // Responsive font size based on canvas width
   const x = 30; // 30px from left edge
   const y = canvasHeight - 30; // 30px from bottom edge
