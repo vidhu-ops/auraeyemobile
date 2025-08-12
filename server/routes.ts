@@ -3463,65 +3463,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // PDF upload endpoint for healer dashboard
-  app.post('/api/upload-pdf', isAuthenticated, upload.single('pdf'), async (req, res) => {
-    try {
-      console.log('PDF upload request received from user:', req.user.id);
-      console.log('File info:', req.file ? { name: req.file.originalname, size: req.file.size } : 'No file');
-      console.log('Body data:', req.body);
-      
-      if (!req.file) {
-        console.log('No PDF file uploaded');
-        return res.status(400).json({ message: "No PDF file uploaded" });
-      }
-
-      const { clientUserId, analysisType, analysisId, originalFileName } = req.body;
-      
-      if (!clientUserId || !analysisType || !analysisId) {
-        console.log('Missing required fields:', { clientUserId, analysisType, analysisId });
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      // Create a unique filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const fileName = `${analysisType}-${timestamp}-${req.file.originalname}`;
-      const filePath = `uploads/pdfs/${fileName}`;
-      
-      console.log('Creating file at path:', filePath);
-      
-      // Create the uploads/pdfs directory if it doesn't exist
-      const fs = await import('fs');
-      const path = await import('path');
-      const uploadsDir = path.join(process.cwd(), 'uploads', 'pdfs');
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-        console.log('Created uploads directory');
-      }
-      
-      // Save the file to the uploads directory
-      const fullPath = path.join(uploadsDir, fileName);
-      fs.writeFileSync(fullPath, req.file.buffer);
-      console.log('File saved to:', fullPath);
-
-      // Save download record with file path
-      const download = await storage.saveDownload({
-        healerId: req.user.id,
-        clientUserId: parseInt(clientUserId),
-        analysisType,
-        analysisId: parseInt(analysisId),
-        downloadType: 'pdf',
-        fileName: fileName,
-        fileData: filePath, // Store file path instead of base64
-        originalFileName: originalFileName || fileName
-      });
-
-      console.log('Download record saved:', download.id);
-      res.json({ success: true, download });
-    } catch (error) {
-      console.error("Error uploading PDF:", error);
-      res.status(500).json({ message: "Failed to upload PDF", error: error.message });
-    }
-  });
+  // PDF upload endpoint removed - now using archive-pdf-download link-based system
 
   // Downloads endpoints for healer dashboard
   app.post('/api/downloads', isAuthenticated, async (req, res) => {
@@ -3619,103 +3561,112 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // PDF upload endpoint for healer downloads archive
-  app.post('/api/upload-pdf', isAuthenticated, async (req: any, res) => {
-    console.log('PDF UPLOAD SERVER DEBUG - Endpoint called, user:', req.user?.username);
+  // Archive PDF download link for healer dashboard
+  app.post('/api/archive-pdf-download', isAuthenticated, async (req: any, res) => {
+    console.log('PDF ARCHIVE DEBUG - Endpoint called, user:', req.user?.username);
     
     try {
-      // Configure multer for PDF files
-      const pdfStorage = multer.diskStorage({
-        destination: function (req, file, cb) {
-          const uploadDir = path.join(process.cwd(), 'uploads', 'pdfs');
-          // Create directory if it doesn't exist
-          if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-            console.log('PDF UPLOAD DEBUG - Created uploads/pdfs directory');
-          }
-          cb(null, uploadDir);
-        },
-        filename: function (req, file, cb) {
-          // Generate unique filename
-          const timestamp = Date.now();
-          const cleanName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '-');
-          const filename = `${timestamp}-${cleanName}`;
-          console.log('PDF UPLOAD DEBUG - Generated filename:', filename);
-          cb(null, filename);
-        }
+      const { 
+        analysisType, 
+        analysisId, 
+        clientUserId, 
+        clientName, 
+        fileName,
+        pdfBlob // Base64 encoded PDF data
+      } = req.body;
+
+      if (!analysisType || !analysisId || !clientUserId || !pdfBlob) {
+        return res.status(400).json({ message: "Missing required fields for PDF archival" });
+      }
+
+      // Generate unique filename for the PDF
+      const timestamp = Date.now();
+      const uniqueFileName = `${analysisType}-${analysisId}-${timestamp}.pdf`;
+      
+      // Create the uploads/pdfs directory if it doesn't exist
+      const uploadDir = path.join(process.cwd(), 'uploads', 'pdfs');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log('PDF ARCHIVE DEBUG - Created uploads/pdfs directory');
+      }
+
+      // Save the PDF file to disk
+      const filePath = path.join(uploadDir, uniqueFileName);
+      const pdfBuffer = Buffer.from(pdfBlob, 'base64');
+      fs.writeFileSync(filePath, pdfBuffer);
+      
+      console.log('PDF ARCHIVE DEBUG - PDF saved to disk:', uniqueFileName, 'Size:', pdfBuffer.length);
+
+      // Generate download URL that the healer can use to re-access the PDF
+      const downloadUrl = `/api/download-pdf/${uniqueFileName}`;
+
+      // Save download record to database
+      const downloadRecord = await storage.createDownload({
+        healerId: req.user.id,
+        clientUserId: parseInt(clientUserId),
+        analysisType,
+        analysisId: parseInt(analysisId),
+        downloadType: 'pdf',
+        fileName: fileName || uniqueFileName,
+        downloadUrl,
+        clientName,
+        originalFileName: fileName
       });
 
-      const pdfFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-        console.log('PDF UPLOAD DEBUG - File filter check:', file.mimetype, file.originalname);
-        
-        // Accept PDF files
-        if (file.mimetype === 'application/pdf') {
-          cb(null, true);
-        } else {
-          console.log('PDF UPLOAD DEBUG - Rejected file type:', file.mimetype);
-          cb(new Error('Only PDF files are allowed for downloads archive'));
-        }
-      };
+      console.log('PDF ARCHIVE DEBUG - Download record created:', downloadRecord.id, 'URL:', downloadUrl);
 
-      const uploadPdf = multer({ 
-        storage: pdfStorage,
-        fileFilter: pdfFilter,
-        limits: {
-          fileSize: 50 * 1024 * 1024, // 50MB max for PDF files
-        }
-      }).single('pdf');
-
-      uploadPdf(req, res, async (err) => {
-        if (err) {
-          console.error('PDF UPLOAD ERROR - Multer error:', err);
-          return res.status(400).json({ message: err.message });
-        }
-
-        if (!req.file) {
-          console.error('PDF UPLOAD ERROR - No file uploaded');
-          return res.status(400).json({ message: "No PDF file uploaded" });
-        }
-
-        console.log('PDF UPLOAD DEBUG - File uploaded successfully:', req.file.filename, 'Size:', req.file.size);
-
-        try {
-          // Save download record to database
-          const downloadRecord = await storage.createDownload({
-            healerId: req.user.id,
-            fileName: req.body.originalFileName || req.file.originalname,
-            fileData: `uploads/pdfs/${req.file.filename}`, // Store file path
-            analysisType: req.body.analysisType || 'aura',
-            clientName: req.body.clientName || 'Unknown Client',
-            downloadedAt: new Date(),
-            originalFileName: req.body.originalFileName || req.file.originalname
-          });
-
-          console.log('PDF UPLOAD DEBUG - Download record created:', downloadRecord.id);
-
-          res.json({ 
-            success: true, 
-            message: "PDF uploaded and archived successfully",
-            downloadId: downloadRecord.id,
-            fileName: downloadRecord.fileName
-          });
-
-        } catch (dbError) {
-          console.error('PDF UPLOAD ERROR - Database error:', dbError);
-          
-          // Clean up uploaded file on database error
-          try {
-            fs.unlinkSync(req.file.path);
-          } catch (cleanupError) {
-            console.error('PDF UPLOAD ERROR - Failed to cleanup file:', cleanupError);
-          }
-          
-          res.status(500).json({ message: "Failed to save PDF to archive" });
-        }
+      res.json({ 
+        success: true, 
+        message: "PDF archived successfully",
+        downloadId: downloadRecord.id,
+        downloadUrl,
+        fileName: downloadRecord.fileName
       });
 
     } catch (error) {
-      console.error('PDF UPLOAD ERROR - General error:', error);
-      res.status(500).json({ message: "Failed to process PDF upload" });
+      console.error('PDF ARCHIVE ERROR - General error:', error);
+      res.status(500).json({ message: "Failed to archive PDF download" });
+    }
+  });
+
+  // Serve archived PDF downloads for healers
+  app.get('/api/download-pdf/:filename', isAuthenticated, async (req: any, res) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(process.cwd(), 'uploads', 'pdfs', filename);
+      
+      console.log('PDF DOWNLOAD DEBUG - Requested file:', filename, 'Path:', filePath);
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.log('PDF DOWNLOAD DEBUG - File not found:', filePath);
+        return res.status(404).json({ message: "PDF file not found" });
+      }
+
+      // Verify this healer has access to this PDF by checking the downloads table
+      const downloads = await storage.getDownloadsByHealer(req.user.id);
+      const hasAccess = downloads.some(download => 
+        download.downloadUrl === `/api/download-pdf/${filename}`
+      );
+
+      if (!hasAccess) {
+        console.log('PDF DOWNLOAD DEBUG - Access denied for user:', req.user.username, 'file:', filename);
+        return res.status(403).json({ message: "Access denied to this PDF" });
+      }
+
+      // Set appropriate headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+      
+      // Stream the file
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+      
+      console.log('PDF DOWNLOAD DEBUG - File served successfully:', filename);
+      
+    } catch (error) {
+      console.error('PDF DOWNLOAD ERROR:', error);
+      res.status(500).json({ message: "Failed to serve PDF" });
     }
   });
 

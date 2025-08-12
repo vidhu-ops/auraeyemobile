@@ -1236,45 +1236,52 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // Download the PDF for the user immediately
       pdf.save(fileName);
       
-      // Upload PDF to server and save download record
+      // Archive PDF download link to server
       try {
-        const formData = new FormData();
-        formData.append('pdf', pdfBlob, fileName);
-        formData.append('clientUserId', reading.userId.toString());
-        formData.append('analysisType', 'aura');
-        formData.append('analysisId', reading.id.toString());
-        formData.append('originalFileName', `Aura Analysis Report - ${reading.name}`);
+        const pdfBase64 = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
         
-        console.log('Uploading PDF to server...', fileName);
-        const uploadResponse = await fetch('/api/upload-pdf', {
+        const archiveData = {
+          analysisType: 'aura',
+          analysisId: reading.id,
+          clientUserId: reading.userId,
+          clientName: reading.name,
+          fileName,
+          pdfBlob: pdfBase64
+        };
+        
+        console.log('Archiving PDF download link to server...', fileName);
+        const archiveResponse = await fetch('/api/archive-pdf-download', {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(archiveData),
           credentials: 'include'
         });
         
-        console.log('Upload response status:', uploadResponse.status);
-        const responseData = await uploadResponse.json();
-        console.log('Upload response data:', responseData);
+        console.log('Archive response status:', archiveResponse.status);
+        const responseData = await archiveResponse.json();
+        console.log('Archive response data:', responseData);
         
-        if (uploadResponse.ok) {
-          console.log('PDF uploaded successfully, refreshing downloads list');
+        if (archiveResponse.ok) {
+          console.log('PDF archived successfully, refreshing downloads list');
           // Refresh downloads list
           queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
           
           toast({
-            title: "PDF Saved",
-            description: "PDF has been saved to your downloads archive",
+            title: "PDF Saved & Archived",
+            description: "PDF has been downloaded and saved to your Downloads archive for future access",
           });
         } else {
-          console.error('Upload failed:', responseData);
+          console.error('Archive failed:', responseData);
           toast({
-            title: "Upload Failed",
+            title: "Archive Failed",
             description: "PDF generated but failed to save to archive",
             variant: "destructive"
           });
         }
       } catch (error) {
-        console.log('PDF upload and tracking failed:', error);
+        console.log('PDF archive and tracking failed:', error);
       }
       
       toast({
@@ -1552,45 +1559,52 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
     // Download the PDF for the user immediately
     pdf.save(fileName);
     
-    // Upload PDF to server and save download record
+    // Archive PDF download link to server
     try {
-      const formData = new FormData();
-      formData.append('pdf', pdfBlob, fileName);
-      formData.append('clientUserId', reading.userId.toString());
-      formData.append('analysisType', 'numerology');
-      formData.append('analysisId', reading.id.toString());
-      formData.append('originalFileName', `Numerology Reading - ${reading.name}`);
+      const pdfBase64 = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
       
-      console.log('Uploading numerology PDF to server...', fileName);
-      const uploadResponse = await fetch('/api/upload-pdf', {
+      const archiveData = {
+        analysisType: 'numerology',
+        analysisId: reading.id,
+        clientUserId: reading.userId,
+        clientName: reading.name,
+        fileName,
+        pdfBlob: pdfBase64
+      };
+      
+      console.log('Archiving numerology PDF download link to server...', fileName);
+      const archiveResponse = await fetch('/api/archive-pdf-download', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(archiveData),
         credentials: 'include'
       });
       
-      console.log('Numerology upload response status:', uploadResponse.status);
-      const responseData = await uploadResponse.json();
-      console.log('Numerology upload response data:', responseData);
+      console.log('Numerology archive response status:', archiveResponse.status);
+      const responseData = await archiveResponse.json();
+      console.log('Numerology archive response data:', responseData);
       
-      if (uploadResponse.ok) {
-        console.log('Numerology PDF uploaded successfully, refreshing downloads list');
+      if (archiveResponse.ok) {
+        console.log('Numerology PDF archived successfully, refreshing downloads list');
         // Refresh downloads list
         queryClient.invalidateQueries({ queryKey: ['/api/downloads'] });
         
         toast({
-          title: "PDF Saved",
-          description: "Numerology PDF has been saved to your downloads archive",
+          title: "PDF Saved & Archived",
+          description: "Numerology PDF has been downloaded and archived for future access",
         });
       } else {
-        console.error('Numerology upload failed:', responseData);
+        console.error('Numerology archive failed:', responseData);
         toast({
-          title: "Upload Failed", 
+          title: "Archive Failed", 
           description: "PDF generated but failed to save to archive",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.log('PDF upload and tracking failed:', error);
+      console.log('PDF archive and tracking failed:', error);
     }
   };
 
@@ -1758,9 +1772,15 @@ const DownloadsSection = memo(function DownloadsSection() {
                 </Badge>
               </div>
               
-              <h4 className="font-semibold text-gray-800 mb-2 truncate">
+              <h4 className="font-semibold text-gray-800 mb-1 truncate">
                 {download.originalFileName || download.fileName}
               </h4>
+              
+              {download.clientName && (
+                <p className="text-sm text-blue-600 mb-2 font-medium">
+                  Client: {download.clientName}
+                </p>
+              )}
               
               <p className="text-sm text-gray-600 mb-3">
                 Downloaded: {format(new Date(download.downloadedAt || download.createdAt), 'MMM dd, yyyy HH:mm')}

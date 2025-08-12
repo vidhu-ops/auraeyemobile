@@ -629,6 +629,35 @@ export class DatabaseStorage implements IStorage {
     return newDownload;
   }
 
+  // Create download record with generated PDF link
+  async createDownload(downloadData: {
+    healerId: number;
+    clientUserId: number;
+    analysisType: string;
+    analysisId: number;
+    downloadType: string;
+    fileName: string;
+    downloadUrl: string;
+    clientName?: string;
+    originalFileName?: string;
+  }): Promise<Download> {
+    const [newDownload] = await db
+      .insert(downloads)
+      .values({
+        healerId: downloadData.healerId,
+        clientUserId: downloadData.clientUserId,
+        analysisType: downloadData.analysisType,
+        analysisId: downloadData.analysisId,
+        downloadType: downloadData.downloadType,
+        fileName: downloadData.fileName,
+        downloadUrl: downloadData.downloadUrl,
+        clientName: downloadData.clientName,
+        originalFileName: downloadData.originalFileName,
+      })
+      .returning();
+    return newDownload;
+  }
+
   async getDownloadsByHealer(healerId: number): Promise<Download[]> {
     return await db
       .select()
