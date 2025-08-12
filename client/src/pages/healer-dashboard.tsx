@@ -30,12 +30,13 @@ import {
   Save,
   X,
   Plus,
-  FileText
+  FileText,
+  History
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -67,6 +68,16 @@ interface BookingTrend {
   accepted: number;
   rejected: number;
   pending: number;
+}
+
+interface PdfHistoryRecord {
+  id: number;
+  healerId: number;
+  auraReadingId: number;
+  fileName: string;
+  downloadUrl: string;
+  clientName: string;
+  createdAt: string;
 }
 
 interface AuraReading {
@@ -1226,11 +1237,25 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyy-MM-dd');
-      pdf.save(`aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`);
+      const fileName = `aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`;
+      pdf.save(fileName);
+      
+      // Track PDF download in history
+      try {
+        await apiRequest('POST', '/api/pdf-history', {
+          auraReadingId: reading.id,
+          fileName: fileName,
+          downloadUrl: `data:application/pdf;base64,${btoa(pdf.output())}`,
+          clientName: reading.name
+        });
+      } catch (historyError) {
+        console.error("Error saving PDF history:", historyError);
+        // Don't fail the PDF generation if history tracking fails
+      }
       
       toast({
         title: "PDF Generated",
-        description: `Report downloaded successfully`,
+        description: `Report downloaded successfully and saved to your history`,
       });
       
     } catch (error) {
@@ -1615,6 +1640,72 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   );
 }
 
+// PDF History List Component
+const PdfHistoryList = memo(function PdfHistoryList() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch PDF history
+  const { data: pdfHistory = [], isLoading } = useQuery({
+    queryKey: ['/api/pdf-history'],
+    retry: false,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (pdfHistory.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+        <p className="text-gray-500">No PDF downloads yet</p>
+        <p className="text-sm text-gray-400 mt-1">PDF reports will appear here after you download them</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {pdfHistory.map((record: PdfHistoryRecord) => (
+        <Card key={record.id} className="hover:shadow-md transition-shadow">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-4 w-4 text-blue-500" />
+                  <h3 className="font-medium">{record.fileName}</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Client:</strong> {record.clientName}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Downloaded on {format(new Date(record.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(record.downloadUrl, '_blank')}
+                  className="flex items-center gap-1"
+                >
+                  <Download className="h-3 w-3" />
+                  Open PDF
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+});
+
 export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
@@ -1813,12 +1904,13 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -2242,6 +2334,22 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* History Tab */}
+        <TabsContent value="history" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5 text-blue-500" />
+                PDF Download History
+              </CardTitle>
+              <CardDescription>Track and access previously downloaded aura analysis PDF reports</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PdfHistoryList />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 
