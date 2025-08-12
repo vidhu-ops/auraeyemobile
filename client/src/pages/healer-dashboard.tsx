@@ -438,12 +438,26 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           const imgX = (pageWidth - imgWidth) / 2;
           const imgY = 100;
           
-          pdf.addImage(reading.imageUrl, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+          // Handle different image formats
+          let imageSrc = reading.imageUrl;
+          
+          // If imageUrl is a hash/filename, use our image serving API
+          if (!reading.imageUrl.startsWith('http') && !reading.imageUrl.startsWith('data:')) {
+            imageSrc = `/api/image/${reading.imageUrl}`;
+          }
+          
+          console.log('Adding original image to PDF:', imageSrc);
+          pdf.addImage(imageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
           pdf.setFontSize(10);
           pdf.setTextColor(100, 100, 100);
           pdf.text('Original Image', pageWidth / 2, imgY + imgHeight + 8, { align: 'center' });
+          console.log('Original image added successfully to PDF');
         } catch (imageError) {
           console.error('Error adding original image to PDF:', imageError);
+          // Add placeholder text if image fails
+          pdf.setFontSize(10);
+          pdf.setTextColor(150, 150, 150);
+          pdf.text('Original image not available', pageWidth / 2, 125, { align: 'center' });
         }
       }
       
@@ -529,10 +543,27 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           
           // Handle base64 images properly
           let finalImageSrc = imageToAdd;
-          if (reading.processedAuraImage && !reading.processedAuraImage.startsWith('data:')) {
-            finalImageSrc = `data:image/jpeg;base64,${reading.processedAuraImage}`;
+          
+          // First try to use processed aura image if available
+          if (reading.processedAuraImage) {
+            if (!reading.processedAuraImage.startsWith('data:')) {
+              finalImageSrc = `data:image/jpeg;base64,${reading.processedAuraImage}`;
+            } else {
+              finalImageSrc = reading.processedAuraImage;
+            }
+            console.log('Using processed aura image for PDF');
+          } 
+          // Fallback to original image using our image API
+          else if (reading.imageUrl) {
+            if (!reading.imageUrl.startsWith('http') && !reading.imageUrl.startsWith('data:')) {
+              finalImageSrc = `/api/image/${reading.imageUrl}`;
+            } else {
+              finalImageSrc = reading.imageUrl;
+            }
+            console.log('Using original image as fallback for PDF');
           }
           
+          console.log('Final image source for aura visualization:', finalImageSrc.substring(0, 100));
           pdf.addImage(finalImageSrc, 'JPEG', imgX, 35, imgWidth, imgHeight);
           console.log('Aura image added successfully to PDF');
           
