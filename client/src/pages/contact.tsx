@@ -55,7 +55,8 @@ export default function Contact() {
                         </div>
                         <div className="flex items-start">
                           <Mail className="mt-1 mr-3 h-5 w-5" />
-                          <p>contact@auraeye.com</p>
+                          <p>Contact@auraeyesolutions.com</p>
+                          <p> teamauraeye@gmail.com</p>
                         </div>
                       </div>
                       

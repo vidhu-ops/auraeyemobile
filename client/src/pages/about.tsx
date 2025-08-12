@@ -47,6 +47,15 @@ export default function About() {
                 <p className="text-gray-600">
                   Our name, AuraEye, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Eye" (to see), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
+                
+                <p className="text-gray-600">
+                  Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
+                </p>
+
+                <p>
+
+                Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
+                </p>
               </div>
               
               <div className="relative">
@@ -188,16 +197,8 @@ export default function About() {
                     
                     <div className="order-1 md:order-2">
                       <h3 className="font-heading font-semibold text-2xl mb-4">Virtual Energy Healing</h3>
-                      <p className="text-gray-600 mb-4">
-                        Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
-
-                        
-                      </p>
-                      <p className="text-gray-600 mb-6">
-                        Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
-
-                        
-                      </p>
+                      
+                      
                       <ul className="space-y-2">
                         <li className="flex items-start">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />

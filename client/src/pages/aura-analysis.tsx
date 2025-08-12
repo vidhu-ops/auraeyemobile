@@ -1693,34 +1693,44 @@ export default function AuraAnalysis() {
       
       if (isHealer) {
         try {
-          // Convert PDF to blob for server upload
-          const pdfBlob = pdf.output('blob');
-          console.log('PDF BLOB DEBUG - Size:', pdfBlob.size, 'Type:', pdfBlob.type);
+          // Convert PDF to base64 for archival
+          const pdfBase64 = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
+          console.log('PDF ARCHIVE DEBUG - Base64 size:', pdfBase64.length);
           
-          // Upload to server for healer downloads archive
-          const formData = new FormData();
-          formData.append('pdf', pdfBlob, fileName);
-          formData.append('originalFileName', fileName);
-          formData.append('analysisType', 'aura');
-          formData.append('clientName', nameToUse);
+          // Archive PDF download link to server
+          const archiveData = {
+            analysisType: 'aura',
+            analysisId: currentAuraId,
+            clientUserId: auraAnalysisData?.userId || 0, // Use analysis user ID if available
+            clientName: nameToUse,
+            fileName,
+            pdfBlob: pdfBase64
+          };
           
-          console.log('PDF UPLOAD DEBUG - Uploading PDF to server for healer archive...');
+          console.log('PDF ARCHIVE DEBUG - Archiving PDF download link...');
           
-          const uploadResponse = await fetch('/api/upload-pdf', {
+          const archiveResponse = await fetch('/api/archive-pdf-download', {
             method: 'POST',
-            body: formData
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(archiveData)
           });
           
-          if (uploadResponse.ok) {
-            const uploadResult = await uploadResponse.json();
-            console.log('PDF UPLOAD DEBUG - Server response:', uploadResult);
+          if (archiveResponse.ok) {
+            const archiveResult = await archiveResponse.json();
+            console.log('PDF ARCHIVE DEBUG - Server response:', archiveResult);
+            
+            // Also trigger regular download for immediate access
+            pdf.save(fileName);
+            
             toast({
               title: "PDF Downloaded & Archived",
-              description: "Your comprehensive aura analysis report has been downloaded and saved to your Downloads archive.",
+              description: "Your comprehensive aura analysis report has been downloaded and archived for future access in your Downloads tab.",
             });
           } else {
-            console.error('PDF UPLOAD ERROR - Server response:', await uploadResponse.text());
-            // Still download the PDF even if upload fails
+            console.error('PDF ARCHIVE ERROR - Server response:', await archiveResponse.text());
+            // Still download the PDF even if archive fails
             pdf.save(fileName);
             toast({
               title: "PDF Downloaded",
