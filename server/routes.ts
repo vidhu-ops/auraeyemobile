@@ -3519,6 +3519,75 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // PDF Storage API for exact PDF retrieval
+  app.post('/api/pdf-storage', isAuthenticated, async (req, res) => {
+    try {
+      const { auraReadingId, fileName, pdfData, clientName } = req.body;
+      
+      // Ensure user is a healer
+      if (req.user?.userType !== 'healer') {
+        return res.status(403).json({ message: "Only healers can store PDFs" });
+      }
+
+      const pdfStorage = await storage.storePdf({
+        auraReadingId,
+        healerId: req.user.id,
+        fileName,
+        pdfData,
+        clientName
+      });
+
+      res.status(201).json(pdfStorage);
+    } catch (error) {
+      console.error("Error storing PDF:", error);
+      res.status(500).json({ message: "Failed to store PDF" });
+    }
+  });
+
+  // Get stored PDF by aura reading ID
+  app.get('/api/pdf-storage/aura/:auraReadingId', isAuthenticated, async (req, res) => {
+    try {
+      const auraReadingId = parseInt(req.params.auraReadingId);
+      
+      // Ensure user is a healer
+      if (req.user?.userType !== 'healer') {
+        return res.status(403).json({ message: "Only healers can access stored PDFs" });
+      }
+
+      const storedPdf = await storage.getPdfByAuraReadingId(auraReadingId);
+      
+      if (!storedPdf) {
+        return res.status(404).json({ message: "PDF not found" });
+      }
+
+      // Verify this healer owns this PDF
+      if (storedPdf.healerId !== req.user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json(storedPdf);
+    } catch (error) {
+      console.error("Error retrieving PDF:", error);
+      res.status(500).json({ message: "Failed to retrieve PDF" });
+    }
+  });
+
+  // Get all PDFs stored by a healer
+  app.get('/api/pdf-storage/healer', isAuthenticated, async (req, res) => {
+    try {
+      // Ensure user is a healer
+      if (req.user?.userType !== 'healer') {
+        return res.status(403).json({ message: "Only healers can access PDF history" });
+      }
+
+      const pdfs = await storage.getPdfsByHealerId(req.user.id);
+      res.json(pdfs);
+    } catch (error) {
+      console.error("Error retrieving PDF history:", error);
+      res.status(500).json({ message: "Failed to retrieve PDF history" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   

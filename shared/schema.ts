@@ -228,6 +228,22 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
+// PDF storage table for exact PDF retrieval
+export const pdfStorage = pgTable("pdf_storage", {
+  id: serial("id").primaryKey(),
+  auraReadingId: integer("aura_reading_id").notNull().references(() => auraReadings.id),
+  healerId: integer("healer_id").notNull().references(() => users.id),
+  fileName: text("file_name").notNull(),
+  pdfData: text("pdf_data").notNull(), // Base64 encoded PDF data
+  clientName: text("client_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPdfStorageSchema = createInsertSchema(pdfStorage).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -250,3 +266,5 @@ export type OtpVerification = typeof otpVerifications.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+export type PdfStorage = typeof pdfStorage.$inferSelect;
+export type InsertPdfStorage = z.infer<typeof insertPdfStorageSchema>;
