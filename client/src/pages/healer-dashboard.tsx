@@ -289,6 +289,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const updateReadingMutation = useMutation({
     mutationFn: async (notes: string) => {
@@ -1248,6 +1249,9 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           downloadUrl: `data:application/pdf;base64,${btoa(pdf.output())}`,
           clientName: reading.name
         });
+        
+        // Immediately refresh PDF history to show the new download
+        queryClient.invalidateQueries({ queryKey: ['/api/pdf-history'] });
       } catch (historyError) {
         console.error("Error saving PDF history:", historyError);
         // Don't fail the PDF generation if history tracking fails
@@ -1396,7 +1400,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
                     <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(color)}`}></div>
                     <h5 className="font-medium text-gray-800">{color}</h5>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{String(meaning)}</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{typeof meaning === 'string' ? meaning : JSON.stringify(meaning)}</p>
                 </div>
               ))}
             </div>
@@ -1671,27 +1675,27 @@ const PdfHistoryList = memo(function PdfHistoryList() {
 
   return (
     <div className="space-y-4">
-      {pdfHistory.map((record: PdfHistoryRecord) => (
+      {(pdfHistory as any[]).map((record: any) => (
         <Card key={record.id} className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="h-4 w-4 text-blue-500" />
-                  <h3 className="font-medium">{record.fileName}</h3>
+                  <h3 className="font-medium">{record.file_name || record.fileName}</h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-1">
-                  <strong>Client:</strong> {record.clientName}
+                  <strong>Client:</strong> {record.client_name || record.clientName}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Downloaded on {format(new Date(record.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                  Downloaded on {format(new Date(record.created_at || record.createdAt), "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open(record.downloadUrl, '_blank')}
+                  onClick={() => window.open(record.download_url || record.downloadUrl, '_blank')}
                   className="flex items-center gap-1"
                 >
                   <Download className="h-3 w-3" />
