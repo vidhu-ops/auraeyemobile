@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -93,6 +93,11 @@ export interface IStorage {
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
   validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
+
+  // PDF storage for exact PDF retrieval
+  storePdf(pdfStorage: InsertPdfStorage): Promise<PdfStorage>;
+  getPdfByAuraReadingId(auraReadingId: number): Promise<PdfStorage | undefined>;
+  getPdfsByHealerId(healerId: number): Promise<PdfStorage[]>;
 
   // Session store
   sessionStore: any;
@@ -613,6 +618,31 @@ export class DatabaseStorage implements IStorage {
       .update(passwordResetTokens)
       .set({ used: true })
       .where(eq(passwordResetTokens.id, tokenId));
+  }
+
+  // PDF storage for exact PDF retrieval
+  async storePdf(pdfStorageData: InsertPdfStorage): Promise<PdfStorage> {
+    const [pdfRecord] = await db
+      .insert(pdfStorage)
+      .values(pdfStorageData)
+      .returning();
+    return pdfRecord;
+  }
+
+  async getPdfByAuraReadingId(auraReadingId: number): Promise<PdfStorage | undefined> {
+    const [pdfRecord] = await db
+      .select()
+      .from(pdfStorage)
+      .where(eq(pdfStorage.auraReadingId, auraReadingId));
+    return pdfRecord || undefined;
+  }
+
+  async getPdfsByHealerId(healerId: number): Promise<PdfStorage[]> {
+    return await db
+      .select()
+      .from(pdfStorage)
+      .where(eq(pdfStorage.healerId, healerId))
+      .orderBy(desc(pdfStorage.createdAt));
   }
 }
 
