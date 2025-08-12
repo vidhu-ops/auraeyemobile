@@ -35,6 +35,7 @@ export default function HomePage() {
   const [vibeResult, setVibeResult] = useState<QuickVibeResult | null>(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -301,13 +302,61 @@ export default function HomePage() {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-      setVibeResult(null); // Clear previous results
+      processImageFile(file);
+    }
+  };
+
+  const processImageFile = (file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file (JPG, PNG, etc.)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedImage(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+    setVibeResult(null); // Clear previous results
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      processImageFile(file);
     }
   };
 
@@ -532,18 +581,33 @@ export default function HomePage() {
             <Card className="bg-white backdrop-blur-sm">
               <CardContent className="p-1">
                 {!imagePreview ? (
-                  /* Upload Section */
+                  /* Upload Section with Drag & Drop */
                   <div className="text-center">
-                    <div className=" border-violet-300 rounded-xl p-12 bg-violet-50/50 hover:bg-violet-50 transition-colors">
+                    <div 
+                      className={`border-2 border-dashed rounded-xl p-12 transition-all cursor-pointer ${
+                        isDragging 
+                          ? 'border-violet-500 bg-violet-100/80 scale-105' 
+                          : 'border-violet-300 bg-violet-50/50 hover:bg-violet-50'
+                      }`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       <div className="flex flex-col items-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
+                        <div className={`w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4 transition-transform ${
+                          isDragging ? 'scale-110' : ''
+                        }`}>
                           <Camera className="h-10 w-10 text-white" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          Upload Your Photo
+                          {isDragging ? 'Drop Your Photo Here' : 'Upload Your Photo'}
                         </h3>
                         <p className="text-gray-600 mb-6 max-w-md">
-                          Choose a clear photo of yourself to discover your dominant aura color and energy signature.
+                          {isDragging 
+                            ? 'Release to upload your photo for aura analysis'
+                            : 'Drag & drop your photo here, or click to browse. Choose a clear photo of yourself to discover your dominant aura color and energy signature.'
+                          }
                         </p>
                         <input
                           ref={fileInputRef}
@@ -552,14 +616,18 @@ export default function HomePage() {
                           onChange={handleImageSelect}
                           className="hidden"
                         />
-                        <Button
-                          onClick={() => fileInputRef.current?.click()}
-                          size="lg"
-                          className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
-                        >
-                          <Upload className="mr-2 h-5 w-5" />
-                          Choose Photo
-                        </Button>
+                        {!isDragging && (
+                          <Button
+                            size="lg"
+                            className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
+                          >
+                            <Upload className="mr-2 h-5 w-5" />
+                            Choose Photo
+                          </Button>
+                        )}
+                        <div className="mt-4 text-sm text-gray-500">
+                          Supports JPG, PNG • Max 10MB
+                        </div>
                       </div>
                     </div>
                   </div>
