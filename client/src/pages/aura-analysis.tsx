@@ -504,6 +504,40 @@ export default function AuraAnalysis() {
     
     // Draw watermark text as pure white overlay
     ctx.fillText('AuraEyeTM', centerX-2, centerY);
+    // Apply watermark with pure white text and no background interference
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 0.32; // High opacity for visibility
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 70px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // No shadow at all to prevent any black spots
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Draw watermark text as pure white overlay
+    ctx.fillText('Left', centerX-320, centerY+380);
+    // Draw watermark text as pure white overlay
+    ctx.fillText('AuraEyeTM', centerX-2, centerY);
+    // Apply watermark with pure white text and no background interference
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 0.32; // High opacity for visibility
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 70px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // No shadow at all to prevent any black spots
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Draw watermark text as pure white overlay
+    ctx.fillText('Right', centerX+320, centerY+380);
    
     
     ctx.restore();
