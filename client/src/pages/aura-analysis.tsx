@@ -4340,7 +4340,9 @@ export default function AuraAnalysis() {
             setProcessedAuraImage(enhancedImageBase64); // Store for PDF generation
 
             // After visualization is generated, capture it and update the stored image
+            console.log('🎨 Aura visualization generated, preparing to store...');
             setTimeout(() => {
+                console.log('⏰ Attempting to capture and store visualization...');
                 captureAndUpdateAuraVisualization(enhancedImageBase64);
             }, 1000); // Give time for the image to render in the DOM
         };
@@ -4356,11 +4358,17 @@ export default function AuraAnalysis() {
             return;
         }
 
-        // Try to get current analysis ID, or use the latest result ID
+        // Get analysis ID from current analysis or result
         const analysisId = currentAnalysisId || (result?.id);
+        
+        console.log('🔍 Debug: currentAnalysisId =', currentAnalysisId);
+        console.log('🔍 Debug: result?.id =', result?.id);
+        console.log('🔍 Debug: final analysisId =', analysisId);
         
         if (!analysisId) {
             console.log('⚠️ No analysis ID found, skipping image storage');
+            // Try to get the analysis ID from a recent successful analysis
+            console.log('🔍 Attempting to find recent analysis ID from API calls...');
             return;
         }
 
@@ -4953,6 +4961,17 @@ export default function AuraAnalysis() {
             // Set analysis ID if returned from server for review functionality
             if (analysisResult.id) {
               setCurrentAnalysisId(analysisResult.id);
+              console.log('✅ Analysis ID set successfully:', analysisResult.id);
+              
+              // Immediately try to store any existing visualization
+              if (enhancedAuraImage) {
+                console.log('📸 Found existing enhanced aura image, storing immediately...');
+                setTimeout(() => {
+                  captureAndUpdateAuraVisualization(enhancedAuraImage);
+                }, 100);
+              }
+            } else {
+              console.log('⚠️ No analysis ID in result:', analysisResult);
             }
             
             // Invalidate queries to refresh user's reading history immediately
@@ -4967,6 +4986,14 @@ export default function AuraAnalysis() {
             } else {
               setProcessedAuraImage(base64String || '');
               setAnalysisStage("Analysis complete!");
+              
+              // If no visualization needed, try to store any existing processed image
+              if (analysisResult.id && processedAuraImage) {
+                console.log('📸 Storing existing processed image for analysis:', analysisResult.id);
+                setTimeout(() => {
+                  captureAndUpdateAuraVisualization(processedAuraImage);
+                }, 500);
+              }
             }
             
             // Ensure progress shows 100% at the end
