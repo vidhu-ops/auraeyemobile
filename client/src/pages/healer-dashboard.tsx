@@ -433,9 +433,9 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // Add original image if available
       if (reading.imageUrl) {
         try {
-          const imgWidth = 60;
-          const imgHeight = 95;
-          const imgX = (pageWidth - imgWidth) / 2;
+          const imgWidth = 90;
+          const imgHeight = 160;
+          const imgX = (pageWidth - imgWidth);
           const imgY = 100;
           
           // Handle different image formats
@@ -450,7 +450,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.addImage(imageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
           pdf.setFontSize(10);
           pdf.setTextColor(100, 100, 100);
-          pdf.text('Original Image', pageWidth / 2, imgY + imgHeight + 8, { align: 'center' });
+          pdf.text('Original Image', pageWidth, imgY + imgHeight + 8, { align: 'center' });
           console.log('Original image added successfully to PDF');
         } catch (imageError) {
           console.error('Error adding original image to PDF:', imageError);

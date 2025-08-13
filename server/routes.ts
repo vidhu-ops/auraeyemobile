@@ -1514,8 +1514,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         };
       }
 
-      // Save the aura reading to database if user is authenticated and this is a new analysis
-      if (req.isAuthenticated() && req.user && !useExistingAnalysis) {
+      // Always save each aura reading to database if user is authenticated (each reading should have unique ID)
+      if (req.isAuthenticated() && req.user) {
         try {
           const savedReading = await storage.saveAuraReading({
             userId: req.user.id,
@@ -1550,7 +1550,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           
           // Add the saved reading ID to the response
           auraAnalysis.id = savedReading.id;
-          console.log("Aura reading saved successfully");
+          console.log("Aura reading saved successfully with ID:", savedReading.id);
+          console.log("Analysis result now includes ID:", auraAnalysis.id);
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
           // Don't fail the whole request if saving fails
@@ -1576,6 +1577,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       
       // Return guaranteed successful response
       console.log("Aura analysis completed successfully");
+      console.log("Final response includes ID:", auraAnalysis.id);
       res.json(auraAnalysis);
     } catch (error) {
       console.error("Error analyzing aura:", error);
