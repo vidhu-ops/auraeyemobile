@@ -1350,9 +1350,9 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       try {
         pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
         console.log('PDF generated successfully, size:', pdfData.length, 'characters');
-      } catch (pdfError) {
+      } catch (pdfError: any) {
         console.error('Error converting PDF to base64:', pdfError);
-        throw new Error('Failed to convert PDF to base64: ' + pdfError.message);
+        throw new Error('Failed to convert PDF to base64: ' + String(pdfError?.message || pdfError));
       }
       
       // Store the PDF in database for exact retrieval later
@@ -1446,6 +1446,40 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           </TabsList>
           
           <TabsContent value="overview" className="space-y-6">
+            {/* Aura Visualization Image */}
+            {(reading.processedAuraImage || reading.imageUrl) && (
+              <div className="text-center mb-6">
+                <h4 className="font-semibold text-lg mb-3">Aura Visualization</h4>
+                <div className="flex justify-center">
+                  <div className="relative rounded-lg overflow-hidden shadow-lg border-2 border-purple-200">
+                    <img
+                      src={reading.processedAuraImage ? 
+                        (reading.processedAuraImage.startsWith('data:') ? 
+                          reading.processedAuraImage : 
+                          `data:image/jpeg;base64,${reading.processedAuraImage}`
+                        ) : 
+                        (reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
+                          reading.imageUrl : 
+                          `/api/image/${reading.imageUrl}`
+                        )
+                      }
+                      alt={`Aura visualization for ${reading.name}`}
+                      className="max-w-sm max-h-64 object-contain"
+                      onError={(e) => {
+                        // Fallback to original image if processed image fails
+                        const img = e.target as HTMLImageElement;
+                        if (reading.imageUrl && !img.src.includes(reading.imageUrl)) {
+                          img.src = reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
+                            reading.imageUrl : 
+                            `/api/image/${reading.imageUrl}`;
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Aura Colors Display */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
@@ -1503,12 +1537,12 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
                       <div key={chakra} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
                           <div className="flex justify-between items-center mb-2">
                               <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</span>
-                              <span className="text-sm font-bold text-indigo-600">{score}/10</span>
+                              <span className="text-sm font-bold text-indigo-600">{Number(score)}/10</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                               <div
                                   className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
-                                  style={{ width: `${(score / 10) * 100}%` }}
+                                  style={{ width: `${(Number(score) / 10) * 100}%` }}
                               ></div>
                           </div>
                       </div>
@@ -1675,11 +1709,10 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => generateComprehensivePDF(reading)}
-              disabled={isGeneratingPDF}
+              onClick={downloadPDF}
               title="Download PDF"
             >
-              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <Download className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
