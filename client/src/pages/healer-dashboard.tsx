@@ -1834,12 +1834,12 @@ export default function HealerDashboard() {
   });
 
   // Fetch healer's own aura readings with immediate updates
-  const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings } = useQuery<AuraReading[]>({
+  const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings, refetch: refetchAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
     staleTime: 0, // Always refetch to get latest data
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
-    refetchInterval: 10000, // Refetch every 10 seconds for real-time updates
+    gcTime: 30 * 1000, // Keep in cache for 30 seconds only for immediate updates
+    refetchInterval: 3000, // Refetch every 3 seconds for very fast updates
   });
 
   // Fetch healer's own numerology readings
@@ -2239,9 +2239,20 @@ export default function HealerDashboard() {
             {/* Aura Readings */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5 text-purple-500" />
-                  My Aura Readings
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Palette className="h-5 w-5 text-purple-500" />
+                    My Aura Readings
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => refetchAuraReadings()}
+                    disabled={isLoadingAuraReadings}
+                    className="text-xs"
+                  >
+                    {isLoadingAuraReadings ? 'Refreshing...' : 'Refresh'}
+                  </Button>
                 </CardTitle>
                 <CardDescription>Your personal spiritual energy analysis</CardDescription>
               </CardHeader>
