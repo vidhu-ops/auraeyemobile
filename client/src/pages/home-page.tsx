@@ -61,7 +61,7 @@ export default function HomePage() {
     ctx.shadowOffsetY = 2;
     
     // Draw watermark text
-    ctx.fillText('AuraEye', centerX, centerY);
+    ctx.fillText('AuraEyeTM', centerX, centerY);
     
     ctx.restore();
   };
