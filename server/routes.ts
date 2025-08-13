@@ -1610,6 +1610,29 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     }
   });
 
+  // Update processed aura image - allows frontend to send the actual visualized image
+  app.post("/api/update-aura-image", isAuthenticated, async (req, res) => {
+    try {
+      const { auraReadingId, processedImage } = req.body;
+      
+      if (!auraReadingId || !processedImage) {
+        return res.status(400).json({ message: "Missing auraReadingId or processedImage" });
+      }
+
+      // Update the aura reading with the new processed image
+      const updated = await storage.updateAuraReadingImage(auraReadingId, processedImage);
+      
+      if (updated) {
+        res.json({ success: true, message: "Aura visualization updated successfully" });
+      } else {
+        res.status(404).json({ message: "Aura reading not found or not authorized" });
+      }
+    } catch (error) {
+      console.error("Error updating aura image:", error);
+      res.status(500).json({ message: "An error occurred updating the image" });
+    }
+  });
+
   // Fallback to Gemini for aura analysis if OpenAI fails
   app.post("/api/gemini-analyze", upload.single("image"), async (req, res) => {
     try {
