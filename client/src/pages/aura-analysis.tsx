@@ -4339,13 +4339,99 @@ export default function AuraAnalysis() {
             setEnhancedAuraImage(enhancedImageBase64);
             setProcessedAuraImage(enhancedImageBase64); // Store for PDF generation
 
-            // After visualization is generated, capture it and update the stored image
-            console.log('🎨 Aura visualization generated, preparing to store...');
+            // After visualization is generated, capture the actual display screenshot
+            console.log('🎨 Aura visualization generated, preparing to capture screenshot of display...');
             setTimeout(() => {
-                console.log('⏰ Attempting to capture and store visualization...');
-                captureAndUpdateAuraVisualization(enhancedImageBase64);
-            }, 1000); // Give time for the image to render in the DOM
+                console.log('⏰ Taking screenshot of the actual aura visualization display...');
+                captureActualVisualizationScreenshot();
+            }, 2000); // Give time for the complete visualization to render
         };
+    };
+
+    // Function to capture actual screenshot of the aura visualization display
+    const captureActualVisualizationScreenshot = async () => {
+        // Get analysis ID from current analysis or result
+        const analysisId = currentAnalysisId || (result?.id);
+        
+        console.log('🔍 Screenshot Debug: currentAnalysisId =', currentAnalysisId);
+        console.log('🔍 Screenshot Debug: result?.id =', result?.id);
+        console.log('🔍 Screenshot Debug: final analysisId =', analysisId);
+        
+        if (!analysisId) {
+            console.log('⚠️ No analysis ID found for screenshot, skipping capture');
+            return;
+        }
+
+        try {
+            // Find the main visualization container that shows both original and aura images side by side
+            // First try to find the visualization tab content, then the grid container
+            let visualizationContainer = document.querySelector('[data-state="active"] .grid') || 
+                                       document.querySelector('.flex.flex-col.md\\:grid.md\\:grid-cols-2') ||
+                                       document.querySelector('.md\\:grid.md\\:grid-cols-2.gap-4');
+            
+            // If no container found, try alternative approaches
+            if (!visualizationContainer) {
+                console.log('⚠️ Primary container not found, trying fallback approaches...');
+                
+                // Try to find the aura visualization canvas directly
+                const auraCanvas = document.getElementById('aura-visualization-container') || 
+                                 document.querySelector('#enhanced-aura-image') ||
+                                 document.querySelector('canvas');
+                
+                if (auraCanvas) {
+                    console.log('📷 Found aura canvas element, using it for screenshot...');
+                    visualizationContainer = auraCanvas.parentElement || auraCanvas;
+                } else {
+                    console.log('⚠️ No visualization elements found for screenshot');
+                    return;
+                }
+            }
+
+            console.log('📷 Found visualization container, capturing screenshot...');
+            console.log('📐 Container dimensions:', visualizationContainer.scrollWidth, 'x', visualizationContainer.scrollHeight);
+
+            // Capture the entire visualization display (original + aura side by side)
+            const canvas = await html2canvas(visualizationContainer as HTMLElement, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                scale: 2, // Higher quality
+                logging: false,
+                width: visualizationContainer.scrollWidth,
+                height: visualizationContainer.scrollHeight
+            });
+
+            // Convert to base64
+            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            console.log('📸 Screenshot captured successfully, size:', screenshotBase64.length, 'characters');
+
+            // Send screenshot to backend to update the stored processedAuraImage
+            const response = await fetch('/api/update-aura-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    auraReadingId: analysisId,
+                    processedImage: screenshotBase64
+                })
+            });
+
+            if (response.ok) {
+                console.log('✅ Screenshot of aura visualization display stored successfully');
+                console.log('📸 Display screenshot stored for aura reading:', analysisId);
+                
+                // Invalidate healer dashboard cache to show updated screenshots immediately
+                await queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
+                await queryClient.invalidateQueries({ queryKey: ["/api/aura-readings"] });
+                console.log('🔄 Dashboard cache invalidated - screenshot should appear immediately');
+            } else {
+                const errorData = await response.json();
+                console.error('❌ Failed to store screenshot:', errorData);
+            }
+        } catch (error) {
+            console.error('Error capturing screenshot of visualization display:', error);
+        }
     };
 
     // Function to capture and store the aura visualization image directly
