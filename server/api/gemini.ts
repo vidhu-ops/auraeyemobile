@@ -12,15 +12,15 @@ export async function generateAuraVisualization(
   auraAnalysis: any
 ): Promise<string> {
   try {
-    const { createCanvas, loadImage } = require('canvas');
+    const { createCanvas, loadImage } = await import('canvas');
     
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 1600x900px`);
+    console.log(`Processing with standardized dimensions: 1400x900px`);
     
-    // Standardized dimensions as requested: 1600px width × 900px height
-    const STANDARD_WIDTH = 1600;
+    // Standardized dimensions as requested: 1400px width × 900px height
+    const STANDARD_WIDTH = 1400;
     const STANDARD_HEIGHT = 900;
     
     // Create canvas with standardized dimensions
@@ -129,10 +129,10 @@ function addStandardizedAuraEffects(
   // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Purple/Violet zones in examples)
   console.log('Drawing receiving zone (left) with increased density...');
   
-  // Multiple layers for denser smoke effect
-  for (let layer = 0; layer < 3; layer++) {
-    const layerOffset = layer * 20;
-    const baseOpacity = 0.6 - (layer * 0.15); // Start higher, reduce per layer
+  // Multiple layers for consistent dense smoke effect
+  for (let layer = 0; layer < 4; layer++) {
+    const layerOffset = layer * 15;
+    const baseOpacity = 0.65 - (layer * 0.12); // More consistent opacity reduction
     
     const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth / 2) + layerOffset, 0);
     receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity})`);
@@ -147,10 +147,10 @@ function addStandardizedAuraEffects(
   // ZONE 2: RIGHT SIDE - GIVING ENERGY (Green zones in examples)
   console.log('Drawing giving zone (right) with increased density...');
   
-  // Multiple layers for denser smoke effect
-  for (let layer = 0; layer < 3; layer++) {
-    const layerOffset = layer * 20;
-    const baseOpacity = 0.6 - (layer * 0.15); // Start higher, reduce per layer
+  // Multiple layers for consistent dense smoke effect
+  for (let layer = 0; layer < 4; layer++) {
+    const layerOffset = layer * 15;
+    const baseOpacity = 0.65 - (layer * 0.12); // More consistent opacity reduction
     
     const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth / 2) - layerOffset, 0);
     givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity})`);
@@ -165,10 +165,10 @@ function addStandardizedAuraEffects(
   // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
   console.log('Drawing thinking zone (top) with increased density...');
   
-  // Multiple layers for denser smoke effect
-  for (let layer = 0; layer < 3; layer++) {
-    const layerOffset = layer * 15;
-    const baseOpacity = 0.55 - (layer * 0.12); // Higher opacity for thinking zone
+  // Multiple layers for consistent dense smoke effect
+  for (let layer = 0; layer < 4; layer++) {
+    const layerOffset = layer * 12;
+    const baseOpacity = 0.62 - (layer * 0.11); // Consistent opacity with other zones
     
     const thinkingGradient = ctx.createLinearGradient(0, 0, 0, (canvasHeight / 3) + layerOffset);
     thinkingGradient.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity})`);
@@ -183,13 +183,13 @@ function addStandardizedAuraEffects(
   // ZONE 4: EDGES - PERSONALITY ENERGY (Outer rim effect with increased density)
   console.log('Drawing personality zone (edges) with increased density...');
   
-  // Multiple edge layers for denser smoke effect
-  const edgeThickness = 150; // Increased from 100
-  const edgeLayers = 4; // More layers for denser effect
+  // Multiple edge layers for consistent dense smoke effect
+  const edgeThickness = 140; // Standardized thickness
+  const edgeLayers = 4; // Consistent with other zones
   
   for (let layer = 0; layer < edgeLayers; layer++) {
-    const layerOffset = layer * 10;
-    const baseOpacity = 0.45 - (layer * 0.08);
+    const layerOffset = layer * 8;
+    const baseOpacity = 0.58 - (layer * 0.10); // Consistent with other zones
     
     // Top edge
     const topEdgeGradient = ctx.createLinearGradient(0, 0, 0, edgeThickness - layerOffset);
@@ -227,14 +227,14 @@ function addStandardizedAuraEffects(
   // Add multiple layers of dense energy wisps for much more prominent smokey effect
   console.log('Adding multiple layers of dense energy wisps...');
   
-  // Layer 1: Close inner wisps (very dense)
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 80, 0.4, 25);
+  // Layer 1: Close inner wisps (standardized density)
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 72, 0.45, 24);
   
-  // Layer 2: Medium distance wisps
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 60, 0.3, 20);
+  // Layer 2: Medium distance wisps (consistent spacing)
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 56, 0.35, 20);
   
-  // Layer 3: Outer atmospheric wisps
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 40, 0.2, 15);
+  // Layer 3: Outer atmospheric wisps (uniform distribution)
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 40, 0.25, 16);
   
   // Add dense radial smoke clouds around the person for ultra-smokey effect
   console.log('Adding dense radial smoke clouds...');
@@ -263,13 +263,17 @@ function addEnergyWisps(
   
   for (let i = 0; i < numWisps; i++) {
     const angle = (i / numWisps) * Math.PI * 2;
-    const distance = Math.min(width, height) * (0.15 + Math.random() * 0.4); // Closer to person
+    // Use deterministic distance patterns for consistency
+    const distanceMultiplier = 0.2 + ((i % 3) * 0.15); // Creates 3 consistent distance rings
+    const distance = Math.min(width, height) * distanceMultiplier;
     const x = centerX + Math.cos(angle) * distance;
     const y = centerY + Math.sin(angle) * distance;
     
-    // Vary radius for more organic look
-    const radius = baseRadius + Math.random() * 10;
-    const opacity = baseOpacity + Math.random() * 0.1;
+    // Use consistent radius patterns instead of random
+    const radiusVariation = (i % 4) * 2; // Creates 4 different size patterns
+    const radius = baseRadius + radiusVariation;
+    const opacityVariation = (i % 3) * 0.05; // Creates 3 opacity levels
+    const opacity = baseOpacity + opacityVariation;
     
     const wispGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
     const color = i % 2 === 0 ? primaryRGB : secondaryRGB;
@@ -286,8 +290,11 @@ function addEnergyWisps(
     // Add additional smokey wisps around main ones for density
     if (i % 3 === 0) {
       for (let j = 0; j < 3; j++) {
-        const offsetAngle = angle + (Math.random() - 0.5) * 0.8;
-        const offsetDistance = distance + (Math.random() - 0.5) * 30;
+        // Use consistent offset patterns instead of random
+        const angleOffset = (j - 1) * 0.3; // Creates consistent -0.3, 0, 0.3 pattern
+        const offsetAngle = angle + angleOffset;
+        const distanceOffset = (j - 1) * 12; // Creates consistent distance variations
+        const offsetDistance = distance + distanceOffset;
         const offsetX = centerX + Math.cos(offsetAngle) * offsetDistance;
         const offsetY = centerY + Math.sin(offsetAngle) * offsetDistance;
         
@@ -329,13 +336,17 @@ function addDenseSmokeyClouds(
     
     for (let cloud = 0; cloud < numClouds; cloud++) {
       const angle = (cloud / numClouds) * Math.PI * 2;
-      const radiusVariation = ringRadius + (Math.random() - 0.5) * 50;
+      // Use deterministic variations for consistency
+      const variationPattern = (cloud % 5) * 10 - 25; // Creates 5 consistent patterns
+      const radiusVariation = ringRadius + variationPattern;
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
       
-      // Create varying cloud sizes for organic look
-      const cloudRadius = 25 + Math.random() * 20;
-      const cloudOpacity = opacity + (Math.random() - 0.5) * 0.1;
+      // Use consistent cloud sizes based on pattern
+      const sizePattern = (cloud % 3) * 5; // Creates 3 size patterns
+      const cloudRadius = 25 + sizePattern;
+      const opacityPattern = (cloud % 4) * 0.02; // Creates 4 opacity patterns
+      const cloudOpacity = opacity + opacityPattern;
       
       const color = cloud % 2 === 0 ? primaryRGB : secondaryRGB;
       
@@ -359,11 +370,15 @@ function addDenseSmokeyClouds(
   
   for (let i = 0; i < innerClouds; i++) {
     const angle = (i / innerClouds) * Math.PI * 2;
-    const distance = innerRadius + (Math.random() - 0.5) * 20;
+    // Use consistent patterns for inner clouds
+    const distancePattern = (i % 4) * 5 - 10; // Creates 4 consistent distance patterns
+    const distance = innerRadius + distancePattern;
     const x = centerX + Math.cos(angle) * distance;
     const y = centerY + Math.sin(angle) * distance;
     
-    const cloudRadius = 15 + Math.random() * 12;
+    // Use consistent radius patterns
+    const radiusPattern = (i % 3) * 3; // Creates 3 radius patterns
+    const cloudRadius = 15 + radiusPattern;
     const color = i % 3 === 0 ? primaryRGB : secondaryRGB;
     
     const innerGradient = ctx.createRadialGradient(x, y, 0, x, y, cloudRadius);

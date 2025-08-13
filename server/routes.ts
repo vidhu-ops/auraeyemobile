@@ -1033,7 +1033,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Keep compressing until we reach 150KB or lower for faster processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(1600, 900, {
+          .resize(1400, 900, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1421,7 +1421,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       if (!useExistingAnalysis) {
         try {
           // Generate standardized aura visualization with consistent dimensions and zone positioning
-          console.log("Generating standardized aura visualization with 1600x900px dimensions...");
+          console.log("Generating standardized aura visualization with 1400x900px dimensions...");
           
           // Ensure aura analysis has zone-specific colors for the new visualization system
           if (!auraAnalysis.auraLayerColors) {
@@ -1441,7 +1441,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             `data:image/jpeg;base64,${imageData}`,
             auraAnalysis
           );
-          console.log("Standardized aura visualization completed successfully with 1600x900px dimensions");
+          console.log("Standardized aura visualization completed successfully with 1400x900px dimensions");
           console.log("Aura analysis generated successfully");
         } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
