@@ -4348,11 +4348,21 @@ export default function AuraAnalysis() {
 
     // Function to capture the displayed aura visualization and update the stored image
     const captureAndUpdateAuraVisualization = async () => {
-        if (!currentAnalysisId) return;
+        if (!currentAnalysisId) {
+            console.log('⚠️ No currentAnalysisId found, skipping screenshot capture');
+            return;
+        }
+
+        console.log('📸 Starting screenshot capture for aura reading:', currentAnalysisId);
 
         try {
             const container = document.getElementById('aura-visualization-container');
-            if (!container) return;
+            if (!container) {
+                console.log('⚠️ Aura visualization container not found, skipping screenshot');
+                return;
+            }
+
+            console.log('📷 Found aura visualization container, dimensions:', container.offsetWidth, 'x', container.offsetHeight);
 
             // Capture the visualization container
             const canvas = await html2canvas(container, {
@@ -4381,13 +4391,16 @@ export default function AuraAnalysis() {
             });
 
             if (response.ok) {
-                console.log('Aura visualization updated successfully in database');
+                console.log('✅ Aura visualization updated successfully in database');
+                console.log('📸 Screenshot captured and stored for aura reading:', currentAnalysisId);
                 
                 // Invalidate healer dashboard cache to show updated images immediately
-                queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
-                queryClient.invalidateQueries({ queryKey: ["/api/aura-readings"] });
+                await queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
+                await queryClient.invalidateQueries({ queryKey: ["/api/aura-readings"] });
+                console.log('🔄 Healer dashboard cache invalidated - new images should appear immediately');
             } else {
-                console.error('Failed to update aura visualization in database');
+                const errorData = await response.json();
+                console.error('❌ Failed to update aura visualization in database:', errorData);
             }
         } catch (error) {
             console.error('Error capturing and updating aura visualization:', error);
