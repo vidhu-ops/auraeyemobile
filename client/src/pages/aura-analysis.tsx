@@ -4343,6 +4343,7 @@ export default function AuraAnalysis() {
             console.log('🎨 Aura visualization generated, preparing to capture screenshot of display...');
             setTimeout(() => {
                 console.log('⏰ Taking screenshot of the actual aura visualization display...');
+                console.log('🆔 Analysis ID available for screenshot:', window.currentAnalysisIdForScreenshot || currentAnalysisId);
                 captureActualVisualizationScreenshot();
             }, 2000); // Give time for the complete visualization to render
         };
@@ -4350,15 +4351,29 @@ export default function AuraAnalysis() {
 
     // Function to capture actual screenshot of the aura visualization display
     const captureActualVisualizationScreenshot = async () => {
-        // Get analysis ID from current analysis or result
-        const analysisId = currentAnalysisId || (result?.id);
+        // Get analysis ID from multiple sources - prioritize the global one
+        const analysisId = window.currentAnalysisIdForScreenshot || currentAnalysisId || (result?.id);
         
+        console.log('🔍 Screenshot Debug: window.currentAnalysisIdForScreenshot =', window.currentAnalysisIdForScreenshot);
         console.log('🔍 Screenshot Debug: currentAnalysisId =', currentAnalysisId);
         console.log('🔍 Screenshot Debug: result?.id =', result?.id);
         console.log('🔍 Screenshot Debug: final analysisId =', analysisId);
         
         if (!analysisId) {
-            console.log('⚠️ No analysis ID found for screenshot, skipping capture');
+            console.log('⚠️ No analysis ID found for screenshot, attempting retry in 3 seconds...');
+            
+            // Retry once after a delay to allow for state updates
+            setTimeout(() => {
+                const retryAnalysisId = window.currentAnalysisIdForScreenshot || currentAnalysisId || (result?.id);
+                console.log('🔄 Retry attempt - analysis ID:', retryAnalysisId);
+                
+                if (retryAnalysisId) {
+                    console.log('✅ Found analysis ID on retry, proceeding with screenshot...');
+                    captureActualVisualizationScreenshot();
+                } else {
+                    console.log('❌ No analysis ID found even after retry, skipping screenshot capture');
+                }
+            }, 3000);
             return;
         }
 
@@ -5026,6 +5041,9 @@ export default function AuraAnalysis() {
             // Always call API to ensure database record and ID are created
             analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
             
+            console.log('🆔 Raw API result:', analysisResult);
+            console.log('🆔 Analysis ID from API:', analysisResult?.id);
+            
             if (cachedResult) {
               // Use cached analysis result but keep the new ID from the API call
               setAnalysisStage("Loading cached analysis for consistency...");
@@ -5040,6 +5058,22 @@ export default function AuraAnalysis() {
                 newCache.set(imageHash, analysisResult);
                 return newCache;
               });
+            }
+            
+            // Immediately set the current analysis ID for screenshot capture
+            if (analysisResult?.id) {
+              setCurrentAnalysisId(analysisResult.id);
+              console.log('🆔 Current analysis ID set to:', analysisResult.id);
+              
+              // Store the analysis ID globally for screenshot capture
+              window.currentAnalysisIdForScreenshot = analysisResult.id;
+              
+              // Immediately invalidate healer dashboard cache to show new reading
+              queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
+              queryClient.invalidateQueries({ queryKey: ["/api/aura-readings"] });
+              console.log('🔄 Cache invalidated immediately after setting analysis ID');
+            } else {
+              console.log('⚠️ No ID in analysis result, will retry later');
             }
             
             setResult(analysisResult);
