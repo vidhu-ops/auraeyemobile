@@ -1248,7 +1248,7 @@ export default function AuraAnalysis() {
       };
 
       // Helper function to add screenshot images (simplified for synchronous use)
-      function addScreenshotImage(imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
+      const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
             try {
                 // Ensure y is a valid number
                 if (typeof y !== 'number' || isNaN(y) || y < 0) {
@@ -1267,7 +1267,7 @@ export default function AuraAnalysis() {
                 console.error('Error adding screenshot image:', error);
                 return y + 10;
             }
-        }
+        };
 
       // Add the uploaded image as the first page if available
       const addUploadedImageAsFirstPage = async () => {
@@ -4382,6 +4382,10 @@ export default function AuraAnalysis() {
 
             if (response.ok) {
                 console.log('Aura visualization updated successfully in database');
+                
+                // Invalidate healer dashboard cache to show updated images immediately
+                queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
+                queryClient.invalidateQueries({ queryKey: ["/api/aura-readings"] });
             } else {
                 console.error('Failed to update aura visualization in database');
             }
@@ -6663,12 +6667,12 @@ export default function AuraAnalysis() {
                                   <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
                                     <div className="flex items-center justify-between mb-4">
                                       <h3 className="font-medium text-lg">Spiritual Energy Alignment</h3>
-                                      <Badge variant={getCombinedInsights(result, numerologyResult, formData.birthDate).energyAlignment === 'Highly Aligned' ? 'default' : 'secondary'}>
-                                        {getCombinedInsights(result, numerologyResult, formData.birthDate).energyAlignment}
+                                      <Badge variant={getCombinedInsights(result, numerologyResult, numerologyBirthDate).energyAlignment === 'Highly Aligned' ? 'default' : 'secondary'}>
+                                        {getCombinedInsights(result, numerologyResult, numerologyBirthDate).energyAlignment}
                                       </Badge>
                                     </div>
                                     <p className="text-sm text-gray-600 mb-4">
-                                      {getCombinedInsights(result, numerologyResult, formData.birthDate).compatibility}
+                                      {getCombinedInsights(result, numerologyResult, numerologyBirthDate).compatibility}
                                     </p>
                                   </div>
 
@@ -6696,9 +6700,9 @@ export default function AuraAnalysis() {
                                           <div className="flex items-center space-x-2">
                                             <div 
                                               className="w-4 h-4 rounded-full"
-                                              style={{ backgroundColor: getAccurateColorCode(getCombinedInsights(result, numerologyResult, formData.birthDate).lifePathColor) }}
+                                              style={{ backgroundColor: getAccurateColorCode(getCombinedInsights(result, numerologyResult, numerologyBirthDate).lifePathColor) }}
                                             ></div>
-                                            <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, formData.birthDate).lifePathColor}</span>
+                                            <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).lifePathColor}</span>
                                           </div>
                                         </div>
                                       </div>
@@ -6713,20 +6717,20 @@ export default function AuraAnalysis() {
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Personality Number</span>
-                                          <span className="text-2xl font-bold text-indigo-600">{getCombinedInsights(result, numerologyResult, formData.birthDate).personalityNumber}</span>
+                                          <span className="text-2xl font-bold text-indigo-600">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).personalityNumber}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Personality Color</span>
                                           <div className="flex items-center space-x-2">
                                             <div 
                                               className="w-4 h-4 rounded-full"
-                                              style={{ backgroundColor: getAccurateColorCode(getCombinedInsights(result, numerologyResult, formData.birthDate).personalityColor) }}
+                                              style={{ backgroundColor: getAccurateColorCode(getCombinedInsights(result, numerologyResult, numerologyBirthDate).personalityColor) }}
                                             ></div>
-                                            <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, formData.birthDate).personalityColor}</span>
+                                            <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).personalityColor}</span>
                                           </div>
                                         </div>
                                         <p className="text-xs text-gray-600 leading-relaxed">
-                                          {getCombinedInsights(result, numerologyResult, formData.birthDate).personalityIntegration}
+                                          {getCombinedInsights(result, numerologyResult, numerologyBirthDate).personalityIntegration}
                                         </p>
                                       </div>
                                     </div>
@@ -6746,19 +6750,19 @@ export default function AuraAnalysis() {
                                       <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Most Influential Chakra/Active Chakra</span>
-                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, formData.birthDate).chakraAlignment}</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).chakraAlignment}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Planetary Influence</span>
-                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, formData.birthDate).planetaryInfluence}</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).planetaryInfluence}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">Sacred Mantra</span>
-                                          <span className="text-sm font-mono bg-white px-2 py-1 rounded">{getCombinedInsights(result, numerologyResult, formData.birthDate).sacredMantra}</span>
+                                          <span className="text-sm font-mono bg-white px-2 py-1 rounded">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).sacredMantra}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <span className="text-sm text-gray-600">The Chakra that you use most   </span>
-                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, formData.birthDate).dominantSoulChakra}</span>
+                                          <span className="text-sm font-medium">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).dominantSoulChakra}</span>
                                         </div>
                                       </div>
                                     </div>
@@ -6769,12 +6773,12 @@ export default function AuraAnalysis() {
                                       <div className="space-y-3">
                                         <div>
                                           <span className="text-sm text-gray-600 block">Archangel Guidance</span>
-                                          <span className="text-sm font-medium text-purple-700">{getCombinedInsights(result, numerologyResult, formData.birthDate).archangelGuidance}</span>
+                                          <span className="text-sm font-medium text-purple-700">{getCombinedInsights(result, numerologyResult, numerologyBirthDate).archangelGuidance}</span>
                                         </div>
                                         <div>
                                           <span className="text-sm text-gray-600 block">Healing Crystals</span>
                                           <div className="flex flex-wrap gap-1 mt-1">
-                                            {getCombinedInsights(result, numerologyResult, formData.birthDate).healingCrystals.map((crystal, index) => (
+                                            {getCombinedInsights(result, numerologyResult, numerologyBirthDate).healingCrystals.map((crystal, index) => (
                                               <span key={index} className="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
                                                 {crystal}
                                               </span>
@@ -6784,9 +6788,9 @@ export default function AuraAnalysis() {
                                         <div>
                                           <span className="text-sm text-gray-600 block">Energy Alignment</span>
                                           <div className="mt-1">
-                                            <Badge variant={getCombinedInsights(result, numerologyResult, formData.birthDate).energyAlignment === 'Perfect Alignment' ? 'default' : 
-                                                           getCombinedInsights(result, numerologyResult, formData.birthDate).energyAlignment === 'Highly Aligned' ? 'secondary' : 'outline'}>
-                                              {getCombinedInsights(result, numerologyResult, formData.birthDate).energyAlignment}
+                                            <Badge variant={getCombinedInsights(result, numerologyResult, numerologyBirthDate).energyAlignment === 'Perfect Alignment' ? 'default' : 
+                                                           getCombinedInsights(result, numerologyResult, numerologyBirthDate).energyAlignment === 'Highly Aligned' ? 'secondary' : 'outline'}>
+                                              {getCombinedInsights(result, numerologyResult, numerologyBirthDate).energyAlignment}
                                             </Badge>
                                           </div>
                                         </div>
@@ -6798,19 +6802,19 @@ export default function AuraAnalysis() {
                                   <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-100">
                                     <h4 className="font-medium mb-3">Integrated Spiritual Guidance</h4>
                                     <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                                      {getCombinedInsights(result, numerologyResult, formData.birthDate).spiritualGuidance}
+                                      {getCombinedInsights(result, numerologyResult, numerologyBirthDate).spiritualGuidance}
                                     </p>
                                     
                                     <div className="bg-white rounded-lg p-4 border border-amber-200 mb-4">
                                       <h5 className="font-medium text-sm mb-2 text-amber-800">Personality Integration Insight</h5>
                                       <p className="text-sm text-gray-700 leading-relaxed">
-                                        {getCombinedInsights(result, numerologyResult, formData.birthDate).personalityIntegration}
+                                        {getCombinedInsights(result, numerologyResult, numerologyBirthDate).personalityIntegration}
                                       </p>
                                     </div>
                                     
                                     <h5 className="font-medium text-sm mb-3">Personalized Spiritual Practices</h5>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                      {getCombinedInsights(result, numerologyResult, formData.birthDate).recommendedPractices.map((practice, index) => (
+                                      {getCombinedInsights(result, numerologyResult, numerologyBirthDate).recommendedPractices.map((practice, index) => (
                                         <div key={index} className="flex items-start text-sm text-gray-600 bg-white p-3 rounded border border-amber-100">
                                           <span className="text-amber-500 mr-2 flex-shrink-0">•</span>
                                           <span>{practice}</span>
