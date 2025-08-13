@@ -4338,7 +4338,56 @@ export default function AuraAnalysis() {
             const enhancedImageBase64 = canvas.toDataURL('image/jpeg');
             setEnhancedAuraImage(enhancedImageBase64);
             setProcessedAuraImage(enhancedImageBase64); // Store for PDF generation
+
+            // After visualization is generated, capture it and update the stored image
+            setTimeout(() => {
+                captureAndUpdateAuraVisualization();
+            }, 1000); // Give time for the image to render in the DOM
         };
+    };
+
+    // Function to capture the displayed aura visualization and update the stored image
+    const captureAndUpdateAuraVisualization = async () => {
+        if (!currentAnalysisId) return;
+
+        try {
+            const container = document.getElementById('aura-visualization-container');
+            if (!container) return;
+
+            // Capture the visualization container
+            const canvas = await html2canvas(container, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                scale: 2, // Higher quality
+                logging: false,
+                width: container.offsetWidth,
+                height: container.offsetHeight
+            });
+
+            // Convert to base64
+            const capturedImageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+
+            // Send to backend to update the stored processedAuraImage
+            const response = await fetch('/api/update-aura-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    auraReadingId: currentAnalysisId,
+                    processedImage: capturedImageBase64
+                })
+            });
+
+            if (response.ok) {
+                console.log('Aura visualization updated successfully in database');
+            } else {
+                console.error('Failed to update aura visualization in database');
+            }
+        } catch (error) {
+            console.error('Error capturing and updating aura visualization:', error);
+        }
     };
   
   // Function to draw aura cloud effects
@@ -7015,7 +7064,7 @@ export default function AuraAnalysis() {
                                     {/* Processed Aura Image */}
                                     <div className="text-center">
                                       <h4 className="font-medium mb-3">With Aura Colors</h4>
-                                      <div className="relative bg-white rounded-lg shadow-sm border p-4">
+                                      <div id="aura-visualization-container" className="relative bg-white rounded-lg shadow-sm border p-4">
                                         {enhancedAuraImage ? (
                                           <img 
                                             src={enhancedAuraImage} 

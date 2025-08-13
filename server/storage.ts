@@ -41,6 +41,7 @@ export interface IStorage {
   getAuraReading(id: number): Promise<AuraReading | undefined>;
   updateAuraReadingReview(id: number, rating: number, reviewText?: string): Promise<AuraReading | undefined>;
   updateAuraReadingNotes(id: number, healerNotes: string): Promise<AuraReading | undefined>;
+  updateAuraReadingImage(id: number, processedImage: string): Promise<boolean>;
   
   // Journal entries
   createJournalEntry(entry: InsertJournal): Promise<Journal>;
@@ -221,6 +222,20 @@ export class DatabaseStorage implements IStorage {
       .where(eq(auraReadings.id, id))
       .returning();
     return updatedReading || undefined;
+  }
+
+  async updateAuraReadingImage(id: number, processedImage: string): Promise<boolean> {
+    try {
+      const [updatedReading] = await db
+        .update(auraReadings)
+        .set({ processedAuraImage: processedImage })
+        .where(eq(auraReadings.id, id))
+        .returning();
+      return !!updatedReading;
+    } catch (error) {
+      console.error("Error updating aura reading image:", error);
+      return false;
+    }
   }
 
   // Journal entries
