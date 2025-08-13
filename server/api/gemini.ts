@@ -17,10 +17,10 @@ export async function generateAuraVisualization(
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 1400x900px`);
+    console.log(`Processing with standardized dimensions: 600x900px`);
     
-    // Standardized dimensions as requested: 1400px width × 900px height
-    const STANDARD_WIDTH = 1400;
+    // Standardized dimensions as requested: 600px width × 900px height
+    const STANDARD_WIDTH = 600;
     const STANDARD_HEIGHT = 900;
     
     // Create canvas with standardized dimensions
@@ -123,73 +123,75 @@ function addStandardizedAuraEffects(
   console.log(`Person center: ${personCenterX}, ${personCenterY}`);
   console.log(`Image bounds: ${imageOffsetX}, ${imageOffsetY}, ${imageWidth}, ${imageHeight}`);
   
-  // Set blend mode for smooth aura effects
-  ctx.globalCompositeOperation = 'screen';
+  // Set blend mode for ultra-smooth, cohesive aura effects
+  ctx.globalCompositeOperation = 'multiply';
   
   // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Purple/Violet zones in examples)
   console.log('Drawing receiving zone (left) with increased density...');
   
-  // Multiple layers for consistent dense smoke effect
-  for (let layer = 0; layer < 4; layer++) {
-    const layerOffset = layer * 15;
-    const baseOpacity = 0.65 - (layer * 0.12); // More consistent opacity reduction
+  // Create seamless, blended smoke layers to avoid scattered appearance
+  for (let layer = 0; layer < 3; layer++) {
+    const layerOffset = layer * 25;
+    const baseOpacity = 0.35 - (layer * 0.08); // Lower opacity for smoother blend
     
-    const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth / 2) + layerOffset, 0);
+    const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth * 0.75) + layerOffset, 0);
     receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity})`);
-    receivingGradient.addColorStop(0.5, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.7})`);
-    receivingGradient.addColorStop(0.8, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.4})`);
+    receivingGradient.addColorStop(0.3, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.8})`);
+    receivingGradient.addColorStop(0.6, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.5})`);
+    receivingGradient.addColorStop(0.9, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.2})`);
     receivingGradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
     
     ctx.fillStyle = receivingGradient;
-    ctx.fillRect(0, 0, canvasWidth / 2, canvasHeight);
+    ctx.fillRect(0, 0, canvasWidth * 0.75, canvasHeight);
   }
   
   // ZONE 2: RIGHT SIDE - GIVING ENERGY (Green zones in examples)
   console.log('Drawing giving zone (right) with increased density...');
   
-  // Multiple layers for consistent dense smoke effect
-  for (let layer = 0; layer < 4; layer++) {
-    const layerOffset = layer * 15;
-    const baseOpacity = 0.65 - (layer * 0.12); // More consistent opacity reduction
+  // Create seamless, blended smoke layers to avoid scattered appearance
+  for (let layer = 0; layer < 3; layer++) {
+    const layerOffset = layer * 25;
+    const baseOpacity = 0.35 - (layer * 0.08); // Lower opacity for smoother blend
     
-    const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth / 2) - layerOffset, 0);
+    const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth * 0.25) - layerOffset, 0);
     givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity})`);
-    givingGradient.addColorStop(0.5, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.7})`);
-    givingGradient.addColorStop(0.8, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.4})`);
+    givingGradient.addColorStop(0.3, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.8})`);
+    givingGradient.addColorStop(0.6, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.5})`);
+    givingGradient.addColorStop(0.9, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.2})`);
     givingGradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
     
     ctx.fillStyle = givingGradient;
-    ctx.fillRect(canvasWidth / 2, 0, canvasWidth / 2, canvasHeight);
+    ctx.fillRect(canvasWidth * 0.25, 0, canvasWidth * 0.75, canvasHeight);
   }
   
   // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
   console.log('Drawing thinking zone (top) with increased density...');
   
-  // Multiple layers for consistent dense smoke effect
-  for (let layer = 0; layer < 4; layer++) {
-    const layerOffset = layer * 12;
-    const baseOpacity = 0.62 - (layer * 0.11); // Consistent opacity with other zones
+  // Create seamless thinking zone with smooth transitions
+  for (let layer = 0; layer < 2; layer++) {
+    const layerOffset = layer * 20;
+    const baseOpacity = 0.28 - (layer * 0.08); // Reduced opacity for subtlety
     
-    const thinkingGradient = ctx.createLinearGradient(0, 0, 0, (canvasHeight / 3) + layerOffset);
+    const thinkingGradient = ctx.createLinearGradient(0, 0, 0, (canvasHeight * 0.4) + layerOffset);
     thinkingGradient.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity})`);
-    thinkingGradient.addColorStop(0.4, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.8})`);
-    thinkingGradient.addColorStop(0.7, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.5})`);
+    thinkingGradient.addColorStop(0.3, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.7})`);
+    thinkingGradient.addColorStop(0.6, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.4})`);
     thinkingGradient.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
     
     ctx.fillStyle = thinkingGradient;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight / 3);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight * 0.4);
   }
   
   // ZONE 4: EDGES - PERSONALITY ENERGY (Outer rim effect with increased density)
   console.log('Drawing personality zone (edges) with increased density...');
   
-  // Multiple edge layers for consistent dense smoke effect
-  const edgeThickness = 140; // Standardized thickness
-  const edgeLayers = 4; // Consistent with other zones
+  // Create subtle edge effects for cohesive appearance
+  const edgeThickness = 100; // Reduced for less scattered look
+  const edgeLayers = 2; // Fewer layers for cleaner appearance
   
   for (let layer = 0; layer < edgeLayers; layer++) {
-    const layerOffset = layer * 8;
-    const baseOpacity = 0.58 - (layer * 0.10); // Consistent with other zones
+    const layerOffset = layer * 15;
+    const baseOpacity = 0.25 - (layer * 0.08); // Much lower opacity
     
     // Top edge
     const topEdgeGradient = ctx.createLinearGradient(0, 0, 0, edgeThickness - layerOffset);
@@ -227,14 +229,8 @@ function addStandardizedAuraEffects(
   // Add multiple layers of dense energy wisps for much more prominent smokey effect
   console.log('Adding multiple layers of dense energy wisps...');
   
-  // Layer 1: Close inner wisps (standardized density)
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 72, 0.45, 24);
-  
-  // Layer 2: Medium distance wisps (consistent spacing)
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 56, 0.35, 20);
-  
-  // Layer 3: Outer atmospheric wisps (uniform distribution)
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 40, 0.25, 16);
+  // Single layer of subtle wisps for cleaner appearance
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 24, 0.15, 18);
   
   // Add dense radial smoke clouds around the person for ultra-smokey effect
   console.log('Adding dense radial smoke clouds...');
@@ -259,7 +255,7 @@ function addEnergyWisps(
   const centerX = width / 2;
   const centerY = height / 2;
   
-  ctx.globalCompositeOperation = 'screen';
+  ctx.globalCompositeOperation = 'multiply';
   
   for (let i = 0; i < numWisps; i++) {
     const angle = (i / numWisps) * Math.PI * 2;
@@ -323,16 +319,16 @@ function addDenseSmokeyClouds(
   primaryRGB: any,
   secondaryRGB: any
 ) {
-  ctx.globalCompositeOperation = 'screen';
+  ctx.globalCompositeOperation = 'multiply';
   
-  // Create multiple concentric smoke rings around the person
-  const cloudRings = 4;
-  const baseRadius = Math.max(personWidth, personHeight) * 0.3;
+  // Create fewer, larger smoke rings for cleaner appearance
+  const cloudRings = 2;
+  const baseRadius = Math.max(personWidth, personHeight) * 0.25;
   
   for (let ring = 0; ring < cloudRings; ring++) {
-    const ringRadius = baseRadius + (ring * 40);
-    const numClouds = 16 + (ring * 4); // More clouds in outer rings
-    const opacity = 0.35 - (ring * 0.06); // Gradually fade outer rings
+    const ringRadius = baseRadius + (ring * 60);
+    const numClouds = 12 + (ring * 2); // Fewer clouds for less scatter
+    const opacity = 0.20 - (ring * 0.05); // Lower base opacity
     
     for (let cloud = 0; cloud < numClouds; cloud++) {
       const angle = (cloud / numClouds) * Math.PI * 2;
@@ -364,9 +360,9 @@ function addDenseSmokeyClouds(
     }
   }
   
-  // Add additional dense inner aura directly around person
-  const innerClouds = 24;
-  const innerRadius = Math.min(personWidth, personHeight) * 0.4;
+  // Add minimal inner aura for subtlety
+  const innerClouds = 16;
+  const innerRadius = Math.min(personWidth, personHeight) * 0.35;
   
   for (let i = 0; i < innerClouds; i++) {
     const angle = (i / innerClouds) * Math.PI * 2;
