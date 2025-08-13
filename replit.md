@@ -33,7 +33,7 @@ Preferred communication style: Simple, everyday language.
 - **Schema Management**: Drizzle Kit
 
 ### Key Features & Design Decisions
-- **Aura Analysis**: AI-powered image analysis with standardized visualization system. All human aura images are processed to consistent 1400px width × 900px height dimensions with distinct zone positioning: left side (receiving energy), right side (giving energy), top area (thinking energy), and outer edges (personality energy). Features ultra-smooth smokey aura effects while preserving face visibility and maintaining uniform appearance across all input images.
+- **Aura Analysis**: AI-powered image analysis with standardized visualization system. All human aura images are processed to consistent 600px width × 900px height dimensions with distinct zone positioning: left side (receiving energy), right side (giving energy), top area (thinking energy), and outer edges (personality energy). Features ultra-smooth, cohesive smokey aura effects with seamless blending to eliminate scattered colors while preserving face visibility and maintaining uniform appearance across all input images.
 - **Object Analysis**: Spiritual analysis of objects, distinct from human aura analysis.
 - **Numerology**: Comprehensive calculations and interpretations including life path, destiny, and chakra analysis.
 - **Horoscope Services**: Daily, monthly, and yearly astrological readings.
@@ -41,7 +41,7 @@ Preferred communication style: Simple, everyday language.
 - **Healer Platform**: Marketplace for connecting clients with healers, including real-time booking, detailed healer dashboards, and integrated analytics. Healers can access client analysis reports (aura, numerology) and generate PDFs.
 - **AI Integration**: Primary use of OpenAI GPT-4o and Google Gemini for analysis and content generation.
 - **User Management**: Session-based authentication, distinct client and healer roles, subscription-based premium features. New users default to client type; healers are manually added and managed via database.
-- **Image Processing**: Dual-system image processing - standardized resizing (1400x900) and compression (target 150KB) for AI analysis, plus dedicated aura visualization system creating consistent 1400px × 900px output images with standardized zone positioning and black backgrounds. Includes robust human detection for specific analysis types.
+- **Image Processing**: Dual-system image processing - standardized resizing (600x900) and compression (target 150KB) for AI analysis, plus dedicated aura visualization system creating consistent 600px × 900px output images with standardized zone positioning, seamless smokey blending, and black backgrounds. Includes robust human detection for specific analysis types.
 - **PDF Generation**: Comprehensive PDF reports for aura analysis (for clients) and detailed reports (for healers), including original and processed images, chakra analysis, spiritual guidance, and healer notes.
 - **Credit System**: Dynamic pricing based on user type. Clients: Object scan (3), Connect with healer (3), Human aura scan (15), What's my vibe (1), Numerology (5). Healers: Object scan (1), Human aura scan (5), What's my vibe (1), Healer booking (1), Numerology (3). New clients receive 30 initial credits, new healers receive 100 initial credits.
 - **User Verification**: WhatsApp OTP for mobile verification (via Twilio), and email validation (via AbstractAPI) during registration.
