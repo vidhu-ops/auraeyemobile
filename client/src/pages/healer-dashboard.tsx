@@ -1833,12 +1833,13 @@ export default function HealerDashboard() {
     refetchInterval: 60000, // Refresh every minute
   });
 
-  // Fetch healer's own aura readings with optimized loading
+  // Fetch healer's own aura readings with immediate updates
   const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent unnecessary requests
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    staleTime: 0, // Always refetch to get latest data
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchInterval: 10000, // Refetch every 10 seconds for real-time updates
   });
 
   // Fetch healer's own numerology readings
