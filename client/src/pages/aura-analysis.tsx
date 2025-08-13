@@ -4341,42 +4341,34 @@ export default function AuraAnalysis() {
 
             // After visualization is generated, capture it and update the stored image
             setTimeout(() => {
-                captureAndUpdateAuraVisualization();
+                captureAndUpdateAuraVisualization(enhancedImageBase64);
             }, 1000); // Give time for the image to render in the DOM
         };
     };
 
-    // Function to capture the displayed aura visualization and update the stored image
-    const captureAndUpdateAuraVisualization = async () => {
-        if (!currentAnalysisId) {
-            console.log('⚠️ No currentAnalysisId found, skipping screenshot capture');
+    // Function to capture and store the aura visualization image directly
+    const captureAndUpdateAuraVisualization = async (visualizationImage?: string) => {
+        // Use the enhanced image directly instead of screenshot
+        const imageToStore = visualizationImage || enhancedAuraImage;
+        
+        if (!imageToStore) {
+            console.log('⚠️ No visualization image available for capture');
             return;
         }
 
-        console.log('📸 Starting screenshot capture for aura reading:', currentAnalysisId);
+        // Try to get current analysis ID, or use the latest result ID
+        const analysisId = currentAnalysisId || (result?.id);
+        
+        if (!analysisId) {
+            console.log('⚠️ No analysis ID found, skipping image storage');
+            return;
+        }
+
+        console.log('📸 Storing aura visualization for reading:', analysisId);
 
         try {
-            const container = document.getElementById('aura-visualization-container');
-            if (!container) {
-                console.log('⚠️ Aura visualization container not found, skipping screenshot');
-                return;
-            }
-
-            console.log('📷 Found aura visualization container, dimensions:', container.offsetWidth, 'x', container.offsetHeight);
-
-            // Capture the visualization container
-            const canvas = await html2canvas(container, {
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                scale: 2, // Higher quality
-                logging: false,
-                width: container.offsetWidth,
-                height: container.offsetHeight
-            });
-
-            // Convert to base64
-            const capturedImageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            // Use the enhanced image directly (no need for screenshot)
+            const capturedImageBase64 = imageToStore;
 
             // Send to backend to update the stored processedAuraImage
             const response = await fetch('/api/update-aura-image', {
@@ -4385,14 +4377,14 @@ export default function AuraAnalysis() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    auraReadingId: currentAnalysisId,
+                    auraReadingId: analysisId,
                     processedImage: capturedImageBase64
                 })
             });
 
             if (response.ok) {
                 console.log('✅ Aura visualization updated successfully in database');
-                console.log('📸 Screenshot captured and stored for aura reading:', currentAnalysisId);
+                console.log('📸 Visualization captured and stored for aura reading:', analysisId);
                 
                 // Invalidate healer dashboard cache to show updated images immediately
                 await queryClient.invalidateQueries({ queryKey: ["/api/healer-aura-readings"] });
@@ -4937,14 +4929,18 @@ export default function AuraAnalysis() {
             
             let analysisResult: AuraAnalysisResult;
             
+            // Always call API to ensure database record and ID are created
+            analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
+            
             if (cachedResult) {
-              // Use cached result for consistency
-              analysisResult = cachedResult;
+              // Use cached analysis result but keep the new ID from the API call
               setAnalysisStage("Loading cached analysis for consistency...");
+              analysisResult = {
+                ...cachedResult,
+                id: analysisResult.id // Keep the new database ID
+              };
             } else {
-              // Call API to analyze the image
-              analysisResult = await analyzeAuraImage(base64data, analysisName || 'Unnamed');
-              // Cache the result
+              // Cache the result for future consistency
               setImageCache(prev => {
                 const newCache = new Map(prev);
                 newCache.set(imageHash, analysisResult);
