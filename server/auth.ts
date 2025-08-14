@@ -73,13 +73,25 @@ export function setupAuth(app: Express) {
         // First check if this is a healer login
         const healer = await storage.getHealerByUsername(username);
         if (healer && await comparePasswords(password, healer.password)) {
-          // Return healer as authenticated user with healer type
+          // Find or create corresponding user record for credit management
+          let userRecord = await storage.getUserByUsername(username);
+          if (!userRecord) {
+            // Create user record for healer if it doesn't exist
+            userRecord = await storage.createUser({
+              username: healer.username,
+              password: healer.password,
+              userType: "healer",
+              credits: 100 // Default healer credits
+            });
+          }
+          
+          // Return healer as authenticated user using the user record ID
           const healerUser = {
-            id: healer.id,
+            id: userRecord.id, // Use user record ID for credit management
             username: healer.username,
             password: healer.password,
             userType: "healer" as const,
-            birthDate: null,
+            birthDate: userRecord.birthDate,
             createdAt: healer.createdAt,
             healerData: healer // Store full healer data for dashboard access
           };
@@ -108,19 +120,24 @@ export function setupAuth(app: Express) {
       const { id, userType } = userData;
       
       if (userType === 'healer') {
-        // For healers, get the healer data directly
-        const healer = await storage.getHealer(id);
-        if (healer) {
-          const healerUser = {
-            id: healer.id,
-            username: healer.username,
-            password: healer.password,
-            userType: "healer" as const,
-            birthDate: null,
-            createdAt: healer.createdAt,
-            healerData: healer
-          };
-          done(null, healerUser);
+        // For healers, get both user and healer data
+        const userRecord = await storage.getUser(id);
+        if (userRecord && userRecord.userType === 'healer') {
+          const healer = await storage.getHealerByUsername(userRecord.username);
+          if (healer) {
+            const healerUser = {
+              id: userRecord.id, // Use user record ID
+              username: userRecord.username,
+              password: userRecord.password,
+              userType: "healer" as const,
+              birthDate: userRecord.birthDate,
+              createdAt: userRecord.createdAt,
+              healerData: healer
+            };
+            done(null, healerUser);
+          } else {
+            done(null, false);
+          }
         } else {
           done(null, false);
         }
