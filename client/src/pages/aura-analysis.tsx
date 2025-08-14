@@ -1184,6 +1184,8 @@ export default function AuraAnalysis() {
 
     console.log('Starting PDF generation with result:', result);
     console.log('Processed aura image available:', !!processedAuraImage);
+    console.log('Enhanced aura image available:', !!enhancedAuraImage);
+    console.log('Using image for PDF:', processedAuraImage || enhancedAuraImage || 'none available');
 
     try {
       toast({
@@ -1376,7 +1378,8 @@ export default function AuraAnalysis() {
       yPosition += 15;
 
       // ADD AURA VISUALIZATION IMAGE
-      if (processedAuraImage) {
+      const auraImageForPDF = processedAuraImage || enhancedAuraImage;
+      if (auraImageForPDF) {
         // Check if we need a new page for the image
         if (yPosition > pageHeight - 120) {
           pdf.addPage();
@@ -1394,7 +1397,7 @@ export default function AuraAnalysis() {
           await new Promise((resolve, reject) => {
             tempImg.onload = resolve;
             tempImg.onerror = reject;
-            tempImg.src = processedAuraImage;
+            tempImg.src = auraImageForPDF;
           });
           
           // Calculate dimensions to match webapp display (larger, more prominent)
@@ -1415,7 +1418,7 @@ export default function AuraAnalysis() {
           
           const imgX = (pageWidth - imgWidth) / 2; // Center the image
           
-          pdf.addImage(processedAuraImage, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
+          pdf.addImage(auraImageForPDF, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
           yPosition += imgHeight + 15;
 
           pdf.setFontSize(11);
@@ -5084,6 +5087,14 @@ export default function AuraAnalysis() {
             
             setResult(analysisResult);
             
+            // Load processedAuraImage from backend if available
+            if (analysisResult.processedImage || analysisResult.processedAuraImage) {
+              console.log('📸 Loading processed aura image from backend');
+              const backendImage = analysisResult.processedImage || analysisResult.processedAuraImage;
+              setProcessedAuraImage(backendImage);
+              console.log('📸 Processed image loaded from backend, length:', backendImage?.length || 0);
+            }
+            
             // Set analysis ID if returned from server for review functionality
             if (analysisResult.id) {
               setCurrentAnalysisId(analysisResult.id);
@@ -5114,11 +5125,18 @@ export default function AuraAnalysis() {
               setAnalysisStage("Analysis complete!");
               
               // If no visualization needed, try to store any existing processed image
-              if (analysisResult.id && processedAuraImage) {
-                console.log('📸 Storing existing processed image for analysis:', analysisResult.id);
-                setTimeout(() => {
-                  captureAndUpdateAuraVisualization(processedAuraImage);
-                }, 500);
+              if (analysisResult.id) {
+                console.log('📸 Attempting to store image for analysis:', analysisResult.id);
+                
+                // Use any available image: enhancedAuraImage, processedAuraImage, or base64String
+                const imageToStore = enhancedAuraImage || processedAuraImage || base64String;
+                if (imageToStore) {
+                  setTimeout(() => {
+                    captureAndUpdateAuraVisualization(imageToStore);
+                  }, 500);
+                } else {
+                  console.log('⚠️ No image available for storage');
+                }
               }
             }
             
