@@ -716,7 +716,8 @@ export default function HomePage() {
                               </h3>
                               <div className="text-right">
                                 <div className="text-sm text-gray-600">Today's Scan: 1/1</div>
-                                <div className="text-xs text-gray-500">Next free scan in 30 days - Upgrade for daily scans</div>
+                                <div className="text-xs text-gray-500">Next free scan in 30 days</div>
+                                <div className="text-xs text-gray-500">Upgrade for daily scans</div>
                               </div>
                             </div>
 
@@ -772,10 +773,11 @@ export default function HomePage() {
                                 <div className="space-y-3">
                                   {/* Main Blurred Section */}
                                   <div className="relative bg-gray-100 rounded-lg p-4 overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-gray-400/80 to-gray-500/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-gray-400/80 to-gray-500/80 backdrop-blur-sm z-12 flex items-center justify-center">
                                       <div className="text-center">
                                         <div className="text-sm font-semibold text-white mb-2">🔒 Premium Content</div>
-                                        <div className="text-xs text-white/90 mb-3">Upgrade to unlock detailed insights</div>
+                                        <div className="text-xs text-white/90 mb-2">Upgrade to unlock detailed insights</div>
+                                        <div className="text-xs text-white/90 mb-3">Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report</div>
                                         <Button
                                           onClick={() => setShowVideoModal(true)}
                                           size="sm"
@@ -795,19 +797,9 @@ export default function HomePage() {
                                   </div>
 
                                   {/* 2x2 Grid of Blurred Services */}
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
-                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
-                                      <div className="text-sm font-medium text-gray-600 mb-1">5th Aura Service</div>
-                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
-                                      <div className="text-xs text-gray-500">Deep energy field analysis beyond basic aura reading...</div>
-                                    </div>
-                                    <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
-                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
-                                      <div className="text-sm font-medium text-gray-600 mb-1">Mindmapping Service</div>
-                                      <div className="text-xs text-gray-500 mb-2">📍 Premium - Pay by Session</div>
-                                      <div className="text-xs text-gray-500">Spiritual journey mapping and energy pathway visualization...</div>
-                                    </div>
+                                  <div className="grid grid-cols-1 gap-3">
+                                   
+                                   
                                     <div className="relative bg-gray-100 rounded-lg p-3 text-center overflow-hidden">
                                       <div className="absolute inset-0 bg-gradient-to-br from-gray-400/70 to-gray-500/70 backdrop-blur-sm z-10"></div>
                                       <div className="text-sm font-medium text-gray-600 mb-1">Reading</div>
