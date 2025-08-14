@@ -517,12 +517,13 @@ export default function HomePage() {
         <div className="absolute bottom-1/4 left-16 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-300 to-emerald-500 opacity-40 animate-pulse animation-delay-1000"></div>
         <div className="absolute top-1/4 left-1/3 w-6 h-6 rounded-full bg-gradient-to-r from-cyan-300 to-cyan-500 opacity-50 animate-pulse animation-delay-2000"></div>
         
-        <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="container mx-auto px-8 py-16 relative z-15">
           <div className="flex flex-col items-center text-center">
-            <div className="mb-8 animate-fade-in-down">
-              <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
+            <div className="mb-10 animate-fade-in-down">
+              <h1 className="font-large font-bold text-3xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
                 Your Energy, made <span className="text-secondary to primary">Visible</span> <br />
-                Embrace Your <span className="text-emerald-300">Energy</span>
+                <span className="text-orange-300">See </span>
+                 Heal <span className="text-emerald-300">Transform</span>
               </h1>
             </div>
             
@@ -880,6 +881,30 @@ export default function HomePage() {
                               </Card>
                             )}
 
+                            {/* Action Buttons Row */}
+                                                  <div className="flex gap-3 mt-6">
+                                                    <Link to="/aura-analysis" className="flex-1">
+                                                      <Button className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700">
+                                                        Get Full Analysis
+                                                      </Button>
+                                                    </Link>
+
+                                                    <Link to="/journal" className="flex-1">
+                                                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+                                                        Journal with us
+                                                      </Button>
+                                                    </Link>
+
+                                                    <Button
+                                                      onClick={resetVibeCheck}
+                                                      variant="outline"
+                                                      className="flex-1"
+                                                    >
+                                                      Try Another Photo
+                                                    </Button>
+                                                  </div>
+                                                
+
                             {/* Premium Action Buttons - 3 columns as per screenshot */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                               <Card className="bg-gradient-to-br from-teal-400 to-cyan-500 text-white">
@@ -953,27 +978,7 @@ export default function HomePage() {
                             </div>
 
                             {/* Action Buttons Row */}
-                            <div className="flex gap-3 mt-6">
-                              <Link to="/aura-analysis" className="flex-1">
-                                <Button className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700">
-                                  Get Full Analysis
-                                </Button>
-                              </Link>
-                              
-                              <Link to="/journal" className="flex-1">
-                                <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                                  Journal with us
-                                </Button>
-                              </Link>
-                              
-                              <Button
-                                onClick={resetVibeCheck}
-                                variant="outline"
-                                className="flex-1"
-                              >
-                                Try Another Photo
-                              </Button>
-                            </div>
+                           
                           </div>
                         )}
                       </div>
