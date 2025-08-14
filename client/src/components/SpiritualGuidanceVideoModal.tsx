@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import spiritualVideoPath from '@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4';
@@ -44,11 +44,13 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl w-full p-6 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold text-white mb-2">
+            🔮 Spiritual Guidance Video
+          </DialogTitle>
+        </DialogHeader>
         <div className="flex flex-col items-center space-y-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">
-              🔮 Spiritual Guidance Video
-            </h2>
             <p className="text-purple-200">
               Let the universe guide you through this spiritual journey
             </p>
