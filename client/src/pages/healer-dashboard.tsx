@@ -433,9 +433,9 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // Add original image if available
       if (reading.imageUrl) {
         try {
-          const imgWidth = 90;
+          const imgWidth = 200;
           const imgHeight = 160;
-          const imgX = (pageWidth - imgWidth);
+          const imgX = (pageWidth/2 - imgWidth);
           const imgY = 100;
           
           // Handle different image formats
@@ -450,7 +450,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.addImage(imageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
           pdf.setFontSize(10);
           pdf.setTextColor(100, 100, 100);
-          pdf.text('Original Image', pageWidth/2, imgY + imgHeight + 8, { align: 'center' });
+          pdf.text('Original Image', pageWidth, imgY + imgHeight + 8, { align: 'center' });
           console.log('Original image added successfully to PDF');
         } catch (imageError) {
           console.error('Error adding original image to PDF:', imageError);
@@ -534,10 +534,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.setTextColor(147, 51, 234);
           pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
           
-          // Calculate image dimensions - much larger for better visibility
-          const imgWidth = 75;  // Increased from 90
-          const imgHeight = 108; // Maintaining 550x800 aspect ratio (550/800 * 75 = 51.5, rounded to 108 for better visibility)
-          const spacing = 10;
+          // Calculate image dimensions for maximum visibility
+          const imgWidth = 90;  // Maximum width for better display
+          const imgHeight = 130; // Maintaining 550x800 aspect ratio with enhanced height for prominence
+          const spacing = 10;    // Reduced spacing to allow larger images
           const totalWidth = (imgWidth * 2) + spacing;
           const startX = (pageWidth - totalWidth) / 2;
           
@@ -585,14 +585,14 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.addImage(finalImageSrc, 'JPEG', startX + imgWidth + spacing, 50, imgWidth, imgHeight);
           console.log('Aura image added successfully to PDF');
           
-          // Description text
+          // Description text - adjusted for much larger images
           pdf.setFontSize(11);
           pdf.setTextColor(107, 114, 128);
-          pdf.text('Processed Aura Analysis Visualization with Energy Fields', pageWidth / 2, 170, { align: 'center' });
+          pdf.text('Processed Aura Analysis Visualization with Energy Fields', pageWidth / 2, 190, { align: 'center' });
           
           pdf.setFontSize(9);
-          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 180, { align: 'center' });
-          pdf.text('Colors represent different aspects of your personality and energy flow.', pageWidth / 2, 190, { align: 'center' });
+          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 200, { align: 'center' });
+          pdf.text('Colors represent different aspects of your personality and energy flow.', pageWidth / 2, 210, { align: 'center' });
           
           pdf.setFontSize(8);
           pdf.text('Page 2 of 8', 20, pageHeight - 10);
