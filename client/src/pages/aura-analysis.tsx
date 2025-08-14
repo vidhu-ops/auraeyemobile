@@ -1662,7 +1662,7 @@ export default function AuraAnalysis() {
           
           pdf.setFontSize(14);
           pdf.setTextColor(75, 0, 130);
-          yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, 20, yPosition);
+          yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)}`, 20, yPosition);
           yPosition += 10;
           
           try {
