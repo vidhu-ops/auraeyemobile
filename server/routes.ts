@@ -1021,16 +1021,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to uniform dimensions and compress to 200KB maximum for fast processing
+  // Helper function to resize images to exactly 600x900 pixels and compress to 60KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Start with high quality and progressively reduce if needed
-      let quality = 90;
+      // Start with moderate quality and progressively reduce to hit 60KB target
+      let quality = 85;
       let compressedBuffer: Buffer;
+      const targetSizeKB = 60;
       
-      // Keep compressing until we reach 150KB or lower for faster processing
+      // Keep compressing until we reach 60KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
           .resize(600, 900, {
@@ -1040,23 +1041,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .jpeg({ 
             quality: quality,
             progressive: true,
-            mozjpeg: true // Enable mozjpeg for better compression
+            mozjpeg: true, // Enable mozjpeg for better compression
+            force: true // Force JPEG format for consistency
           })
           .toBuffer();
           
         const fileSizeKB = compressedBuffer.length / 1024;
-        console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality}`);
+        console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality} (target: ${targetSizeKB}KB)`);
         
-        // If still too large, reduce quality by 10
-        if (fileSizeKB > 150 && quality > 30) {
-          quality -= 10;
+        // If still too large, reduce quality by 5 for finer control
+        if (fileSizeKB > targetSizeKB && quality > 25) {
+          quality -= 5;
         } else {
           break; // Either small enough or minimum quality reached
         }
-      } while (quality >= 30);
+      } while (quality >= 25);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`Final compressed image: ${finalSizeKB.toFixed(1)}KB (target: 150KB max)`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      
+      // Verify dimensions are exactly what we expect
+      const metadata = await sharp(compressedBuffer).metadata();
+      console.log(`📐 Verified dimensions: ${metadata.width}x${metadata.height}px`);
       
       return compressedBuffer;
     } catch (error) {
@@ -1366,7 +1372,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (1600x900px) with guaranteed success
+      // Resize image to standard dimensions (600x900px) and compress to 60KB with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);

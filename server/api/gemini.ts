@@ -19,6 +19,11 @@ export async function generateAuraVisualization(
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
     console.log(`Processing with standardized dimensions: 600x900px`);
     
+    // Calculate input image size for verification
+    const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+    const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
+    console.log(`Input image size: ${inputSizeKB}KB (target: ~60KB)`);
+    
     // Standardized dimensions as requested: 600px width × 900px height
     const STANDARD_WIDTH = 600;
     const STANDARD_HEIGHT = 900;
