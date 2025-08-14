@@ -774,8 +774,15 @@ export default function HomePage() {
                                   <div className="relative bg-gray-100 rounded-lg p-4 overflow-hidden">
                                     <div className="absolute inset-0 bg-gradient-to-r from-gray-400/80 to-gray-500/80 backdrop-blur-sm z-10 flex items-center justify-center">
                                       <div className="text-center">
-                                        <div className="text-sm font-semibold text-white mb-1">🔒 Premium Content</div>
-                                        <div className="text-xs text-white/90">Upgrade to unlock detailed insights</div>
+                                        <div className="text-sm font-semibold text-white mb-2">🔒 Premium Content</div>
+                                        <div className="text-xs text-white/90 mb-3">Upgrade to unlock detailed insights</div>
+                                        <Button
+                                          onClick={() => setShowVideoModal(true)}
+                                          size="sm"
+                                          className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-xs"
+                                        >
+                                          Watch Now
+                                        </Button>
                                       </div>
                                     </div>
                                     <div className="text-sm font-medium text-gray-700 mb-2">Chakra & Aura Analysis</div>
@@ -1111,13 +1118,13 @@ export default function HomePage() {
               className="w-full h-full max-w-full max-h-full rounded-lg shadow-lg"
               style={{ objectFit: 'contain' }}
             >
-              <source src={videoSrc} type="video/mp4" />
+              <source src="/premium-demo-video.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
           <div className="text-center mt-4">
-            <p className="text-sm text-gray-600">
-              This spiritual guidance video provides insights for energy healing and aura balance.
+            <p className="text-gray-600 text-sm">
+              Experience the power of spiritual guidance and energy healing with our premium services.
             </p>
           </div>
         </DialogContent>
