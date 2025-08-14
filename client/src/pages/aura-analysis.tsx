@@ -21,6 +21,12 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+// Declare global window property for screenshot functionality
+declare global {
+  interface Window {
+    currentAnalysisIdForScreenshot?: number;
+  }
+}
 
 // Enhanced color code mapping function with all specified colors
 const getAccurateColorCode = (colorName: string): string => {

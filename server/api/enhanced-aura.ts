@@ -472,13 +472,19 @@ function generateFallbackAnalysis(): AuraAnalysisResult {
     auraLayerColors: { 
       inner: dominant, 
       middle: secondary, 
-      outer: tertiary,
-      ethereal: quaternary
+      outer: tertiary
+    },
+    zones: {
+      thinking: tertiary,
+      receiving: secondary,
+      giving: dominant,
+      personality: quaternary
     },
     energyLevel: Math.floor(Math.random() * 3) + 7, // Higher energy for complex spectrums
     personalityTraits: combinedTraits.slice(0, 8),
     spiritualGuidance: `Your ${auraSpectrum.length}-color aura spectrum reveals ${dominantColorData.spiritualMeaning} combined with ${secondaryColorData.spiritualMeaning}. This creates a unique multi-layered energy signature that speaks to your complex spiritual nature and diverse gifts. The interplay of ${auraSpectrum.slice(0, 4).join(', ')} energies shows remarkable spiritual development.`,
     chakraActivity: {
+      soulStar: Math.floor(Math.random() * 3) + 8,
       root: Math.floor(Math.random() * 3) + 6,
       sacral: Math.floor(Math.random() * 3) + 6,
       solarPlexus: Math.floor(Math.random() * 3) + 7,
