@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import videoSrc from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754998851112.mp4";
+import { SpiritualGuidanceVideoModal } from "@/components/SpiritualGuidanceVideoModal";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -518,7 +519,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center text-center">
             <div className="mb-8 animate-fade-in-down">
               <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Your Energy made <span className="text-secondary to primary">Visible</span> <br />
+                Your Energy, made <span className="text-secondary to primary">Visible</span> <br />
                 Embrace Your <span className="text-emerald-300">Energy</span>
               </h1>
             </div>
@@ -1095,32 +1096,11 @@ export default function HomePage() {
       
       <Footer />
 
-      {/* Video Modal */}
-      <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
-        <DialogContent className="max-w-4xl w-[90vw] h-[80vh] p-6">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-semibold text-violet-600 mb-4">
-              Spiritual Guidance & Energy Healing
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 flex items-center justify-center">
-            <video
-              controls
-              autoPlay
-              className="w-full h-full max-w-full max-h-full rounded-lg shadow-lg"
-              style={{ objectFit: 'contain' }}
-            >
-              <source src="/premium-demo-video.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <div className="text-center mt-4">
-            <p className="text-gray-600 text-sm">
-              Experience the power of spiritual guidance and energy healing with our premium services.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Spiritual Guidance Video Modal */}
+      <SpiritualGuidanceVideoModal 
+        isOpen={showVideoModal} 
+        onClose={() => setShowVideoModal(false)} 
+      />
     </div>
   );
 }
