@@ -1021,20 +1021,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 600x900 pixels and compress to 60KB maximum for consistent aura processing
+  // Helper function to resize images to exactly 550x800 pixels and compress to 50KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Start with moderate quality and progressively reduce to hit 60KB target
+      // Start with moderate quality and progressively reduce to hit 50KB target
       let quality = 85;
       let compressedBuffer: Buffer;
-      const targetSizeKB = 60;
+      const targetSizeKB = 50;
       
-      // Keep compressing until we reach 60KB or lower for consistent processing
+      // Keep compressing until we reach 50KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(600, 900, {
+          .resize(550, 800, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1058,7 +1058,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } while (quality >= 25);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 550x800px`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();
@@ -1372,7 +1372,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (600x900px) and compress to 60KB with guaranteed success
+      // Resize image to standard dimensions (550x800px) and compress to 50KB with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);
