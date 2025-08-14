@@ -503,7 +503,7 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 0;
     
     // Draw watermark text as pure white overlay
-    ctx.fillText('AuraEyeTM', centerX-2, centerY);
+    ctx.fillText('AuraEye™', centerX-2, centerY);
     // Apply watermark with pure white text and no background interference
     ctx.globalCompositeOperation = 'screen';
     ctx.globalAlpha = 0.32; // High opacity for visibility
