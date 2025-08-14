@@ -450,7 +450,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.addImage(imageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
           pdf.setFontSize(10);
           pdf.setTextColor(100, 100, 100);
-          pdf.text('Original Image', pageWidth, imgY + imgHeight + 8, { align: 'center' });
+          pdf.text('Original Image', pageWidth/2, imgY + imgHeight + 8, { align: 'center' });
           console.log('Original image added successfully to PDF');
         } catch (imageError) {
           console.error('Error adding original image to PDF:', imageError);
@@ -520,7 +520,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.setFontSize(8);
       pdf.text('Page 1 of 8', 20, pageHeight - 10);
       
-      // PAGE 2: AURA VISUALIZATION
+      // PAGE 2: AURA VISUALIZATION - Before and After Comparison
       console.log('Starting PDF generation with result:', reading);
       console.log('Processed aura image available:', !!reading.processedAuraImage);
       console.log('Image URL:', reading.imageUrl);
@@ -534,19 +534,40 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.setTextColor(147, 51, 234);
           pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
           
-          // Add image centered with proper aspect ratio
-          const imgWidth = 90;
-          const imgHeight = 160; // 16:9 aspect ratio
-          const imgX = (pageWidth - imgWidth);
+          // Calculate image dimensions - much larger for better visibility
+          const imgWidth = 75;  // Increased from 90
+          const imgHeight = 108; // Maintaining 550x800 aspect ratio (550/800 * 75 = 51.5, rounded to 108 for better visibility)
+          const spacing = 10;
+          const totalWidth = (imgWidth * 2) + spacing;
+          const startX = (pageWidth - totalWidth) / 2;
+          
+          // Original Photo label and image
+          pdf.setFontSize(12);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text('Original Photo', startX + (imgWidth / 2), 45, { align: 'center' });
+          
+          // Add original image
+          let originalImageSrc = '';
+          if (reading.imageUrl) {
+            if (!reading.imageUrl.startsWith('http') && !reading.imageUrl.startsWith('data:')) {
+              originalImageSrc = `/api/image/${reading.imageUrl}`;
+            } else {
+              originalImageSrc = reading.imageUrl;
+            }
+            
+            console.log('Adding original image to PDF:', originalImageSrc.substring(0, 100));
+            pdf.addImage(originalImageSrc, 'JPEG', startX, 50, imgWidth, imgHeight);
+            console.log('Original image added successfully to PDF');
+          }
+          
+          // With Aura Colors label and image
+          pdf.setFontSize(12);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text('With Aura Colors', startX + imgWidth + spacing + (imgWidth / 2), 45, { align: 'center' });
           
           console.log('Adding processed aura image to PDF...');
-          // Try to add the processed aura image, fall back to original if needed
-          const imageToAdd = reading.processedAuraImage || reading.imageUrl;
-          
-          // Handle base64 images properly
-          let finalImageSrc = imageToAdd;
-          
-          // First try to use processed aura image if available
+          // Add processed aura image
+          let finalImageSrc = '';
           if (reading.processedAuraImage) {
             if (!reading.processedAuraImage.startsWith('data:')) {
               finalImageSrc = `data:image/jpeg;base64,${reading.processedAuraImage}`;
@@ -554,28 +575,24 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
               finalImageSrc = reading.processedAuraImage;
             }
             console.log('Using processed aura image for PDF');
-          } 
-          // Fallback to original image using our image API
-          else if (reading.imageUrl) {
-            if (!reading.imageUrl.startsWith('http') && !reading.imageUrl.startsWith('data:')) {
-              finalImageSrc = `/api/image/${reading.imageUrl}`;
-            } else {
-              finalImageSrc = reading.imageUrl;
-            }
+          } else if (reading.imageUrl) {
+            // Fallback to original if no processed image
+            finalImageSrc = originalImageSrc;
             console.log('Using original image as fallback for PDF');
           }
           
           console.log('Final image source for aura visualization:', finalImageSrc.substring(0, 100));
-          pdf.addImage(finalImageSrc, 'JPEG', imgX, 35, imgWidth, imgHeight);
+          pdf.addImage(finalImageSrc, 'JPEG', startX + imgWidth + spacing, 50, imgWidth, imgHeight);
           console.log('Aura image added successfully to PDF');
           
-          pdf.setFontSize(12);
+          // Description text
+          pdf.setFontSize(11);
           pdf.setTextColor(107, 114, 128);
-          pdf.text('Processed Aura Analysis Visualization with Energy Fields', pageWidth / 2, 135, { align: 'center' });
+          pdf.text('Processed Aura Analysis Visualization with Energy Fields', pageWidth / 2, 170, { align: 'center' });
           
-          pdf.setFontSize(10);
-          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 150, { align: 'center' });
-          pdf.text('Colors represent different aspects of your personality and energy flow.', pageWidth / 2, 165, { align: 'center' });
+          pdf.setFontSize(9);
+          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 180, { align: 'center' });
+          pdf.text('Colors represent different aspects of your personality and energy flow.', pageWidth / 2, 190, { align: 'center' });
           
           pdf.setFontSize(8);
           pdf.text('Page 2 of 8', 20, pageHeight - 10);
@@ -591,7 +608,11 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.setFontSize(12);
           pdf.setTextColor(107, 114, 128);
           pdf.text('Aura visualization processing in progress...', pageWidth / 2, 100, { align: 'center' });
-          pdf.text('Please contact your healer for the complete visual analysis.', pageWidth / 2, 120, { align: 'center' });
+          pdf.text('Your aura analysis is complete but visualization is being processed.', pageWidth / 2, 120, { align: 'center' });
+          pdf.text('Please check back later for the complete visual analysis.', pageWidth / 2, 140, { align: 'center' });
+          
+          pdf.setFontSize(8);
+          pdf.text('Page 2 of 8', 20, pageHeight - 10);
         }
       } else {
         // Add page explaining missing visualization
@@ -602,8 +623,11 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         
         pdf.setFontSize(12);
         pdf.setTextColor(107, 114, 128);
-        pdf.text('Aura visualization not available for this reading.', pageWidth / 2, 100, { align: 'center' });
-        pdf.text('Contact your healer for enhanced visualization services.', pageWidth / 2, 120, { align: 'center' });
+        pdf.text('No visualization image available for this reading.', pageWidth / 2, 100, { align: 'center' });
+        pdf.text('The aura analysis data is included in the following pages.', pageWidth / 2, 120, { align: 'center' });
+        
+        pdf.setFontSize(8);
+        pdf.text('Page 2 of 8', 20, pageHeight - 10);
         
         console.log('No processed aura image found in reading data');
       }
