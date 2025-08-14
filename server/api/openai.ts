@@ -749,6 +749,7 @@ export async function generateNumerologyReading(name: string, birthDate: string)
           - Destiny Number: ${baseProfile.destinyNumber}
           - Soul Urge Number: ${baseProfile.soulUrgeNumber}
           - Personality Number: ${baseProfile.personalityNumber}
+          - Personal Year Number: ${baseProfile.personalYearNumber}
 
           Please provide a comprehensive interpretation that includes:
           1. A detailed explanation of each number's meaning and influence
@@ -864,11 +865,42 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     return reduceNumber(sum);
   };
 
+  // Calculate Personal Year Number from birth month, day, and current year (2025)
+  const calculatePersonalYear = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5; // Default fallback
+    
+    const month = parts[1]; // MM (birth month)
+    const day = parts[2];   // DD (birth day)
+    const currentYear = "2025"; // Current year 2025
+    
+    let sum = 0;
+    
+    // Sum all digits from birth month
+    for (const digit of month) {
+      sum += parseInt(digit);
+    }
+    
+    // Sum all digits from birth day
+    for (const digit of day) {
+      sum += parseInt(digit);
+    }
+    
+    // Sum all digits from current year (2025)
+    for (const digit of currentYear) {
+      sum += parseInt(digit);
+    }
+    
+    // Reduce to single digit
+    return reduceNumber(sum);
+  };
+
   // Calculate all numbers
   const lifePathNumber = calculateLifePath(birthDate);
   const destinyNumber = calculateDestiny(name);
   const soulUrgeNumber = calculateSoulUrge(name);
   const personalityNumber = calculatePersonality(birthDate);
+  const personalYearNumber = calculatePersonalYear(birthDate);
 
   // Generate interpretation based on calculated numbers
   const interpretation = generateNumerologyInterpretation(lifePathNumber, destinyNumber, soulUrgeNumber, personalityNumber);
@@ -878,6 +910,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     destinyNumber,
     soulUrgeNumber,
     personalityNumber,
+    personalYearNumber,
     interpretation
   };
 }
