@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import videoSrc from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754998851112.mp4";
 import { SpiritualGuidanceVideoModal } from "@/components/SpiritualGuidanceVideoModal";
+import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -40,6 +41,7 @@ export default function HomePage() {
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showPremiumVideoModal, setShowPremiumVideoModal] = useState(false);
 
   // Quick vibe analysis mutation
   // Add watermark to image
@@ -780,7 +782,7 @@ export default function HomePage() {
                                         <div className="text-xs text-white/90 mb-2">Upgrade to unlock detailed insights</div>
                                         <div className="text-xs text-white/90 mb-3">Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report</div>
                                         <Button
-                                          onClick={() => setShowVideoModal(true)}
+                                          onClick={() => setShowPremiumVideoModal(true)}
                                           size="sm"
                                           className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-xs"
                                         >
@@ -1100,6 +1102,12 @@ export default function HomePage() {
       <SpiritualGuidanceVideoModal 
         isOpen={showVideoModal} 
         onClose={() => setShowVideoModal(false)} 
+      />
+
+      {/* Premium Content Video Modal */}
+      <PremiumContentVideoModal 
+        isOpen={showPremiumVideoModal} 
+        onClose={() => setShowPremiumVideoModal(false)} 
       />
     </div>
   );
