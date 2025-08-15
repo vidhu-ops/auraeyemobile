@@ -1021,7 +1021,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 550x800 pixels and compress to 50KB maximum for consistent aura processing
+  // Helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
@@ -1034,7 +1034,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Keep compressing until we reach 50KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(550, 800, {
+          .resize(600, 900, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1058,7 +1058,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } while (quality >= 25);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 550x800px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();

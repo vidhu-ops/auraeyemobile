@@ -3649,15 +3649,15 @@ export default function AuraAnalysis() {
     const innerRadius = Math.max(personWidth, personHeight) * 0.5;
     const extendedRadius = Math.max(width, height) * 0.9; // Reaches image edges
     
-    // UNIFORM SIZING SYSTEM: All images are now 1600x900, so use fixed measurements for consistency
-    const STANDARD_WIDTH = 1600;
+    // UNIFORM SIZING SYSTEM: All images are now 600x900, so use fixed measurements for consistency
+    const STANDARD_WIDTH = 600;
     const STANDARD_HEIGHT = 900;
-    const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 135px radius
-    const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 1360px reach
+    const standardPersonRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.15; // Fixed 90px radius
+    const standardExtendedRadius = Math.max(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.85; // Fixed 765px reach
     
     // LAYER 1: Receiving energy layer on left side (base layer)
     ctx.globalCompositeOperation = 'source-over';
-    const standardReceivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 585px radius
+    const standardReceivingRadius = Math.min(STANDARD_WIDTH, STANDARD_HEIGHT) * 0.65; // Fixed 390px radius
     const receivingLayer = ctx.createRadialGradient(
       centerX - standardPersonRadius * 0.8, centerY, 0, // LEFT side origin for receiving energy
       centerX - standardPersonRadius * 0.8, centerY, standardReceivingRadius
@@ -5847,10 +5847,10 @@ export default function AuraAnalysis() {
                     />
                   </div>
                 ) : (
-                  <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
+                  <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:gap-8">
                     <div className="w-full">
-                      <h2 className="font-heading font-semibold text-lg md:text-xl mb-3">Upload Your Photo</h2>
-                      <div className="flex items-center justify-between mb-3">
+                      <h2 className="font-heading font-semibold text-lg lg:text-xl mb-3">Upload Your Photo</h2>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
                         <p className="text-sm text-gray-600">Analysis for: <span className="font-medium">{analysisName}</span></p>
                         {result && (
                           <p className="text-xs text-gray-500 italic">Refresh page for new analysis</p>
@@ -5909,14 +5909,14 @@ export default function AuraAnalysis() {
                     </div>
                     
                     {result && !isAnalyzing && (
-                      <div className="flex space-x-2">
+                      <div className="flex flex-wrap gap-2">
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-sm"
+                          className="flex items-center text-xs sm:text-sm"
                           onClick={() => shareAuraImage('facebook')}
                         >
-                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
                           </svg>
                           Share
@@ -5924,10 +5924,10 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-sm"
+                          className="flex items-center text-xs sm:text-sm"
                           onClick={() => shareAuraImage('instagram')}
                         >
-                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153.509.5.902 1.105 1.153 1.772.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 01-1.153 1.772c-.5.508-1.105.902-1.772 1.153-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 01-1.772-1.153 4.904 4.904 0 01-1.153-1.772c-.247-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428.247-.67.636-1.276 1.153-1.772a4.91 4.91 0 011.772-1.153c.637-.247 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.986.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.048 1.055-.058 1.37-.058 4.04 0 2.669.01 2.986.058 4.04.045.976.207 1.504.344 1.857.181.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.04.058 2.669 0 2.986-.01 4.04-.058.976-.045 1.504-.207 1.857-.344.466-.181.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.04 0-2.669-.01-2.986-.058-4.04-.045-.976-.207-1.504-.344-1.857a3.097 3.097 0 00-.748-1.15c-.35-.35-.683-.567-1.15-.748-.353-.137-.882-.3-1.857-.344-1.055-.048-1.37-.058-4.04-.058zm0 3.063a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 8.468a3.333 3.333 0 100-6.666 3.333 3.333 0 000 6.666zm6.538-8.469a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/>
                           </svg>
                           Share
@@ -5935,10 +5935,10 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-sm"
+                          className="flex items-center text-xs sm:text-sm"
                           onClick={() => shareAuraImage('twitter')}
                         >
-                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                           </svg>
                           Share
@@ -5946,10 +5946,10 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-sm"
+                          className="flex items-center text-xs sm:text-sm"
                           onClick={downloadComprehensiveAuraPDF}
                         >
-                          <Download className="w-4 h-4 mr-1" />
+                          <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                           Download PDF
                         </Button>
                         {capturedScreenshots.size > 0 && (
@@ -5995,65 +5995,63 @@ export default function AuraAnalysis() {
                     </Card>
                   ) : result ? (
                     <Card>
-                      <CardContent className="p-7" id="aura-reading-section">
-                        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full h-30">
-                          <TabsList className="grid grid-rows-4 gap-3 w-full h-30 p-2 mb-11">
-                            <div className="grid grid-cols-2 gap-20">
-                              <TabsTrigger value="analysis" className="text-sm whitespace-nowrap px-2">Analysis</TabsTrigger>
-                              <TabsTrigger value="energy-reading" className="text-sm whitespace-nowrap px-2 relative">
-                                Chakra Score
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 items-center justify-center">
-                                    <span className="text-[8px] text-white font-bold">●</span>
-                                  </span>
+                      <CardContent className="p-4 sm:p-6 lg:p-7" id="aura-reading-section">
+                        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                          <TabsList className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 w-full p-2 mb-6 sm:mb-8 lg:mb-11 gap-1 sm:gap-2 h-auto">
+                            <TabsTrigger value="analysis" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">Analysis</TabsTrigger>
+                            <TabsTrigger value="energy-reading" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
+                              <span className="hidden sm:inline">Chakra Score</span>
+                              <span className="sm:hidden">Chakras</span>
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-cyan-500"></span>
+                              </span>
+                            </TabsTrigger>
+                            <TabsTrigger value="chakras" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">
+                              <span className="hidden lg:inline">Detailed Chakras</span>
+                              <span className="lg:hidden">Details</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="guidance" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">Guidance</TabsTrigger>
+                            <TabsTrigger value="spectrum" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
+                              <span className="hidden sm:inline">Color Spectrum</span>
+                              <span className="sm:hidden">Colors</span>
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500">
+                                  <Sparkles className="h-1 w-1 sm:h-2 sm:w-2 text-white m-auto" />
                                 </span>
-                              </TabsTrigger>
-                            </div>
-                            <div className="grid grid-cols-2 gap-10">
-                              <TabsTrigger value="chakras" className="text-sm whitespace-nowrap px-2"> Detailed Chakras Analysis</TabsTrigger>
-                              <TabsTrigger value="guidance" className="text-sm whitespace-nowrap px-2">Guidance</TabsTrigger>
-                            </div>
-                            <div className="grid grid-cols-2 gap-15">
-                              <TabsTrigger value="spectrum" className="text-sm whitespace-nowrap px-2 relative">
-                                Color Spectrum
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 items-center justify-center">
-                                    <Sparkles className="h-2 w-2 text-white" />
-                                  </span>
+                              </span>
+                            </TabsTrigger>
+                            <TabsTrigger value="energy-map" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
+                              <span className="hidden sm:inline">Energy Map</span>
+                              <span className="sm:hidden">Energy</span>
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-emerald-500">
+                                  <Zap className="h-1 w-1 sm:h-2 sm:w-2 text-white m-auto" />
                                 </span>
-                              </TabsTrigger>
-                              <TabsTrigger value="energy-map" className="text-sm whitespace-nowrap px-2 relative">
-                                Energy Map
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 items-center justify-center">
-                                    <Zap className="h-2 w-2 text-white" />
-                                  </span>
+                              </span>
+                            </TabsTrigger>
+                            <TabsTrigger value="detailed" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
+                              <span className="hidden lg:inline">Detailed Analysis</span>
+                              <span className="lg:hidden">Advanced</span>
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-amber-500">
+                                  <Crown className="h-1 w-1 sm:h-2 sm:w-2 text-white m-auto" />
                                 </span>
-                              </TabsTrigger>
-                            </div>
-                            <div className="grid grid-cols-2 gap-10">
-                              <TabsTrigger value="detailed" className="relative">
-                                Detailed Analysis
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 mb-5">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                                    <Crown className="h-2 w-2 text-white" />
-                                  </span>
+                              </span>
+                            </TabsTrigger>
+                            <TabsTrigger value="combined" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
+                              <span className="hidden lg:inline">Combined Analysis</span>
+                              <span className="lg:hidden">Combined</span>
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-purple-500">
+                                  <span className="text-[6px] sm:text-[10px] text-white font-bold">✨</span>
                                 </span>
-                              </TabsTrigger>
-                              <TabsTrigger value="combined" className="text-sm whitespace-nowrap px-2 relative">
-                                Combined Analysis
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-purple-500 items-center justify-center">
-                                    <span className="text-[10px] text-white font-bold">✨</span>
-                                  </span>
-                                </span>
-                              </TabsTrigger>
-                            </div>
+                              </span>
+                            </TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="energy-reading" data-tab="energy-reading">
