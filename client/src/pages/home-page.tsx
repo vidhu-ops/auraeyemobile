@@ -520,10 +520,10 @@ export default function HomePage() {
         <div className="container mx-auto px-8 py-16 relative z-15">
           <div className="flex flex-col items-center text-center">
             <div className="mb-10 animate-fade-in-down">
-              <h1 className="font-large font-bold text-3xl md:text-6xl lg:text-7xl mb-6 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Your Energy, made <span className="text-secondary to primary">Visible</span> <br />
-                <span className="text-orange-300">See </span>
-                 Heal <span className="text-emerald-300">Transform</span>
+              <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
+                Your Energy, made <span className="text-white">Visible</span> <br />
+                <span className="text-orange-300">Scan .  </span>
+                <span className="text-blue-300">Heal . </span> <span className="text-green-300">Transform</span>
               </h1>
             </div>
             
