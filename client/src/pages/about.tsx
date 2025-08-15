@@ -6,6 +6,7 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Check, Users, Heart, Sparkles, Brain, Palette } from "lucide-react";
+import nishantImage from "@assets/WhatsApp Image 2025-08-11 at 3.52.01 AM_1755270078104.jpeg";
 
 export default function About() {
   return (
@@ -279,7 +280,7 @@ export default function About() {
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
                     <img 
-                      src="https://C:/Users/weewee/Downloads/WhatsApp%20Image%202025-06-16%20at%205.50.48%20PM.jpeg" 
+                      src={nishantImage} 
                       alt="Nishant Sharma" 
                       className="w-full h-full object-cover"
                     />
