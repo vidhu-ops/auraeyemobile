@@ -989,12 +989,30 @@ export default function AuraAnalysis() {
         rect.width
       );
       
-      const contentHeight = Math.max(
+      // For chakras tab, ensure we capture all content including scrollable areas
+      let contentHeight = Math.max(
         htmlElement.scrollHeight,
         htmlElement.offsetHeight,
         htmlElement.clientHeight,
         rect.height
       );
+      
+      // Special handling for chakras tab to ensure full content capture
+      if (tabId === 'chakras') {
+        // Find all child elements and calculate total height
+        const children = htmlElement.querySelectorAll('*');
+        let maxBottom = 0;
+        children.forEach(child => {
+          const childRect = child.getBoundingClientRect();
+          const elementRect = htmlElement.getBoundingClientRect();
+          const relativeBottom = childRect.bottom - elementRect.top;
+          maxBottom = Math.max(maxBottom, relativeBottom);
+        });
+        
+        // Use the maximum detected height
+        contentHeight = Math.max(contentHeight, maxBottom + 100); // Add 100px padding
+        console.log(`Chakras tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}`);
+      }
 
       // Use screen width as base for consistent readability, ensure minimum width
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
