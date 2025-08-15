@@ -1052,7 +1052,7 @@ export default function AuraAnalysis() {
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 2.5, // High quality for crisp text and details
+            scale: 3.0, // Increased scale for maximum quality
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1066,7 +1066,7 @@ export default function AuraAnalysis() {
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 1000,
+            imageTimeout: 2000,
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1096,8 +1096,8 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions (account for scale factor)
-        const finalWidth = captureWidth * 2.5;
-        const finalHeight = screenshots.length * (sectionHeight * 2.5);
+        const finalWidth = captureWidth * 3.0;
+        const finalHeight = screenshots.length * (sectionHeight * 3.0);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1108,14 +1108,14 @@ export default function AuraAnalysis() {
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 2.5));
+              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
               resolve(true);
             };
           });
         }
         
-        // Compress the combined image to prevent memory issues
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.85);
+        // Use PNG for better quality, only compress if too large
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
         // Only store if reasonable size (less than 10MB)
@@ -1133,7 +1133,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 2.5, // High quality for crisp text
+          scale: 3.0, // Increased scale for maximum quality
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1145,7 +1145,7 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 1000,
+          imageTimeout: 2000,
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
@@ -1159,8 +1159,8 @@ export default function AuraAnalysis() {
           }
         });
 
-        // Compress single capture to prevent memory issues
-        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        // Use PNG for better quality
+        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
         // Only store if reasonable size (less than 10MB)
@@ -1372,15 +1372,25 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // Set canvas size to target dimensions
-              canvas.width = Math.min(targetWidth * 4, 1200); // Max width 1200px
-              canvas.height = Math.min(targetHeight * 4, 1600); // Max height 1600px
+              // Set canvas size with higher resolution for better PDF quality
+              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
+              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
               
-              // Draw and compress the image
+              // Use high-quality image rendering
+              ctx!.imageSmoothingEnabled = true;
+              ctx!.imageSmoothingQuality = 'high';
+              
+              // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // Compress to JPEG with 0.8 quality to reduce file size
-              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+              // Use PNG for better quality, JPEG as fallback if too large
+              let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
+              
+              // If PNG is too large, fallback to high quality JPEG
+              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Higher quality JPEG
+              }
+              
               resolve(compressedDataUrl);
             };
             img.src = imageDataUrl;
@@ -1698,23 +1708,28 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // Calculate optimal PDF dimensions while preserving readability
+            // Calculate optimal PDF dimensions for better clarity and readability
             const maxPdfWidth = 170; // Maximum width for PDF
-            const maxPdfHeight = 240; // Maximum height per page section
+            const maxPdfHeight = 220; // Increased height for better visibility
             
             let imageWidth = maxPdfWidth;
             let imageHeight = maxPdfWidth * trueAspectRatio;
             
-            // If image would be too tall for readability, scale down appropriately
+            // If image would be too tall, scale down appropriately
             if (imageHeight > maxPdfHeight) {
               imageHeight = maxPdfHeight;
               imageWidth = maxPdfHeight / trueAspectRatio;
             }
             
-            // Ensure minimum readability dimensions
-            if (imageWidth < 120) {
-              imageWidth = 120;
-              imageHeight = 120 * trueAspectRatio;
+            // Ensure good minimum dimensions for clarity
+            const minWidth = 140; // Increased minimum width
+            if (imageWidth < minWidth) {
+              imageWidth = minWidth;
+              imageHeight = minWidth * trueAspectRatio;
+              // If still too tall, cap the height
+              if (imageHeight > maxPdfHeight) {
+                imageHeight = maxPdfHeight;
+              }
             }
             
             console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${imageWidth.toFixed(1)}x${imageHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
