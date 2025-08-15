@@ -1680,13 +1680,8 @@ export default function AuraAnalysis() {
         yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
         yPosition += 10;
         
-        // Add each captured screenshot with proper sizing
+        // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
-          // Ensure enough space for full-size screenshot (at least 150 units for image + title + spacing)
-          if (yPosition > pageHeight - 150) {
-            pdf.addPage();
-            yPosition = 20;
-          }
           
           pdf.setFontSize(14);
           pdf.setTextColor(75, 0, 130);
@@ -1708,44 +1703,110 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // Calculate optimal PDF dimensions for better clarity and readability
-            const maxPdfWidth = 170; // Maximum width for PDF
-            const maxPdfHeight = 220; // Increased height for better visibility
+            // CRITICAL FIX: Maintain 6:9 aspect ratio without squishing
+            const targetAspectRatio = 9 / 6; // Height/Width = 1.5
+            const pageMaxWidth = 170; // Maximum usable page width
+            const pageMaxHeight = 250; // Maximum usable page height per section
             
-            let imageWidth = maxPdfWidth;
-            let imageHeight = maxPdfWidth * trueAspectRatio;
+            // Calculate proper dimensions maintaining aspect ratio
+            let finalWidth = pageMaxWidth;
+            let finalHeight = finalWidth * trueAspectRatio;
             
-            // If image would be too tall, scale down appropriately
-            if (imageHeight > maxPdfHeight) {
-              imageHeight = maxPdfHeight;
-              imageWidth = maxPdfHeight / trueAspectRatio;
-            }
+            // If the image is very long (tall), we need to handle it differently
+            const isLongScreenshot = trueAspectRatio > 2.5; // More than 2.5:1 ratio
             
-            // Ensure good minimum dimensions for clarity
-            const minWidth = 140; // Increased minimum width
-            if (imageWidth < minWidth) {
-              imageWidth = minWidth;
-              imageHeight = minWidth * trueAspectRatio;
-              // If still too tall, cap the height
-              if (imageHeight > maxPdfHeight) {
-                imageHeight = maxPdfHeight;
+            if (isLongScreenshot) {
+              // For long screenshots, use multiple pages to maintain readability
+              const sectionsNeeded = Math.ceil(finalHeight / pageMaxHeight);
+              const sectionHeight = pageMaxHeight;
+              
+              console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
+              
+              // Split the image into multiple sections
+              for (let section = 0; section < sectionsNeeded; section++) {
+                // Start a new page for each section after the first
+                if (section > 0 || yPosition > 40) {
+                  pdf.addPage();
+                  yPosition = 20;
+                }
+                
+                // Calculate the portion of the image for this section
+                const sectionStartY = (section * originalHeight) / sectionsNeeded;
+                const sectionEndY = Math.min(((section + 1) * originalHeight) / sectionsNeeded, originalHeight);
+                const sectionImageHeight = sectionEndY - sectionStartY;
+                
+                // Create a canvas to extract this section
+                const sectionCanvas = document.createElement('canvas');
+                const sectionCtx = sectionCanvas.getContext('2d');
+                sectionCanvas.width = originalWidth;
+                sectionCanvas.height = sectionImageHeight;
+                
+                // Draw the section of the image
+                sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
+                
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.9);
+                const sectionAspectRatio = sectionImageHeight / originalWidth;
+                
+                // Calculate final dimensions for this section
+                let sectionFinalWidth = finalWidth;
+                let sectionFinalHeight = sectionFinalWidth * sectionAspectRatio;
+                
+                // If this section is still too tall, fit to height
+                if (sectionFinalHeight > sectionHeight) {
+                  sectionFinalHeight = sectionHeight;
+                  sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
+                }
+                
+                // Add section title if multiple sections
+                if (sectionsNeeded > 1) {
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(100, 100, 100);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Section ${section + 1}/${sectionsNeeded}`, 20, yPosition);
+                  yPosition += 5;
+                }
+                
+                // Compress and add the section
+                const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                yPosition += sectionFinalHeight + 10;
+                
+                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
+              
+            } else {
+              // For normal screenshots, use single page with proper aspect ratio
+              if (finalHeight > pageMaxHeight) {
+                finalHeight = pageMaxHeight;
+                finalWidth = finalHeight / trueAspectRatio;
+              }
+              
+              // Ensure minimum readability
+              const minWidth = 140;
+              const minHeight = 220;
+              if (finalWidth < minWidth) {
+                finalWidth = minWidth;
+                finalHeight = minWidth * trueAspectRatio;
+              }
+              if (finalHeight < minHeight && trueAspectRatio < 2) {
+                finalHeight = minHeight;
+                finalWidth = minHeight / trueAspectRatio;
+              }
+              
+              console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
+              
+              // Check if screenshot would exceed page height
+              if (yPosition + finalHeight > pageHeight - 40) {
+                pdf.addPage();
+                yPosition = 20;
+              }
+              
+              // Compress the image data before adding to PDF to prevent memory issues
+              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+              
+              // Add the screenshot with preserved aspect ratio
+              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+              yPosition += finalHeight + 15;
             }
-            
-            console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${imageWidth.toFixed(1)}x${imageHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
-            
-            // Check if screenshot would exceed page height
-            if (yPosition + imageHeight > pageHeight - 40) {
-              pdf.addPage();
-              yPosition = 20;
-            }
-            
-            // Compress the image data before adding to PDF to prevent memory issues
-            const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, imageWidth, imageHeight);
-            
-            // Add the screenshot with preserved aspect ratio and optimal sizing
-            pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, imageWidth, imageHeight);
-            yPosition += imageHeight + 15;
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
             
