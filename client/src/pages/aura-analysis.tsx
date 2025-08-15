@@ -4814,19 +4814,16 @@ export default function AuraAnalysis() {
     return traits[personalityNumber] || 'unique spiritual gifts and authentic expression';
   };
 
-  // Function to calculate personality number from day + month for combined analysis
+  // Function to calculate personality number from day digits only for combined analysis
   const calculatePersonalityNumberFromBirthDate = (birthDate: string): number => {
     if (!birthDate) return numerologyResult?.personalityNumber || 1;
     
     const date = new Date(birthDate);
     const day = date.getDate();
-    const month = date.getMonth() + 1; // getMonth() returns 0-11, we need 1-12
     
-    // Sum all digits of day and month
-    const dayDigits = day.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
-    const monthDigits = month.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
-    
-    let totalSum = dayDigits + monthDigits;
+    // Sum all digits of the day only
+    // For example: day 19 -> 1+9=10 -> 1+0=1
+    let totalSum = day.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
     
     // Reduce to single digit (1-9) unless it's 11, 22, or 33
     while (totalSum > 9 && totalSum !== 11 && totalSum !== 22 && totalSum !== 33) {
@@ -4942,7 +4939,7 @@ export default function AuraAnalysis() {
     // Enhanced spiritual guidance
     const spiritualGuidance = `Your ${aura.dominantColor} aura resonates with the ${dominantColorMapping.chakra}, governed by ${dominantColorMapping.planet} and supported by ${dominantColorMapping.archangel}. Combined with Life Path ${numerology.lifePathNumber}, this creates a powerful spiritual signature focused on ${dominantColorMapping.remedies[0]}. Your energy field is naturally attuned to ${dominantSoulChakraName} development, enhanced by ${dominantColorMapping.planet} planetary influences.`;
 
-    // Calculate custom personality number for combined analysis (day + month digits)
+    // Calculate custom personality number for combined analysis (day digits only)
     const customPersonalityNumber = calculatePersonalityNumberFromBirthDate(birthDate || '');
     const personalityColor = getColorForNumber(customPersonalityNumber);
     
