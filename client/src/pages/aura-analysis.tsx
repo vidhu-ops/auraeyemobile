@@ -7971,62 +7971,8 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
 
-                                  {/* Individual Chakra Score Analysis */}
-                                  <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Your Chakra Score Analysis</h5>
-                                    <div className="space-y-4">
-                                      {(() => {
-                                        const chakras = [
-                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10), color: 'pink' },
-                                          { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5, color: 'violet' },
-                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5, color: 'indigo' },
-                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5, color: 'blue' },
-                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5, color: 'green' },
-                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5, color: 'yellow' },
-                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5, color: 'orange' },
-                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5, color: 'red' },
-                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10), color: 'gray' },
-                                        ];
-
-                                        const getAlignmentLevel = (score: number) => {
-                                          if (score >= 9) return { level: 'Karmically Aligned', color: 'emerald', bgColor: 'emerald-50', borderColor: 'emerald-200' };
-                                          if (score >= 7) return { level: 'Currently Learning', color: 'blue', bgColor: 'blue-50', borderColor: 'blue-200' };
-                                          if (score >= 4) return { level: 'Karmic Test', color: 'amber', bgColor: 'amber-50', borderColor: 'amber-200' };
-                                          return { level: 'Karmic Block', color: 'red', bgColor: 'red-50', borderColor: 'red-200' };
-                                        };
-
-                                        const getAlignmentMeaning = (score: number) => {
-                                          if (score >= 9) return 'Your soul is highly aligned with this lesson and you have almost learnt this lesson or not this lesson is fully mastered';
-                                          if (score >= 7) return 'You are actively working on healing and understanding this area';
-                                          if (score >= 4) return 'You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern';
-                                          return 'Deep-rooted block or ancestral karma making you feel stuck; urgent healing required';
-                                        };
-
-                                        return chakras.map((chakra, index) => {
-                                          const alignment = getAlignmentLevel(chakra.score);
-                                          return (
-                                            <div key={index} className={`bg-gradient-to-r from-${alignment.bgColor} to-white rounded-lg p-4 border border-${alignment.borderColor}`}>
-                                              <div className="flex items-center justify-between mb-2">
-                                                <div className="flex items-center">
-                                                  <div className={`w-4 h-4 rounded-full bg-${chakra.color}-500 mr-3`}></div>
-                                                  <h6 className="font-medium text-gray-800">{chakra.name}</h6>
-                                                </div>
-                                                <div className="flex items-center">
-                                                  <span className={`text-lg font-bold text-${alignment.color}-600 mr-3`}>{chakra.score}/10</span>
-                                                  <div className={`px-3 py-1 bg-${alignment.color}-100 rounded-full`}>
-                                                    <span className={`text-xs font-medium text-${alignment.color}-700`}>{alignment.level}</span>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <p className={`text-xs text-${alignment.color}-700 italic`}>
-                                                {getAlignmentMeaning(chakra.score)}
-                                              </p>
-                                            </div>
-                                          );
-                                        });
-                                      })()}
-                                    </div>
-                                  </div>
+                              
+                                 
 
                                   {/* Healing Priority Guide */}
                                   <div className="bg-white rounded-lg p-5 border border-violet-200">
@@ -8660,53 +8606,7 @@ export default function AuraAnalysis() {
                                     </div>
                                   </div>
 
-                                  {/* Negative Influence (Inverse) Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-red-300">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-red-600 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-red-800">Negative Influence</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-red-600">
-                                        {(() => {
-                                          // Calculate negative influence as sum of (10 - chakra_score) for all chakras
-                                          const soulStarScore = calculateSoulStarChakra(result);
-                                          const crownScore = result.chakraActivity?.crown || 5;
-                                          const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
-                                          const throatScore = result.chakraActivity?.throat || 5;
-                                          const heartScore = result.chakraActivity?.heart || 5;
-                                          const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
-                                          const sacralScore = result.chakraActivity?.sacral || 5;
-                                          const rootScore = result.chakraActivity?.root || 5;
-                                          
-                                          const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
-                                          return negativeInfluence.toFixed(1);
-                                        })()}
-                                      </div>
-                                      <div className="text-xs text-gray-500">Psychic overload & energetic contamination</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        // Calculate negative influence as sum of (10 - chakra_score) for all chakras
-                                        const soulStarScore = calculateSoulStarChakra(result);
-                                        const crownScore = result.chakraActivity?.crown || 5;
-                                        const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
-                                        const throatScore = result.chakraActivity?.throat || 5;
-                                        const heartScore = result.chakraActivity?.heart || 5;
-                                        const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
-                                        const sacralScore = result.chakraActivity?.sacral || 5;
-                                        const rootScore = result.chakraActivity?.root || 5;
-                                        
-                                        const negativeInfluence = (10 - soulStarScore) + (10 - crownScore) + (10 - thirdEyeScore) + (10 - throatScore) + (10 - heartScore) + (10 - solarPlexusScore) + (10 - sacralScore) + (10 - rootScore);
-                                        
-                                        if (negativeInfluence <= 10) return "Very low negative influence, excellent energetic state";
-                                        if (negativeInfluence <= 20) return "Low negative influence, good energetic balance";
-                                        if (negativeInfluence <= 30) return "Moderate negative influence, some clearing recommended";
-                                        if (negativeInfluence <= 40) return "High negative influence, energy cleansing needed";
-                                        return "Very high negative influence, urgent spiritual protection required";
-                                      })()}
-                                    </div>
-                                  </div>
+                                
 
                                 </div>
                               </div>
