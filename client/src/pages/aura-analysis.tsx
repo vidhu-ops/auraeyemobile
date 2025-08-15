@@ -8641,208 +8641,69 @@ export default function AuraAnalysis() {
                                   })()}
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        </TabsContent>
-                          
-                          <TabsContent value="guidance" data-tab="guidance">
-                            {/* Screenshot Button */}
-                            <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('guidance')}
-                                disabled={isCapturingScreenshot === 'guidance'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'guidance' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'guidance' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
-                            </div>
-                            <div className="space-y-6">
-                              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
-                                <h3 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
-                                  <Sparkles className="h-5 w-5" />
-                                  Spiritual Guidance
-                                </h3>
-                                
-                                {/* Main spiritual guidance */}
-                                <div className="mb-4">
-                                  <p className="text-sm text-purple-700 leading-relaxed">
-                                    {result.spiritualGuidance || `Your ${result.dominantColor} aura carries deep spiritual significance, representing a unique energy signature that connects you to higher realms. This color frequency resonates with transformation, healing, and spiritual awakening. Your aura reflects your soul's journey toward enlightenment and your natural ability to channel divine energy for healing and guidance.`}
-                                  </p>
-                                </div>
 
-                                {/* Enhanced guidance based on colors */}
-                                <div className="bg-white rounded-lg p-4 border border-purple-200 mb-4">
-                                  <h4 className="font-medium text-purple-800 mb-3">Aura Color Meanings</h4>
-                                  
-                                  <div className="space-y-3">
-                                    <div className="flex items-start gap-3">
-                                      <div 
-                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
-                                      ></div>
-                                      <div>
-                                        <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
-                                        <p className="text-xs text-gray-600 leading-relaxed">
-                                          {(() => {
-                                            const meanings: Record<string, string> = {
-                                              'Black': 'Shadow integration and transformation energy representing deep inner work, void consciousness, and spiritual rebirth through darkness.',
-                                              'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. Energetically vulnerable, escapist tendencies, difficulty being grounded. Learning to protect energy and feel safe in the physical world.',
-                                              'Brown': 'Humble, grounded, connected to nature and body, down-to-earth wisdom. Stagnation, lack of ambition, heaviness, resistance to change. Bringing movement into life while staying rooted.',
-                                              'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. Could indicate suppressed anger, burnout, aggressive or reactive behavior, hyper competitiveness. Balancing drive with emotional regulation.',
-                                              'Yellow': 'Confident, radiant, strong leadership energy, optimistic and intelligent. Perfectionist, controlling, rigid expectations, critical of self and others. Letting go of control and embracing flow.',
-                                              'Blue': 'Peaceful communicator, emotionally calm, expressive and serene presence. Lethargy, emotional shutdown, fear of speaking up, hidden sadness. Learning to express needs clearly and calmly.',
-                                              'Green': 'Compassionate, healer energy, emotionally balanced and nurturing. Overgiving, energy depletion, putting others before self to a harmful degree. Setting boundaries while nurturing others.',
-                                              'Violet': 'Highly spiritual, visionary, deeply connected to purpose and divine calling. Disconnected from higher self, confusion about life purpose, escapism or spiritual bypassing. Difficulty balancing spiritual connection with everyday life.',
-                                              'Indigo': 'Strong intuitive abilities, psychic insight, deep inner knowing and truth-seeking. Overwhelmed by inner visions, escapism, fear of trusting intuition or self-doubt. Trusting one's psychic abilities and grounding insights.',
-                                              'Purple': 'Spiritual wisdom and mystical awareness. This royal frequency indicates deep spiritual development and connection to higher realms.',
-                                              'Gold': 'Divinely protected, powerful soul guide, radiant and healed presence. Ego inflation, spiritual superiority, loneliness from being different. Staying humble while embracing one's light.',
-                                              'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul. Energetic overload, anxiety, unclear boundaries, difficulty being in the body. Grounding spiritual gifts with practical living.',
-                                              'Orange': 'Creative, joyful, playful, sensually alive, loves experiencing pleasure and life. Restlessness, overindulgence, scattered energy, addicted to stimulation. Channeling creativity in consistent and meaningful ways.',
-                                              'Pink': 'Loving, emotionally open, romantic, deeply caring and affectionate. Over-sensitive, emotionally dependent, fear of rejection or abandonment. Balancing love with self-worth and independence.'
-                                            };
-                                            return meanings[result.dominantColor] || 'This unique aura color carries special spiritual significance and represents your individual soul expression.';
-                                          })()}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    
-                                    {result.secondaryColor && (
-                                      <div className="flex items-start gap-3">
-                                        <div 
-                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
-                                        ></div>
-                                        <div>
-                                          <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Emotional)</p>
-                                          <p className="text-xs text-gray-600 leading-relaxed">
-                                            {(() => {
-                                              const meanings: Record<string, string> = {
-                                                'Black': 'Shadow integration and transformation energy representing deep inner work, void consciousness, and spiritual rebirth through darkness.',
-                                                'White': 'Spiritually pure, transcendent, deeply sensitive, universal connection. Energetically vulnerable, escapist tendencies, difficulty being grounded.',
-                                                'Brown': 'Humble, grounded, connected to nature and body, down-to-earth wisdom. May indicate stagnation or resistance to change.',
-                                                'Red': 'Action-oriented, passionate, driven, energized and grounded in goals. Could indicate suppressed anger or reactive behavior.',
-                                                'Yellow': 'Confident, radiant, strong leadership energy, optimistic and intelligent. May show controlling or perfectionist tendencies.',
-                                                'Blue': 'Peaceful communicator, emotionally calm, expressive and serene presence. Could indicate emotional withdrawal or suppressed feelings.',
-                                                'Green': 'Compassionate, healer energy, emotionally balanced and nurturing. May show overgiving or energy depletion patterns.',
-                                                'Violet': 'Highly spiritual, visionary, deeply connected to purpose and divine calling. Could indicate spiritual bypassing or disconnection.',
-                                                'Indigo': 'Strong intuitive abilities, psychic insight, deep inner knowing and truth-seeking. May show overwhelm from psychic sensitivity.',
-                                                'Purple': 'Spiritual wisdom and mystical awareness indicating deep spiritual development and connection to higher realms.',
-                                                'Gold': 'Divinely protected, powerful soul guide, radiant and healed presence. May indicate ego inflation or spiritual superiority.',
-                                                'Silver': 'Psychic, channeling divine wisdom, sensitive to spiritual realms, graceful soul. Could show energetic overload or anxiety.',
-                                                'Orange': 'Creative, joyful, playful, sensually alive, loves experiencing pleasure and life. May indicate restlessness or scattered energy.',
-                                                'Pink': 'Loving, emotionally open, romantic, deeply caring and affectionate. Could show over-sensitivity or emotional dependence.'
-                                              };
-                                              return meanings[result.secondaryColor] || 'This secondary color adds important nuance to your energetic expression.';
-                                            })()}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Action Steps */}
-                                <div className="bg-white rounded-lg p-4 border border-purple-200">
-                                  <h4 className="font-medium text-purple-800 mb-3">Recommended Actions</h4>
-                                  <div className="space-y-2 text-sm text-purple-700">
-                                    <div className="flex items-start gap-2">
-                                      <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
-                                      <p>Meditate on your {result.dominantColor.toLowerCase()} energy daily to strengthen your spiritual connection.</p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                      <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
-                                      <p>Practice energy protection techniques to maintain your auric boundaries.</p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                      <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
-                                      <p>Journal about the insights revealed in your aura reading to deepen self-awareness.</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </TabsContent>
-                          
-                          <TabsContent value="detailed" data-tab="detailed">
-                            {/* Screenshot Button */}
-                            <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('detailed')}
-                                disabled={isCapturingScreenshot === 'detailed'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'detailed' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'detailed' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
-                            </div>
-                            <div className="space-y-6">
-                              {/* Aura Intensity */}
-                              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-6 border border-blue-200">
-                                <h3 className="font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                                  <Zap className="h-5 w-5" />
-                                  Aura Intensity Analysis
-                                </h3>
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                  <div className="bg-white rounded-lg p-4 border border-blue-100">
-                                    <div className="text-center">
-                                      <div className="text-2xl font-bold text-blue-600 mb-1">
-                                        {Math.round((result.intensity || 50))}%
-                                      </div>
-                                      <div className="text-sm text-gray-600">Overall Intensity</div>
-                                      <div className="text-xs text-gray-500">Energy field strength</div>
-                                    </div>
-                                  </div>
-                                  <div className="bg-white rounded-lg p-4 border border-blue-100">
-                                    <div className="text-center">
-                                      <div className="text-2xl font-bold text-blue-600 mb-1">
-                                        {result.auraColors?.length || 2}
-                                      </div>
-                                      <div className="text-sm text-gray-600">Color Layers</div>
-                                      <div className="text-xs text-gray-500">Energetic complexity</div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <p className="text-sm text-blue-700">
-                                  Your aura displays {result.intensity && result.intensity > 70 ? 'high' : result.intensity && result.intensity > 40 ? 'moderate' : 'subtle'} intensity, indicating {result.intensity && result.intensity > 70 ? 'strong energetic presence and vibrant life force' : result.intensity && result.intensity > 40 ? 'balanced energy flow with room for enhancement' : 'gentle energy requiring nurturing and strengthening'}.
+                              {/* Life Score Analysis Based on Chakra Activity */}
+                              <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg p-6 border border-rose-200">
+                                <h4 className="font-medium text-xl mb-4 text-rose-800">Life Score Analysis</h4>
+                                <p className="text-sm text-gray-600 mb-6">
+                                  Your chakra activity levels create specific life patterns. These scores reveal your current strengths and areas for growth.
                                 </p>
-                              </div>
 
-                              {/* Energetic Signature */}
-                              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
-                                <h3 className="font-semibold text-green-800 mb-4 flex items-center gap-2">
-                                  <Activity className="h-5 w-5" />
-                                  Energetic Signature
-                                </h3>
-                                <div className="space-y-4">
-                                  <div className="bg-white rounded-lg p-4 border border-green-100">
-                                    <h4 className="font-medium text-green-800 mb-2">Primary Energy Pattern</h4>
-                                    <p className="text-sm text-green-700">
-                                      Your {result.dominantColor} aura creates a {result.dominantColor === 'Red' ? 'dynamic and action-oriented' : result.dominantColor === 'Blue' ? 'calm and communicative' : result.dominantColor === 'Green' ? 'healing and nurturing' : result.dominantColor === 'Yellow' ? 'radiant and intellectual' : result.dominantColor === 'Purple' ? 'mystical and spiritual' : result.dominantColor === 'Orange' ? 'creative and joyful' : 'unique and powerful'} energetic signature that influences how you interact with the world around you.
-                                    </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  
+                                  {/* Love & Relationships Score */}
+                                  <div className="bg-white rounded-lg p-4 border border-pink-200">
+                                    <div className="flex items-center mb-3">
+                                      <div className="w-5 h-5 rounded-full bg-pink-500 mr-2"></div>
+                                      <h5 className="font-semibold text-sm text-pink-800">Love & Relationships</h5>
+                                    </div>
+                                    <div className="text-center mb-3">
+                                      <div className="text-2xl font-bold text-pink-600">
+                                        {(() => {
+                                          const score = (0.4 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.throat || 5));
+                                          return score.toFixed(1);
+                                        })()}/10
+                                      </div>
+                                      <div className="text-xs text-gray-500">Emotional openness & authentic expression</div>
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      {(() => {
+                                        const score = (0.4 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.throat || 5));
+                                        if (score <= 4) return "Emotionally blocked, finds it hard to trust or open up";
+                                        if (score <= 6) return "Moderate emotional openness, some trust barriers";
+                                        if (score <= 8) return "Good emotional flow, healthy relationships";
+                                        return "Excellent emotional openness and authentic expression";
+                                      })()}
+                                    </div>
                                   </div>
-                                  <div className="bg-white rounded-lg p-4 border border-green-100">
-                                    <h4 className="font-medium text-green-800 mb-2">Energy Flow Direction</h4>
-                                    <p className="text-sm text-green-700">
-                                      The positioning of your aura colors reveals {result.auraPositions?.left ? 'receptive energy on your left side (receiving from others)' : ''} {result.auraPositions?.left && result.auraPositions?.right ? 'and ' : ''}{result.auraPositions?.right ? 'expressive energy on your right side (giving to others)' : ''}. This indicates your natural energetic exchange patterns.
-                                    </p>
+
+                                  {/* Money & Abundance Score */}
+                                  <div className="bg-white rounded-lg p-4 border border-green-200">
+                                    <div className="flex items-center mb-3">
+                                      <div className="w-5 h-5 rounded-full bg-green-500 mr-2"></div>
+                                      <h5 className="font-semibold text-sm text-green-800">Money & Abundance</h5>
+                                    </div>
+                                    <div className="text-center mb-3">
+                                      <div className="text-2xl font-bold text-green-600">
+                                        {(() => {
+                                          const earthStarScore = calculateEarthStarChakra(result)/10;
+                                          const score = (0.3 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.4 * earthStarScore);
+                                          return score.toFixed(1);
+                                        })()}/10
+                                      </div>
+                                      <div className="text-xs text-gray-500">Groundedness & wealth mindset</div>
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      {(() => {
+                                        const earthStarScore = calculateEarthStarChakra(result)/10;
+                                        const score = (0.3 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.4 * earthStarScore);
+                                        if (score <= 4) return "Money anxiety, scarcity mindset, karmic blocks";
+                                        if (score <= 6) return "Developing abundance mindset, some financial blocks";
+                                        if (score <= 8) return "Good financial flow, stable wealth mindset";
+                                        return "Excellent abundance consciousness and financial stability";
+                                      })()}
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            </div>
-                          </TabsContent>
 
                                   {/* Career & Purpose Score */}
                                   <div className="bg-white rounded-lg p-4 border border-blue-200">
