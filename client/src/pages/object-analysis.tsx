@@ -359,7 +359,7 @@ export default function ObjectAnalysis() {
     
     // Add main watermark text in white
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText('AuraEyeTM', centerX, centerY);
+    ctx.fillText('AuraEye™', centerX, centerY);
     
     // Restore the context
     ctx.restore();
