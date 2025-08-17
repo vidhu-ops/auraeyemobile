@@ -997,9 +997,9 @@ export default function AuraAnalysis() {
         rect.height
       );
       
-      // Special handling for chakras tab to ensure full content capture
-      if (tabId === 'chakras') {
-        // Find all child elements and calculate total height
+      // Special handling for specific tabs to ensure full content capture
+      if (tabId === 'chakras' || tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'analysis') {
+        // Find all child elements and calculate total height for comprehensive capture
         const children = htmlElement.querySelectorAll('*');
         let maxBottom = 0;
         children.forEach(child => {
@@ -1009,17 +1009,33 @@ export default function AuraAnalysis() {
           maxBottom = Math.max(maxBottom, relativeBottom);
         });
         
-        // Use the maximum detected height
-        contentHeight = Math.max(contentHeight, maxBottom + 100); // Add 100px padding
-        console.log(`Chakras tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}`);
+        // Use the maximum detected height with extra padding for scroll content
+        contentHeight = Math.max(contentHeight, maxBottom + 200); // Increased padding for complete capture
+        console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}`);
+        
+        // For analysis tab, ensure we capture ALL content including scrollable sections
+        if (tabId === 'analysis') {
+          // Look for any scrollable containers within the analysis tab
+          const scrollableElements = htmlElement.querySelectorAll('[style*="overflow"], [class*="scroll"]');
+          scrollableElements.forEach(scrollElement => {
+            const scrollHeight = (scrollElement as HTMLElement).scrollHeight;
+            const scrollRect = scrollElement.getBoundingClientRect();
+            const relativeScrollBottom = scrollRect.bottom - htmlElement.getBoundingClientRect().top + scrollHeight;
+            maxBottom = Math.max(maxBottom, relativeScrollBottom);
+          });
+          contentHeight = Math.max(contentHeight, maxBottom + 300); // Extra padding for analysis
+          console.log(`Analysis tab comprehensive height: ${contentHeight}`);
+        }
       }
 
       // Use screen width as base for consistent readability, ensure minimum width
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
       
       // Determine if content needs multi-section capture for long content
-      const maxSingleCaptureHeight = viewportHeight * 2; // 2 screen heights max per section
-      const needsMultiSection = contentHeight > maxSingleCaptureHeight;
+      // Force multi-section for specific tabs that tend to have long content
+      const forceMultiSection = ['chakras', 'analysis', 'energy-map'].includes(tabId);
+      const maxSingleCaptureHeight = forceMultiSection ? viewportHeight * 1.5 : viewportHeight * 2; 
+      const needsMultiSection = contentHeight > maxSingleCaptureHeight || forceMultiSection;
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
@@ -1038,21 +1054,44 @@ export default function AuraAnalysis() {
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
           
-          // Scroll element to show this section
-          if (htmlElement.scrollTo) {
-            htmlElement.scrollTo(0, startY);
-          } else {
-            // Fallback to window scroll
-            const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo(0, elementTop + startY);
+          // Scroll element to show this section - enhanced for specific tabs
+          try {
+            // For tabs with complex content, ensure proper scrolling
+            if (['guidance', 'energy-reading', 'analysis'].includes(tabId)) {
+              // Try multiple scroll methods to ensure content is visible
+              if (htmlElement.scrollTo) {
+                htmlElement.scrollTo({ top: startY, behavior: 'instant' });
+              }
+              // Also scroll any parent containers
+              const scrollParent = htmlElement.closest('[data-state="active"]') || htmlElement.parentElement;
+              if (scrollParent && (scrollParent as HTMLElement).scrollTo) {
+                (scrollParent as HTMLElement).scrollTo({ top: startY, behavior: 'instant' });
+              }
+              // Fallback to window scroll
+              const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
+              window.scrollTo({ top: elementTop + startY, behavior: 'instant' });
+            } else {
+              // Standard scrolling for other tabs
+              if (htmlElement.scrollTo) {
+                htmlElement.scrollTo(0, startY);
+              } else {
+                const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo(0, elementTop + startY);
+              }
+            }
+          } catch (scrollError) {
+            console.warn('Scroll error:', scrollError);
+            // Fallback scroll
+            window.scrollTo(0, startY);
           }
           
-          // Wait for scroll to complete and content to render
-          await new Promise(resolve => setTimeout(resolve, 300));
+          // Wait for scroll to complete and content to render - increased for complex tabs
+          const waitTime = ['guidance', 'energy-reading', 'analysis'].includes(tabId) ? 500 : 300;
+          await new Promise(resolve => setTimeout(resolve, waitTime));
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 3.0, // Increased scale for maximum quality
+            scale: 2.5, // Optimized scale for quality vs performance
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1061,21 +1100,31 @@ export default function AuraAnalysis() {
             width: captureWidth,
             height: actualSectionHeight,
             scrollX: 0,
-            scrollY: 0,
+            scrollY: startY, // Ensure scroll position is captured
             windowWidth: captureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
-            foreignObjectRendering: false,
-            imageTimeout: 2000,
+            foreignObjectRendering: true, // Enable for better content rendering
+            imageTimeout: 3000, // Increased timeout for complex content
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
                 const elem = clonedElement as HTMLElement;
+                // Ensure all content is visible
                 elem.style.overflow = 'visible';
                 elem.style.height = 'auto';
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
+                
+                // Make all child elements visible
+                const allChildren = elem.querySelectorAll('*');
+                allChildren.forEach(child => {
+                  const childElem = child as HTMLElement;
+                  childElem.style.overflow = 'visible';
+                  childElem.style.maxHeight = 'none';
+                  childElem.style.height = 'auto';
+                });
               }
             }
           });
@@ -1128,7 +1177,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 3.0, // Increased scale for maximum quality
+          scale: 2.5, // Optimized scale for quality vs performance
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1139,17 +1188,27 @@ export default function AuraAnalysis() {
           windowWidth: captureWidth,
           windowHeight: contentHeight,
           removeContainer: false,
-          foreignObjectRendering: false,
-          imageTimeout: 2000,
+          foreignObjectRendering: true, // Enable for better content rendering
+          imageTimeout: 3000, // Increased timeout for complex content
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
               const elem = clonedElement as HTMLElement;
+              // Ensure all content is visible for single capture
               elem.style.overflow = 'visible';
               elem.style.height = 'auto';
               elem.style.maxHeight = 'none';
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
+              
+              // Make all child elements visible
+              const allChildren = elem.querySelectorAll('*');
+              allChildren.forEach(child => {
+                const childElem = child as HTMLElement;
+                childElem.style.overflow = 'visible';
+                childElem.style.maxHeight = 'none';
+                childElem.style.height = 'auto';
+              });
             }
           }
         });
