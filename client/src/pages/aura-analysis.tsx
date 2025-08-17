@@ -965,7 +965,7 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Screenshot capture function with proper sizing and 16:9 aspect ratio for long content
+  // Enhanced screenshot capture function with proper sizing and full content capture
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
@@ -1118,14 +1118,9 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (combinedImageDataUrl.length < 10 * 1024 * 1024) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
-        } else {
-          console.warn(`Combined image too large for ${tabId}, skipping storage`);
-        }
-        
-        console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
+        // Always store the screenshot regardless of size for PDF generation
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
+        console.log(`Multi-section capture complete: ${finalWidth}x${finalHeight} total`);
         
       } else {
         // Single capture for shorter content with optimal sizing
@@ -1163,12 +1158,8 @@ export default function AuraAnalysis() {
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (imageDataUrl.length < 10 * 1024 * 1024) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
-        } else {
-          console.warn(`Single image too large for ${tabId}, skipping storage`);
-        }
+        // Always store the screenshot for PDF generation
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
       }
@@ -1363,7 +1354,7 @@ export default function AuraAnalysis() {
         }
       };
 
-      // Helper function to compress images for PDF to prevent "Invalid string length" errors
+      // Helper function to compress images for PDF while maintaining quality and visibility
       const compressImageForPDF = async (imageDataUrl: string, targetWidth: number, targetHeight: number) => {
         try {
           const canvas = document.createElement('canvas');
@@ -1372,26 +1363,52 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // Set canvas size with higher resolution for better PDF quality
-              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
-              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
+              // Calculate optimal resolution based on original image
+              const originalWidth = img.width;
+              const originalHeight = img.height;
+              const aspectRatio = originalWidth / originalHeight;
               
-              // Use high-quality image rendering
+              // Use higher resolution but maintain aspect ratio to prevent distortion
+              const maxWidth = Math.min(originalWidth, 2400); // Maximum width for quality
+              const maxHeight = Math.min(originalHeight, 3200); // Maximum height for quality
+              
+              let finalWidth, finalHeight;
+              
+              // Preserve aspect ratio while optimizing for PDF
+              if (aspectRatio > 1) {
+                // Landscape orientation
+                finalWidth = Math.min(maxWidth, targetWidth * 4);
+                finalHeight = finalWidth / aspectRatio;
+              } else {
+                // Portrait or square orientation
+                finalHeight = Math.min(maxHeight, targetHeight * 4);
+                finalWidth = finalHeight * aspectRatio;
+              }
+              
+              canvas.width = finalWidth;
+              canvas.height = finalHeight;
+              
+              // Use high-quality image rendering with proper scaling
               ctx!.imageSmoothingEnabled = true;
               ctx!.imageSmoothingQuality = 'high';
               
-              // Draw the image with high quality
-              ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
+              // Clear canvas with white background for better PDF compatibility
+              ctx!.fillStyle = 'white';
+              ctx!.fillRect(0, 0, finalWidth, finalHeight);
               
-              // Use PNG for better quality, JPEG as fallback if too large
-              let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
+              // Draw the image maintaining quality and aspect ratio
+              ctx!.drawImage(img, 0, 0, finalWidth, finalHeight);
               
-              // If PNG is too large, fallback to high quality JPEG
-              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Higher quality JPEG
-              }
+              // Use high-quality JPEG for PDF optimization (better than PNG for large images)
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+              
+              console.log(`Image compressed: ${originalWidth}x${originalHeight} -> ${finalWidth}x${finalHeight}, size: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB`);
               
               resolve(compressedDataUrl);
+            };
+            img.onerror = () => {
+              console.warn('Image compression failed, using original');
+              resolve(imageDataUrl);
             };
             img.src = imageDataUrl;
           });
@@ -1472,24 +1489,37 @@ export default function AuraAnalysis() {
             tempImg.src = auraImageForPDF;
           });
           
-          // Calculate dimensions to match webapp display (larger, more prominent)
+          // Calculate dimensions to maintain proper aspect ratio and visibility
           const imgAspectRatio = tempImg.width / tempImg.height;
-          const maxWidth = pageWidth - 20; // Use almost full page width with small margins
-          const maxHeight = 120; // Reasonable height limit
+          const maxWidth = pageWidth - 30; // Use page width with margins
+          const maxHeight = 150; // Increased height for better visibility
           
           let imgWidth, imgHeight;
-          if (imgAspectRatio > maxWidth / maxHeight) {
-            // Image is wider, fit to page width
-            imgWidth = maxWidth;
+          if (imgAspectRatio > 1) {
+            // Landscape orientation - fit to width
+            imgWidth = Math.min(maxWidth, tempImg.width / 4); // Scale down appropriately
             imgHeight = imgWidth / imgAspectRatio;
           } else {
-            // Image is taller, fit to height
-            imgHeight = maxHeight;
+            // Portrait or square orientation - standard 6:9 ratio handling
+            imgHeight = Math.min(maxHeight, 135); // Ensure good visibility
             imgWidth = imgHeight * imgAspectRatio;
+          }
+          
+          // Ensure minimum readable size
+          const minSize = 80;
+          if (imgWidth < minSize && imgHeight < minSize) {
+            if (imgAspectRatio > 1) {
+              imgWidth = minSize * 1.5;
+              imgHeight = imgWidth / imgAspectRatio;
+            } else {
+              imgHeight = minSize * 1.5;
+              imgWidth = imgHeight * imgAspectRatio;
+            }
           }
           
           const imgX = (pageWidth - imgWidth) / 2; // Center the image
           
+          console.log(`Adding aura image to PDF: ${imgWidth.toFixed(1)}x${imgHeight.toFixed(1)}, aspect ratio: ${imgAspectRatio.toFixed(3)}`);
           pdf.addImage(auraImageForPDF, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
           yPosition += imgHeight + 15;
 
