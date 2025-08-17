@@ -1069,8 +1069,8 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Use screen width as base for consistent readability, ensure minimum width
-      const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      // Fixed capture width for consistent aspect ratio (600px for proper 6:9 ratio)
+      const captureWidth = 600;
       
       // Enhanced multi-section logic for optimal PDF page distribution
       const tabsRequiringMultiSection = ['chakras', 'analysis', 'energy-map', 'guidance', 'energy-reading'];
@@ -1137,20 +1137,20 @@ export default function AuraAnalysis() {
             });
           });
           
-          // Enhanced html2canvas configuration for all tabs
+          // Enhanced html2canvas configuration with fixed dimensions
           const canvasConfig = {
             backgroundColor: '#ffffff',
-            scale: 2.2, // Consistent high quality scale for all tabs
+            scale: 1.5, // Reduced scale to prevent distortion
             logging: false,
             useCORS: true,
             allowTaint: false,
             x: 0,
             y: 0, // Always start from top of element, scroll handled separately
-            width: captureWidth,
+            width: 600, // Fixed width
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0, // Reset scroll position in canvas
-            windowWidth: captureWidth,
+            windowWidth: 600, // Fixed window width
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: true,
@@ -1184,7 +1184,7 @@ export default function AuraAnalysis() {
                   elem.style.overflow = 'visible';
                   elem.style.height = 'auto';
                   elem.style.maxHeight = 'none';
-                  elem.style.width = `${captureWidth}px`;
+                  elem.style.width = `600px`;
                   elem.style.maxWidth = 'none';
                   elem.style.position = 'static';
                   elem.style.transform = 'none';
@@ -1214,14 +1214,16 @@ export default function AuraAnalysis() {
             sectionCanvas = await html2canvas(htmlElement, canvasConfig);
           } catch (canvasError) {
             console.warn(`Canvas error for section ${section + 1}, trying fallback:`, canvasError);
-            // Fallback with simpler config
+            // Fallback with simpler config maintaining aspect ratio
             const fallbackConfig = {
               backgroundColor: '#ffffff',
-              scale: 1.5,
+              scale: 1.0, // Simpler scale for fallback
               useCORS: true,
               allowTaint: false,
               logging: false,
-              imageTimeout: 8000
+              imageTimeout: 8000,
+              width: 600, // Fixed width
+              height: actualSectionHeight
             };
             sectionCanvas = await html2canvas(htmlElement, fallbackConfig);
           }
@@ -1239,7 +1241,7 @@ export default function AuraAnalysis() {
         
         // Create optimized combined image for PDF with proper scaling
         const combinedCanvas = document.createElement('canvas');
-        const pdfOptimalWidth = 1200; // Optimal width for PDF readability
+        const pdfOptimalWidth = 600; // Fixed width for consistent 6:9 aspect ratio
         const scaleRatio = pdfOptimalWidth / captureWidth;
         const scaledSectionHeight = adjustedSectionHeight * scaleRatio;
         
@@ -1284,10 +1286,10 @@ export default function AuraAnalysis() {
         // Single capture for shorter content with optimal sizing
         console.log(`Single capture: ${captureWidth}x${contentHeight}`);
 
-        // Enhanced single capture configuration
+        // Enhanced single capture configuration with fixed aspect ratio
         const singleCaptureConfig = {
           backgroundColor: '#ffffff',
-          scale: tabId === 'analysis' ? 1.8 : 2.5, // Reduced scale for analysis
+          scale: 2.0, // Consistent scale for all tabs
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1572,14 +1574,15 @@ export default function AuraAnalysis() {
               
               let finalWidth, finalHeight;
               
-              // Enhanced aspect ratio preservation with higher resolution
-              if (aspectRatio > 1) {
-                // Landscape orientation
-                finalWidth = Math.min(maxWidth, targetWidth * 5); // Increased multiplier
+              // FIXED: Maintain exact aspect ratio without forced scaling
+              // Always preserve original aspect ratio - no arbitrary multipliers
+              if (originalWidth > originalHeight) {
+                // Landscape: fit to max width, calculate height proportionally
+                finalWidth = Math.min(maxWidth, originalWidth);
                 finalHeight = finalWidth / aspectRatio;
               } else {
-                // Portrait or square orientation
-                finalHeight = Math.min(maxHeight, targetHeight * 5); // Increased multiplier
+                // Portrait/Square: fit to max height, calculate width proportionally
+                finalHeight = Math.min(maxHeight, originalHeight);
                 finalWidth = finalHeight * aspectRatio;
               }
               
