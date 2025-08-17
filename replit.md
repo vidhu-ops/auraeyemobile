@@ -35,7 +35,7 @@ Preferred communication style: Simple, everyday language.
 ### Key Features & Design Decisions
 - **Aura Analysis**: AI-powered image analysis with standardized visualization system. All human aura images are processed to consistent 600px width × 900px height dimensions with distinct zone positioning: left side (receiving energy), right side (giving energy), top area (thinking energy), and outer edges (personality energy). Features ultra-smooth, cohesive smokey aura effects with seamless blending to eliminate scattered colors while preserving face visibility and maintaining uniform appearance across all input images. Fully responsive mobile design with optimized tab layout.
 - **Object Analysis**: Spiritual analysis of objects, distinct from human aura analysis.
-- **Numerology**: Comprehensive calculations and interpretations including life path, destiny, and chakra analysis.
+- **Numerology**: Comprehensive calculations and interpretations including life path, destiny, chakra analysis, and personal year forecasting. Personal year calculation consistently uses individual digit summation: month digits + day digits + current year digits (2025), then reduced to single digit (e.g., 12/19/2020 → 1+2+1+9+2+0+2+5 = 22 → 2+2 = 4).
 - **Horoscope Services**: Daily, monthly, and yearly astrological readings.
 - **Spiritual Journaling**: Mood and energy pattern tracking.
 - **Healer Platform**: Marketplace for connecting clients with healers, including real-time booking, detailed healer dashboards, and integrated analytics. Healers can access client analysis reports (aura, numerology) and generate PDFs.

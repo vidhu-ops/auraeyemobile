@@ -673,7 +673,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     
     const month = parts[1]; // MM (birth month)
     const day = parts[2];   // DD (birth day)
-    const currentYear = new Date().getFullYear().toString(); // Use actual current year
+    const currentYear = "2025"; // Current year 2025
     
     console.log(`calculatePersonalYear debug: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
@@ -689,7 +689,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
       sum += parseInt(digit);
     }
     
-    // Sum all digits from current year
+    // Sum all digits from current year (2025)
     for (const digit of currentYear) {
       sum += parseInt(digit);
     }
