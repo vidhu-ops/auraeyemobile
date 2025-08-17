@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense, useEffect } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
@@ -168,9 +168,63 @@ function NumerologyInputForm() {
 function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [currentYear, setCurrentYear] = useState("2025");
+  const [calculatedPersonalYear, setCalculatedPersonalYear] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Calculate personal year using digit summation method
+  const calculatePersonalYear = (month: string, day: string, year: string): number => {
+    if (!month || !day || !year) return 0;
+    
+    let sum = 0;
+    
+    // Sum all digits from birth month
+    for (const digit of month) {
+      if (!isNaN(parseInt(digit))) {
+        sum += parseInt(digit);
+      }
+    }
+    
+    // Sum all digits from birth day
+    for (const digit of day) {
+      if (!isNaN(parseInt(digit))) {
+        sum += parseInt(digit);
+      }
+    }
+    
+    // Sum all digits from current year
+    for (const digit of year) {
+      if (!isNaN(parseInt(digit))) {
+        sum += parseInt(digit);
+      }
+    }
+    
+    // Reduce to single digit
+    while (sum > 9) {
+      sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+    }
+    
+    return sum;
+  };
+
+  // Update personal year when inputs change
+  const updatePersonalYear = () => {
+    if (birthMonth && birthDay && currentYear) {
+      const personalYear = calculatePersonalYear(birthMonth, birthDay, currentYear);
+      setCalculatedPersonalYear(personalYear);
+    } else {
+      setCalculatedPersonalYear(null);
+    }
+  };
+
+  // Update personal year when any input changes
+  useEffect(() => {
+    updatePersonalYear();
+  }, [birthMonth, birthDay, currentYear]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,6 +253,10 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         // Reset form
         setName("");
         setBirthDate("");
+        setBirthMonth("");
+        setBirthDay("");
+        setCurrentYear("2025");
+        setCalculatedPersonalYear(null);
         
         // Refresh the readings list
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
@@ -247,6 +305,68 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
             required
           />
         </div>
+      </div>
+
+      {/* Manual Personal Year Calculation */}
+      <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+        <h4 className="font-semibold text-emerald-800 mb-3">Personal Year Calculation (Manual Entry)</h4>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-emerald-700 mb-1">
+              Birth Month (digits only)
+            </label>
+            <Input
+              type="text"
+              value={birthMonth}
+              onChange={(e) => setBirthMonth(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g., 12"
+              className="w-full"
+              maxLength={2}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-emerald-700 mb-1">
+              Birth Day (digits only)
+            </label>
+            <Input
+              type="text"
+              value={birthDay}
+              onChange={(e) => setBirthDay(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g., 19"
+              className="w-full"
+              maxLength={2}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-emerald-700 mb-1">
+              Current Year
+            </label>
+            <Input
+              type="text"
+              value={currentYear}
+              onChange={(e) => setCurrentYear(e.target.value.replace(/\D/g, ''))}
+              placeholder="2025"
+              className="w-full"
+              maxLength={4}
+            />
+          </div>
+        </div>
+        
+        {calculatedPersonalYear !== null && (
+          <div className="mt-4 p-3 bg-white rounded-lg border border-emerald-300">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-emerald-600">{calculatedPersonalYear}</div>
+              <p className="text-sm text-emerald-700">Calculated Personal Year Number</p>
+              <p className="text-xs text-emerald-600 mt-1">
+                {birthMonth && birthDay && currentYear && (
+                  `${birthMonth.split('').join(' + ')} + ${birthDay.split('').join(' + ')} + ${currentYear.split('').join(' + ')} = ${calculatedPersonalYear}`
+                )}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
       
       <Button 
