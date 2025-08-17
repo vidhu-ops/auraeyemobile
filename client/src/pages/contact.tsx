@@ -47,12 +47,9 @@ export default function Contact() {
                       <div className="space-y-9">
                         <div className="flex items-start">
                           <MapPin className="mt-1 mr-3 h-5 w-5" />
-                          <p>AuraEye Solutions Pvt. Ltd.  : Office address: 124 City Road, London EC1V 2NX</p>
+                          <p>AuraEye Solutions Ltd.  : Office address: 124 City Road, London EC1V 2NX</p>
                         </div>
-                        <div className="flex items-start">
-                          <Phone className="mt-1 mr-3 h-5 w-5" />
-                          <p>+1 (555) 123-4567</p>
-                        </div>
+                       
                         <div className="flex items-start">
                           <Mail className="mt-1 mr-3 h-5 w-5" />
                           <p>Contact@auraeyesolutions.com </p>

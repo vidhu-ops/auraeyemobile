@@ -865,14 +865,14 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     return reduceNumber(sum);
   };
 
-  // Calculate Personal Year Number from birth month, day, and current year
+  // Calculate Personal Year Number from birth month, day, and current year (2025)
   const calculatePersonalYear = (birthDate: string): number => {
     const parts = birthDate.split('-');
     if (parts.length !== 3) return 5; // Default fallback
     
     const month = parts[1]; // MM (birth month)
     const day = parts[2];   // DD (birth day)
-    const currentYear = new Date().getFullYear().toString(); // Use actual current year
+    const currentYear = "2025"; // Current year 2025
     
     let sum = 0;
     
@@ -886,7 +886,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
       sum += parseInt(digit);
     }
     
-    // Sum all digits from current year
+    // Sum all digits from current year (2025)
     for (const digit of currentYear) {
       sum += parseInt(digit);
     }

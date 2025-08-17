@@ -2012,7 +2012,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           if (parts.length !== 3) return 5;
           const month = parts[1];
           const day = parts[2];
-          const currentYear = new Date().getFullYear().toString(); // Use actual current year
+          const currentYear = "2025";
           let sum = 0;
           for (const digit of month) sum += parseInt(digit);
           for (const digit of day) sum += parseInt(digit);
@@ -3020,6 +3020,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return reduceNumber(sum);
       };
 
+      // Calculate Personal Year Number from birth month, day, and current year (2025)
+      const calculatePersonalYear = (birthDate: string): number => {
+        const parts = birthDate.split('-');
+        if (parts.length !== 3) return 5; // Default fallback
+        
+        const month = parts[1]; // MM (birth month)
+        const day = parts[2];   // DD (birth day)
+        const currentYear = "2025"; // Current year 2025
+        
+        let sum = 0;
+        
+        // Sum all digits from birth month
+        for (const digit of month) {
+          sum += parseInt(digit);
+        }
+        
+        // Sum all digits from birth day
+        for (const digit of day) {
+          sum += parseInt(digit);
+        }
+        
+        // Sum all digits from current year (2025)
+        for (const digit of currentYear) {
+          sum += parseInt(digit);
+        }
+        
+        // Reduce to single digit
+        return reduceNumber(sum);
+      };
+
       // Generate core numbers - no database saving
       const lifePath = calculateLifePath(birthDate);
       const destiny = calculateDestiny(name);
@@ -3027,6 +3057,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const personality = calculatePersonality(birthDate);
       const decisionMakingChakra = calculateDecisionMakingChakra(birthDate);
       const dominantSoulChakra = calculateDominantSoulChakra(birthDate);
+      const personalYear = calculatePersonalYear(birthDate);
 
       // Generate AI interpretations using Gemini to avoid OpenAI quota issues
       const aiResponse = await generateGeminiNumerologyAnalysis({
@@ -3048,10 +3079,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         personality,
         decisionMakingChakra,
         dominantSoulChakra,
+        personalYear,
         lifePathInterpretation: aiResponse?.lifePathInterpretation || `Life Path ${lifePath} represents your life's journey and primary purpose. This number influences your natural abilities and the lessons you're here to learn.`,
         destinyInterpretation: aiResponse?.destinyInterpretation || `Destiny ${destiny} represents your life's mission and what you're meant to accomplish. This number shows your potential achievements and contributions.`,
         soulUrgeInterpretation: aiResponse?.soulUrgeInterpretation || `Soul Urge ${soulUrge} represents your inner desires and what truly motivates you from within. This number reveals your deepest aspirations and spiritual needs.`,
-        personalityInterpretation: aiResponse?.personalityInterpretation || `Personality ${personality} represents how others see you and your outer expression. This number influences your social interactions and public image.`
+        personalityInterpretation: aiResponse?.personalityInterpretation || `Personality ${personality} represents how others see you and your outer expression. This number influences your social interactions and public image.`,
+        personalYearInterpretation: `Personal Year ${personalYear} represents the energy theme for 2025. This number influences the opportunities and lessons that will present themselves throughout this year.`
       };
 
       console.log(`Live numerology result:`, JSON.stringify(result, null, 2));
@@ -3183,12 +3216,43 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return sum;
       };
 
+      // Calculate Personal Year Number from birth month, day, and current year (2025)
+      const calculatePersonalYear = (birthDate: string): number => {
+        const parts = birthDate.split('-');
+        if (parts.length !== 3) return 5; // Default fallback
+        
+        const month = parts[1]; // MM (birth month)
+        const day = parts[2];   // DD (birth day)
+        const currentYear = "2025"; // Current year 2025
+        
+        let sum = 0;
+        
+        // Sum all digits from birth month
+        for (const digit of month) {
+          sum += parseInt(digit);
+        }
+        
+        // Sum all digits from birth day
+        for (const digit of day) {
+          sum += parseInt(digit);
+        }
+        
+        // Sum all digits from current year (2025)
+        for (const digit of currentYear) {
+          sum += parseInt(digit);
+        }
+        
+        // Reduce to single digit
+        return reduceNumber(sum);
+      };
+
       // Calculate all numbers
       const lifePathNumber = calculateLifePath(birthDate);
       const destinyNumber = calculateDestiny(name);
       const soulUrgeNumber = calculateSoulUrge(name);
       const personalityNumber = calculatePersonality(birthDate);
       const soulChakraNumber = calculateDominantSoulChakra(birthDate);
+      const personalYearNumber = calculatePersonalYear(birthDate);
 
       // Map a number to its color name - standardized with remedies data
       const getColorName = (num: number): string => {
@@ -3216,7 +3280,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         soulUrgeNumber,
         personalityNumber,
         soulChakraNumber,
-        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you. Your Soul Chakra Number ${soulChakraNumber} reveals your spiritual energy center.`,
+        personalYearNumber,
+        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you. Your Soul Chakra Number ${soulChakraNumber} reveals your spiritual energy center. Your Personal Year Number ${personalYearNumber} represents the energy theme for 2025.`,
         // Add enhanced properties
         colorAssociations: {
           lifePathColor: getColorName(lifePathNumber),
@@ -3252,6 +3317,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
             destinyNumber,
             soulUrgeNumber,
             personalityNumber,
+            personalYearNumber,
             interpretation: numerologyProfile.interpretation
           };
           

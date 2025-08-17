@@ -232,7 +232,7 @@ export default function NumerologyPage() {
     
     const month = parts[1]; // MM (birth month)
     const day = parts[2];   // DD (birth day)
-    const currentYear = new Date().getFullYear().toString(); // Use actual current year
+    const currentYear = "2025"; // Current year 2025
     
     let sum = 0;
     
@@ -246,7 +246,7 @@ export default function NumerologyPage() {
       sum += parseInt(digit);
     }
     
-    // Sum all digits from current year
+    // Sum all digits from current year (2025)
     for (const digit of currentYear) {
       sum += parseInt(digit);
     }
@@ -1029,7 +1029,7 @@ export default function NumerologyPage() {
                               {personalYear}
                             </div>
                             <h3 className="text-xl font-semibold mb-2">Personal Year: {personalYear}</h3>
-                            <p className="text-gray-600 mb-2">{new Date().getFullYear()} Forecast</p>
+                            <p className="text-gray-600 mb-2">2025 Forecast</p>
                             <div className="text-sm text-gray-500 italic mb-4">
                               Based on your birth date and the current year
                             </div>
@@ -1040,7 +1040,7 @@ export default function NumerologyPage() {
                             <p className="text-sm text-indigo-700 mb-4">{personalYearInfo.description}</p>
                             
                             <div className="bg-white rounded-lg p-4 border border-indigo-100">
-                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for {new Date().getFullYear()}</h5>
+                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for 2025</h5>
                               <ul className="space-y-2">
                                 {personalYearInfo.focus.map((item, index) => (
                                   <li key={index} className="flex items-start text-sm text-indigo-700">
@@ -1061,7 +1061,7 @@ export default function NumerologyPage() {
                                 const birthDate = new Date(user?.birthDate || "1990-01-01");
                                 const day = birthDate.getDate();
                                 const month = birthDate.getMonth() + 1;
-                                const currentYear = new Date().getFullYear();
+                                const currentYear = 2025;
                                 return (
                                   <div className="bg-white p-3 rounded border">
                                     <p>Day: {day} + Month: {month} + Year digits: {currentYear.toString().split('').join(' + ')} = {day + month + 2 + 0 + 2 + 5}</p>
@@ -1074,7 +1074,7 @@ export default function NumerologyPage() {
 
                           {/* Vibration Qualities for Personal Year */}
                           <div>
-                            <h4 className="font-semibold text-purple-800 mb-3">{new Date().getFullYear()} Energy Qualities</h4>
+                            <h4 className="font-semibold text-purple-800 mb-3">2025 Energy Qualities</h4>
                             <div className="flex flex-wrap gap-2">
                               {getVibrationQualities(personalYear).map((quality, index) => (
                                 <Badge key={index} variant="secondary" className="bg-indigo-100 text-indigo-800 border-indigo-200">
@@ -1086,18 +1086,18 @@ export default function NumerologyPage() {
 
                           {/* Personal Year Guidance */}
                           <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-                            <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance for {new Date().getFullYear()}</h4>
+                            <h4 className="font-semibold text-purple-800 mb-3">Spiritual Guidance for 2025</h4>
                             <p className="text-sm text-purple-700">
                               This Personal Year {personalYear} invites you to embrace {personalYearInfo.title.toLowerCase()} energy. 
                               Focus on the themes of {getVibrationQualities(personalYear).slice(0, 3).join(', ').toLowerCase()} 
-                              as you navigate through {new Date().getFullYear()}. This is a time for {personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion and preparation' : 'steady progress'} 
+                              as you navigate through 2025. This is a time for {personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion and preparation' : 'steady progress'} 
                               in your spiritual journey.
                             </p>
                           </div>
 
                           {/* Personal Month Section */}
                           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
-                            <h4 className="font-semibold text-blue-800 mb-4">Personal Month Forecast {new Date().getFullYear()}</h4>
+                            <h4 className="font-semibold text-blue-800 mb-4">Personal Month Forecast 2025</h4>
                             <p className="text-sm text-blue-700 mb-4">
                               Each month carries its own energy based on your Personal Year {personalYear}. The monthly cycle progresses from 1-9 and repeats.
                             </p>
