@@ -997,8 +997,8 @@ export default function AuraAnalysis() {
         rect.height
       );
       
-      // Special handling for chakras tab to ensure full content capture
-      if (tabId === 'chakras') {
+      // Enhanced height detection for all tabs to ensure full content capture
+      if (['chakras', 'analysis', 'guidance', 'energy-reading', 'spectrum', 'energy-map', 'detailed', 'combined'].includes(tabId)) {
         // Find all child elements and calculate total height
         const children = htmlElement.querySelectorAll('*');
         let maxBottom = 0;
@@ -1009,22 +1009,42 @@ export default function AuraAnalysis() {
           maxBottom = Math.max(maxBottom, relativeBottom);
         });
         
-        // Use the maximum detected height
-        contentHeight = Math.max(contentHeight, maxBottom + 100); // Add 100px padding
-        console.log(`Chakras tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}`);
+        // For tabs with lots of content, add extra padding
+        const paddingMultiplier = ['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 100;
+        
+        // Use the maximum detected height with appropriate padding
+        contentHeight = Math.max(contentHeight, maxBottom + paddingMultiplier);
+        console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
+        
+        // Special handling for very tall content - ensure we capture everything
+        if (tabId === 'analysis' || tabId === 'guidance') {
+          // For analysis and guidance tabs, double-check we have enough height
+          const scrollableContainer = htmlElement.querySelector('.space-y-6, .space-y-4, .bg-gradient-to-br');
+          if (scrollableContainer) {
+            const containerRect = scrollableContainer.getBoundingClientRect();
+            const elementRect = htmlElement.getBoundingClientRect();
+            const containerHeight = containerRect.bottom - elementRect.top;
+            contentHeight = Math.max(contentHeight, containerHeight + paddingMultiplier);
+            console.log(`${tabId} container height check: container=${containerHeight}, final=${contentHeight}`);
+          }
+        }
       }
 
       // Use screen width as base for consistent readability, ensure minimum width
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
       
       // Determine if content needs multi-section capture for long content
-      const maxSingleCaptureHeight = viewportHeight * 2; // 2 screen heights max per section
+      // Use a higher threshold for multi-section to avoid unnecessary splitting
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 3, 4000); // 3 screen heights or 4000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
+      
+      // Force multi-section for very tall tabs that are known to have lots of content
+      const forceMultiSection = ['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 2000;
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
-      if (needsMultiSection) {
+      if (needsMultiSection || forceMultiSection) {
         // Capture long content in 16:9 sections for optimal PDF display
         const screenshots: string[] = [];
         const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
@@ -1038,17 +1058,39 @@ export default function AuraAnalysis() {
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
           
-          // Scroll element to show this section
-          if (htmlElement.scrollTo) {
-            htmlElement.scrollTo(0, startY);
-          } else {
-            // Fallback to window scroll
+          // Scroll element to show this section - try multiple approaches
+          try {
+            if (htmlElement.scrollTo) {
+              htmlElement.scrollTo({ top: startY, behavior: 'instant' });
+            }
+            
+            // Also try scrolling any scrollable parent containers
+            const scrollableParents = [];
+            let parent = htmlElement.parentElement;
+            while (parent) {
+              const style = window.getComputedStyle(parent);
+              if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
+                scrollableParents.push(parent);
+              }
+              parent = parent.parentElement;
+            }
+            
+            scrollableParents.forEach(scrollParent => {
+              if (scrollParent.scrollTo) {
+                scrollParent.scrollTo({ top: startY, behavior: 'instant' });
+              }
+            });
+            
+            // Also scroll window as fallback
             const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo(0, elementTop + startY);
+            window.scrollTo({ top: elementTop + startY, behavior: 'instant' });
+            
+          } catch (scrollError) {
+            console.warn('Scroll failed, continuing with capture:', scrollError);
           }
           
-          // Wait for scroll to complete and content to render
-          await new Promise(resolve => setTimeout(resolve, 300));
+          // Wait longer for scroll to complete and content to render
+          await new Promise(resolve => setTimeout(resolve, 500));
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
@@ -1084,11 +1126,33 @@ export default function AuraAnalysis() {
           console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
         }
         
-        // Reset scroll position
-        if (htmlElement.scrollTo) {
-          htmlElement.scrollTo(0, 0);
-        } else {
-          window.scrollTo(0, 0);
+        // Reset scroll position for all scrollable containers
+        try {
+          if (htmlElement.scrollTo) {
+            htmlElement.scrollTo({ top: 0, behavior: 'instant' });
+          }
+          
+          // Reset scroll for scrollable parent containers
+          const scrollableParents = [];
+          let parent = htmlElement.parentElement;
+          while (parent) {
+            const style = window.getComputedStyle(parent);
+            if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
+              scrollableParents.push(parent);
+            }
+            parent = parent.parentElement;
+          }
+          
+          scrollableParents.forEach(scrollParent => {
+            if (scrollParent.scrollTo) {
+              scrollParent.scrollTo({ top: 0, behavior: 'instant' });
+            }
+          });
+          
+          // Reset window scroll
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } catch (resetScrollError) {
+          console.warn('Failed to reset scroll position:', resetScrollError);
         }
         
         // Combine all sections into one long image for PDF
@@ -1131,6 +1195,21 @@ export default function AuraAnalysis() {
         // Single capture for shorter content with optimal sizing
         console.log(`Single capture: ${captureWidth}x${contentHeight}`);
 
+        // Ensure element is fully expanded before capture
+        const originalStyles = {
+          overflow: htmlElement.style.overflow,
+          height: htmlElement.style.height,
+          maxHeight: htmlElement.style.maxHeight
+        };
+        
+        // Temporarily expand the element to show all content
+        htmlElement.style.overflow = 'visible';
+        htmlElement.style.height = 'auto';
+        htmlElement.style.maxHeight = 'none';
+        
+        // Wait for layout to stabilize
+        await new Promise(resolve => setTimeout(resolve, 200));
+
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
           scale: 3.0, // Increased scale for maximum quality
@@ -1145,7 +1224,7 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 2000,
+          imageTimeout: 3000, // Longer timeout for complex content
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
@@ -1155,9 +1234,23 @@ export default function AuraAnalysis() {
               elem.style.maxHeight = 'none';
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
+              
+              // Ensure all child elements are visible
+              const allChildren = elem.querySelectorAll('*');
+              allChildren.forEach(child => {
+                const childElem = child as HTMLElement;
+                childElem.style.overflow = 'visible';
+                childElem.style.maxHeight = 'none';
+                childElem.style.height = 'auto';
+              });
             }
           }
         });
+        
+        // Restore original styles
+        htmlElement.style.overflow = originalStyles.overflow;
+        htmlElement.style.height = originalStyles.height;
+        htmlElement.style.maxHeight = originalStyles.maxHeight;
 
         // Use PNG for better quality
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
