@@ -88,7 +88,7 @@ const getColorSpiritalMeaning = (color: string): string => {
     },
     'Gold': 'Divine wisdom and spiritual illumination. This sacred frequency represents enlightened consciousness and spiritual mastery.',
     'White': 'Pure divine light and spiritual protection. This pristine frequency indicates angelic connection and spiritual purity.',
-    'Silver': 'Lunar energy and psychic sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
+    'Silver': 'Moon energy and intutive sensitivity. This reflective frequency enhances intuitive abilities and emotional receptivity.',
     'black': 'Shadow work and transformative energy. This deep frequency represents deep spiritual integration and shadow healing.',
     'grey': 'Neutral balance and adaptable wisdom. This balanced frequency indicates wise neutrality and peaceful resolution.',
     'brown': 'Earth connection and grounding stability. This practical frequency represents natural wisdom and earth-based spiritual growth.',
@@ -109,7 +109,7 @@ function getColorMeditationFocus(color: string): string {
         'Pink': 'Practice unconditional love and emotional healing meditations',
         'Gold': 'Concentrate on divine wisdom and enlightenment meditations',
         'White': 'Focus on pure light meditation and spiritual protection practices',
-        'Silver': 'Practice lunar energy and psychic sensitivity meditations',
+        'Silver': 'Practice Moon energy rituals and intutive sensitivity meditations',
         'Black': 'Requires intensive shadow work, inner healing, and confronting darkness',
         'gray': 'Meditation to address emotional detachment and spiritual numbness'
     };
@@ -1013,16 +1013,47 @@ export default function AuraAnalysis() {
         contentHeight = Math.max(contentHeight, maxBottom + 200); // Increased padding for complete capture
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}`);
         
-        // For analysis tab, ensure we capture ALL content including scrollable sections
+        // Enhanced analysis tab capture - ensure ALL content is captured
         if (tabId === 'analysis') {
-          // Look for any scrollable containers within the analysis tab
-          const scrollableElements = htmlElement.querySelectorAll('[style*="overflow"], [class*="scroll"]');
-          scrollableElements.forEach(scrollElement => {
-            const scrollHeight = (scrollElement as HTMLElement).scrollHeight;
-            const scrollRect = scrollElement.getBoundingClientRect();
-            const relativeScrollBottom = scrollRect.bottom - htmlElement.getBoundingClientRect().top + scrollHeight;
-            maxBottom = Math.max(maxBottom, relativeScrollBottom);
-          });
+          try {
+            // Look for any scrollable containers within the analysis tab
+            const scrollableElements = htmlElement.querySelectorAll('[style*="overflow"], [class*="scroll"]');
+            scrollableElements.forEach(scrollElement => {
+              try {
+                const scrollHeight = (scrollElement as HTMLElement).scrollHeight;
+                const scrollRect = scrollElement.getBoundingClientRect();
+                const relativeScrollBottom = scrollRect.bottom - htmlElement.getBoundingClientRect().top + scrollHeight;
+                maxBottom = Math.max(maxBottom, relativeScrollBottom);
+              } catch (e) {
+                console.warn('Error measuring scrollable element:', e);
+              }
+            });
+            
+            // Also check for any hidden or dynamically loaded content
+            const hiddenElements = htmlElement.querySelectorAll('[style*="display: none"], [hidden]');
+            hiddenElements.forEach(hiddenEl => {
+              try {
+                // Temporarily show to measure
+                const el = hiddenEl as HTMLElement;
+                const originalDisplay = el.style.display;
+                const originalHidden = el.hidden;
+                el.style.display = 'block';
+                el.hidden = false;
+                
+                const hiddenRect = el.getBoundingClientRect();
+                const relativeHiddenBottom = hiddenRect.bottom - htmlElement.getBoundingClientRect().top;
+                maxBottom = Math.max(maxBottom, relativeHiddenBottom);
+                
+                // Restore original state
+                el.style.display = originalDisplay;
+                el.hidden = originalHidden;
+              } catch (e) {
+                console.warn('Error measuring hidden element:', e);
+              }
+            });
+          } catch (error) {
+            console.warn('Enhanced analysis capture error:', error);
+          }
           contentHeight = Math.max(contentHeight, maxBottom + 300); // Extra padding for analysis
           console.log(`Analysis tab comprehensive height: ${contentHeight}`);
         }
@@ -1089,9 +1120,10 @@ export default function AuraAnalysis() {
           const waitTime = ['guidance', 'energy-reading', 'analysis'].includes(tabId) ? 500 : 300;
           await new Promise(resolve => setTimeout(resolve, waitTime));
           
-          const sectionCanvas = await html2canvas(htmlElement, {
+          // Enhanced html2canvas configuration for analysis tab
+          const canvasConfig = {
             backgroundColor: '#ffffff',
-            scale: 2.5, // Optimized scale for quality vs performance
+            scale: tabId === 'analysis' ? 2.0 : 2.5, // Reduced scale for analysis to prevent memory issues
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1105,8 +1137,21 @@ export default function AuraAnalysis() {
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: true, // Enable for better content rendering
-            imageTimeout: 3000, // Increased timeout for complex content
-            onclone: (clonedDoc) => {
+            imageTimeout: tabId === 'analysis' ? 5000 : 3000, // Increased timeout for analysis
+            ignoreElements: (element: Element) => {
+              try {
+                const htmlEl = element as HTMLElement;
+                return htmlEl.classList?.contains('screenshot-exclude') || 
+                       htmlEl.tagName === 'VIDEO' ||
+                       htmlEl.tagName === 'IFRAME' ||
+                       (htmlEl.tagName === 'CANVAS' && htmlEl !== htmlElement) ||
+                       htmlEl.style?.display === 'none' ||
+                       htmlEl.hasAttribute('hidden');
+              } catch (e) {
+                return true; // Skip problematic elements
+              }
+            },
+            onclone: (clonedDoc: any) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
                 const elem = clonedElement as HTMLElement;
@@ -1127,7 +1172,24 @@ export default function AuraAnalysis() {
                 });
               }
             }
-          });
+          };
+
+          let sectionCanvas;
+          try {
+            sectionCanvas = await html2canvas(htmlElement, canvasConfig);
+          } catch (canvasError) {
+            console.warn(`Canvas error for section ${section + 1}, trying fallback:`, canvasError);
+            // Fallback with simpler config
+            const fallbackConfig = {
+              backgroundColor: '#ffffff',
+              scale: 1.5,
+              useCORS: true,
+              allowTaint: false,
+              logging: false,
+              imageTimeout: 8000
+            };
+            sectionCanvas = await html2canvas(htmlElement, fallbackConfig);
+          }
           
           screenshots.push(sectionCanvas.toDataURL('image/jpeg', 0.98));
           console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
@@ -1175,9 +1237,10 @@ export default function AuraAnalysis() {
         // Single capture for shorter content with optimal sizing
         console.log(`Single capture: ${captureWidth}x${contentHeight}`);
 
-        const canvas = await html2canvas(htmlElement, {
+        // Enhanced single capture configuration
+        const singleCaptureConfig = {
           backgroundColor: '#ffffff',
-          scale: 2.5, // Optimized scale for quality vs performance
+          scale: tabId === 'analysis' ? 1.8 : 2.5, // Reduced scale for analysis
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1189,8 +1252,21 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: true, // Enable for better content rendering
-          imageTimeout: 3000, // Increased timeout for complex content
-          onclone: (clonedDoc) => {
+          imageTimeout: tabId === 'analysis' ? 8000 : 3000, // Increased timeout for analysis
+          ignoreElements: (element: Element) => {
+            try {
+              const htmlEl = element as HTMLElement;
+              return htmlEl.classList?.contains('screenshot-exclude') || 
+                     htmlEl.tagName === 'VIDEO' ||
+                     htmlEl.tagName === 'IFRAME' ||
+                     (htmlEl.tagName === 'CANVAS' && htmlEl !== htmlElement) ||
+                     htmlEl.style?.display === 'none' ||
+                     htmlEl.hasAttribute('hidden');
+            } catch (e) {
+              return true;
+            }
+          },
+          onclone: (clonedDoc: any) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
               const elem = clonedElement as HTMLElement;
@@ -1211,7 +1287,23 @@ export default function AuraAnalysis() {
               });
             }
           }
-        });
+        };
+
+        let canvas;
+        try {
+          canvas = await html2canvas(htmlElement, singleCaptureConfig);
+        } catch (canvasError) {
+          console.warn(`Single capture error, trying fallback:`, canvasError);
+          const fallbackConfig = {
+            backgroundColor: '#ffffff',
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            imageTimeout: 10000
+          };
+          canvas = await html2canvas(htmlElement, fallbackConfig);
+        }
 
         // Use high-quality JPEG with reduced compression for better visibility
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.98);
