@@ -2012,7 +2012,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           if (parts.length !== 3) return 5;
           const month = parts[1];
           const day = parts[2];
-          const currentYear = "2025";
+          const currentYear = new Date().getFullYear().toString(); // Use actual current year
           let sum = 0;
           for (const digit of month) sum += parseInt(digit);
           for (const digit of day) sum += parseInt(digit);
