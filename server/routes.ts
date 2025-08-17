@@ -1763,12 +1763,38 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       } catch (apiError) {
         console.error("Healer numerology API error, using fallback:", apiError);
         
+        // Helper function for fallback personal year calculation
+        const calculatePersonalYearFallback = (birthDate: string): number => {
+          const parts = birthDate.split('-');
+          if (parts.length !== 3) return 5;
+          const month = parts[1];
+          const day = parts[2];
+          const currentYear = "2025";
+          
+          console.log(`Healer fallback calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
+          
+          let sum = 0;
+          for (const digit of month) sum += parseInt(digit);
+          for (const digit of day) sum += parseInt(digit);
+          for (const digit of currentYear) sum += parseInt(digit);
+          
+          console.log(`Healer fallback personal year sum before reduction: ${sum}`);
+          
+          // Reduce to single digit
+          while (sum > 9) {
+            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+          }
+          console.log(`Healer fallback personalYear result: ${sum}`);
+          return sum;
+        };
+        
         // Create a fallback calculation
         numerologyProfile = {
           lifePathNumber: calculateLifePath(birthDate),
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
           personalityNumber: calculatePersonality(birthDate),
+          personalYearNumber: calculatePersonalYearFallback(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
           interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
           colorAssociations: {
@@ -1800,6 +1826,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           destinyNumber: numerologyProfile.destinyNumber,
           soulUrgeNumber: numerologyProfile.soulUrgeNumber,
           personalityNumber: numerologyProfile.personalityNumber,
+          personalYearNumber: numerologyProfile.personalYearNumber,
           interpretation: numerologyProfile.interpretation
         });
         
@@ -1817,6 +1844,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         destiny: numerologyProfile.destinyNumber,
         soulUrge: numerologyProfile.soulUrgeNumber,
         personality: numerologyProfile.personalityNumber,
+        personalYear: numerologyProfile.personalYearNumber,
         // Chakra calculations
         decisionMakingChakra: calculateDecisionMakingChakra(birthDate),
         dominantSoulChakra: calculateDominantSoulChakra(birthDate),
@@ -1825,11 +1853,13 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         destinyInterpretation: getNumberInterpretation(numerologyProfile.destinyNumber, 'destiny'),
         soulUrgeInterpretation: getNumberInterpretation(numerologyProfile.soulUrgeNumber, 'soulUrge'),
         personalityInterpretation: getNumberInterpretation(numerologyProfile.personalityNumber, 'personality'),
+        personalYearInterpretation: getNumberInterpretation(numerologyProfile.personalYearNumber, 'personalYear'),
         // Legacy fields for compatibility
         lifePathNumber: numerologyProfile.lifePathNumber,
         destinyNumber: numerologyProfile.destinyNumber,
         soulUrgeNumber: numerologyProfile.soulUrgeNumber,
         personalityNumber: numerologyProfile.personalityNumber,
+        personalYearNumber: numerologyProfile.personalYearNumber,
         interpretation: numerologyProfile.interpretation || `Your numerology profile reveals unique insights about your spiritual path and personal development.`,
         // Enhanced properties from original profile
         colorAssociations: numerologyProfile.colorAssociations,
