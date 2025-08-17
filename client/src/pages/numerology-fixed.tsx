@@ -117,32 +117,15 @@ export default function NumerologyPage() {
   };
 
   const calculatePersonalYear = (birthDate: string): number => {
-    const parts = birthDate.split('-');
-    if (parts.length !== 3) return 5; // Default fallback
+    const date = new Date(birthDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const currentYear = 2025; // Current year for forecast
     
-    const month = parts[1]; // MM (birth month)
-    const day = parts[2];   // DD (birth day)
-    const currentYear = "2025"; // Current year 2025
-    
-    let sum = 0;
-    
-    // Sum all digits from birth month
-    for (const digit of month) {
-      sum += parseInt(digit);
-    }
-    
-    // Sum all digits from birth day
-    for (const digit of day) {
-      sum += parseInt(digit);
-    }
-    
-    // Sum all digits from current year (2025)
-    for (const digit of currentYear) {
-      sum += parseInt(digit);
-    }
-    
-    // Reduce to single digit
-    return reduceToSingleDigit(sum);
+    // Correct calculation: current year + day + month, then reduce to single digit
+    const totalSum = currentYear + day + month;
+    const personalYear = reduceToSingleDigit(totalSum);
+    return personalYear;
   };
 
   const calculatePersonalMonth = (personalYear: number, month: number): number => {
