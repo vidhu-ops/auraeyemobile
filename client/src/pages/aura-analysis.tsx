@@ -1009,15 +1009,25 @@ export default function AuraAnalysis() {
           maxBottom = Math.max(maxBottom, relativeBottom);
         });
         
-        // For tabs with lots of content, add extra padding
-        const paddingMultiplier = ['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 100;
+        // Extra padding for tabs with complex content - increased for analysis tab
+        const paddingMultiplier = tabId === 'analysis' ? 400 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 100);
         
         // Use the maximum detected height with appropriate padding
         contentHeight = Math.max(contentHeight, maxBottom + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
         
-        // Special handling for very tall content - ensure we capture everything
+        // Special handling for analysis and guidance tabs - ensure we capture everything including personality integration
         if (tabId === 'analysis' || tabId === 'guidance') {
+          // Look for personality integration section specifically
+          const personalitySection = htmlElement.querySelector('[class*="personality"], [class*="integration"], h4:contains("Personality Integration")');
+          if (personalitySection) {
+            const sectionRect = personalitySection.getBoundingClientRect();
+            const elementRect = htmlElement.getBoundingClientRect();
+            const sectionBottom = sectionRect.bottom - elementRect.top;
+            contentHeight = Math.max(contentHeight, sectionBottom + 300);
+            console.log(`${tabId} personality section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
+          }
+          
           // For analysis and guidance tabs, double-check we have enough height
           const scrollableContainer = htmlElement.querySelector('.space-y-6, .space-y-4, .bg-gradient-to-br');
           if (scrollableContainer) {
@@ -1027,6 +1037,21 @@ export default function AuraAnalysis() {
             contentHeight = Math.max(contentHeight, containerHeight + paddingMultiplier);
             console.log(`${tabId} container height check: container=${containerHeight}, final=${contentHeight}`);
           }
+          
+          // Additional check: find the last visible element in the tab
+          const allElements = Array.from(htmlElement.querySelectorAll('*')).filter(el => {
+            const style = window.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden';
+          });
+          
+          if (allElements.length > 0) {
+            const lastElement = allElements[allElements.length - 1];
+            const lastRect = lastElement.getBoundingClientRect();
+            const elementRect = htmlElement.getBoundingClientRect();
+            const lastBottom = lastRect.bottom - elementRect.top;
+            contentHeight = Math.max(contentHeight, lastBottom + 200);
+            console.log(`${tabId} last element bottom: ${lastBottom}, final content height: ${contentHeight}`);
+          }
         }
       }
 
@@ -1035,11 +1060,12 @@ export default function AuraAnalysis() {
       
       // Determine if content needs multi-section capture for long content
       // Use a higher threshold for multi-section to avoid unnecessary splitting
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 3, 4000); // 3 screen heights or 4000px max per section
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Increased to 4 screen heights or 6000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
       // Force multi-section for very tall tabs that are known to have lots of content
-      const forceMultiSection = ['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 2000;
+      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 3000) || 
+                                (['analysis', 'guidance'].includes(tabId) && contentHeight > 4000);
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
@@ -1206,13 +1232,25 @@ export default function AuraAnalysis() {
         htmlElement.style.overflow = 'visible';
         htmlElement.style.height = 'auto';
         htmlElement.style.maxHeight = 'none';
+        htmlElement.style.minHeight = `${contentHeight}px`;
+        
+        // Force all children to be visible too
+        const allChildren = htmlElement.querySelectorAll('*');
+        allChildren.forEach(child => {
+          const childElem = child as HTMLElement;
+          if (childElem.style) {
+            childElem.style.overflow = 'visible';
+            childElem.style.maxHeight = 'none';
+            childElem.style.height = 'auto';
+          }
+        });
         
         // Wait for layout to stabilize
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 3.0, // Increased scale for maximum quality
+          scale: 2.0, // Balanced scale for quality and performance
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1224,7 +1262,7 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 3000, // Longer timeout for complex content
+          imageTimeout: 5000, // Longer timeout for complex content
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
@@ -1251,6 +1289,7 @@ export default function AuraAnalysis() {
         htmlElement.style.overflow = originalStyles.overflow;
         htmlElement.style.height = originalStyles.height;
         htmlElement.style.maxHeight = originalStyles.maxHeight;
+        htmlElement.style.minHeight = '';
 
         // Use PNG for better quality
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);

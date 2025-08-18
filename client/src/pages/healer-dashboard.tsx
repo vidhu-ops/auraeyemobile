@@ -2475,7 +2475,7 @@ export default function HealerDashboard() {
                 <h3 className="font-semibold mb-2">What's My vibe</h3>
                 <p className="text-sm text-gray-600 mb-4">Analyze the spiritual energy of a person in short</p>
                 <p className="text-sm text-red-600 mb-4">1 credit</p>
-                <Link to="/#vibe-analysis">
+                <Link to="/#vibe-check-section">
                   <Button className="w-full">Analyze</Button>
                 </Link>
               </CardContent>
