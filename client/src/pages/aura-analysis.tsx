@@ -1081,29 +1081,39 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Use screen width as base for consistent readability, ensure minimum width
-      const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      // ENHANCED: Use much wider capture for better quality and proportion to height
+      const captureWidth = Math.max(viewportWidth * 1.8, contentWidth * 1.5, 2400); // Significantly increased width
       
       // Determine if content needs multi-section capture for long content
       // Use a reasonable threshold - prefer single capture for better PDF formatting
       const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section only for extremely tall content
-      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 6000) || 
+      // ENHANCED: Force multi-section for detailed chakra tab into 4 parts and other tall content
+      const forceMultiSection = (tabId === 'detailed' && contentHeight > 2000) || // Force 4 parts for detailed
+                                (['chakras', 'combined'].includes(tabId) && contentHeight > 6000) || 
                                 (['analysis'].includes(tabId) && contentHeight > 8000);
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // Capture long content in 16:9 sections for optimal PDF display
+        // ENHANCED: Capture with special handling for detailed chakra tab (4 parts)
         const screenshots: string[] = [];
-        const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
-        const sectionHeight = Math.floor(captureWidth / targetAspectRatio);
-        const totalSections = Math.ceil(contentHeight / sectionHeight);
+        let totalSections, sectionHeight;
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (16:9 ratio)`);
+        if (tabId === 'detailed') {
+          // Force exactly 4 sections for detailed chakra tab
+          totalSections = 4;
+          sectionHeight = Math.ceil(contentHeight / 4);
+        } else {
+          // For other tabs, use 16:9 aspect ratio
+          const targetAspectRatio = 16 / 9;
+          sectionHeight = Math.floor(captureWidth / targetAspectRatio);
+          totalSections = Math.ceil(contentHeight / sectionHeight);
+        }
+        
+        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed chakra)' : ' (16:9 ratio)'}`);
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1146,7 +1156,7 @@ export default function AuraAnalysis() {
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 4.0, // ENHANCED: Ultra-high scale for crystal clear sections
+            scale: 6.0, // ENHANCED: Maximum scale for ultra-crystal clear sections
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1160,7 +1170,7 @@ export default function AuraAnalysis() {
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 20000, // Extended timeout for high-quality processing
+            imageTimeout: 30000, // Extended timeout for maximum-quality processing
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1171,13 +1181,16 @@ export default function AuraAnalysis() {
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
                 
-                // ENHANCED: Ensure all chakra elements and colors are fully visible
-                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"]');
+                // ENHANCED: Ensure all chakra elements, colors, and scores are fully visible with enhanced styling
+                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], .text-white, .font-bold, .text-center');
                 chakraElements.forEach(chakraElem => {
                   const htmlChakraElem = chakraElem as HTMLElement;
                   htmlChakraElem.style.opacity = '1';
                   htmlChakraElem.style.visibility = 'visible';
                   htmlChakraElem.style.display = 'block';
+                  htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
+                  htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
+                  htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
                 });
               }
             }
@@ -1220,9 +1233,9 @@ export default function AuraAnalysis() {
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // ENHANCED: Calculate combined dimensions with ultra-high resolution for clarity
-        const finalWidth = captureWidth * 4.0; // Increased resolution for crystal clarity
-        const finalHeight = screenshots.length * (sectionHeight * 4.0); // Ultra-high resolution
+        // ENHANCED: Calculate combined dimensions with maximum resolution for clarity
+        const finalWidth = captureWidth * 6.0; // Maximum resolution for crystal clarity
+        const finalHeight = screenshots.length * (sectionHeight * 6.0); // Maximum resolution
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1236,7 +1249,7 @@ export default function AuraAnalysis() {
               // ENHANCED: Use high-quality rendering for ultra-sharp section captures
               ctx.imageSmoothingEnabled = true;
               ctx.imageSmoothingQuality = 'high';
-              ctx.drawImage(img, 0, i * (sectionHeight * 4.0));
+              ctx.drawImage(img, 0, i * (sectionHeight * 6.0));
               resolve(true);
             };
           });
@@ -1296,7 +1309,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 2.0, // ENHANCED: Higher scale for better quality screenshots
+          scale: 6.0, // ENHANCED: Maximum scale matching multi-section capture
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1308,7 +1321,7 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 15000, // Extended timeout for ultra-high quality processing
+          imageTimeout: 30000, // Extended timeout matching multi-section processing
           ignoreElements: (element) => {
             // Ignore scroll bars and other non-essential elements
             const htmlElement = element as HTMLElement;
@@ -1325,6 +1338,18 @@ export default function AuraAnalysis() {
               elem.style.maxHeight = 'none';
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
+              
+              // ENHANCED: Ensure all chakra elements, colors, and scores are fully visible with enhanced styling
+              const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], .text-white, .font-bold, .text-center');
+              chakraElements.forEach(chakraElem => {
+                const htmlChakraElem = chakraElem as HTMLElement;
+                htmlChakraElem.style.opacity = '1';
+                htmlChakraElem.style.visibility = 'visible';
+                htmlChakraElem.style.display = 'block';
+                htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
+                htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
+                htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
+              });
               
               // Ensure all child elements are visible
               const allChildren = elem.querySelectorAll('*');
@@ -1351,8 +1376,8 @@ export default function AuraAnalysis() {
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality screenshots (increased limit to 15MB for better quality)
-        if (imageDataUrl.length < 15 * 1024 * 1024) {
+        // ENHANCED: Store high-quality screenshots (increased limit to 25MB for maximum quality)
+        if (imageDataUrl.length < 25 * 1024 * 1024) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         } else {
           console.warn(`Single image too large for ${tabId}, skipping storage`);
