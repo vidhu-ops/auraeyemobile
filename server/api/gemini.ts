@@ -25,9 +25,9 @@ export async function generateAuraVisualization(
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
     console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
     
-    // CRITICAL FIX: Standardized dimensions as specified: 600px width × 900px height
-    const STANDARD_WIDTH = 600;
-    const STANDARD_HEIGHT = 900;
+    // CRITICAL FIX: Standardized dimensions optimized for mobile: 400px width × 600px height
+    const STANDARD_WIDTH = 400;
+    const STANDARD_HEIGHT = 600;
     
     // Create canvas with standardized dimensions
     const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
@@ -133,29 +133,31 @@ function addStandardizedAuraEffects(
   // CRITICAL FIX: Enhanced blend mode for ultra-smooth, cohesive aura effects
   ctx.globalCompositeOperation = 'multiply';
   
-  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Smooth continuous gradient)
-  console.log('Drawing receiving zone (left) with smooth gradient...');
+  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Ultra-dense gradient for compact canvas)
+  console.log('Drawing receiving zone (left) with ultra-dense gradient...');
   
-  const receivingGradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.7, 0);
-  receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.3)`);
-  receivingGradient.addColorStop(0.3, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.2)`);
-  receivingGradient.addColorStop(0.6, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
+  const receivingGradient = ctx.createLinearGradient(0, 0, canvasWidth * 0.8, 0);
+  receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.5)`);
+  receivingGradient.addColorStop(0.2, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.4)`);
+  receivingGradient.addColorStop(0.5, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.25)`);
+  receivingGradient.addColorStop(0.8, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0.1)`);
   receivingGradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
   
   ctx.fillStyle = receivingGradient;
-  ctx.fillRect(0, 0, canvasWidth * 0.7, canvasHeight);
+  ctx.fillRect(0, 0, canvasWidth * 0.8, canvasHeight);
   
-  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Smooth continuous gradient)
-  console.log('Drawing giving zone (right) with smooth gradient...');
+  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Ultra-dense gradient for compact canvas)
+  console.log('Drawing giving zone (right) with ultra-dense gradient...');
   
-  const givingGradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.3, 0);
-  givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.3)`);
-  givingGradient.addColorStop(0.3, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.2)`);
-  givingGradient.addColorStop(0.6, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
+  const givingGradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth * 0.2, 0);
+  givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.5)`);
+  givingGradient.addColorStop(0.2, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.4)`);
+  givingGradient.addColorStop(0.5, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.25)`);
+  givingGradient.addColorStop(0.8, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0.1)`);
   givingGradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
   
   ctx.fillStyle = givingGradient;
-  ctx.fillRect(canvasWidth * 0.3, 0, canvasWidth * 0.7, canvasHeight);
+  ctx.fillRect(canvasWidth * 0.2, 0, canvasWidth * 0.8, canvasHeight);
   
   // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
   console.log('Drawing thinking zone (top) with increased density...');
@@ -256,41 +258,42 @@ function addEnergyWisps(
   
   ctx.globalCompositeOperation = 'multiply';
   
-  // Create continuous flowing energy patterns instead of individual dots
-  const numFlows = 4; // Number of energy flow patterns
+  // Create ultra-dense continuous flowing energy patterns for compact canvas
+  const numFlows = 8; // More energy flow patterns for denser effect
   
   for (let flow = 0; flow < numFlows; flow++) {
     const flowAngle = (flow / numFlows) * Math.PI * 2;
     const color = flow % 2 === 0 ? primaryRGB : secondaryRGB;
     
-    // Create curved energy flow path
-    const flowLength = Math.min(width, height) * 0.4;
-    const flowWidth = baseRadius * 2;
+    // Create longer and wider curved energy flow paths for density
+    const flowLength = Math.min(width, height) * 0.6;
+    const flowWidth = baseRadius * 3; // Wider flows for denser effect
     
     ctx.beginPath();
     
-    // Start from center and create flowing pattern
-    const startX = centerX + Math.cos(flowAngle) * (flowLength * 0.2);
-    const startY = centerY + Math.sin(flowAngle) * (flowLength * 0.2);
+    // Start closer to center for more coverage
+    const startX = centerX + Math.cos(flowAngle) * (flowLength * 0.15);
+    const startY = centerY + Math.sin(flowAngle) * (flowLength * 0.15);
     
     const endX = centerX + Math.cos(flowAngle) * flowLength;
     const endY = centerY + Math.sin(flowAngle) * flowLength;
     
-    // Create gradient along the flow path
+    // Create denser gradient along the flow path
     const flowGradient = ctx.createLinearGradient(startX, startY, endX, endY);
-    flowGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
-    flowGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.7})`);
+    flowGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 1.5})`);
+    flowGradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity})`);
+    flowGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${baseOpacity * 0.6})`);
     flowGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     ctx.fillStyle = flowGradient;
     
-    // Draw flowing energy stream with curves
-    const controlX1 = startX + Math.cos(flowAngle + Math.PI/4) * (flowLength * 0.3);
-    const controlY1 = startY + Math.sin(flowAngle + Math.PI/4) * (flowLength * 0.3);
-    const controlX2 = startX + Math.cos(flowAngle - Math.PI/4) * (flowLength * 0.6);
-    const controlY2 = startY + Math.sin(flowAngle - Math.PI/4) * (flowLength * 0.6);
+    // Draw wider flowing energy stream with curves
+    const controlX1 = startX + Math.cos(flowAngle + Math.PI/4) * (flowLength * 0.4);
+    const controlY1 = startY + Math.sin(flowAngle + Math.PI/4) * (flowLength * 0.4);
+    const controlX2 = startX + Math.cos(flowAngle - Math.PI/4) * (flowLength * 0.7);
+    const controlY2 = startY + Math.sin(flowAngle - Math.PI/4) * (flowLength * 0.7);
     
-    // Draw curved path
+    // Draw thicker curved path
     ctx.moveTo(startX, startY);
     ctx.bezierCurveTo(controlX1, controlY1, controlX2, controlY2, endX, endY);
     ctx.lineWidth = flowWidth;
@@ -298,16 +301,17 @@ function addEnergyWisps(
     ctx.stroke();
   }
   
-  // Add soft ambient glow around the person
-  const glowRadius = Math.min(width, height) * 0.25;
+  // Add ultra-dense ambient glow around the person for compact canvas
+  const glowRadius = Math.min(width, height) * 0.35; // Larger glow for denser effect
   const ambientGradient = ctx.createRadialGradient(
-    centerX, centerY, 0,
+    centerX, centerY, glowRadius * 0.1,
     centerX, centerY, glowRadius
   );
   
-  ambientGradient.addColorStop(0, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, ${baseOpacity * 0.3})`);
-  ambientGradient.addColorStop(0.5, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, ${baseOpacity * 0.2})`);
-  ambientGradient.addColorStop(1, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, 0)`);
+  ambientGradient.addColorStop(0, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, ${baseOpacity * 0.6})`);
+  ambientGradient.addColorStop(0.3, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, ${baseOpacity * 0.4})`);
+  ambientGradient.addColorStop(0.6, `rgba(${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}, ${baseOpacity * 0.2})`);
+  ambientGradient.addColorStop(1, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0)`);
   
   ctx.fillStyle = ambientGradient;
   ctx.beginPath();
@@ -361,24 +365,25 @@ function addDenseSmokeyClouds(
 ) {
   ctx.globalCompositeOperation = 'multiply';
   
-  // NEW APPROACH: Create continuous flowing smoke patterns instead of individual dots
-  const maxRadius = Math.max(personWidth, personHeight) * 0.7;
-  const numLayers = 6; // Multiple smoke layers for density
+  // ENHANCED DENSE SMOKE: Create ultra-dense continuous flowing smoke patterns
+  const maxRadius = Math.max(personWidth, personHeight) * 0.9;
+  const numLayers = 10; // Increased layers for ultra-dense effect on smaller canvas
   
   for (let layer = 0; layer < numLayers; layer++) {
     const layerRadius = (maxRadius / numLayers) * (layer + 1);
-    const opacity = 0.4 - (layer * 0.05); // Gradually reduce opacity for outer layers
+    const opacity = 0.6 - (layer * 0.04); // Higher base opacity for denser effect
     const color = layer % 2 === 0 ? primaryRGB : secondaryRGB;
     
-    // Create continuous radial smoke gradient (not individual dots)
+    // Create ultra-dense continuous radial smoke gradient
     const smokeGradient = ctx.createRadialGradient(
-      centerX, centerY, layerRadius * 0.3, 
+      centerX, centerY, layerRadius * 0.1, 
       centerX, centerY, layerRadius
     );
     
     smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-    smokeGradient.addColorStop(0.4, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
-    smokeGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.6})`);
+    smokeGradient.addColorStop(0.2, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
+    smokeGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.8})`);
+    smokeGradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.4})`);
     smokeGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     ctx.fillStyle = smokeGradient;
@@ -387,58 +392,66 @@ function addDenseSmokeyClouds(
     ctx.fill();
   }
   
-  // Add flowing energy streams around the person
-  const streamCount = 8;
+  // Add ultra-dense flowing energy streams around the person
+  const streamCount = 12; // More streams for denser effect
   for (let stream = 0; stream < streamCount; stream++) {
     const angle = (stream / streamCount) * Math.PI * 2;
-    const streamLength = personHeight * 0.8;
-    const streamWidth = personWidth * 0.15;
+    const streamLength = personHeight * 1.1; // Longer streams for more coverage
+    const streamWidth = personWidth * 0.2; // Wider streams for denser effect
     
-    const startX = centerX + Math.cos(angle) * (personWidth * 0.3);
-    const startY = centerY + Math.sin(angle) * (personHeight * 0.3);
+    const startX = centerX + Math.cos(angle) * (personWidth * 0.25);
+    const startY = centerY + Math.sin(angle) * (personHeight * 0.25);
     const endX = centerX + Math.cos(angle) * streamLength;
     const endY = centerY + Math.sin(angle) * streamLength;
     
     const color = stream % 2 === 0 ? primaryRGB : secondaryRGB;
     
-    // Create linear gradient for flowing effect
+    // Create denser linear gradient for ultra-dense flowing effect
     const streamGradient = ctx.createLinearGradient(startX, startY, endX, endY);
-    streamGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
-    streamGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, 0.15)`);
+    streamGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`); // Higher opacity
+    streamGradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, 0.35)`);
+    streamGradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`);
     streamGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     ctx.fillStyle = streamGradient;
     
-    // Draw flowing stream using path
+    // Draw denser flowing stream using path
     ctx.beginPath();
     ctx.moveTo(startX - streamWidth/2, startY);
-    ctx.lineTo(endX - streamWidth/4, endY);
-    ctx.lineTo(endX + streamWidth/4, endY);
+    ctx.lineTo(endX - streamWidth/3, endY);
+    ctx.lineTo(endX + streamWidth/3, endY);
     ctx.lineTo(startX + streamWidth/2, startY);
     ctx.closePath();
     ctx.fill();
   }
   
-  // Add dense inner aura with soft edges (not individual circles)
-  const innerRadius = Math.min(personWidth, personHeight) * 0.4;
+  // Add ultra-dense inner aura with multiple overlapping gradients
+  const innerRadius = Math.min(personWidth, personHeight) * 0.5;
   const innerColor1 = primaryRGB;
   const innerColor2 = secondaryRGB;
   
-  // Create soft inner glow
-  const innerGradient = ctx.createRadialGradient(
-    centerX, centerY, 0,
-    centerX, centerY, innerRadius
-  );
-  
-  innerGradient.addColorStop(0, `rgba(${innerColor1.r}, ${innerColor1.g}, ${innerColor1.b}, 0.2)`);
-  innerGradient.addColorStop(0.3, `rgba(${innerColor2.r}, ${innerColor2.g}, ${innerColor2.b}, 0.15)`);
-  innerGradient.addColorStop(0.6, `rgba(${innerColor1.r}, ${innerColor1.g}, ${innerColor1.b}, 0.1)`);
-  innerGradient.addColorStop(1, `rgba(${innerColor2.r}, ${innerColor2.g}, ${innerColor2.b}, 0)`);
-  
-  ctx.fillStyle = innerGradient;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
-  ctx.fill();
+  // Create multiple overlapping inner glows for ultra-dense effect
+  for (let innerLayer = 0; innerLayer < 3; innerLayer++) {
+    const layerRadius = innerRadius * (0.6 + innerLayer * 0.2);
+    const layerOpacity = 0.35 - (innerLayer * 0.08);
+    const color = innerLayer % 2 === 0 ? innerColor1 : innerColor2;
+    
+    const innerGradient = ctx.createRadialGradient(
+      centerX, centerY, layerRadius * 0.1,
+      centerX, centerY, layerRadius
+    );
+    
+    innerGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity})`);
+    innerGradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.8})`);
+    innerGradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.5})`);
+    innerGradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, ${layerOpacity * 0.2})`);
+    innerGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = innerGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, layerRadius, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
