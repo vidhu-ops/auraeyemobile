@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Check, Users, Heart, Sparkles, Brain, Palette } from "lucide-react";
 import nishantImage from "@assets/WhatsApp Image 2025-08-11 at 3.52.01 AM_1755270078104.jpeg";
+import aboutHeroImage from "@assets/WhatsApp Image 2025-08-18 at 3.35.45 AM_1755540582047.jpeg";
 
 export default function About() {
   return (
@@ -15,7 +16,7 @@ export default function About() {
       
       <main className="flex-grow">
         {/* Hero section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16 md:py-24">
+        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16 md:py-2">
           <AuraGlow 
             colors={[
               { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
@@ -48,21 +49,21 @@ export default function About() {
                   Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
                 </p>
                 <p className="text-gray-600">
-                  Our name, AuraEye, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Eye" (To see), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
+                  Our name, AuraEye™, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Eye" (To see), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
               </div>
               
               <div className="relative">
                 <img 
-                  src="https://images.pexels.com/photos/268941/pexels-photo-268941.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                  alt="Meditation and spiritual growth" 
-                  className="rounded-xl shadow-xl"
+                  src={aboutHeroImage} 
+                  alt="Spiritual energy and healing" 
+                  className="rounded-xl shadow-xl w-full h-auto object-cover"
                 />
                 <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg max-w-xs">
                   <p className="text-gray-600 italic">
                     "Our aura is not just limited to positive or negative vibes, infact it is the blueprint of our soul" 
                   </p>
-                  <p className="text-right text-gray-500 mt-2">- AuraEye (TM) founder.</p>
+                  <p className="text-right text-gray-500 mt-2">- AuraEye™ founder.</p>
                 </div>
               </div>
             </div>
@@ -150,7 +151,7 @@ export default function About() {
                       <ul className="space-y-2">
                         <li className="flex items-start">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                          <span>Certified AuraEye Readers, trained to pin point exact blocks in your aura & chakras
+                          <span>Certified AuraEye™ Readers, trained to pin point exact blocks in your aura & chakras
                             
                             
                             </span>
@@ -227,7 +228,7 @@ export default function About() {
                     <div>
                       <h3 className="font-heading font-semibold text-2xl mb-4">Our Research Foundation</h3>
                       <p className="text-gray-600 mb-4">
-                        The AuraEye approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
+                        The AuraEye™ approach is grounded in both ancient wisdom and contemporary research. We actively collaborate with researchers in fields such as biofield science, consciousness studies, and subtle energy medicine to ensure our platform reflects the latest scientific understanding.
                       </p>
                       <p className="text-gray-600 mb-6">
                         Our team includes not only spiritual practitioners but also data scientists, psychologists, and researchers who work together to create a holistic approach to spiritual wellness that honors tradition while embracing innovation.
@@ -275,7 +276,7 @@ export default function About() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-5xl mx-auto">
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
