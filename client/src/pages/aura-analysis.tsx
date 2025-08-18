@@ -6298,6 +6298,26 @@ export default function AuraAnalysis() {
 
 
                             </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="spiritual" data-tab="spiritual">
+                            {/* Screenshot Button */}
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('spiritual')}
+                                disabled={isCapturingScreenshot === 'spiritual'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'spiritual' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'spiritual' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
                                 <h3 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
@@ -6487,7 +6507,7 @@ export default function AuraAnalysis() {
                               </div>
                             </TabsContent>
 
-                          
+                          <TabsContent value="spectrum" data-tab="spectrum">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
                               <Button
@@ -6826,6 +6846,7 @@ export default function AuraAnalysis() {
 
 
                             </div>
+                          </TabsContent>
                           </TabsContent>
                           
                           <TabsContent value="energy-map" data-tab="energy-map">
@@ -10224,6 +10245,4 @@ export default function AuraAnalysis() {
   );
 }
 
-function createSeamlessBlendingOverlay(ctx: CanvasRenderingContext2D, width: number, height: number, centerX: number, centerY: number, personWidth: number, personHeight: number, colors: any) {
-    throw new Error("Function not implemented.");
-}
+
