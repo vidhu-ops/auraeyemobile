@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
-import logoPath from "@/assets/eye-logo.png";
+import logoPath from "@/assets/new-aura-logo.jpg";
 
 export default function Footer() {
   return (
@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
+              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 object-contain" />
               <span className="font-heading font-bold text-2xl text-black">AuraEye™</span>
             </div>
             <p className="text-black/70 mb-4">Empowering spiritual growth through modern metaphysical tools and enhanced aura analysis.</p>
