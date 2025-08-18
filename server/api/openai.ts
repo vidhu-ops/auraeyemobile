@@ -865,34 +865,53 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     return reduceNumber(sum);
   };
 
-  // Calculate Personal Year Number from birth month, day, and current year (2025)
+  // Calculate Personal Year Number from birth month, day, and current year (2025) - CORRECTED
   const calculatePersonalYear = (birthDate: string): number => {
     const parts = birthDate.split('-');
     if (parts.length !== 3) return 5; // Default fallback
     
-    const month = parts[1]; // MM (birth month)
-    const day = parts[2];   // DD (birth day)
+    const year = parts[0];   // YYYY (birth year - not used in personal year)
+    const month = parts[1];  // MM (birth month)
+    const day = parts[2];    // DD (birth day) 
     const currentYear = "2025"; // Current year 2025
+    
+    console.log(`OpenAI CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
     let sum = 0;
     
-    // Sum all digits from birth month
+    // CRITICAL FIX: Sum all digits from birth month properly
     for (const digit of month) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`OpenAI Adding month digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
-    // Sum all digits from birth day
+    // CRITICAL FIX: Sum all digits from birth day properly
     for (const digit of day) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`OpenAI Adding day digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
     // Sum all digits from current year (2025)
     for (const digit of currentYear) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`OpenAI Adding current year digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
-    // Reduce to single digit
-    return reduceNumber(sum);
+    console.log(`OpenAI CORRECTED personal year sum before reduction: ${sum}`);
+    
+    // Reduce to single digit (except for master numbers 11, 22, 33)
+    const result = reduceNumber(sum);
+    console.log(`OpenAI CORRECTED personalYear result: ${result}`);
+    return result;
   };
 
   // Calculate all numbers
