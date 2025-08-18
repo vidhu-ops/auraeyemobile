@@ -47,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - **User Verification**: WhatsApp OTP for mobile verification (via Twilio), and email validation (via AbstractAPI) during registration.
 - **Branding**: Dynamic branding updates, currently using "AuraEye" with custom eye logo design provided by user (eye-logo.png). Logo features modern geometric eye design with concentric patterns.
 - **Spiritual Guidance Video System**: Two separate video modals - Premium content preview (WhatsApp Video 2025-08-14 at 4.09.26 PM) accessed via "Watch Now" button, and Spiritual guidance video (WhatsApp Video 2025-08-11 at 3.45.29 AM) with post-video navigation asking "Would you like to scan your aura again?" - Yes redirects to /vibe, No redirects to home page.
+- **Sample Aura Readings Display**: Home page features three sample aura readings using specific uploaded images for blue (WhatsApp Image 2025-08-18 at 3.56.39 AM), green (WhatsApp Image 2025-08-18 at 3.52.42 AM), and purple (WhatsApp Image 2025-08-18 at 4.01.06 AM) dominant aura demonstrations with matching gradient overlays and descriptive text.
 
 ## External Dependencies
 

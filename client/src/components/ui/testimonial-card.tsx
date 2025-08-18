@@ -51,7 +51,7 @@ export default function TestimonialCard({ rating, testimonial, name, title, init
           <span className="font-medium text-sm">{initials}</span>
         </div>
         <div>
-          <p className="font-medium">{name}</p>
+          <p className="font-medium text-black">{name}</p>
           <p className="text-black/70 text-sm">{title}</p>
         </div>
       </div>
