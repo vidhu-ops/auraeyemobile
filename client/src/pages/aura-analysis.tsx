@@ -999,6 +999,40 @@ export default function AuraAnalysis() {
       
       // Enhanced height detection for all tabs to ensure full content capture
       if (['chakras', 'analysis', 'guidance', 'energy-reading', 'spectrum', 'energy-map', 'detailed', 'combined'].includes(tabId)) {
+        // Scroll to bottom first to ensure all content is rendered and measurable
+        const originalScrollTop = htmlElement.scrollTop;
+        htmlElement.scrollTop = htmlElement.scrollHeight;
+        await new Promise(resolve => setTimeout(resolve, 100)); // Let content render
+        
+        // Now scroll back to top for measurement
+        htmlElement.scrollTop = 0;
+        await new Promise(resolve => setTimeout(resolve, 100)); // Let layout stabilize
+        
+        // Temporarily expand element to full content size for accurate measurement
+        const tempStyles = {
+          overflow: htmlElement.style.overflow,
+          height: htmlElement.style.height,
+          maxHeight: htmlElement.style.maxHeight,
+          minHeight: htmlElement.style.minHeight
+        };
+        
+        htmlElement.style.overflow = 'visible';
+        htmlElement.style.height = 'auto';
+        htmlElement.style.maxHeight = 'none';
+        htmlElement.style.minHeight = 'auto';
+        
+        // Wait for layout recalculation
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Re-measure after expansion
+        const expandedRect = htmlElement.getBoundingClientRect();
+        let realContentHeight = Math.max(
+          htmlElement.scrollHeight,
+          htmlElement.offsetHeight,
+          htmlElement.clientHeight,
+          expandedRect.height
+        );
+        
         // Find all child elements and calculate total height
         const children = htmlElement.querySelectorAll('*');
         let maxBottom = 0;
@@ -1009,49 +1043,41 @@ export default function AuraAnalysis() {
           maxBottom = Math.max(maxBottom, relativeBottom);
         });
         
-        // Extra padding for tabs with complex content - increased for analysis tab
-        const paddingMultiplier = tabId === 'analysis' ? 400 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 100);
+        // Use the larger of the two measurements
+        realContentHeight = Math.max(realContentHeight, maxBottom);
         
-        // Use the maximum detected height with appropriate padding
-        contentHeight = Math.max(contentHeight, maxBottom + paddingMultiplier);
-        console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
+        // Restore original styles
+        htmlElement.style.overflow = tempStyles.overflow;
+        htmlElement.style.height = tempStyles.height;
+        htmlElement.style.maxHeight = tempStyles.maxHeight;
+        htmlElement.style.minHeight = tempStyles.minHeight;
         
-        // Special handling for analysis and guidance tabs - ensure we capture everything including personality integration
-        if (tabId === 'analysis' || tabId === 'guidance') {
-          // Look for personality integration section specifically
-          const personalitySection = htmlElement.querySelector('[class*="personality"], [class*="integration"], h4:contains("Personality Integration")');
-          if (personalitySection) {
-            const sectionRect = personalitySection.getBoundingClientRect();
+        // Extra padding for tabs with complex content
+        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 150));
+        
+        contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
+        console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
+        
+        // Special handling for specific tabs to ensure complete capture
+        if (['analysis', 'guidance', 'spectrum'].includes(tabId)) {
+          // Look for the last meaningful content section
+          const lastSections = htmlElement.querySelectorAll('.space-y-4 > div:last-child, .space-y-6 > div:last-child, .grid:last-child, .bg-gradient-to-br:last-child');
+          if (lastSections.length > 0) {
+            const lastSection = lastSections[lastSections.length - 1];
+            const sectionRect = lastSection.getBoundingClientRect();
             const elementRect = htmlElement.getBoundingClientRect();
             const sectionBottom = sectionRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, sectionBottom + 300);
-            console.log(`${tabId} personality section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
+            contentHeight = Math.max(contentHeight, sectionBottom + 200);
+            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
           }
           
-          // For analysis and guidance tabs, double-check we have enough height
-          const scrollableContainer = htmlElement.querySelector('.space-y-6, .space-y-4, .bg-gradient-to-br');
-          if (scrollableContainer) {
-            const containerRect = scrollableContainer.getBoundingClientRect();
-            const elementRect = htmlElement.getBoundingClientRect();
-            const containerHeight = containerRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, containerHeight + paddingMultiplier);
-            console.log(`${tabId} container height check: container=${containerHeight}, final=${contentHeight}`);
-          }
-          
-          // Additional check: find the last visible element in the tab
-          const allElements = Array.from(htmlElement.querySelectorAll('*')).filter(el => {
-            const style = window.getComputedStyle(el);
-            return style.display !== 'none' && style.visibility !== 'hidden';
-          });
-          
-          if (allElements.length > 0) {
-            const lastElement = allElements[allElements.length - 1];
-            const lastRect = lastElement.getBoundingClientRect();
-            const elementRect = htmlElement.getBoundingClientRect();
-            const lastBottom = lastRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, lastBottom + 200);
-            console.log(`${tabId} last element bottom: ${lastBottom}, final content height: ${contentHeight}`);
-          }
+          // Force minimum height for complex tabs
+          const minHeights: Record<string, number> = {
+            'guidance': 2000,
+            'spectrum': 1800,
+            'analysis': 3000
+          };
+          contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
       }
 
@@ -1059,13 +1085,13 @@ export default function AuraAnalysis() {
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
       
       // Determine if content needs multi-section capture for long content
-      // Use a higher threshold for multi-section to avoid unnecessary splitting
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Increased to 4 screen heights or 6000px max per section
+      // Use a reasonable threshold - prefer single capture for better PDF formatting
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section for very tall tabs that are known to have lots of content
-      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 3000) || 
-                                (['analysis', 'guidance'].includes(tabId) && contentHeight > 4000);
+      // Force multi-section only for extremely tall content
+      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 6000) || 
+                                (['analysis'].includes(tabId) && contentHeight > 8000);
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
@@ -1230,11 +1256,13 @@ export default function AuraAnalysis() {
         
         // Temporarily expand the element to show all content
         htmlElement.style.overflow = 'visible';
-        htmlElement.style.height = 'auto';
+        htmlElement.style.height = `${contentHeight}px`;
         htmlElement.style.maxHeight = 'none';
         htmlElement.style.minHeight = `${contentHeight}px`;
+        htmlElement.style.width = 'auto';
+        htmlElement.style.maxWidth = 'none';
         
-        // Force all children to be visible too
+        // Force all children to be visible and properly sized
         const allChildren = htmlElement.querySelectorAll('*');
         allChildren.forEach(child => {
           const childElem = child as HTMLElement;
@@ -1242,15 +1270,21 @@ export default function AuraAnalysis() {
             childElem.style.overflow = 'visible';
             childElem.style.maxHeight = 'none';
             childElem.style.height = 'auto';
+            childElem.style.opacity = '1';
+            childElem.style.visibility = 'visible';
           }
         });
         
+        // Ensure no scrolling during capture
+        htmlElement.scrollTop = 0;
+        window.scrollTo(0, 0);
+        
         // Wait for layout to stabilize
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 2.0, // Balanced scale for quality and performance
+          scale: 1.5, // Optimized scale for quality and file size
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1262,7 +1296,14 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 5000, // Longer timeout for complex content
+          imageTimeout: 8000, // Longer timeout for complex content
+          ignoreElements: (element) => {
+            // Ignore scroll bars and other non-essential elements
+            const htmlElement = element as HTMLElement;
+            return element.tagName === 'NOSCRIPT' || 
+                   element.className?.includes?.('scroll') ||
+                   htmlElement.style?.position === 'fixed';
+          },
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
             if (clonedElement) {
@@ -1290,6 +1331,8 @@ export default function AuraAnalysis() {
         htmlElement.style.height = originalStyles.height;
         htmlElement.style.maxHeight = originalStyles.maxHeight;
         htmlElement.style.minHeight = '';
+        htmlElement.style.width = '';
+        htmlElement.style.maxWidth = '';
 
         // Use PNG for better quality
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
@@ -1835,21 +1878,26 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // CRITICAL FIX: Maintain 6:9 aspect ratio without squishing
-            const targetAspectRatio = 9 / 6; // Height/Width = 1.5
-            const pageMaxWidth = 170; // Maximum usable page width
-            const pageMaxHeight = 250; // Maximum usable page height per section
+            // CRITICAL FIX: Maintain original aspect ratio without squishing
+            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
+            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
             
-            // Calculate proper dimensions maintaining aspect ratio
+            // Calculate proper dimensions maintaining original aspect ratio
             let finalWidth = pageMaxWidth;
             let finalHeight = finalWidth * trueAspectRatio;
             
+            // If height exceeds page, scale down proportionally
+            if (finalHeight > pageMaxHeight) {
+              finalHeight = pageMaxHeight;
+              finalWidth = finalHeight / trueAspectRatio;
+            }
+            
             // If the image is very long (tall), we need to handle it differently
-            const isLongScreenshot = trueAspectRatio > 2.5; // More than 2.5:1 ratio
+            const isLongScreenshot = trueAspectRatio > 3.0; // More than 3:1 ratio - very tall content
             
             if (isLongScreenshot) {
               // For long screenshots, use multiple pages to maintain readability
-              const sectionsNeeded = Math.ceil(finalHeight / pageMaxHeight);
+              const sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio
               const sectionHeight = pageMaxHeight;
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
@@ -1906,22 +1954,26 @@ export default function AuraAnalysis() {
               }
               
             } else {
-              // For normal screenshots, use single page with proper aspect ratio
-              if (finalHeight > pageMaxHeight) {
-                finalHeight = pageMaxHeight;
-                finalWidth = finalHeight / trueAspectRatio;
-              }
+              // For normal screenshots, use single page with proper aspect ratio - already calculated above
+              // Ensure minimum readability while respecting page constraints
+              const minWidth = 120;
+              const minHeight = 160;
               
-              // Ensure minimum readability
-              const minWidth = 140;
-              const minHeight = 220;
-              if (finalWidth < minWidth) {
+              // Only increase size if we have room and it improves readability
+              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
                 finalWidth = minWidth;
                 finalHeight = minWidth * trueAspectRatio;
               }
-              if (finalHeight < minHeight && trueAspectRatio < 2) {
-                finalHeight = minHeight;
-                finalWidth = minHeight / trueAspectRatio;
+              
+              // Final check: ensure we don't exceed page boundaries
+              if (finalWidth > pageMaxWidth) {
+                finalWidth = pageMaxWidth;
+                finalHeight = finalWidth * trueAspectRatio;
+              }
+              
+              if (finalHeight > pageMaxHeight) {
+                finalHeight = pageMaxHeight;
+                finalWidth = finalHeight / trueAspectRatio;
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
