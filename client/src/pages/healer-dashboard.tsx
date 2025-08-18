@@ -2446,7 +2446,8 @@ export default function HealerDashboard() {
                   <Palette className="h-6 w-6 text-purple-600" />
                 </div>
                 <h3 className="font-semibold mb-2">Aura Analysis</h3>
-                <p className="text-sm text-gray-600 mb-4">Analyze your own spiritual energy and aura colors</p>
+                <p className="text-sm text-gray-600 mb-4">Analyze your own spiritual energy and aura colors(</p>
+                <p className="text-sm text-red-600 mb-4">5 credits</p>
                 <Link to="/aura-analysis">
                   <Button className="w-full">Start Analysis</Button>
                 </Link>
@@ -2460,8 +2461,48 @@ export default function HealerDashboard() {
                 </div>
                 <h3 className="font-semibold mb-2">Object Analysis</h3>
                 <p className="text-sm text-gray-600 mb-4">Analyze the spiritual energy of objects</p>
+                <p className="text-sm text-red-600 mb-4">1 credit</p>
                 <Link to="/object-analysis">
                   <Button className="w-full">Analyze Object</Button>
+                </Link>
+              </CardContent>
+            </Card>
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Eye className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">What's My vibe</h3>
+                <p className="text-sm text-gray-600 mb-4">Analyze the spiritual energy of a person in short</p>
+                <p className="text-sm text-red-600 mb-4">1 credit</p>
+                <Link to="/#vibe-analysis">
+                  <Button className="w-full">Analyze</Button>
+                </Link>
+              </CardContent>
+            </Card>
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Eye className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Journal</h3>
+                <p className="text-sm text-gray-600 mb-4">Journal and write your thoughts</p>
+                <p className="text-sm text-green-600 mb-4">0 credit</p>
+                <Link to="/journal">
+                  <Button className="w-full">Journal</Button>
+                </Link>
+              </CardContent>
+            </Card>
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Eye className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Horoscope</h3>
+                <p className="text-sm text-gray-600 mb-4">find horoscope</p>
+                <p className="text-sm text-green-600 mb-4">0 credit</p>
+                <Link to="/daily-horoscope">
+                  <Button className="w-full">Find</Button>
                 </Link>
               </CardContent>
             </Card>
