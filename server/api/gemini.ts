@@ -17,16 +17,16 @@ export async function generateAuraVisualization(
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 550x800px`);
+    console.log(`Processing with standardized dimensions: 600x900px`);
     
     // Calculate input image size for verification
     const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
     console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
     
-    // Standardized dimensions as requested: 550px width × 800px height
-    const STANDARD_WIDTH = 550;
-    const STANDARD_HEIGHT = 800;
+    // CRITICAL FIX: Standardized dimensions as specified: 600px width × 900px height
+    const STANDARD_WIDTH = 600;
+    const STANDARD_HEIGHT = 900;
     
     // Create canvas with standardized dimensions
     const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
@@ -129,16 +129,16 @@ function addStandardizedAuraEffects(
   console.log(`Person center: ${personCenterX}, ${personCenterY}`);
   console.log(`Image bounds: ${imageOffsetX}, ${imageOffsetY}, ${imageWidth}, ${imageHeight}`);
   
-  // Set blend mode for ultra-smooth, cohesive aura effects
+  // CRITICAL FIX: Enhanced blend mode for ultra-smooth, cohesive aura effects
   ctx.globalCompositeOperation = 'multiply';
   
-  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Dense smokey layers for face protection)
+  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
   console.log('Drawing receiving zone (left) with ultra-dense smokey protection...');
   
-  // Create multiple dense smoke layers for better face protection
-  for (let layer = 0; layer < 5; layer++) {
-    const layerOffset = layer * 15;
-    const baseOpacity = 0.45 - (layer * 0.05); // Higher opacity for denser effect
+  // Create more dense smoke layers for perfect consistency
+  for (let layer = 0; layer < 8; layer++) {
+    const layerOffset = layer * 12;
+    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
     
     const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth * 0.8) + layerOffset, 0);
     receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity})`);
@@ -152,13 +152,13 @@ function addStandardizedAuraEffects(
     ctx.fillRect(0, 0, canvasWidth * 0.8, canvasHeight);
   }
   
-  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Dense smokey layers for face protection)
+  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
   console.log('Drawing giving zone (right) with ultra-dense smokey protection...');
   
-  // Create multiple dense smoke layers for better face protection
-  for (let layer = 0; layer < 5; layer++) {
-    const layerOffset = layer * 15;
-    const baseOpacity = 0.45 - (layer * 0.05); // Higher opacity for denser effect
+  // Create more dense smoke layers for perfect consistency
+  for (let layer = 0; layer < 8; layer++) {
+    const layerOffset = layer * 12;
+    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
     
     const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth * 0.2) - layerOffset, 0);
     givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity})`);
@@ -370,14 +370,14 @@ function addDenseSmokeyClouds(
 ) {
   ctx.globalCompositeOperation = 'multiply';
   
-  // Create more dense smoke rings for much denser appearance
-  const cloudRings = 4; // Increased from 2
-  const baseRadius = Math.max(personWidth, personHeight) * 0.2;
+  // CRITICAL FIX: Create ULTRA-DENSE smoke rings for maximum appearance
+  const cloudRings = 8; // Increased from 4 to 8 for ultra-dense effect
+  const baseRadius = Math.max(personWidth, personHeight) * 0.15; // Smaller base for tighter coverage
   
   for (let ring = 0; ring < cloudRings; ring++) {
-    const ringRadius = baseRadius + (ring * 45);
-    const numClouds = 18 + (ring * 3); // More clouds for denser coverage
-    const opacity = 0.35 - (ring * 0.04); // Higher base opacity for density
+    const ringRadius = baseRadius + (ring * 35); // Tighter ring spacing
+    const numClouds = 24 + (ring * 4); // Even more clouds for ultra-dense coverage
+    const opacity = 0.65 - (ring * 0.05); // Much higher base opacity for ultra-dense effect
     
     for (let cloud = 0; cloud < numClouds; cloud++) {
       const angle = (cloud / numClouds) * Math.PI * 2;
@@ -387,11 +387,11 @@ function addDenseSmokeyClouds(
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
       
-      // Use larger cloud sizes for denser coverage
-      const sizePattern = (cloud % 3) * 8; // Creates 3 size patterns with larger variation
-      const cloudRadius = 35 + sizePattern; // Increased base size
-      const opacityPattern = (cloud % 4) * 0.03; // Creates 4 opacity patterns
-      const cloudOpacity = opacity + opacityPattern;
+      // ULTRA-DENSE cloud sizes for maximum coverage
+      const sizePattern = (cloud % 4) * 6; // Creates 4 size patterns for better distribution
+      const cloudRadius = 45 + sizePattern; // Even larger base size for ultra-dense effect
+      const opacityPattern = (cloud % 5) * 0.04; // Creates 5 opacity patterns for variation
+      const cloudOpacity = Math.min(opacity + opacityPattern, 0.8); // Cap maximum opacity
       
       const color = cloud % 2 === 0 ? primaryRGB : secondaryRGB;
       
@@ -409,9 +409,9 @@ function addDenseSmokeyClouds(
     }
   }
   
-  // Add dense inner aura for maximum protection
-  const innerClouds = 24; // Increased from 16
-  const innerRadius = Math.min(personWidth, personHeight) * 0.3;
+  // Add ULTRA-DENSE inner aura for maximum protection
+  const innerClouds = 36; // Increased from 24 to 36 for ultra-dense coverage
+  const innerRadius = Math.min(personWidth, personHeight) * 0.25; // Tighter inner radius
   
   for (let i = 0; i < innerClouds; i++) {
     const angle = (i / innerClouds) * Math.PI * 2;
