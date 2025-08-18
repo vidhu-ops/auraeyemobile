@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { Check, Users, Heart, Sparkles, Brain, Palette } from "lucide-react";
 import nishantImage from "@assets/WhatsApp Image 2025-08-11 at 3.52.01 AM_1755270078104.jpeg";
 import aboutHeroImage from "@assets/WhatsApp Image 2025-08-18 at 3.35.45 AM_1755540582047.jpeg";
+import auraAnalysisImage from "@assets/WhatsApp Image 2025-08-18 at 3.40.10 AM_1755540718923.jpeg";
 
 export default function About() {
   return (
@@ -173,9 +174,9 @@ export default function About() {
                     
                     <div className="relative">
                       <img 
-                        src="https://images.pexels.com/photos/7675702/pexels-photo-7675702.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                        alt="AI aura analysis" 
-                        className="rounded-xl shadow-lg"
+                        src={auraAnalysisImage} 
+                        alt="Aura analysis and spiritual energy reading" 
+                        className="rounded-xl shadow-lg w-full h-auto object-cover"
                       />
                       <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-purple-500 to-blue-500 text-white p-3 rounded-lg shadow-lg text-sm font-medium">
                         Powered by advanced Analysis algorithms
