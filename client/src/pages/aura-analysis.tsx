@@ -1141,12 +1141,12 @@ export default function AuraAnalysis() {
             console.warn('Scroll failed, continuing with capture:', scrollError);
           }
           
-          // Wait longer for scroll to complete and content to render
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // ENHANCED: Wait longer for scroll to complete and content to render for chakra details
+          await new Promise(resolve => setTimeout(resolve, 800)); // Increased wait time
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 3.0, // Increased scale for maximum quality
+            scale: 4.0, // ENHANCED: Ultra-high scale for crystal clear sections
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1160,7 +1160,7 @@ export default function AuraAnalysis() {
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 2000,
+            imageTimeout: 20000, // Extended timeout for high-quality processing
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1170,6 +1170,15 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
+                
+                // ENHANCED: Ensure all chakra elements and colors are fully visible
+                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"]');
+                chakraElements.forEach(chakraElem => {
+                  const htmlChakraElem = chakraElem as HTMLElement;
+                  htmlChakraElem.style.opacity = '1';
+                  htmlChakraElem.style.visibility = 'visible';
+                  htmlChakraElem.style.display = 'block';
+                });
               }
             }
           });
@@ -1211,9 +1220,9 @@ export default function AuraAnalysis() {
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // Calculate combined dimensions (account for scale factor)
-        const finalWidth = captureWidth * 3.0;
-        const finalHeight = screenshots.length * (sectionHeight * 3.0);
+        // ENHANCED: Calculate combined dimensions with ultra-high resolution for clarity
+        const finalWidth = captureWidth * 4.0; // Increased resolution for crystal clarity
+        const finalHeight = screenshots.length * (sectionHeight * 4.0); // Ultra-high resolution
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1224,7 +1233,10 @@ export default function AuraAnalysis() {
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
+              // ENHANCED: Use high-quality rendering for ultra-sharp section captures
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
+              ctx.drawImage(img, 0, i * (sectionHeight * 4.0));
               resolve(true);
             };
           });
@@ -1234,8 +1246,8 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (combinedImageDataUrl.length < 10 * 1024 * 1024) {
+        // ENHANCED: Store high-quality captures (increased limit for better quality)
+        if (combinedImageDataUrl.length < 20 * 1024 * 1024) { // Increased to 20MB for ultra-high quality
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
           console.warn(`Combined image too large for ${tabId}, skipping storage`);
@@ -1490,8 +1502,8 @@ export default function AuraAnalysis() {
       // Add the uploaded image as the first page if available
       const addUploadedImageAsFirstPage = async () => {
         try {
-          // Import the uploaded image directly from attached assets  
-          const uploadedImageModule = await import('@assets/WhatsApp Image 2025-07-28 at 10.02.03 PM_1753725795826.jpeg');
+          // Import the new uploaded image directly from attached assets  
+          const uploadedImageModule = await import('@assets/WhatsApp Image 2025-08-18 at 3.25.14 AM_1755552940295.jpeg');
           const uploadedImageSrc = uploadedImageModule.default;
           
           // Create image to get dimensions
@@ -1985,11 +1997,11 @@ export default function AuraAnalysis() {
                 yPosition = 20;
               }
               
-              // Compress the image data before adding to PDF to prevent memory issues
+              // ENHANCED: Compress with higher quality for crystal clear PDF display
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Add the screenshot with preserved aspect ratio
-              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+              // Add the screenshot with preserved aspect ratio using PNG for better quality
+              pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
               yPosition += finalHeight + 15;
             }
             
