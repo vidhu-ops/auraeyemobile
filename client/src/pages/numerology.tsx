@@ -1020,7 +1020,9 @@ export default function NumerologyPage() {
                   {/* Personal Year Tab */}
                   <TabsContent value="personalYear" className="space-y-6 mt-6">
                     {(() => {
-                      const personalYear = calculatePersonalYear(user?.birthDate || "1990-01-01");
+                      // CRITICAL FIX: Use the correct birth date from healer input
+                      const birthDateToUse = healerData?.birthDate || targetBirthDate || user?.birthDate || "1990-01-01";
+                      const personalYear = calculatePersonalYear(birthDateToUse);
                       const personalYearInfo = getPersonalYearMeaning(personalYear);
                       return (
                         <>
@@ -1089,7 +1091,7 @@ export default function NumerologyPage() {
                                   <div className="bg-white p-3 rounded border">
                                     <p>Day: {dayDigits.join(' + ')} = {daySum} + Month: {monthDigits.join(' + ')} = {monthSum} + Year digits: {yearDigits.join(' + ')} = {yearSum}</p>
                                     <p>Total: {daySum} + {monthSum} + {yearSum} = {totalSum}</p>
-                                    {totalSum > 9 && ![11, 22, 33].includes(totalSum) ? (
+                                    {totalSum > 9 ? (
                                       <p>Reduced to single digit: {totalSum.toString().split('').join(' + ')} = <span className="font-medium text-indigo-600">{reducedPersonalYear}</span></p>
                                     ) : (
                                       <p>Final result: <span className="font-medium text-indigo-600">{reducedPersonalYear}</span></p>
