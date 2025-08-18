@@ -1052,10 +1052,10 @@ export default function AuraAnalysis() {
         htmlElement.style.maxHeight = tempStyles.maxHeight;
         htmlElement.style.minHeight = tempStyles.minHeight;
         
-        // ENHANCED: Extra padding for tabs with complex content, special handling for energy-reading (chakra bars)
+        // ENHANCED: Extra padding for tabs with complex content, special handling for all analysis tabs
         const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : 
-                                 (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 
-                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for chakra bars
+                                 (['chakras', 'detailed', 'combined'].includes(tabId) ? 300 : 
+                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for complex content
         
         contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
@@ -1073,12 +1073,15 @@ export default function AuraAnalysis() {
             console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
           }
           
-          // ENHANCED: Force minimum height for complex tabs, including energy-reading for chakra bars
+          // ENHANCED: Force minimum height for complex tabs, including all analysis tabs
           const minHeights: Record<string, number> = {
             'guidance': 2000,
             'spectrum': 1800,
             'analysis': 3000,
-            'energy-reading': 1500 // Ensure chakra bars are fully captured
+            'energy-reading': 1500, // Ensure chakra bars are fully captured
+            'chakras': 2500, // Ensure detailed chakras are captured
+            'detailed': 2500, // Ensure detailed analysis is captured
+            'combined': 3000 // Ensure combined analysis is captured
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -2005,10 +2008,22 @@ export default function AuraAnalysis() {
                     pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   }
                 } catch (sectionError) {
-                  console.warn('Section image failed, adding placeholder:', sectionError);
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  pdf.text(`[${getTabDisplayName(tabId)} section ${section + 1} - technical issue]`, 20, yPosition + 10);
+                  console.warn('Section image failed, trying fallback:', sectionError);
+                  
+                  // Try fallback approach for section
+                  try {
+                    const base64SectionData = compressedSectionDataUrl.split(',')[1];
+                    if (base64SectionData && base64SectionData.length > 0) {
+                      pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                    } else {
+                      throw new Error('Invalid section base64 data');
+                    }
+                  } catch (sectionFallbackError) {
+                    console.error('Section fallback also failed:', sectionFallbackError);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(100, 100, 100);
+                    pdf.text(`[${getTabDisplayName(tabId)} section ${section + 1} - technical issue]`, 20, yPosition + 10);
+                  }
                 }
                 yPosition += sectionFinalHeight + 10;
                 
@@ -2060,10 +2075,24 @@ export default function AuraAnalysis() {
                 }
               } catch (imageError) {
                 console.warn('High-quality image failed, creating text placeholder:', imageError);
-                // Fallback: add a text description instead of losing content
-                pdf.setFontSize(10);
-                pdf.setTextColor(100, 100, 100);
-                pdf.text(`[${getTabDisplayName(tabId)} screenshot - technical issue prevented inclusion]`, 20, yPosition + 10);
+                console.error('Image error details:', imageError);
+                
+                // Try to save the image with a different approach
+                try {
+                  // Convert to base64 and try again
+                  const base64Data = compressedImageDataUrl.split(',')[1];
+                  if (base64Data && base64Data.length > 0) {
+                    pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                  } else {
+                    throw new Error('Invalid base64 data');
+                  }
+                } catch (fallbackError) {
+                  console.error('Fallback image addition also failed:', fallbackError);
+                  // Add a text description instead of losing content
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(100, 100, 100);
+                  pdf.text(`[${getTabDisplayName(tabId)} screenshot - technical issue prevented inclusion]`, 20, yPosition + 10);
+                }
               }
               yPosition += finalHeight + 15;
             }
