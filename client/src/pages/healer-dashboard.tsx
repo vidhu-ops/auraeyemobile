@@ -2432,6 +2432,7 @@ export default function HealerDashboard() {
                 Numerology Analysis
               </CardTitle>
               <CardDescription>Generate comprehensive numerology readings by entering client information</CardDescription>
+              <CardDescription className="text-red-300">3 credits</CardDescription>
             </CardHeader>
             <CardContent>
               <NumerologyInputForm />

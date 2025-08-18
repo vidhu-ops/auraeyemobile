@@ -348,18 +348,14 @@ export default function ObjectAnalysis() {
     const centerY = height / 2;
     
     // Set font properties - responsive to image size
-    ctx.font = `bold 100px Arial, sans-serif`;
+    ctx.font = `bold 50px Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Add text shadow/outline for better visibility
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.lineWidth = 0;
-    ctx.strokeText('AuraEye™', centerX, centerY);
-    
+   
     // Add main watermark text in white
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText('AuraEyeTM', centerX, centerY);
+    ctx.fillText('AuraEye™', centerX, centerY);
     
     // Restore the context
     ctx.restore();
