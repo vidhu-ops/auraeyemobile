@@ -1052,10 +1052,10 @@ export default function AuraAnalysis() {
         htmlElement.style.maxHeight = tempStyles.maxHeight;
         htmlElement.style.minHeight = tempStyles.minHeight;
         
-        // ENHANCED: Extra padding for tabs with complex content, special handling for all analysis tabs
+        // ENHANCED: Extra padding for tabs with complex content, special handling for energy-reading (chakra bars)
         const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : 
-                                 (['chakras', 'detailed', 'combined'].includes(tabId) ? 300 : 
-                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for complex content
+                                 (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 
+                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for chakra bars
         
         contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
@@ -1073,15 +1073,12 @@ export default function AuraAnalysis() {
             console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
           }
           
-          // ENHANCED: Force minimum height for complex tabs, including all analysis tabs
+          // ENHANCED: Force minimum height for complex tabs, including energy-reading for chakra bars
           const minHeights: Record<string, number> = {
             'guidance': 2000,
             'spectrum': 1800,
             'analysis': 3000,
-            'energy-reading': 1500, // Ensure chakra bars are fully captured
-            'chakras': 2500, // Ensure detailed chakras are captured
-            'detailed': 2500, // Ensure detailed analysis is captured
-            'combined': 3000 // Ensure combined analysis is captured
+            'energy-reading': 1500 // Ensure chakra bars are fully captured
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1095,8 +1092,8 @@ export default function AuraAnalysis() {
       const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // ENHANCED: Force multi-section for detailed analysis tab into 4 parts and other tall content
-      const forceMultiSection = (tabId === 'detailed' && contentHeight > 1000) || // Force 4 parts for detailed analysis - lower threshold
+      // ENHANCED: Force multi-section for detailed chakra tab into 4 parts and other tall content
+      const forceMultiSection = (tabId === 'detailed' && contentHeight > 2000) || // Force 4 parts for detailed
                                 (['chakras', 'combined'].includes(tabId) && contentHeight > 6000) || 
                                 (['analysis'].includes(tabId) && contentHeight > 8000);
       
@@ -1104,12 +1101,12 @@ export default function AuraAnalysis() {
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // ENHANCED: Capture with special handling for detailed analysis tab (4 parts)
+        // ENHANCED: Capture with special handling for detailed chakra tab (4 parts)
         const screenshots: string[] = [];
         let totalSections, sectionHeight;
         
         if (tabId === 'detailed') {
-          // Force exactly 4 sections for detailed analysis tab
+          // Force exactly 4 sections for detailed chakra tab
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
         } else {
@@ -1119,7 +1116,7 @@ export default function AuraAnalysis() {
           totalSections = Math.ceil(contentHeight / sectionHeight);
         }
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed analysis)' : ' (16:9 ratio)'}`);
+        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed chakra)' : ' (16:9 ratio)'}`);
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1271,9 +1268,9 @@ export default function AuraAnalysis() {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
           console.warn(`Combined image too large for ${tabId}, compressing and retrying`);
-          // Try high-quality JPEG compression as fallback
-          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
-          if (fallbackDataUrl.length < 25 * 1024 * 1024) {
+          // Try JPEG compression as fallback
+          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
+          if (fallbackDataUrl.length < 20 * 1024 * 1024) {
             setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackDataUrl));
           } else {
             console.warn(`Even compressed image too large for ${tabId}, skipping storage`);
@@ -1391,8 +1388,8 @@ export default function AuraAnalysis() {
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality screenshots (increased limit to 30MB for maximum quality)
-        if (imageDataUrl.length < 30 * 1024 * 1024) {
+        // ENHANCED: Store high-quality screenshots (increased limit to 25MB for maximum quality)
+        if (imageDataUrl.length < 25 * 1024 * 1024) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         } else {
           console.warn(`Single image too large for ${tabId}, skipping storage`);
@@ -1600,9 +1597,9 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // ENHANCED: Set canvas size with maximum resolution for crystal clear PDF quality
-              canvas.width = Math.min(targetWidth * 12, 3600); // Maximum resolution for ultra-crisp PDFs
-              canvas.height = Math.min(targetHeight * 12, 4800); // Maximum resolution for ultra-crisp PDFs
+              // ENHANCED: Set canvas size with ultra-high resolution for premium PDF quality
+              canvas.width = Math.min(targetWidth * 8, 2400); // Ultra-high resolution for crisp PDFs
+              canvas.height = Math.min(targetHeight * 8, 3200); // Ultra-high resolution for crisp PDFs
               
               // Use high-quality image rendering
               ctx!.imageSmoothingEnabled = true;
@@ -1611,12 +1608,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // ENHANCED: Use PNG for maximum quality, no compression fallback for screenshots
+              // ENHANCED: Use PNG for maximum quality, reduced compression for screenshot clarity
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, use highest quality JPEG with absolute minimal compression
-              if (compressedDataUrl.length > 12 * 1024 * 1024) { // Increased threshold to 12MB
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Absolute maximum quality JPEG
+              // If PNG is too large, fallback to maximum quality JPEG with minimal compression
+              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Maximum quality JPEG (minimal compression)
               }
               
               resolve(compressedDataUrl);
@@ -1909,10 +1906,7 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing and multi-page support
-        // ENHANCED: Include all analysis tabs in PDF screenshots
-        const allowedTabs = ['analysis', 'energy-reading', 'guidance', 'spectrum', 'chakras', 'detailed', 'combined'];
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
-          if (!allowedTabs.includes(tabId)) continue;
           
           pdf.setFontSize(14);
           pdf.setTextColor(75, 0, 130);
@@ -2004,29 +1998,12 @@ export default function AuraAnalysis() {
                 // Compress and add the section with error handling
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                 try {
-                  // Use the highest quality format available
-                  if (compressedSectionDataUrl.startsWith('data:image/png')) {
-                    pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  } else {
-                    pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  }
+                  pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                 } catch (sectionError) {
-                  console.warn('Section image failed, trying fallback:', sectionError);
-                  
-                  // Try fallback approach for section
-                  try {
-                    const base64SectionData = compressedSectionDataUrl.split(',')[1];
-                    if (base64SectionData && base64SectionData.length > 0) {
-                      pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                    } else {
-                      throw new Error('Invalid section base64 data');
-                    }
-                  } catch (sectionFallbackError) {
-                    console.error('Section fallback also failed:', sectionFallbackError);
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(100, 100, 100);
-                    pdf.text(`[${getTabDisplayName(tabId)} section ${section + 1} - technical issue]`, 20, yPosition + 10);
-                  }
+                  console.warn('Section PNG failed, trying JPEG:', sectionError);
+                  // Fallback to JPEG
+                  const jpegSectionDataUrl = compressedSectionDataUrl.replace('data:image/png', 'data:image/jpeg');
+                  pdf.addImage(jpegSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                 }
                 yPosition += sectionFinalHeight + 10;
                 
@@ -2067,35 +2044,14 @@ export default function AuraAnalysis() {
               // ENHANCED: Compress with higher quality for crystal clear PDF display
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // ENHANCED: Add screenshot with maximum quality preservation
+              // Add the screenshot with preserved aspect ratio - try PNG first, fallback to JPEG
               try {
-                // Try PNG first for lossless quality
-                if (compressedImageDataUrl.startsWith('data:image/png')) {
-                  pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
-                } else {
-                  // Use JPEG with maximum quality
-                  pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                }
-              } catch (imageError) {
-                console.warn('High-quality image failed, creating text placeholder:', imageError);
-                console.error('Image error details:', imageError);
-                
-                // Try to save the image with a different approach
-                try {
-                  // Convert to base64 and try again
-                  const base64Data = compressedImageDataUrl.split(',')[1];
-                  if (base64Data && base64Data.length > 0) {
-                    pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                  } else {
-                    throw new Error('Invalid base64 data');
-                  }
-                } catch (fallbackError) {
-                  console.error('Fallback image addition also failed:', fallbackError);
-                  // Add a text description instead of losing content
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  pdf.text(`[${getTabDisplayName(tabId)} screenshot - technical issue prevented inclusion]`, 20, yPosition + 10);
-                }
+                pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
+              } catch (pngError) {
+                console.warn('PNG failed, trying JPEG:', pngError);
+                // Convert to JPEG as fallback
+                const jpegDataUrl = compressedImageDataUrl.replace('data:image/png', 'data:image/jpeg');
+                pdf.addImage(jpegDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
               }
               yPosition += finalHeight + 15;
             }
@@ -2104,7 +2060,7 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            console.error('Error details:', (error as Error)?.message || 'Unknown error');
+            console.error('Error details:', error?.message || 'Unknown error');
             
             // Add error message to PDF instead of skipping
             pdf.setFontSize(10);
