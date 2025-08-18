@@ -1,4 +1,5 @@
 import { AuraAnalysisResult } from "../../client/src/lib/openai";
+import axios from "axios";
 
 // Remove unused imports since we're using canvas-based processing
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -135,12 +136,12 @@ function addStandardizedAuraEffects(
   // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
   console.log('Drawing receiving zone (left) with ultra-dense smokey protection...');
   
-  // Create more dense smoke layers for perfect consistency
-  for (let layer = 0; layer < 8; layer++) {
-    const layerOffset = layer * 12;
-    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
+  // Create ultra-dense smoke layers scaled for mobile uploads
+  for (let layer = 0; layer < 12; layer++) {
+    const layerOffset = layer * 6;
+    const baseOpacity = 0.65 - (layer * 0.03); // Higher opacity for ultra-dense effect
     
-    const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth * 0.8) + layerOffset, 0);
+    const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth * 0.6) + layerOffset, 0);
     receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity})`);
     receivingGradient.addColorStop(0.2, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.9})`);
     receivingGradient.addColorStop(0.4, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.7})`);
@@ -149,18 +150,18 @@ function addStandardizedAuraEffects(
     receivingGradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
     
     ctx.fillStyle = receivingGradient;
-    ctx.fillRect(0, 0, canvasWidth * 0.8, canvasHeight);
+    ctx.fillRect(0, 0, canvasWidth * 0.6, canvasHeight);
   }
   
   // ZONE 2: RIGHT SIDE - GIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
   console.log('Drawing giving zone (right) with ultra-dense smokey protection...');
   
-  // Create more dense smoke layers for perfect consistency
-  for (let layer = 0; layer < 8; layer++) {
-    const layerOffset = layer * 12;
-    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
+  // Create ultra-dense smoke layers scaled for mobile uploads
+  for (let layer = 0; layer < 12; layer++) {
+    const layerOffset = layer * 6;
+    const baseOpacity = 0.65 - (layer * 0.03); // Higher opacity for ultra-dense effect
     
-    const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth * 0.2) - layerOffset, 0);
+    const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth * 0.4) - layerOffset, 0);
     givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity})`);
     givingGradient.addColorStop(0.2, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.9})`);
     givingGradient.addColorStop(0.4, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.7})`);
@@ -169,7 +170,7 @@ function addStandardizedAuraEffects(
     givingGradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
     
     ctx.fillStyle = givingGradient;
-    ctx.fillRect(canvasWidth * 0.2, 0, canvasWidth * 0.8, canvasHeight);
+    ctx.fillRect(canvasWidth * 0.4, 0, canvasWidth * 0.6, canvasHeight);
   }
   
   // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
@@ -241,9 +242,10 @@ function addStandardizedAuraEffects(
   // Add multiple layers of dense energy wisps for much more prominent smokey effect
   console.log('Adding multiple layers of dense energy wisps...');
   
-  // Multiple layers of denser wisps for better coverage
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 36, 0.25, 22);
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 24, 0.18, 16);
+  // Multiple layers of ultra-dense wisps scaled for mobile uploads
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 72, 0.35, 8);
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 48, 0.28, 6);
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 36, 0.22, 4);
   
   // Add dense radial smoke clouds around the person for ultra-smokey effect
   console.log('Adding dense radial smoke clouds...');
@@ -334,14 +336,14 @@ function addFacialProtectionLayer(
 ) {
   ctx.globalCompositeOperation = 'multiply';
   
-  // Calculate face area (upper 1/3 of person)
-  const faceAreaRadius = Math.min(personWidth, personHeight) * 0.4;
+  // Calculate face area (upper 1/3 of person) - scaled for mobile uploads
+  const faceAreaRadius = Math.min(personWidth, personHeight) * 0.25;
   const faceY = centerY - (personHeight * 0.15); // Face area slightly above center
   
   // Create multiple dense protection layers specifically around face area
-  for (let layer = 0; layer < 8; layer++) {
-    const layerRadius = faceAreaRadius + (layer * 12);
-    const opacity = 0.4 - (layer * 0.04);
+  for (let layer = 0; layer < 12; layer++) {
+    const layerRadius = faceAreaRadius + (layer * 6); // Tighter layer spacing
+    const opacity = 0.5 - (layer * 0.03); // Higher base opacity
     const color = layer % 2 === 0 ? primaryRGB : secondaryRGB;
     
     // Create facial protection gradient
@@ -370,14 +372,14 @@ function addDenseSmokeyClouds(
 ) {
   ctx.globalCompositeOperation = 'multiply';
   
-  // CRITICAL FIX: Create ULTRA-DENSE smoke rings for maximum appearance
-  const cloudRings = 8; // Increased from 4 to 8 for ultra-dense effect
-  const baseRadius = Math.max(personWidth, personHeight) * 0.15; // Smaller base for tighter coverage
+  // CRITICAL FIX: Create ULTRA-DENSE smoke rings scaled properly for mobile uploads
+  const cloudRings = 12; // More rings for ultra-dense effect
+  const baseRadius = Math.min(personWidth, personHeight) * 0.08; // Much smaller base for tighter coverage
   
   for (let ring = 0; ring < cloudRings; ring++) {
-    const ringRadius = baseRadius + (ring * 35); // Tighter ring spacing
-    const numClouds = 24 + (ring * 4); // Even more clouds for ultra-dense coverage
-    const opacity = 0.65 - (ring * 0.05); // Much higher base opacity for ultra-dense effect
+    const ringRadius = baseRadius + (ring * 15); // Much tighter ring spacing
+    const numClouds = 48 + (ring * 6); // Significantly more clouds for ultra-dense coverage
+    const opacity = 0.75 - (ring * 0.03); // Even higher base opacity for ultra-dense effect
     
     for (let cloud = 0; cloud < numClouds; cloud++) {
       const angle = (cloud / numClouds) * Math.PI * 2;
@@ -387,11 +389,11 @@ function addDenseSmokeyClouds(
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
       
-      // ULTRA-DENSE cloud sizes for maximum coverage
-      const sizePattern = (cloud % 4) * 6; // Creates 4 size patterns for better distribution
-      const cloudRadius = 45 + sizePattern; // Even larger base size for ultra-dense effect
-      const opacityPattern = (cloud % 5) * 0.04; // Creates 5 opacity patterns for variation
-      const cloudOpacity = Math.min(opacity + opacityPattern, 0.8); // Cap maximum opacity
+      // ULTRA-DENSE cloud sizes scaled for mobile images
+      const sizePattern = (cloud % 4) * 3; // Smaller size patterns for denser effect
+      const cloudRadius = 18 + sizePattern; // Much smaller base size for ultra-dense effect
+      const opacityPattern = (cloud % 5) * 0.06; // Higher opacity patterns for variation
+      const cloudOpacity = Math.min(opacity + opacityPattern, 0.9); // Higher maximum opacity
       
       const color = cloud % 2 === 0 ? primaryRGB : secondaryRGB;
       
@@ -410,8 +412,8 @@ function addDenseSmokeyClouds(
   }
   
   // Add ULTRA-DENSE inner aura for maximum protection
-  const innerClouds = 36; // Increased from 24 to 36 for ultra-dense coverage
-  const innerRadius = Math.min(personWidth, personHeight) * 0.25; // Tighter inner radius
+  const innerClouds = 72; // Significantly increased for ultra-dense coverage
+  const innerRadius = Math.min(personWidth, personHeight) * 0.12; // Much tighter inner radius
   
   for (let i = 0; i < innerClouds; i++) {
     const angle = (i / innerClouds) * Math.PI * 2;
@@ -597,20 +599,16 @@ Respond with valid JSON containing:
       energyLevel: 6,
       personalityTraits: ["Intuitive", "Healing", "Compassionate", "Balanced"],
       spiritualGuidance: "Your aura indicates a strong connection to your intuition and higher guidance. Continue to develop your spiritual practices and trust your inner wisdom.",
-      _chakraActivity: {
+      chakraActivity: {
           root: 5,
           sacral: 6,
           solarPlexus: 5,
           heart: 7,
           throat: 6,
           thirdEye: 8,
-          crown: 7
-      },
-      get chakraActivity() {
-          return this._chakraActivity;
-      },
-      set chakraActivity(value) {
-          this._chakraActivity = value;
+          crown: 7,
+          soulStar: 8,
+          earthStar: 5
       },
       detailedAnalysis: "The colors in your aura reveal a person with strong intuitive and psychic abilities. You likely sense energies around you and may have experienced spiritual insights or visions. Your challenge is to remain grounded while exploring higher consciousness. Regular meditation will help integrate your spiritual experiences."
         };
@@ -643,11 +641,7 @@ Respond with valid JSON containing:
       auraLayerColors: {
         inner: "Indigo",
         middle: "Violet", 
-        outer: "Blue",
-        receiving: "Purple",
-        giving: "Green",
-        thinking: "Yellow",
-        personality: "Red"
+        outer: "Blue"
       },
       energyLevel: 7,
       personalityTraits: ["Intuitive", "Spiritual", "Visionary", "Sensitive"],
@@ -659,7 +653,9 @@ Respond with valid JSON containing:
         heart: 7,
         throat: 6,
         thirdEye: 9,
-        crown: 8
+        crown: 8,
+        soulStar: 9,
+        earthStar: 6
       },
       detailedAnalysis: "The dominant indigo and violet hues in your aura suggest you have highly developed intuitive and spiritual abilities. You may be experiencing a period of spiritual awakening or growth. These colors indicate a strong connection to higher consciousness and the ability to access inner wisdom. Your energy field shows sensitivity to others' emotions and a natural healing ability. Focus on protecting your energy through regular grounding practices and setting healthy boundaries."
     };
@@ -679,7 +675,9 @@ function fallbackParser(text: string): Partial<AuraAnalysisResult> {
       heart: 7,
       throat: 6,
       thirdEye: 8,
-      crown: 7
+      crown: 7,
+      soulStar: 8,
+      earthStar: 5
     },
     // Initialize aura color spectrum with default values
     auraColorSpectrum: [],
