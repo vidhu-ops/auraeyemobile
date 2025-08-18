@@ -1084,51 +1084,72 @@ export default function AuraAnalysis() {
       // Use screen width as base for consistent readability, ensure minimum width
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
       
-      // Determine if content needs multi-section capture for long content
-      // Use a reasonable threshold - prefer single capture for better PDF formatting
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
+      // Always use multi-section capture for better clarity and completeness
+      // Split content into optimal sections for maximum clarity
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 2, 2500); // Smaller sections for better clarity
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section only for extremely tall content
-      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 6000) || 
-                                (['analysis'].includes(tabId) && contentHeight > 8000);
+      // Force multi-section for tabs with complex content to ensure complete capture
+      const forceMultiSection = (['chakras', 'detailed', 'combined', 'guidance', 'spectrum', 'analysis'].includes(tabId) && contentHeight > 2000);
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // Capture long content in 16:9 sections for optimal PDF display
+        // Capture content in optimally sized sections for maximum clarity
         const screenshots: string[] = [];
-        const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
-        const sectionHeight = Math.floor(captureWidth / targetAspectRatio);
+        const sectionHeight = Math.min(2500, Math.max(1500, contentHeight / Math.ceil(contentHeight / 2000))); // Optimal section height
         const totalSections = Math.ceil(contentHeight / sectionHeight);
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (16:9 ratio)`);
+        console.log(`Capturing ${totalSections} high-quality sections, each ${captureWidth}x${sectionHeight} for maximum clarity`);
+        
+        // First, expand element to full size and force all content to be visible
+        const originalStyles = {
+          overflow: htmlElement.style.overflow,
+          height: htmlElement.style.height,
+          maxHeight: htmlElement.style.maxHeight,
+          minHeight: htmlElement.style.minHeight,
+          width: htmlElement.style.width,
+          maxWidth: htmlElement.style.maxWidth
+        };
+        
+        htmlElement.style.overflow = 'visible';
+        htmlElement.style.height = `${contentHeight}px`;
+        htmlElement.style.maxHeight = 'none';
+        htmlElement.style.minHeight = `${contentHeight}px`;
+        htmlElement.style.width = 'auto';
+        htmlElement.style.maxWidth = 'none';
+        
+        // Force all children to be fully visible with high contrast
+        const allChildren = htmlElement.querySelectorAll('*');
+        allChildren.forEach(child => {
+          const childElem = child as HTMLElement;
+          if (childElem.style) {
+            childElem.style.overflow = 'visible';
+            childElem.style.maxHeight = 'none';
+            childElem.style.height = 'auto';
+            childElem.style.opacity = '1';
+            childElem.style.visibility = 'visible';
+            childElem.style.display = childElem.style.display === 'none' ? 'block' : childElem.style.display;
+            // Ensure text is crisp and colors are vivid
+            childElem.style.textRendering = 'optimizeLegibility';
+            childElem.style.fontSmooth = 'always';
+            childElem.style.webkitFontSmoothing = 'antialiased';
+          }
+        });
+        
+        // Wait for all styling changes to take effect
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
           
-          // Scroll element to show this section - try multiple approaches
+          console.log(`Capturing section ${section + 1}/${totalSections}: Y=${startY}-${endY}, Height=${actualSectionHeight}px`);
+          
+          // No scrolling needed since element is fully expanded
           try {
-            if (htmlElement.scrollTo) {
-              htmlElement.scrollTo({ top: startY, behavior: 'instant' });
-            }
-            
-            // Also try scrolling any scrollable parent containers
-            const scrollableParents = [];
-            let parent = htmlElement.parentElement;
-            while (parent) {
-              const style = window.getComputedStyle(parent);
-              if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
-                scrollableParents.push(parent);
-              }
-              parent = parent.parentElement;
-            }
-            
-            scrollableParents.forEach(scrollParent => {
-              if (scrollParent.scrollTo) {
                 scrollParent.scrollTo({ top: startY, behavior: 'instant' });
               }
             });
@@ -1144,68 +1165,105 @@ export default function AuraAnalysis() {
           // Wait longer for scroll to complete and content to render
           await new Promise(resolve => setTimeout(resolve, 500));
           
-          const sectionCanvas = await html2canvas(htmlElement, {
-            backgroundColor: '#ffffff',
-            scale: 3.0, // Increased scale for maximum quality
-            logging: false,
-            useCORS: true,
-            allowTaint: false,
-            x: 0,
-            y: startY,
-            width: captureWidth,
-            height: actualSectionHeight,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: captureWidth,
-            windowHeight: actualSectionHeight,
-            removeContainer: false,
-            foreignObjectRendering: false,
-            imageTimeout: 2000,
-            onclone: (clonedDoc) => {
-              const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
-              if (clonedElement) {
-                const elem = clonedElement as HTMLElement;
-                elem.style.overflow = 'visible';
-                elem.style.height = 'auto';
-                elem.style.maxHeight = 'none';
-                elem.style.width = 'auto';
-                elem.style.maxWidth = 'none';
+            const sectionCanvas = await html2canvas(htmlElement, {
+              backgroundColor: '#ffffff',
+              scale: 3.0, // Maximum scale for crystal clear quality
+              logging: false,
+              useCORS: true,
+              allowTaint: false,
+              x: 0,
+              y: startY,
+              width: captureWidth,
+              height: actualSectionHeight,
+              scrollX: 0,
+              scrollY: 0,
+              windowWidth: captureWidth,
+              windowHeight: actualSectionHeight,
+              removeContainer: false,
+              foreignObjectRendering: false,
+              imageTimeout: 15000, // Extended timeout for high quality rendering
+              onclone: (clonedDoc) => {
+                const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
+                if (clonedElement) {
+                  const elem = clonedElement as HTMLElement;
+                  elem.style.overflow = 'visible';
+                  elem.style.height = 'auto';
+                  elem.style.maxHeight = 'none';
+                  elem.style.width = 'auto';
+                  elem.style.maxWidth = 'none';
+                  
+                  // Apply high quality text rendering to cloned elements
+                  const clonedChildren = elem.querySelectorAll('*');
+                  clonedChildren.forEach(child => {
+                    const childElem = child as HTMLElement;
+                    if (childElem.style) {
+                      childElem.style.textRendering = 'optimizeLegibility';
+                      childElem.style.fontSmooth = 'always';
+                      childElem.style.webkitFontSmoothing = 'antialiased';
+                      childElem.style.opacity = '1';
+                      childElem.style.visibility = 'visible';
+                    }
+                  });
+                }
               }
-            }
-          });
+            });
           
-          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0));
-          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
+            // Use PNG for lossless quality and add to screenshots array
+            const highQualityDataUrl = sectionCanvas.toDataURL('image/png', 1.0);
+            screenshots.push(highQualityDataUrl);
+            
+            const sizeInKB = Math.round(highQualityDataUrl.length / 1024);
+            console.log(`✓ Section ${section + 1}/${totalSections} captured: ${sectionCanvas.width}x${sectionCanvas.height}, Size: ${sizeInKB}KB`);
+            
+          } catch (sectionError) {
+            console.error(`Failed to capture section ${section + 1}:`, sectionError);
+            // Create a placeholder for failed sections
+            const placeholderCanvas = document.createElement('canvas');
+            placeholderCanvas.width = captureWidth * 3.0;
+            placeholderCanvas.height = actualSectionHeight * 3.0;
+            const ctx = placeholderCanvas.getContext('2d')!;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, placeholderCanvas.width, placeholderCanvas.height);
+            ctx.fillStyle = '#000000';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Section ${section + 1} - Capture Failed`, placeholderCanvas.width/2, placeholderCanvas.height/2);
+            screenshots.push(placeholderCanvas.toDataURL('image/png', 1.0));
+          }
         }
         
-        // Reset scroll position for all scrollable containers
+        // Restore original element styles
         try {
-          if (htmlElement.scrollTo) {
-            htmlElement.scrollTo({ top: 0, behavior: 'instant' });
-          }
+          htmlElement.style.overflow = originalStyles.overflow;
+          htmlElement.style.height = originalStyles.height;
+          htmlElement.style.maxHeight = originalStyles.maxHeight;
+          htmlElement.style.minHeight = originalStyles.minHeight;
+          htmlElement.style.width = originalStyles.width;
+          htmlElement.style.maxWidth = originalStyles.maxWidth;
           
-          // Reset scroll for scrollable parent containers
-          const scrollableParents = [];
-          let parent = htmlElement.parentElement;
-          while (parent) {
-            const style = window.getComputedStyle(parent);
-            if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
-              scrollableParents.push(parent);
-            }
-            parent = parent.parentElement;
-          }
-          
-          scrollableParents.forEach(scrollParent => {
-            if (scrollParent.scrollTo) {
-              scrollParent.scrollTo({ top: 0, behavior: 'instant' });
+          // Reset child element styles
+          allChildren.forEach(child => {
+            const childElem = child as HTMLElement;
+            if (childElem.style) {
+              childElem.style.textRendering = '';
+              childElem.style.fontSmooth = '';
+              childElem.style.webkitFontSmoothing = '';
             }
           });
           
-          // Reset window scroll
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        } catch (resetScrollError) {
-          console.warn('Failed to reset scroll position:', resetScrollError);
+          console.log('✓ Element styles restored successfully');
+        } catch (resetStyleError) {
+          console.warn('Failed to reset element styles:', resetStyleError);
         }
+        
+        // Create individual high-quality sections and a combined image
+        const sectionImages: string[] = [];
+        
+        // Store individual sections for potential separate use
+        screenshots.forEach((screenshot, index) => {
+          sectionImages.push(screenshot);
+          console.log(`Section ${index + 1} stored successfully`);
+        });
         
         // Combine all sections into one long image for PDF
         const combinedCanvas = document.createElement('canvas');
@@ -1213,35 +1271,51 @@ export default function AuraAnalysis() {
         
         // Calculate combined dimensions (account for scale factor)
         const finalWidth = captureWidth * 3.0;
-        const finalHeight = screenshots.length * (sectionHeight * 3.0);
+        const actualSectionHeights = screenshots.map((_, i) => {
+          const startY = i * sectionHeight;
+          const endY = Math.min(startY + sectionHeight, contentHeight);
+          return (endY - startY) * 3.0;
+        });
+        const finalHeight = actualSectionHeights.reduce((sum, h) => sum + h, 0);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
+        // Set canvas background to white for better visibility
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, finalWidth, finalHeight);
+        
         // Draw each section onto the combined canvas
+        let currentY = 0;
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
+              // Draw with exact positioning to prevent gaps
+              ctx.drawImage(img, 0, currentY, finalWidth, actualSectionHeights[i]);
+              currentY += actualSectionHeights[i];
               resolve(true);
             };
           });
         }
         
-        // Use PNG for better quality, only compress if too large
+        // Use PNG for lossless quality
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
-        console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+        const sizeInMB = (combinedImageDataUrl.length / 1024 / 1024);
+        console.log(`✓ Combined ultra-high-quality image created: ${finalWidth}x${finalHeight}px, Size: ${sizeInMB.toFixed(2)} MB`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (combinedImageDataUrl.length < 10 * 1024 * 1024) {
+        // Store if reasonable size (up to 15MB for high quality)
+        if (combinedImageDataUrl.length < 15 * 1024 * 1024) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
+          console.log(`✓ Multi-section ${tabId} screenshot stored successfully with crystal clear quality`);
         } else {
-          console.warn(`Combined image too large for ${tabId}, skipping storage`);
+          // If too large, create a compressed version
+          const compressedDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
+          const compressedSizeInMB = (compressedDataUrl.length / 1024 / 1024);
+          console.log(`Image too large (${sizeInMB.toFixed(2)}MB), using compressed version: ${compressedSizeInMB.toFixed(2)}MB`);
+          setCapturedScreenshots(prev => new Map(prev).set(tabId, compressedDataUrl));
         }
-        
-        console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
         
       } else {
         // Single capture for shorter content with optimal sizing
@@ -1284,7 +1358,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 1.5, // Optimized scale for quality and file size
+          scale: 2.5, // Higher scale for crystal clear quality
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1296,7 +1370,7 @@ export default function AuraAnalysis() {
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
-          imageTimeout: 8000, // Longer timeout for complex content
+          imageTimeout: 12000, // Extended timeout for high quality rendering
           ignoreElements: (element) => {
             // Ignore scroll bars and other non-essential elements
             const htmlElement = element as HTMLElement;
