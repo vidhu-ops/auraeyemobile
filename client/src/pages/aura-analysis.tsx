@@ -1052,8 +1052,10 @@ export default function AuraAnalysis() {
         htmlElement.style.maxHeight = tempStyles.maxHeight;
         htmlElement.style.minHeight = tempStyles.minHeight;
         
-        // Extra padding for tabs with complex content
-        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 150));
+        // ENHANCED: Extra padding for tabs with complex content, special handling for energy-reading (chakra bars)
+        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : 
+                                 (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 
+                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for chakra bars
         
         contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
@@ -1071,11 +1073,12 @@ export default function AuraAnalysis() {
             console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
           }
           
-          // Force minimum height for complex tabs
+          // ENHANCED: Force minimum height for complex tabs, including energy-reading for chakra bars
           const minHeights: Record<string, number> = {
             'guidance': 2000,
             'spectrum': 1800,
-            'analysis': 3000
+            'analysis': 3000,
+            'energy-reading': 1500 // Ensure chakra bars are fully captured
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1181,8 +1184,8 @@ export default function AuraAnalysis() {
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
                 
-                // ENHANCED: Ensure all chakra elements, colors, and scores are fully visible with enhanced styling
-                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], .text-white, .font-bold, .text-center');
+                // ENHANCED: Ensure all chakra elements, colors, scores, and progress bars are fully visible
+                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full');
                 chakraElements.forEach(chakraElem => {
                   const htmlChakraElem = chakraElem as HTMLElement;
                   htmlChakraElem.style.opacity = '1';
@@ -1191,6 +1194,7 @@ export default function AuraAnalysis() {
                   htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
                   htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
                   htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
+                  htmlChakraElem.style.minHeight = '20px'; // Ensure bars are visible
                 });
               }
             }
@@ -1259,11 +1263,18 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality captures (increased limit for better quality)
+        // ENHANCED: Store high-quality captures with fallback compression
         if (combinedImageDataUrl.length < 20 * 1024 * 1024) { // Increased to 20MB for ultra-high quality
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
-          console.warn(`Combined image too large for ${tabId}, skipping storage`);
+          console.warn(`Combined image too large for ${tabId}, compressing and retrying`);
+          // Try JPEG compression as fallback
+          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
+          if (fallbackDataUrl.length < 20 * 1024 * 1024) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackDataUrl));
+          } else {
+            console.warn(`Even compressed image too large for ${tabId}, skipping storage`);
+          }
         }
         
         console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
@@ -1339,8 +1350,8 @@ export default function AuraAnalysis() {
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
               
-              // ENHANCED: Ensure all chakra elements, colors, and scores are fully visible with enhanced styling
-              const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], .text-white, .font-bold, .text-center');
+              // ENHANCED: Ensure all chakra elements, colors, scores, and progress bars are fully visible
+              const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full');
               chakraElements.forEach(chakraElem => {
                 const htmlChakraElem = chakraElem as HTMLElement;
                 htmlChakraElem.style.opacity = '1';
@@ -1349,6 +1360,7 @@ export default function AuraAnalysis() {
                 htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
                 htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
                 htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
+                htmlChakraElem.style.minHeight = '20px'; // Ensure bars are visible
               });
               
               // Ensure all child elements are visible
@@ -1596,12 +1608,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // ENHANCED: Use PNG for maximum quality, improved JPEG fallback
+              // ENHANCED: Use PNG for maximum quality, reduced compression for screenshot clarity
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to ultra-high quality JPEG (20% less compression)
-              if (compressedDataUrl.length > 6 * 1024 * 1024) { // Increased threshold to 6MB
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Ultra-high quality JPEG (20% less compression)
+              // If PNG is too large, fallback to maximum quality JPEG with minimal compression
+              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Maximum quality JPEG (minimal compression)
               }
               
               resolve(compressedDataUrl);
@@ -1983,9 +1995,16 @@ export default function AuraAnalysis() {
                   yPosition += 5;
                 }
                 
-                // Compress and add the section
+                // Compress and add the section with error handling
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                try {
+                  pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                } catch (sectionError) {
+                  console.warn('Section PNG failed, trying JPEG:', sectionError);
+                  // Fallback to JPEG
+                  const jpegSectionDataUrl = compressedSectionDataUrl.replace('data:image/png', 'data:image/jpeg');
+                  pdf.addImage(jpegSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                }
                 yPosition += sectionFinalHeight + 10;
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
@@ -2025,8 +2044,15 @@ export default function AuraAnalysis() {
               // ENHANCED: Compress with higher quality for crystal clear PDF display
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Add the screenshot with preserved aspect ratio using PNG for better quality
-              pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
+              // Add the screenshot with preserved aspect ratio - try PNG first, fallback to JPEG
+              try {
+                pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
+              } catch (pngError) {
+                console.warn('PNG failed, trying JPEG:', pngError);
+                // Convert to JPEG as fallback
+                const jpegDataUrl = compressedImageDataUrl.replace('data:image/png', 'data:image/jpeg');
+                pdf.addImage(jpegDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+              }
               yPosition += finalHeight + 15;
             }
             
@@ -2034,6 +2060,12 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
+            console.error('Error details:', error?.message || 'Unknown error');
+            
+            // Add error message to PDF instead of skipping
+            pdf.setFontSize(10);
+            pdf.setTextColor(200, 0, 0);
+            yPosition = addTextWithPageBreak(`Screenshot for ${getTabDisplayName(tabId)} could not be included due to technical issues.`, 20, yPosition);
             yPosition += 25;
           }
         }
