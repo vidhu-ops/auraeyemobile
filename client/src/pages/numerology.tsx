@@ -1058,13 +1058,27 @@ export default function NumerologyPage() {
                             <div className="text-sm text-gray-700 space-y-2">
                               <p>Personal Year = (Birth Day + Birth Month + Current Year) reduced to single digit</p>
                               {(() => {
-                                const birthDate = new Date(user?.birthDate || "1990-01-01");
+                                // CRITICAL FIX: Use the correct birth date from healer input or form data
+                                const birthDateToUse = healerData?.birthDate || targetBirthDate || user?.birthDate || "1990-01-01";
+                                const birthDate = new Date(birthDateToUse);
                                 const day = birthDate.getDate();
                                 const month = birthDate.getMonth() + 1;
                                 const currentYear = 2025;
+                                
+                                // CORRECTED CALCULATION: Use actual month and day digits, not just numbers
+                                const dayDigits = day.toString().split('').map(d => parseInt(d));
+                                const monthDigits = month.toString().split('').map(d => parseInt(d));
+                                const yearDigits = currentYear.toString().split('').map(d => parseInt(d));
+                                
+                                const daySum = dayDigits.reduce((a, b) => a + b, 0);
+                                const monthSum = monthDigits.reduce((a, b) => a + b, 0);
+                                const yearSum = yearDigits.reduce((a, b) => a + b, 0);
+                                const totalSum = daySum + monthSum + yearSum;
+                                
                                 return (
                                   <div className="bg-white p-3 rounded border">
-                                    <p>Day: {day} + Month: {month} + Year digits: {currentYear.toString().split('').join(' + ')} = {day + month + 2 + 0 + 2 + 5}</p>
+                                    <p>Day: {dayDigits.join(' + ')} = {daySum} + Month: {monthDigits.join(' + ')} = {monthSum} + Year digits: {yearDigits.join(' + ')} = {yearSum}</p>
+                                    <p>Total: {daySum} + {monthSum} + {yearSum} = {totalSum}</p>
                                     <p>Reduced to single digit: <span className="font-medium text-indigo-600">{personalYear}</span></p>
                                   </div>
                                 );
