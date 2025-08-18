@@ -17,6 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 import videoSrc from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1754998851112.mp4";
 import { SpiritualGuidanceVideoModal } from "@/components/SpiritualGuidanceVideoModal";
 import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
+import blueAuraImage from "@assets/WhatsApp Image 2025-08-18 at 3.56.39 AM_1755539933519.jpeg";
+import greenAuraImage from "@assets/WhatsApp Image 2025-08-18 at 3.52.42 AM_1755540002448.jpeg";
+import purpleAuraImage from "@assets/WhatsApp Image 2025-08-18 at 4.01.06 AM_1755540002447.jpeg";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -1014,7 +1017,7 @@ export default function HomePage() {
               {/* Sample 1 - Blue Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 3.56.39 AM_1755539933519.jpeg" alt="Person with blue aura" className="w-full h-56 object-cover" />
+                  <img src={blueAuraImage} alt="Person with blue aura" className="w-full h-56 object-cover" />
                   <div className="absolute inset-0 bg-gradient-radial from-blue-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
@@ -1029,7 +1032,7 @@ export default function HomePage() {
               {/* Sample 2 - Green Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 3.52.42 AM_1755540002448.jpeg" alt="Person with green aura" className="w-full h-56 object-cover" />
+                  <img src={greenAuraImage} alt="Person with green aura" className="w-full h-56 object-cover" />
                   <div className="absolute inset-0 bg-gradient-radial from-green-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
@@ -1044,7 +1047,7 @@ export default function HomePage() {
               {/* Sample 3 - Purple Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 4.01.06 AM_1755540002447.jpeg" alt="Person with purple aura" className="w-full h-56 object-cover" />
+                  <img src={purpleAuraImage} alt="Person with purple aura" className="w-full h-56 object-cover" />
                   <div className="absolute inset-0 bg-gradient-radial from-purple-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
