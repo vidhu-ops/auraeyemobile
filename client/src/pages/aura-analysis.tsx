@@ -1095,8 +1095,8 @@ export default function AuraAnalysis() {
       const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // ENHANCED: Force multi-section for detailed chakra tab into 4 parts and other tall content
-      const forceMultiSection = (tabId === 'detailed' && contentHeight > 2000) || // Force 4 parts for detailed
+      // ENHANCED: Force multi-section for detailed analysis tab into 4 parts and other tall content
+      const forceMultiSection = (tabId === 'detailed' && contentHeight > 1000) || // Force 4 parts for detailed analysis - lower threshold
                                 (['chakras', 'combined'].includes(tabId) && contentHeight > 6000) || 
                                 (['analysis'].includes(tabId) && contentHeight > 8000);
       
@@ -1104,12 +1104,12 @@ export default function AuraAnalysis() {
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // ENHANCED: Capture with special handling for detailed chakra tab (4 parts)
+        // ENHANCED: Capture with special handling for detailed analysis tab (4 parts)
         const screenshots: string[] = [];
         let totalSections, sectionHeight;
         
         if (tabId === 'detailed') {
-          // Force exactly 4 sections for detailed chakra tab
+          // Force exactly 4 sections for detailed analysis tab
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
         } else {
@@ -1119,7 +1119,7 @@ export default function AuraAnalysis() {
           totalSections = Math.ceil(contentHeight / sectionHeight);
         }
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed chakra)' : ' (16:9 ratio)'}`);
+        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed analysis)' : ' (16:9 ratio)'}`);
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1909,7 +1909,10 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing and multi-page support
+        // ENHANCED: Include all analysis tabs in PDF screenshots
+        const allowedTabs = ['analysis', 'energy-reading', 'guidance', 'spectrum', 'chakras', 'detailed', 'combined'];
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
+          if (!allowedTabs.includes(tabId)) continue;
           
           pdf.setFontSize(14);
           pdf.setTextColor(75, 0, 130);
