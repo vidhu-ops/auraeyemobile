@@ -1075,11 +1075,25 @@ export default function NumerologyPage() {
                                 const yearSum = yearDigits.reduce((a, b) => a + b, 0);
                                 const totalSum = daySum + monthSum + yearSum;
                                 
+                                // CRITICAL FIX: Properly reduce to single digit
+                                const reduceToSingleDigit = (num: number): number => {
+                                  while (num > 9 && ![11, 22, 33].includes(num)) {
+                                    num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+                                  }
+                                  return num;
+                                };
+                                
+                                const reducedPersonalYear = reduceToSingleDigit(totalSum);
+                                
                                 return (
                                   <div className="bg-white p-3 rounded border">
                                     <p>Day: {dayDigits.join(' + ')} = {daySum} + Month: {monthDigits.join(' + ')} = {monthSum} + Year digits: {yearDigits.join(' + ')} = {yearSum}</p>
                                     <p>Total: {daySum} + {monthSum} + {yearSum} = {totalSum}</p>
-                                    <p>Reduced to single digit: <span className="font-medium text-indigo-600">{personalYear}</span></p>
+                                    {totalSum > 9 && ![11, 22, 33].includes(totalSum) ? (
+                                      <p>Reduced to single digit: {totalSum.toString().split('').join(' + ')} = <span className="font-medium text-indigo-600">{reducedPersonalYear}</span></p>
+                                    ) : (
+                                      <p>Final result: <span className="font-medium text-indigo-600">{reducedPersonalYear}</span></p>
+                                    )}
                                   </div>
                                 );
                               })()}
