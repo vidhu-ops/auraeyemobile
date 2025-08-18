@@ -521,7 +521,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center text-center">
             <div className="mb-10 animate-fade-in-down">
               <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Your Energy, made <span className="text-white">Visible</span> <br />
+                Your Energy, Made <span className="text-white">Visible</span> <br />
                 <span className="text-orange-300">Scan .  </span>
                 <span className="text-blue-300">Heal . </span> <span className="text-green-300">Transform</span>
               </h1>
@@ -1011,25 +1011,25 @@ export default function HomePage() {
           <div className="mt-16">
             <h3 className="font-heading font-semibold text-2xl text-center mb-8">Sample Aura Readings</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Sample 1 */}
+              {/* Sample 1 - Blue Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="https://images.pexels.com/photos/3812944/pexels-photo-3812944.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Woman with purple aura" className="w-full h-56 object-cover" />
-                  <div className="absolute inset-0 bg-gradient-radial from-purple-500/30 to-transparent"></div>
+                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 3.56.39 AM_1755539933519.jpeg" alt="Person with blue aura" className="w-full h-56 object-cover" />
+                  <div className="absolute inset-0 bg-gradient-radial from-blue-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center mb-3">
-                    <span className="inline-block w-4 h-4 rounded-full bg-purple-500 mr-2"></span>
-                    <h4 className="font-heading font-semibold">Purple Dominant</h4>
+                    <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2"></span>
+                    <h4 className="font-heading font-semibold">Blue Dominant</h4>
                   </div>
-                  <p className="text-gray-600 text-sm">A spiritual individual with strong intuition. Your crown chakra shows high activity, indicating a deep connection to higher consciousness.</p>
+                  <p className="text-gray-600 text-sm">A clear communicator with strong self-expression. Your throat chakra shows vibrant energy, indicating authentic expression and creative abilities.</p>
                 </div>
               </div>
               
-              {/* Sample 2 */}
+              {/* Sample 2 - Green Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Man with green-gold aura" className="w-full h-56 object-cover" />
+                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 3.52.42 AM_1755540002448.jpeg" alt="Person with green aura" className="w-full h-56 object-cover" />
                   <div className="absolute inset-0 bg-gradient-radial from-green-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
@@ -1041,18 +1041,18 @@ export default function HomePage() {
                 </div>
               </div>
               
-              {/* Sample 3 */}
+              {/* Sample 3 - Purple Dominant */}
               <div className="bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="relative">
-                  <img src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person with blue aura" className="w-full h-56 object-cover" />
-                  <div className="absolute inset-0 bg-gradient-radial from-blue-500/30 to-transparent"></div>
+                  <img src="/attached_assets/WhatsApp Image 2025-08-18 at 4.01.06 AM_1755540002447.jpeg" alt="Person with purple aura" className="w-full h-56 object-cover" />
+                  <div className="absolute inset-0 bg-gradient-radial from-purple-500/30 to-transparent"></div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center mb-3">
-                    <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2"></span>
-                    <h4 className="font-heading font-semibold">Blue Dominant</h4>
+                    <span className="inline-block w-4 h-4 rounded-full bg-purple-500 mr-2"></span>
+                    <h4 className="font-heading font-semibold">Purple Dominant</h4>
                   </div>
-                  <p className="text-gray-600 text-sm">A clear communicator with strong self-expression. Your throat chakra shows vibrant energy, indicating authentic expression and creative abilities.</p>
+                  <p className="text-gray-600 text-sm">A spiritual individual with strong intuition. Your crown chakra shows high activity, indicating a deep connection to higher consciousness.</p>
                 </div>
               </div>
             </div>
@@ -1072,27 +1072,36 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <TestimonialCard 
                 rating={5}
-                testimonial="The aura reading was incredibly accurate! It revealed colors I've always been drawn to and explained energy patterns that made so much sense. The guidance provided helped me focus on areas where my energy was blocked."
-                name="Sarah M."
-                title="Yoga Instructor"
+                testimonial="
+                Trust that this meditation is so powerful that it have still impact.
+                Trust it that this meditation is so powerful and beyond the imagination, however before the meditation nishant elaborate all the aspects of the meditation, Further in the meditation one can feel the energy working upon oneself, Really a wonder, Blessings."
+                name="Siya M."
+                title=""
                 initials="SM"
                 bgColor="primary"
               />
               
               <TestimonialCard 
                 rating={5}
-                testimonial="I was skeptical at first, but the numerology reading was eye-opening. The insights about my life path number explained challenges I've faced and provided clarity about my purpose. I've recommended AuraEye to all my friends."
-                name="James T."
-                title="Business Consultant"
+                testimonial="
+                Blessings from ancestors
+                Hi All, just wanted to share that I got 15% hike just out of nowhere. I
+                mean I had just joined the company 4 months back and they did market correction and gave me 15% hike. It was a welcome surprise. Its not
+                even any appraisal time.
+                Real thankful to Nishant for his guidance."
+                name="Suyeash."
+                title=""
                 initials="JT"
                 bgColor="secondary"
               />
               
               <TestimonialCard 
                 rating={4.5}
-                testimonial="The guided meditations have been transformative for my spiritual practice. I feel more connected to my inner self and have noticed a significant improvement in my energy levels. The journal feature helps me track my progress."
-                name="Elena P."
-                title="Art Therapist"
+                testimonial="
+                Trust that this meditation is so powerful that it have still impact.
+                Trust it that this meditation is so powerful and beyond the imagination, however before the meditation nishant elaborate all the aspects of the meditation, Further in the meditation one can feel the energy working upon oneself, Really a wonder, Blessings"
+                name="Yogesh Kumar."
+                title=""
                 initials="EP"
                 bgColor="accent"
               />
