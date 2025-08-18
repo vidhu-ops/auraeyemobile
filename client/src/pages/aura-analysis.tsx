@@ -1268,9 +1268,9 @@ export default function AuraAnalysis() {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
           console.warn(`Combined image too large for ${tabId}, compressing and retrying`);
-          // Try JPEG compression as fallback
-          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
-          if (fallbackDataUrl.length < 20 * 1024 * 1024) {
+          // Try high-quality JPEG compression as fallback
+          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
+          if (fallbackDataUrl.length < 25 * 1024 * 1024) {
             setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackDataUrl));
           } else {
             console.warn(`Even compressed image too large for ${tabId}, skipping storage`);
@@ -1388,8 +1388,8 @@ export default function AuraAnalysis() {
         const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality screenshots (increased limit to 25MB for maximum quality)
-        if (imageDataUrl.length < 25 * 1024 * 1024) {
+        // ENHANCED: Store high-quality screenshots (increased limit to 30MB for maximum quality)
+        if (imageDataUrl.length < 30 * 1024 * 1024) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         } else {
           console.warn(`Single image too large for ${tabId}, skipping storage`);
@@ -1597,9 +1597,9 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // ENHANCED: Set canvas size with ultra-high resolution for premium PDF quality
-              canvas.width = Math.min(targetWidth * 8, 2400); // Ultra-high resolution for crisp PDFs
-              canvas.height = Math.min(targetHeight * 8, 3200); // Ultra-high resolution for crisp PDFs
+              // ENHANCED: Set canvas size with maximum resolution for crystal clear PDF quality
+              canvas.width = Math.min(targetWidth * 12, 3600); // Maximum resolution for ultra-crisp PDFs
+              canvas.height = Math.min(targetHeight * 12, 4800); // Maximum resolution for ultra-crisp PDFs
               
               // Use high-quality image rendering
               ctx!.imageSmoothingEnabled = true;
@@ -1608,12 +1608,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // ENHANCED: Use PNG for maximum quality, reduced compression for screenshot clarity
+              // ENHANCED: Use PNG for maximum quality, no compression fallback for screenshots
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to maximum quality JPEG with minimal compression
-              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Maximum quality JPEG (minimal compression)
+              // If PNG is too large, use highest quality JPEG with absolute minimal compression
+              if (compressedDataUrl.length > 12 * 1024 * 1024) { // Increased threshold to 12MB
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Absolute maximum quality JPEG
               }
               
               resolve(compressedDataUrl);
@@ -1998,12 +1998,17 @@ export default function AuraAnalysis() {
                 // Compress and add the section with error handling
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                 try {
-                  pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  // Use the highest quality format available
+                  if (compressedSectionDataUrl.startsWith('data:image/png')) {
+                    pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  } else {
+                    pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  }
                 } catch (sectionError) {
-                  console.warn('Section PNG failed, trying JPEG:', sectionError);
-                  // Fallback to JPEG
-                  const jpegSectionDataUrl = compressedSectionDataUrl.replace('data:image/png', 'data:image/jpeg');
-                  pdf.addImage(jpegSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  console.warn('Section image failed, adding placeholder:', sectionError);
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(100, 100, 100);
+                  pdf.text(`[${getTabDisplayName(tabId)} section ${section + 1} - technical issue]`, 20, yPosition + 10);
                 }
                 yPosition += sectionFinalHeight + 10;
                 
@@ -2044,14 +2049,21 @@ export default function AuraAnalysis() {
               // ENHANCED: Compress with higher quality for crystal clear PDF display
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Add the screenshot with preserved aspect ratio - try PNG first, fallback to JPEG
+              // ENHANCED: Add screenshot with maximum quality preservation
               try {
-                pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
-              } catch (pngError) {
-                console.warn('PNG failed, trying JPEG:', pngError);
-                // Convert to JPEG as fallback
-                const jpegDataUrl = compressedImageDataUrl.replace('data:image/png', 'data:image/jpeg');
-                pdf.addImage(jpegDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                // Try PNG first for lossless quality
+                if (compressedImageDataUrl.startsWith('data:image/png')) {
+                  pdf.addImage(compressedImageDataUrl, 'PNG', 20, yPosition, finalWidth, finalHeight);
+                } else {
+                  // Use JPEG with maximum quality
+                  pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                }
+              } catch (imageError) {
+                console.warn('High-quality image failed, creating text placeholder:', imageError);
+                // Fallback: add a text description instead of losing content
+                pdf.setFontSize(10);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(`[${getTabDisplayName(tabId)} screenshot - technical issue prevented inclusion]`, 20, yPosition + 10);
               }
               yPosition += finalHeight + 15;
             }
@@ -2060,7 +2072,7 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            console.error('Error details:', error?.message || 'Unknown error');
+            console.error('Error details:', (error as Error)?.message || 'Unknown error');
             
             // Add error message to PDF instead of skipping
             pdf.setFontSize(10);
