@@ -1055,7 +1055,7 @@ export default function AuraAnalysis() {
         // ENHANCED: Extra padding for tabs with complex content, special handling for energy-reading (chakra bars)
         const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : 
                                  (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 
-                                 (tabId === 'energy-reading' ? 500 : 150))); // Extra padding for chakra bars
+                                 (tabId === 'energy-reading' ? 400 : 150))); // Extra padding for chakra bars
         
         contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
@@ -1078,7 +1078,7 @@ export default function AuraAnalysis() {
             'guidance': 2000,
             'spectrum': 1800,
             'analysis': 3000,
-            'energy-reading': 2000 // Extra height to ensure chakra bars are fully captured
+            'energy-reading': 1500 // Ensure chakra bars are fully captured
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1184,36 +1184,18 @@ export default function AuraAnalysis() {
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
                 
-                // ENHANCED: Force chakra bars and elements to be fully visible with proper styling
-                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full, [style*="width:"]');
+                // ENHANCED: Ensure all chakra elements, colors, scores, and progress bars are fully visible
+                const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full');
                 chakraElements.forEach(chakraElem => {
                   const htmlChakraElem = chakraElem as HTMLElement;
                   htmlChakraElem.style.opacity = '1';
                   htmlChakraElem.style.visibility = 'visible';
                   htmlChakraElem.style.display = 'block';
-                  htmlChakraElem.style.fontSize = '16px';
-                  htmlChakraElem.style.fontWeight = 'bold';
-                  htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
-                  htmlChakraElem.style.minHeight = '24px'; // Larger bars for visibility
-                  htmlChakraElem.style.border = '1px solid rgba(255,255,255,0.3)'; // Subtle border
-                  // Force background colors to be visible
-                  if (htmlChakraElem.className.includes('bg-gradient')) {
-                    htmlChakraElem.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
-                  }
+                  htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
+                  htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
+                  htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
+                  htmlChakraElem.style.minHeight = '20px'; // Ensure bars are visible
                 });
-                
-                // Special handling for energy-reading tab bars
-                if (tabId === 'energy-reading') {
-                  const progressBars = elem.querySelectorAll('.bg-gradient-to-r, [style*="width:"], .rounded-full');
-                  progressBars.forEach(bar => {
-                    const barElem = bar as HTMLElement;
-                    barElem.style.minHeight = '28px'; // Even larger for energy bars
-                    barElem.style.backgroundColor = '#4f46e5'; // Fallback solid color
-                    barElem.style.opacity = '1';
-                    barElem.style.visibility = 'visible';
-                    barElem.style.display = 'block';
-                  });
-                }
               }
             }
           });
@@ -1333,8 +1315,8 @@ export default function AuraAnalysis() {
         htmlElement.scrollTop = 0;
         window.scrollTo(0, 0);
         
-        // ENHANCED: Extended wait for chakra bars to fully render
-        await new Promise(resolve => setTimeout(resolve, tabId === 'energy-reading' ? 1500 : 800));
+        // Wait for layout to stabilize
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
@@ -1368,36 +1350,18 @@ export default function AuraAnalysis() {
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
               
-              // ENHANCED: Force chakra bars and elements to be fully visible with proper styling
-              const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full, [style*="width:"]');
+              // ENHANCED: Ensure all chakra elements, colors, scores, and progress bars are fully visible
+              const chakraElements = elem.querySelectorAll('[class*="chakra"], [class*="color"], [class*="score"], [class*="progress"], [class*="bar"], .text-white, .font-bold, .text-center, .bg-gradient-to-r, .rounded-full');
               chakraElements.forEach(chakraElem => {
                 const htmlChakraElem = chakraElem as HTMLElement;
                 htmlChakraElem.style.opacity = '1';
                 htmlChakraElem.style.visibility = 'visible';
                 htmlChakraElem.style.display = 'block';
-                htmlChakraElem.style.fontSize = '16px';
-                htmlChakraElem.style.fontWeight = 'bold';
-                htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
-                htmlChakraElem.style.minHeight = '24px'; // Larger bars for visibility
-                htmlChakraElem.style.border = '1px solid rgba(255,255,255,0.3)'; // Subtle border
-                // Force background colors to be visible
-                if (htmlChakraElem.className.includes('bg-gradient')) {
-                  htmlChakraElem.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
-                }
+                htmlChakraElem.style.fontSize = '16px'; // Ensure readable font size
+                htmlChakraElem.style.fontWeight = 'bold'; // Make text bold for clarity
+                htmlChakraElem.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)'; // Add text shadow for visibility
+                htmlChakraElem.style.minHeight = '20px'; // Ensure bars are visible
               });
-              
-              // Special handling for energy-reading tab bars
-              if (tabId === 'energy-reading') {
-                const progressBars = elem.querySelectorAll('.bg-gradient-to-r, [style*="width:"], .rounded-full');
-                progressBars.forEach(bar => {
-                  const barElem = bar as HTMLElement;
-                  barElem.style.minHeight = '28px'; // Even larger for energy bars
-                  barElem.style.backgroundColor = '#4f46e5'; // Fallback solid color
-                  barElem.style.opacity = '1';
-                  barElem.style.visibility = 'visible';
-                  barElem.style.display = 'block';
-                });
-              }
               
               // Ensure all child elements are visible
               const allChildren = elem.querySelectorAll('*');
@@ -1644,12 +1608,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // ENHANCED: 30% better quality - PNG first, then ultra-high quality JPEG
+              // ENHANCED: Use PNG for maximum quality, reduced compression for screenshot clarity
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, use 30% better quality JPEG than before
-              if (compressedDataUrl.length > 10 * 1024 * 1024) { // Increased threshold to 10MB
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.99); // 30% better quality JPEG
+              // If PNG is too large, fallback to maximum quality JPEG with minimal compression
+              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Maximum quality JPEG (minimal compression)
               }
               
               resolve(compressedDataUrl);
@@ -2096,7 +2060,7 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            console.error('Error details:', (error as Error)?.message || 'Unknown error');
+            console.error('Error details:', error?.message || 'Unknown error');
             
             // Add error message to PDF instead of skipping
             pdf.setFontSize(10);
