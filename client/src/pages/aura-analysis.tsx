@@ -1084,56 +1084,31 @@ export default function AuraAnalysis() {
       // Use screen width as base for consistent readability, ensure minimum width
       const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
       
-      // Determine if content needs multi-section capture for better clarity
-      // Use smaller sections for better image quality and element visibility
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 2.5, 4000); // Reduced to 2.5 screen heights or 4000px for clearer captures
+      // Determine if content needs multi-section capture for long content
+      // Use a reasonable threshold - prefer single capture for better PDF formatting
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section for content that benefits from splitting for clarity
-      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 3000) || 
-                                (['analysis', 'guidance', 'spectrum'].includes(tabId) && contentHeight > 2500);
+      // Force multi-section only for extremely tall content
+      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 6000) || 
+                                (['analysis'].includes(tabId) && contentHeight > 8000);
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // Capture long content in optimized sections for maximum clarity
+        // Capture long content in 16:9 sections for optimal PDF display
         const screenshots: string[] = [];
-        const targetAspectRatio = 4 / 3; // 4:3 aspect ratio for better readability
+        const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
         const sectionHeight = Math.floor(captureWidth / targetAspectRatio);
         const totalSections = Math.ceil(contentHeight / sectionHeight);
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (4:3 ratio for clarity)`);
+        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (16:9 ratio)`);
         
         for (let section = 0; section < totalSections; section++) {
-          const startY = section * sectionHeight * 0.9; // 10% overlap between sections
+          const startY = section * sectionHeight;
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
-          
-          // Enhanced visibility preparation for each section
-          const allSectionElements = htmlElement.querySelectorAll('*');
-          const originalElementStyles: Array<{element: HTMLElement, styles: any}> = [];
-          
-          // Store original styles and enhance visibility
-          allSectionElements.forEach(el => {
-            const element = el as HTMLElement;
-            if (element.style) {
-              originalElementStyles.push({
-                element,
-                styles: {
-                  opacity: element.style.opacity,
-                  visibility: element.style.visibility,
-                  transform: element.style.transform,
-                  filter: element.style.filter
-                }
-              });
-              
-              // Enhance visibility for this section
-              element.style.opacity = '1';
-              element.style.visibility = 'visible';
-              element.style.filter = 'contrast(1.1) brightness(1.05)'; // Slight enhancement
-            }
-          });
           
           // Scroll element to show this section - try multiple approaches
           try {
@@ -1167,11 +1142,11 @@ export default function AuraAnalysis() {
           }
           
           // Wait longer for scroll to complete and content to render
-          await new Promise(resolve => setTimeout(resolve, 800));
+          await new Promise(resolve => setTimeout(resolve, 500));
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 3.0, // Maximum scale for crystal clear text and colors
+            scale: 3.0, // Increased scale for maximum quality
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1184,8 +1159,8 @@ export default function AuraAnalysis() {
             windowWidth: captureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
-            foreignObjectRendering: true, // Enhanced rendering for better text/SVG quality
-            imageTimeout: 8000, // Extended timeout for quality capture
+            foreignObjectRendering: false,
+            imageTimeout: 2000,
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1195,27 +1170,8 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                
-                // Enhance all text elements for clarity
-                const textElements = clonedElement.querySelectorAll('*');
-                textElements.forEach(textEl => {
-                  const textElement = textEl as HTMLElement;
-                  if (textElement.style) {
-                    textElement.style.textRendering = 'optimizeLegibility';
-                    (textElement.style as any).fontSmooth = 'always';
-                    (textElement.style as any).webkitFontSmoothing = 'antialiased';
-                  }
-                });
               }
             }
-          });
-          
-          // Restore original element styles
-          originalElementStyles.forEach(({element, styles}) => {
-            element.style.opacity = styles.opacity || '';
-            element.style.visibility = styles.visibility || '';
-            element.style.transform = styles.transform || '';
-            element.style.filter = styles.filter || '';
           });
           
           screenshots.push(sectionCanvas.toDataURL('image/png', 1.0));
@@ -1255,9 +1211,9 @@ export default function AuraAnalysis() {
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // Calculate combined dimensions with proper scaling
-        const finalWidth = captureWidth * 2.0; // Balanced scaling for file size
-        const finalHeight = screenshots.length * (sectionHeight * 2.0);
+        // Calculate combined dimensions (account for scale factor)
+        const finalWidth = captureWidth * 3.0;
+        const finalHeight = screenshots.length * (sectionHeight * 3.0);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1268,7 +1224,7 @@ export default function AuraAnalysis() {
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 2.0));
+              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
               resolve(true);
             };
           });
@@ -1306,7 +1262,7 @@ export default function AuraAnalysis() {
         htmlElement.style.width = 'auto';
         htmlElement.style.maxWidth = 'none';
         
-        // Force all children to be visible and properly sized with enhanced clarity
+        // Force all children to be visible and properly sized
         const allChildren = htmlElement.querySelectorAll('*');
         allChildren.forEach(child => {
           const childElem = child as HTMLElement;
@@ -1316,10 +1272,6 @@ export default function AuraAnalysis() {
             childElem.style.height = 'auto';
             childElem.style.opacity = '1';
             childElem.style.visibility = 'visible';
-            childElem.style.textRendering = 'optimizeLegibility';
-            (childElem.style as any).fontSmooth = 'always';
-            (childElem.style as any).webkitFontSmoothing = 'antialiased';
-            childElem.style.filter = 'contrast(1.05) brightness(1.02)'; // Slight enhancement for clarity
           }
         });
         
@@ -1332,7 +1284,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 2.5, // Increased scale for maximum clarity and text sharpness
+          scale: 1.5, // Optimized scale for quality and file size
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1343,8 +1295,8 @@ export default function AuraAnalysis() {
           windowWidth: captureWidth,
           windowHeight: contentHeight,
           removeContainer: false,
-          foreignObjectRendering: true, // Better text and SVG rendering
-          imageTimeout: 12000, // Extended timeout for high-quality capture
+          foreignObjectRendering: false,
+          imageTimeout: 8000, // Longer timeout for complex content
           ignoreElements: (element) => {
             // Ignore scroll bars and other non-essential elements
             const htmlElement = element as HTMLElement;
@@ -1362,20 +1314,13 @@ export default function AuraAnalysis() {
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
               
-              // Enhance all elements in cloned document for maximum clarity
-              const allClonedElements = elem.querySelectorAll('*');
-              allClonedElements.forEach(clonedEl => {
-                const clonedElement = clonedEl as HTMLElement;
-                if (clonedElement.style) {
-                  clonedElement.style.textRendering = 'optimizeLegibility';
-                  (clonedElement.style as any).fontSmooth = 'always';
-                  (clonedElement.style as any).webkitFontSmoothing = 'antialiased';
-                  clonedElement.style.opacity = '1';
-                  clonedElement.style.visibility = 'visible';
-                  clonedElement.style.overflow = 'visible';
-                  clonedElement.style.maxHeight = 'none';
-                  clonedElement.style.height = 'auto';
-                }
+              // Ensure all child elements are visible
+              const allChildren = elem.querySelectorAll('*');
+              allChildren.forEach(child => {
+                const childElem = child as HTMLElement;
+                childElem.style.overflow = 'visible';
+                childElem.style.maxHeight = 'none';
+                childElem.style.height = 'auto';
               });
             }
           }
