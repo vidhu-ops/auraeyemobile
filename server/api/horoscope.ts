@@ -671,34 +671,47 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     const parts = birthDate.split('-');
     if (parts.length !== 3) return 5; // Default fallback
     
-    const month = parts[1]; // MM (birth month)
-    const day = parts[2];   // DD (birth day)
+    const year = parts[0];   // YYYY (birth year - not used in personal year)
+    const month = parts[1];  // MM (birth month)
+    const day = parts[2];    // DD (birth day)
     const currentYear = "2025"; // Current year 2025
     
-    console.log(`calculatePersonalYear debug: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
+    console.log(`Horoscope CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
     let sum = 0;
     
-    // Sum all digits from birth month
+    // CRITICAL FIX: Sum all digits from birth month properly
     for (const digit of month) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`Horoscope Adding month digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
-    // Sum all digits from birth day
+    // CRITICAL FIX: Sum all digits from birth day properly  
     for (const digit of day) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`Horoscope Adding day digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
     // Sum all digits from current year (2025)
     for (const digit of currentYear) {
-      sum += parseInt(digit);
+      const digitValue = parseInt(digit);
+      if (!isNaN(digitValue)) {
+        sum += digitValue;
+        console.log(`Horoscope Adding current year digit: ${digit} (${digitValue}), running sum: ${sum}`);
+      }
     }
     
-    console.log(`calculatePersonalYear debug: total sum before reduction=${sum}`);
+    console.log(`Horoscope CORRECTED personal year sum before reduction: ${sum}`);
     
-    // Reduce to single digit
+    // Reduce to single digit (except for master numbers 11, 22, 33)
     const result = reduceNumber(sum);
-    console.log(`calculatePersonalYear debug: final result=${result}`);
+    console.log(`Horoscope CORRECTED personalYear result: ${result}`);
     return result;
   };
   

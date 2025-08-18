@@ -1763,28 +1763,57 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       } catch (apiError) {
         console.error("Healer numerology API error, using fallback:", apiError);
         
-        // Helper function for fallback personal year calculation
+        // Helper function for fallback personal year calculation - CORRECTED TO USE PROPER DIGITS
         const calculatePersonalYearFallback = (birthDate: string): number => {
           const parts = birthDate.split('-');
           if (parts.length !== 3) return 5;
-          const month = parts[1];
-          const day = parts[2];
-          const currentYear = "2025";
           
-          console.log(`Healer fallback calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
+          const year = parts[0];   // YYYY (birth year)
+          const month = parts[1];  // MM (birth month)
+          const day = parts[2];    // DD (birth day)
+          const currentYear = "2025"; // Current year
+          
+          console.log(`Healer CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
           
           let sum = 0;
-          for (const digit of month) sum += parseInt(digit);
-          for (const digit of day) sum += parseInt(digit);
-          for (const digit of currentYear) sum += parseInt(digit);
           
-          console.log(`Healer fallback personal year sum before reduction: ${sum}`);
-          
-          // Reduce to single digit
-          while (sum > 9) {
-            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+          // CRITICAL FIX: Add both digits of the month properly
+          for (const digit of month) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding month digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
           }
-          console.log(`Healer fallback personalYear result: ${sum}`);
+          
+          // CRITICAL FIX: Add both digits of the day properly  
+          for (const digit of day) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding day digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
+          }
+          
+          // Add all digits from current year (2025)
+          for (const digit of currentYear) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding current year digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
+          }
+          
+          console.log(`Healer CORRECTED personal year sum before reduction: ${sum}`);
+          
+          // Reduce to single digit (except for master numbers 11, 22, 33)
+          while (sum > 9 && ![11, 22, 33].includes(sum)) {
+            const oldSum = sum;
+            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+            console.log(`Reducing ${oldSum} to ${sum}`);
+          }
+          
+          console.log(`Healer CORRECTED personalYear result: ${sum}`);
           return sum;
         };
         
@@ -2036,20 +2065,57 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         // Already using algorithmic calculation as fallback in the API
         console.error("Numerology error:", apiError);
         
-        // Create a fallback in case the API function completely fails
+        // Create a fallback in case the API function completely fails - CORRECTED CALCULATION
         const calculatePersonalYear = (birthDate: string): number => {
           const parts = birthDate.split('-');
           if (parts.length !== 3) return 5;
-          const month = parts[1];
-          const day = parts[2];
-          const currentYear = "2025";
+          
+          const year = parts[0];   // YYYY (birth year - not used in personal year)  
+          const month = parts[1];  // MM (birth month)
+          const day = parts[2];    // DD (birth day)
+          const currentYear = "2025"; // Current year
+          
+          console.log(`Fallback CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
+          
           let sum = 0;
-          for (const digit of month) sum += parseInt(digit);
-          for (const digit of day) sum += parseInt(digit);
-          for (const digit of currentYear) sum += parseInt(digit);
-          while (sum > 9) {
-            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+          
+          // CRITICAL FIX: Add both digits of the month properly
+          for (const digit of month) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding month digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
           }
+          
+          // CRITICAL FIX: Add both digits of the day properly  
+          for (const digit of day) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding day digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
+          }
+          
+          // Add all digits from current year (2025)
+          for (const digit of currentYear) {
+            const digitValue = parseInt(digit);
+            if (!isNaN(digitValue)) {
+              sum += digitValue;
+              console.log(`Adding current year digit: ${digit} (${digitValue}), running sum: ${sum}`);
+            }
+          }
+          
+          console.log(`Fallback CORRECTED personal year sum before reduction: ${sum}`);
+          
+          // Reduce to single digit (except for master numbers 11, 22, 33)
+          while (sum > 9 && ![11, 22, 33].includes(sum)) {
+            const oldSum = sum;
+            sum = sum.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+            console.log(`Reducing ${oldSum} to ${sum}`);
+          }
+          
+          console.log(`Fallback CORRECTED personalYear result: ${sum}`);
           return sum;
         };
         
