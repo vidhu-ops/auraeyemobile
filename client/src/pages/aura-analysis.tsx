@@ -1089,21 +1089,36 @@ export default function AuraAnalysis() {
       const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section only for extremely tall content
-      const forceMultiSection = (['chakras', 'detailed', 'combined'].includes(tabId) && contentHeight > 6000) || 
-                                (['analysis'].includes(tabId) && contentHeight > 8000);
+      // Force multi-section for specific tabs to ensure readability
+      const forceMultiSection = (['chakras'].includes(tabId) && contentHeight > 6000) || 
+                                (['analysis'].includes(tabId) && contentHeight > 8000) ||
+                                (['detailed'].includes(tabId)); // Always use 4 sections for detailed tab
       
       console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
       console.log(`Multi-section capture needed: ${needsMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
-        // Capture long content in 16:9 sections for optimal PDF display
+        // Capture long content in optimized sections for optimal PDF display
         const screenshots: string[] = [];
-        const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
-        const sectionHeight = Math.floor(captureWidth / targetAspectRatio);
-        const totalSections = Math.ceil(contentHeight / sectionHeight);
         
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight} (16:9 ratio)`);
+        // Special handling for detailed chakra analysis - force 4 sections for better readability
+        let sectionHeight: number;
+        let totalSections: number;
+        
+        if (tabId === 'detailed') {
+          // Force exactly 4 sections for detailed analysis with larger dimensions for readability
+          totalSections = 4;
+          sectionHeight = Math.ceil(contentHeight / 4);
+          // Increase capture width significantly for detailed tab to improve text legibility
+          const detailedCaptureWidth = Math.max(captureWidth * 1.5, 1800); // 50% larger for better text
+        } else {
+          // Use aspect ratio for other tabs
+          const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
+          sectionHeight = Math.floor(captureWidth / targetAspectRatio);
+          totalSections = Math.ceil(contentHeight / sectionHeight);
+        }
+        
+        console.log(`Capturing ${totalSections} sections for ${tabId} tab, each ${tabId === 'detailed' ? 'enhanced for text legibility' : 'optimized for readability'}`);
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1144,23 +1159,27 @@ export default function AuraAnalysis() {
           // Wait longer for scroll to complete and content to render
           await new Promise(resolve => setTimeout(resolve, 500));
           
+          // Use higher capture width for detailed tab to improve text legibility
+          const captureWidthForSection = tabId === 'detailed' ? Math.max(captureWidth * 1.5, 1800) : captureWidth;
+          
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 3.0, // Increased scale for maximum quality
+            scale: tabId === 'detailed' ? 4.0 : 3.0, // Extra high scale for detailed tab text legibility
             logging: false,
             useCORS: true,
             allowTaint: false,
             x: 0,
             y: startY,
-            width: captureWidth,
+            width: captureWidthForSection,
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: captureWidth,
+            windowWidth: captureWidthForSection,
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 2000,
+            imageTimeout: 3000, // Longer timeout for detailed processing
+            // Enhanced text rendering with high quality settings
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1170,6 +1189,17 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
+                // Enhance text rendering for detailed tab
+                if (tabId === 'detailed') {
+                  elem.style.fontSize = '16px'; // Increase font size for better legibility
+                  elem.style.lineHeight = '1.6';
+                  const textElements = elem.querySelectorAll('p, span, div');
+                  textElements.forEach(textEl => {
+                    const textElement = textEl as HTMLElement;
+                    textElement.style.fontSize = '16px';
+                    textElement.style.fontWeight = '500';
+                  });
+                }
               }
             }
           });
@@ -1284,7 +1314,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 1.5, // Optimized scale for quality and file size
+          scale: 2.5, // Higher scale for better quality screenshots
           logging: false,
           useCORS: true,
           allowTaint: false,
