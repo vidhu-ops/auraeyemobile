@@ -353,13 +353,13 @@ export default function ObjectAnalysis() {
     ctx.textBaseline = 'middle';
     
     // Add text shadow/outline for better visibility
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
     ctx.lineWidth = 0;
     ctx.strokeText('AuraEye™', centerX, centerY);
     
     // Add main watermark text in white
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText('AuraEye™', centerX, centerY);
+    ctx.fillText('AuraEyeTM', centerX, centerY);
     
     // Restore the context
     ctx.restore();

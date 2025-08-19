@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Loader2 } from "lucide-react";
 import MobileOtpVerificationSimple from "@/components/mobile-otp-verification-simple";
-import logoPath from "@/assets/new-aura-logo.jpg";
+import logoPath from "@/assets/eye-logo.png";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -92,7 +92,7 @@ export default function AuthPage() {
         <Card className="w-full max-w-md z-10">
           <CardHeader>
             <div className="flex items-center space-x-2 mb-2">
-              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 object-contain" />
+              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="font-heading font-bold text-2xl text-primary">AuraEye™</span>
             </div>
             <CardTitle className="text-2xl">Welcome to AuraEye</CardTitle>

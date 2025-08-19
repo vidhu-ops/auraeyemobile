@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Menu, User, LogOut, CreditCard } from "lucide-react";
-import logoPath from "@/assets/new-aura-logo.jpg";
+import logoPath from "@/assets/eye-logo.png";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -56,7 +56,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 relative">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
-            <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 object-contain" />
+            <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
             <span className="font-heading font-bold text-2xl text-primary">AuraEye™</span>
           </Link>
 

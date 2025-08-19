@@ -27,15 +27,8 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
   };
 
   const handleScanAuraAgain = () => {
-    navigate('/#vibe-check-section');
+    navigate('/vibe');
     onClose();
-    // Small delay to ensure navigation completes, then scroll to vibe section
-    setTimeout(() => {
-      const vibeSection = document.getElementById('vibe-check-section');
-      if (vibeSection) {
-        vibeSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
   };
 
   const handleGoHome = () => {
