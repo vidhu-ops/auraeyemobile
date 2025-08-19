@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Menu, User, LogOut, CreditCard } from "lucide-react";
-import logoPath from "@/assets/eye-logo.png";
+import logoPath from "@assets/new-logo.jpeg";
 
 export default function Navbar() {
   const [location] = useLocation();
