@@ -1146,7 +1146,7 @@ export default function AuraAnalysis() {
           
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 3.0, // Increased scale for maximum quality
+            scale: 4.0, // Maximum scale for ultimate legibility in PDF
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1212,8 +1212,8 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions (account for scale factor)
-        const finalWidth = captureWidth * 3.0;
-        const finalHeight = screenshots.length * (sectionHeight * 3.0);
+        const finalWidth = captureWidth * 4.0;
+        const finalHeight = screenshots.length * (sectionHeight * 4.0);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1224,7 +1224,7 @@ export default function AuraAnalysis() {
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
+              ctx.drawImage(img, 0, i * (sectionHeight * 4.0));
               resolve(true);
             };
           });
@@ -1284,7 +1284,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 1.5, // Optimized scale for quality and file size
+          scale: 4.0, // Maximum scale for ultimate legibility in PDF
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1547,9 +1547,9 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // Set canvas size with higher resolution for better PDF quality
-              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
-              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
+              // Set canvas size with maximum resolution for ultimate PDF quality
+              canvas.width = Math.min(targetWidth * 8, 2400); // Maximum resolution for crisp text
+              canvas.height = Math.min(targetHeight * 8, 3200); // Maximum resolution for crisp text
               
               // Use high-quality image rendering
               ctx!.imageSmoothingEnabled = true;
@@ -1561,9 +1561,9 @@ export default function AuraAnalysis() {
               // Use PNG for better quality, JPEG as fallback if too large
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to high quality JPEG (reduced compression by 20%)
+              // If PNG is too large, fallback to highest quality JPEG (reduced compression by 40% total)
               if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Even higher quality JPEG (reduced compression)
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Maximum quality JPEG for ultimate clarity
               }
               
               resolve(compressedDataUrl);
@@ -1924,7 +1924,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.95); // Improved screenshot clarity
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 1.0); // Maximum clarity for PDF sections
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -4747,19 +4747,21 @@ export default function AuraAnalysis() {
             console.log('📷 Found visualization container, capturing screenshot...');
             console.log('📐 Container dimensions:', visualizationContainer.scrollWidth, 'x', visualizationContainer.scrollHeight);
 
-            // Capture the entire visualization display (original + aura side by side)
+            // Capture the entire visualization display with maximum quality settings
             const canvas = await html2canvas(visualizationContainer as HTMLElement, {
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#ffffff',
-                scale: 2, // Higher quality
+                scale: 3, // Maximum quality scale for ultimate legibility
                 logging: false,
                 width: visualizationContainer.scrollWidth,
-                height: visualizationContainer.scrollHeight
+                height: visualizationContainer.scrollHeight,
+                pixelRatio: window.devicePixelRatio || 1,
+                dpi: 192 // Higher DPI for crisp text and details
             });
 
-            // Convert to base64 with improved clarity
-            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.95); // Enhanced screenshot quality
+            // Convert to base64 with maximum clarity
+            const screenshotBase64 = canvas.toDataURL('image/jpeg', 1.0); // Maximum screenshot quality for ultimate legibility
             console.log('📸 Screenshot captured successfully, size:', screenshotBase64.length, 'characters');
 
             // Send screenshot to backend to update the stored processedAuraImage
