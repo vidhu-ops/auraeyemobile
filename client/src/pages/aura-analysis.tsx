@@ -1489,8 +1489,8 @@ export default function AuraAnalysis() {
       // Add the uploaded image as the first page if available
       const addUploadedImageAsFirstPage = async () => {
         try {
-          // Import the uploaded image directly from attached assets  
-          const uploadedImageModule = await import('@assets/WhatsApp Image 2025-07-28 at 10.02.03 PM_1753725795826.jpeg');
+          // Import the new cover image directly from attached assets  
+          const uploadedImageModule = await import('@assets/pdf-cover-image.jpeg');
           const uploadedImageSrc = uploadedImageModule.default;
           
           // Create image to get dimensions
