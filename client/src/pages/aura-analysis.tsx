@@ -965,7 +965,7 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Screenshot capture function with proper sizing and 16:9 aspect ratio for long content
+  // Enhanced screenshot capture function with 15% increased width and improved quality
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
@@ -981,15 +981,18 @@ export default function AuraAnalysis() {
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       
-      // Calculate the full scrollable content size
-      const contentWidth = Math.max(
+      // Calculate the full scrollable content size with 15% width increase as requested
+      const baseContentWidth = Math.max(
         htmlElement.scrollWidth,
         htmlElement.offsetWidth,
         htmlElement.clientWidth,
         rect.width
       );
       
-      // For chakras tab, ensure we capture all content including scrollable areas
+      // Increase width by 15% for better readability and visibility
+      const contentWidth = Math.floor(baseContentWidth * 1.15);
+      
+      // Ensure comprehensive content height capture for all tabs
       let contentHeight = Math.max(
         htmlElement.scrollHeight,
         htmlElement.offsetHeight,
@@ -1081,44 +1084,52 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Use screen width as base for consistent readability, ensure minimum width
-      const captureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      // Enhanced capture width with 15% increase for better readability and minimum thresholds
+      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      const captureWidth = Math.floor(baseCaptureWidth * 1.15); // 15% width increase as requested
       
-      // Determine if content needs multi-section capture for long content
-      // Use a reasonable threshold - prefer single capture for better PDF formatting
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
+      // Enhanced section thresholds for better PDF quality - force multi-section for long content
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Force multi-section for specific tabs to ensure readability
-      const forceMultiSection = (['chakras'].includes(tabId) && contentHeight > 6000) || 
-                                (['analysis'].includes(tabId) && contentHeight > 8000) ||
-                                (['detailed'].includes(tabId)); // Always use 4 sections for detailed tab
+      // Enhanced multi-section logic for better readability across all tabs
+      const forceMultiSection = (['chakras', 'analysis', 'guidance', 'spectrum', 'energy-map'].includes(tabId) && contentHeight > 4000) ||
+                                (['detailed'].includes(tabId)); // Always use multi-section for detailed tab
       
-      console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
-      console.log(`Multi-section capture needed: ${needsMultiSection}`);
+      console.log(`Enhanced capture: Base ${baseCaptureWidth}x${contentHeight} → Enhanced ${captureWidth}x${contentHeight} (+15% width)`);
+      console.log(`Multi-section capture needed: ${needsMultiSection || forceMultiSection}`);
 
       if (needsMultiSection || forceMultiSection) {
         // Capture long content in optimized sections for optimal PDF display
         const screenshots: string[] = [];
         
-        // Special handling for detailed chakra analysis - force 4 sections for better readability
+        // Enhanced section calculation for optimal readability and PDF presentation
         let sectionHeight: number;
         let totalSections: number;
+        let enhancedCaptureWidth = captureWidth;
         
         if (tabId === 'detailed') {
-          // Force exactly 4 sections for detailed analysis with larger dimensions for readability
+          // Force exactly 4 sections for detailed analysis with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Increase capture width significantly for detailed tab to improve text legibility
-          const detailedCaptureWidth = Math.max(captureWidth * 1.5, 1800); // 50% larger for better text
+          // Additional 25% width increase for detailed tab text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+        } else if (['chakras', 'analysis', 'guidance'].includes(tabId)) {
+          // Optimized sectioning for complex tabs
+          const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
+          sectionHeight = idealSectionHeight;
+          totalSections = Math.ceil(contentHeight / sectionHeight);
+          // Additional 10% width increase for complex tabs
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.10);
         } else {
-          // Use aspect ratio for other tabs
-          const targetAspectRatio = 16 / 9; // 16:9 aspect ratio
+          // Standard sectioning for other tabs with optimal aspect ratio
+          const targetAspectRatio = 16 / 9;
           sectionHeight = Math.floor(captureWidth / targetAspectRatio);
           totalSections = Math.ceil(contentHeight / sectionHeight);
+          // Use base enhanced width (already 15% increased)
         }
         
-        console.log(`Capturing ${totalSections} sections for ${tabId} tab, each ${tabId === 'detailed' ? 'enhanced for text legibility' : 'optimized for readability'}`);
+        console.log(`Capturing ${totalSections} sections for ${tabId} tab with enhanced width ${enhancedCaptureWidth}px, each section optimized for PDF readability`);
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1159,26 +1170,24 @@ export default function AuraAnalysis() {
           // Wait longer for scroll to complete and content to render
           await new Promise(resolve => setTimeout(resolve, 500));
           
-          // Use higher capture width for detailed tab to improve text legibility
-          const captureWidthForSection = tabId === 'detailed' ? Math.max(captureWidth * 1.5, 1800) : captureWidth;
-          
+          // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: tabId === 'detailed' ? 4.0 : 3.0, // Extra high scale for detailed tab text legibility
+            scale: tabId === 'detailed' ? 4.5 : 3.5, // Enhanced scale for all tabs with extra boost for detailed
             logging: false,
             useCORS: true,
             allowTaint: false,
             x: 0,
             y: startY,
-            width: captureWidthForSection,
+            width: enhancedCaptureWidth,
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: captureWidthForSection,
+            windowWidth: enhancedCaptureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 3000, // Longer timeout for detailed processing
+            imageTimeout: 5000, // Extended timeout for high-quality processing
             // Enhanced text rendering with high quality settings
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
@@ -1189,15 +1198,27 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhance text rendering for detailed tab
+                // Enhanced text rendering for all tabs with special boost for detailed
                 if (tabId === 'detailed') {
-                  elem.style.fontSize = '16px'; // Increase font size for better legibility
-                  elem.style.lineHeight = '1.6';
-                  const textElements = elem.querySelectorAll('p, span, div');
+                  elem.style.fontSize = '18px'; // Larger font for detailed tab
+                  elem.style.lineHeight = '1.7';
+                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
                   textElements.forEach(textEl => {
                     const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '16px';
+                    textElement.style.fontSize = '18px';
+                    textElement.style.fontWeight = '600';
+                    textElement.style.letterSpacing = '0.3px';
+                  });
+                } else {
+                  // Enhanced text for all other tabs
+                  elem.style.fontSize = '15px';
+                  elem.style.lineHeight = '1.6';
+                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+                  textElements.forEach(textEl => {
+                    const textElement = textEl as HTMLElement;
+                    textElement.style.fontSize = '15px';
                     textElement.style.fontWeight = '500';
+                    textElement.style.letterSpacing = '0.2px';
                   });
                 }
               }
@@ -1237,13 +1258,14 @@ export default function AuraAnalysis() {
           console.warn('Failed to reset scroll position:', resetScrollError);
         }
         
-        // Combine all sections into one long image for PDF
+        // Combine all sections into one long image for PDF with enhanced dimensions
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // Calculate combined dimensions (account for scale factor)
-        const finalWidth = captureWidth * 3.0;
-        const finalHeight = screenshots.length * (sectionHeight * 3.0);
+        // Calculate combined dimensions using enhanced width and scale factor
+        const scaleUsed = tabId === 'detailed' ? 4.5 : 3.5;
+        const finalWidth = enhancedCaptureWidth * scaleUsed;
+        const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1254,21 +1276,26 @@ export default function AuraAnalysis() {
           img.src = screenshots[i];
           await new Promise((resolve) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * 3.0));
+              ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
               resolve(true);
             };
           });
         }
         
-        // Use PNG for better quality, only compress if too large
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
-        console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+        // Use PNG for better quality with optimized compression
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.98);
+        console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (combinedImageDataUrl.length < 10 * 1024 * 1024) {
+        // Store with higher size limit for enhanced quality screenshots
+        if (combinedImageDataUrl.length < 15 * 1024 * 1024) { // Increased limit for high-quality captures
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
-          console.warn(`Combined image too large for ${tabId}, skipping storage`);
+          console.warn(`Combined image too large for ${tabId}, attempting JPEG compression`);
+          // Fallback to JPEG with high quality
+          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 0.95);
+          if (jpegVersion.length < 12 * 1024 * 1024) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
+          }
         }
         
         console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
@@ -1314,11 +1341,11 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 2.5, // Higher scale for better quality screenshots
+          scale: 3.5, // Enhanced scale for all single captures
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: captureWidth,
+          width: captureWidth, // Already enhanced with 15% increase
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
@@ -1344,13 +1371,24 @@ export default function AuraAnalysis() {
               elem.style.width = 'auto';
               elem.style.maxWidth = 'none';
               
-              // Ensure all child elements are visible
+              // Ensure all child elements are visible with enhanced text rendering
               const allChildren = elem.querySelectorAll('*');
               allChildren.forEach(child => {
                 const childElem = child as HTMLElement;
                 childElem.style.overflow = 'visible';
                 childElem.style.maxHeight = 'none';
                 childElem.style.height = 'auto';
+              });
+              
+              // Enhanced text rendering for single captures
+              elem.style.fontSize = '15px';
+              elem.style.lineHeight = '1.6';
+              const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+              textElements.forEach(textEl => {
+                const textElement = textEl as HTMLElement;
+                textElement.style.fontSize = '15px';
+                textElement.style.fontWeight = '500';
+                textElement.style.letterSpacing = '0.2px';
               });
             }
           }
@@ -1364,15 +1402,20 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG for better quality
-        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
-        console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+        // Use PNG for enhanced quality with optimized settings
+        const imageDataUrl = canvas.toDataURL('image/png', 0.98);
+        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
-        // Only store if reasonable size (less than 10MB)
-        if (imageDataUrl.length < 10 * 1024 * 1024) {
+        // Store with higher size limit for enhanced quality screenshots
+        if (imageDataUrl.length < 12 * 1024 * 1024) { // Increased limit for enhanced quality
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         } else {
-          console.warn(`Single image too large for ${tabId}, skipping storage`);
+          console.warn(`Single image too large for ${tabId}, attempting JPEG compression`);
+          // Fallback to JPEG with high quality
+          const jpegVersion = canvas.toDataURL('image/jpeg', 0.95);
+          if (jpegVersion.length < 10 * 1024 * 1024) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
+          }
         }
         
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
