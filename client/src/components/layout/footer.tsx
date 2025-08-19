@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
-import logoPath from "@/assets/eye-logo.png";
+import logoPath from "@assets/new-logo.jpeg";
 
 export default function Footer() {
   return (

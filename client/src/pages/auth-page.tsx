@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Loader2 } from "lucide-react";
 import MobileOtpVerificationSimple from "@/components/mobile-otp-verification-simple";
-import logoPath from "@/assets/eye-logo.png";
+import logoPath from "@assets/new-logo.jpeg";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
