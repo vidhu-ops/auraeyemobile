@@ -946,6 +946,62 @@ export default function AuraAnalysis() {
     }
   };
 
+  // Function to compress image to exactly 60KB for PDF
+  const compressImageTo60KB = async (imageDataUrl: string): Promise<string> => {
+    const targetSize = 60 * 1024; // 60KB in bytes
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        // Start with reasonable dimensions
+        let width = img.width;
+        let height = img.height;
+        
+        // Scale down if too large initially
+        const maxDimension = 1200;
+        if (width > maxDimension || height > maxDimension) {
+          const ratio = Math.min(maxDimension / width, maxDimension / height);
+          width = Math.floor(width * ratio);
+          height = Math.floor(height * ratio);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx!.drawImage(img, 0, 0, width, height);
+        
+        // Binary search for optimal quality
+        let quality = 0.8;
+        let minQuality = 0.1;
+        let maxQuality = 1.0;
+        let bestDataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        for (let i = 0; i < 10; i++) { // Max 10 iterations
+          const testDataUrl = canvas.toDataURL('image/jpeg', quality);
+          const size = testDataUrl.length * 0.75; // Approximate size from base64
+          
+          if (Math.abs(size - targetSize) < targetSize * 0.1) { // Within 10% of target
+            bestDataUrl = testDataUrl;
+            break;
+          }
+          
+          if (size > targetSize) {
+            maxQuality = quality;
+          } else {
+            minQuality = quality;
+            bestDataUrl = testDataUrl; // Keep the largest one under target
+          }
+          
+          quality = (minQuality + maxQuality) / 2;
+        }
+        
+        resolve(bestDataUrl);
+      };
+      img.src = imageDataUrl;
+    });
+  };
+
   // Helper function for PDF color meanings
   const getColorMeaningForPDF = (colorName: string): string => {
     const meanings: Record<string, string> = {
@@ -965,77 +1021,123 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Screenshot capture function with proper sizing and 16:9 aspect ratio for long content
+  // COMPLETELY REWRITTEN: Bulletproof screenshot capture function with 60KB compression
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      // First, try to switch to the tab to ensure it's visible and rendered
-      const tabTrigger = document.querySelector(`[value="${tabId}"]`);
-      if (tabTrigger && tabTrigger instanceof HTMLElement) {
-        console.log(`Switching to tab ${tabId} before screenshot...`);
-        tabTrigger.click();
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for tab switch and rendering
+      console.log(`🎯 Starting capture for ${tabId}...`);
+      
+      // STEP 1: Force tab switch and wait for rendering
+      const tabTrigger = document.querySelector(`[value="${tabId}"]`) as HTMLElement;
+      if (!tabTrigger) {
+        throw new Error(`Tab trigger for ${tabId} not found`);
       }
       
-      // Try multiple selectors to find the tab content
-      let element = document.querySelector(`[data-tab="${tabId}"]`);
+      console.log(`📱 Switching to tab ${tabId}...`);
+      tabTrigger.click();
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Extended wait for tab switch
       
-      // If not found by data-tab, try to find the active tab content (should be our tab now)
+      // STEP 2: Bulletproof tab content detection
+      let element: Element | null = null;
+      
+      // Method 1: Try data-value attribute (Radix UI pattern)
+      element = document.querySelector(`[data-value="${tabId}"][data-state="active"]`);
+      console.log(`🔍 Method 1 (data-value): ${element ? 'Found' : 'Not found'}`);
+      
+      // Method 2: Try role-based selection with active state
       if (!element) {
-        element = document.querySelector(`[data-state="active"]`);
-        console.log(`Using active tab element for ${tabId}:`, element);
+        element = document.querySelector('[role="tabpanel"][data-state="active"]');
+        console.log(`🔍 Method 2 (role tabpanel): ${element ? 'Found' : 'Not found'}`);
       }
       
-      // If still not found, try alternative selectors
+      // Method 3: Look for the active tab content by class patterns
       if (!element) {
-        element = document.querySelector(`[value="${tabId}"]`) || 
-                 document.querySelector(`#${tabId}`) || 
-                 document.querySelector(`.${tabId}`) ||
-                 document.querySelector(`[id*="${tabId}"]`) ||
-                 document.querySelector(`[class*="${tabId}"]`);
+        const activeTabContent = document.querySelectorAll('[data-state="active"]');
+        for (const tabContent of activeTabContent) {
+          // Check if this element contains content that matches our tab
+          if (tabContent.textContent && tabContent.textContent.length > 100) {
+            element = tabContent;
+            console.log(`🔍 Method 3 (content-based): Found active content`);
+            break;
+          }
+        }
+      }
+      
+      // Method 4: Direct container search by common tab container patterns
+      if (!element) {
+        const containers = document.querySelectorAll('.tab-content, [role="tabpanel"], .tabs-content, [data-tab]');
+        for (const container of containers) {
+          const containerElement = container as HTMLElement;
+          if (containerElement.offsetWidth > 0 && containerElement.offsetHeight > 0) {
+            element = container;
+            console.log(`🔍 Method 4 (container-based): Found visible container`);
+            break;
+          }
+        }
+      }
+      
+      // Method 5: Fallback to visible content areas
+      if (!element) {
+        const visibleElements = document.querySelectorAll('div[class*="tab"], div[class*="content"]');
+        for (const visibleEl of visibleElements) {
+          const htmlEl = visibleEl as HTMLElement;
+          if (htmlEl.offsetWidth > 500 && htmlEl.offsetHeight > 300) { // Reasonable content size
+            element = visibleEl;
+            console.log(`🔍 Method 5 (size-based): Found content area`);
+            break;
+          }
+        }
       }
       
       if (!element) {
-        console.error(`Could not find tab content for ${tabId}. Available tabs:`, 
-          Array.from(document.querySelectorAll('[data-tab]')).map(el => el.getAttribute('data-tab')));
-        console.error('Available active elements:', 
-          Array.from(document.querySelectorAll('[data-state="active"]')));
-        throw new Error(`Tab content for ${tabId} not found even after switching to tab`);
+        console.error(`❌ All detection methods failed for ${tabId}`);
+        console.error(`Available elements:`, {
+          'data-state=active': document.querySelectorAll('[data-state="active"]').length,
+          'role=tabpanel': document.querySelectorAll('[role="tabpanel"]').length,
+          'tab-related': document.querySelectorAll('[class*="tab"], [data-tab]').length
+        });
+        throw new Error(`Could not find any suitable content for ${tabId} after comprehensive search`);
       }
-
-      console.log(`Found element for ${tabId}:`, element);
 
       const htmlElement = element as HTMLElement;
+      console.log(`✅ Found element for ${tabId}:`, htmlElement.tagName, htmlElement.className);
+
+      // STEP 3: Ensure element visibility and dimensions
       const rect = htmlElement.getBoundingClientRect();
+      console.log(`📐 Initial dimensions for ${tabId}: ${rect.width}x${rect.height}`);
       
-      // Ensure the element is visible and fully loaded
       if (rect.width === 0 || rect.height === 0) {
-        console.warn(`Element for ${tabId} has zero dimensions, attempting to make visible...`);
+        console.log(`🔧 Making ${tabId} element visible...`);
         htmlElement.style.display = 'block';
         htmlElement.style.visibility = 'visible';
         htmlElement.style.opacity = '1';
-        await new Promise(resolve => setTimeout(resolve, 500)); // Allow time for rendering
+        htmlElement.style.position = 'static';
+        htmlElement.style.overflow = 'visible';
+        await new Promise(resolve => setTimeout(resolve, 800)); // Extended wait for rendering
+        
+        const newRect = htmlElement.getBoundingClientRect();
+        console.log(`📐 Updated dimensions for ${tabId}: ${newRect.width}x${newRect.height}`);
       }
       
-      // Get viewport dimensions for proper sizing reference
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Calculate the full scrollable content size
+      // STEP 4: Calculate content dimensions precisely
+      const finalRect = htmlElement.getBoundingClientRect();
       const contentWidth = Math.max(
         htmlElement.scrollWidth,
         htmlElement.offsetWidth,
         htmlElement.clientWidth,
-        rect.width
+        finalRect.width,
+        1400 // Minimum width for quality
       );
       
-      // For chakras tab, ensure we capture all content including scrollable areas
       let contentHeight = Math.max(
         htmlElement.scrollHeight,
         htmlElement.offsetHeight,
         htmlElement.clientHeight,
-        rect.height
+        finalRect.height,
+        600 // Minimum height
       );
+      
+      console.log(`📏 Content dimensions for ${tabId}: ${contentWidth}x${contentHeight}`);
       
       // Enhanced height detection for all tabs to ensure full content capture
       if (['chakras', 'analysis', 'guidance', 'energy-reading', 'spectrum', 'energy-map', 'detailed', 'combined'].includes(tabId)) {
@@ -1124,12 +1226,12 @@ export default function AuraAnalysis() {
         }
       }
 
-      // ENHANCED: Use much wider capture for better quality and proportion to height
-      const captureWidth = Math.max(viewportWidth * 1.8, contentWidth * 1.5, 2400); // Significantly increased width
+      // STEP 5: Calculate capture dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       
-      // Determine if content needs multi-section capture for long content
-      // Use a reasonable threshold - prefer single capture for better PDF formatting
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000); // Increased to 5 screen heights or 8000px max per section
+      const captureWidth = Math.max(viewportWidth * 1.8, contentWidth * 1.5, 2400);
+      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000);
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
       // ENHANCED: Force multi-section for detailed chakra tab into 4 parts and other tall content
@@ -1197,9 +1299,11 @@ export default function AuraAnalysis() {
           // ENHANCED: Wait longer for scroll to complete and content to render for chakra details
           await new Promise(resolve => setTimeout(resolve, 800)); // Increased wait time
           
+          console.log(`📸 Capturing section ${section + 1}/${totalSections} at y=${startY} height=${actualSectionHeight}`);
+          
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: 6.0, // ENHANCED: Maximum scale for ultra-crystal clear sections
+            scale: 3.0, // Optimized scale for 60KB target
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1212,8 +1316,8 @@ export default function AuraAnalysis() {
             windowWidth: captureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
-            foreignObjectRendering: false,
-            imageTimeout: 30000, // Extended timeout for maximum-quality processing
+            foreignObjectRendering: true,
+            imageTimeout: 15000, // Reasonable timeout
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1240,8 +1344,11 @@ export default function AuraAnalysis() {
             }
           });
           
-          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0));
-          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
+          // COMPRESS TO EXACTLY 60KB
+          const compressed60KB = await compressImageTo60KB(sectionCanvas.toDataURL('image/png', 1.0));
+          
+          screenshots.push(compressed60KB);
+          console.log(`✅ Section ${section + 1}/${totalSections} captured and compressed to 60KB: ${sectionCanvas.width}x${sectionCanvas.height}`);
         }
         
         // Reset scroll position for all scrollable containers
@@ -1303,19 +1410,11 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality captures with fallback compression
-        if (combinedImageDataUrl.length < 20 * 1024 * 1024) { // Increased to 20MB for ultra-high quality
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
-        } else {
-          console.warn(`Combined image too large for ${tabId}, compressing and retrying`);
-          // Try JPEG compression as fallback
-          const fallbackDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
-          if (fallbackDataUrl.length < 20 * 1024 * 1024) {
-            setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackDataUrl));
-          } else {
-            console.warn(`Even compressed image too large for ${tabId}, skipping storage`);
-          }
-        }
+        // COMPRESS COMBINED IMAGE TO 60KB
+        const compressed60KBCombined = await compressImageTo60KB(combinedImageDataUrl);
+        console.log(`✅ Multi-section image compressed to 60KB for ${tabId}`);
+        
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, compressed60KBCombined));
         
         console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
         
@@ -1360,7 +1459,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 6.0, // ENHANCED: Maximum scale matching multi-section capture
+          scale: 3.0, // Optimized scale for 60KB target
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1371,8 +1470,8 @@ export default function AuraAnalysis() {
           windowWidth: captureWidth,
           windowHeight: contentHeight,
           removeContainer: false,
-          foreignObjectRendering: false,
-          imageTimeout: 30000, // Extended timeout matching multi-section processing
+          foreignObjectRendering: true,
+          imageTimeout: 15000, // Reasonable timeout
           ignoreElements: (element) => {
             // Ignore scroll bars and other non-essential elements
             const htmlElement = element as HTMLElement;
@@ -1423,17 +1522,14 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG for better quality
-        // ENHANCED: Ultra-high quality PNG for crystal clear screenshots
-        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
-        console.log(`Single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+        // COMPRESS TO EXACTLY 60KB FOR PDF
+        const rawImageDataUrl = canvas.toDataURL('image/png', 1.0);
+        console.log(`Raw single image size: ${(rawImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         
-        // ENHANCED: Store high-quality screenshots (increased limit to 25MB for maximum quality)
-        if (imageDataUrl.length < 25 * 1024 * 1024) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
-        } else {
-          console.warn(`Single image too large for ${tabId}, skipping storage`);
-        }
+        const compressed60KB = await compressImageTo60KB(rawImageDataUrl);
+        console.log(`✅ Single image compressed to 60KB for ${tabId}`);
+        
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, compressed60KB));
         
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
       }
