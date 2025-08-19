@@ -1660,8 +1660,8 @@ export default function AuraAnalysis() {
           return new Promise<string>((resolve) => {
             img.onload = () => {
               // ENHANCED: Set canvas size with ultra-high resolution for premium PDF quality
-              canvas.width = Math.min(targetWidth * 8, 2400); // Ultra-high resolution for crisp PDFs
-              canvas.height = Math.min(targetHeight * 8, 3200); // Ultra-high resolution for crisp PDFs
+              canvas.width = Math.min(targetWidth * 10, 3000); // Maximum resolution for ultra-crisp PDFs
+              canvas.height = Math.min(targetHeight * 10, 4000); // Maximum resolution for ultra-crisp PDFs
               
               // Use high-quality image rendering
               ctx!.imageSmoothingEnabled = true;
@@ -1670,12 +1670,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // ENHANCED: Use PNG for maximum quality, reduced compression for screenshot clarity
+              // ENHANCED: Use PNG for maximum quality, virtually no compression for ultra-crisp screenshots
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to maximum quality JPEG with minimal compression
-              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Maximum quality JPEG (minimal compression)
+              // If PNG is too large, use highest quality JPEG with ultra-minimal compression
+              if (compressedDataUrl.length > 12 * 1024 * 1024) { // Further increased threshold to 12MB for premium quality
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.99); // Ultra-maximum quality JPEG (virtually no compression)
               }
               
               resolve(compressedDataUrl);
@@ -2125,17 +2125,22 @@ export default function AuraAnalysis() {
               const pdfCanvas = document.createElement('canvas');
               const pdfCtx = pdfCanvas.getContext('2d');
               
-              // Set canvas to PDF dimensions with high resolution
-              pdfCanvas.width = Math.floor(finalWidth * 4); // 4x resolution for clarity
-              pdfCanvas.height = Math.floor(finalHeight * 4);
+              // Set canvas to PDF dimensions with ultra-high resolution for maximum clarity
+              pdfCanvas.width = Math.floor(finalWidth * 6); // 6x resolution for ultra-clarity
+              pdfCanvas.height = Math.floor(finalHeight * 6);
               
               // Step 2: Draw the original image to PDF canvas with perfect scaling
               pdfCtx!.fillStyle = '#ffffff';
               pdfCtx!.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
               pdfCtx!.drawImage(tempImg, 0, 0, pdfCanvas.width, pdfCanvas.height);
               
-              // Step 3: Convert to JPEG with controlled quality - guaranteed to work
-              const finalImageDataUrl = pdfCanvas.toDataURL('image/jpeg', 0.85);
+              // Step 3: Convert to highest quality format - PNG first, then high-quality JPEG fallback
+              let finalImageDataUrl = pdfCanvas.toDataURL('image/png', 1.0);
+              
+              // If PNG is too large, use ultra-high quality JPEG
+              if (finalImageDataUrl.length > 10 * 1024 * 1024) { // 10MB threshold
+                finalImageDataUrl = pdfCanvas.toDataURL('image/jpeg', 0.97); // Ultra-high quality JPEG
+              }
               
               // Step 4: Add to PDF with proper error handling
               try {
@@ -2172,10 +2177,22 @@ export default function AuraAnalysis() {
               emergencyCtx!.fillStyle = '#ffffff';
               emergencyCtx!.fillRect(0, 0, emergencyCanvas.width, emergencyCanvas.height);
               
-              // Draw original image if possible
-              if (tempImg.complete && tempImg.naturalWidth > 0) {
-                emergencyCtx!.drawImage(tempImg, 0, 0, emergencyCanvas.width, emergencyCanvas.height);
-              } else {
+              // Draw original image if possible (create a new image from the dataURL)
+              const emergencyImg = new Image();
+              emergencyImg.src = imageDataUrl;
+              
+              try {
+                await new Promise((resolve, reject) => {
+                  emergencyImg.onload = resolve;
+                  emergencyImg.onerror = reject;
+                });
+                
+                if (emergencyImg.complete && emergencyImg.naturalWidth > 0) {
+                  emergencyCtx!.drawImage(emergencyImg, 0, 0, emergencyCanvas.width, emergencyCanvas.height);
+                } else {
+                  throw new Error('Emergency image failed to load');
+                }
+              } catch (imgError) {
                 // Draw a placeholder if image failed
                 emergencyCtx!.fillStyle = '#f0f0f0';
                 emergencyCtx!.fillRect(50, 50, emergencyCanvas.width - 100, emergencyCanvas.height - 100);
@@ -2266,13 +2283,16 @@ export default function AuraAnalysis() {
         const currentDate = new Date().toISOString().split('T')[0];
         const sanitizedName = nameToUse.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30);
         const fileName = `aura-analysis-${sanitizedName}-${currentDate}.pdf`;
-        console.log('🎯 Attempting to save high-quality PDF:', fileName);
+        console.log('🎯 Attempting to save ultra-high quality PDF:', fileName);
+        
+        // Configure PDF for maximum quality output - disable compression
+        (pdf as any).compress = false; // Disable compression for maximum quality
         
         // Add a small delay to ensure all content is rendered
         await new Promise(resolve => setTimeout(resolve, 500));
         
         pdf.save(fileName);
-        console.log('✅ High-quality PDF saved successfully with enhanced compression settings');
+        console.log('✅ Ultra-high quality PDF saved successfully with minimal compression');
       } catch (saveError) {
         console.error('❌ Error during PDF save:', saveError);
         throw new Error(`PDF generation failed: ${saveError instanceof Error ? saveError.message : String(saveError)}`);
@@ -6358,15 +6378,7 @@ export default function AuraAnalysis() {
                             PDF + Screenshots ({capturedScreenshots.size})
                           </Button>
                         )}
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="flex items-center text-sm bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                          onClick={captureAllTabs}
-                        >
-                          <Camera className="w-4 h-4 mr-1" />
-                          Test All Screenshots
-                        </Button>
+
 
                       </div>
                     )}
