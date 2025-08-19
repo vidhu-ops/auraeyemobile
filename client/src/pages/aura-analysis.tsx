@@ -1028,75 +1028,43 @@ export default function AuraAnalysis() {
       console.log(`🎯 Starting capture for ${tabId}...`);
       
       // STEP 1: Force tab switch and wait for rendering
+      console.log(`🎯 Switching to tab ${tabId}...`);
       const tabTrigger = document.querySelector(`[value="${tabId}"]`) as HTMLElement;
-      if (!tabTrigger) {
-        throw new Error(`Tab trigger for ${tabId} not found`);
+      if (tabTrigger) {
+        tabTrigger.click();
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Extended wait
       }
       
-      console.log(`📱 Switching to tab ${tabId}...`);
-      tabTrigger.click();
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Extended wait for tab switch
+      // STEP 2: SIMPLIFIED element detection - just find any active tab content
+      let element: HTMLElement | null = null;
       
-      // STEP 2: Bulletproof tab content detection
-      let element: Element | null = null;
-      
-      // Method 1: Try data-value attribute (Radix UI pattern)
-      element = document.querySelector(`[data-value="${tabId}"][data-state="active"]`);
-      console.log(`🔍 Method 1 (data-value): ${element ? 'Found' : 'Not found'}`);
-      
-      // Method 2: Try role-based selection with active state
-      if (!element) {
-        element = document.querySelector('[role="tabpanel"][data-state="active"]');
-        console.log(`🔍 Method 2 (role tabpanel): ${element ? 'Found' : 'Not found'}`);
+      // Try the most common pattern first
+      const activePanel = document.querySelector('[role="tabpanel"][data-state="active"]') as HTMLElement;
+      if (activePanel && activePanel.offsetWidth > 0 && activePanel.offsetHeight > 0) {
+        element = activePanel;
+        console.log(`✅ Found active tabpanel: ${element.offsetWidth}x${element.offsetHeight}`);
       }
       
-      // Method 3: Look for the active tab content by class patterns
+      // Fallback: any visible large content area
       if (!element) {
-        const activeTabContent = document.querySelectorAll('[data-state="active"]');
-        for (const tabContent of activeTabContent) {
-          // Check if this element contains content that matches our tab
-          if (tabContent.textContent && tabContent.textContent.length > 100) {
-            element = tabContent;
-            console.log(`🔍 Method 3 (content-based): Found active content`);
+        const allDivs = document.querySelectorAll('div');
+        for (const div of allDivs) {
+          const htmlDiv = div as HTMLElement;
+          if (htmlDiv.offsetWidth > 400 && htmlDiv.offsetHeight > 300 && 
+              htmlDiv.textContent && htmlDiv.textContent.length > 200) {
+            element = htmlDiv;
+            console.log(`✅ Found content area: ${element.offsetWidth}x${element.offsetHeight}`);
             break;
           }
         }
       }
       
-      // Method 4: Direct container search by common tab container patterns
+      // Last resort: capture main content area
       if (!element) {
-        const containers = document.querySelectorAll('.tab-content, [role="tabpanel"], .tabs-content, [data-tab]');
-        for (const container of containers) {
-          const containerElement = container as HTMLElement;
-          if (containerElement.offsetWidth > 0 && containerElement.offsetHeight > 0) {
-            element = container;
-            console.log(`🔍 Method 4 (container-based): Found visible container`);
-            break;
-          }
-        }
-      }
-      
-      // Method 5: Fallback to visible content areas
-      if (!element) {
-        const visibleElements = document.querySelectorAll('div[class*="tab"], div[class*="content"]');
-        for (const visibleEl of visibleElements) {
-          const htmlEl = visibleEl as HTMLElement;
-          if (htmlEl.offsetWidth > 500 && htmlEl.offsetHeight > 300) { // Reasonable content size
-            element = visibleEl;
-            console.log(`🔍 Method 5 (size-based): Found content area`);
-            break;
-          }
-        }
-      }
-      
-      if (!element) {
-        console.error(`❌ All detection methods failed for ${tabId}`);
-        console.error(`Available elements:`, {
-          'data-state=active': document.querySelectorAll('[data-state="active"]').length,
-          'role=tabpanel': document.querySelectorAll('[role="tabpanel"]').length,
-          'tab-related': document.querySelectorAll('[class*="tab"], [data-tab]').length
-        });
-        throw new Error(`Could not find any suitable content for ${tabId} after comprehensive search`);
+        element = document.querySelector('main') as HTMLElement || 
+                 document.querySelector('.container') as HTMLElement ||
+                 document.body;
+        console.log(`✅ Using fallback element: ${element.tagName}`);
       }
 
       const htmlElement = element as HTMLElement;
@@ -1226,41 +1194,51 @@ export default function AuraAnalysis() {
         }
       }
 
-      // STEP 5: Calculate capture dimensions
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      // STEP 5: SIMPLIFIED capture - single screenshot only
+      const captureWidth = Math.max(element.offsetWidth, 1200);
+      const captureHeight = Math.max(element.offsetHeight, 800);
       
-      const captureWidth = Math.max(viewportWidth * 1.8, contentWidth * 1.5, 2400);
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 5, 8000);
-      const needsMultiSection = contentHeight > maxSingleCaptureHeight;
+      console.log(`📸 Capture dimensions: ${captureWidth}x${captureHeight}`);
       
-      // ENHANCED: Force multi-section for detailed chakra tab into 4 parts and other tall content
-      const forceMultiSection = (tabId === 'detailed' && contentHeight > 2000) || // Force 4 parts for detailed
-                                (['chakras', 'combined'].includes(tabId) && contentHeight > 6000) || 
-                                (['analysis'].includes(tabId) && contentHeight > 8000);
+      // STEP 6: SIMPLE SINGLE SCREENSHOT with error handling
+      console.log(`📸 Starting single capture for ${tabId}...`);
       
-      console.log(`Content: ${contentWidth}x${contentHeight}, viewport: ${viewportWidth}x${viewportHeight}, capture width: ${captureWidth}`);
-      console.log(`Multi-section capture needed: ${needsMultiSection}`);
-
-      if (needsMultiSection || forceMultiSection) {
-        // ENHANCED: Capture with special handling for detailed chakra tab (4 parts)
-        const screenshots: string[] = [];
-        let totalSections, sectionHeight;
-        
-        if (tabId === 'detailed') {
-          // Force exactly 4 sections for detailed chakra tab
-          totalSections = 4;
-          sectionHeight = Math.ceil(contentHeight / 4);
-        } else {
-          // For other tabs, use 16:9 aspect ratio
-          const targetAspectRatio = 16 / 9;
-          sectionHeight = Math.floor(captureWidth / targetAspectRatio);
-          totalSections = Math.ceil(contentHeight / sectionHeight);
-        }
-        
-        console.log(`Capturing ${totalSections} sections, each ${captureWidth}x${sectionHeight}${tabId === 'detailed' ? ' (4 equal parts for detailed chakra)' : ' (16:9 ratio)'}`);
-        
-        for (let section = 0; section < totalSections; section++) {
+      // Ensure element is visible and ready
+      element.style.display = 'block';
+      element.style.visibility = 'visible';
+      element.style.opacity = '1';
+      element.scrollTop = 0;
+      
+      await new Promise(resolve => setTimeout(resolve, 500)); // Brief wait for rendering
+      
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#ffffff',
+        scale: 2.0, // Balanced scale for quality vs performance
+        logging: true, // Enable logging to see what's happening
+        useCORS: true,
+        allowTaint: false,
+        width: captureWidth,
+        height: captureHeight,
+        scrollX: 0,
+        scrollY: 0,
+        removeContainer: false,
+        foreignObjectRendering: true,
+        imageTimeout: 10000 // 10 second timeout
+      });
+      
+      console.log(`✅ Canvas created: ${canvas.width}x${canvas.height}`);
+      
+      // COMPRESS TO 60KB
+      const rawImage = canvas.toDataURL('image/png', 1.0);
+      const compressed60KB = await compressImageTo60KB(rawImage);
+      
+      setCapturedScreenshots(prev => new Map(prev).set(tabId, compressed60KB));
+      console.log(`✅ Screenshot compressed to 60KB and stored for ${tabId}`);
+      
+      toast({
+        title: "Screenshot Captured",
+        description: `High-quality screenshot of ${getTabDisplayName(tabId)} captured with proper dimensions.`,
+      });
           const startY = section * sectionHeight;
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
@@ -1541,6 +1519,44 @@ export default function AuraAnalysis() {
       
     } catch (error) {
       console.error('Screenshot capture failed:', error);
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack
+      });
+      
+      // EMERGENCY FALLBACK: Try to capture the entire page
+      try {
+        console.log('🚨 Emergency fallback: capturing entire viewport');
+        const fallbackCanvas = await html2canvas(document.body, {
+          backgroundColor: '#ffffff',
+          scale: 2.0,
+          logging: true,
+          useCORS: true,
+          allowTaint: false,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight
+        });
+        
+        const fallbackImage = await compressImageTo60KB(fallbackCanvas.toDataURL('image/png', 1.0));
+        setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackImage));
+        
+        toast({
+          title: "Emergency Screenshot Captured",
+          description: `Fallback capture successful for ${getTabDisplayName(tabId)}`,
+        });
+        
+        console.log('✅ Emergency fallback successful');
+        return;
+        
+      } catch (fallbackError) {
+        console.error('Emergency fallback also failed:', fallbackError);
+      }
+      
       toast({
         title: "Screenshot Failed",
         description: "Could not capture screenshot. Please try again.",
