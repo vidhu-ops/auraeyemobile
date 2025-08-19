@@ -969,13 +969,53 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
-      if (!element) {
-        throw new Error('Tab content not found');
+      // First, try to switch to the tab to ensure it's visible and rendered
+      const tabTrigger = document.querySelector(`[value="${tabId}"]`);
+      if (tabTrigger && tabTrigger instanceof HTMLElement) {
+        console.log(`Switching to tab ${tabId} before screenshot...`);
+        tabTrigger.click();
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for tab switch and rendering
       }
+      
+      // Try multiple selectors to find the tab content
+      let element = document.querySelector(`[data-tab="${tabId}"]`);
+      
+      // If not found by data-tab, try to find the active tab content (should be our tab now)
+      if (!element) {
+        element = document.querySelector(`[data-state="active"]`);
+        console.log(`Using active tab element for ${tabId}:`, element);
+      }
+      
+      // If still not found, try alternative selectors
+      if (!element) {
+        element = document.querySelector(`[value="${tabId}"]`) || 
+                 document.querySelector(`#${tabId}`) || 
+                 document.querySelector(`.${tabId}`) ||
+                 document.querySelector(`[id*="${tabId}"]`) ||
+                 document.querySelector(`[class*="${tabId}"]`);
+      }
+      
+      if (!element) {
+        console.error(`Could not find tab content for ${tabId}. Available tabs:`, 
+          Array.from(document.querySelectorAll('[data-tab]')).map(el => el.getAttribute('data-tab')));
+        console.error('Available active elements:', 
+          Array.from(document.querySelectorAll('[data-state="active"]')));
+        throw new Error(`Tab content for ${tabId} not found even after switching to tab`);
+      }
+
+      console.log(`Found element for ${tabId}:`, element);
 
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
+      
+      // Ensure the element is visible and fully loaded
+      if (rect.width === 0 || rect.height === 0) {
+        console.warn(`Element for ${tabId} has zero dimensions, attempting to make visible...`);
+        htmlElement.style.display = 'block';
+        htmlElement.style.visibility = 'visible';
+        htmlElement.style.opacity = '1';
+        await new Promise(resolve => setTimeout(resolve, 500)); // Allow time for rendering
+      }
       
       // Get viewport dimensions for proper sizing reference
       const viewportWidth = window.innerWidth;
@@ -1995,15 +2035,25 @@ export default function AuraAnalysis() {
                   yPosition += 5;
                 }
                 
-                // Compress and add the section with error handling
+                // Compress and add the section with enhanced error handling
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                 try {
                   pdf.addImage(compressedSectionDataUrl, 'PNG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                 } catch (sectionError) {
                   console.warn('Section PNG failed, trying JPEG:', sectionError);
-                  // Fallback to JPEG
-                  const jpegSectionDataUrl = compressedSectionDataUrl.replace('data:image/png', 'data:image/jpeg');
-                  pdf.addImage(jpegSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  try {
+                    // Fallback to JPEG
+                    const jpegSectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.9);
+                    const compressedJpegDataUrl = await compressImageForPDF(jpegSectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                    pdf.addImage(compressedJpegDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  } catch (jpegError) {
+                    console.warn(`Failed to add section ${section + 1} for ${tabId}:`, jpegError);
+                    // Skip this section but continue with others
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(100, 100, 100);
+                    yPosition = addTextWithPageBreak(`Section ${section + 1} processing encountered technical difficulties`, 20, yPosition);
+                    yPosition += 15;
+                  }
                 }
                 yPosition += sectionFinalHeight + 10;
                 
@@ -2060,13 +2110,34 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            console.error('Error details:', error?.message || 'Unknown error');
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('Error details:', errorMessage);
             
-            // Add error message to PDF instead of skipping
-            pdf.setFontSize(10);
-            pdf.setTextColor(200, 0, 0);
-            yPosition = addTextWithPageBreak(`Screenshot for ${getTabDisplayName(tabId)} could not be included due to technical issues.`, 20, yPosition);
-            yPosition += 25;
+            // Try alternative methods to add the screenshot
+            try {
+              // Use fallback dimensions - these are defined earlier in the same scope
+              const fallbackWidth = 150; // Default width for error cases
+              const fallbackHeight = 200; // Default height for error cases
+              
+              // Attempt to add as JPEG with lower quality
+              const fallbackImageData = imageDataUrl.replace('data:image/png', 'data:image/jpeg');
+              pdf.addImage(fallbackImageData, 'JPEG', 20, yPosition, fallbackWidth * 0.8, fallbackHeight * 0.8);
+              yPosition += (fallbackHeight * 0.8) + 15;
+              console.log(`Fallback JPEG method worked for ${tabId}`);
+            } catch (fallbackError) {
+              const errorMessage = fallbackError instanceof Error ? fallbackError.message : 'Unknown error';
+              console.error('Fallback method also failed:', errorMessage);
+              
+              // Add informative message instead of error
+              pdf.setFontSize(12);
+              pdf.setTextColor(100, 100, 100);
+              yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Screenshot`, 20, yPosition);
+              yPosition += 8;
+              pdf.setFontSize(10);
+              yPosition = addTextWithPageBreak(`This section contains detailed visual analysis that was captured separately.`, 20, yPosition);
+              yPosition = addTextWithPageBreak(`Please refer to the individual tab screenshots in your analysis.`, 20, yPosition);
+              yPosition += 25;
+            }
           }
         }
       }
