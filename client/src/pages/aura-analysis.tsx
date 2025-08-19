@@ -1561,9 +1561,9 @@ export default function AuraAnalysis() {
               // Use PNG for better quality, JPEG as fallback if too large
               let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to high quality JPEG
+              // If PNG is too large, fallback to high quality JPEG (reduced compression by 20%)
               if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Higher quality JPEG
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Even higher quality JPEG (reduced compression)
               }
               
               resolve(compressedDataUrl);
@@ -1924,7 +1924,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.9);
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.95); // Improved screenshot clarity
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -4758,8 +4758,8 @@ export default function AuraAnalysis() {
                 height: visualizationContainer.scrollHeight
             });
 
-            // Convert to base64
-            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            // Convert to base64 with improved clarity
+            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.95); // Enhanced screenshot quality
             console.log('📸 Screenshot captured successfully, size:', screenshotBase64.length, 'characters');
 
             // Send screenshot to backend to update the stored processedAuraImage
