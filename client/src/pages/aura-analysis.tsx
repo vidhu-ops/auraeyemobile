@@ -5059,26 +5059,22 @@ export default function AuraAnalysis() {
     return traits[personalityNumber] || 'unique spiritual gifts and authentic expression';
   };
 
-  // Function to calculate personality number from day + month for combined analysis
+  // Function to calculate personality number from day digits only for combined analysis
   const calculatePersonalityNumberFromBirthDate = (birthDate: string): number => {
     if (!birthDate) return numerologyResult?.personalityNumber || 1;
     
     const date = new Date(birthDate);
     const day = date.getDate();
-    const month = date.getMonth() + 1; // getMonth() returns 0-11, we need 1-12
     
-    // Sum all digits of day and month
-    const dayDigits = day.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
-    const monthDigits = month.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
-    
-    let totalSum = dayDigits + monthDigits;
+    // Sum all digits of the day only (as requested by user)
+    let dayDigitsSum = day.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
     
     // Reduce to single digit (1-9) unless it's 11, 22, or 33
-    while (totalSum > 9 && totalSum !== 11 && totalSum !== 22 && totalSum !== 33) {
-      totalSum = totalSum.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
+    while (dayDigitsSum > 9 && dayDigitsSum !== 11 && dayDigitsSum !== 22 && dayDigitsSum !== 33) {
+      dayDigitsSum = dayDigitsSum.toString().split('').map(Number).reduce((sum, digit) => sum + digit, 0);
     }
     
-    return totalSum;
+    return dayDigitsSum;
   };
 
   // Function to generate combined insights from aura and numerology
