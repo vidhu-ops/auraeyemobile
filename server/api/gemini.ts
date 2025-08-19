@@ -82,7 +82,7 @@ export async function generateAuraVisualization(
     addWatermark(ctx, STANDARD_WIDTH, STANDARD_HEIGHT);
     
     // Convert canvas to base64
-    const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.98); // Reduced compression by 20% for higher quality
+    const processedImageBase64 = canvas.toDataURL('image/jpeg', 1.0); // Maximum quality for ultimate clarity and legibility
     
     console.log(`Aura visualization completed successfully`);
     console.log(`Output dimensions: ${STANDARD_WIDTH}x${STANDARD_HEIGHT}px`);
