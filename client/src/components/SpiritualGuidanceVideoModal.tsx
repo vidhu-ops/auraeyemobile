@@ -11,6 +11,7 @@ interface SpiritualGuidanceVideoModalProps {
 
 export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidanceVideoModalProps) {
   const [showPostVideoOptions, setShowPostVideoOptions] = useState(false);
+  const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
   const [, navigate] = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -19,6 +20,9 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
       // Reset video to start when modal opens
       videoRef.current.currentTime = 0;
       setShowPostVideoOptions(false);
+      setNegativeFeedbackClicked(false);
+      // Ensure controls are visible when modal opens
+      videoRef.current.controls = true;
     }
   }, [isOpen]);
 
@@ -36,12 +40,26 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
   };
 
   const handleGoHome = () => {
-    navigate('/');
-    onClose();
+    setNegativeFeedbackClicked(true);
+    // Remove video controls immediately when negative feedback is clicked
+    if (videoRef.current) {
+      videoRef.current.controls = false;
+    }
+    
+    // Delay navigation slightly to ensure controls are removed
+    setTimeout(() => {
+      navigate('/');
+      onClose();
+    }, 100);
   };
 
   const handleClose = () => {
     setShowPostVideoOptions(false);
+    setNegativeFeedbackClicked(false);
+    // Reset video controls when closing
+    if (videoRef.current) {
+      videoRef.current.controls = true;
+    }
     onClose();
   };
 
@@ -64,7 +82,7 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
             <video
               ref={videoRef}
               className="w-full h-auto"
-              controls
+              controls={!negativeFeedbackClicked}
               onEnded={handleVideoEnded}
               poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDgwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMTEwZTI0Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIyNSIgcj0iNjAiIGZpbGw9IiM4YjVjZjYiLz4KPHN2ZyB4PSIzNzAiIHk9IjE5NSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+PHBhdGggZD0iTTggNWwxMSA3LTExIDd2LTE0eiIvPjwvcD4KPC9zdmc+Cjx0ZXh0IHg9IjQwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOGI1Y2Y2IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4Ij5DbGljayB0byBwbGF5IHNwaXJpdHVhbCBndWlkYW5jZSB2aWRlbzwvdGV4dD4KPC9zdmc+"
             >
