@@ -1283,8 +1283,8 @@ export default function AuraAnalysis() {
           });
         }
         
-        // Use PNG for maximum quality with reduced compression
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
+        // Use PNG with 10% more compression
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
         // Store with much higher size limit for enhanced quality screenshots, especially for chakras and detailed tabs
@@ -1294,8 +1294,8 @@ export default function AuraAnalysis() {
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
           console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
-          // Fallback to JPEG with maximum quality
-          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 1.0);
+          // Fallback to JPEG with 10% more compression
+          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 0.9);
           if (jpegVersion.length < 20 * 1024 * 1024) { // Higher fallback limit
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1408,8 +1408,8 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG for maximum quality with reduced compression
-        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+        // Use PNG with 10% more compression  
+        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
@@ -1419,8 +1419,8 @@ export default function AuraAnalysis() {
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
-          // Fallback to JPEG with maximum quality
-          const jpegVersion = canvas.toDataURL('image/jpeg', 1.0);
+          // Fallback to JPEG with 10% more compression
+          const jpegVersion = canvas.toDataURL('image/jpeg', 0.9);
           if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1642,12 +1642,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // Use PNG for better quality, JPEG as fallback if too large
-              let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
+              // Use PNG with 10% more compression
+              let compressedDataUrl = canvas.toDataURL('image/png', 0.9);
               
-              // If PNG is too large, fallback to high quality JPEG (reduced compression by 20%)
+              // If PNG is too large, fallback to JPEG with 10% more compression
               if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Even higher quality JPEG (reduced compression)
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // 10% more compression
               }
               
               resolve(compressedDataUrl);
@@ -2014,7 +2014,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.95); // Improved screenshot clarity
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
