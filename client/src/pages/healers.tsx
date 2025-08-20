@@ -38,9 +38,15 @@ export default function HealersPage() {
   const queryClient = useQueryClient();
   
   // Fetch healers from database
-  const { data: healers = [], isLoading, error } = useQuery<Healer[]>({
+  const { data: allHealers = [], isLoading, error } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
   });
+
+  // Filter to only show Nishant Sharma on the frontend, but keep all healers functional in backend
+  const healers = allHealers.filter(healer => 
+    healer.name.toLowerCase().includes('nishant sharma') || 
+    healer.name.toLowerCase().includes('nishant') && healer.name.toLowerCase().includes('sharma')
+  );
   
   // Booking mutation
   const bookingMutation = useMutation({
