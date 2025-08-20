@@ -1008,6 +1008,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
   
+  // Serve attached assets
+  app.use('/attached_assets', (req, res, next) => {
+    const path = require('path');
+    const fs = require('fs');
+    const filePath = path.join(process.cwd(), 'attached_assets', req.path);
+    
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: 'Asset not found' });
+    }
+  });
+  
   // Configure file upload first (lightweight operation)
   const upload = configureFileUpload();
   

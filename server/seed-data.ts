@@ -12,14 +12,14 @@ export async function seedHealers() {
 
     const healersData = [
       {
-        name: "Dr. Sarah Chen",
-        username: "sarah.chen",
+        name: "Nishant Sharma",
+        username: "nishant.sharma2",
         password: await hashPassword("healer123"),
         specialty: "Energy Healing & Chakra Balancing",
-        description: "With over 15 years of experience in energy healing, Dr. Chen specializes in chakra alignment and spiritual wellness. She combines traditional Eastern practices with modern healing techniques.",
-        email: "sarah.chen@spiritualwellness.com",
+        description: "With over 15 years of experience in energy healing, Nishant specializes in chakra alignment and spiritual wellness. He combines traditional Eastern practices with modern healing techniques.",
+        email: "nishant.sharma@spiritualwellness.com",
         phone: "+1-555-0123",
-        imageUrl: "/api/placeholder/300/300",
+        imageUrl: "@assets/WhatsApp Image 2025-08-11 at 3.52.01 AM_1755705996010.jpeg",
         rating: 5,
         experience: "15+ years",
         location: "San Francisco, CA"
