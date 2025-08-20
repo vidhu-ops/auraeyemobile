@@ -77,19 +77,6 @@ export async function seedHealers() {
         location: "Austin, TX"
       },
       {
-        name: "Nishant Sharma",
-        username: "nishant.sharma",
-        password: await hashPassword("healer123"),
-        specialty: "Advanced Aura Reading & Spiritual Counseling",
-        description: "Master Nishant Sharma is a renowned spiritual counselor with expertise in advanced aura reading, energy healing, and spiritual guidance. With deep knowledge of ancient wisdom and modern practices, he provides transformative healing experiences.",
-        email: "nishant.sharma@spiritualwellness.com",
-        phone: "+1-555-0128",
-        imageUrl: "/api/placeholder/300/300",
-        rating: 5,
-        experience: "25+ years",
-        location: "Mumbai, India"
-      },
-      {
         name: "Test Healer",
         username: "test healer",
         password: await hashPassword("healer123"),
