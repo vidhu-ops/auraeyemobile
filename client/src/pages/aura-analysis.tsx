@@ -2027,6 +2027,12 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
+                // Special size enhancement for chakras tab - increase by 60%
+                if (tabId === 'chakras') {
+                  sectionFinalWidth = sectionFinalWidth * 1.6; // 60% increase
+                  sectionFinalHeight = sectionFinalHeight * 1.6; // 60% increase
+                }
+                
                 // Add section title if multiple sections
                 if (sectionsNeeded > 1) {
                   pdf.setFontSize(10);
