@@ -1977,11 +1977,17 @@ export default function AuraAnalysis() {
             }
             
             // If the image is very long (tall), we need to handle it differently
-            const isLongScreenshot = trueAspectRatio > 3.0; // More than 3:1 ratio - very tall content
+            // Force chakras tab to always use multi-section approach for 4-part breakdown
+            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
             
             if (isLongScreenshot) {
-              // For long screenshots, use multiple pages to maintain readability
-              const sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio
+              // Special handling for chakras tab - force exactly 4 sections
+              let sectionsNeeded;
+              if (tabId === 'chakras') {
+                sectionsNeeded = 4; // Force exactly 4 sections for chakras
+              } else {
+                sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
+              }
               const sectionHeight = pageMaxHeight;
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
@@ -2025,7 +2031,10 @@ export default function AuraAnalysis() {
                 if (sectionsNeeded > 1) {
                   pdf.setFontSize(10);
                   pdf.setTextColor(100, 100, 100);
-                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Section ${section + 1}/${sectionsNeeded}`, 20, yPosition);
+                  const sectionTitle = tabId === 'chakras' ? 
+                    `Detailed Chakras Analysis - Part ${section + 1} of 4` : 
+                    `${getTabDisplayName(tabId)} - Section ${section + 1}/${sectionsNeeded}`;
+                  yPosition = addTextWithPageBreak(sectionTitle, 20, yPosition);
                   yPosition += 5;
                 }
                 
