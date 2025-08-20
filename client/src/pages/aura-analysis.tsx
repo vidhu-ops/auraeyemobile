@@ -1093,8 +1093,8 @@ export default function AuraAnalysis() {
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
       // Enhanced multi-section logic for better readability across all tabs
-      const forceMultiSection = (['chakras', 'analysis', 'guidance', 'spectrum', 'energy-map'].includes(tabId) && contentHeight > 4000) ||
-                                (['detailed'].includes(tabId)); // Always use multi-section for detailed tab
+      const forceMultiSection = (['analysis', 'guidance', 'spectrum', 'energy-map'].includes(tabId) && contentHeight > 4000) ||
+                                (['detailed', 'chakras'].includes(tabId)); // Always use multi-section for detailed and chakras tabs
       
       console.log(`Enhanced capture: Base ${baseCaptureWidth}x${contentHeight} → Enhanced ${captureWidth}x${contentHeight} (+15% width)`);
       console.log(`Multi-section capture needed: ${needsMultiSection || forceMultiSection}`);
@@ -1108,13 +1108,13 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'detailed') {
-          // Force exactly 4 sections for detailed analysis with enhanced dimensions
+        if (tabId === 'detailed' || tabId === 'chakras') {
+          // Force exactly 4 sections for detailed analysis and chakras with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Additional 25% width increase for detailed tab text legibility (40% total increase)
+          // Additional 25% width increase for chakras and detailed tab text legibility (40% total increase)
           enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
-        } else if (['chakras', 'analysis', 'guidance'].includes(tabId)) {
+        } else if (['analysis', 'guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
           sectionHeight = idealSectionHeight;
@@ -1173,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: tabId === 'detailed' ? 4.5 : 3.5, // Enhanced scale for all tabs with extra boost for detailed
+            scale: (tabId === 'detailed' || tabId === 'chakras') ? 4.5 : 3.5, // Enhanced scale for detailed and chakras tabs
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1198,9 +1198,9 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering for all tabs with special boost for detailed
-                if (tabId === 'detailed') {
-                  elem.style.fontSize = '18px'; // Larger font for detailed tab
+                // Enhanced text rendering for all tabs with special boost for detailed and chakras
+                if (tabId === 'detailed' || tabId === 'chakras') {
+                  elem.style.fontSize = '18px'; // Larger font for detailed and chakras tabs
                   elem.style.lineHeight = '1.7';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
                   textElements.forEach(textEl => {
@@ -1225,7 +1225,7 @@ export default function AuraAnalysis() {
             }
           });
           
-          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0));
+          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
           console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
         }
         
@@ -1263,7 +1263,7 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = tabId === 'detailed' ? 4.5 : 3.5;
+        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras') ? 4.5 : 3.5;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
@@ -1282,8 +1282,8 @@ export default function AuraAnalysis() {
           });
         }
         
-        // Use PNG for better quality with optimized compression
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.98);
+        // Use PNG for maximum quality with reduced compression
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
         // Store with higher size limit for enhanced quality screenshots
@@ -1291,8 +1291,8 @@ export default function AuraAnalysis() {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
         } else {
           console.warn(`Combined image too large for ${tabId}, attempting JPEG compression`);
-          // Fallback to JPEG with high quality
-          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 0.95);
+          // Fallback to JPEG with maximum quality
+          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 1.0);
           if (jpegVersion.length < 12 * 1024 * 1024) {
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
           }
@@ -1402,8 +1402,8 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG for enhanced quality with optimized settings
-        const imageDataUrl = canvas.toDataURL('image/png', 0.98);
+        // Use PNG for maximum quality with reduced compression
+        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
@@ -1411,8 +1411,8 @@ export default function AuraAnalysis() {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
         } else {
           console.warn(`Single image too large for ${tabId}, attempting JPEG compression`);
-          // Fallback to JPEG with high quality
-          const jpegVersion = canvas.toDataURL('image/jpeg', 0.95);
+          // Fallback to JPEG with maximum quality
+          const jpegVersion = canvas.toDataURL('image/jpeg', 1.0);
           if (jpegVersion.length < 10 * 1024 * 1024) {
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
           }
