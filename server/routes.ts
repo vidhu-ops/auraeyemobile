@@ -2328,8 +2328,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Healers API endpoints
   app.get("/api/healers", async (req, res) => {
     try {
-      const healers = await storage.getAllHealers();
-      res.json(healers);
+      // Get all healers from storage (keeps them functional in backend)
+      const allHealers = await storage.getAllHealers();
+      
+      // Filter to show only nishant.sharma2 (username) on the healers page
+      // All other healers remain stored, active and functional in the backend
+      const visibleHealers = allHealers.filter(healer => 
+        healer.username === 'nishant.sharma2'
+      );
+      
+      res.json(visibleHealers);
     } catch (error) {
       console.error("Error fetching healers:", error);
       res.status(500).json({ message: "Failed to fetch healers" });
