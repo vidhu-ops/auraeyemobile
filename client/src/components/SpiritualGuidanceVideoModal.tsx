@@ -11,19 +11,14 @@ interface SpiritualGuidanceVideoModalProps {
 
 export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidanceVideoModalProps) {
   const [showPostVideoOptions, setShowPostVideoOptions] = useState(false);
-  const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
   const [, navigate] = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      // Reset states when modal opens
+    if (isOpen && videoRef.current) {
+      // Reset video to start when modal opens
+      videoRef.current.currentTime = 0;
       setShowPostVideoOptions(false);
-      setNegativeFeedbackClicked(false);
-      // Reset video to start when modal opens (if video exists)
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-      }
     }
   }, [isOpen]);
 
@@ -41,18 +36,12 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
   };
 
   const handleGoHome = () => {
-    setNegativeFeedbackClicked(true);
-    
-    // Delay navigation to show feedback message briefly
-    setTimeout(() => {
-      navigate('/');
-      onClose();
-    }, 1500);
+    navigate('/');
+    onClose();
   };
 
   const handleClose = () => {
     setShowPostVideoOptions(false);
-    setNegativeFeedbackClicked(false);
     onClose();
   };
 
@@ -72,26 +61,16 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
           </div>
 
           <div className="w-full max-w-2xl bg-black/20 rounded-lg overflow-hidden">
-            {!negativeFeedbackClicked ? (
-              <video
-                ref={videoRef}
-                className="w-full h-auto"
-                controls
-                onEnded={handleVideoEnded}
-                poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDgwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMTEwZTI0Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIyNSIgcj0iNjAiIGZpbGw9IiM4YjVjZjYiLz4KPHN2ZyB4PSIzNzAiIHk9IjE5NSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+PHBhdGggZD0iTTggNWwxMSA3LTExIDd2LTE0eiIvPjwvcD4KPC9zdmc+Cjx0ZXh0IHg9IjQwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOGI1Y2Y2IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4Ij5DbGljayB0byBwbGF5IHNwaXJpdHVhbCBndWlkYW5jZSB2aWRlbzwvdGV4dD4KPC9zdmc+"
-              >
-                <source src={spiritualVideoPath} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <div className="w-full h-64 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 flex items-center justify-center rounded-lg">
-                <div className="text-center text-purple-200">
-                  <div className="text-4xl mb-4">🏠</div>
-                  <p className="text-lg">Thank you for your feedback.</p>
-                  <p className="text-sm opacity-75">Redirecting you home...</p>
-                </div>
-              </div>
-            )}
+            <video
+              ref={videoRef}
+              className="w-full h-auto"
+              controls
+              onEnded={handleVideoEnded}
+              poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDgwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMTEwZTI0Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIyNSIgcj0iNjAiIGZpbGw9IiM4YjVjZjYiLz4KPHN2ZyB4PSIzNzAiIHk9IjE5NSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+PHBhdGggZD0iTTggNWwxMSA3LTExIDd2LTE0eiIvPjwvcD4KPC9zdmc+Cjx0ZXh0IHg9IjQwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOGI1Y2Y2IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4Ij5DbGljayB0byBwbGF5IHNwaXJpdHVhbCBndWlkYW5jZSB2aWRlbzwvdGV4dD4KPC9zdmc+"
+            >
+              <source src={spiritualVideoPath} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
 
           {showPostVideoOptions && (
