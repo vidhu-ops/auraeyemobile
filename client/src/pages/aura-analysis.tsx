@@ -2027,10 +2027,10 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras tab - double the size
+                // Special size enhancement for chakras tab - make much larger
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double the size
-                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double the size
+                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
                 // Add section title if multiple sections
