@@ -11,6 +11,7 @@ interface SpiritualGuidanceVideoModalProps {
 
 export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidanceVideoModalProps) {
   const [showPostVideoOptions, setShowPostVideoOptions] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [, navigate] = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -19,11 +20,25 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
       // Reset video to start when modal opens
       videoRef.current.currentTime = 0;
       setShowPostVideoOptions(false);
+      setIsPlaying(false);
     }
   }, [isOpen]);
 
   const handleVideoEnded = () => {
     setShowPostVideoOptions(true);
+    setIsPlaying(false);
+  };
+
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }
   };
 
   const handleScanAuraAgain = () => {
@@ -60,17 +75,38 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
             </p>
           </div>
 
-          <div className="w-full max-w-2xl bg-black/20 rounded-lg overflow-hidden">
+          <div className="w-full max-w-2xl bg-black/20 rounded-lg overflow-hidden relative">
             <video
               ref={videoRef}
               className="w-full h-auto"
-              controls
               onEnded={handleVideoEnded}
               poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDgwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMTEwZTI0Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIyNSIgcj0iNjAiIGZpbGw9IiM4YjVjZjYiLz4KPHN2ZyB4PSIzNzAiIHk9IjE5NSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+PHBhdGggZD0iTTggNWwxMSA3LTExIDd2LTE0eiIvPjwvcD4KPC9zdmc+Cjx0ZXh0IHg9IjQwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOGI1Y2Y2IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4Ij5DbGljayB0byBwbGF5IHNwaXJpdHVhbCBndWlkYW5jZSB2aWRlbzwvdGV4dD4KPC9zdmc+"
             >
               <source src={spiritualVideoPath} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
+            
+            {/* Custom Play/Pause Button */}
+            {!isPlaying && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/30 hover:bg-black/40 transition-all duration-200"
+                onClick={handlePlayPause}
+              >
+                <div className="bg-purple-600/80 hover:bg-purple-600 rounded-full p-4 transform hover:scale-110 transition-all duration-200">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M8 5l11 7-11 7v-14z"/>
+                  </svg>
+                </div>
+              </div>
+            )}
+            
+            {/* Video click handler for pause */}
+            {isPlaying && (
+              <div 
+                className="absolute inset-0 cursor-pointer"
+                onClick={handlePlayPause}
+              />
+            )}
           </div>
 
           {showPostVideoOptions && (
