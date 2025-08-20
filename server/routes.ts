@@ -1012,7 +1012,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve attached assets
   app.use('/attached_assets', (req, res, next) => {
-    const filePath = path.join(process.cwd(), 'attached_assets', req.path);
+    // Decode URL-encoded path to handle spaces properly
+    const decodedPath = decodeURIComponent(req.path);
+    const filePath = path.join(process.cwd(), 'attached_assets', decodedPath);
     
     if (fs.existsSync(filePath)) {
       res.sendFile(filePath);
