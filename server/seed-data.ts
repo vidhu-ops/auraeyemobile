@@ -19,7 +19,7 @@ export async function seedHealers() {
         description: "With over 15 years of experience in energy healing, Nishant specializes in chakra alignment and spiritual wellness. He combines traditional Eastern practices with modern healing techniques.",
         email: "nishant.sharma@spiritualwellness.com",
         phone: "+1-555-0123",
-        imageUrl: "@assets/WhatsApp Image 2025-08-11 at 3.52.01 AM_1755705996010.jpeg",
+        imageUrl: "/attached_assets/WhatsApp%20Image%202025-08-11%20at%203.52.01%20AM_1755705996010.jpeg",
         rating: 5,
         experience: "15+ years",
         location: "San Francisco, CA"
