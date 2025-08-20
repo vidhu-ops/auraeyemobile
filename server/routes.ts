@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import crypto from "crypto";
 import sharp from "sharp";
+import path from "path";
+import fs from "fs";
 import { setupAuth, isAuthenticated } from "./auth";
 import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
@@ -1010,8 +1012,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve attached assets
   app.use('/attached_assets', (req, res, next) => {
-    const path = require('path');
-    const fs = require('fs');
     const filePath = path.join(process.cwd(), 'attached_assets', req.path);
     
     if (fs.existsSync(filePath)) {
