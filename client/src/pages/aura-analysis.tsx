@@ -2131,9 +2131,9 @@ export default function AuraAnalysis() {
         yPosition += 20;
 
         // Add styled box background for notes
-        pdf.setFillColor(254, 252, 232); // Light yellow background
+        pdf.setFillColor(255, 255, 255); // Light yellow background
         pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'F'); // Filled rectangle
-        pdf.setDrawColor(251, 191, 36); // Golden border
+        pdf.setDrawColor(255, 255, 255); // Golden border
         pdf.setLineWidth(1);
         pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'S'); // Stroked rectangle
 
@@ -8269,6 +8269,143 @@ export default function AuraAnalysis() {
                             </div>
                             
                             <div className="space-y-6">
+                              {/* Detailed Chakra Scoring Analysis Section */}
+                              <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
+                                <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
+                                  <span className="mr-3">📊</span>
+                                  Detailed Chakra Scoring Analysis
+                                </h4>
+                                <p className="text-sm text-gray-600 mb-6">
+                                  Understanding your chakra scores and their karmic significance for spiritual development and healing.
+                                </p>
+
+                                <div className="space-y-4">
+                                  {/* Chakra Score Ranges Guide */}
+                                  <div className="bg-white rounded-lg p-5 border border-violet-200">
+                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Chakra Score Interpretation Guide</h5>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                      
+                                      {/* Karmically Aligned (9-10) */}
+                                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-200">
+                                        <div className="text-center mb-3">
+                                          <div className="text-2xl font-bold text-emerald-600">9-10</div>
+                                          <div className="text-sm font-medium text-emerald-700">Karmically Aligned</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                          <p className="font-medium text-emerald-800">Meaning:</p>
+                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson or not this lesson is fully mastered</p>
+                                        </div>
+                                        <div className="mt-3 flex justify-center">
+                                          <div className="px-3 py-1 bg-emerald-100 rounded-full">
+                                            <span className="text-xs font-medium text-emerald-700">✨ Mastered</span>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Currently Learning (7-8) */}
+                                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+                                        <div className="text-center mb-3">
+                                          <div className="text-2xl font-bold text-blue-600">7-8</div>
+                                          <div className="text-sm font-medium text-blue-700">Currently Learning</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                          <p className="font-medium text-blue-800">Meaning:</p>
+                                          <p>You are actively working on healing and understanding this area</p>
+                                        </div>
+                                        <div className="mt-3 flex justify-center">
+                                          <div className="px-3 py-1 bg-blue-100 rounded-full">
+                                            <span className="text-xs font-medium text-blue-700">📚 Learning</span>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Karmic Test (4-6) */}
+                                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200">
+                                        <div className="text-center mb-3">
+                                          <div className="text-2xl font-bold text-amber-600">4-6</div>
+                                          <div className="text-sm font-medium text-amber-700">Karmic Test</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                          <p className="font-medium text-amber-800">Meaning:</p>
+                                          <p>You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern</p>
+                                        </div>
+                                        <div className="mt-3 flex justify-center">
+                                          <div className="px-3 py-1 bg-amber-100 rounded-full">
+                                            <span className="text-xs font-medium text-amber-700">⚡ Testing</span>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Karmic Block (1-3) */}
+                                      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-lg p-4 border border-red-200">
+                                        <div className="text-center mb-3">
+                                          <div className="text-2xl font-bold text-red-600">1-3</div>
+                                          <div className="text-sm font-medium text-red-700">Karmic Block</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                          <p className="font-medium text-red-800">Meaning:</p>
+                                          <p>Deep-rooted block or ancestral karma making you feel stuck; urgent healing required</p>
+                                        </div>
+                                        <div className="mt-3 flex justify-center">
+                                          <div className="px-3 py-1 bg-red-100 rounded-full">
+                                            <span className="text-xs font-medium text-red-700">🚫 Blocked</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                              
+                                 
+
+                                  {/* Healing Priority Guide */}
+                                  <div className="bg-white rounded-lg p-5 border border-violet-200">
+                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Recommended Healing Priority</h5>
+                                    <div className="space-y-3">
+                                      {(() => {
+                                        const chakras = [
+                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10) },
+                                          { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5 },
+                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
+                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
+                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
+                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
+                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
+                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
+                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
+                                        ];
+
+                                        // Sort chakras by score (lowest first for healing priority)
+                                        const sortedChakras = [...chakras].sort((a, b) => a.score - b.score);
+                                        
+                                        return sortedChakras.slice(0, 3).map((chakra, index) => {
+                                          const priority = index === 0 ? 'Highest Priority' : index === 1 ? 'Medium Priority' : 'Lower Priority';
+                                          const priorityColor = index === 0 ? 'red' : index === 1 ? 'amber' : 'blue';
+                                          
+                                          return (
+                                            <div key={index} className={`flex items-center justify-between p-3 bg-${priorityColor}-50 rounded-lg border border-${priorityColor}-200`}>
+                                              <div className="flex items-center">
+                                                <span className={`text-lg font-bold text-${priorityColor}-600 mr-3`}>{index + 1}</span>
+                                                <span className="font-medium text-gray-800">{chakra.name}</span>
+                                              </div>
+                                              <div className="flex items-center">
+                                                <span className="text-sm text-gray-600 mr-3">Score: {chakra.score}/10</span>
+                                                <div className={`px-3 py-1 bg-${priorityColor}-100 rounded-full`}>
+                                                  <span className={`text-xs font-medium text-${priorityColor}-700`}>{priority}</span>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        });
+                                      })()}
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-4 italic">
+                                      Focus on healing the chakras with lowest scores first, as they represent the most urgent areas needing attention.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
                               <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
@@ -8982,230 +9119,10 @@ export default function AuraAnalysis() {
 
                               {/* Life Score Analysis Based on Chakra Activity */}
                               <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg p-6 border border-rose-200">
-                                <h4 className="font-medium text-xl mb-4 text-rose-800">Life Score Analysis</h4>
-                                <p className="text-sm text-gray-600 mb-6">
-                                  Your chakra activity levels create specific life patterns. These scores reveal your current strengths and areas for growth.
-                                </p>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                  
-                                  {/* Love & Relationships Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-pink-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-pink-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-pink-800">Love & Relationships</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-pink-600">
-                                        {(() => {
-                                          const score = (0.4 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.throat || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Emotional openness & authentic expression</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const score = (0.4 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.throat || 5));
-                                        if (score <= 4) return "Emotionally blocked, finds it hard to trust or open up";
-                                        if (score <= 6) return "Moderate emotional openness, some trust barriers";
-                                        if (score <= 8) return "Good emotional flow, healthy relationships";
-                                        return "Excellent emotional openness and authentic expression";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Money & Abundance Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-green-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-green-800">Money & Abundance</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-green-600">
-                                        {(() => {
-                                          const earthStarScore = calculateEarthStarChakra(result)/10;
-                                          const score = (0.3 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.4 * earthStarScore);
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Groundedness & wealth mindset</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const earthStarScore = calculateEarthStarChakra(result)/10;
-                                        const score = (0.3 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.4 * earthStarScore);
-                                        if (score <= 4) return "Money anxiety, scarcity mindset, karmic blocks";
-                                        if (score <= 6) return "Developing abundance mindset, some financial blocks";
-                                        if (score <= 8) return "Good financial flow, stable wealth mindset";
-                                        return "Excellent abundance consciousness and financial stability";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Career & Purpose Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-blue-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-blue-800">Career & Purpose</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-blue-600">
-                                        {(() => {
-                                          const score = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * (result.chakraActivity?.crown || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Vision, action & divine guidance alignment</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const score = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * (result.chakraActivity?.crown || 5));
-                                        if (score <= 4) return "Feels lost or stuck, lacks clarity of life direction";
-                                        if (score <= 6) return "Developing purpose clarity, some direction uncertainty";
-                                        if (score <= 8) return "Good career alignment, clear life direction";
-                                        return "Excellent purpose clarity and career fulfillment";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Emotional Stability Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-purple-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-purple-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-purple-800">Emotional Stability</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-purple-600">
-                                        {(() => {
-                                          const score = (0.4 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.root || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Emotional maturity & self-soothing ability</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const score = (0.4 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.root || 5));
-                                        if (score <= 4) return "Emotionally reactive, overwhelmed easily";
-                                        if (score <= 6) return "Moderate emotional stability, occasional overwhelm";
-                                        if (score <= 8) return "Good emotional balance, handles stress well";
-                                        return "Excellent emotional stability and resilience";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Spiritual Growth Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-indigo-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-indigo-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-indigo-800">Spiritual Growth</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-indigo-600">
-                                        {(() => {
-                                          const soulStarScore = calculateSoulStarChakra(result)/10;
-                                          const score = (0.4 * (result.chakraActivity?.crown || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * soulStarScore);
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Higher wisdom & divine intuition</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const soulStarScore = calculateSoulStarChakra(result)/10;
-                                        const score = (0.4 * (result.chakraActivity?.crown || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * soulStarScore);
-                                        if (score <= 4) return "Spiritually disconnected or resisting inner voice";
-                                        if (score <= 6) return "Developing spiritual awareness, some resistance";
-                                        if (score <= 8) return "Good spiritual connection, regular inner guidance";
-                                        return "Excellent spiritual openness and divine connection";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Physical Energy Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-orange-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-orange-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-orange-800">Physical Energy</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-orange-600">
-                                        {(() => {
-                                          const score = (0.4 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.sacral || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Stamina, vitality & body-mind connection</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const score = (0.4 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.sacral || 5));
-                                        if (score <= 4) return "Low vitality, potential health or energy blocks";
-                                        if (score <= 6) return "Moderate energy levels, some vitality blocks";
-                                        if (score <= 8) return "Good physical energy, healthy vitality";
-                                        return "Excellent physical energy and vibrant health";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Manifestation Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-yellow-200">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-yellow-500 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-yellow-800">Manifestation</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-yellow-600">
-                                        {(() => {
-                                          const score = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.root || 5)) + (0.2 * (result.chakraActivity?.thirdEye || 5)) + (0.1 * (result.chakraActivity?.sacral || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Converting visions into tangible results</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const score = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.root || 5)) + (0.2 * (result.chakraActivity?.thirdEye || 5)) + (0.1 * (result.chakraActivity?.sacral || 5));
-                                        if (score <= 4) return "Energies are scattered or sabotaged";
-                                        if (score <= 6) return "Moderate manifestation ability, some blocks";
-                                        if (score <= 8) return "Good manifestation skills, visions becoming reality";
-                                        return "Excellent manifestation power, dreams easily realized";
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  {/* Protection Score */}
-                                  <div className="bg-white rounded-lg p-4 border border-gray-300">
-                                    <div className="flex items-center mb-3">
-                                      <div className="w-5 h-5 rounded-full bg-gray-600 mr-2"></div>
-                                      <h5 className="font-semibold text-sm text-gray-800">Protection</h5>
-                                    </div>
-                                    <div className="text-center mb-3">
-                                      <div className="text-2xl font-bold text-gray-600">
-                                        {(() => {
-                                          const soulStarScore = calculateSoulStarChakra(result)/10;
-                                          const score = (0.4 * (result.chakraActivity?.root || 5)) + (0.3 * soulStarScore) + (0.2 * (result.chakraActivity?.solarPlexus || 5)) + (0.1 * (result.chakraActivity?.thirdEye || 5));
-                                          return score.toFixed(1);
-                                        })()}/10
-                                      </div>
-                                      <div className="text-xs text-gray-500">Spiritual boundary & auric shield strength</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">
-                                      {(() => {
-                                        const soulStarScore = calculateSoulStarChakra(result)/10;
-                                        const score = (0.4 * (result.chakraActivity?.root || 5)) + (0.3 * soulStarScore) + (0.2 * (result.chakraActivity?.solarPlexus || 5)) + (0.1 * (result.chakraActivity?.thirdEye || 5));
-                                        if (score <= 4) return "Highly vulnerable to others' energies";
-                                        if (score <= 6) return "Moderate protection, some energetic vulnerability";
-                                        if (score <= 8) return "Good energetic boundaries, stable protection";
-                                        return "Excellent auric shield, strong energetic protection";
-                                      })()}
-                                    </div>
-                                  </div>
+                                
+                               
 
                                 
-
-                                </div>
                               </div>
                             </div>
                           </div>
@@ -9418,20 +9335,7 @@ export default function AuraAnalysis() {
                               </div>
                               
                               {/* Connect to Healers Button */}
-                              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-200">
-                                <div className="text-center">
-                                  <h4 className="font-semibold text-amber-800 mb-2">Need Professional Guidance?</h4>
-                                  <p className="text-sm text-amber-700 mb-4">
-                                    Connect with experienced spiritual healers who can provide personalized guidance based on your aura reading
-                                  </p>
-                                  <Link href="/healers">
-                                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                                      <Users className="h-4 w-4 mr-2" />
-                                      Connect to Healers
-                                    </Button>
-                                  </Link>
-                                </div>
-                              </div>
+                              
                             </div>
                           </TabsContent>
                           
@@ -9454,143 +9358,6 @@ export default function AuraAnalysis() {
                               </Button>
                             </div>
                             <div>
-                              {/* Detailed Chakra Scoring Analysis Section */}
-                              <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
-                                <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
-                                  <span className="mr-3">📊</span>
-                                  Detailed Chakra Scoring Analysis
-                                </h4>
-                                <p className="text-sm text-gray-600 mb-6">
-                                  Understanding your chakra scores and their karmic significance for spiritual development and healing.
-                                </p>
-
-                                <div className="space-y-4">
-                                  {/* Chakra Score Ranges Guide */}
-                                  <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Chakra Score Interpretation Guide</h5>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                      
-                                      {/* Karmically Aligned (9-10) */}
-                                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-200">
-                                        <div className="text-center mb-3">
-                                          <div className="text-2xl font-bold text-emerald-600">9-10</div>
-                                          <div className="text-sm font-medium text-emerald-700">Karmically Aligned</div>
-                                        </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
-                                          <p className="font-medium text-emerald-800">Meaning:</p>
-                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson or not this lesson is fully mastered</p>
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                          <div className="px-3 py-1 bg-emerald-100 rounded-full">
-                                            <span className="text-xs font-medium text-emerald-700">✨ Mastered</span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Currently Learning (7-8) */}
-                                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
-                                        <div className="text-center mb-3">
-                                          <div className="text-2xl font-bold text-blue-600">7-8</div>
-                                          <div className="text-sm font-medium text-blue-700">Currently Learning</div>
-                                        </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
-                                          <p className="font-medium text-blue-800">Meaning:</p>
-                                          <p>You are actively working on healing and understanding this area</p>
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                          <div className="px-3 py-1 bg-blue-100 rounded-full">
-                                            <span className="text-xs font-medium text-blue-700">📚 Learning</span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Karmic Test (4-6) */}
-                                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200">
-                                        <div className="text-center mb-3">
-                                          <div className="text-2xl font-bold text-amber-600">4-6</div>
-                                          <div className="text-sm font-medium text-amber-700">Karmic Test</div>
-                                        </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
-                                          <p className="font-medium text-amber-800">Meaning:</p>
-                                          <p>You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern</p>
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                          <div className="px-3 py-1 bg-amber-100 rounded-full">
-                                            <span className="text-xs font-medium text-amber-700">⚡ Testing</span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Karmic Block (1-3) */}
-                                      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-lg p-4 border border-red-200">
-                                        <div className="text-center mb-3">
-                                          <div className="text-2xl font-bold text-red-600">1-3</div>
-                                          <div className="text-sm font-medium text-red-700">Karmic Block</div>
-                                        </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
-                                          <p className="font-medium text-red-800">Meaning:</p>
-                                          <p>Deep-rooted block or ancestral karma making you feel stuck; urgent healing required</p>
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                          <div className="px-3 py-1 bg-red-100 rounded-full">
-                                            <span className="text-xs font-medium text-red-700">🚫 Blocked</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                              
-                                 
-
-                                  {/* Healing Priority Guide */}
-                                  <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Recommended Healing Priority</h5>
-                                    <div className="space-y-3">
-                                      {(() => {
-                                        const chakras = [
-                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10) },
-                                          { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5 },
-                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
-                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
-                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
-                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
-                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
-                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
-                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
-                                        ];
-
-                                        // Sort chakras by score (lowest first for healing priority)
-                                        const sortedChakras = [...chakras].sort((a, b) => a.score - b.score);
-                                        
-                                        return sortedChakras.slice(0, 3).map((chakra, index) => {
-                                          const priority = index === 0 ? 'Highest Priority' : index === 1 ? 'Medium Priority' : 'Lower Priority';
-                                          const priorityColor = index === 0 ? 'red' : index === 1 ? 'amber' : 'blue';
-                                          
-                                          return (
-                                            <div key={index} className={`flex items-center justify-between p-3 bg-${priorityColor}-50 rounded-lg border border-${priorityColor}-200`}>
-                                              <div className="flex items-center">
-                                                <span className={`text-lg font-bold text-${priorityColor}-600 mr-3`}>{index + 1}</span>
-                                                <span className="font-medium text-gray-800">{chakra.name}</span>
-                                              </div>
-                                              <div className="flex items-center">
-                                                <span className="text-sm text-gray-600 mr-3">Score: {chakra.score}/10</span>
-                                                <div className={`px-3 py-1 bg-${priorityColor}-100 rounded-full`}>
-                                                  <span className={`text-xs font-medium text-${priorityColor}-700`}>{priority}</span>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          );
-                                        });
-                                      })()}
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-4 italic">
-                                      Focus on healing the chakras with lowest scores first, as they represent the most urgent areas needing attention.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
                               <div className="mb-6 relative">
                                 <div className="absolute -top-3 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-17 mb-5">
                                   Advanced Feature
