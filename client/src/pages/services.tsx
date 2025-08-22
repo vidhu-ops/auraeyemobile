@@ -35,6 +35,14 @@ const services = [
   },
   {
     id: "numerology",
+    title: "What's My Vibe",
+    description: "Discover your Dominant Aura and comprehensive spiritual insights.",
+    icon: <span className="font-bold text-indigo-500 text-lg">!</span>,
+    path: "/#vibe-section",
+    tags: ["Whatsmyvibe", "Aura", "feature", "Soul Analysis"]
+  },
+  {
+    id: "numerology",
     title: "Enhanced Numerology Analysis",
     description: "Discover your Life Path Number, Destiny Number, Decision-making Chakra, and Dominant Soul Chakra for comprehensive spiritual insights.",
     icon: <span className="font-bold text-indigo-500 text-lg">#</span>,
