@@ -9292,10 +9292,9 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </TabsContent>
+                          </div></TabsContent>
                           
-                        <TabsContent value="guidance" data-tab="guidance">
+                          
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
                               <Button
