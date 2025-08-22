@@ -26,6 +26,14 @@ const services = [
     tags: ["Energy", "Artifacts", "Intuitive"]
   },
   {
+    id: "object-analysis",
+    title: "What's My Vibe",
+    description: "Discover your dominant aura and get a comprehensive understanding.",
+    icon: <Box className="h-6 w-6 text-purple-500" />,
+    path: "/#vibe-check-section",
+    tags: ["vibe", "aura", "energy"]
+  },
+  {
     id: "daily-horoscope",
     title: "Daily Horoscope",
     description: "Receive personalized astrological guidance to navigate your day with cosmic insight.",

@@ -13,8 +13,11 @@ export function PremiumContentVideoModal({ isOpen, onClose }: PremiumContentVide
 
   useEffect(() => {
     if (isOpen && videoRef.current) {
-      // Reset video to start when modal opens
+      // Reset video to start when modal opens and autoplay
       videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(error => {
+        console.log('Auto-play was prevented:', error);
+      });
     }
   }, [isOpen]);
 
@@ -41,7 +44,11 @@ export function PremiumContentVideoModal({ isOpen, onClose }: PremiumContentVide
             <video
               ref={videoRef}
               className="w-full h-auto"
-              controls
+              autoPlay
+              muted
+              playsInline
+              disablePictureInPicture
+              controlsList="nodownload nofullscreen noremoteplayback"
               poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDgwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMTEwZTI0Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIyNSIgcj0iNjAiIGZpbGw9IiM4YjVjZjYiLz4KPHN2ZyB4PSIzNzAiIHk9IjE5NSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+PHBhdGggZD0iTTggNWwxMSA3LTExIDd2LTE0eiIvPjwvcD4KPC9zdmc+Cjx0ZXh0IHg9IjQwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOGI1Y2Y2IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4Ij5DbGljayB0byBwbGF5IHByZW1pdW0gY29udGVudCBwcmV2aWV3PC90ZXh0Pgo8L3N2Zz4="
             >
               <source src={premiumVideoPath} type="video/mp4" />
