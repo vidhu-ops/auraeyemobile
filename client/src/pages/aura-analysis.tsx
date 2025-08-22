@@ -1942,11 +1942,6 @@ export default function AuraAnalysis() {
         // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           
-          pdf.setFontSize(14);
-          pdf.setTextColor(75, 0, 130);
-          yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)}`, 20, yPosition);
-          yPosition += 10;
-          
           try {
             // Create a temporary image to get exact dimensions
             const tempImg = new Image();
@@ -2033,16 +2028,7 @@ export default function AuraAnalysis() {
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
-                // Add section title if multiple sections
-                if (sectionsNeeded > 1) {
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  const sectionTitle = tabId === 'chakras' ? 
-                    `Detailed Chakras Analysis - Part ${section + 1} of 4` : 
-                    `${getTabDisplayName(tabId)} - Section ${section + 1}/${sectionsNeeded}`;
-                  yPosition = addTextWithPageBreak(sectionTitle, 20, yPosition);
-                  yPosition += 5;
-                }
+                // Section titles removed for continuous image flow as requested
                 
                 // Compress and add the section
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
@@ -6287,12 +6273,12 @@ export default function AuraAnalysis() {
                               </span>
                             </TabsTrigger>
                             <TabsTrigger value="chakras" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">
-                              <span className="hidden lg:inline">Detailed Chakras</span>
+                              <span className="hidden lg:inline">Chakra Details</span>
                               <span className="lg:hidden">Details</span>
                             </TabsTrigger>
                             <TabsTrigger value="guidance" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">Guidance</TabsTrigger>
                             <TabsTrigger value="spectrum" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
-                              <span className="hidden sm:inline">Color Spectrum</span>
+                              <span className="hidden sm:inline">Life Score</span>
                               <span className="sm:hidden">Colors</span>
                               <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rainbow-400 opacity-75"></span>
@@ -6312,7 +6298,7 @@ export default function AuraAnalysis() {
                               </span>
                             </TabsTrigger>
                             <TabsTrigger value="detailed" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
-                              <span className="hidden lg:inline">Detailed Analysis</span>
+                              <span className="hidden lg:inline">Detailed</span>
                               <span className="lg:hidden">Advanced</span>
                               <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -6322,7 +6308,7 @@ export default function AuraAnalysis() {
                               </span>
                             </TabsTrigger>
                             <TabsTrigger value="combined" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto relative">
-                              <span className="hidden lg:inline">Combined Analysis</span>
+                              <span className="hidden lg:inline">Combined</span>
                               <span className="lg:hidden">Combined</span>
                               <span className="absolute -top-1 -right-1 flex h-2 w-2 sm:h-3 sm:w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
@@ -8360,48 +8346,9 @@ export default function AuraAnalysis() {
 
                                   {/* Healing Priority Guide */}
                                   <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Recommended Healing Priority</h5>
-                                    <div className="space-y-3">
-                                      {(() => {
-                                        const chakras = [
-                                          { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10) },
-                                          { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5 },
-                                          { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
-                                          { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
-                                          { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
-                                          { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
-                                          { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
-                                          { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
-                                          { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
-                                        ];
-
-                                        // Sort chakras by score (lowest first for healing priority)
-                                        const sortedChakras = [...chakras].sort((a, b) => a.score - b.score);
-                                        
-                                        return sortedChakras.slice(0, 3).map((chakra, index) => {
-                                          const priority = index === 0 ? 'Highest Priority' : index === 1 ? 'Medium Priority' : 'Lower Priority';
-                                          const priorityColor = index === 0 ? 'red' : index === 1 ? 'amber' : 'blue';
-                                          
-                                          return (
-                                            <div key={index} className={`flex items-center justify-between p-3 bg-${priorityColor}-50 rounded-lg border border-${priorityColor}-200`}>
-                                              <div className="flex items-center">
-                                                <span className={`text-lg font-bold text-${priorityColor}-600 mr-3`}>{index + 1}</span>
-                                                <span className="font-medium text-gray-800">{chakra.name}</span>
-                                              </div>
-                                              <div className="flex items-center">
-                                                <span className="text-sm text-gray-600 mr-3">Score: {chakra.score}/10</span>
-                                                <div className={`px-3 py-1 bg-${priorityColor}-100 rounded-full`}>
-                                                  <span className={`text-xs font-medium text-${priorityColor}-700`}>{priority}</span>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          );
-                                        });
-                                      })()}
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-4 italic">
-                                      Focus on healing the chakras with lowest scores first, as they represent the most urgent areas needing attention.
-                                    </p>
+                                    
+                                   
+                                  
                                   </div>
                                 </div>
                               </div>
