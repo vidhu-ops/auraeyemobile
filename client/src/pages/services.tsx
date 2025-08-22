@@ -27,14 +27,6 @@ const services = [
   },
   {
     id: "daily-horoscope",
-    title: "What's My Vibe",
-    description: "Discover your Dominant Aura and details about it and a comprehensive understanding.",
-    icon: <Star className="h-6 w-6 text-secondary" />,
-    path: "/#vibe-section",
-    tags: ["vibe", "aura", "dominant"]
-  },
-  {
-    id: "daily-horoscope",
     title: "Daily Horoscope",
     description: "Receive personalized astrological guidance to navigate your day with cosmic insight.",
     icon: <Star className="h-6 w-6 text-secondary" />,
