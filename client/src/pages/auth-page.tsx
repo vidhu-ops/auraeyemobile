@@ -8,11 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Loader2 } from "lucide-react";
-import MobileOtpVerificationSimple from "@/components/mobile-otp-verification-simple";
 import logoPath from "@assets/new-logo.jpeg";
 
 const loginSchema = z.object({
@@ -20,22 +17,10 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Please enter a valid email address").optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  birthDate: z.string().min(1, "Birth date is required"),
-  mobileNumber: z.string().min(10, "Mobile number verification is required"),
-});
-
 type LoginData = z.infer<typeof loginSchema>;
-type RegisterData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<string>("login");
-  const [showMobileVerification, setShowMobileVerification] = useState(false);
-  const [verifiedMobile, setVerifiedMobile] = useState<string>("");
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation } = useAuth();
   
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -45,33 +30,8 @@ export default function AuthPage() {
     },
   });
 
-  const registerForm = useForm<RegisterData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      birthDate: "",
-      mobileNumber: "",
-    },
-  });
-
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
-  };
-
-  const onRegisterSubmit = (data: RegisterData) => {
-    // Include verified mobile number in registration data
-    const registrationData = {
-      ...data,
-      mobileNumber: verifiedMobile || data.mobileNumber,
-    };
-    registerMutation.mutate(registrationData);
-  };
-
-  const handleMobileVerified = (mobileNumber: string) => {
-    setVerifiedMobile(mobileNumber);
-    setShowMobileVerification(false);
   };
 
   // Redirect if already logged in
@@ -99,167 +59,58 @@ export default function AuthPage() {
             <CardDescription>Access your spiritual wellness journey</CardDescription>
           </CardHeader>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
-                  <CardContent className="space-y-4 pt-6">
-                    <FormField
-                      control={loginForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={loginForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Enter your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                  
-                  <CardFooter className="flex-col space-y-2">
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-primary hover:bg-primary-dark"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                          Logging in...
-                        </>
-                      ) : "Login"}
-                    </Button>
-                    <Link href="/forgot-password" className="text-sm text-center text-primary hover:text-primary-dark">
-                      Forgot your password?
-                    </Link>
-                  </CardFooter>
-                </form>
-              </Form>
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <Form {...registerForm}>
-                <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)}>
-                  <CardContent className="space-y-4 pt-6">
-                    <FormField
-                      control={registerForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Choose a username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={registerForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email (Optional)</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Enter your email for password reset" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Create a password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={registerForm.control}
-                      name="birthDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Birth Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          <Form {...loginForm}>
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
+              <CardContent className="space-y-4 pt-6">
+                <FormField
+                  control={loginForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Enter your password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+              
+              <CardFooter className="flex-col space-y-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-primary hover:bg-primary-dark"
+                  disabled={loginMutation.isPending}
+                >
+                  {loginMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                      Logging in...
+                    </>
+                  ) : "Login"}
+                </Button>
+                <Link href="/forgot-password" className="text-sm text-center text-primary hover:text-primary-dark">
+                  Forgot your password?
+                </Link>
+              </CardFooter>
+            </form>
+          </Form>
 
-                    {/* Mobile Verification Section - MANDATORY */}
-                    <div className="space-y-4">
-                      <div className="border-t pt-4">
-                        <label className="text-sm font-medium text-red-600 mb-2 block">
-                          * Mobile Verification Required
-                        </label>
-                        
-                        {!verifiedMobile ? (
-                          <MobileOtpVerificationSimple
-                            onVerified={handleMobileVerified}
-                            initialMobileNumber={registerForm.watch("mobileNumber") || ""}
-                          />
-                        ) : (
-                          <div className="text-sm text-green-600 font-medium bg-green-50 p-3 rounded-lg">
-                            ✓ Mobile verified: {verifiedMobile}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-
-                  </CardContent>
-                  
-                  <CardFooter>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-primary hover:bg-primary-dark"
-                      disabled={registerMutation.isPending || !verifiedMobile}
-                    >
-                      {registerMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                          Creating account...
-                        </>
-                      ) : !verifiedMobile ? "Please verify mobile number first" : "Create Account"}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Form>
-            </TabsContent>
-          </Tabs>
         </Card>
       </div>
       
