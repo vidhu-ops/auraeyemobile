@@ -1387,7 +1387,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (550x800px) and compress to 50KB with guaranteed success
+      // Resize image to standard dimensions (600x900px) and compress to 50KB with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);
