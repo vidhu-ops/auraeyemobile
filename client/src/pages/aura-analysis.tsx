@@ -969,9 +969,38 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      // Mobile-specific debugging and element detection
+      const isMobileDevice = window.innerWidth < 768;
+      console.log(`📱 Mobile capture for ${tabId} tab: ${isMobileDevice ? 'YES' : 'NO'} (${window.innerWidth}px)`);
+      
+      // Ensure we're on the correct tab first for mobile
+      if (activeTab !== tabId) {
+        console.log(`Switching to ${tabId} tab for capture...`);
+        setActiveTab(tabId);
+        await new Promise(resolve => setTimeout(resolve, isMobileDevice ? 800 : 500)); // Longer wait for mobile
+      }
+      
+      // Enhanced element discovery with multiple strategies for mobile compatibility
+      const element = document.querySelector(`[data-tab="${tabId}"]`) ||
+                      document.querySelector(`[value="${tabId}"][data-state="active"]`) ||
+                      document.querySelector('[data-state="active"]') ||
+                      document.querySelector(`[role="tabpanel"][data-value="${tabId}"]`) ||
+                      document.querySelector(`#${tabId}-content`);
+      
+      console.log(`Element detection for ${tabId}: ${element ? 'FOUND' : 'NOT FOUND'}`);
+      if (element) {
+        console.log(`Element details: tag=${element.tagName}, class=${element.className}, data-tab=${element.getAttribute('data-tab')}`);
+      } else {
+        // Try to find any active tab content and log what we find
+        const allTabs = document.querySelectorAll('[data-tab]');
+        console.log(`Available tabs found: ${allTabs.length}`);
+        allTabs.forEach((tab, index) => {
+          console.log(`Tab ${index}: data-tab="${tab.getAttribute('data-tab')}", visible=${window.getComputedStyle(tab).display !== 'none'}`);
+        });
+      }
+      
       if (!element) {
-        throw new Error('Tab content not found');
+        throw new Error(`Tab content not found for ${tabId}. Available tabs: ${Array.from(document.querySelectorAll('[data-tab]')).map(el => el.getAttribute('data-tab')).join(', ')}`);
       }
 
       const htmlElement = element as HTMLElement;
@@ -1227,7 +1256,7 @@ export default function AuraAnalysis() {
                     textElement.style.fontWeight = '700';
                     textElement.style.letterSpacing = '0.4px';
                     textElement.style.textRendering = 'optimizeLegibility';
-                    textElement.style.webkitFontSmoothing = 'antialiased'; // Better mobile rendering
+                    (textElement.style as any).webkitFontSmoothing = 'antialiased'; // Better mobile rendering
                   });
                 } else {
                   // Enhanced text for all other tabs with mobile optimization
@@ -1240,7 +1269,7 @@ export default function AuraAnalysis() {
                     textElement.style.fontSize = fontSize;
                     textElement.style.fontWeight = '500';
                     textElement.style.letterSpacing = '0.2px';
-                    textElement.style.webkitFontSmoothing = 'antialiased';
+                    (textElement.style as any).webkitFontSmoothing = 'antialiased';
                   });
                 }
                 
