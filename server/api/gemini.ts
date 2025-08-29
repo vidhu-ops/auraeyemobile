@@ -17,16 +17,16 @@ export async function generateAuraVisualization(
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 600x900px`);
+    console.log(`Processing with standardized dimensions: 550x700px`);
     
     // Calculate input image size for verification
     const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
     console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
     
-    // CRITICAL FIX: Standardized dimensions as specified: 600px width × 900px height
-    const STANDARD_WIDTH = 600;
-    const STANDARD_HEIGHT = 900;
+    // NEW STANDARD: 550px width × 700px height for uniform display
+    const STANDARD_WIDTH = 550;
+    const STANDARD_HEIGHT = 700;
     
     // Create canvas with standardized dimensions
     const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
@@ -161,7 +161,11 @@ function addStandardizedAuraEffects(
   createFlowingWisps(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
     imageWidth, imageHeight, dominantRGB, secondaryRGB, seededRandom, faceProtectionRadius);
   
-  // LAYER 3: Subtle background glow
+  // LAYER 3: Additional ultra-dense coverage layer
+  createExtraDenseCoverage(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
+    imageWidth, imageHeight, dominantRGB, secondaryRGB, seededRandom, faceProtectionRadius);
+  
+  // LAYER 4: Subtle background glow
   createSubtleBackgroundGlow(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
     imageWidth, imageHeight, dominantRGB, secondaryRGB);
   
@@ -189,14 +193,14 @@ function createDensePerimeterSmoke(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  // Create dense smoke rings around the person
-  const numRings = 6;
-  const baseRadius = Math.max(personWidth, personHeight) * 0.4;
+  // Create ULTRA-DENSE smoke rings around the person
+  const numRings = 12; // Doubled rings for maximum density
+  const baseRadius = Math.max(personWidth, personHeight) * 0.3;
   
   for (let ring = 0; ring < numRings; ring++) {
-    const ringRadius = baseRadius + (ring * 35);
-    const numParticles = 48 + (ring * 6); // More particles in outer rings
-    const opacity = 0.4 - (ring * 0.05);
+    const ringRadius = baseRadius + (ring * 25); // Tighter spacing
+    const numParticles = 96 + (ring * 8); // Much more particles per ring
+    const opacity = 0.6 - (ring * 0.04); // Higher base opacity
     
     for (let particle = 0; particle < numParticles; particle++) {
       const angle = (particle / numParticles) * Math.PI * 2;
@@ -224,9 +228,9 @@ function createDensePerimeterSmoke(
         color = personalityRGB; // Edges - personality energy
       }
       
-      // Create smoke particle with natural gradient
-      const particleSize = 15 + seededRandom() * 25; // Variable sizes
-      const particleOpacity = opacity * (0.6 + seededRandom() * 0.4);
+      // Create LARGER smoke particle with natural gradient for maximum coverage
+      const particleSize = 25 + seededRandom() * 35; // Much larger particles for denser coverage
+      const particleOpacity = opacity * (0.8 + seededRandom() * 0.2); // Higher opacity for density
       
       const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
       smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
@@ -258,8 +262,8 @@ function createFlowingWisps(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  const numWisps = 24;
-  const wispLength = Math.max(personWidth, personHeight) * 0.8;
+  const numWisps = 48; // Double the wisps for ultra-dense coverage
+  const wispLength = Math.max(personWidth, personHeight) * 1.2; // Longer wisps for better coverage
   
   for (let wisp = 0; wisp < numWisps; wisp++) {
     const angle = (wisp / numWisps) * Math.PI * 2;
@@ -297,6 +301,53 @@ function createFlowingWisps(
       ctx.arc(x, y, segmentSize, 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+}
+
+/**
+ * Creates extra-dense coverage to eliminate any remaining gaps
+ */
+function createExtraDenseCoverage(
+  ctx: any,
+  canvasWidth: number,
+  canvasHeight: number,
+  personX: number,
+  personY: number,
+  personWidth: number,
+  personHeight: number,
+  dominantRGB: any,
+  secondaryRGB: any,
+  seededRandom: () => number,
+  faceProtectionRadius: number
+) {
+  // Fill gaps with ultra-dense small particles
+  const numExtraParticles = 200; // Many small particles to fill gaps
+  const coverageRadius = Math.max(personWidth, personHeight) * 0.8;
+  
+  for (let i = 0; i < numExtraParticles; i++) {
+    const angle = seededRandom() * Math.PI * 2;
+    const radius = seededRandom() * coverageRadius;
+    const x = personX + Math.cos(angle) * radius;
+    const y = personY + Math.sin(angle) * radius;
+    
+    // Skip particles too close to face
+    const distanceFromFace = Math.sqrt((x - personX) ** 2 + (y - personY) ** 2);
+    if (distanceFromFace < faceProtectionRadius) continue;
+    
+    // Use alternating colors for variety
+    const color = i % 2 === 0 ? dominantRGB : secondaryRGB;
+    const particleSize = 8 + seededRandom() * 16; // Smaller particles for filling
+    const particleOpacity = 0.15 + seededRandom() * 0.25; // Moderate opacity
+    
+    const fillGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
+    fillGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
+    fillGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.4})`);
+    fillGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = fillGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
