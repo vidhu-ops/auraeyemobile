@@ -1524,6 +1524,158 @@ export default function AuraAnalysis() {
     return names[tabId] || tabId;
   };
 
+  // Enhanced automatic tab capture before PDF generation
+  const captureAllTabsForPDF = async () => {
+    const tabsToCapture = ['analysis', 'energy-reading', 'chakras', 'guidance', 'spectrum', 'energy-map', 'detailed', 'combined'];
+    const isMobileDevice = window.innerWidth < 768;
+    
+    console.log(`🔄 Starting automatic capture of all ${tabsToCapture.length} tabs for PDF (mobile: ${isMobileDevice})`);
+    
+    // Clear existing screenshots to ensure fresh captures
+    const newScreenshots = new Map();
+    
+    for (const tabId of tabsToCapture) {
+      try {
+        console.log(`📸 Capturing ${tabId} tab for PDF...`);
+        
+        // Force tab switch with longer delays for mobile reliability
+        setActiveTab(tabId);
+        await new Promise(resolve => setTimeout(resolve, isMobileDevice ? 1200 : 600));
+        
+        // Enhanced element detection with all possible selectors
+        const element = document.querySelector(`[data-tab="${tabId}"]`) ||
+                        document.querySelector(`[value="${tabId}"][data-state="active"]`) ||
+                        document.querySelector('[data-state="active"]') ||
+                        document.querySelector(`[role="tabpanel"][data-value="${tabId}"]`) ||
+                        document.querySelector(`#${tabId}-content`) ||
+                        document.querySelector(`.tab-content[data-tab="${tabId}"]`);
+        
+        if (!element) {
+          console.warn(`❌ Element not found for ${tabId} tab, trying alternate approach...`);
+          // Try clicking the tab trigger first
+          const tabTrigger = document.querySelector(`[value="${tabId}"]`);
+          if (tabTrigger) {
+            (tabTrigger as HTMLElement).click();
+            await new Promise(resolve => setTimeout(resolve, isMobileDevice ? 1000 : 500));
+            
+            // Try again after clicking
+            const retryElement = document.querySelector(`[data-tab="${tabId}"]`) ||
+                                 document.querySelector('[data-state="active"]');
+            if (retryElement) {
+              console.log(`✅ Found ${tabId} element after manual tab click`);
+              const screenshot = await captureElementScreenshot(retryElement as HTMLElement, tabId);
+              if (screenshot) {
+                newScreenshots.set(tabId, screenshot);
+                console.log(`✅ Successfully captured ${tabId} tab`);
+              }
+            }
+          }
+          continue;
+        }
+        
+        console.log(`✅ Found ${tabId} element, capturing screenshot...`);
+        const screenshot = await captureElementScreenshot(element as HTMLElement, tabId);
+        if (screenshot) {
+          newScreenshots.set(tabId, screenshot);
+          console.log(`✅ Successfully captured ${tabId} tab (${(screenshot.length / 1024).toFixed(1)}KB)`);
+        } else {
+          console.warn(`❌ Failed to capture screenshot for ${tabId} tab`);
+        }
+        
+      } catch (error) {
+        console.error(`❌ Error capturing ${tabId} tab:`, error);
+      }
+    }
+    
+    // Update captured screenshots
+    setCapturedScreenshots(newScreenshots);
+    console.log(`🎯 Completed automatic capture: ${newScreenshots.size}/${tabsToCapture.length} tabs captured successfully`);
+    
+    return newScreenshots;
+  };
+
+  // Helper function to capture element screenshot (extracted from main function)
+  const captureElementScreenshot = async (element: HTMLElement, tabId: string): Promise<string | null> => {
+    try {
+      const rect = element.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const isMobileDevice = window.innerWidth < 768;
+      
+      // Enhanced mobile sizing with better width calculation
+      const baseContentWidth = Math.max(
+        element.scrollWidth,
+        element.offsetWidth,
+        element.clientWidth,
+        rect.width
+      );
+      
+      // Mobile enhancement: 50% width boost and 4.0x scale for critical tabs
+      const isCriticalTab = ['chakras', 'detailed', 'analysis', 'energy-map'].includes(tabId);
+      const mobileWidthBoost = isMobileDevice && isCriticalTab ? 1.5 : 1.15; // 50% boost for critical tabs, 15% for others
+      const mobileScaleFactor = isMobileDevice && isCriticalTab ? 4.0 : 3.5; // Higher scale for critical tabs
+      
+      const contentWidth = Math.floor(baseContentWidth * mobileWidthBoost);
+      
+      let contentHeight = Math.max(
+        element.scrollHeight,
+        element.offsetHeight,
+        element.clientHeight,
+        rect.height
+      );
+      
+      // Enhanced height detection for critical tabs
+      if (isCriticalTab) {
+        const originalScrollTop = element.scrollTop;
+        element.scrollTop = element.scrollHeight;
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        contentHeight = Math.max(contentHeight, element.scrollHeight);
+        element.scrollTop = originalScrollTop;
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      // Enhanced screenshot capture with mobile optimizations
+      const screenshot = await html2canvas(element, {
+        width: contentWidth,
+        height: contentHeight,
+        scale: mobileScaleFactor,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: viewportWidth,
+        windowHeight: window.innerHeight,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) as HTMLElement;
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.position = 'static';
+            
+            // Enhanced text rendering for mobile screenshots
+            const allTextElements = clonedElement.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6, li, td, th');
+            allTextElements.forEach(textEl => {
+              const textElement = textEl as HTMLElement;
+              const fontSize = isMobileDevice ? '14px' : '15px';
+              textElement.style.fontSize = fontSize;
+              textElement.style.fontWeight = isCriticalTab ? '700' : '500';
+              textElement.style.letterSpacing = '0.3px';
+              textElement.style.textRendering = 'optimizeLegibility';
+              (textElement.style as any).webkitFontSmoothing = 'antialiased';
+              textElement.style.lineHeight = '1.6';
+            });
+          }
+        }
+      });
+      
+      return screenshot.toDataURL('image/jpeg', 0.95);
+      
+    } catch (error) {
+      console.error(`Failed to capture ${tabId} screenshot:`, error);
+      return null;
+    }
+  };
+
   const downloadComprehensiveAuraPDF = async () => {
     if (!result) {
       console.error('No aura analysis result available for PDF generation');
@@ -1534,6 +1686,17 @@ export default function AuraAnalysis() {
       });
       return;
     }
+
+    // STEP 1: Automatically capture all tabs before PDF generation
+    toast({
+      title: "Preparing PDF",
+      description: "Capturing all analysis tabs for comprehensive report...",
+    });
+    
+    const allScreenshots = await captureAllTabsForPDF();
+    
+    // Brief pause to ensure UI updates
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     console.log('Starting PDF generation with result:', result);
     console.log('Processed aura image available:', !!processedAuraImage);
@@ -1984,8 +2147,8 @@ export default function AuraAnalysis() {
       }
       yPosition += 15;
 
-      // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
-      if (capturedScreenshots.size > 0) {
+      // SECTION 8: CAPTURED TAB SCREENSHOTS (use fresh captures)
+      if (allScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
         
@@ -2000,7 +2163,7 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing and multi-page support
-        for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
+        for (const [tabId, imageDataUrl] of Array.from(allScreenshots.entries())) {
           
           try {
             // Create a temporary image to get exact dimensions
