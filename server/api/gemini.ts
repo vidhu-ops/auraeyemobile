@@ -22,7 +22,7 @@ export async function generateAuraVisualization(
     // Calculate input image size for verification
     const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
-    console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
+    console.log(`Input image size: ${inputSizeKB}KB (target: ~20KB)`);
     
     // NEW STANDARD: 550px width × 700px height for uniform display
     const STANDARD_WIDTH = 550;
@@ -193,14 +193,14 @@ function createDensePerimeterSmoke(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  // Create ULTRA-DENSE smoke rings around the person
-  const numRings = 12; // Doubled rings for maximum density
-  const baseRadius = Math.max(personWidth, personHeight) * 0.3;
+  // Create MAXIMUM DENSITY smoke rings around the person
+  const numRings = 18; // Triple rings for absolute maximum density
+  const baseRadius = Math.max(personWidth, personHeight) * 0.25;
   
   for (let ring = 0; ring < numRings; ring++) {
-    const ringRadius = baseRadius + (ring * 25); // Tighter spacing
-    const numParticles = 96 + (ring * 8); // Much more particles per ring
-    const opacity = 0.6 - (ring * 0.04); // Higher base opacity
+    const ringRadius = baseRadius + (ring * 20); // Even tighter spacing
+    const numParticles = 120 + (ring * 12); // Maximum particles per ring
+    const opacity = 0.7 - (ring * 0.03); // Highest base opacity
     
     for (let particle = 0; particle < numParticles; particle++) {
       const angle = (particle / numParticles) * Math.PI * 2;
@@ -228,9 +228,9 @@ function createDensePerimeterSmoke(
         color = personalityRGB; // Edges - personality energy
       }
       
-      // Create LARGER smoke particle with natural gradient for maximum coverage
-      const particleSize = 25 + seededRandom() * 35; // Much larger particles for denser coverage
-      const particleOpacity = opacity * (0.8 + seededRandom() * 0.2); // Higher opacity for density
+      // Create MAXIMUM SIZE smoke particle with natural gradient for complete coverage
+      const particleSize = 35 + seededRandom() * 45; // Extra large particles for maximum density
+      const particleOpacity = opacity * (0.9 + seededRandom() * 0.1); // Maximum opacity for density
       
       const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
       smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
@@ -320,9 +320,9 @@ function createExtraDenseCoverage(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  // Fill gaps with ultra-dense small particles
-  const numExtraParticles = 200; // Many small particles to fill gaps
-  const coverageRadius = Math.max(personWidth, personHeight) * 0.8;
+  // Fill gaps with maximum-density small particles  
+  const numExtraParticles = 400; // Double the particles to completely fill all gaps
+  const coverageRadius = Math.max(personWidth, personHeight) * 1.0; // Wider coverage
   
   for (let i = 0; i < numExtraParticles; i++) {
     const angle = seededRandom() * Math.PI * 2;

@@ -1036,20 +1036,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
+  // Helper function to resize images to exactly 550x700 pixels and compress to 20KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Start with moderate quality and progressively reduce to hit 50KB target
-      let quality = 85;
+      // Start with lower quality to target 20KB - more aggressive compression needed
+      let quality = 65;
       let compressedBuffer: Buffer;
-      const targetSizeKB = 50;
+      const targetSizeKB = 20; // NEW TARGET: 20KB for faster loading and consistent sizing
       
-      // Keep compressing until we reach 50KB or lower for consistent processing
+      // Keep compressing until we reach 20KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(600, 900, {
+          .resize(550, 700, { // NEW DIMENSIONS: 550x700 for uniform display
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1065,15 +1065,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality} (target: ${targetSizeKB}KB)`);
         
         // If still too large, reduce quality by 5 for finer control
-        if (fileSizeKB > targetSizeKB && quality > 25) {
+        if (fileSizeKB > targetSizeKB && quality > 15) {
           quality -= 5;
         } else {
           break; // Either small enough or minimum quality reached
         }
-      } while (quality >= 25);
+      } while (quality >= 15);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 550x700px`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();
