@@ -193,33 +193,6 @@ export default function AuraAnalysis() {
   const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
   const [isCapturingScreenshot, setIsCapturingScreenshot] = useState<string | null>(null);
 
-  // Auto-capture screenshots when tabs become visible and result is available
-  React.useEffect(() => {
-    if (result && !isAnalyzing) {
-      const captureAllTabsAutomatically = async () => {
-        const tabsToCapture = ['analysis', 'energy-reading', 'guidance', 'spectrum', 'detailed'];
-        
-        for (const tabId of tabsToCapture) {
-          // Only capture if we don't already have this screenshot
-          if (!capturedScreenshots.has(tabId)) {
-            try {
-              // Small delay between captures to avoid overwhelming the browser
-              await new Promise(resolve => setTimeout(resolve, 500));
-              await captureTabScreenshot(tabId);
-              console.log(`Auto-captured screenshot for ${tabId} tab`);
-            } catch (error) {
-              console.warn(`Failed to auto-capture ${tabId} tab:`, error);
-            }
-          }
-        }
-      };
-      
-      // Delay to ensure all tabs are rendered
-      const timer = setTimeout(captureAllTabsAutomatically, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [result, isAnalyzing, capturedScreenshots]);
-
   // If user is a client (not a healer), show locked state
   if (!isHealer) {
     return (
@@ -1999,14 +1972,14 @@ export default function AuraAnalysis() {
             }
             
             // If the image is very long (tall), we need to handle it differently
-            // Force chakras and detailed tabs to always use multi-section approach for optimal readability
-            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras' || tabId === 'detailed'; // More than 3:1 ratio or special tabs
+            // Force chakras tab to always use multi-section approach for 4-part breakdown
+            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
             
             if (isLongScreenshot) {
-              // Special handling for chakras and detailed tabs - force exactly 4 sections
+              // Special handling for chakras tab - force exactly 4 sections
               let sectionsNeeded;
-              if (tabId === 'chakras' || tabId === 'detailed') {
-                sectionsNeeded = 4; // Force exactly 4 sections for chakras and detailed tabs
+              if (tabId === 'chakras') {
+                sectionsNeeded = 4; // Force exactly 4 sections for chakras
               } else {
                 sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
               }
@@ -2049,8 +2022,8 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras and detailed tabs - make much larger
-                if (tabId === 'chakras' || tabId === 'detailed') {
+                // Special size enhancement for chakras tab - make much larger
+                if (tabId === 'chakras') {
                   sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
