@@ -147,10 +147,14 @@ function addStandardizedAuraEffects(
     };
   })();
   
-  console.log('Generating dense natural smoke around person...');
+  console.log('Generating MAXIMUM DENSITY natural smoke around person...');
   
   // Face protection zone (avoid placing smoke on face)
   const faceProtectionRadius = Math.min(imageWidth, imageHeight) * 0.2;
+  
+  // LAYER 0: Solid smoke base to eliminate any gaps
+  createSolidSmokeBase(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
+    imageWidth, imageHeight, dominantRGB, secondaryRGB, faceProtectionRadius);
   
   // LAYER 1: Dense smoke particles around person perimeter
   createDensePerimeterSmoke(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY, 
@@ -176,6 +180,49 @@ function addStandardizedAuraEffects(
 }
 
 /**
+ * Creates a solid smoke base to eliminate all gaps and ensure continuous coverage
+ */
+function createSolidSmokeBase(
+  ctx: any,
+  canvasWidth: number,
+  canvasHeight: number,
+  personX: number,
+  personY: number,
+  personWidth: number,
+  personHeight: number,
+  dominantRGB: any,
+  secondaryRGB: any,
+  faceProtectionRadius: number
+) {
+  // Create multiple overlapping radial gradients for solid base coverage
+  const baseRadius = Math.max(personWidth, personHeight) * 0.8;
+  
+  // Create 6 overlapping gradients to ensure no gaps
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3; // 60-degree intervals
+    const offsetX = Math.cos(angle) * (baseRadius * 0.3);
+    const offsetY = Math.sin(angle) * (baseRadius * 0.3);
+    
+    const centerX = personX + offsetX;
+    const centerY = personY + offsetY;
+    
+    // Check if this gradient center is too close to face
+    const distanceToFace = Math.sqrt((centerX - personX) ** 2 + (centerY - personY) ** 2);
+    if (distanceToFace < faceProtectionRadius) continue;
+    
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius);
+    
+    const color = i % 2 === 0 ? dominantRGB : secondaryRGB;
+    gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
+    gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, 0.15)`);
+    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  }
+}
+
+/**
  * Creates dense smoke particles around the person's perimeter
  */
 function createDensePerimeterSmoke(
@@ -193,14 +240,14 @@ function createDensePerimeterSmoke(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  // Create MAXIMUM DENSITY smoke rings around the person
-  const numRings = 18; // Triple rings for absolute maximum density
-  const baseRadius = Math.max(personWidth, personHeight) * 0.25;
+  // Create EXTREME DENSITY smoke rings around the person  
+  const numRings = 25; // EXTREME: 25 rings for absolute maximum density
+  const baseRadius = Math.max(personWidth, personHeight) * 0.2;
   
   for (let ring = 0; ring < numRings; ring++) {
-    const ringRadius = baseRadius + (ring * 20); // Even tighter spacing
-    const numParticles = 120 + (ring * 12); // Maximum particles per ring
-    const opacity = 0.7 - (ring * 0.03); // Highest base opacity
+    const ringRadius = baseRadius + (ring * 15); // Ultra-tight spacing
+    const numParticles = 150 + (ring * 15); // EXTREME particles per ring
+    const opacity = 0.8 - (ring * 0.025); // Maximum base opacity
     
     for (let particle = 0; particle < numParticles; particle++) {
       const angle = (particle / numParticles) * Math.PI * 2;
@@ -228,9 +275,9 @@ function createDensePerimeterSmoke(
         color = personalityRGB; // Edges - personality energy
       }
       
-      // Create MAXIMUM SIZE smoke particle with natural gradient for complete coverage
-      const particleSize = 35 + seededRandom() * 45; // Extra large particles for maximum density
-      const particleOpacity = opacity * (0.9 + seededRandom() * 0.1); // Maximum opacity for density
+      // Create EXTREME SIZE smoke particle with natural gradient for complete coverage
+      const particleSize = 40 + seededRandom() * 55; // EXTREME large particles for maximum density
+      const particleOpacity = opacity * (0.95 + seededRandom() * 0.05); // EXTREME opacity for density
       
       const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
       smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
@@ -320,9 +367,9 @@ function createExtraDenseCoverage(
   seededRandom: () => number,
   faceProtectionRadius: number
 ) {
-  // Fill gaps with maximum-density small particles  
-  const numExtraParticles = 400; // Double the particles to completely fill all gaps
-  const coverageRadius = Math.max(personWidth, personHeight) * 1.0; // Wider coverage
+  // Fill gaps with EXTREME-density small particles  
+  const numExtraParticles = 600; // EXTREME particles to completely fill all gaps
+  const coverageRadius = Math.max(personWidth, personHeight) * 1.2; // MAXIMUM coverage area
   
   for (let i = 0; i < numExtraParticles; i++) {
     const angle = seededRandom() * Math.PI * 2;
