@@ -1084,9 +1084,15 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Enhanced capture width with 15% increase for better readability and minimum thresholds
-      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      // Enhanced capture width with mobile optimization and 15% increase for better readability
+      const isMobile = viewportWidth < 768; // Mobile breakpoint
+      const minDesktopWidth = 1200;
+      const minMobileWidth = isMobile ? 400 : 1200; // Ensure minimum width for mobile
+      
+      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, minMobileWidth, minDesktopWidth);
       const captureWidth = Math.floor(baseCaptureWidth * 1.15); // 15% width increase as requested
+      
+      console.log(`Mobile detection: ${isMobile}, viewport: ${viewportWidth}x${viewportHeight}, base width: ${baseCaptureWidth}`)
       
       // Enhanced section thresholds for better PDF quality - force multi-section for long content
       const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
@@ -1113,7 +1119,11 @@ export default function AuraAnalysis() {
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+          // Extra width boost for mobile to ensure chakra details are captured properly
+          const mobileWidthBoost = isMobile ? 1.5 : 1.25; // 50% boost for mobile, 25% for desktop
+          enhancedCaptureWidth = Math.floor(captureWidth * mobileWidthBoost);
+          
+          console.log(`Critical tab ${tabId} mobile optimization: ${isMobile ? 'mobile' : 'desktop'} mode, width boost: ${mobileWidthBoost}x`);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
@@ -1170,10 +1180,13 @@ export default function AuraAnalysis() {
           // Wait longer for scroll to complete and content to render
           await new Promise(resolve => setTimeout(resolve, 500));
           
-          // Use enhanced width for all tabs with tab-specific optimizations
+          // Use enhanced width for all tabs with tab-specific optimizations and mobile scaling
+          const mobileScale = isMobile ? 4.0 : 5.0; // Slightly lower scale for mobile to prevent memory issues
+          const standardScale = isMobile ? 2.5 : 3.5; // Mobile-optimized scaling
+          
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? mobileScale : standardScale,
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1187,10 +1200,12 @@ export default function AuraAnalysis() {
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
-            imageTimeout: 5000, // Extended timeout for high-quality processing
-            // Enhanced text rendering with high quality settings
+            imageTimeout: isMobile ? 8000 : 5000, // Extended timeout for mobile processing
+            // Enhanced text rendering with mobile optimization and high quality settings
             onclone: (clonedDoc) => {
-              const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
+              const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || 
+                                   clonedDoc.querySelector('[data-state="active"]') ||
+                                   clonedDoc.querySelector(`[value="${tabId}"]`); // Additional selector for mobile
               if (clonedElement) {
                 const elem = clonedElement as HTMLElement;
                 elem.style.overflow = 'visible';
@@ -1198,28 +1213,44 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering for all tabs with special boost for critical tabs
+                elem.style.position = 'relative'; // Ensure proper positioning
+                
+                // Mobile-optimized text rendering for all tabs with special boost for critical tabs
                 if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-                  elem.style.fontSize = '20px'; // Maximum font for critical tabs
+                  const fontSize = isMobile ? '18px' : '20px'; // Slightly smaller on mobile to fit better
+                  elem.style.fontSize = fontSize;
                   elem.style.lineHeight = '1.8';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
                   textElements.forEach(textEl => {
                     const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '20px';
+                    textElement.style.fontSize = fontSize;
                     textElement.style.fontWeight = '700';
                     textElement.style.letterSpacing = '0.4px';
                     textElement.style.textRendering = 'optimizeLegibility';
+                    textElement.style.webkitFontSmoothing = 'antialiased'; // Better mobile rendering
                   });
                 } else {
-                  // Enhanced text for all other tabs
-                  elem.style.fontSize = '15px';
+                  // Enhanced text for all other tabs with mobile optimization
+                  const fontSize = isMobile ? '14px' : '15px';
+                  elem.style.fontSize = fontSize;
                   elem.style.lineHeight = '1.6';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
                   textElements.forEach(textEl => {
                     const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '15px';
+                    textElement.style.fontSize = fontSize;
                     textElement.style.fontWeight = '500';
                     textElement.style.letterSpacing = '0.2px';
+                    textElement.style.webkitFontSmoothing = 'antialiased';
+                  });
+                }
+                
+                // Ensure all content is visible on mobile
+                if (isMobile) {
+                  const allElements = elem.querySelectorAll('*');
+                  allElements.forEach(el => {
+                    const element = el as HTMLElement;
+                    element.style.transform = 'none'; // Remove any transforms that might hide content
+                    element.style.opacity = '1'; // Ensure visibility
                   });
                 }
               }
