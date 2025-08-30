@@ -8380,7 +8380,12 @@ export default function AuraAnalysis() {
                                       <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-red-600 to-red-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${calculateSoulStarChakra(result)}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
 
                                 {/* Crown Chakra - Number 3 */}
@@ -8403,7 +8408,12 @@ export default function AuraAnalysis() {
                                       <span className="text-violet-600">{result.chakraActivity?.crown || 5}/10 ({(result.chakraActivity?.crown || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.crown || 5) * 10} className="h-3 bg-violet-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-violet-600 to-violet-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.crown || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Third Eye Chakra - Number 8 */}
@@ -8426,7 +8436,12 @@ export default function AuraAnalysis() {
                                       <span className="text-indigo-600">{result.chakraActivity?.thirdEye || 5}/10 ({(result.chakraActivity?.thirdEye || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.thirdEye || 5) * 10} className="h-3 bg-indigo-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.thirdEye || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Throat Chakra - Number 5 */}
@@ -8449,7 +8464,12 @@ export default function AuraAnalysis() {
                                       <span className="text-blue-600">{result.chakraActivity?.throat || 5}/10 ({(result.chakraActivity?.throat || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.throat || 5) * 10} className="h-3 bg-blue-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.throat || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Heart Chakra - Number 2 */}
@@ -8472,7 +8492,12 @@ export default function AuraAnalysis() {
                                       <span className="text-green-600">{result.chakraActivity?.heart || 5}/10 ({(result.chakraActivity?.heart || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.heart || 5) * 10} className="h-3 bg-green-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-green-600 to-green-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.heart || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Solar Plexus Chakra - Number 1 */}
@@ -8495,7 +8520,12 @@ export default function AuraAnalysis() {
                                       <span className="text-yellow-600">{result.chakraActivity?.solarPlexus || 5}/10 ({(result.chakraActivity?.solarPlexus || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.solarPlexus || 5) * 10} className="h-3 bg-yellow-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.solarPlexus || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Sacral Chakra - Number 6 */}
@@ -8518,7 +8548,12 @@ export default function AuraAnalysis() {
                                       <span className="text-orange-600">{result.chakraActivity?.sacral || 5}/10 ({(result.chakraActivity?.sacral || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.sacral || 5) * 10} className="h-3 bg-orange-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.sacral || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
                                 
                                 {/* Root Chakra - Number 9 */}
@@ -8541,7 +8576,12 @@ export default function AuraAnalysis() {
                                       <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({(result.chakraActivity?.root || 5) * 10}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-red-600 to-red-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${(result.chakraActivity?.root || 5) * 10}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
 
                                 {/* Earth Star Chakra - Number 8 */}
@@ -8564,7 +8604,12 @@ export default function AuraAnalysis() {
                                       <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
                                     </div>
                                   </div>
-                                  <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
+                                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-amber-600 to-amber-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${calculateEarthStarChakra(result)}%` }}
+                                    ></div>
+                                  </div>
                                 </div>
 
                               </div>
