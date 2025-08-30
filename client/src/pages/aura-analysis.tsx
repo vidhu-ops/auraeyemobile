@@ -965,45 +965,6 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Auto-capture function for critical tabs to ensure PDF completeness
-  const autoCaptureCriticalTabScreenshots = async () => {
-    console.log('🤖 Auto-capturing critical tab screenshots for PDF generation...');
-    
-    // Define critical tabs that should always be included in PDFs
-    const criticalTabs = ['analysis', 'energy-reading', 'chakras', 'guidance', 'spectrum', 'energy-map', 'detailed'];
-    
-    try {
-      for (const tabId of criticalTabs) {
-        // Check if screenshot is already captured to avoid duplicates
-        if (!capturedScreenshots.has(tabId)) {
-          console.log(`🤖 Auto-capturing ${tabId} tab screenshot...`);
-          
-          // Switch to the tab first
-          setActiveTab(tabId);
-          
-          // Wait for tab content to render
-          await new Promise(resolve => setTimeout(resolve, 800));
-          
-          // Capture the screenshot
-          await captureTabScreenshot(tabId);
-          
-          // Wait between captures to prevent performance issues
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } else {
-          console.log(`✅ ${tabId} tab screenshot already captured, skipping...`);
-        }
-      }
-      
-      console.log('🤖 Auto-capture completed! All critical tabs captured.');
-      
-      // Switch back to analysis tab
-      setActiveTab('analysis');
-      
-    } catch (error) {
-      console.error('❌ Error during auto-capture:', error);
-    }
-  };
-
   // Enhanced screenshot capture function with 15% increased width and improved quality
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
@@ -5606,11 +5567,6 @@ export default function AuraAnalysis() {
               // Set active tab to analysis to show results including visualization
               setActiveTab("analysis");
               // Keep name entered state - user must refresh for new analysis
-              
-              // Auto-capture screenshots for all important tabs after analysis completes
-              setTimeout(() => {
-                autoCaptureCriticalTabScreenshots();
-              }, 1000); // Give time for DOM to render
             }, 200);
           } catch (error) {
             console.error("Error in aura analysis:", error);
