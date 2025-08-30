@@ -1486,27 +1486,69 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // CRITICAL FIX: Automatically capture all important tab screenshots before PDF generation
-      console.log('Auto-capturing all tab screenshots for comprehensive PDF...');
+      // CRITICAL FIX: Force capture ALL important tab screenshots for comprehensive PDF
+      console.log('🔥 FORCE-capturing ALL tab screenshots for comprehensive PDF (ignoring existing)...');
       const tabsToAutoCapture = ['analysis', 'energy-reading', 'chakras', 'guidance', 'spectrum', 'energy-map', 'detailed'];
       
+      // Clear existing screenshots to ensure fresh captures
+      console.log('🧹 Clearing existing screenshots to force fresh capture...');
+      setCapturedScreenshots(new Map());
+      
+      // Force capture all tabs with enhanced logging and tab switching
       for (const tabId of tabsToAutoCapture) {
         try {
-          // Only capture if not already captured
-          if (!capturedScreenshots.has(tabId)) {
-            console.log(`Auto-capturing missing screenshot for tab: ${tabId}`);
-            await captureTabScreenshot(tabId);
-            // Small delay to ensure proper capture
-            await new Promise(resolve => setTimeout(resolve, 300));
-          } else {
-            console.log(`Screenshot already exists for tab: ${tabId}`);
+          console.log(`🎯 FORCE-capturing screenshot for tab: ${tabId}`);
+          
+          // CRITICAL: Ensure tab is active before capture
+          console.log(`🔄 Switching to tab: ${tabId}`);
+          setActiveTab(tabId);
+          
+          // Wait for tab switch to complete and content to render
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          // Verify the tab is now active
+          const activeElement = document.querySelector(`[data-tab="${tabId}"]`);
+          if (!activeElement) {
+            console.warn(`⚠️ Tab element not found for ${tabId}, trying alternative selector`);
+            // Try clicking the tab button if it exists
+            const tabButton = document.querySelector(`button[data-value="${tabId}"]`) || 
+                            document.querySelector(`[role="tab"][data-value="${tabId}"]`);
+            if (tabButton) {
+              console.log(`🔘 Clicking tab button for ${tabId}`);
+              (tabButton as HTMLElement).click();
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
           }
+          
+          await captureTabScreenshot(tabId);
+          
+          // Longer delay to ensure proper capture on slow networks/production
+          await new Promise(resolve => setTimeout(resolve, 700));
+          console.log(`✅ Successfully captured ${tabId} screenshot`);
+          
         } catch (captureError) {
-          console.warn(`Failed to auto-capture ${tabId}:`, captureError);
+          console.error(`❌ FAILED to capture ${tabId}:`, captureError);
+          // Try one more time with additional delay and explicit tab switching
+          try {
+            console.log(`🔄 Retrying ${tabId} capture with explicit tab switch...`);
+            setActiveTab(tabId);
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            await captureTabScreenshot(tabId);
+            console.log(`✅ Retry successful for ${tabId}`);
+          } catch (retryError) {
+            console.error(`❌ Retry failed for ${tabId}:`, retryError);
+          }
         }
       }
       
-      console.log(`Auto-capture complete. Total screenshots: ${capturedScreenshots.size}`);
+      // Wait a bit more and log final state
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`🏁 Auto-capture COMPLETE. Total screenshots captured: ${capturedScreenshots.size}`);
+      console.log(`📋 Captured tabs:`, Array.from(capturedScreenshots.keys()));
+      
+      // Return to the first tab for better UX
+      console.log(`🔄 Returning to analysis tab for better UX`);
+      setActiveTab('analysis');
 
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
