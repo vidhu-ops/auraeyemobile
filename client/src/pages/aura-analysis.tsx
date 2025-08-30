@@ -1486,6 +1486,28 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
+      // CRITICAL FIX: Automatically capture all important tab screenshots before PDF generation
+      console.log('Auto-capturing all tab screenshots for comprehensive PDF...');
+      const tabsToAutoCapture = ['analysis', 'energy-reading', 'chakras', 'guidance', 'spectrum', 'energy-map', 'detailed'];
+      
+      for (const tabId of tabsToAutoCapture) {
+        try {
+          // Only capture if not already captured
+          if (!capturedScreenshots.has(tabId)) {
+            console.log(`Auto-capturing missing screenshot for tab: ${tabId}`);
+            await captureTabScreenshot(tabId);
+            // Small delay to ensure proper capture
+            await new Promise(resolve => setTimeout(resolve, 300));
+          } else {
+            console.log(`Screenshot already exists for tab: ${tabId}`);
+          }
+        } catch (captureError) {
+          console.warn(`Failed to auto-capture ${tabId}:`, captureError);
+        }
+      }
+      
+      console.log(`Auto-capture complete. Total screenshots: ${capturedScreenshots.size}`);
+
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
       const pdf = new jsPDF({
