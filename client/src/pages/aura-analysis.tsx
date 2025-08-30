@@ -6468,6 +6468,24 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
+                              {/* Energy Interaction Map - moved from spectrum tab */}
+                              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6">
+                                <h4 className="font-semibold text-lg mb-4">Energy Interaction Map</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Energy Flow Pattern</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getEnergyFlowPattern(result.dominantColor, result.secondaryColor)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-sm mb-2">Compatible Energies</h5>
+                                    <p className="text-sm text-gray-700">
+                                      {getCompatibleEnergies(result.dominantColor)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
 
                             </div>
                           </TabsContent>
@@ -7310,24 +7328,7 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
-                              {/* Energy Interaction Map */}
-                              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6">
-                                <h4 className="font-semibold text-lg mb-4">Energy Interaction Map</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <h5 className="font-medium text-sm mb-2">Energy Flow Pattern</h5>
-                                    <p className="text-sm text-gray-700">
-                                      {getEnergyFlowPattern(result.dominantColor, result.secondaryColor)}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <h5 className="font-medium text-sm mb-2">Compatible Energies</h5>
-                                    <p className="text-sm text-gray-700">
-                                      {getCompatibleEnergies(result.dominantColor)}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
+
 
 
 
