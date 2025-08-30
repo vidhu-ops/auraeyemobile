@@ -1973,16 +1973,14 @@ export default function AuraAnalysis() {
             
             // If the image is very long (tall), we need to handle it differently
             // Force chakras tab to always use multi-section approach for 4-part breakdown
-            // Force energy-map tab to always use multi-section approach for 5-part breakdown
-            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras' || tabId === 'energy-map'; // More than 3:1 ratio or special tabs
+            // Energy-map tab should be captured normally but may be naturally long
+            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
             
             if (isLongScreenshot) {
               // Special handling for specific tabs - force exact section counts
               let sectionsNeeded;
               if (tabId === 'chakras') {
                 sectionsNeeded = 4; // Force exactly 4 sections for chakras
-              } else if (tabId === 'energy-map') {
-                sectionsNeeded = 5; // Force exactly 5 sections for energy-map to capture full content
               } else {
                 sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
               }
@@ -2025,13 +2023,10 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras and energy-map tabs - make much larger
+                // Special size enhancement for chakras tab - make much larger
                 if (tabId === 'chakras') {
                   sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
-                } else if (tabId === 'energy-map') {
-                  sectionFinalWidth = sectionFinalWidth * 2.5; // Enhanced size for energy-map visibility
-                  sectionFinalHeight = sectionFinalHeight * 2.5; // Enhanced size for energy-map visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
