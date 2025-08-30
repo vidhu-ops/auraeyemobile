@@ -1081,6 +1081,37 @@ export default function AuraAnalysis() {
             'analysis': 3000
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
+        } else if (tabId === 'energy-map') {
+          // Special handling for energy-map to ensure Energy Interaction Map section is captured
+          // Look for the specific gradient background that contains the Energy Interaction Map
+          const energyInteractionSections = Array.from(htmlElement.querySelectorAll('.bg-gradient-to-br')).filter(el => 
+            el.textContent?.includes('Energy Interaction Map') || 
+            el.textContent?.includes('Energy Flow Pattern') || 
+            el.textContent?.includes('Compatible Energies')
+          );
+          
+          if (energyInteractionSections.length > 0) {
+            const lastSection = energyInteractionSections[energyInteractionSections.length - 1];
+            const sectionRect = lastSection.getBoundingClientRect();
+            const elementRect = htmlElement.getBoundingClientRect();
+            const sectionBottom = sectionRect.bottom - elementRect.top;
+            contentHeight = Math.max(contentHeight, sectionBottom + 300); // Extra padding for bottom content
+            console.log(`${tabId} Energy Interaction Map section detected at: ${sectionBottom}, adjusted height: ${contentHeight}`);
+          }
+          
+          // Also check for all gradient sections to ensure complete capture
+          const allGradientSections = htmlElement.querySelectorAll('.bg-gradient-to-br');
+          if (allGradientSections.length > 0) {
+            const lastGradient = allGradientSections[allGradientSections.length - 1];
+            const gradientRect = lastGradient.getBoundingClientRect();
+            const elementRect = htmlElement.getBoundingClientRect();
+            const gradientBottom = gradientRect.bottom - elementRect.top;
+            contentHeight = Math.max(contentHeight, gradientBottom + 400); // Extra padding to ensure nothing is cut off
+            console.log(`${tabId} last gradient section at: ${gradientBottom}, ensuring height: ${contentHeight}`);
+          }
+          
+          // Force minimum height for energy-map to ensure complete capture
+          contentHeight = Math.max(contentHeight, 4500); // Increased minimum height to capture all sections
         }
       }
 
@@ -1108,12 +1139,20 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
+        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis') {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
           enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+        } else if (tabId === 'energy-map') {
+          // Energy-map needs enough sections to capture all content including bottom sections
+          // Calculate sections needed based on content height to ensure complete capture
+          const idealSectionHeight = Math.min(4500, Math.max(3500, contentHeight / 5)); // Target 5 sections for complete capture
+          sectionHeight = idealSectionHeight;
+          totalSections = Math.max(5, Math.ceil(contentHeight / sectionHeight)); // Minimum 5 sections to ensure bottom content
+          // Additional 20% width increase for energy-map readability
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.20);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
