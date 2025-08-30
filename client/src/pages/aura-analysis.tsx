@@ -1480,32 +1480,6 @@ export default function AuraAnalysis() {
     console.log('Enhanced aura image available:', !!enhancedAuraImage);
     console.log('Using image for PDF:', processedAuraImage || enhancedAuraImage || 'none available');
 
-    // CRITICAL: Auto-capture all important tabs for PDF if they haven't been captured yet
-    const criticalTabs = ['analysis', 'chakras', 'detailed', 'guidance', 'spectrum'];
-    console.log('🔄 Auto-capturing critical tabs for PDF generation...');
-    
-    for (const tabId of criticalTabs) {
-      if (!capturedScreenshots.has(tabId)) {
-        console.log(`📸 Auto-capturing missing ${tabId} tab for PDF...`);
-        try {
-          // Switch to the tab to ensure it's visible for capture
-          setActiveTab(tabId);
-          // Wait for tab to load
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          // Capture the tab
-          await captureTabScreenshot(tabId);
-          // Wait for capture to complete
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } catch (error) {
-          console.warn(`⚠️ Could not auto-capture ${tabId} tab:`, error);
-        }
-      } else {
-        console.log(`✅ ${tabId} tab already captured`);
-      }
-    }
-    
-    console.log('🎯 Auto-capture complete. Starting PDF generation...');
-
     try {
       toast({
         title: "Generating PDF",
@@ -1964,10 +1938,6 @@ export default function AuraAnalysis() {
         pdf.setTextColor(60, 60, 60);
         yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
         yPosition += 10;
-        
-        // Debug: Log which tabs were actually captured
-        console.log('📋 Captured tabs for PDF:', Array.from(capturedScreenshots.keys()));
-        console.log('🔍 Detailed tab captured:', capturedScreenshots.has('detailed') ? 'YES' : 'NO');
         
         // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
