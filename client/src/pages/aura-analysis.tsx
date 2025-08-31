@@ -1209,8 +1209,9 @@ export default function AuraAnalysis() {
       const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Enhanced multi-section logic - force 4-section for ALL tabs except chakras and guidance (keep unchanged)
-      const forceMultiSection = !['chakras', 'guidance'].includes(tabId); // All tabs except chakras and guidance use 4-section capture
+      // Enhanced multi-section logic for better readability across all tabs
+      const forceMultiSection = (['guidance', 'spectrum'].includes(tabId) && contentHeight > 4000) ||
+                                (['detailed', 'chakras', 'analysis', 'energy-map'].includes(tabId)); // Always use multi-section for critical tabs
       
       console.log(`Enhanced capture: Base ${baseCaptureWidth}x${contentHeight} → Enhanced ${captureWidth}x${contentHeight} (+15% width)`);
       console.log(`Multi-section capture needed: ${needsMultiSection || forceMultiSection}`);
@@ -1224,23 +1225,25 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'chakras') {
-          // Keep chakras tab unchanged - use existing 4 sections with current logic
+        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
+          // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
+          // Additional 25% width increase for critical tabs text legibility (40% total increase)
           enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
-        } else if (tabId === 'guidance') {
-          // Keep guidance tab unchanged - use existing sectioning logic
+        } else if (['guidance'].includes(tabId)) {
+          // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
           sectionHeight = idealSectionHeight;
           totalSections = Math.ceil(contentHeight / sectionHeight);
+          // Additional 10% width increase for complex tabs
           enhancedCaptureWidth = Math.floor(captureWidth * 1.10);
         } else {
-          // ALL other tabs: Force exactly 4 sections for consistent capture
-          totalSections = 4;
-          sectionHeight = Math.ceil(contentHeight / 4);
-          // Enhanced width increase for better text legibility
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+          // Standard sectioning for other tabs with optimal aspect ratio
+          const targetAspectRatio = 16 / 9;
+          sectionHeight = Math.floor(captureWidth / targetAspectRatio);
+          totalSections = Math.ceil(contentHeight / sectionHeight);
+          // Use base enhanced width (already 15% increased)
         }
         
         console.log(`Capturing ${totalSections} sections for ${tabId} tab with enhanced width ${enhancedCaptureWidth}px, each section optimized for PDF readability`);
@@ -1312,21 +1315,8 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering with maximum quality for life score tab
-                if (tabId === 'life-score') {
-                  elem.style.fontSize = '24px'; // Maximum font specifically for life score
-                  elem.style.lineHeight = '2.0';
-                  elem.style.fontWeight = '800';
-                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
-                  textElements.forEach(textEl => {
-                    const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '24px';
-                    textElement.style.fontWeight = '800';
-                    textElement.style.letterSpacing = '0.5px';
-                    textElement.style.textRendering = 'optimizeLegibility';
-                    textElement.style.fontSmooth = 'always';
-                  });
-                } else if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
+                // Enhanced text rendering for all tabs with special boost for critical tabs
+                if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
                   elem.style.lineHeight = '1.8';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
@@ -1391,17 +1381,11 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        // Enhanced scaling for specific tabs to improve visibility while keeping others optimized
+        // Optimized scaling for maximum image clarity (excluding chakras tab which should remain unchanged)
         let scaleUsed;
         if (tabId === 'chakras') {
           // Keep chakras tab unchanged as requested - use existing high quality settings
           scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5;
-        } else if (tabId === 'life-score') {
-          // Extra enhanced scale specifically for life score tab
-          scaleUsed = viewportWidth > 1400 ? 5.0 : 6.0; // Maximum scaling for life score tab clarity
-        } else if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
-          // Double the scale for specific tabs to improve visibility
-          scaleUsed = viewportWidth > 1400 ? 4.0 : 5.0; // Enhanced scaling for better visibility
         } else {
           // For other tabs: use optimized scaling to prevent blur and improve clarity
           scaleUsed = viewportWidth > 1400 ? 2.0 : 2.5; // Reduced scaling for sharper, clearer images
@@ -1618,18 +1602,8 @@ export default function AuraAnalysis() {
         // Wait for layout to stabilize
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Enhanced scale factor for specific tabs with extra enhancement for life score tab
-        const getOptimizedScale = (tabId: string) => {
-          if (tabId === 'chakras') return 3.5; // Keep chakras unchanged as requested
-          if (tabId === 'life-score') {
-            return 6.5; // Extra high scale specifically for life score tab to improve clarity
-          }
-          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
-            return 5.6; // Double the size (2.8 * 2) for better visibility
-          }
-          return 2.8; // Standard scale for other tabs
-        };
-        const optimizedScale = getOptimizedScale(tabId);
+        // Optimized scale factor for different tabs to improve clarity
+        const optimizedScale = tabId === 'chakras' ? 3.5 : 2.8; // Lower scale for non-chakras tabs to prevent blur
         
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
@@ -1672,35 +1646,15 @@ export default function AuraAnalysis() {
                 childElem.style.height = 'auto';
               });
               
-              // Enhanced text rendering with maximum settings for life score tab
-              const isLifeScoreTab = tabId === 'life-score';
-              const isEnhancedTab = tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed';
-              
-              let baseFontSize, baseLineHeight, fontWeight;
-              if (isLifeScoreTab) {
-                baseFontSize = '22px'; // Extra large font for life score tab
-                baseLineHeight = '2.0'; // Extra spacing
-                fontWeight = '700'; // Bold text
-              } else if (isEnhancedTab) {
-                baseFontSize = '18px'; // Larger font for enhanced tabs
-                baseLineHeight = '1.8';
-                fontWeight = '600'; // Semi-bold
-              } else {
-                baseFontSize = '15px'; // Standard font
-                baseLineHeight = '1.6';
-                fontWeight = '500'; // Medium
-              }
-              
-              elem.style.fontSize = baseFontSize;
-              elem.style.lineHeight = baseLineHeight;
-              elem.style.fontWeight = fontWeight;
+              // Enhanced text rendering for single captures
+              elem.style.fontSize = '15px';
+              elem.style.lineHeight = '1.6';
               const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
               textElements.forEach(textEl => {
                 const textElement = textEl as HTMLElement;
-                textElement.style.fontSize = baseFontSize;
-                textElement.style.fontWeight = fontWeight;
-                textElement.style.fontWeight = isEnhancedTab ? '600' : '500'; // Bolder text for enhanced tabs
-                textElement.style.letterSpacing = isEnhancedTab ? '0.3px' : '0.2px';
+                textElement.style.fontSize = '15px';
+                textElement.style.fontWeight = '500';
+                textElement.style.letterSpacing = '0.2px';
               });
             }
           }
@@ -1719,17 +1673,7 @@ export default function AuraAnalysis() {
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const getSizeLimit = (tabId: string) => {
-          if (tabId === 'chakras') return 22 * 1024 * 1024; // Keep chakras unchanged
-          if (tabId === 'life-score') {
-            return 50 * 1024 * 1024; // Maximum limit specifically for life score tab
-          }
-          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
-            return 35 * 1024 * 1024; // Much higher limit for doubled-size tabs
-          }
-          return 15 * 1024 * 1024; // Standard limit for other tabs
-        };
-        const singleSizeLimit = getSizeLimit(tabId);
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 22 * 1024 * 1024 : 15 * 1024 * 1024; // Increased for better quality
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1742,12 +1686,9 @@ export default function AuraAnalysis() {
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
           // Fallback to high-quality JPEG for better clarity
-          const jpegQuality = (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score') ? 0.98 : 
-                              (tabId === 'chakras' ? 0.95 : 0.92); // Highest quality for enhanced tabs
+          const jpegQuality = tabId === 'chakras' ? 0.95 : 0.92; // Higher quality for all tabs
           const jpegVersion = canvas.toDataURL('image/jpeg', jpegQuality);
-          const jpegSizeLimit = (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score') ? 
-                               40 * 1024 * 1024 : 20 * 1024 * 1024; // Higher limits for enhanced tabs
-          if (jpegVersion.length < jpegSizeLimit) {
+          if (jpegVersion.length < 20 * 1024 * 1024) { // Increased fallback limit for better quality
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
           
@@ -2021,16 +1962,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Maximum quality compression for crystal clear PDF images
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Maximum quality - no compression
+                // Ultra high quality compression for maximum PDF image clarity
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Increased to 0.98 for maximum clarity
                 
-                // If still too large, use minimal compression to maintain maximum visibility
-                const maxSize = 25 * 1024 * 1024; // Increased to 25MB to allow maximum quality images
+                // If still too large, reduce quality more gradually to maintain visibility
+                const maxSize = 15 * 1024 * 1024; // Increased to 15MB to allow higher quality images
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.99); // Minimal compression fallback
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Very high quality fallback
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Still maintain maximum visibility
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.90); // Still maintain excellent visibility
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2334,31 +2275,8 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing and multi-page support
-        // Use separate pages for each tab to prevent overlapping
-        let isFirstTab = true;
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           
-          // Start each tab on a new page to prevent overlapping (except the first one)
-          if (!isFirstTab) {
-            pdf.addPage();
-            yPosition = 20;
-            
-            // Add tab title on new page
-            pdf.setFontSize(16);
-            pdf.setTextColor(75, 0, 130);
-            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, pageWidth/2, yPosition, { align: 'center' });
-            yPosition += 15;
-          } else {
-            // Add spacing for first tab
-            yPosition += 10;
-            // Add tab title for first tab too
-            pdf.setFontSize(16);
-            pdf.setTextColor(75, 0, 130);
-            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, pageWidth/2, yPosition, { align: 'center' });
-            yPosition += 15;
-            isFirstTab = false;
-          }
-
           try {
             // Create a temporary image to get exact dimensions
             const tempImg = new Image();
@@ -2374,61 +2292,29 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // Enhanced sizing with extra enhancement for life score tab
-            const isLifeScoreTab = tabId === 'life-score';
-            const isEnhancedTab = tabId === 'guidance' || tabId === 'detailed';
+            // CRITICAL FIX: Maintain original aspect ratio without squishing
+            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
+            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
             
-            // Increase base dimensions with extra size for life score tab
-            let baseMaxWidth, baseMaxHeight;
-            if (isLifeScoreTab) {
-              // Extra large dimensions specifically for life score tab to improve clarity
-              baseMaxWidth = 420; // Even larger width for life score
-              baseMaxHeight = 600; // Even larger height for life score
-            } else if (isEnhancedTab) {
-              baseMaxWidth = 340; // Double width for enhanced tabs
-              baseMaxHeight = 480; // Double height for enhanced tabs
-            } else {
-              baseMaxWidth = 170; // Standard width
-              baseMaxHeight = 240; // Standard height
-            }
+            // Calculate proper dimensions maintaining original aspect ratio
+            let finalWidth = pageMaxWidth;
+            let finalHeight = finalWidth * trueAspectRatio;
             
-            // Adjust page limits based on tab type - allow larger dimensions for life score
-            const pageMaxWidth = isLifeScoreTab ? Math.min(baseMaxWidth, 450) : Math.min(baseMaxWidth, 380);
-            const pageMaxHeight = isLifeScoreTab ? Math.min(baseMaxHeight, 650) : Math.min(baseMaxHeight, 500);
-            
-            // Calculate proper dimensions maintaining original aspect ratio (critical to prevent squishing/stretching)
-            let finalWidth, finalHeight;
-            
-            // Always maintain aspect ratio - scale based on which dimension is the limiting factor
-            if (trueAspectRatio > pageMaxHeight / pageMaxWidth) {
-              // Image is relatively tall, limit by height
-              finalHeight = pageMaxHeight;
-              finalWidth = finalHeight / trueAspectRatio;
-            } else {
-              // Image is relatively wide, limit by width
-              finalWidth = pageMaxWidth;
-              finalHeight = finalWidth * trueAspectRatio;
-            }
-            
-            // Double-check to ensure no dimension exceeds limits (safety check)
-            if (finalWidth > pageMaxWidth) {
-              finalWidth = pageMaxWidth;
-              finalHeight = finalWidth * trueAspectRatio;
-            }
+            // If height exceeds page, scale down proportionally
             if (finalHeight > pageMaxHeight) {
               finalHeight = pageMaxHeight;
               finalWidth = finalHeight / trueAspectRatio;
             }
             
-            // Force specific tabs into multi-section approach regardless of aspect ratio
-            // Analysis and energy-map MUST use 4 sections, chakras keeps its existing logic
-            const isLongScreenshot = trueAspectRatio > 3.0 || ['chakras', 'analysis', 'energy-map'].includes(tabId);
+            // If the image is very long (tall), we need to handle it differently
+            // Force chakras tab to always use multi-section approach for 4-part breakdown
+            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
             
             if (isLongScreenshot) {
-              // Force exactly 4 sections for specific tabs
+              // Special handling for chakras tab - force exactly 4 sections
               let sectionsNeeded;
-              if (['chakras', 'analysis', 'energy-map'].includes(tabId)) {
-                sectionsNeeded = 4; // Force exactly 4 sections for these critical tabs
+              if (tabId === 'chakras') {
+                sectionsNeeded = 4; // Force exactly 4 sections for chakras
               } else {
                 sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
               }
@@ -2436,27 +2322,12 @@ export default function AuraAnalysis() {
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
               
-              // Special handling for analysis and energy-map: 1 section per page for perfect clarity
-              const isAnalysisOrEnergyMap = ['analysis', 'energy-map'].includes(tabId);
-              const isOtherFourSectionTab = !['chakras', 'guidance', 'analysis', 'energy-map'].includes(tabId);
-              let sectionsPerPage;
-              if (isAnalysisOrEnergyMap) {
-                sectionsPerPage = 1; // 1 section per page for analysis and energy-map to prevent overlapping
-              } else if (isOtherFourSectionTab) {
-                sectionsPerPage = 2; // 2 sections per page for other tabs
-              } else {
-                sectionsPerPage = 1; // 1 section per page for chakras and guidance
-              }
-              
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Page break logic based on sections per page setting
-                const shouldStartNewPage = section > 0 && section % sectionsPerPage === 0;
-                
-                if (shouldStartNewPage) {
+                // Start a new page for each section after the first
+                if (section > 0 || yPosition > 40) {
                   pdf.addPage();
                   yPosition = 20;
-                  console.log(`Started new page for ${tabId} - page ${Math.floor(section / sectionsPerPage) + 1}`);
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2486,44 +2357,20 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Enhanced sizing for specific tabs to make them much more visible in PDF
+                // Larger size for chakras tab for maximum visibility in PDF
                 if (tabId === 'chakras') {
-                  // Keep chakras unchanged as requested
-                  sectionFinalWidth = sectionFinalWidth * 2.8;
-                  sectionFinalHeight = sectionFinalHeight * 2.8;
-                } else if (tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed') {
-                  // Double the size for enhanced tabs to improve visibility dramatically
-                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double width
-                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double height
+                  sectionFinalWidth = sectionFinalWidth * 2.8; // Increased from 2.2 to 2.8 for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.8; // Increased from 2.2 to 2.8 for better visibility
                 }
                 
-                // Add section titles for analysis and energy-map tabs for clear identification
-                if (isAnalysisOrEnergyMap) {
-                  pdf.setFontSize(12);
-                  pdf.setTextColor(100, 100, 100);
-                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Section ${section + 1} of ${sectionsNeeded}`, 20, yPosition);
-                  yPosition += 8;
-                }
-                // Section titles removed for other tabs for continuous image flow as requested
+                // Section titles removed for continuous image flow as requested
                 
                 // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  
-                  // Calculate spacing based on sections per page
-                  let spacingAfterSection;
-                  if (sectionsPerPage === 1) {
-                    // For 1 section per page: minimal spacing since each section gets its own page
-                    spacingAfterSection = 10;
-                  } else {
-                    // For 2 sections per page: different spacing for first vs second section on page
-                    const sectionOnPage = section % sectionsPerPage;
-                    spacingAfterSection = sectionOnPage === 0 ? 25 : 15; // More space after first section on page
-                  }
-                  
-                  yPosition += sectionFinalHeight + spacingAfterSection;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}) with ${spacingAfterSection}px spacing`);
+                  yPosition += sectionFinalHeight + 10;
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
                 } catch (sectionError) {
                   console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
                   // Add placeholder text for failed section
@@ -2548,42 +2395,23 @@ export default function AuraAnalysis() {
                 finalHeight = minWidth * trueAspectRatio;
               }
               
-              // Enhanced sizing for specific tabs to double their visibility
-              if (tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed') {
-                // Double the size for enhanced tabs while respecting page boundaries
-                finalWidth = Math.min(finalWidth * 2.0, pageMaxWidth);
-                finalHeight = Math.min(finalHeight * 2.0, pageMaxHeight);
-                
-                // Re-adjust if one dimension exceeds after doubling
-                if (finalWidth > pageMaxWidth) {
-                  finalWidth = pageMaxWidth;
-                  finalHeight = finalWidth * trueAspectRatio;
-                }
-                if (finalHeight > pageMaxHeight) {
-                  finalHeight = pageMaxHeight;
-                  finalWidth = finalHeight / trueAspectRatio;
-                }
-              } else {
-                // Standard sizing for other tabs
-                if (finalWidth > pageMaxWidth) {
-                  finalWidth = pageMaxWidth;
-                  finalHeight = finalWidth * trueAspectRatio;
-                }
-                
-                if (finalHeight > pageMaxHeight) {
-                  finalHeight = pageMaxHeight;
-                  finalWidth = finalHeight / trueAspectRatio;
-                }
+              // Final check: ensure we don't exceed page boundaries
+              if (finalWidth > pageMaxWidth) {
+                finalWidth = pageMaxWidth;
+                finalHeight = finalWidth * trueAspectRatio;
+              }
+              
+              if (finalHeight > pageMaxHeight) {
+                finalHeight = pageMaxHeight;
+                finalWidth = finalHeight / trueAspectRatio;
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
               
-              // Enhanced page management for larger images - prevent overlapping
-              const pageBottomMargin = isEnhancedTab ? 60 : 40; // More margin for enhanced tabs
-              if (yPosition + finalHeight > pageHeight - pageBottomMargin) {
+              // Check if screenshot would exceed page height
+              if (yPosition + finalHeight > pageHeight - 40) {
                 pdf.addPage();
                 yPosition = 20;
-                console.log(`Started new page for ${tabId} to prevent overlapping`);
               }
               
               // Compress the image data before adding to PDF to prevent memory issues
@@ -2592,10 +2420,8 @@ export default function AuraAnalysis() {
               // Add the screenshot with preserved aspect ratio and improved error handling
               try {
                 pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                // Enhanced spacing for enhanced tabs to prevent overlapping
-                const spacingAfterImage = isEnhancedTab ? 25 : 15;
-                yPosition += finalHeight + spacingAfterImage;
-                console.log(`Successfully added ${tabId} screenshot to PDF (${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)})`);
+                yPosition += finalHeight + 15;
+                console.log(`Successfully added ${tabId} screenshot to PDF`);
               } catch (addImageError) {
                 console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
                 // Add a placeholder text instead
@@ -2612,9 +2438,6 @@ export default function AuraAnalysis() {
             console.error('Error adding screenshot image:', error);
             yPosition += 25;
           }
-          
-          // Ensure adequate spacing after each complete tab to prevent any overlapping
-          yPosition += 20; // Extra spacing between different tabs
         }
       }
 
