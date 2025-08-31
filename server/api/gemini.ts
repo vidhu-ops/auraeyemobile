@@ -17,16 +17,16 @@ export async function generateAuraVisualization(
     console.log(`\n=== AURA VISUALIZATION PROCESSING ===`);
     console.log(`Dominant Color: ${auraAnalysis.dominantColor}`);
     console.log(`Secondary Color: ${auraAnalysis.secondaryColor}`);
-    console.log(`Processing with standardized dimensions: 550x700px`);
+    console.log(`Processing with standardized dimensions: 600x900px`);
     
     // Calculate input image size for verification
     const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
-    console.log(`Input image size: ${inputSizeKB}KB (target: ~20KB)`);
+    console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
     
-    // NEW STANDARD: 550px width × 700px height for uniform display
-    const STANDARD_WIDTH = 550;
-    const STANDARD_HEIGHT = 700;
+    // CRITICAL FIX: Standardized dimensions as specified: 600px width × 900px height
+    const STANDARD_WIDTH = 600;
+    const STANDARD_HEIGHT = 900;
     
     // Create canvas with standardized dimensions
     const canvas = createCanvas(STANDARD_WIDTH, STANDARD_HEIGHT);
@@ -129,306 +129,130 @@ function addStandardizedAuraEffects(
   console.log(`Person center: ${personCenterX}, ${personCenterY}`);
   console.log(`Image bounds: ${imageOffsetX}, ${imageOffsetY}, ${imageWidth}, ${imageHeight}`);
   
-  // CRITICAL CHANGE: Use source-over for natural smoke layering
-  ctx.globalCompositeOperation = 'source-over';
+  // CRITICAL FIX: Enhanced blend mode for ultra-smooth, cohesive aura effects
+  ctx.globalCompositeOperation = 'multiply';
   
-  // Create seed for consistent smoke patterns based on colors
-  let seedValue = 0;
-  for (let i = 0; i < dominantColor.length; i++) {
-    seedValue += dominantColor.charCodeAt(i);
+  // ZONE 1: LEFT SIDE - RECEIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
+  console.log('Drawing receiving zone (left) with ultra-dense smokey protection...');
+  
+  // Create more dense smoke layers for perfect consistency
+  for (let layer = 0; layer < 8; layer++) {
+    const layerOffset = layer * 12;
+    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
+    
+    const receivingGradient = ctx.createLinearGradient(0, 0, (canvasWidth * 0.8) + layerOffset, 0);
+    receivingGradient.addColorStop(0, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity})`);
+    receivingGradient.addColorStop(0.2, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.9})`);
+    receivingGradient.addColorStop(0.4, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.7})`);
+    receivingGradient.addColorStop(0.7, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.4})`);
+    receivingGradient.addColorStop(0.9, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, ${baseOpacity * 0.1})`);
+    receivingGradient.addColorStop(1, `rgba(${receivingRGB.r}, ${receivingRGB.g}, ${receivingRGB.b}, 0)`);
+    
+    ctx.fillStyle = receivingGradient;
+    ctx.fillRect(0, 0, canvasWidth * 0.8, canvasHeight);
   }
   
-  // Seeded random function for deterministic results
-  const seededRandom = (() => {
-    let seed = seedValue;
-    return () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
-  })();
+  // ZONE 2: RIGHT SIDE - GIVING ENERGY (Ultra-dense smokey layers for perfect face protection)
+  console.log('Drawing giving zone (right) with ultra-dense smokey protection...');
   
-  console.log('Generating MAXIMUM DENSITY natural smoke around person...');
+  // Create more dense smoke layers for perfect consistency
+  for (let layer = 0; layer < 8; layer++) {
+    const layerOffset = layer * 12;
+    const baseOpacity = 0.55 - (layer * 0.04); // Even higher opacity for ultra-dense effect
+    
+    const givingGradient = ctx.createLinearGradient(canvasWidth, 0, (canvasWidth * 0.2) - layerOffset, 0);
+    givingGradient.addColorStop(0, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity})`);
+    givingGradient.addColorStop(0.2, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.9})`);
+    givingGradient.addColorStop(0.4, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.7})`);
+    givingGradient.addColorStop(0.7, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.4})`);
+    givingGradient.addColorStop(0.9, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, ${baseOpacity * 0.1})`);
+    givingGradient.addColorStop(1, `rgba(${givingRGB.r}, ${givingRGB.g}, ${givingRGB.b}, 0)`);
+    
+    ctx.fillStyle = givingGradient;
+    ctx.fillRect(canvasWidth * 0.2, 0, canvasWidth * 0.8, canvasHeight);
+  }
   
-  // Face protection zone (avoid placing smoke on face)
-  const faceProtectionRadius = Math.min(imageWidth, imageHeight) * 0.2;
+  // ZONE 3: TOP - THINKING ENERGY (Yellow/Orange zones in examples)
+  console.log('Drawing thinking zone (top) with increased density...');
   
-  // LAYER 0: Solid smoke base to eliminate any gaps
-  createSolidSmokeBase(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
-    imageWidth, imageHeight, dominantRGB, secondaryRGB, faceProtectionRadius);
+  // Create seamless thinking zone with smooth transitions
+  for (let layer = 0; layer < 2; layer++) {
+    const layerOffset = layer * 20;
+    const baseOpacity = 0.28 - (layer * 0.08); // Reduced opacity for subtlety
+    
+    const thinkingGradient = ctx.createLinearGradient(0, 0, 0, (canvasHeight * 0.4) + layerOffset);
+    thinkingGradient.addColorStop(0, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity})`);
+    thinkingGradient.addColorStop(0.3, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.7})`);
+    thinkingGradient.addColorStop(0.6, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, ${baseOpacity * 0.4})`);
+    thinkingGradient.addColorStop(1, `rgba(${thinkingRGB.r}, ${thinkingRGB.g}, ${thinkingRGB.b}, 0)`);
+    
+    ctx.fillStyle = thinkingGradient;
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight * 0.4);
+  }
   
-  // LAYER 1: Dense smoke particles around person perimeter
-  createDensePerimeterSmoke(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY, 
-    imageWidth, imageHeight, receivingRGB, givingRGB, thinkingRGB, personalityRGB, 
-    seededRandom, faceProtectionRadius);
+  // ZONE 4: EDGES - PERSONALITY ENERGY (Outer rim effect with increased density)
+  console.log('Drawing personality zone (edges) with increased density...');
   
-  // LAYER 2: Flowing smoke wisps for natural movement
-  createFlowingWisps(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
-    imageWidth, imageHeight, dominantRGB, secondaryRGB, seededRandom, faceProtectionRadius);
+  // Create subtle edge effects for cohesive appearance
+  const edgeThickness = 100; // Reduced for less scattered look
+  const edgeLayers = 2; // Fewer layers for cleaner appearance
   
-  // LAYER 3: Additional ultra-dense coverage layer
-  createExtraDenseCoverage(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
-    imageWidth, imageHeight, dominantRGB, secondaryRGB, seededRandom, faceProtectionRadius);
+  for (let layer = 0; layer < edgeLayers; layer++) {
+    const layerOffset = layer * 15;
+    const baseOpacity = 0.25 - (layer * 0.08); // Much lower opacity
+    
+    // Top edge
+    const topEdgeGradient = ctx.createLinearGradient(0, 0, 0, edgeThickness - layerOffset);
+    topEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity})`);
+    topEdgeGradient.addColorStop(0.6, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.6})`);
+    topEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+    ctx.fillStyle = topEdgeGradient;
+    ctx.fillRect(0, 0, canvasWidth, edgeThickness);
+    
+    // Bottom edge
+    const bottomEdgeGradient = ctx.createLinearGradient(0, canvasHeight, 0, canvasHeight - (edgeThickness - layerOffset));
+    bottomEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity})`);
+    bottomEdgeGradient.addColorStop(0.6, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.6})`);
+    bottomEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+    ctx.fillStyle = bottomEdgeGradient;
+    ctx.fillRect(0, canvasHeight - edgeThickness, canvasWidth, edgeThickness);
+    
+    // Left edge
+    const leftEdgeGradient = ctx.createLinearGradient(0, 0, edgeThickness - layerOffset, 0);
+    leftEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.8})`);
+    leftEdgeGradient.addColorStop(0.6, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.5})`);
+    leftEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+    ctx.fillStyle = leftEdgeGradient;
+    ctx.fillRect(0, 0, edgeThickness, canvasHeight);
+    
+    // Right edge
+    const rightEdgeGradient = ctx.createLinearGradient(canvasWidth, 0, canvasWidth - (edgeThickness - layerOffset), 0);
+    rightEdgeGradient.addColorStop(0, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.8})`);
+    rightEdgeGradient.addColorStop(0.6, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, ${baseOpacity * 0.5})`);
+    rightEdgeGradient.addColorStop(1, `rgba(${personalityRGB.r}, ${personalityRGB.g}, ${personalityRGB.b}, 0)`);
+    ctx.fillStyle = rightEdgeGradient;
+    ctx.fillRect(canvasWidth - edgeThickness, 0, edgeThickness, canvasHeight);
+  }
   
-  // LAYER 4: Subtle background glow
-  createSubtleBackgroundGlow(ctx, canvasWidth, canvasHeight, personCenterX, personCenterY,
-    imageWidth, imageHeight, dominantRGB, secondaryRGB);
+  // Add ultra-dense facial protection layer first
+  console.log('Adding ultra-dense facial protection layer...');
+  addFacialProtectionLayer(ctx, personCenterX, personCenterY, imageWidth, imageHeight, dominantRGB, secondaryRGB);
+  
+  // Add multiple layers of dense energy wisps for much more prominent smokey effect
+  console.log('Adding multiple layers of dense energy wisps...');
+  
+  // Multiple layers of denser wisps for better coverage
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 36, 0.25, 22);
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 24, 0.18, 16);
+  
+  // Add dense radial smoke clouds around the person for ultra-smokey effect
+  console.log('Adding dense radial smoke clouds...');
+  addDenseSmokeyClouds(ctx, personCenterX, personCenterY, imageWidth, imageHeight, dominantRGB, secondaryRGB);
   
   // Reset composite operation
   ctx.globalCompositeOperation = 'source-over';
   
-  console.log('Natural dense smoke aura effects completed');
-}
-
-/**
- * Creates a solid smoke base to eliminate all gaps and ensure continuous coverage
- */
-function createSolidSmokeBase(
-  ctx: any,
-  canvasWidth: number,
-  canvasHeight: number,
-  personX: number,
-  personY: number,
-  personWidth: number,
-  personHeight: number,
-  dominantRGB: any,
-  secondaryRGB: any,
-  faceProtectionRadius: number
-) {
-  // Create multiple overlapping radial gradients for solid base coverage
-  const baseRadius = Math.max(personWidth, personHeight) * 0.8;
-  
-  // Create 6 overlapping gradients to ensure no gaps
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3; // 60-degree intervals
-    const offsetX = Math.cos(angle) * (baseRadius * 0.3);
-    const offsetY = Math.sin(angle) * (baseRadius * 0.3);
-    
-    const centerX = personX + offsetX;
-    const centerY = personY + offsetY;
-    
-    // Check if this gradient center is too close to face
-    const distanceToFace = Math.sqrt((centerX - personX) ** 2 + (centerY - personY) ** 2);
-    if (distanceToFace < faceProtectionRadius) continue;
-    
-    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius);
-    
-    const color = i % 2 === 0 ? dominantRGB : secondaryRGB;
-    gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
-    gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, 0.15)`);
-    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-  }
-}
-
-/**
- * Creates dense smoke particles around the person's perimeter
- */
-function createDensePerimeterSmoke(
-  ctx: any,
-  canvasWidth: number,
-  canvasHeight: number,
-  personX: number,
-  personY: number,
-  personWidth: number,
-  personHeight: number,
-  receivingRGB: any,
-  givingRGB: any,
-  thinkingRGB: any,
-  personalityRGB: any,
-  seededRandom: () => number,
-  faceProtectionRadius: number
-) {
-  // Create EXTREME DENSITY smoke rings around the person  
-  const numRings = 25; // EXTREME: 25 rings for absolute maximum density
-  const baseRadius = Math.max(personWidth, personHeight) * 0.2;
-  
-  for (let ring = 0; ring < numRings; ring++) {
-    const ringRadius = baseRadius + (ring * 15); // Ultra-tight spacing
-    const numParticles = 150 + (ring * 15); // EXTREME particles per ring
-    const opacity = 0.8 - (ring * 0.025); // Maximum base opacity
-    
-    for (let particle = 0; particle < numParticles; particle++) {
-      const angle = (particle / numParticles) * Math.PI * 2;
-      
-      // Add variation to ring radius for natural appearance
-      const radiusVariation = (seededRandom() - 0.5) * 20;
-      const particleRadius = ringRadius + radiusVariation;
-      
-      const x = personX + Math.cos(angle) * particleRadius;
-      const y = personY + Math.sin(angle) * particleRadius;
-      
-      // Skip particles too close to face
-      const distanceFromFace = Math.sqrt((x - personX) ** 2 + (y - personY) ** 2);
-      if (distanceFromFace < faceProtectionRadius) continue;
-      
-      // Zone-based color selection
-      let color;
-      if (x < personX - personWidth * 0.1) {
-        color = receivingRGB; // Left side - receiving energy
-      } else if (x > personX + personWidth * 0.1) {
-        color = givingRGB; // Right side - giving energy
-      } else if (y < personY - personHeight * 0.1) {
-        color = thinkingRGB; // Top - thinking energy
-      } else {
-        color = personalityRGB; // Edges - personality energy
-      }
-      
-      // Create EXTREME SIZE smoke particle with natural gradient for complete coverage
-      const particleSize = 40 + seededRandom() * 55; // EXTREME large particles for maximum density
-      const particleOpacity = opacity * (0.95 + seededRandom() * 0.05); // EXTREME opacity for density
-      
-      const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-      smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
-      smokeGradient.addColorStop(0.4, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.7})`);
-      smokeGradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.3})`);
-      smokeGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-      
-      ctx.fillStyle = smokeGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-}
-
-/**
- * Creates flowing smoke wisps for natural movement
- */
-function createFlowingWisps(
-  ctx: any,
-  canvasWidth: number,
-  canvasHeight: number,
-  personX: number,
-  personY: number,
-  personWidth: number,
-  personHeight: number,
-  dominantRGB: any,
-  secondaryRGB: any,
-  seededRandom: () => number,
-  faceProtectionRadius: number
-) {
-  const numWisps = 48; // Double the wisps for ultra-dense coverage
-  const wispLength = Math.max(personWidth, personHeight) * 1.2; // Longer wisps for better coverage
-  
-  for (let wisp = 0; wisp < numWisps; wisp++) {
-    const angle = (wisp / numWisps) * Math.PI * 2;
-    const startRadius = Math.max(personWidth, personHeight) * 0.3;
-    const startX = personX + Math.cos(angle) * startRadius;
-    const startY = personY + Math.sin(angle) * startRadius;
-    
-    // Skip wisps too close to face
-    const distanceFromFace = Math.sqrt((startX - personX) ** 2 + (startY - personY) ** 2);
-    if (distanceFromFace < faceProtectionRadius) continue;
-    
-    const color = wisp % 2 === 0 ? dominantRGB : secondaryRGB;
-    
-    // Create flowing wisp with multiple segments
-    const numSegments = 8;
-    for (let segment = 0; segment < numSegments; segment++) {
-      const segmentProgress = segment / numSegments;
-      const wispRadius = startRadius + (segmentProgress * wispLength);
-      
-      // Add flow variation
-      const flowAngle = angle + (seededRandom() - 0.5) * 0.3;
-      const x = personX + Math.cos(flowAngle) * wispRadius;
-      const y = personY + Math.sin(flowAngle) * wispRadius;
-      
-      const segmentSize = 12 * (1 - segmentProgress * 0.6); // Taper off
-      const segmentOpacity = 0.25 * (1 - segmentProgress * 0.7);
-      
-      const wispGradient = ctx.createRadialGradient(x, y, 0, x, y, segmentSize);
-      wispGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${segmentOpacity})`);
-      wispGradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, ${segmentOpacity * 0.5})`);
-      wispGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-      
-      ctx.fillStyle = wispGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, segmentSize, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-}
-
-/**
- * Creates extra-dense coverage to eliminate any remaining gaps
- */
-function createExtraDenseCoverage(
-  ctx: any,
-  canvasWidth: number,
-  canvasHeight: number,
-  personX: number,
-  personY: number,
-  personWidth: number,
-  personHeight: number,
-  dominantRGB: any,
-  secondaryRGB: any,
-  seededRandom: () => number,
-  faceProtectionRadius: number
-) {
-  // Fill gaps with EXTREME-density small particles  
-  const numExtraParticles = 600; // EXTREME particles to completely fill all gaps
-  const coverageRadius = Math.max(personWidth, personHeight) * 1.2; // MAXIMUM coverage area
-  
-  for (let i = 0; i < numExtraParticles; i++) {
-    const angle = seededRandom() * Math.PI * 2;
-    const radius = seededRandom() * coverageRadius;
-    const x = personX + Math.cos(angle) * radius;
-    const y = personY + Math.sin(angle) * radius;
-    
-    // Skip particles too close to face
-    const distanceFromFace = Math.sqrt((x - personX) ** 2 + (y - personY) ** 2);
-    if (distanceFromFace < faceProtectionRadius) continue;
-    
-    // Use alternating colors for variety
-    const color = i % 2 === 0 ? dominantRGB : secondaryRGB;
-    const particleSize = 8 + seededRandom() * 16; // Smaller particles for filling
-    const particleOpacity = 0.15 + seededRandom() * 0.25; // Moderate opacity
-    
-    const fillGradient = ctx.createRadialGradient(x, y, 0, x, y, particleSize);
-    fillGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity})`);
-    fillGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${particleOpacity * 0.4})`);
-    fillGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-    
-    ctx.fillStyle = fillGradient;
-    ctx.beginPath();
-    ctx.arc(x, y, particleSize, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-/**
- * Creates subtle background glow
- */
-function createSubtleBackgroundGlow(
-  ctx: any,
-  canvasWidth: number,
-  canvasHeight: number,
-  personX: number,
-  personY: number,
-  personWidth: number,
-  personHeight: number,
-  dominantRGB: any,
-  secondaryRGB: any
-) {
-  // Create large, soft background glow
-  const glowRadius = Math.max(canvasWidth, canvasHeight) * 0.6;
-  
-  const backgroundGradient = ctx.createRadialGradient(
-    personX, personY, 0,
-    personX, personY, glowRadius
-  );
-  
-  backgroundGradient.addColorStop(0, `rgba(${dominantRGB.r}, ${dominantRGB.g}, ${dominantRGB.b}, 0.08)`);
-  backgroundGradient.addColorStop(0.3, `rgba(${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}, 0.05)`);
-  backgroundGradient.addColorStop(0.6, `rgba(${dominantRGB.r}, ${dominantRGB.g}, ${dominantRGB.b}, 0.03)`);
-  backgroundGradient.addColorStop(1, `rgba(${dominantRGB.r}, ${dominantRGB.g}, ${dominantRGB.b}, 0)`);
-  
-  ctx.fillStyle = backgroundGradient;
-  ctx.beginPath();
-  ctx.arc(personX, personY, glowRadius, 0, Math.PI * 2);
-  ctx.fill();
+  console.log('All aura zones applied successfully');
 }
 
 function addEnergyWisps(

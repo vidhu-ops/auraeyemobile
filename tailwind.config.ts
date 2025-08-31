@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       aspectRatio: {
-        'aura': '550/700',
+        'aura': '600/900',
       },
       borderRadius: {
         lg: "var(--radius)",
