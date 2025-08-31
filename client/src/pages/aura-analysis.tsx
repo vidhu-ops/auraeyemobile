@@ -9115,7 +9115,10 @@ export default function AuraAnalysis() {
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                      
+                                      <div 
+                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                      ></div>
                                       <div>
                                         <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -9144,7 +9147,10 @@ export default function AuraAnalysis() {
                                     
                                     {result.secondaryColor && (
                                       <div className="flex items-start gap-3">
-                                        
+                                        <div 
+                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                        ></div>
                                         <div>
                                           <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
