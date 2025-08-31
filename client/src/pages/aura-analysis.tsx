@@ -2316,9 +2316,15 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // CRITICAL FIX: Maintain original aspect ratio without squishing
-            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
-            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
+            // Enhanced sizing for specific tabs to double their visibility in PDF
+            const isEnhancedTab = tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed';
+            
+            // Increase base dimensions for enhanced tabs to make them much more visible
+            const baseMaxWidth = isEnhancedTab ? 340 : 170; // Double width for enhanced tabs
+            const baseMaxHeight = isEnhancedTab ? 480 : 240; // Double height for enhanced tabs
+            
+            const pageMaxWidth = Math.min(baseMaxWidth, 380); // Prevent overflow
+            const pageMaxHeight = Math.min(baseMaxHeight, 500); // Prevent overflow
             
             // Calculate proper dimensions maintaining original aspect ratio
             let finalWidth = pageMaxWidth;
@@ -2381,10 +2387,15 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Larger size for chakras tab for maximum visibility in PDF
+                // Enhanced sizing for specific tabs to make them much more visible in PDF
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 2.8; // Increased from 2.2 to 2.8 for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 2.8; // Increased from 2.2 to 2.8 for better visibility
+                  // Keep chakras unchanged as requested
+                  sectionFinalWidth = sectionFinalWidth * 2.8;
+                  sectionFinalHeight = sectionFinalHeight * 2.8;
+                } else if (tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed') {
+                  // Double the size for enhanced tabs to improve visibility dramatically
+                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double width
+                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double height
                 }
                 
                 // Section titles removed for continuous image flow as requested
@@ -2419,23 +2430,42 @@ export default function AuraAnalysis() {
                 finalHeight = minWidth * trueAspectRatio;
               }
               
-              // Final check: ensure we don't exceed page boundaries
-              if (finalWidth > pageMaxWidth) {
-                finalWidth = pageMaxWidth;
-                finalHeight = finalWidth * trueAspectRatio;
-              }
-              
-              if (finalHeight > pageMaxHeight) {
-                finalHeight = pageMaxHeight;
-                finalWidth = finalHeight / trueAspectRatio;
+              // Enhanced sizing for specific tabs to double their visibility
+              if (tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed') {
+                // Double the size for enhanced tabs while respecting page boundaries
+                finalWidth = Math.min(finalWidth * 2.0, pageMaxWidth);
+                finalHeight = Math.min(finalHeight * 2.0, pageMaxHeight);
+                
+                // Re-adjust if one dimension exceeds after doubling
+                if (finalWidth > pageMaxWidth) {
+                  finalWidth = pageMaxWidth;
+                  finalHeight = finalWidth * trueAspectRatio;
+                }
+                if (finalHeight > pageMaxHeight) {
+                  finalHeight = pageMaxHeight;
+                  finalWidth = finalHeight / trueAspectRatio;
+                }
+              } else {
+                // Standard sizing for other tabs
+                if (finalWidth > pageMaxWidth) {
+                  finalWidth = pageMaxWidth;
+                  finalHeight = finalWidth * trueAspectRatio;
+                }
+                
+                if (finalHeight > pageMaxHeight) {
+                  finalHeight = pageMaxHeight;
+                  finalWidth = finalHeight / trueAspectRatio;
+                }
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
               
-              // Check if screenshot would exceed page height
-              if (yPosition + finalHeight > pageHeight - 40) {
+              // Enhanced page management for larger images - prevent overlapping
+              const pageBottomMargin = isEnhancedTab ? 60 : 40; // More margin for enhanced tabs
+              if (yPosition + finalHeight > pageHeight - pageBottomMargin) {
                 pdf.addPage();
                 yPosition = 20;
+                console.log(`Started new page for ${tabId} to prevent overlapping`);
               }
               
               // Compress the image data before adding to PDF to prevent memory issues
@@ -2444,8 +2474,10 @@ export default function AuraAnalysis() {
               // Add the screenshot with preserved aspect ratio and improved error handling
               try {
                 pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                yPosition += finalHeight + 15;
-                console.log(`Successfully added ${tabId} screenshot to PDF`);
+                // Enhanced spacing for enhanced tabs to prevent overlapping
+                const spacingAfterImage = isEnhancedTab ? 25 : 15;
+                yPosition += finalHeight + spacingAfterImage;
+                console.log(`Successfully added ${tabId} screenshot to PDF (${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)})`);
               } catch (addImageError) {
                 console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
                 // Add a placeholder text instead
