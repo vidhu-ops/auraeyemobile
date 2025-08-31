@@ -1486,6 +1486,25 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
+      // Auto-capture chakras tab if not already captured
+      if (!capturedScreenshots.has('chakras')) {
+        console.log('Auto-capturing chakras tab for PDF generation...');
+        try {
+          // First, ensure the chakras tab is active/visible
+          const chakrasTab = document.querySelector('[data-value="chakras"]') as HTMLElement;
+          if (chakrasTab) {
+            chakrasTab.click();
+            // Wait for tab to become active
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          
+          await captureTabScreenshot('chakras');
+          console.log('Chakras tab captured successfully for PDF');
+        } catch (captureError) {
+          console.warn('Failed to auto-capture chakras tab:', captureError);
+        }
+      }
+
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
       const pdf = new jsPDF({
@@ -1629,29 +1648,61 @@ export default function AuraAnalysis() {
           const ctx = canvas.getContext('2d');
           const img = new Image();
           
-          return new Promise<string>((resolve) => {
+          return new Promise<string>((resolve, reject) => {
             img.onload = () => {
-              // Set canvas size with higher resolution for better PDF quality
-              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
-              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
-              
-              // Use high-quality image rendering
-              ctx!.imageSmoothingEnabled = true;
-              ctx!.imageSmoothingQuality = 'high';
-              
-              // Draw the image with high quality
-              ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
-              
-              // Use PNG with 10% more compression
-              let compressedDataUrl = canvas.toDataURL('image/png', 0.9);
-              
-              // If PNG is too large, fallback to JPEG with 10% more compression
-              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // 10% more compression
+              try {
+                // Calculate optimal canvas size - balance quality vs memory
+                const maxCanvasSize = 4096; // Max canvas dimension
+                let canvasWidth = Math.min(targetWidth * 4, maxCanvasSize);
+                let canvasHeight = Math.min(targetHeight * 4, maxCanvasSize);
+                
+                // Preserve aspect ratio
+                const aspectRatio = img.naturalWidth / img.naturalHeight;
+                if (canvasWidth / canvasHeight > aspectRatio) {
+                  canvasWidth = canvasHeight * aspectRatio;
+                } else {
+                  canvasHeight = canvasWidth / aspectRatio;
+                }
+                
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                
+                // Configure high-quality rendering
+                ctx!.imageSmoothingEnabled = true;
+                ctx!.imageSmoothingQuality = 'high';
+                
+                // Fill with white background to prevent transparency issues in PDF
+                ctx!.fillStyle = 'white';
+                ctx!.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw the image
+                ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Try multiple compression levels to find best balance
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                
+                // If still too large, reduce quality progressively
+                const maxSize = 8 * 1024 * 1024; // 8MB limit
+                if (compressedDataUrl.length > maxSize) {
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                }
+                if (compressedDataUrl.length > maxSize) {
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                }
+                
+                console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
+                resolve(compressedDataUrl);
+              } catch (canvasError) {
+                console.error('Canvas processing error:', canvasError);
+                reject(canvasError);
               }
-              
-              resolve(compressedDataUrl);
             };
+            
+            img.onerror = (error) => {
+              console.error('Image loading error:', error);
+              reject(error);
+            };
+            
             img.src = imageDataUrl;
           });
         } catch (error) {
@@ -2030,10 +2081,20 @@ export default function AuraAnalysis() {
                 
                 // Section titles removed for continuous image flow as requested
                 
-                // Compress and add the section
-                const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                yPosition += sectionFinalHeight + 10;
+                // Compress and add the section with error handling
+                try {
+                  const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  yPosition += sectionFinalHeight + 10;
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
+                } catch (sectionError) {
+                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
+                  // Add placeholder text for failed section
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(150, 150, 150);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
+                  yPosition += 15;
+                }
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
@@ -2072,9 +2133,19 @@ export default function AuraAnalysis() {
               // Compress the image data before adding to PDF to prevent memory issues
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Add the screenshot with preserved aspect ratio
-              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 15;
+              // Add the screenshot with preserved aspect ratio and improved error handling
+              try {
+                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                yPosition += finalHeight + 15;
+                console.log(`Successfully added ${tabId} screenshot to PDF`);
+              } catch (addImageError) {
+                console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
+                // Add a placeholder text instead
+                pdf.setFontSize(12);
+                pdf.setTextColor(100, 100, 100);
+                yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
+                yPosition += 20;
+              }
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
