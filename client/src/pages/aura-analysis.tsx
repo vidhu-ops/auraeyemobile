@@ -1225,8 +1225,14 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
-          // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
+        if (tabId === 'analysis' || tabId === 'energy-map') {
+          // Force exactly 2 sections for analysis-1st and energy-map tabs as requested
+          totalSections = 2;
+          sectionHeight = Math.ceil(contentHeight / 2);
+          // Additional 25% width increase for critical tabs text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+        } else if (tabId === 'detailed' || tabId === 'chakras') {
+          // Keep 4 sections for detailed and chakras tabs unchanged
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
@@ -1247,6 +1253,11 @@ export default function AuraAnalysis() {
         }
         
         console.log(`Capturing ${totalSections} sections for ${tabId} tab with enhanced width ${enhancedCaptureWidth}px, each section optimized for PDF readability`);
+        
+        // Special handling for 2-section tabs to ensure proper PDF layout
+        if (tabId === 'analysis' || tabId === 'energy-map') {
+          console.log(`Using 2-section approach for ${tabId} tab - each section will be ${sectionHeight}px tall`);
+        }
         
         for (let section = 0; section < totalSections; section++) {
           const startY = section * sectionHeight;
@@ -1329,7 +1340,20 @@ export default function AuraAnalysis() {
                     textElement.style.textRendering = 'optimizeLegibility';
                     textElement.style.fontSmooth = 'always';
                   });
-                } else if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
+                } else if (tabId === 'analysis' || tabId === 'energy-map') {
+                  // Enhanced text rendering for 2-section tabs
+                  elem.style.fontSize = '22px'; // Larger font for 2-section tabs
+                  elem.style.lineHeight = '1.9';
+                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+                  textElements.forEach(textEl => {
+                    const textElement = textEl as HTMLElement;
+                    textElement.style.fontSize = '22px';
+                    textElement.style.fontWeight = '750';
+                    textElement.style.letterSpacing = '0.5px';
+                    textElement.style.textRendering = 'optimizeLegibility';
+                    textElement.style.fontSmooth = 'always';
+                  });
+                } else if (tabId === 'detailed' || tabId === 'chakras') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
                   elem.style.lineHeight = '1.8';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
@@ -2441,11 +2465,21 @@ export default function AuraAnalysis() {
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section after the first, with better spacing
-                if (section > 0) {
-                  pdf.addPage();
-                  yPosition = 20;
-                  console.log(`Started new page for ${tabId} section ${section + 1} to prevent overlapping`);
+                // Enhanced page management for 2-section tabs (analysis, energy-map)
+                if (tabId === 'analysis' || tabId === 'energy-map') {
+                  // For 2-section tabs: put each section on its own page for optimal visibility
+                  if (section > 0) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    console.log(`Started new page for ${tabId} section ${section + 1} (2-section layout)`);
+                  }
+                } else {
+                  // For other multi-section tabs: start new page after first section
+                  if (section > 0) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    console.log(`Started new page for ${tabId} section ${section + 1} to prevent overlapping`);
+                  }
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2493,10 +2527,16 @@ export default function AuraAnalysis() {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   
-                  // Add proper spacing after each section to prevent overlapping
-                  const spacingAfterSection = 15; // Increased spacing between sections
+                  // Enhanced spacing for 2-section tabs to ensure optimal visibility
+                  let spacingAfterSection;
+                  if (tabId === 'analysis' || tabId === 'energy-map') {
+                    spacingAfterSection = 25; // Extra spacing for 2-section tabs
+                  } else {
+                    spacingAfterSection = 15; // Standard spacing for other tabs
+                  }
+                  
                   yPosition += sectionFinalHeight + spacingAfterSection;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)})`);
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}) with ${spacingAfterSection}px spacing`);
                 } catch (sectionError) {
                   console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
                   // Add placeholder text for failed section
