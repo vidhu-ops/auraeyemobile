@@ -2052,10 +2052,10 @@ export default function AuraAnalysis() {
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section after the first
-                if (section > 0 || yPosition > 40) {
+                // Start a new page for each section (continuous flow)
+                if (section > 0) {
                   pdf.addPage();
-                  yPosition = 20;
+                  yPosition = 10; // Minimal top margin
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2085,40 +2085,33 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras tab - make much larger
-                if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
+                // Fill full page width for all tabs to eliminate black spaces
+                sectionFinalWidth = pageWidth - 40; // Full width minus small margins
+                sectionFinalHeight = sectionFinalWidth * sectionAspectRatio;
+                
+                let xPosition = 20; // Default left margin
+                
+                // If height exceeds page, adjust to fit and center
+                if (sectionFinalHeight > pageHeight - 60) {
+                  sectionFinalHeight = pageHeight - 60;
+                  sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
+                  xPosition = (pageWidth - sectionFinalWidth) / 2; // Center horizontally
                 }
                 
-                // Section titles removed for continuous image flow as requested
-                
-                // Compress and add the section
+                // Compress and add the section with full width
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                yPosition += sectionFinalHeight + 10;
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', xPosition, yPosition, sectionFinalWidth, sectionFinalHeight);
+                yPosition += sectionFinalHeight + 5; // Minimal spacing
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
-              // For normal screenshots, use single page with proper aspect ratio - already calculated above
-              // Ensure minimum readability while respecting page constraints
-              const minWidth = 120;
-              const minHeight = 160;
+              // For normal screenshots, use full page width to eliminate black spaces
+              finalWidth = pageWidth - 40; // Full width minus margins
+              finalHeight = finalWidth * trueAspectRatio;
               
-              // Only increase size if we have room and it improves readability
-              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
-                finalWidth = minWidth;
-                finalHeight = minWidth * trueAspectRatio;
-              }
-              
-              // Final check: ensure we don't exceed page boundaries
-              if (finalWidth > pageMaxWidth) {
-                finalWidth = pageMaxWidth;
-                finalHeight = finalWidth * trueAspectRatio;
-              }
-              
+              // If height exceeds page, adjust to fit
               if (finalHeight > pageMaxHeight) {
                 finalHeight = pageMaxHeight;
                 finalWidth = finalHeight / trueAspectRatio;
@@ -2135,9 +2128,12 @@ export default function AuraAnalysis() {
               // Compress the image data before adding to PDF to prevent memory issues
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Add the screenshot with preserved aspect ratio
-              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 15;
+              // Center the screenshot horizontally if it's smaller than full width
+              const xPosition = Math.max(20, (pageWidth - finalWidth) / 2);
+              
+              // Add the screenshot with full width layout
+              pdf.addImage(compressedImageDataUrl, 'JPEG', xPosition, yPosition, finalWidth, finalHeight);
+              yPosition += finalHeight + 5; // Minimal spacing between screenshots
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
