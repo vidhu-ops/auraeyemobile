@@ -1097,42 +1097,21 @@ export default function AuraAnalysis() {
       const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
       const needsMultiSection = contentHeight > maxSingleCaptureHeight;
       
-      // Enhanced multi-section logic for better readability across all tabs
-      const forceMultiSection = (['guidance', 'spectrum'].includes(tabId) && contentHeight > 4000) ||
-                                (['detailed', 'chakras', 'analysis', 'energy-map'].includes(tabId)); // Always use multi-section for critical tabs
+      // FORCE ALL TABS TO USE EXACTLY 4 SECTIONS AS REQUESTED BY USER
+      const forceMultiSection = true; // Always use 4-section capture for all tabs
       
       console.log(`Enhanced capture: Base ${baseCaptureWidth}x${contentHeight} → Enhanced ${captureWidth}x${contentHeight} (+15% width)`);
-      console.log(`Multi-section capture needed: ${needsMultiSection || forceMultiSection}`);
+      console.log(`Multi-section capture: FORCED 4 sections for all tabs`);
 
-      if (needsMultiSection || forceMultiSection) {
-        // Capture long content in optimized sections for optimal PDF display
+      if (forceMultiSection) {
+        // Capture ALL tabs in exactly 4 sections for optimal PDF display
         const screenshots: string[] = [];
         
-        // Enhanced section calculation for optimal readability and PDF presentation
-        let sectionHeight: number;
-        let totalSections: number;
-        let enhancedCaptureWidth = captureWidth;
-        
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
-          // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
-          totalSections = 4;
-          sectionHeight = Math.ceil(contentHeight / 4);
-          // Additional 25% width increase for critical tabs text legibility (40% total increase)
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
-        } else if (['guidance'].includes(tabId)) {
-          // Optimized sectioning for complex tabs
-          const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
-          sectionHeight = idealSectionHeight;
-          totalSections = Math.ceil(contentHeight / sectionHeight);
-          // Additional 10% width increase for complex tabs
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.10);
-        } else {
-          // Standard sectioning for other tabs with optimal aspect ratio
-          const targetAspectRatio = 16 / 9;
-          sectionHeight = Math.floor(captureWidth / targetAspectRatio);
-          totalSections = Math.ceil(contentHeight / sectionHeight);
-          // Use base enhanced width (already 15% increased)
-        }
+        // STANDARDIZED: All tabs use exactly 4 sections
+        const totalSections = 4;
+        const sectionHeight = Math.ceil(contentHeight / 4);
+        // Enhanced width for better readability (25% increase for all tabs)
+        const enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
         
         console.log(`Capturing ${totalSections} sections for ${tabId} tab with enhanced width ${enhancedCaptureWidth}px, each section optimized for PDF readability`);
         
@@ -1175,10 +1154,10 @@ export default function AuraAnalysis() {
           // Wait longer for scroll to complete and content to render
           await new Promise(resolve => setTimeout(resolve, 500));
           
-          // Use enhanced width for all tabs with tab-specific optimizations
+          // Use standardized capture settings for all tabs with optimal quality
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
+            scale: 3.0, // Consistent scale for all tabs to prevent memory issues
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1191,9 +1170,9 @@ export default function AuraAnalysis() {
             windowWidth: enhancedCaptureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
-            foreignObjectRendering: false,
-            imageTimeout: 5000, // Extended timeout for high-quality processing
-            // Enhanced text rendering with high quality settings
+            foreignObjectRendering: true,
+            imageTimeout: 8000, // Extended timeout for reliable processing
+            // Enhanced text rendering for all tabs
             onclone: (clonedDoc) => {
               const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
               if (clonedElement) {
@@ -1203,30 +1182,19 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering for all tabs with special boost for critical tabs
-                if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-                  elem.style.fontSize = '20px'; // Maximum font for critical tabs
-                  elem.style.lineHeight = '1.8';
-                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
-                  textElements.forEach(textEl => {
-                    const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '20px';
-                    textElement.style.fontWeight = '700';
-                    textElement.style.letterSpacing = '0.4px';
-                    textElement.style.textRendering = 'optimizeLegibility';
-                  });
-                } else {
-                  // Enhanced text for all other tabs
-                  elem.style.fontSize = '15px';
-                  elem.style.lineHeight = '1.6';
-                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
-                  textElements.forEach(textEl => {
-                    const textElement = textEl as HTMLElement;
-                    textElement.style.fontSize = '15px';
-                    textElement.style.fontWeight = '500';
-                    textElement.style.letterSpacing = '0.2px';
-                  });
-                }
+                elem.style.transform = 'none';
+                // Consistent text enhancement for all tabs
+                elem.style.fontSize = '16px';
+                elem.style.lineHeight = '1.6';
+                const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+                textElements.forEach(textEl => {
+                  const textElement = textEl as HTMLElement;
+                  textElement.style.fontSize = '16px';
+                  textElement.style.fontWeight = '600';
+                  textElement.style.letterSpacing = '0.3px';
+                  textElement.style.textRendering = 'optimizeLegibility';
+                  textElement.style.transform = 'none';
+                });
               }
             }
           });
@@ -1268,52 +1236,73 @@ export default function AuraAnalysis() {
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5;
+        // Calculate combined dimensions using consistent scale factor
+        const scaleUsed = 3.0; // Consistent scale for all tabs
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
-        // Draw each section onto the combined canvas
+        // Draw each section onto the combined canvas with proper error handling
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
           img.src = screenshots[i];
-          await new Promise((resolve) => {
+          await new Promise((resolve, reject) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
-              resolve(true);
+              try {
+                ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
+                resolve(true);
+              } catch (drawError) {
+                console.error(`Error drawing section ${i}:`, drawError);
+                reject(drawError);
+              }
             };
+            img.onerror = reject;
+            // Add timeout to prevent hanging
+            setTimeout(() => reject(new Error('Image load timeout')), 10000);
           });
         }
         
-        // Use PNG with 10% more compression
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
-        console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
+        // Try PNG first, fallback to JPEG if too large
+        let combinedImageDataUrl: string;
+        try {
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.8);
+          console.log(`Combined PNG image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+          
+          // If PNG is too large, use JPEG
+          if (combinedImageDataUrl.length > 10 * 1024 * 1024) {
+            combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.85);
+            console.log(`Fallback to JPEG: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+          }
+        } catch (conversionError) {
+          console.warn('PNG conversion failed, using JPEG:', conversionError);
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.8);
+        }
         
-        // Store with much higher size limit for enhanced quality screenshots, especially for chakras and detailed tabs
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 25 * 1024 * 1024 : 15 * 1024 * 1024;
+        // Store with reasonable size limit (consistent for all tabs)
+        const sizeLimit = 15 * 1024 * 1024; // 15MB limit for all tabs
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
-          console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
-          // Fallback to JPEG with 10% more compression
-          const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 0.9);
-          if (jpegVersion.length < 20 * 1024 * 1024) { // Higher fallback limit
-            setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
-            console.log(`✅ ${tabId} screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+          console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting aggressive compression`);
+          // Aggressive fallback compression
+          const compressedVersion = combinedCanvas.toDataURL('image/jpeg', 0.6);
+          if (compressedVersion.length < 12 * 1024 * 1024) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, compressedVersion));
+            console.log(`✅ ${tabId} screenshot captured with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
           } else {
-            console.error(`❌ ${tabId} screenshot too large even with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+            console.error(`❌ ${tabId} screenshot too large even with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
+            throw new Error(`Screenshot too large for ${tabId}`);
           }
         }
         
         console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
         
       } else {
-        // Single capture for shorter content with optimal sizing
-        console.log(`Single capture: ${captureWidth}x${contentHeight}`);
+        // This should never happen since forceMultiSection is always true
+        throw new Error('Unexpected single capture path - all tabs should use 4-section capture');
 
         // Ensure element is fully expanded before capture
         const originalStyles = {
@@ -1982,170 +1971,83 @@ export default function AuraAnalysis() {
         yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
         yPosition += 10;
         
-        // Add each captured screenshot with proper sizing and multi-page support
+        // Add each captured screenshot - these are already in 4-section format from capture
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           
           try {
-            // Create a temporary image to get exact dimensions
+            // Add page break before each screenshot
+            if (yPosition > 40) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            
+            // Add tab title
+            pdf.setFontSize(16);
+            pdf.setTextColor(75, 0, 130);
+            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, pageWidth/2, yPosition, { align: 'center' });
+            yPosition += 15;
+            
+            // Validate image data
+            if (!imageDataUrl || !imageDataUrl.startsWith('data:image') || imageDataUrl.length < 100) {
+              throw new Error(`Invalid image data for ${tabId}`);
+            }
+            
+            // Create temporary image to get dimensions
             const tempImg = new Image();
             tempImg.src = imageDataUrl;
             
-            // Wait for image to load and get true dimensions
             await new Promise((resolve, reject) => {
               tempImg.onload = resolve;
               tempImg.onerror = reject;
+              setTimeout(() => reject(new Error('Image load timeout')), 5000);
             });
             
             const originalWidth = tempImg.naturalWidth;
             const originalHeight = tempImg.naturalHeight;
-            const trueAspectRatio = originalHeight / originalWidth;
+            const aspectRatio = originalHeight / originalWidth;
             
-            // CRITICAL FIX: Maintain original aspect ratio without squishing
-            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
-            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
+            // Calculate optimal dimensions for PDF (maintain aspect ratio)
+            const maxPageWidth = 170; // A4 page width minus margins
+            const maxPageHeight = 240; // A4 page height minus margins
             
-            // Calculate proper dimensions maintaining original aspect ratio
-            let finalWidth = pageMaxWidth;
-            let finalHeight = finalWidth * trueAspectRatio;
+            let finalWidth = maxPageWidth;
+            let finalHeight = finalWidth * aspectRatio;
             
-            // If height exceeds page, scale down proportionally
-            if (finalHeight > pageMaxHeight) {
-              finalHeight = pageMaxHeight;
-              finalWidth = finalHeight / trueAspectRatio;
+            // If too tall, scale down
+            if (finalHeight > maxPageHeight) {
+              finalHeight = maxPageHeight;
+              finalWidth = finalHeight / aspectRatio;
             }
             
-            // If the image is very long (tall), we need to handle it differently
-            // Force chakras tab to always use multi-section approach for 4-part breakdown
-            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
+            console.log(`Screenshot ${tabId}: ${originalWidth}x${originalHeight} → PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}`);
             
-            if (isLongScreenshot) {
-              // Special handling for chakras tab - force exactly 4 sections
-              let sectionsNeeded;
-              if (tabId === 'chakras') {
-                sectionsNeeded = 4; // Force exactly 4 sections for chakras
-              } else {
-                sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
-              }
-              const sectionHeight = pageMaxHeight;
-              
-              console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
-              
-              // Split the image into multiple sections
-              for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section after the first
-                if (section > 0 || yPosition > 40) {
-                  pdf.addPage();
-                  yPosition = 20;
-                }
-                
-                // Calculate the portion of the image for this section
-                const sectionStartY = (section * originalHeight) / sectionsNeeded;
-                const sectionEndY = Math.min(((section + 1) * originalHeight) / sectionsNeeded, originalHeight);
-                const sectionImageHeight = sectionEndY - sectionStartY;
-                
-                // Create a canvas to extract this section
-                const sectionCanvas = document.createElement('canvas');
-                const sectionCtx = sectionCanvas.getContext('2d');
-                sectionCanvas.width = originalWidth;
-                sectionCanvas.height = sectionImageHeight;
-                
-                // Draw the section of the image
-                sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
-                
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
-                const sectionAspectRatio = sectionImageHeight / originalWidth;
-                
-                // Calculate final dimensions for this section
-                let sectionFinalWidth = finalWidth;
-                let sectionFinalHeight = sectionFinalWidth * sectionAspectRatio;
-                
-                // If this section is still too tall, fit to height
-                if (sectionFinalHeight > sectionHeight) {
-                  sectionFinalHeight = sectionHeight;
-                  sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
-                }
-                
-                // Special size enhancement for chakras tab - make much larger
-                if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
-                }
-                
-                // Section titles removed for continuous image flow as requested
-                
-                // Compress and add the section
-                const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                yPosition += sectionFinalHeight + 10;
-                
-                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
-              }
-              
-            } else {
-              // For normal screenshots, use single page with proper aspect ratio - already calculated above
-              // Ensure minimum readability while respecting page constraints
-              const minWidth = 120;
-              const minHeight = 160;
-              
-              // Only increase size if we have room and it improves readability
-              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
-                finalWidth = minWidth;
-                finalHeight = minWidth * trueAspectRatio;
-              }
-              
-              // Final check: ensure we don't exceed page boundaries
-              if (finalWidth > pageMaxWidth) {
-                finalWidth = pageMaxWidth;
-                finalHeight = finalWidth * trueAspectRatio;
-              }
-              
-              if (finalHeight > pageMaxHeight) {
-                finalHeight = pageMaxHeight;
-                finalWidth = finalHeight / trueAspectRatio;
-              }
-              
-              console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
-              
-              // Check if screenshot would exceed page height
-              if (yPosition + finalHeight > pageHeight - 40) {
-                pdf.addPage();
-                yPosition = 20;
-              }
-              
-              // Compress the image data before adding to PDF to prevent memory issues
-              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-              
-              // Validate image data before adding to PDF
-              if (!compressedImageDataUrl || compressedImageDataUrl.length < 100 || !compressedImageDataUrl.startsWith('data:image')) {
-                throw new Error(`Invalid compressed image data for ${tabId}`);
-              }
-              
-              // Add the screenshot with preserved aspect ratio
-              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 15;
+            // Compress image for PDF
+            const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+            
+            if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
+              throw new Error(`Compression failed for ${tabId}`);
             }
             
-            console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
+            // Check if screenshot fits on current page
+            if (yPosition + finalHeight > pageHeight - 40) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            
+            // Add the screenshot to PDF
+            pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+            yPosition += finalHeight + 20;
+            
+            console.log(`✅ Screenshot ${tabId} added to PDF successfully`);
             
           } catch (error) {
-            console.error('Error adding screenshot image:', error);
-            // Try fallback approach for problematic screenshots
-            try {
-              // Validate original image data before fallback
-              if (imageDataUrl && imageDataUrl.startsWith('data:image') && imageDataUrl.length > 100) {
-                pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, 170, 120);
-                yPosition += 135;
-                console.log(`Screenshot ${tabId} added with fallback method`);
-              } else {
-                throw new Error('Invalid image data for fallback');
-              }
-            } catch (fallbackError) {
-              console.error(`Failed to add ${tabId} screenshot even with fallback:`, fallbackError);
-              pdf.setFontSize(11);
-              pdf.setTextColor(150, 150, 150);
-              yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, pageWidth/2, yPosition, { align: 'center' });
-              yPosition += 25;
-            }
+            console.error(`Error adding screenshot for ${tabId}:`, error);
+            
+            // Simple fallback: add error message
+            pdf.setFontSize(12);
+            pdf.setTextColor(150, 150, 150);
+            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, pageWidth/2, yPosition, { align: 'center' });
+            yPosition += 30;
           }
         }
       }
