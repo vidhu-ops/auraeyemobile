@@ -1381,12 +1381,14 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        // Use adaptive scaling based on viewport size for optimal quality
+        // Optimized scaling for maximum image clarity (excluding chakras tab which should remain unchanged)
         let scaleUsed;
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5; // Lower scale for large screens to prevent memory issues
+        if (tabId === 'chakras') {
+          // Keep chakras tab unchanged as requested - use existing high quality settings
+          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5;
         } else {
-          scaleUsed = viewportWidth > 1400 ? 2.9 : 3.5;
+          // For other tabs: use optimized scaling to prevent blur and improve clarity
+          scaleUsed = viewportWidth > 1400 ? 2.0 : 2.5; // Reduced scaling for sharper, clearer images
         }
         
         const finalWidth = enhancedCaptureWidth * scaleUsed;
@@ -1600,9 +1602,12 @@ export default function AuraAnalysis() {
         // Wait for layout to stabilize
         await new Promise(resolve => setTimeout(resolve, 800));
 
+        // Optimized scale factor for different tabs to improve clarity
+        const optimizedScale = tabId === 'chakras' ? 3.5 : 2.8; // Lower scale for non-chakras tabs to prevent blur
+        
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 3.5, // Enhanced scale for all single captures
+          scale: optimizedScale, // Dynamic scale based on tab type
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1663,8 +1668,8 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG with 10% more compression  
-        const imageDataUrl = canvas.toDataURL('image/png', 0.95);
+        // Use high-quality PNG for maximum clarity in PDF
+        const imageDataUrl = canvas.toDataURL('image/png', 0.98); // Increased PNG quality for sharper images
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
@@ -1680,9 +1685,10 @@ export default function AuraAnalysis() {
           }
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
-          // Fallback to JPEG with 10% more compression
-          const jpegVersion = canvas.toDataURL('image/jpeg', 0.9);
-          if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
+          // Fallback to high-quality JPEG for better clarity
+          const jpegQuality = tabId === 'chakras' ? 0.95 : 0.92; // Higher quality for all tabs
+          const jpegVersion = canvas.toDataURL('image/jpeg', jpegQuality);
+          if (jpegVersion.length < 20 * 1024 * 1024) { // Increased fallback limit for better quality
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
           
@@ -1956,16 +1962,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // High quality compression for better image visibility in PDF
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Increased from 0.75 to 0.92 for better visibility
+                // Ultra high quality compression for maximum PDF image clarity
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Increased to 0.98 for maximum clarity
                 
                 // If still too large, reduce quality more gradually to maintain visibility
-                const maxSize = 10 * 1024 * 1024; // Increased from 6MB to 10MB to allow higher quality
+                const maxSize = 15 * 1024 * 1024; // Increased to 15MB to allow higher quality images
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85); // Higher quality fallback
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Very high quality fallback
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Still maintain good visibility
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.90); // Still maintain excellent visibility
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
