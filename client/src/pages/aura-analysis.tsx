@@ -1483,30 +1483,8 @@ export default function AuraAnalysis() {
     try {
       toast({
         title: "Generating PDF",
-        description: "Capturing all analysis tabs first, then creating your comprehensive report...",
+        description: "Creating your comprehensive aura analysis report with all sections...",
       });
-
-      // STEP 1: Auto-capture all analysis tabs before PDF generation
-      const allAnalysisTabs = ['energy-reading', 'spectrum', 'energy-map', 'detailed', 'chakras', 'combined'];
-      console.log('Auto-capturing all analysis tabs for PDF...');
-      
-      for (const tabId of allAnalysisTabs) {
-        if (!capturedScreenshots.has(tabId)) {
-          console.log(`Auto-capturing missing tab: ${tabId}`);
-          try {
-            await captureTabScreenshot(tabId);
-            // Small delay to ensure capture completes
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } catch (error) {
-            console.warn(`Failed to capture ${tabId}, continuing without it:`, error);
-          }
-        } else {
-          console.log(`Tab ${tabId} already captured, skipping`);
-        }
-      }
-      
-      console.log(`Total screenshots captured: ${capturedScreenshots.size}`);
-      console.log('Captured tabs:', Array.from(capturedScreenshots.keys()));
 
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
