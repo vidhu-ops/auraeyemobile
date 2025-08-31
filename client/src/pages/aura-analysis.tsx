@@ -1491,49 +1491,18 @@ export default function AuraAnalysis() {
         console.log('Auto-capturing chakras tab for PDF generation...');
         try {
           // First, ensure the chakras tab is active/visible
-          const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
-          if (chakrasTabTrigger) {
-            console.log('Clicking chakras tab trigger to activate tab');
-            chakrasTabTrigger.click();
-            // Wait for tab to become active and content to render
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } else {
-            console.warn('Chakras tab trigger not found, trying alternative selector');
-            // Alternative selector - try finding the tab trigger by text content
-            const allTabs = document.querySelectorAll('[role="tab"]');
-            for (const tab of allTabs) {
-              if (tab.textContent?.toLowerCase().includes('chakras')) {
-                console.log('Found chakras tab by text content, clicking...');
-                (tab as HTMLElement).click();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                break;
-              }
-            }
+          const chakrasTab = document.querySelector('[data-value="chakras"]') as HTMLElement;
+          if (chakrasTab) {
+            chakrasTab.click();
+            // Wait for tab to become active
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
           
           await captureTabScreenshot('chakras');
           console.log('Chakras tab captured successfully for PDF');
-          
-          // Verify the screenshot was actually captured
-          if (capturedScreenshots.has('chakras')) {
-            console.log('✅ Chakras tab screenshot confirmed in capturedScreenshots');
-          } else {
-            console.error('❌ Chakras tab screenshot NOT found in capturedScreenshots after capture');
-          }
         } catch (captureError) {
-          console.error('Failed to auto-capture chakras tab:', captureError);
-          // Try manual retry with different approach
-          try {
-            console.log('Attempting manual retry for chakras tab capture...');
-            setActiveTab('chakras');
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            await captureTabScreenshot('chakras');
-          } catch (retryError) {
-            console.error('Manual retry also failed:', retryError);
-          }
+          console.warn('Failed to auto-capture chakras tab:', captureError);
         }
-      } else {
-        console.log('Chakras tab already captured, proceeding with PDF generation');
       }
 
       // Test jsPDF initialization
