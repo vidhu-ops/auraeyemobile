@@ -1001,17 +1001,7 @@ export default function AuraAnalysis() {
         console.log(`- Client dimensions: ${htmlElement.clientWidth}x${htmlElement.clientHeight}`);
         console.log(`- Tab data attribute: ${htmlElement.getAttribute('data-tab')}`);
         console.log(`- Active tab state: ${activeTab}`);
-        
-        // Calculate the exact minimum width needed
-        const actualContentWidth = Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth);
-        console.log(`- Will use MINIMUM content width: ${actualContentWidth} (eliminates black areas)`);
-        
-        // Find the actual content container within the tab
-        const contentContainer = htmlElement.querySelector('.space-y-6, .space-y-4, .grid') as HTMLElement;
-        if (contentContainer) {
-          console.log(`- Content container found: ${contentContainer.offsetWidth}x${contentContainer.offsetHeight}`);
-          console.log(`- Container scroll: ${contentContainer.scrollWidth}x${contentContainer.scrollHeight}`);
-        }
+        console.log(`- Will use content width: ${Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800)} (prevents black areas)`);
       }
       const rect = htmlElement.getBoundingClientRect();
       
@@ -1154,9 +1144,9 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // For chakras, use exact content width to eliminate black areas completely
+          // For chakras, use actual content width to avoid black areas
           enhancedCaptureWidth = tabId === 'chakras' 
-            ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth) 
+            ? Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800) 
             : Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
@@ -1223,11 +1213,11 @@ export default function AuraAnalysis() {
             allowTaint: false,
             x: 0,
             y: startY,
-            width: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth) : enhancedCaptureWidth, // Use exact content width for chakras
+            width: tabId === 'chakras' ? htmlElement.scrollWidth : enhancedCaptureWidth, // Use actual content width for chakras
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth) : enhancedCaptureWidth, // Match exact content width
+            windowWidth: tabId === 'chakras' ? htmlElement.scrollWidth : enhancedCaptureWidth, // Match content width
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
@@ -1240,12 +1230,11 @@ export default function AuraAnalysis() {
                 elem.style.overflow = 'visible';
                 elem.style.height = 'auto';
                 elem.style.maxHeight = 'none';
-                // Special width handling for chakras tab to eliminate black areas completely
+                // Special width handling for chakras tab to prevent black areas
                 if (tabId === 'chakras') {
-                  elem.style.width = 'min-content';
-                  elem.style.maxWidth = 'min-content';
-                  elem.style.display = 'inline-block';
-                  elem.style.overflow = 'visible';
+                  elem.style.width = 'fit-content';
+                  elem.style.maxWidth = 'fit-content';
+                  elem.style.minWidth = '800px';
                 } else {
                   elem.style.width = 'auto';
                   elem.style.maxWidth = 'none';
@@ -1403,11 +1392,11 @@ export default function AuraAnalysis() {
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth) : captureWidth, // Use exact content width for chakras
+          width: tabId === 'chakras' ? htmlElement.scrollWidth : captureWidth, // Use actual content width for chakras
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, htmlElement.clientWidth) : captureWidth, // Match exact content width
+          windowWidth: tabId === 'chakras' ? htmlElement.scrollWidth : captureWidth, // Match content width
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
@@ -1426,12 +1415,11 @@ export default function AuraAnalysis() {
               elem.style.overflow = 'visible';
               elem.style.height = 'auto';
               elem.style.maxHeight = 'none';
-              // Special width handling for chakras tab to eliminate black areas completely
+              // Special width handling for chakras tab to prevent black areas
               if (tabId === 'chakras') {
-                elem.style.width = 'min-content';
-                elem.style.maxWidth = 'min-content';
-                elem.style.display = 'inline-block';
-                elem.style.overflow = 'visible';
+                elem.style.width = 'fit-content';
+                elem.style.maxWidth = 'fit-content';
+                elem.style.minWidth = '800px';
               } else {
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
