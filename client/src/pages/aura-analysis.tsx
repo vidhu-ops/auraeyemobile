@@ -969,9 +969,33 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      // Enhanced element selection for detailed chakras tab
+      let element: Element | null = null;
+      
+      if (tabId === 'chakras') {
+        // Special handling for detailed chakras tab (3rd tab)
+        element = document.querySelector('[data-tab="chakras"]') || 
+                 document.querySelector('[data-value="chakras"]') ||
+                 document.querySelector('[role="tabpanel"][data-state="active"]');
+        
+        // If still not found, try to find the active tab content
+        if (!element) {
+          const allTabPanels = document.querySelectorAll('[role="tabpanel"]');
+          // Try to get the 3rd tab panel (detailed chakras should be 3rd)
+          if (allTabPanels.length >= 3) {
+            element = allTabPanels[2]; // 0-indexed, so 2 = 3rd tab
+          } else if (allTabPanels.length > 0) {
+            // Fallback to active tab panel
+            element = document.querySelector('[role="tabpanel"][data-state="active"]') || allTabPanels[0];
+          }
+        }
+      } else {
+        // Standard element selection for other tabs
+        element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      }
+      
       if (!element) {
-        throw new Error('Tab content not found');
+        throw new Error(`Tab content not found for ${tabId}`);
       }
 
       const htmlElement = element as HTMLElement;
@@ -1490,25 +1514,46 @@ export default function AuraAnalysis() {
       if (!capturedScreenshots.has('chakras')) {
         console.log('Auto-capturing chakras tab for PDF generation...');
         try {
-          // First, ensure the chakras tab is active/visible
-          const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
-          if (chakrasTabTrigger) {
-            console.log('Clicking chakras tab trigger to activate tab');
-            chakrasTabTrigger.click();
-            // Wait for tab to become active and content to render
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } else {
-            console.warn('Chakras tab trigger not found, trying alternative selector');
-            // Alternative selector - try finding the tab trigger by text content
+          // First, ensure the detailed chakras tab is active/visible (3rd tab)
+          console.log('Searching for detailed chakras tab (3rd tab)...');
+          
+          // Try multiple selectors to find the detailed chakras tab
+          let chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
+          
+          if (!chakrasTabTrigger) {
+            // Alternative 1: Try data-value attribute
+            chakrasTabTrigger = document.querySelector('[data-value="chakras"]') as HTMLElement;
+          }
+          
+          if (!chakrasTabTrigger) {
+            // Alternative 2: Find by text content containing "Detailed" or "Chakras"
             const allTabs = document.querySelectorAll('[role="tab"]');
             for (const tab of allTabs) {
-              if (tab.textContent?.toLowerCase().includes('chakras')) {
-                console.log('Found chakras tab by text content, clicking...');
-                (tab as HTMLElement).click();
-                await new Promise(resolve => setTimeout(resolve, 1000));
+              const tabText = tab.textContent?.toLowerCase() || '';
+              if (tabText.includes('detailed') && tabText.includes('chakras')) {
+                console.log('Found detailed chakras tab by text content:', tabText);
+                chakrasTabTrigger = tab as HTMLElement;
                 break;
               }
             }
+          }
+          
+          if (!chakrasTabTrigger) {
+            // Alternative 3: Try the 3rd tab (index 2)
+            const allTabs = document.querySelectorAll('[role="tab"]');
+            if (allTabs.length >= 3) {
+              console.log('Using 3rd tab as detailed chakras tab');
+              chakrasTabTrigger = allTabs[2] as HTMLElement;
+            }
+          }
+          
+          if (chakrasTabTrigger) {
+            console.log('Clicking detailed chakras tab to activate...');
+            chakrasTabTrigger.click();
+            // Wait for tab to become active and content to render
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          } else {
+            console.warn('Detailed chakras tab trigger not found with any selector');
           }
           
           await captureTabScreenshot('chakras');
@@ -2011,10 +2056,31 @@ export default function AuraAnalysis() {
       console.log(`Capturedscreenshots size: ${capturedScreenshots.size}`);
       console.log(`Available screenshots:`, Array.from(capturedScreenshots.keys()));
       
-      // Force chakras tab capture if missing
+      // Force detailed chakras tab capture if missing
       if (!capturedScreenshots.has('chakras')) {
-        console.log('Chakras tab missing from captured screenshots, attempting auto-capture...');
-        await captureTabScreenshot('chakras');
+        console.log('Detailed chakras tab missing from captured screenshots, attempting auto-capture...');
+        try {
+          // Make sure we're clicking the right tab first
+          const detailedChakrasTab = document.querySelector('[role="tab"]');
+          const allTabs = document.querySelectorAll('[role="tab"]');
+          
+          // Find and click the detailed chakras tab (should be 3rd tab)
+          for (let i = 0; i < allTabs.length; i++) {
+            const tab = allTabs[i] as HTMLElement;
+            const tabText = tab.textContent?.toLowerCase() || '';
+            if ((tabText.includes('detailed') && tabText.includes('chakras')) || i === 2) {
+              console.log(`Clicking tab ${i + 1} for detailed chakras capture`);
+              tab.click();
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              break;
+            }
+          }
+          
+          await captureTabScreenshot('chakras');
+          console.log('Detailed chakras tab capture completed');
+        } catch (error) {
+          console.error('Failed to auto-capture detailed chakras tab:', error);
+        }
       }
       
       if (capturedScreenshots.size > 0) {
