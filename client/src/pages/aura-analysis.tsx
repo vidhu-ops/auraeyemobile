@@ -1509,8 +1509,8 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // CRITICAL FIX: Ensure detailed chakras tab and other essential tabs are always captured for PDF
-      const essentialTabs = ['chakras', 'analysis', 'energy-map'];
+      // CRITICAL FIX: Ensure essential tabs are always captured for PDF (excluding detailed chakras tab - only manual capture)
+      const essentialTabs = ['analysis', 'energy-map'];
       
       for (const tabId of essentialTabs) {
         if (!capturedScreenshots.has(tabId)) {
@@ -2116,7 +2116,7 @@ export default function AuraAnalysis() {
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
               // Validate image data before adding to PDF
-              if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
+              if (!compressedImageDataUrl || compressedImageDataUrl.length < 100 || !compressedImageDataUrl.startsWith('data:image')) {
                 throw new Error(`Invalid compressed image data for ${tabId}`);
               }
               
@@ -2131,10 +2131,14 @@ export default function AuraAnalysis() {
             console.error('Error adding screenshot image:', error);
             // Try fallback approach for problematic screenshots
             try {
-              // Simple fallback with basic dimensions
-              pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, 170, 120);
-              yPosition += 135;
-              console.log(`Screenshot ${tabId} added with fallback method`);
+              // Validate original image data before fallback
+              if (imageDataUrl && imageDataUrl.startsWith('data:image') && imageDataUrl.length > 100) {
+                pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, 170, 120);
+                yPosition += 135;
+                console.log(`Screenshot ${tabId} added with fallback method`);
+              } else {
+                throw new Error('Invalid image data for fallback');
+              }
             } catch (fallbackError) {
               console.error(`Failed to add ${tabId} screenshot even with fallback:`, fallbackError);
               pdf.setFontSize(11);
