@@ -971,23 +971,55 @@ export default function AuraAnalysis() {
     try {
       console.log(`🔍 Looking for tab content with tabId: ${tabId}`);
       
-      // Multiple selector attempts to ensure we find the chakras tab
-      let element = document.querySelector(`[data-tab="${tabId}"]`);
+      // Enhanced robust selector logic for all screen sizes and window contexts
+      let element = null;
       
-      if (!element) {
-        // Alternative selector - try by attribute value combination
-        element = document.querySelector(`[data-value="${tabId}"][data-tab="${tabId}"]`);
-        console.log(`🔍 Trying alternative selector [data-value="${tabId}"][data-tab="${tabId}"]`);
+      // Try multiple selector strategies to find the tab content
+      const selectors = [
+        `[data-tab="${tabId}"]`,
+        `[data-value="${tabId}"]`,
+        `[data-tab="${tabId}"][data-state="active"]`,
+        `[data-value="${tabId}"][data-state="active"]`,
+        `.tabcontent[data-tab="${tabId}"]`,
+        `#${tabId}-tab`,
+        `#${tabId}`,
+        `[id*="${tabId}"]`,
+        `[class*="${tabId}"]`
+      ];
+      
+      for (const selector of selectors) {
+        element = document.querySelector(selector);
+        if (element) {
+          console.log(`✅ Found element using selector: ${selector}`);
+          break;
+        }
+        console.log(`🔍 Selector failed: ${selector}`);
       }
       
+      // Special handling for chakras tab - check if it's currently active
+      if (!element && tabId === 'chakras') {
+        // Look for any active tab content that might be the chakras tab
+        const activeTabs = document.querySelectorAll('[data-state="active"]');
+        for (const tab of activeTabs) {
+          const tabElement = tab as HTMLElement;
+          if (tabElement.textContent?.toLowerCase().includes('chakra') ||
+              tabElement.innerHTML?.includes('chakra') ||
+              tabElement.className?.includes('chakra')) {
+            element = tabElement;
+            console.log(`🎯 Found chakras tab through content analysis`);
+            break;
+          }
+        }
+      }
+      
+      // Ultimate fallback - find the currently active tab
       if (!element) {
-        // Final fallback - find the active tab content
         element = document.querySelector('[data-state="active"]');
-        console.log(`🔍 Falling back to active tab selector`);
+        console.log(`🔍 Using active tab as fallback`);
       }
       
       if (!element) {
-        console.error(`❌ No element found for tabId: ${tabId}`);
+        console.error(`❌ No element found for tabId: ${tabId} after trying all selectors`);
         throw new Error(`Tab content not found for ${tabId}`);
       }
       
@@ -1290,15 +1322,25 @@ export default function AuraAnalysis() {
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
-        // Draw each section onto the combined canvas
+        // Draw each section onto the combined canvas with proper error handling
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
-          img.src = screenshots[i];
-          await new Promise((resolve) => {
+          await new Promise((resolve, reject) => {
             img.onload = () => {
-              ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
-              resolve(true);
+              try {
+                ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
+                console.log(`✅ Section ${i + 1} drawn to combined canvas`);
+                resolve(true);
+              } catch (error) {
+                console.error(`❌ Failed to draw section ${i + 1}:`, error);
+                reject(error);
+              }
             };
+            img.onerror = (error) => {
+              console.error(`❌ Failed to load section ${i + 1} image:`, error);
+              reject(error);
+            };
+            img.src = screenshots[i];
           });
         }
         
@@ -1308,16 +1350,37 @@ export default function AuraAnalysis() {
         
         // Higher size limits for better image quality and visibility in PDFs
         const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 28 * 1024 * 1024 : 18 * 1024 * 1024; // Increased for better quality
-        if (combinedImageDataUrl.length < sizeLimit) {
+        // Verify the combined image has valid data before storing
+        if (combinedImageDataUrl.length > 1000 && combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Special verification for chakras tab
+          if (tabId === 'chakras') {
+            console.log(`🎯 CHAKRAS TAB: Multi-section screenshot successfully stored`);
+            console.log(`🎯 CHAKRAS TAB: Image data length:`, combinedImageDataUrl.length);
+            console.log(`🎯 CHAKRAS TAB: Canvas dimensions:`, combinedCanvas.width, 'x', combinedCanvas.height);
+          }
+        } else if (combinedImageDataUrl.length <= 1000) {
+          console.error(`❌ Combined image data is too small (${combinedImageDataUrl.length} bytes), likely invalid`);
+          // Try fallback with different approach
+          const fallbackImageUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
+          if (fallbackImageUrl.length > 1000) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, fallbackImageUrl));
+            console.log(`✅ ${tabId} screenshot captured with fallback method: ${(fallbackImageUrl.length / 1024 / 1024).toFixed(2)} MB`);
+          }
         } else {
           console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
           // Fallback to JPEG with 10% more compression
           const jpegVersion = combinedCanvas.toDataURL('image/jpeg', 0.9);
-          if (jpegVersion.length < 20 * 1024 * 1024) { // Higher fallback limit
+          if (jpegVersion.length > 1000 && jpegVersion.length < 20 * 1024 * 1024) { // Higher fallback limit with validity check
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+            
+            // Special verification for chakras tab
+            if (tabId === 'chakras') {
+              console.log(`🎯 CHAKRAS TAB: JPEG screenshot successfully stored`);
+            }
           } else {
             console.error(`❌ ${tabId} screenshot too large even with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
           }
@@ -1566,12 +1629,35 @@ export default function AuraAnalysis() {
             setActiveTab('chakras');
             await new Promise(resolve => setTimeout(resolve, 1500));
             await captureTabScreenshot('chakras');
+            
+            // Final verification after retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (!capturedScreenshots.has('chakras')) {
+              console.error('❌ CRITICAL: Chakras tab still not captured after retry');
+              // Force one more capture attempt with the active tab
+              console.log('🔧 Forcing final capture attempt...');
+              const activeTabContent = document.querySelector('[data-state="active"]');
+              if (activeTabContent) {
+                console.log('Found active tab content, attempting direct capture...');
+                await captureTabScreenshot('chakras');
+              }
+            }
           } catch (retryError) {
             console.error('Manual retry also failed:', retryError);
           }
         }
       } else {
         console.log('Chakras tab already captured, proceeding with PDF generation');
+        // Double-check that the screenshot is valid
+        const chakrasScreenshot = capturedScreenshots.get('chakras');
+        if (!chakrasScreenshot || chakrasScreenshot.length < 1000) {
+          console.warn('🔧 Chakras screenshot exists but appears invalid, re-capturing...');
+          try {
+            await captureTabScreenshot('chakras');
+          } catch (recaptureError) {
+            console.error('Failed to re-capture chakras tab:', recaptureError);
+          }
+        }
       }
 
       // Test jsPDF initialization
