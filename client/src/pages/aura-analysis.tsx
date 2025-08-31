@@ -1386,21 +1386,41 @@ export default function AuraAnalysis() {
         if (tabId === 'chakras') {
           // Keep chakras tab unchanged as requested - use existing high quality settings
           scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5;
+        } else if (tabId === 'guidance') {
+          // 2x increase for guidance tab for better visibility
+          scaleUsed = viewportWidth > 1400 ? 4.0 : 5.0; // Doubled scaling for guidance tab
         } else {
           // For other tabs: use optimized scaling to prevent blur and improve clarity
           scaleUsed = viewportWidth > 1400 ? 2.0 : 2.5; // Reduced scaling for sharper, clearer images
         }
         
         const finalWidth = enhancedCaptureWidth * scaleUsed;
-        const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
+        // Calculate total height based on actual screenshot sections to prevent overlapping
+        let totalHeight = 0;
         
-        console.log(`🎨 Canvas dimensions: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x, viewport: ${viewportWidth}px)`);
+        // Pre-calculate total height from all screenshot sections
+        for (let i = 0; i < screenshots.length; i++) {
+          const tempImg = new Image();
+          tempImg.src = screenshots[i];
+          await new Promise((resolve) => {
+            tempImg.onload = () => {
+              totalHeight += tempImg.height;
+              resolve(true);
+            };
+          });
+        }
+        
+        const finalHeight = totalHeight || (screenshots.length * (sectionHeight * scaleUsed));
+        
+        console.log(`🎨 Canvas dimensions: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x, viewport: ${viewportWidth}px, totalHeight: ${totalHeight}px)`);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
         // Draw each section onto the combined canvas with enhanced error handling and validation
         console.log(`🎨 Starting to combine ${screenshots.length} sections into final canvas`);
+        
+        let currentYPosition = 0; // Track running Y position to prevent overlapping
         
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
@@ -1415,13 +1435,15 @@ export default function AuraAnalysis() {
           await new Promise((resolve, reject) => {
             img.onload = () => {
               try {
-                const yPosition = i * (sectionHeight * scaleUsed);
-                console.log(`🎨 Drawing section ${i + 1}: ${img.width}x${img.height} at position y=${yPosition}`);
+                console.log(`🎨 Drawing section ${i + 1}: ${img.width}x${img.height} at position y=${currentYPosition}`);
                 
                 // Ensure the draw operation is valid
                 if (img.width > 0 && img.height > 0) {
-                  ctx.drawImage(img, 0, yPosition, img.width, img.height);
+                  ctx.drawImage(img, 0, currentYPosition, img.width, img.height);
                   console.log(`✅ Section ${i + 1} drawn to combined canvas successfully`);
+                  
+                  // Update Y position for next section
+                  currentYPosition += img.height;
                 } else {
                   console.error(`❌ Section ${i + 1} has invalid dimensions: ${img.width}x${img.height}`);
                 }
@@ -1603,7 +1625,14 @@ export default function AuraAnalysis() {
         await new Promise(resolve => setTimeout(resolve, 800));
 
         // Optimized scale factor for different tabs to improve clarity
-        const optimizedScale = tabId === 'chakras' ? 3.5 : 2.8; // Lower scale for non-chakras tabs to prevent blur
+        let optimizedScale;
+        if (tabId === 'chakras') {
+          optimizedScale = 3.5; // Keep chakras unchanged
+        } else if (tabId === 'guidance') {
+          optimizedScale = 5.6; // 2x increase for guidance tab (2.8 * 2 = 5.6)
+        } else {
+          optimizedScale = 2.8; // Standard scale for other tabs
+        }
         
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
@@ -1673,7 +1702,14 @@ export default function AuraAnalysis() {
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 22 * 1024 * 1024 : 15 * 1024 * 1024; // Increased for better quality
+        let singleSizeLimit;
+        if (tabId === 'guidance') {
+          singleSizeLimit = 35 * 1024 * 1024; // Higher limit for 2x sized guidance tab
+        } else if (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') {
+          singleSizeLimit = 22 * 1024 * 1024; // Standard high quality limit
+        } else {
+          singleSizeLimit = 15 * 1024 * 1024; // Default limit
+        }
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
