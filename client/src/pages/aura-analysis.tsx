@@ -1486,22 +1486,26 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // Auto-capture chakras tab if not already captured
-      if (!capturedScreenshots.has('chakras')) {
-        console.log('Auto-capturing chakras tab for PDF generation...');
-        try {
-          // First, ensure the chakras tab is active/visible
-          const chakrasTab = document.querySelector('[data-value="chakras"]') as HTMLElement;
-          if (chakrasTab) {
-            chakrasTab.click();
-            // Wait for tab to become active
-            await new Promise(resolve => setTimeout(resolve, 500));
+      // Auto-capture all important tabs for comprehensive PDF
+      const keyTabsToCapture = ['chakras', 'detailed', 'guidance', 'analysis'];
+      
+      for (const tabId of keyTabsToCapture) {
+        if (!capturedScreenshots.has(tabId)) {
+          console.log(`Auto-capturing ${tabId} tab for PDF generation...`);
+          try {
+            // First, ensure the tab is active/visible
+            const tabElement = document.querySelector(`[data-value="${tabId}"]`) as HTMLElement;
+            if (tabElement) {
+              tabElement.click();
+              // Wait for tab to become active and content to load
+              await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            await captureTabScreenshot(tabId);
+            console.log(`${tabId} tab captured successfully for PDF`);
+          } catch (captureError) {
+            console.warn(`Failed to auto-capture ${tabId} tab:`, captureError);
           }
-          
-          await captureTabScreenshot('chakras');
-          console.log('Chakras tab captured successfully for PDF');
-        } catch (captureError) {
-          console.warn('Failed to auto-capture chakras tab:', captureError);
         }
       }
 
@@ -2054,13 +2058,33 @@ export default function AuraAnalysis() {
                 // Create a canvas to extract this section
                 const sectionCanvas = document.createElement('canvas');
                 const sectionCtx = sectionCanvas.getContext('2d');
+                
+                if (!sectionCtx) {
+                  console.error(`Failed to get canvas context for ${tabId} section ${section + 1}`);
+                  continue;
+                }
+                
                 sectionCanvas.width = originalWidth;
                 sectionCanvas.height = sectionImageHeight;
                 
-                // Draw the section of the image
-                sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
+                // Configure high-quality rendering
+                sectionCtx.imageSmoothingEnabled = true;
+                sectionCtx.imageSmoothingQuality = 'high';
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
+                // Fill with white background
+                sectionCtx.fillStyle = 'white';
+                sectionCtx.fillRect(0, 0, sectionCanvas.width, sectionCanvas.height);
+                
+                // Draw the specific section of the image
+                sectionCtx.drawImage(
+                  tempImg,
+                  0, sectionStartY, // Source x, y
+                  originalWidth, sectionImageHeight, // Source width, height
+                  0, 0, // Destination x, y
+                  originalWidth, sectionImageHeight // Destination width, height
+                );
+                
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.9);
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -2081,12 +2105,28 @@ export default function AuraAnalysis() {
                 
                 // Section titles removed for continuous image flow as requested
                 
+                // Validate section data before compression
+                if (!sectionDataUrl || sectionDataUrl.length < 100) {
+                  console.error(`Invalid section data for ${tabId} section ${section + 1}`);
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(150, 150, 150);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be generated`, 20, yPosition);
+                  yPosition += 15;
+                  continue;
+                }
+                
                 // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  
+                  // Double-check compressed data is valid
+                  if (!compressedSectionDataUrl || compressedSectionDataUrl.length < 100) {
+                    throw new Error(`Compression failed for ${tabId} section ${section + 1}`);
+                  }
+                  
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   yPosition += sectionFinalHeight + 10;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${(compressedSectionDataUrl.length / 1024 / 1024).toFixed(2)}MB)`);
                 } catch (sectionError) {
                   console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
                   // Add placeholder text for failed section
@@ -2151,7 +2191,11 @@ export default function AuraAnalysis() {
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
             
           } catch (error) {
-            console.error('Error adding screenshot image:', error);
+            console.error(`Error processing screenshot for ${tabId}:`, error);
+            // Add placeholder text for failed screenshot
+            pdf.setFontSize(12);
+            pdf.setTextColor(150, 150, 150);
+            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} analysis content could not be embedded as image`, 20, yPosition);
             yPosition += 25;
           }
         }
