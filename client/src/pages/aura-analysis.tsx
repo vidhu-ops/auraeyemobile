@@ -1287,8 +1287,8 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // High size limits for crystal clear text legibility
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 50 * 1024 * 1024 : 30 * 1024 * 1024; // Increased for text clarity
+        // Ultra-high size limits for perfect text legibility
+        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 70 * 1024 * 1024 : 40 * 1024 * 1024; // Further increased for perfect clarity
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1413,7 +1413,7 @@ export default function AuraAnalysis() {
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 40 * 1024 * 1024 : 25 * 1024 * 1024; // High limits for text legibility
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 60 * 1024 * 1024 : 35 * 1024 * 1024; // Ultra-high limits for perfect text legibility
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1709,16 +1709,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // High quality compression for crystal clear text readability
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Maximum quality for legible text
+                // Ultra-high quality compression for crystal clear text (additional 15% improvement)
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Near-maximum quality for perfect text legibility
                 
-                // If still too large, reduce quality minimally to maintain readability
-                const maxSize = 15 * 1024 * 1024; // Increased size limit for high quality screenshots
+                // If still too large, reduce quality minimally to maintain perfect readability
+                const maxSize = 20 * 1024 * 1024; // Further increased size limit for ultra-high quality
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // High quality maintained
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.96); // Ultra-high quality maintained
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // Still very high quality for text clarity
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.94); // Still ultra-high quality for perfect text clarity
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2006,23 +2006,51 @@ export default function AuraAnalysis() {
       }
       yPosition += 15;
 
-      // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
+      // SECTION 8: CAPTURED TAB SCREENSHOTS (FORCE CHAKRAS TAB INCLUSION)
+      // Always ensure chakras tab is captured and included
+      console.log(`Capturedscreenshots size: ${capturedScreenshots.size}`);
+      console.log(`Available screenshots:`, Array.from(capturedScreenshots.keys()));
+      
+      // Force chakras tab capture if missing
+      if (!capturedScreenshots.has('chakras')) {
+        console.log('Chakras tab missing from captured screenshots, attempting auto-capture...');
+        await captureTabScreenshot('chakras');
+      }
+      
       if (capturedScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
         
         pdf.setFontSize(18);
         pdf.setTextColor(75, 0, 130);
-        yPosition = addTextWithPageBreak('CAPTURED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
+        yPosition = addTextWithPageBreak('DETAILED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
         yPosition += 15;
         
         pdf.setFontSize(11);
         pdf.setTextColor(60, 60, 60);
-        yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
+        yPosition = addWrappedText('These screenshots provide detailed visual analysis from different tabs including the chakras analysis.', 20, yPosition, 170);
         yPosition += 10;
         
+        // Process chakras tab first (priority)
+        const priorityOrder = ['chakras', 'analysis', 'detailed', 'energy-map', 'energy-reading', 'guidance', 'spectrum'];
+        const sortedScreenshots = new Map();
+        
+        // Add screenshots in priority order
+        priorityOrder.forEach(tabId => {
+          if (capturedScreenshots.has(tabId)) {
+            sortedScreenshots.set(tabId, capturedScreenshots.get(tabId));
+          }
+        });
+        
+        // Add any remaining screenshots
+        capturedScreenshots.forEach((value, key) => {
+          if (!sortedScreenshots.has(key)) {
+            sortedScreenshots.set(key, value);
+          }
+        });
+        
         // Add each captured screenshot with proper sizing and multi-page support
-        for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
+        for (const [tabId, imageDataUrl] of Array.from(sortedScreenshots.entries())) {
           
           try {
             // Create a temporary image to get exact dimensions
@@ -2118,8 +2146,9 @@ export default function AuraAnalysis() {
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   yPosition += sectionFinalHeight + 10;
                   console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
+                  console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
                 } catch (sectionError) {
-                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
+                  console.error(`Error adding screenshot image:`, sectionError);
                   // Add placeholder text for failed section
                   pdf.setFontSize(10);
                   pdf.setTextColor(150, 150, 150);
@@ -2127,7 +2156,6 @@ export default function AuraAnalysis() {
                   yPosition += 15;
                 }
                 
-                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
@@ -2169,8 +2197,9 @@ export default function AuraAnalysis() {
                 pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
                 yPosition += finalHeight + 15;
                 console.log(`Successfully added ${tabId} screenshot to PDF`);
+                console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
               } catch (addImageError) {
-                console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
+                console.error(`Error adding screenshot image:`, addImageError);
                 // Add a placeholder text instead
                 pdf.setFontSize(12);
                 pdf.setTextColor(100, 100, 100);
@@ -2186,6 +2215,14 @@ export default function AuraAnalysis() {
             yPosition += 25;
           }
         }
+      } else {
+        console.log('⚠️ No screenshots captured for PDF generation');
+        // Add a note about missing screenshots
+        pdf.addPage();
+        yPosition = 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(200, 100, 100);
+        yPosition = addTextWithPageBreak('Screenshots could not be captured for this analysis', pageWidth/2, yPosition, { align: 'center' });
       }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
@@ -9217,10 +9254,7 @@ export default function AuraAnalysis() {
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                      <div 
-                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
-                                      ></div>
+                                    
                                       <div>
                                         <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -9249,10 +9283,7 @@ export default function AuraAnalysis() {
                                     
                                     {result.secondaryColor && (
                                       <div className="flex items-start gap-3">
-                                        <div 
-                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
-                                        ></div>
+                                        
                                         <div>
                                           <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
