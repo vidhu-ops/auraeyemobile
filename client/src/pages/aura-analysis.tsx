@@ -1092,17 +1092,22 @@ export default function AuraAnalysis() {
       // Get viewport dimensions for proper sizing reference
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
+      console.log(`📏 Viewport dimensions: ${viewportWidth}x${viewportHeight}`);
+      console.log(`📏 Element rect: ${rect.width}x${rect.height}`);
       
-      // Calculate the full scrollable content size with 15% width increase as requested
+      // Calculate the full scrollable content size with enhanced width for full-screen windows
       const baseContentWidth = Math.max(
         htmlElement.scrollWidth,
         htmlElement.offsetWidth,
         htmlElement.clientWidth,
-        rect.width
+        rect.width,
+        viewportWidth * 0.9 // Ensure we capture at least 90% of viewport width
       );
       
-      // Increase width by 15% for better readability and visibility
-      const contentWidth = Math.floor(baseContentWidth * 1.15);
+      // For full-screen windows, use a more generous width increase
+      const widthMultiplier = viewportWidth > 1400 ? 1.25 : 1.15; // 25% increase for full-screen
+      const contentWidth = Math.floor(baseContentWidth * widthMultiplier);
+      console.log(`📏 Content width calculation: base=${baseContentWidth}, final=${contentWidth} (${widthMultiplier}x multiplier)`);
       
       // Ensure comprehensive content height capture for all tabs
       let contentHeight = Math.max(
@@ -1376,9 +1381,18 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.5 : 3.5;
+        // Use adaptive scaling based on viewport size for optimal quality
+        let scaleUsed;
+        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
+          scaleUsed = viewportWidth > 1400 ? 3.5 : 4.5; // Lower scale for large screens to prevent memory issues
+        } else {
+          scaleUsed = viewportWidth > 1400 ? 2.5 : 3.5;
+        }
+        
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
+        
+        console.log(`🎨 Canvas dimensions: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x, viewport: ${viewportWidth}px)`);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
@@ -1433,7 +1447,7 @@ export default function AuraAnalysis() {
         
         console.log(`🎨 All sections combined. Final canvas: ${combinedCanvas.width}x${combinedCanvas.height}`);
         
-        // Ensure canvas has valid content before converting to data URL
+        // Enhanced canvas validation and recovery for reliable image generation
         const hasContent = screenshots.length > 0 && combinedCanvas.width > 0 && combinedCanvas.height > 0;
         console.log(`Canvas validation: hasContent=${hasContent}, sections=${screenshots.length}, width=${combinedCanvas.width}, height=${combinedCanvas.height}`);
         
@@ -1441,11 +1455,47 @@ export default function AuraAnalysis() {
           throw new Error(`Invalid canvas state: sections=${screenshots.length}, dimensions=${combinedCanvas.width}x${combinedCanvas.height}`);
         }
         
+        // Verify canvas context and content
+        const imageData = ctx.getImageData(0, 0, Math.min(100, combinedCanvas.width), Math.min(100, combinedCanvas.height));
+        const hasPixelData = imageData.data.some(pixel => pixel !== 0);
+        console.log(`Canvas pixel validation: hasPixelData=${hasPixelData}`);
+        
+        if (!hasPixelData) {
+          console.error('❌ Canvas appears empty, attempting recovery...');
+          // Clear and rebuild canvas
+          ctx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+          
+          // Redraw all sections with error recovery
+          for (let i = 0; i < screenshots.length; i++) {
+            const img = new Image();
+            img.src = screenshots[i];
+            await new Promise((resolve) => {
+              img.onload = () => {
+                const yPosition = i * (sectionHeight * scaleUsed);
+                try {
+                  ctx.drawImage(img, 0, yPosition);
+                  console.log(`🔧 Recovery: Section ${i + 1} redrawn successfully`);
+                } catch (drawError) {
+                  console.error(`🔧 Recovery failed for section ${i + 1}:`, drawError);
+                }
+                resolve(true);
+              };
+            });
+          }
+        }
+        
         // Use PNG with higher quality for better PDF visibility
         let combinedImageDataUrl;
         try {
           combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.95);
           console.log(`Canvas toDataURL successful: ${combinedImageDataUrl.length} bytes`);
+          
+          // Final validation - ensure we have a valid image
+          if (combinedImageDataUrl.length < 1000) {
+            console.error('❌ Generated image too small, trying JPEG fallback');
+            combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
+            console.log(`JPEG fallback result: ${combinedImageDataUrl.length} bytes`);
+          }
         } catch (canvasError) {
           console.error('Canvas toDataURL failed, trying JPEG:', canvasError);
           combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
@@ -1648,13 +1698,8 @@ export default function AuraAnalysis() {
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
       }
       
-      // Final verification for chakras tab
-      if (tabId === 'chakras') {
-        setTimeout(() => {
-          console.log(`🎯 CHAKRAS TAB FINAL CHECK: Is in capturedScreenshots?`, capturedScreenshots.has('chakras'));
-          console.log(`🎯 CHAKRAS TAB FINAL CHECK: All captured tabs:`, Array.from(capturedScreenshots.keys()));
-        }, 500);
-      }
+      // Note: Removed immediate state check due to React async state updates
+      // The screenshot is properly stored as shown in the functional state update logs above
       
       toast({
         title: "Screenshot Captured",
