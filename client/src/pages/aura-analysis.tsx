@@ -965,105 +965,16 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Function to crop canvas and remove black/transparent areas
-  const cropCanvasToContent = (canvas: HTMLCanvasElement): HTMLCanvasElement => {
-    const ctx = canvas.getContext('2d')!;
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    
-    let minX = canvas.width;
-    let minY = canvas.height;
-    let maxX = 0;
-    let maxY = 0;
-    
-    // Find the bounds of non-transparent and non-black pixels
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const index = (y * canvas.width + x) * 4;
-        const r = data[index];
-        const g = data[index + 1];
-        const b = data[index + 2];
-        const a = data[index + 3];
-        
-        // Check if pixel is not transparent and not pure black
-        if (a > 0 && !(r === 0 && g === 0 && b === 0)) {
-          minX = Math.min(minX, x);
-          minY = Math.min(minY, y);
-          maxX = Math.max(maxX, x);
-          maxY = Math.max(maxY, y);
-        }
-      }
-    }
-    
-    // If no content found, return the original canvas
-    if (minX >= maxX || minY >= maxY) {
-      return canvas;
-    }
-    
-    // Add small padding to ensure content isn't too tight
-    const padding = 10;
-    minX = Math.max(0, minX - padding);
-    minY = Math.max(0, minY - padding);
-    maxX = Math.min(canvas.width, maxX + padding);
-    maxY = Math.min(canvas.height, maxY + padding);
-    
-    // Create cropped canvas
-    const croppedCanvas = document.createElement('canvas');
-    const croppedCtx = croppedCanvas.getContext('2d')!;
-    const croppedWidth = maxX - minX;
-    const croppedHeight = maxY - minY;
-    
-    croppedCanvas.width = croppedWidth;
-    croppedCanvas.height = croppedHeight;
-    
-    // Fill with white background
-    croppedCtx.fillStyle = '#ffffff';
-    croppedCtx.fillRect(0, 0, croppedWidth, croppedHeight);
-    
-    // Copy the cropped content
-    croppedCtx.drawImage(canvas, minX, minY, croppedWidth, croppedHeight, 0, 0, croppedWidth, croppedHeight);
-    
-    return croppedCanvas;
-  };
-
   // Enhanced screenshot capture function with 15% increased width and improved quality
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      console.log(`🎯 Starting ${tabId} screenshot capture`);
-      
-      // CRITICAL: Ensure we're on the correct tab before capturing
-      if (activeTab !== tabId) {
-        console.log(`🔄 Switching from ${activeTab} to ${tabId} tab`);
-        setActiveTab(tabId);
-        // Extended wait for chakras tab due to complex content
-        const waitTime = tabId === 'chakras' ? 1500 : 1000;
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-        console.log(`✅ Tab switch completed, waiting ${waitTime}ms for ${tabId} content`);
-      }
-      
       const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
       if (!element) {
-        console.error(`❌ Tab element not found for ${tabId}`);
-        throw new Error(`Tab content not found for ${tabId}`);
+        throw new Error('Tab content not found');
       }
-      
-      console.log(`✅ Found ${tabId} element, proceeding with capture...`);
 
       const htmlElement = element as HTMLElement;
-      
-      // Special chakras tab debugging
-      if (tabId === 'chakras') {
-        console.log(`🔍 CHAKRAS TAB DEBUG:`);
-        console.log(`- Element found: ${!!htmlElement}`);
-        console.log(`- Element visible: ${htmlElement.offsetWidth > 0 && htmlElement.offsetHeight > 0}`);
-        console.log(`- Element dimensions: ${htmlElement.offsetWidth}x${htmlElement.offsetHeight}`);
-        console.log(`- Scroll dimensions: ${htmlElement.scrollWidth}x${htmlElement.scrollHeight}`);
-        console.log(`- Client dimensions: ${htmlElement.clientWidth}x${htmlElement.clientHeight}`);
-        console.log(`- Tab data attribute: ${htmlElement.getAttribute('data-tab')}`);
-        console.log(`- Active tab state: ${activeTab}`);
-        console.log(`- Will use content width: ${Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800)} (prevents black areas)`);
-      }
       const rect = htmlElement.getBoundingClientRect();
       
       // Get viewport dimensions for proper sizing reference
@@ -1173,13 +1084,9 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Enhanced capture width - use optimal content width for chakras tab
-      const baseCaptureWidth = tabId === 'chakras' 
-        ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, viewportWidth, 1000) // Use minimal content width for chakras
-        : Math.max(viewportWidth, contentWidth, 1200);
-      const captureWidth = tabId === 'chakras' 
-        ? baseCaptureWidth // Use exact content width for chakras to prevent black areas
-        : Math.floor(baseCaptureWidth * 1.15); // 15% width increase for other tabs
+      // Enhanced capture width with 15% increase for better readability and minimum thresholds
+      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, 1200);
+      const captureWidth = Math.floor(baseCaptureWidth * 1.15); // 15% width increase as requested
       
       // Enhanced section thresholds for better PDF quality - force multi-section for long content
       const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
@@ -1205,10 +1112,8 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // For chakras, use minimal content width to avoid black areas
-          enhancedCaptureWidth = tabId === 'chakras' 
-            ? Math.min(htmlElement.scrollWidth, htmlElement.offsetWidth, viewportWidth, 900) 
-            : Math.floor(captureWidth * 1.25);
+          // Additional 25% width increase for critical tabs text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
@@ -1268,17 +1173,17 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0, // Optimized scale for chakras tab
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
             logging: false,
             useCORS: true,
             allowTaint: false,
             x: 0,
             y: startY,
-            width: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Constrained content width
+            width: enhancedCaptureWidth,
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Match constrained width
+            windowWidth: enhancedCaptureWidth,
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
@@ -1291,35 +1196,8 @@ export default function AuraAnalysis() {
                 elem.style.overflow = 'visible';
                 elem.style.height = 'auto';
                 elem.style.maxHeight = 'none';
-                // Force white background and proper layout for all tabs
-                elem.style.backgroundColor = '#ffffff';
-                elem.style.width = '100%';
-                elem.style.margin = '0';
-                elem.style.padding = '20px';
-                elem.style.boxSizing = 'border-box';
-                
-                // Set comprehensive white background for entire document
-                const clonedDoc_html = clonedDoc.documentElement;
-                const clonedBody = clonedDoc.body;
-                if (clonedDoc_html) {
-                  clonedDoc_html.style.backgroundColor = '#ffffff';
-                  clonedDoc_html.style.margin = '0';
-                  clonedDoc_html.style.padding = '0';
-                }
-                if (clonedBody) {
-                  clonedBody.style.backgroundColor = '#ffffff';
-                  clonedBody.style.margin = '0';
-                  clonedBody.style.padding = '0';
-                }
-                
-                // Ensure all elements have white background, no exceptions
-                const allElements = clonedDoc.querySelectorAll('*');
-                allElements.forEach(child => {
-                  const childEl = child as HTMLElement;
-                  childEl.style.backgroundColor = '#ffffff';
-                  childEl.style.border = 'none';
-                  childEl.style.outline = 'none';
-                });
+                elem.style.width = 'auto';
+                elem.style.maxWidth = 'none';
                 // Enhanced text rendering for all tabs with special boost for critical tabs
                 if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
@@ -1348,10 +1226,8 @@ export default function AuraAnalysis() {
             }
           });
           
-          // Crop the canvas to remove any black areas around the content
-          const croppedCanvas = cropCanvasToContent(sectionCanvas);
-          screenshots.push(croppedCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
-          console.log(`Section ${section + 1}/${totalSections}: ${croppedCanvas.width}x${croppedCanvas.height}`);
+          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
+          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
         }
         
         // Reset scroll position for all scrollable containers
@@ -1475,11 +1351,11 @@ export default function AuraAnalysis() {
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Constrained content width
+          width: captureWidth, // Already enhanced with 15% increase
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Match constrained width
+          windowWidth: captureWidth,
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
@@ -1498,35 +1374,8 @@ export default function AuraAnalysis() {
               elem.style.overflow = 'visible';
               elem.style.height = 'auto';
               elem.style.maxHeight = 'none';
-              // Force white background and proper layout for all tabs
-              elem.style.backgroundColor = '#ffffff';
-              elem.style.width = '100%';
-              elem.style.margin = '0';
-              elem.style.padding = '20px';
-              elem.style.boxSizing = 'border-box';
-              
-              // Set comprehensive white background for entire document
-              const clonedDoc_html = clonedDoc.documentElement;
-              const clonedBody = clonedDoc.body;
-              if (clonedDoc_html) {
-                clonedDoc_html.style.backgroundColor = '#ffffff';
-                clonedDoc_html.style.margin = '0';
-                clonedDoc_html.style.padding = '0';
-              }
-              if (clonedBody) {
-                clonedBody.style.backgroundColor = '#ffffff';
-                clonedBody.style.margin = '0';
-                clonedBody.style.padding = '0';
-              }
-              
-              // Ensure all elements have white background, no exceptions
-              const allElements = clonedDoc.querySelectorAll('*');
-              allElements.forEach(child => {
-                const childEl = child as HTMLElement;
-                childEl.style.backgroundColor = '#ffffff';
-                childEl.style.border = 'none';
-                childEl.style.outline = 'none';
-              });
+              elem.style.width = 'auto';
+              elem.style.maxWidth = 'none';
               
               // Ensure all child elements are visible with enhanced text rendering
               const allChildren = elem.querySelectorAll('*');
@@ -1559,12 +1408,9 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Crop the canvas to remove any black areas around the content
-        const croppedCanvas = cropCanvasToContent(canvas);
-        
         // Use PNG with 10% more compression  
-        const imageDataUrl = croppedCanvas.toDataURL('image/png', 0.9);
-        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality, cropped to ${croppedCanvas.width}x${croppedCanvas.height}`);
+        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
+        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
         const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 20 * 1024 * 1024 : 12 * 1024 * 1024;
@@ -1574,7 +1420,7 @@ export default function AuraAnalysis() {
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
           // Fallback to JPEG with 10% more compression
-          const jpegVersion = croppedCanvas.toDataURL('image/jpeg', 0.9);
+          const jpegVersion = canvas.toDataURL('image/jpeg', 0.9);
           if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1586,22 +1432,10 @@ export default function AuraAnalysis() {
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
       }
       
-      // Enhanced success feedback for chakras tab
-      const successMessage = tabId === 'chakras' 
-        ? "Detailed Chakras screenshot captured successfully! This comprehensive analysis will be split into multiple sections in your PDF for optimal readability."
-        : `${getTabDisplayName(tabId)} tab screenshot captured and will be included in PDF download.`;
-        
       toast({
-        title: "Screenshot Captured Successfully ✅",
-        description: successMessage,
+        title: "Screenshot Captured",
+        description: `High-quality screenshot of ${getTabDisplayName(tabId)} captured with proper dimensions.`,
       });
-      
-      console.log(`🎉 Screenshot capture completed for ${tabId}. Total screenshots: ${capturedScreenshots.size + 1}`);
-      
-      // Special success logging for chakras tab
-      if (tabId === 'chakras') {
-        console.log(`✅ CHAKRAS TAB SUCCESS: Screenshot captured and ready for PDF inclusion with multi-section layout`);
-      }
       
     } catch (error) {
       console.error('Screenshot capture failed:', error);
@@ -1651,9 +1485,6 @@ export default function AuraAnalysis() {
         title: "Generating PDF",
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
-
-      console.log('PDF generation starting with manual screenshots...');
-      console.log(`Using ${capturedScreenshots.size} manually captured screenshots:`, Array.from(capturedScreenshots.keys()));
 
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
@@ -2158,10 +1989,10 @@ export default function AuraAnalysis() {
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section (continuous flow)
-                if (section > 0) {
+                // Start a new page for each section after the first
+                if (section > 0 || yPosition > 40) {
                   pdf.addPage();
-                  yPosition = 10; // Minimal top margin
+                  yPosition = 20;
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2191,61 +2022,43 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Optimize dimensions for chakras tab vs other tabs
+                // Special size enhancement for chakras tab - make much larger
                 if (tabId === 'chakras') {
-                  // For chakras, use content-appropriate sizing to prevent stretching
-                  sectionFinalWidth = Math.min(pageWidth - 20, originalWidth * 0.8); // Conservative scaling
-                  sectionFinalHeight = sectionFinalWidth * sectionAspectRatio;
-                  
-                  // Ensure it fits on page height
-                  if (sectionFinalHeight > pageHeight - 40) {
-                    sectionFinalHeight = pageHeight - 40;
-                    sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
-                  }
-                } else {
-                  // Full width for other tabs
-                  sectionFinalWidth = pageWidth - 40;
-                  sectionFinalHeight = sectionFinalWidth * sectionAspectRatio;
-                  
-                  if (sectionFinalHeight > pageHeight - 60) {
-                    sectionFinalHeight = pageHeight - 60;
-                    sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
-                  }
+                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
-                // Center the content horizontally
-                const xPosition = (pageWidth - sectionFinalWidth) / 2;
+                // Section titles removed for continuous image flow as requested
                 
-                // Compress and add the section with full width
+                // Compress and add the section
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', xPosition, yPosition, sectionFinalWidth, sectionFinalHeight);
-                yPosition += sectionFinalHeight + 5; // Minimal spacing
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                yPosition += sectionFinalHeight + 10;
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
-              // Optimize dimensions based on tab type
-              if (tabId === 'chakras') {
-                // For chakras, use content-appropriate sizing to prevent stretching and black areas
-                finalWidth = Math.min(pageWidth - 20, originalWidth * 0.8); // Conservative scaling
+              // For normal screenshots, use single page with proper aspect ratio - already calculated above
+              // Ensure minimum readability while respecting page constraints
+              const minWidth = 120;
+              const minHeight = 160;
+              
+              // Only increase size if we have room and it improves readability
+              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
+                finalWidth = minWidth;
+                finalHeight = minWidth * trueAspectRatio;
+              }
+              
+              // Final check: ensure we don't exceed page boundaries
+              if (finalWidth > pageMaxWidth) {
+                finalWidth = pageMaxWidth;
                 finalHeight = finalWidth * trueAspectRatio;
-                
-                // Ensure it fits on page height
-                if (finalHeight > pageMaxHeight) {
-                  finalHeight = pageMaxHeight;
-                  finalWidth = finalHeight / trueAspectRatio;
-                }
-              } else {
-                // Full width for other tabs
-                finalWidth = pageWidth - 40;
-                finalHeight = finalWidth * trueAspectRatio;
-                
-                // If height exceeds page, adjust to fit
-                if (finalHeight > pageMaxHeight) {
-                  finalHeight = pageMaxHeight;
-                  finalWidth = finalHeight / trueAspectRatio;
-                }
+              }
+              
+              if (finalHeight > pageMaxHeight) {
+                finalHeight = pageMaxHeight;
+                finalWidth = finalHeight / trueAspectRatio;
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
@@ -2259,12 +2072,9 @@ export default function AuraAnalysis() {
               // Compress the image data before adding to PDF to prevent memory issues
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Center the screenshot horizontally if it's smaller than full width
-              const xPosition = Math.max(20, (pageWidth - finalWidth) / 2);
-              
-              // Add the screenshot with full width layout
-              pdf.addImage(compressedImageDataUrl, 'JPEG', xPosition, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 5; // Minimal spacing between screenshots
+              // Add the screenshot with preserved aspect ratio
+              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+              yPosition += finalHeight + 15;
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
@@ -9305,7 +9115,10 @@ export default function AuraAnalysis() {
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                     
+                                      <div 
+                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                      ></div>
                                       <div>
                                         <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -9334,7 +9147,10 @@ export default function AuraAnalysis() {
                                     
                                     {result.secondaryColor && (
                                       <div className="flex items-start gap-3">
-                                       
+                                        <div 
+                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                        ></div>
                                         <div>
                                           <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
