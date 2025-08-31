@@ -1290,7 +1290,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed') ? 4.5 : (tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 4.0, // Enhanced scale for maximum clarity, except detailed tab
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.5 : 3.5, // Higher scale for better image clarity in PDFs
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1602,7 +1602,7 @@ export default function AuraAnalysis() {
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 4.0, // Enhanced scale for maximum single capture clarity
+          scale: 3.5, // Enhanced scale for all single captures
           logging: false,
           useCORS: true,
           allowTaint: false,
@@ -1956,16 +1956,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Enhanced quality compression for maximum image clarity in PDF
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Increased from 0.92 to 0.98 for maximum clarity
+                // High quality compression for better image visibility in PDF
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Increased from 0.75 to 0.92 for better visibility
                 
-                // If still too large, reduce quality more gradually to maintain excellent visibility
-                const maxSize = 15 * 1024 * 1024; // Increased from 10MB to 15MB to allow maximum quality
+                // If still too large, reduce quality more gradually to maintain visibility
+                const maxSize = 10 * 1024 * 1024; // Increased from 6MB to 10MB to allow higher quality
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // High quality fallback
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85); // Higher quality fallback
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.90); // Still maintain excellent visibility
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Still maintain good visibility
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2287,10 +2287,8 @@ export default function AuraAnalysis() {
             const trueAspectRatio = originalHeight / originalWidth;
             
             // CRITICAL FIX: Maintain original aspect ratio without squishing
-            // Double the size for all screenshots except detailed chakras tab (3rd tab)
-            const isDetailedChakrasTab = tabId === 'detailed';
-            const pageMaxWidth = isDetailedChakrasTab ? 170 : 340; // Doubled for better visibility except detailed tab
-            const pageMaxHeight = isDetailedChakrasTab ? 240 : 480; // Doubled for better visibility except detailed tab
+            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
+            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
             
             // Calculate proper dimensions maintaining original aspect ratio
             let finalWidth = pageMaxWidth;
@@ -2340,7 +2338,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.95); // Enhanced quality for better clarity
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -5188,14 +5186,14 @@ export default function AuraAnalysis() {
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#ffffff',
-                scale: 2.5, // Enhanced quality for better visibility
+                scale: 2, // Higher quality
                 logging: false,
                 width: visualizationContainer.scrollWidth,
                 height: visualizationContainer.scrollHeight
             });
 
-            // Convert to base64 with maximum clarity
-            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.98); // Maximum screenshot quality
+            // Convert to base64 with improved clarity
+            const screenshotBase64 = canvas.toDataURL('image/jpeg', 0.95); // Enhanced screenshot quality
             console.log('📸 Screenshot captured successfully, size:', screenshotBase64.length, 'characters');
 
             // Send screenshot to backend to update the stored processedAuraImage
