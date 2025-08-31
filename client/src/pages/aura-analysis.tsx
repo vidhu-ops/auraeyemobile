@@ -1104,10 +1104,15 @@ export default function AuraAnalysis() {
         viewportWidth * 0.9 // Ensure we capture at least 90% of viewport width
       );
       
-      // For full-screen windows, use a more generous width increase
-      const widthMultiplier = viewportWidth > 1400 ? 1.15 : 1.25; // 25% increase for full-screen
+      // Enhanced width multiplier for specific high-quality tabs
+      let widthMultiplier;
+      if (tabId === 'chakras' || tabId === 'guidance' || tabId === 'life-path') {
+        widthMultiplier = viewportWidth > 1400 ? 1.35 : 1.25; // Extra width for key analysis tabs
+      } else {
+        widthMultiplier = viewportWidth > 1400 ? 1.25 : 1.15; // Standard width increase
+      }
       const contentWidth = Math.floor(baseContentWidth * widthMultiplier);
-      console.log(`📏 Content width calculation: base=${baseContentWidth}, final=${contentWidth} (${widthMultiplier}x multiplier)`);
+      console.log(`📏 Content width calculation for ${tabId}: base=${baseContentWidth}, final=${contentWidth} (${widthMultiplier}x multiplier)`);
       
       // Ensure comprehensive content height capture for all tabs
       let contentHeight = Math.max(
@@ -1381,16 +1386,26 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        // Use adaptive scaling based on viewport size for optimal quality
+        // Enhanced scaling with higher quality for specific key analysis tabs
         let scaleUsed;
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5; // Lower scale for large screens to prevent memory issues
+        if (tabId === 'chakras' || tabId === 'guidance' || tabId === 'life-path') {
+          scaleUsed = viewportWidth > 1400 ? 4.5 : 5.5; // Highest quality for key analysis tabs
+        } else if (tabId === 'detailed' || tabId === 'energy-map' || tabId === 'analysis') {
+          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5; // High quality for detailed tabs
         } else {
-          scaleUsed = viewportWidth > 1400 ? 2.9 : 3.5;
+          scaleUsed = viewportWidth > 1400 ? 2.9 : 3.5; // Standard quality for other tabs
         }
         
         const finalWidth = enhancedCaptureWidth * scaleUsed;
-        const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
+        // Calculate dynamic height based on content for better quality
+        let totalHeight = 0;
+        for (let i = 0; i < screenshots.length; i++) {
+          const tempImg = new Image();
+          tempImg.src = screenshots[i];
+          // Add proportional height for each section
+          totalHeight += (sectionHeight * scaleUsed);
+        }
+        const finalHeight = Math.max(totalHeight, screenshots.length * (sectionHeight * scaleUsed));
         
         console.log(`🎨 Canvas dimensions: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x, viewport: ${viewportWidth}px)`);
         
@@ -1413,13 +1428,29 @@ export default function AuraAnalysis() {
           await new Promise((resolve, reject) => {
             img.onload = () => {
               try {
-                const yPosition = i * (sectionHeight * scaleUsed);
+                // Calculate proper y-position based on actual drawn heights
+                let yPosition = 0;
+                for (let j = 0; j < i; j++) {
+                  yPosition += (sectionHeight * scaleUsed);
+                }
                 console.log(`🎨 Drawing section ${i + 1}: ${img.width}x${img.height} at position y=${yPosition}`);
                 
-                // Ensure the draw operation is valid
+                // Ensure the draw operation is valid with proper scaling
                 if (img.width > 0 && img.height > 0) {
-                  ctx.drawImage(img, 0, yPosition, img.width, img.height);
-                  console.log(`✅ Section ${i + 1} drawn to combined canvas successfully`);
+                  // Use consistent scaling to prevent canvas issues
+                  const drawWidth = finalWidth;
+                  const drawHeight = img.height * (finalWidth / img.width);
+                  
+                  // Ensure we don't draw outside canvas bounds
+                  if (yPosition + drawHeight <= finalHeight) {
+                    ctx.drawImage(img, 0, yPosition, drawWidth, drawHeight);
+                    console.log(`✅ Section ${i + 1} drawn to combined canvas successfully (${drawWidth}x${drawHeight})`);
+                  } else {
+                    console.warn(`⚠️ Section ${i + 1} would exceed canvas bounds, adjusting height`);
+                    const adjustedHeight = finalHeight - yPosition;
+                    ctx.drawImage(img, 0, yPosition, drawWidth, adjustedHeight);
+                    console.log(`✅ Section ${i + 1} drawn with adjusted height (${drawWidth}x${adjustedHeight})`);
+                  }
                 } else {
                   console.error(`❌ Section ${i + 1} has invalid dimensions: ${img.width}x${img.height}`);
                 }
@@ -1465,7 +1496,7 @@ export default function AuraAnalysis() {
           // Clear and rebuild canvas
           ctx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
           
-          // Redraw all sections with error recovery
+          // Redraw all sections with enhanced error recovery and proper scaling
           for (let i = 0; i < screenshots.length; i++) {
             const img = new Image();
             img.src = screenshots[i];
@@ -1473,8 +1504,11 @@ export default function AuraAnalysis() {
               img.onload = () => {
                 const yPosition = i * (sectionHeight * scaleUsed);
                 try {
-                  ctx.drawImage(img, 0, yPosition);
-                  console.log(`🔧 Recovery: Section ${i + 1} redrawn successfully`);
+                  // Ensure proper scaling in recovery mode
+                  const scaledWidth = img.width * scaleUsed / 4.0; // Adjust scale for recovery
+                  const scaledHeight = img.height * scaleUsed / 4.0;
+                  ctx.drawImage(img, 0, yPosition, scaledWidth, scaledHeight);
+                  console.log(`🔧 Recovery: Section ${i + 1} redrawn with scaling ${scaledWidth}x${scaledHeight}`);
                 } catch (drawError) {
                   console.error(`🔧 Recovery failed for section ${i + 1}:`, drawError);
                 }
