@@ -998,8 +998,10 @@ export default function AuraAnalysis() {
         console.log(`- Element visible: ${htmlElement.offsetWidth > 0 && htmlElement.offsetHeight > 0}`);
         console.log(`- Element dimensions: ${htmlElement.offsetWidth}x${htmlElement.offsetHeight}`);
         console.log(`- Scroll dimensions: ${htmlElement.scrollWidth}x${htmlElement.scrollHeight}`);
+        console.log(`- Client dimensions: ${htmlElement.clientWidth}x${htmlElement.clientHeight}`);
         console.log(`- Tab data attribute: ${htmlElement.getAttribute('data-tab')}`);
         console.log(`- Active tab state: ${activeTab}`);
+        console.log(`- Will use content width: ${Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800)} (prevents black areas)`);
       }
       const rect = htmlElement.getBoundingClientRect();
       
@@ -1110,9 +1112,13 @@ export default function AuraAnalysis() {
         }
       }
 
-      // Enhanced capture width with 15% increase for better readability and minimum thresholds
-      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, 1200);
-      const captureWidth = Math.floor(baseCaptureWidth * 1.15); // 15% width increase as requested
+      // Enhanced capture width - use actual content width for chakras tab
+      const baseCaptureWidth = tabId === 'chakras' 
+        ? Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800) // Use actual content width for chakras
+        : Math.max(viewportWidth, contentWidth, 1200);
+      const captureWidth = tabId === 'chakras' 
+        ? baseCaptureWidth // No extra width padding for chakras to avoid black areas
+        : Math.floor(baseCaptureWidth * 1.15); // 15% width increase for other tabs
       
       // Enhanced section thresholds for better PDF quality - force multi-section for long content
       const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
@@ -1138,8 +1144,10 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Additional 25% width increase for critical tabs text legibility (40% total increase)
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+          // For chakras, use actual content width to avoid black areas
+          enhancedCaptureWidth = tabId === 'chakras' 
+            ? Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, 800) 
+            : Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
@@ -1205,11 +1213,11 @@ export default function AuraAnalysis() {
             allowTaint: false,
             x: 0,
             y: startY,
-            width: enhancedCaptureWidth,
+            width: tabId === 'chakras' ? htmlElement.scrollWidth : enhancedCaptureWidth, // Use actual content width for chakras
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: enhancedCaptureWidth,
+            windowWidth: tabId === 'chakras' ? htmlElement.scrollWidth : enhancedCaptureWidth, // Match content width
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
@@ -1222,8 +1230,15 @@ export default function AuraAnalysis() {
                 elem.style.overflow = 'visible';
                 elem.style.height = 'auto';
                 elem.style.maxHeight = 'none';
-                elem.style.width = 'auto';
-                elem.style.maxWidth = 'none';
+                // Special width handling for chakras tab to prevent black areas
+                if (tabId === 'chakras') {
+                  elem.style.width = 'fit-content';
+                  elem.style.maxWidth = 'fit-content';
+                  elem.style.minWidth = '800px';
+                } else {
+                  elem.style.width = 'auto';
+                  elem.style.maxWidth = 'none';
+                }
                 // Enhanced text rendering for all tabs with special boost for critical tabs
                 if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
@@ -1377,11 +1392,11 @@ export default function AuraAnalysis() {
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: captureWidth, // Already enhanced with 15% increase
+          width: tabId === 'chakras' ? htmlElement.scrollWidth : captureWidth, // Use actual content width for chakras
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: captureWidth,
+          windowWidth: tabId === 'chakras' ? htmlElement.scrollWidth : captureWidth, // Match content width
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
@@ -1400,8 +1415,15 @@ export default function AuraAnalysis() {
               elem.style.overflow = 'visible';
               elem.style.height = 'auto';
               elem.style.maxHeight = 'none';
-              elem.style.width = 'auto';
-              elem.style.maxWidth = 'none';
+              // Special width handling for chakras tab to prevent black areas
+              if (tabId === 'chakras') {
+                elem.style.width = 'fit-content';
+                elem.style.maxWidth = 'fit-content';
+                elem.style.minWidth = '800px';
+              } else {
+                elem.style.width = 'auto';
+                elem.style.maxWidth = 'none';
+              }
               
               // Ensure all child elements are visible with enhanced text rendering
               const allChildren = elem.querySelectorAll('*');
