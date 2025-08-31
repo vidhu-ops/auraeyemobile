@@ -61,3 +61,24 @@ Preferred communication style: Simple, everyday language.
 - **SMS/OTP**: `twilio` (for WhatsApp Business API)
 - **Email Validation**: AbstractAPI Email Validation
 - **WhatsApp Number Validation**: RapidAPI WhatsApp Number Validator
+- **PDF Generation**: `jspdf` (client-side PDF creation)
+- **Screenshot Capture**: `html2canvas` (client-side screenshot functionality)
+- **Server-side Canvas**: `canvas` (aura visualization generation)
+
+## Deployment Verification
+
+### Critical Production Features
+- **PDF Download**: Uses client-side jsPDF + html2canvas for comprehensive aura analysis reports
+- **Screenshot Capture**: html2canvas captures all visualization tabs (aura, energy reading, chakras)
+- **Aura Visualization**: Server-side canvas generates 550×700px dense smoke effects
+- **Image Processing**: Sharp handles uniform compression (20KB target) and resizing
+- **Size Validation**: All image uploads limited to 3MB with detailed error messages
+
+### Production Build Requirements
+1. **Client Build**: Vite bundles jsPDF and html2canvas for frontend PDF generation
+2. **Server Build**: ESBuild includes canvas and sharp for image processing
+3. **Static Serving**: Production handler serves all built assets correctly
+4. **API Compatibility**: All image processing endpoints maintain exact same functionality
+5. **Feature Parity**: Screenshot capture and PDF download work identically to preview
+
+Use `node verify-deployment.js` to validate all dependencies and configurations before deployment.
