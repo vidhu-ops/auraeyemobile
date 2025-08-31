@@ -965,9 +965,14 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Enhanced screenshot capture function with 15% increased width and improved quality
+  // Enhanced screenshot capture function with deployment compatibility
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
+    
+    // Production environment compatibility check
+    const isProduction = window.location.hostname !== 'localhost' && !window.location.hostname.includes('preview');
+    console.log(`📸 Capturing ${tabId} screenshot in ${isProduction ? 'production' : 'development'} mode`);
+    
     try {
       const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
       if (!element) {
@@ -1342,15 +1347,15 @@ export default function AuraAnalysis() {
         htmlElement.scrollTop = 0;
         window.scrollTo(0, 0);
         
-        // Wait for layout to stabilize
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Wait for layout to stabilize and images to load
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
-          scale: 3.5, // Enhanced scale for all single captures
+          scale: isProduction ? 3.0 : 3.5, // Reduce scale for production stability
           logging: false,
-          useCORS: true,
-          allowTaint: false,
+          useCORS: !isProduction, // Disable CORS in production for better compatibility
+          allowTaint: true, // Allow taint for deployment compatibility
           width: captureWidth, // Already enhanced with 15% increase
           height: contentHeight,
           scrollX: 0,
@@ -1358,14 +1363,18 @@ export default function AuraAnalysis() {
           windowWidth: captureWidth,
           windowHeight: contentHeight,
           removeContainer: false,
-          foreignObjectRendering: false,
-          imageTimeout: 8000, // Longer timeout for complex content
+          foreignObjectRendering: !isProduction, // Disable in production to avoid issues
+          imageTimeout: isProduction ? 20000 : 15000, // Longer timeout for production
           ignoreElements: (element) => {
-            // Ignore scroll bars and other non-essential elements
+            // Ignore problematic elements that can cause failures in production
             const htmlElement = element as HTMLElement;
             return element.tagName === 'NOSCRIPT' || 
+                   element.tagName === 'SCRIPT' ||
+                   element.tagName === 'STYLE' ||
                    element.className?.includes?.('scroll') ||
-                   htmlElement.style?.position === 'fixed';
+                   htmlElement.style?.position === 'fixed' ||
+                   htmlElement.style?.visibility === 'hidden' ||
+                   htmlElement.style?.display === 'none';
           },
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
@@ -1408,24 +1417,38 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
-        // Use PNG with 10% more compression  
-        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
-        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
+        // Production-optimized image format selection
+        let imageDataUrl;
+        const compressionQuality = isProduction ? 0.85 : 0.9; // Lower quality for production stability
         
-        // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 20 * 1024 * 1024 : 12 * 1024 * 1024;
+        try {
+          // Try JPEG first for production environments (better compatibility)
+          if (isProduction) {
+            imageDataUrl = canvas.toDataURL('image/jpeg', compressionQuality);
+          } else {
+            imageDataUrl = canvas.toDataURL('image/png', compressionQuality);
+          }
+          console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with ${isProduction ? 'production' : 'development'} optimization`);
+        } catch (conversionError) {
+          console.warn('Primary image conversion failed, trying fallback:', conversionError);
+          // Fallback to JPEG with lower quality
+          imageDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        }
+        
+        // Store with appropriate size limits based on environment
+        const singleSizeLimit = isProduction ? 8 * 1024 * 1024 : 20 * 1024 * 1024; // Smaller limit for production
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
-          console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
-          // Fallback to JPEG with 10% more compression
-          const jpegVersion = canvas.toDataURL('image/jpeg', 0.9);
-          if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
-            setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
-            console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+          console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting aggressive compression`);
+          // Aggressive fallback compression for production
+          const compressedVersion = canvas.toDataURL('image/jpeg', isProduction ? 0.6 : 0.8);
+          if (compressedVersion.length < (isProduction ? 6 * 1024 * 1024 : 15 * 1024 * 1024)) {
+            setCapturedScreenshots(prev => new Map(prev).set(tabId, compressedVersion));
+            console.log(`✅ ${tabId} single screenshot captured with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
           } else {
-            console.error(`❌ ${tabId} single screenshot too large even with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+            console.error(`❌ ${tabId} single screenshot too large even with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
           }
         }
         
@@ -2092,6 +2115,11 @@ export default function AuraAnalysis() {
               // Compress the image data before adding to PDF to prevent memory issues
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
+              // Validate image data before adding to PDF
+              if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
+                throw new Error(`Invalid compressed image data for ${tabId}`);
+              }
+              
               // Add the screenshot with preserved aspect ratio
               pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
               yPosition += finalHeight + 15;
@@ -2101,7 +2129,19 @@ export default function AuraAnalysis() {
             
           } catch (error) {
             console.error('Error adding screenshot image:', error);
-            yPosition += 25;
+            // Try fallback approach for problematic screenshots
+            try {
+              // Simple fallback with basic dimensions
+              pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, 170, 120);
+              yPosition += 135;
+              console.log(`Screenshot ${tabId} added with fallback method`);
+            } catch (fallbackError) {
+              console.error(`Failed to add ${tabId} screenshot even with fallback:`, fallbackError);
+              pdf.setFontSize(11);
+              pdf.setTextColor(150, 150, 150);
+              yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, pageWidth/2, yPosition, { align: 'center' });
+              yPosition += 25;
+            }
           }
         }
       }
