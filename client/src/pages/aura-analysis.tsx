@@ -155,136 +155,6 @@ const getColorChakraGuidance = (color: string): string => {
 };
 
 
-export default function AuraAnalysis() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const { showPremiumModal } = usePremium();
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [result, setResult] = useState<AuraAnalysisResult | null>(null);
-  const [activeTab, setActiveTab] = useState("analysis");
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [analysisStage, setAnalysisStage] = useState("Initializing aura scanning...");
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
-  const [processedAuraImage, setProcessedAuraImage] = useState<string | null>(null);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState("");
-  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-  const [currentAnalysisId, setCurrentAnalysisId] = useState<number | null>(null);
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
-  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
-  
-  // Name input state
-  const [nameEntered, setNameEntered] = useState(false);
-  const [analysisName, setAnalysisName] = useState("");
-  
-  // Image hash storage for consistent results
-  const [imageCache, setImageCache] = useState<Map<string, AuraAnalysisResult>>(new Map());
-  
-  // Healer notes state (only for healers)
-  const [healerNotes, setHealerNotes] = useState("");
-  const [isHealerNotesExpanded, setIsHealerNotesExpanded] = useState(false);
-  const [isSavingHealerNotes, setIsSavingHealerNotes] = useState(false);
-  
-  // Check if user is a healer (password healer123)
-  const isHealer = user?.userType === 'healer' || false;
-
-  // Screenshot functionality
-  const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
-  const [isCapturingScreenshot, setIsCapturingScreenshot] = useState<string | null>(null);
-
-  // If user is a client (not a healer), show locked state
-  if (!isHealer) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-white mb-4">
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Aura Analysis
-                </span>
-              </h1>
-              <p className="text-white/80 text-lg">
-                Professional aura reading and chakra analysis
-              </p>
-            </div>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-              <CardHeader className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-bold">
-                  Connect with a Professional Healer
-                </CardTitle>
-                <CardDescription className="text-white/70 text-lg">
-                  Aura analysis requires professional interpretation for accurate spiritual guidance. You can run an analysis yourself but the healer can provide the same along with remedies and personalised guidance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-                  <h3 className="text-xl font-semibold mb-4 text-center">Why Work with a Healer?</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium">Professional Interpretation</h4>
-                        <p className="text-white/70 text-sm">Expert analysis of your aura colors and their spiritual meanings</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium">Personalized Remedies</h4>
-                        <p className="text-white/70 text-sm">Custom healing suggestions and spiritual practices</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium">Chakra Balancing</h4>
-                        <p className="text-white/70 text-sm">Detailed chakra analysis with healing recommendations</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium">Spiritual Guidance</h4>
-                        <p className="text-white/70 text-sm">Ongoing support for your spiritual journey</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center space-y-4">
-                  <p className="text-white/80">
-                    Professional healers can provide comprehensive aura analysis reports with personalized remedies and spiritual guidance tailored to your unique energy signature.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/healers">
-                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-3">
-                        <Users className="w-5 h-5 mr-2" />
-                        Connect with a Healer
-                      </Button>
-                    </Link>
-                    <Link href="/client-dashboard">
-                      <Button className="bg-primary text-white hover:bg-white/10 px-8 py-3">
-                        <MessageSquare className="w-5 h-5 mr-2" />
-                        View My Readings
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   // Save healer notes function
   const saveHealerNotes = async (analysisId: number, notes: string) => {
@@ -965,500 +835,7 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Simplified manual screenshot capture for normal screen sizes
-  const captureTabScreenshot = async (tabId: string) => {
-    setIsCapturingScreenshot(tabId);
-    console.log(`📸 Manual capture: ${tabId} tab`);
-    
-    try {
-      // Find the active tab content
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
-      if (!element) {
-        throw new Error(`Tab content for ${tabId} not found`);
-      }
 
-      const htmlElement = element as HTMLElement;
-      
-      // Get the actual content dimensions
-      const rect = htmlElement.getBoundingClientRect();
-      const contentWidth = Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, rect.width);
-      let contentHeight = Math.max(htmlElement.scrollHeight, htmlElement.offsetHeight, rect.height);
-      
-      // Ensure minimum height for tabs with dynamic content
-      const minHeights: Record<string, number> = {
-        'chakras': 800,
-        'analysis': 1200,
-        'guidance': 800,
-        'spectrum': 600,
-        'energy-reading': 600,
-        'energy-map': 400,
-        'detailed': 1000
-      };
-      
-      contentHeight = Math.max(contentHeight, minHeights[tabId] || 400);
-      
-      console.log(`${tabId}: Capturing ${contentWidth}x${contentHeight}`);
-      
-      // Scroll to top to start capture
-      htmlElement.scrollTop = 0;
-      window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Capture in 4 sections for consistency
-      const sections = 4;
-      const sectionHeight = Math.ceil(contentHeight / sections);
-      const screenshots: string[] = [];
-      
-      for (let i = 0; i < sections; i++) {
-        const startY = i * sectionHeight;
-        const actualHeight = Math.min(sectionHeight, contentHeight - startY);
-        
-        // Scroll to this section
-        if (htmlElement.scrollTo) {
-          htmlElement.scrollTo({ top: startY, behavior: 'instant' });
-        }
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Capture this section
-        const canvas = await html2canvas(htmlElement, {
-          backgroundColor: '#ffffff',
-          scale: 2, // Good quality for normal screens
-          logging: false,
-          useCORS: true,
-          allowTaint: false,
-          x: 0,
-          y: startY,
-          width: contentWidth,
-          height: actualHeight,
-          windowWidth: contentWidth,
-          windowHeight: actualHeight
-        });
-        
-        screenshots.push(canvas.toDataURL('image/png', 0.8));
-        console.log(`Section ${i + 1}/${sections}: ${canvas.width}x${canvas.height}`);
-      }
-      
-      // Reset scroll position
-      htmlElement.scrollTop = 0;
-      window.scrollTo(0, 0);
-      
-      // Combine all sections into one image
-      const combinedCanvas = document.createElement('canvas');
-      const ctx = combinedCanvas.getContext('2d')!;
-      
-      combinedCanvas.width = contentWidth * 2; // Account for scale
-      combinedCanvas.height = screenshots.length * sectionHeight * 2; // Account for scale
-      
-      // Draw each section
-      for (let i = 0; i < screenshots.length; i++) {
-        const img = new Image();
-        img.src = screenshots[i];
-        await new Promise((resolve) => {
-          img.onload = () => {
-            ctx.drawImage(img, 0, i * sectionHeight * 2);
-            resolve(true);
-          };
-        });
-      }
-      
-      // Store the combined screenshot
-      const finalImageData = combinedCanvas.toDataURL('image/png', 0.8);
-      setCapturedScreenshots(prev => new Map(prev).set(tabId, finalImageData));
-      
-      console.log(`✅ ${tabId} screenshot captured: ${(finalImageData.length / 1024 / 1024).toFixed(2)}MB`);
-      
-      toast({
-        title: "Screenshot Captured",
-        description: `${getTabDisplayName(tabId)} screenshot captured successfully.`,
-      });
-      
-    } catch (error) {
-      console.error('Screenshot capture failed:', error);
-      toast({
-        title: "Screenshot Failed", 
-        description: "Could not capture screenshot. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsCapturingScreenshot(null);
-    }
-  };
-
-  // Helper function to get display names for tabs
-  const getTabDisplayName = (tabId: string): string => {
-    const names: Record<string, string> = {
-      'analysis': 'Analysis',
-      'energy-reading': 'Chakra Score',
-      'chakras': 'Detailed Chakras',
-      'guidance': 'Guidance',
-      'spectrum': 'Color Spectrum',
-      'energy-map': 'Energy Map',
-      'detailed': 'Detailed Analysis',
-      'combined': 'Combined Analysis'
-    };
-    return names[tabId] || tabId;
-  };
-
-  const downloadComprehensiveAuraPDF = async () => {
-          const startY = section * sectionHeight;
-          const endY = Math.min(startY + sectionHeight, contentHeight);
-          const actualSectionHeight = endY - startY;
-          
-          // Scroll element to show this section - try multiple approaches
-          try {
-            if (htmlElement.scrollTo) {
-              htmlElement.scrollTo({ top: startY, behavior: 'instant' });
-            }
-            
-            // Also try scrolling any scrollable parent containers
-            const scrollableParents = [];
-            let parent = htmlElement.parentElement;
-            while (parent) {
-              const style = window.getComputedStyle(parent);
-              if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
-                scrollableParents.push(parent);
-              }
-              parent = parent.parentElement;
-            }
-            
-            scrollableParents.forEach(scrollParent => {
-              if (scrollParent.scrollTo) {
-                scrollParent.scrollTo({ top: startY, behavior: 'instant' });
-              }
-            });
-            
-            // Also scroll window as fallback
-            const elementTop = htmlElement.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo({ top: elementTop + startY, behavior: 'instant' });
-            
-          } catch (scrollError) {
-            console.warn('Scroll failed, continuing with capture:', scrollError);
-          }
-          
-          // Wait longer for scroll to complete and content to render
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          // Use standardized capture settings for all tabs with optimal quality
-          const sectionCanvas = await html2canvas(htmlElement, {
-            backgroundColor: '#ffffff',
-            scale: 3.0, // Consistent scale for all tabs to prevent memory issues
-            logging: false,
-            useCORS: true,
-            allowTaint: false,
-            x: 0,
-            y: startY,
-            width: enhancedCaptureWidth,
-            height: actualSectionHeight,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: enhancedCaptureWidth,
-            windowHeight: actualSectionHeight,
-            removeContainer: false,
-            foreignObjectRendering: true,
-            imageTimeout: 8000, // Extended timeout for reliable processing
-            // Enhanced text rendering for all tabs
-            onclone: (clonedDoc) => {
-              const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
-              if (clonedElement) {
-                const elem = clonedElement as HTMLElement;
-                elem.style.overflow = 'visible';
-                elem.style.height = 'auto';
-                elem.style.maxHeight = 'none';
-                elem.style.width = 'auto';
-                elem.style.maxWidth = 'none';
-                elem.style.transform = 'none';
-                // Consistent text enhancement for all tabs
-                elem.style.fontSize = '16px';
-                elem.style.lineHeight = '1.6';
-                const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
-                textElements.forEach(textEl => {
-                  const textElement = textEl as HTMLElement;
-                  textElement.style.fontSize = '16px';
-                  textElement.style.fontWeight = '600';
-                  textElement.style.letterSpacing = '0.3px';
-                  textElement.style.textRendering = 'optimizeLegibility';
-                  textElement.style.transform = 'none';
-                });
-              }
-            }
-          });
-          
-          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
-          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
-        }
-        
-        // Reset scroll position for all scrollable containers
-        try {
-          if (htmlElement.scrollTo) {
-            htmlElement.scrollTo({ top: 0, behavior: 'instant' });
-          }
-          
-          // Reset scroll for scrollable parent containers
-          const scrollableParents = [];
-          let parent = htmlElement.parentElement;
-          while (parent) {
-            const style = window.getComputedStyle(parent);
-            if (style.overflow === 'auto' || style.overflow === 'scroll' || style.overflowY === 'auto' || style.overflowY === 'scroll') {
-              scrollableParents.push(parent);
-            }
-            parent = parent.parentElement;
-          }
-          
-          scrollableParents.forEach(scrollParent => {
-            if (scrollParent.scrollTo) {
-              scrollParent.scrollTo({ top: 0, behavior: 'instant' });
-            }
-          });
-          
-          // Reset window scroll
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        } catch (resetScrollError) {
-          console.warn('Failed to reset scroll position:', resetScrollError);
-        }
-        
-        // Combine all sections into one long image for PDF with enhanced dimensions
-        const combinedCanvas = document.createElement('canvas');
-        const ctx = combinedCanvas.getContext('2d')!;
-        
-        // Calculate combined dimensions using consistent scale factor
-        const scaleUsed = 3.0; // Consistent scale for all tabs
-        const finalWidth = enhancedCaptureWidth * scaleUsed;
-        const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
-        
-        combinedCanvas.width = finalWidth;
-        combinedCanvas.height = finalHeight;
-        
-        // Draw each section onto the combined canvas with proper error handling
-        for (let i = 0; i < screenshots.length; i++) {
-          const img = new Image();
-          img.src = screenshots[i];
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              try {
-                ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
-                resolve(true);
-              } catch (drawError) {
-                console.error(`Error drawing section ${i}:`, drawError);
-                reject(drawError);
-              }
-            };
-            img.onerror = reject;
-            // Add timeout to prevent hanging
-            setTimeout(() => reject(new Error('Image load timeout')), 10000);
-          });
-        }
-        
-        // Try PNG first, fallback to JPEG if too large
-        let combinedImageDataUrl: string;
-        try {
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.8);
-          console.log(`Combined PNG image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-          
-          // If PNG is too large, use JPEG
-          if (combinedImageDataUrl.length > 10 * 1024 * 1024) {
-            combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.85);
-            console.log(`Fallback to JPEG: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-          }
-        } catch (conversionError) {
-          console.warn('PNG conversion failed, using JPEG:', conversionError);
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.8);
-        }
-        
-        // Store with reasonable size limit (consistent for all tabs)
-        const sizeLimit = 15 * 1024 * 1024; // 15MB limit for all tabs
-        if (combinedImageDataUrl.length < sizeLimit) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
-          console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-        } else {
-          console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting aggressive compression`);
-          // Aggressive fallback compression
-          const compressedVersion = combinedCanvas.toDataURL('image/jpeg', 0.6);
-          if (compressedVersion.length < 12 * 1024 * 1024) {
-            setCapturedScreenshots(prev => new Map(prev).set(tabId, compressedVersion));
-            console.log(`✅ ${tabId} screenshot captured with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
-          } else {
-            console.error(`❌ ${tabId} screenshot too large even with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
-            throw new Error(`Screenshot too large for ${tabId}`);
-          }
-        }
-        
-        console.log(`Multi-section capture complete: ${combinedCanvas.width}x${combinedCanvas.height} total`);
-        
-      } else {
-        // This should never happen since forceMultiSection is always true
-        throw new Error('Unexpected single capture path - all tabs should use 4-section capture');
-
-        // Ensure element is fully expanded before capture
-        const originalStyles = {
-          overflow: htmlElement.style.overflow,
-          height: htmlElement.style.height,
-          maxHeight: htmlElement.style.maxHeight
-        };
-        
-        // Temporarily expand the element to show all content
-        htmlElement.style.overflow = 'visible';
-        htmlElement.style.height = `${contentHeight}px`;
-        htmlElement.style.maxHeight = 'none';
-        htmlElement.style.minHeight = `${contentHeight}px`;
-        htmlElement.style.width = 'auto';
-        htmlElement.style.maxWidth = 'none';
-        
-        // Force all children to be visible and properly sized
-        const allChildren = htmlElement.querySelectorAll('*');
-        allChildren.forEach(child => {
-          const childElem = child as HTMLElement;
-          if (childElem.style) {
-            childElem.style.overflow = 'visible';
-            childElem.style.maxHeight = 'none';
-            childElem.style.height = 'auto';
-            childElem.style.opacity = '1';
-            childElem.style.visibility = 'visible';
-          }
-        });
-        
-        // Ensure no scrolling during capture
-        htmlElement.scrollTop = 0;
-        window.scrollTo(0, 0);
-        
-        // Wait for layout to stabilize and images to load
-        await new Promise(resolve => setTimeout(resolve, 1200));
-
-        const canvas = await html2canvas(htmlElement, {
-          backgroundColor: '#ffffff',
-          scale: isProduction ? 3.0 : 3.5, // Reduce scale for production stability
-          logging: false,
-          useCORS: !isProduction, // Disable CORS in production for better compatibility
-          allowTaint: true, // Allow taint for deployment compatibility
-          width: captureWidth, // Already enhanced with 15% increase
-          height: contentHeight,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: captureWidth,
-          windowHeight: contentHeight,
-          removeContainer: false,
-          foreignObjectRendering: !isProduction, // Disable in production to avoid issues
-          imageTimeout: isProduction ? 20000 : 15000, // Longer timeout for production
-          ignoreElements: (element) => {
-            // Ignore problematic elements that can cause failures in production
-            const htmlElement = element as HTMLElement;
-            return element.tagName === 'NOSCRIPT' || 
-                   element.tagName === 'SCRIPT' ||
-                   element.tagName === 'STYLE' ||
-                   element.className?.includes?.('scroll') ||
-                   htmlElement.style?.position === 'fixed' ||
-                   htmlElement.style?.visibility === 'hidden' ||
-                   htmlElement.style?.display === 'none';
-          },
-          onclone: (clonedDoc) => {
-            const clonedElement = clonedDoc.querySelector(`[data-tab="${tabId}"]`) || clonedDoc.querySelector('[data-state="active"]');
-            if (clonedElement) {
-              const elem = clonedElement as HTMLElement;
-              elem.style.overflow = 'visible';
-              elem.style.height = 'auto';
-              elem.style.maxHeight = 'none';
-              elem.style.width = 'auto';
-              elem.style.maxWidth = 'none';
-              
-              // Ensure all child elements are visible with enhanced text rendering
-              const allChildren = elem.querySelectorAll('*');
-              allChildren.forEach(child => {
-                const childElem = child as HTMLElement;
-                childElem.style.overflow = 'visible';
-                childElem.style.maxHeight = 'none';
-                childElem.style.height = 'auto';
-              });
-              
-              // Enhanced text rendering for single captures
-              elem.style.fontSize = '15px';
-              elem.style.lineHeight = '1.6';
-              const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
-              textElements.forEach(textEl => {
-                const textElement = textEl as HTMLElement;
-                textElement.style.fontSize = '15px';
-                textElement.style.fontWeight = '500';
-                textElement.style.letterSpacing = '0.2px';
-              });
-            }
-          }
-        });
-        
-        // Restore original styles
-        htmlElement.style.overflow = originalStyles.overflow;
-        htmlElement.style.height = originalStyles.height;
-        htmlElement.style.maxHeight = originalStyles.maxHeight;
-        htmlElement.style.minHeight = '';
-        htmlElement.style.width = '';
-        htmlElement.style.maxWidth = '';
-
-        // Production-optimized image format selection
-        let imageDataUrl;
-        const compressionQuality = isProduction ? 0.85 : 0.9; // Lower quality for production stability
-        
-        try {
-          // Try JPEG first for production environments (better compatibility)
-          if (isProduction) {
-            imageDataUrl = canvas.toDataURL('image/jpeg', compressionQuality);
-          } else {
-            imageDataUrl = canvas.toDataURL('image/png', compressionQuality);
-          }
-          console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with ${isProduction ? 'production' : 'development'} optimization`);
-        } catch (conversionError) {
-          console.warn('Primary image conversion failed, trying fallback:', conversionError);
-          // Fallback to JPEG with lower quality
-          imageDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        }
-        
-        // Store with appropriate size limits based on environment
-        const singleSizeLimit = isProduction ? 8 * 1024 * 1024 : 20 * 1024 * 1024; // Smaller limit for production
-        if (imageDataUrl.length < singleSizeLimit) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
-          console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-        } else {
-          console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting aggressive compression`);
-          // Aggressive fallback compression for production
-          const compressedVersion = canvas.toDataURL('image/jpeg', isProduction ? 0.6 : 0.8);
-          if (compressedVersion.length < (isProduction ? 6 * 1024 * 1024 : 15 * 1024 * 1024)) {
-            setCapturedScreenshots(prev => new Map(prev).set(tabId, compressedVersion));
-            console.log(`✅ ${tabId} single screenshot captured with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
-          } else {
-            console.error(`❌ ${tabId} single screenshot too large even with aggressive compression: ${(compressedVersion.length / 1024 / 1024).toFixed(2)} MB`);
-          }
-        }
-        
-        console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
-      }
-      
-      toast({
-        title: "Screenshot Captured",
-        description: `High-quality screenshot of ${getTabDisplayName(tabId)} captured with proper dimensions.`,
-      });
-      
-    } catch (error) {
-      console.error('Screenshot capture failed:', error);
-      toast({
-        title: "Screenshot Failed",
-        description: "Could not capture screenshot. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsCapturingScreenshot(null);
-    }
-  };
-
-  // Helper function to get display names for tabs
-  const getTabDisplayName = (tabId: string): string => {
-    const names: Record<string, string> = {
-      'analysis': 'Analysis',
-      'energy-reading': 'Chakra Score',
-      'chakras': 'Detailed Chakras',
-      'guidance': 'Guidance',
-      'spectrum': 'Color Spectrum',
-      'energy-map': 'Energy Map',
-      'detailed': 'Detailed Analysis',
-      'combined': 'Combined Analysis'
-    };
-    return names[tabId] || tabId;
-  };
 
   const downloadComprehensiveAuraPDF = async () => {
     if (!result) {
@@ -1479,7 +856,7 @@ export default function AuraAnalysis() {
     try {
       toast({
         title: "Generating PDF",
-        description: "Creating your comprehensive aura analysis report with all sections...",
+        description: "Creating your comprehensive aura analysis report with manually captured screenshots...",
       });
 
       // PDF will only include manually captured screenshots (no auto-capture)
@@ -1492,277 +869,227 @@ export default function AuraAnalysis() {
         unit: 'mm',
         format: 'a4'
       });
-      console.log('jsPDF initialized successfully');
 
-      const pageWidth = 210;
-      const pageHeight = 297;
-      let yPosition = 20;
+      console.log('PDF setup complete, processing content...');
+
+      // Use the best available aura image for the PDF
+      let imageUrl = processedAuraImage || enhancedAuraImage;
       
-      // Helper function to add text with automatic page breaks
-      const addTextWithPageBreak = (text: string, x: number, y: number, options: any = {}) => {
-        try {
-          // Ensure y is a valid number
-          if (typeof y !== 'number' || isNaN(y) || y < 0) {
-            y = 20; // Default to top of page if invalid
-          }
-          
-          if (y > pageHeight - 20) {
-            pdf.addPage();
-            y = 20;
-          }
-          
-          // Ensure center alignment is properly set
-          if (options.align === 'center') {
-            pdf.text(text, x, y, { align: 'center' });
-          } else {
-            pdf.text(text, x, y, options);
-          }
-          return y + 5; // Return next y position
-        } catch (error) {
-          console.error('Error in addTextWithPageBreak:', error, 'Text:', text, 'Position:', x, y);
-          throw error;
-        }
-      };
-
-      // Helper function to add wrapped text
-      const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number = 6) => {
-        try {
-          if (!text || typeof text !== 'string') {
-            console.warn('Invalid text provided to addWrappedText:', text);
-            return y;
-          }
-          const lines = pdf.splitTextToSize(text, maxWidth);
-          for (let i = 0; i < lines.length; i++) {
-            if (y > pageHeight - 20) {
-              pdf.addPage();
-              y = 20;
-            }
-            pdf.text(lines[i], x, y);
-            y += lineHeight;
-          }
-          return y;
-        } catch (error) {
-          console.error('Error in addWrappedText:', error, 'Text:', text);
-          throw error;
-        }
-      };
-
-      // Helper function to add screenshot images (simplified for synchronous use)
-      const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
-            try {
-                // Ensure y is a valid number
-                if (typeof y !== 'number' || isNaN(y) || y < 0) {
-                    y = 20;
-                }
-
-                if (y + maxHeight > pageHeight - 20) {
-                    pdf.addPage();
-                    y = 20;
-                }
-
-                // Add image with fixed dimensions for consistent layout
-                pdf.addImage(imageDataUrl, 'PNG', x, y, maxWidth, maxHeight);
-                return y + maxHeight + 5;
-            } catch (error) {
-                console.error('Error adding screenshot image:', error);
-                return y + 10;
-            }
-        };
-
-      // Add the uploaded image as the first page if available
-      const addUploadedImageAsFirstPage = async () => {
-        try {
-          // Import the new cover image directly from attached assets  
-          const uploadedImageModule = await import('@assets/pdf-cover-image.jpeg');
-          const uploadedImageSrc = uploadedImageModule.default;
-          
-          // Create image to get dimensions
-          const img = new Image();
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = uploadedImageSrc;
-          });
-          
-          // Calculate dimensions to cover the full page (no margins)
-          const imgAspectRatio = img.width / img.height;
-          const pageAspectRatio = pageWidth / pageHeight;
-          
-          let imgWidth, imgHeight, imgX, imgY;
-          
-          if (imgAspectRatio > pageAspectRatio) {
-            // Image is wider than page ratio, fit to page height and extend beyond page width
-            imgHeight = pageHeight;
-            imgWidth = imgHeight * imgAspectRatio;
-            imgX = (pageWidth - imgWidth) / 2; // Center horizontally
-            imgY = 0;
-          } else {
-            // Image is taller than page ratio, fit to page width and extend beyond page height
-            imgWidth = pageWidth;
-            imgHeight = imgWidth / imgAspectRatio;
-            imgX = 0;
-            imgY = (pageHeight - imgHeight) / 2; // Center vertically
-          }
-          
-          // Force full page coverage - ensure image fills entire page with zero margins
-          imgWidth = pageWidth;
-          imgHeight = pageHeight;
-          imgX = 0;
-          imgY = 0;
-          
-          // Add the uploaded original image as full-page first page covering entire surface
-          pdf.addImage(uploadedImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-          
-          console.log('Successfully added uploaded image as full-page first page');
-          return true;
-        } catch (error) {
-          console.warn('Could not load uploaded image for first page:', error);
-          return false;
-        }
-      };
-
-      // Helper function to compress images for PDF to prevent "Invalid string length" errors
-      const compressImageForPDF = async (imageDataUrl: string, targetWidth: number, targetHeight: number) => {
-        try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          const img = new Image();
-          
-          return new Promise<string>((resolve) => {
-            img.onload = () => {
-              // Set canvas size with higher resolution for better PDF quality
-              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
-              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
-              
-              // Use high-quality image rendering
-              ctx!.imageSmoothingEnabled = true;
-              ctx!.imageSmoothingQuality = 'high';
-              
-              // Draw the image with high quality
-              ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
-              
-              // Use PNG with 10% more compression
-              let compressedDataUrl = canvas.toDataURL('image/png', 0.9);
-              
-              // If PNG is too large, fallback to JPEG with 10% more compression
-              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // 10% more compression
-              }
-              
-              resolve(compressedDataUrl);
-            };
-            img.src = imageDataUrl;
-          });
-        } catch (error) {
-          console.warn('Image compression failed, using original:', error);
-          return imageDataUrl;
-        }
-      };
-
-      // Try to add uploaded image as first page
-      const uploadedImageAdded = await addUploadedImageAsFirstPage();
-      
-      // If uploaded image was added, start new page for title
-      if (uploadedImageAdded) {
-        pdf.addPage();
-        yPosition = 20;
+      if (!imageUrl) {
+        console.warn('No aura image available for PDF');
+        toast({
+          title: "Warning",
+          description: "No aura image available for PDF. Generating text-only report.",
+          variant: "destructive",
+        });
       }
 
-      // PAGE 1 (or 2 if uploaded image was added): TITLE AND OVERVIEW
-      pdf.setFontSize(28);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('AURA & CHAKRA ALIGNMENT REPORT', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
-
-      pdf.setFontSize(16);
-      pdf.setTextColor(80, 80, 80);
-      const nameToUse = analysisName || result?.name || 'Unnamed Analysis';
-      yPosition = addTextWithPageBreak(`Client: ${nameToUse}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`Report created by: ${user?.username || 'Anonymous User'}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      yPosition = addTextWithPageBreak(`Analysis Date: ${new Date().toLocaleDateString()}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 20;
-
-      // Add decorative line
-      pdf.setLineWidth(0.5);
-      pdf.setDrawColor(200, 200, 200);
-      pdf.line(20, yPosition, pageWidth, yPosition);
-      yPosition += 15;
-
-      // SECTION 1: AURA COLOR ANALYSIS
+      // Add PDF header
       pdf.setFontSize(20);
-      pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak('AURA COLOR ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 10;
-
-      pdf.setFontSize(14);
-      pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 8;
-      if (result.secondaryColor) {
-        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
-        yPosition += 8;
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Comprehensive Aura Analysis Report', 20, 20);
+      
+      // Add aura image if available
+      let yPosition = 40;
+      if (imageUrl) {
+        try {
+          const imageWidth = 120;
+          const imageHeight = 160;
+          pdf.addImage(imageUrl, 'PNG', 20, yPosition, imageWidth, imageHeight);
+          yPosition += imageHeight + 20;
+        } catch (imageError) {
+          console.warn('Failed to add aura image to PDF:', imageError);
+        }
       }
-      yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 15;
 
-      // ADD AURA VISUALIZATION IMAGE
-      const auraImageForPDF = processedAuraImage || enhancedAuraImage;
-      if (auraImageForPDF) {
-        // Check if we need a new page for the image
-        if (yPosition > pageHeight - 120) {
+      // Add basic analysis information
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Analysis Date: ${new Date().toLocaleDateString()}`, 20, yPosition);
+      yPosition += 10;
+      
+      if (result.dominantColor) {
+        pdf.text(`Dominant Aura Color: ${result.dominantColor}`, 20, yPosition);
+        yPosition += 10;
+      }
+      
+      if (result.energyLevel) {
+        pdf.text(`Energy Level: ${result.energyLevel}`, 20, yPosition);
+        yPosition += 10;
+      }
+
+      // Add manually captured screenshots to PDF 
+      if (capturedScreenshots.size > 0) {
+        console.log(`Adding ${capturedScreenshots.size} manually captured screenshots to PDF`);
+        
+        for (const [tabId, screenshotData] of capturedScreenshots) {
+          // Add new page for each screenshot
           pdf.addPage();
           yPosition = 20;
-        }
-
-        pdf.setFontSize(16);
-        pdf.setTextColor(75, 0, 130);
-        yPosition = addTextWithPageBreak('AURA VISUALIZATION', pageWidth/2, yPosition, { align: 'center' });
-        yPosition += 10;
-
-        try {
-          // Create a new image to get actual dimensions
-          const tempImg = new Image();
-          await new Promise((resolve, reject) => {
-            tempImg.onload = resolve;
-            tempImg.onerror = reject;
-            tempImg.src = auraImageForPDF;
-          });
           
-          // Calculate dimensions to match webapp display (larger, more prominent)
-          const imgAspectRatio = tempImg.width / tempImg.height;
-          const maxWidth = pageWidth - 20; // Use almost full page width with small margins
-          const maxHeight = 120; // Reasonable height limit
+          // Add tab title
+          pdf.setFontSize(16);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`${getTabDisplayName(tabId)} Analysis`, 20, yPosition);
+          yPosition += 20;
           
-          let imgWidth, imgHeight;
-          if (imgAspectRatio > maxWidth / maxHeight) {
-            // Image is wider, fit to page width
-            imgWidth = maxWidth;
-            imgHeight = imgWidth / imgAspectRatio;
-          } else {
-            // Image is taller, fit to height
-            imgHeight = maxHeight;
-            imgWidth = imgHeight * imgAspectRatio;
+          try {
+            // Add screenshot with proper sizing
+            const maxWidth = 170; // A4 width minus margins
+            const maxHeight = 240; // A4 height minus margins and title
+            
+            pdf.addImage(screenshotData, 'PNG', 20, yPosition, maxWidth, maxHeight);
+            console.log(`✅ Added ${tabId} screenshot to PDF`);
+          } catch (error) {
+            console.error(`Failed to add ${tabId} screenshot to PDF:`, error);
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(`Failed to load ${getTabDisplayName(tabId)} screenshot`, 20, yPosition);
           }
-          
-          const imgX = (pageWidth - imgWidth) / 2; // Center the image
-          
-          pdf.addImage(auraImageForPDF, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
-          yPosition += imgHeight + 15;
-
-          pdf.setFontSize(11);
-          pdf.setTextColor(100, 100, 100);
-          yPosition = addTextWithPageBreak('Your personalized aura visualization showing energy patterns and spiritual colors', pageWidth/2, yPosition, { align: 'center' });
-          yPosition += 15;
-        } catch (imageError) {
-          console.error('Error adding aura visualization to PDF:', imageError);
-          pdf.setFontSize(11);
-          pdf.setTextColor(150, 150, 150);
-          yPosition = addTextWithPageBreak('Aura visualization image could not be embedded in PDF', pageWidth/2, yPosition, { align: 'center' });
-          yPosition += 10;
         }
+      } else {
+        // No screenshots captured manually
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('No screenshots were manually captured for this analysis.', 20, 30);
+        pdf.text('To include tab screenshots in future PDFs:', 20, 50);
+        pdf.text('1. Click the screenshot button on each tab you want to capture', 20, 65);
+        pdf.text('2. Wait for the "Screenshot Captured" confirmation', 20, 80);
+        pdf.text('3. Generate the PDF to include your captured screenshots', 20, 95);
       }
+
+      // Save PDF
+      const fileName = `aura-analysis-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+
+      toast({
+        title: "PDF Generated Successfully",
+        description: `Downloaded ${fileName} with ${capturedScreenshots.size} manually captured screenshots`,
+      });
+
+      console.log(`✅ PDF generated successfully with ${capturedScreenshots.size} screenshots`);
+
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "There was an error generating your PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Manual screenshot capture function - only captures when user clicks screenshot button
+  const captureTabScreenshot = async (tabId: string) => {
+    setIsCapturingScreenshot(tabId);
+    
+    try {
+      console.log(`📸 Manual screenshot capture initiated for ${tabId}`);
+      
+      const tabElement = document.querySelector(`[data-tab="${tabId}"]`) as HTMLElement;
+      if (!tabElement) {
+        console.error(`Tab element not found for ${tabId}`);
+        toast({
+          title: "Screenshot Failed",
+          description: "Could not find tab content to capture.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Capture screenshot in 4 sections for all tabs (as requested)
+      const totalSections = 4;
+      const contentHeight = Math.max(tabElement.scrollHeight, 2000); // Minimum height
+      const sectionHeight = Math.ceil(contentHeight / totalSections);
+      const screenshots: string[] = [];
+
+      console.log(`Capturing ${tabId} in ${totalSections} sections, total height: ${contentHeight}px`);
+
+      for (let section = 0; section < totalSections; section++) {
+        const startY = section * sectionHeight;
+        const endY = Math.min(startY + sectionHeight, contentHeight);
+        const actualSectionHeight = endY - startY;
+
+        // Scroll to section
+        tabElement.scrollTop = startY;
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Capture section
+        const canvas = await html2canvas(tabElement, {
+          backgroundColor: '#ffffff',
+          scale: 2.0,
+          logging: false,
+          useCORS: true,
+          allowTaint: false,
+          x: 0,
+          y: startY,
+          width: 800,
+          height: actualSectionHeight,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        screenshots.push(canvas.toDataURL('image/png', 0.9));
+        console.log(`Section ${section + 1}/${totalSections} captured`);
+      }
+
+      // Reset scroll position
+      tabElement.scrollTop = 0;
+
+      // Combine sections into one image
+      const combinedCanvas = document.createElement('canvas');
+      const ctx = combinedCanvas.getContext('2d')!;
+      combinedCanvas.width = 800;
+      combinedCanvas.height = contentHeight * 2; // Scale factor
+
+      for (let i = 0; i < screenshots.length; i++) {
+        const img = new Image();
+        img.src = screenshots[i];
+        await new Promise((resolve) => {
+          img.onload = () => {
+            ctx.drawImage(img, 0, i * sectionHeight * 2);
+            resolve(true);
+          };
+        });
+      }
+
+      const combinedImageData = combinedCanvas.toDataURL('image/png', 0.8);
+      setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageData));
+
+      toast({
+        title: "Screenshot Captured",
+        description: `${getTabDisplayName(tabId)} screenshot captured successfully.`,
+      });
+
+      console.log(`✅ ${tabId} screenshot captured and stored`);
+
+    } catch (error) {
+      console.error('Screenshot capture failed:', error);
+      toast({
+        title: "Screenshot Failed",
+        description: "Could not capture screenshot. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCapturingScreenshot(null);
+    }
+  };
+
+  // Helper function to get display names for tabs
+  const getTabDisplayName = (tabId: string): string => {
+    const names: Record<string, string> = {
+      'analysis': 'Analysis',
+      'energy-reading': 'Chakra Score', 
+      'chakras': 'Detailed Chakras',
+      'guidance': 'Guidance',
+      'spectrum': 'Color Spectrum',
+      'energy-map': 'Energy Map',
+      'detailed': 'Detailed Analysis',
+      'combined': 'Combined Analysis'
+    };
+    return names[tabId] || tabId;
+  };
 
       // SECTION 3: ENERGY LEVEL ANALYSIS  
       if (yPosition > pageHeight - 60) {
@@ -2054,17 +1381,6 @@ export default function AuraAnalysis() {
         title: "PDF Downloaded Successfully",
         description: "Your comprehensive aura analysis report has been downloaded with all sections and analysis data.",
       });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('PDF Error details:', errorMessage);
-      console.error('PDF Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-      toast({
-        title: "PDF Generation Failed",
-        description: `Failed to generate comprehensive PDF: ${errorMessage}. Please try again.`,
-        variant: "destructive",
-      });
-    }
   };
 
   function getPersonalityColorInterpretation(color: string): string {
@@ -2085,23 +1401,6 @@ export default function AuraAnalysis() {
         return personalityInterpretations[color] || `Your ${color.toLowerCase()} personality energy reflects unique spiritual qualities that guide your life path and personal development.`;
     }
 
-  function getColorSpiritalMeaning(color: string): string {
-        const spiritualMeanings: Record<string, string> = {
-            'Red': 'Represents life force, grounding, passion, and physical vitality. Connected to survival instincts and material world mastery.',
-            'Orange': 'Embodies creativity, emotional expression, joy, and sexual energy. Associated with artistic abilities and emotional intelligence.',
-            'Yellow': 'Symbolizes mental clarity, personal power, confidence, and intellectual abilities. Connected to leadership and analytical thinking.',
-            'Green': 'Represents healing, compassion, heart-centered wisdom, and natural harmony. Associated with nurturing and emotional balance.',
-            'Blue': 'Embodies truth, communication, peace, and authentic expression. Connected to clarity of thought and peaceful wisdom.',
-            'Indigo': 'Represents intuition, psychic abilities, spiritual insight, and deep knowing. Associated with seeing beyond the physical realm.',
-            'Violet': 'Symbolizes spiritual connection, divine consciousness, and transformation. Connected to higher wisdom and spiritual development.',
-            'Gold': 'Represents enlightenment, divine wisdom, spiritual mastery, and cosmic consciousness. Associated with ancient knowledge and spiritual teaching.',
-            'Silver': 'Embodies psychic sensitivity, lunar wisdom, and emotional depths. Connected to healing abilities and empathic understanding.',
-            'White': 'Represents purity, divine light, spiritual protection, and cosmic consciousness. Associated with healing energy and spiritual clarity.',
-            'Black': 'Symbolizes transformation, shadow integration, and deep healing work. Connected to helping others through difficult transitions.',
-            'Brown': 'Represents grounding, stability, earth wisdom, and practical guidance. Associated with creating security and foundational support.'
-        };
-        return spiritualMeanings[color] || `${color} energy carries unique spiritual vibrations that contribute to your overall energetic signature and spiritual development.`;
-    }
 
   const getGivingEnergyInterpretation = (color: string): string => {
     const givingInterpretations: Record<string, string> = {
@@ -5968,6 +5267,19 @@ export default function AuraAnalysis() {
     };
     return careers[color] || "Your unique energy combination suggests success in fields that honor your authentic spiritual expression.";
   };
+
+export default function AuraAnalysis() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { checkLimits, checkCredits, deductCredits } = usePremium();
+  const [image, setImage] = useState<File | null>(null);
+  const [result, setResult] = useState<AuraAnalysisResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [analysisName, setAnalysisName] = useState('');
+  const [nameEntered, setNameEntered] = useState(false);
+  const [processedAuraImage, setProcessedAuraImage] = useState<string | null>(null);
+  const [enhancedAuraImage, setEnhancedAuraImage] = useState<string | null>(null);
+  const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
 
   return (
     <div className="min-h-screen flex flex-col">
