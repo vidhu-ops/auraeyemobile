@@ -1383,30 +1383,74 @@ export default function AuraAnalysis() {
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
-        // Draw each section onto the combined canvas with proper error handling
+        // Draw each section onto the combined canvas with enhanced error handling and validation
+        console.log(`🎨 Starting to combine ${screenshots.length} sections into final canvas`);
+        
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
+          const sectionDataUrl = screenshots[i];
+          
+          // Validate section data before processing
+          if (!sectionDataUrl || sectionDataUrl.length < 1000) {
+            console.error(`❌ Section ${i + 1} has invalid data: ${sectionDataUrl ? sectionDataUrl.length : 0} bytes`);
+            continue;
+          }
+          
           await new Promise((resolve, reject) => {
             img.onload = () => {
               try {
-                ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
-                console.log(`✅ Section ${i + 1} drawn to combined canvas`);
+                const yPosition = i * (sectionHeight * scaleUsed);
+                console.log(`🎨 Drawing section ${i + 1}: ${img.width}x${img.height} at position y=${yPosition}`);
+                
+                // Ensure the draw operation is valid
+                if (img.width > 0 && img.height > 0) {
+                  ctx.drawImage(img, 0, yPosition, img.width, img.height);
+                  console.log(`✅ Section ${i + 1} drawn to combined canvas successfully`);
+                } else {
+                  console.error(`❌ Section ${i + 1} has invalid dimensions: ${img.width}x${img.height}`);
+                }
+                
                 resolve(true);
               } catch (error) {
                 console.error(`❌ Failed to draw section ${i + 1}:`, error);
                 reject(error);
               }
             };
+            
             img.onerror = (error) => {
               console.error(`❌ Failed to load section ${i + 1} image:`, error);
               reject(error);
             };
-            img.src = screenshots[i];
+            
+            // Set timeout to prevent hanging
+            setTimeout(() => {
+              reject(new Error(`Section ${i + 1} loading timed out`));
+            }, 10000);
+            
+            img.src = sectionDataUrl;
           });
         }
         
+        console.log(`🎨 All sections combined. Final canvas: ${combinedCanvas.width}x${combinedCanvas.height}`);
+        
+        // Ensure canvas has valid content before converting to data URL
+        const hasContent = screenshots.length > 0 && combinedCanvas.width > 0 && combinedCanvas.height > 0;
+        console.log(`Canvas validation: hasContent=${hasContent}, sections=${screenshots.length}, width=${combinedCanvas.width}, height=${combinedCanvas.height}`);
+        
+        if (!hasContent) {
+          throw new Error(`Invalid canvas state: sections=${screenshots.length}, dimensions=${combinedCanvas.width}x${combinedCanvas.height}`);
+        }
+        
         // Use PNG with higher quality for better PDF visibility
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.95);
+        let combinedImageDataUrl;
+        try {
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.95);
+          console.log(`Canvas toDataURL successful: ${combinedImageDataUrl.length} bytes`);
+        } catch (canvasError) {
+          console.error('Canvas toDataURL failed, trying JPEG:', canvasError);
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
+        }
+        
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
         // Higher size limits for better image quality and visibility in PDFs
@@ -1666,92 +1710,31 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // Auto-capture chakras tab if not already captured (with enhanced verification)
+      // Only proceed with PDF if chakras tab screenshot was manually captured by user
       const currentChakrasScreenshot = capturedScreenshots.get('chakras');
       const hasValidChakrasScreenshot = currentChakrasScreenshot && currentChakrasScreenshot.length > 1000;
       
       if (!hasValidChakrasScreenshot) {
-        console.log('Auto-capturing chakras tab for PDF generation...');
-        try {
-          // First, ensure the chakras tab is active/visible
-          const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
-          if (chakrasTabTrigger) {
-            console.log('Clicking chakras tab trigger to activate tab');
-            chakrasTabTrigger.click();
-            // Wait for tab to become active and content to render
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } else {
-            console.warn('Chakras tab trigger not found, trying alternative selector');
-            // Alternative selector - try finding the tab trigger by text content
-            const allTabs = document.querySelectorAll('[role="tab"]');
-            for (const tab of allTabs) {
-              if (tab.textContent?.toLowerCase().includes('chakras')) {
-                console.log('Found chakras tab by text content, clicking...');
-                (tab as HTMLElement).click();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                break;
-              }
-            }
-          }
-          
-          await captureTabScreenshot('chakras');
-          console.log('Chakras tab captured successfully for PDF');
-          
-          // Wait a moment for state to update then verify
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Verify the screenshot was actually captured with a fresh check
-          const verificationScreenshot = capturedScreenshots.get('chakras');
-          if (verificationScreenshot && verificationScreenshot.length > 1000) {
-            console.log('✅ Chakras tab screenshot confirmed in capturedScreenshots');
-          } else {
-            console.error('❌ Chakras tab screenshot NOT found in capturedScreenshots after capture');
-          }
-        } catch (captureError) {
-          console.error('Failed to auto-capture chakras tab:', captureError);
-          // Try manual retry with different approach
-          try {
-            console.log('Attempting manual retry for chakras tab capture...');
-            setActiveTab('chakras');
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            await captureTabScreenshot('chakras');
-            
-            // Final verification after retry
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (!capturedScreenshots.has('chakras')) {
-              console.error('❌ CRITICAL: Chakras tab still not captured after retry');
-              // Force one more capture attempt with the active tab
-              console.log('🔧 Forcing final capture attempt...');
-              const activeTabContent = document.querySelector('[data-state="active"]');
-              if (activeTabContent) {
-                console.log('Found active tab content, attempting direct capture...');
-                await captureTabScreenshot('chakras');
-              }
-            }
-          } catch (retryError) {
-            console.error('Manual retry also failed:', retryError);
-          }
-        }
+        console.log('⚠️ Chakras tab screenshot not captured yet. User must click screenshot button first.');
+        toast({
+          title: "Screenshot Required",
+          description: "Please capture the Detailed Chakras tab screenshot first by clicking the screenshot button on that tab.",
+          variant: "destructive",
+        });
+        return;
       } else {
-        console.log('Chakras tab already captured, proceeding with PDF generation');
-        // Double-check that the screenshot is valid
-        const chakrasScreenshot = capturedScreenshots.get('chakras');
-        if (!chakrasScreenshot || chakrasScreenshot.length < 1000) {
-          console.warn('🔧 Chakras screenshot exists but appears invalid, re-capturing...');
-          try {
-            // Ensure chakras tab is active first
-            const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
-            if (chakrasTabTrigger) {
-              chakrasTabTrigger.click();
-              await new Promise(resolve => setTimeout(resolve, 800));
-            }
-            await captureTabScreenshot('chakras');
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for state update
-          } catch (recaptureError) {
-            console.error('Failed to re-capture chakras tab:', recaptureError);
-          }
-        } else {
-          console.log('✅ Chakras screenshot validation passed:', (chakrasScreenshot.length / 1024 / 1024).toFixed(2), 'MB');
+        console.log('✅ Chakras tab screenshot found, proceeding with PDF generation');
+        console.log('✅ Chakras screenshot validation passed:', (currentChakrasScreenshot.length / 1024 / 1024).toFixed(2), 'MB');
+        
+        // Validate screenshot is not corrupted
+        if (!currentChakrasScreenshot.startsWith('data:image/')) {
+          console.error('❌ Chakras screenshot appears to be corrupted');
+          toast({
+            title: "Corrupted Screenshot",
+            description: "The chakras screenshot appears to be corrupted. Please recapture it.",
+            variant: "destructive",
+          });
+          return;
         }
       }
 
