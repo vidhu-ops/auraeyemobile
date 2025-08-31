@@ -2420,15 +2420,15 @@ export default function AuraAnalysis() {
               finalWidth = finalHeight / trueAspectRatio;
             }
             
-            // If the image is very long (tall), we need to handle it differently
-            // Force chakras tab to always use multi-section approach for 4-part breakdown
-            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
+            // Force specific tabs into multi-section approach regardless of aspect ratio
+            // Analysis and energy-map MUST use 4 sections, chakras keeps its existing logic
+            const isLongScreenshot = trueAspectRatio > 3.0 || ['chakras', 'analysis', 'energy-map'].includes(tabId);
             
             if (isLongScreenshot) {
-              // Special handling for chakras tab - force exactly 4 sections
+              // Force exactly 4 sections for specific tabs
               let sectionsNeeded;
-              if (tabId === 'chakras') {
-                sectionsNeeded = 4; // Force exactly 4 sections for chakras
+              if (['chakras', 'analysis', 'energy-map'].includes(tabId)) {
+                sectionsNeeded = 4; // Force exactly 4 sections for these critical tabs
               } else {
                 sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
               }
@@ -2436,17 +2436,22 @@ export default function AuraAnalysis() {
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
               
-              // Special handling for ALL 4-section tabs: 2 sections per page (except chakras and guidance which remain unchanged)
-              const isStandardFourSectionTab = !['chakras', 'guidance'].includes(tabId);
-              const sectionsPerPage = isStandardFourSectionTab ? 2 : 1; // 2 sections per page for all 4-section tabs
+              // Special handling for analysis and energy-map: 1 section per page for perfect clarity
+              const isAnalysisOrEnergyMap = ['analysis', 'energy-map'].includes(tabId);
+              const isOtherFourSectionTab = !['chakras', 'guidance', 'analysis', 'energy-map'].includes(tabId);
+              let sectionsPerPage;
+              if (isAnalysisOrEnergyMap) {
+                sectionsPerPage = 1; // 1 section per page for analysis and energy-map to prevent overlapping
+              } else if (isOtherFourSectionTab) {
+                sectionsPerPage = 2; // 2 sections per page for other tabs
+              } else {
+                sectionsPerPage = 1; // 1 section per page for chakras and guidance
+              }
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // For all 4-section tabs: start new page every 2 sections
-                // For chakras/guidance tabs: start new page for each section after the first
-                const shouldStartNewPage = isStandardFourSectionTab 
-                  ? (section > 0 && section % sectionsPerPage === 0)
-                  : (section > 0);
+                // Page break logic based on sections per page setting
+                const shouldStartNewPage = section > 0 && section % sectionsPerPage === 0;
                 
                 if (shouldStartNewPage) {
                   pdf.addPage();
@@ -2492,28 +2497,29 @@ export default function AuraAnalysis() {
                   sectionFinalHeight = sectionFinalHeight * 2.0; // Double height
                 }
                 
-                // Add section titles for all 4-section tabs for clarity (except chakras and guidance)
-                if (isStandardFourSectionTab) {
+                // Add section titles for analysis and energy-map tabs for clear identification
+                if (isAnalysisOrEnergyMap) {
                   pdf.setFontSize(12);
                   pdf.setTextColor(100, 100, 100);
                   yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Section ${section + 1} of ${sectionsNeeded}`, 20, yPosition);
                   yPosition += 8;
                 }
-                // Section titles removed for chakras/guidance tabs for continuous image flow as requested
+                // Section titles removed for other tabs for continuous image flow as requested
                 
                 // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   
-                  // Calculate spacing based on tab type and section position
+                  // Calculate spacing based on sections per page
                   let spacingAfterSection;
-                  if (isStandardFourSectionTab) {
-                    // For all 4-section tabs: different spacing for first vs second section on page
+                  if (sectionsPerPage === 1) {
+                    // For 1 section per page: minimal spacing since each section gets its own page
+                    spacingAfterSection = 10;
+                  } else {
+                    // For 2 sections per page: different spacing for first vs second section on page
                     const sectionOnPage = section % sectionsPerPage;
                     spacingAfterSection = sectionOnPage === 0 ? 25 : 15; // More space after first section on page
-                  } else {
-                    spacingAfterSection = 15; // Standard spacing for chakras/guidance tabs
                   }
                   
                   yPosition += sectionFinalHeight + spacingAfterSection;
