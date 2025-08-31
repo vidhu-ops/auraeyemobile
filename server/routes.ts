@@ -1036,20 +1036,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 550x700 pixels and compress to 20KB maximum for consistent aura processing
+  // Helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Start with lower quality to target 20KB - more aggressive compression needed
-      let quality = 65;
+      // Start with moderate quality and progressively reduce to hit 50KB target
+      let quality = 85;
       let compressedBuffer: Buffer;
-      const targetSizeKB = 20; // NEW TARGET: 20KB for faster loading and consistent sizing
+      const targetSizeKB = 50;
       
-      // Keep compressing until we reach 20KB or lower for consistent processing
+      // Keep compressing until we reach 50KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(550, 700, { // NEW DIMENSIONS: 550x700 for uniform display
+          .resize(600, 900, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1065,15 +1065,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality} (target: ${targetSizeKB}KB)`);
         
         // If still too large, reduce quality by 5 for finer control
-        if (fileSizeKB > targetSizeKB && quality > 15) {
+        if (fileSizeKB > targetSizeKB && quality > 25) {
           quality -= 5;
         } else {
           break; // Either small enough or minimum quality reached
         }
-      } while (quality >= 15);
+      } while (quality >= 25);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 550x700px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();
@@ -1104,16 +1104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
-      }
-
-      // Resize image to standard dimensions (550x700px)
+      // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // Check if image contains a human using Gemini vision API - object analysis should reject human images
@@ -1392,15 +1383,6 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         return res.status(400).json({ message: "No image provided" });
       }
 
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
-      }
-
       // For aura analysis, we'll be more permissive to ensure processing
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
@@ -1460,7 +1442,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       if (!useExistingAnalysis) {
         try {
           // Generate standardized aura visualization with consistent dimensions and zone positioning
-          console.log("Generating standardized aura visualization with 550x700px dimensions...");
+          console.log("Generating standardized aura visualization with 600x900px dimensions...");
           
           // Ensure aura analysis has zone-specific colors for the new visualization system
           if (!auraAnalysis.auraLayerColors) {
@@ -1480,7 +1462,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             `data:image/jpeg;base64,${imageData}`,
             auraAnalysis
           );
-          console.log("Standardized aura visualization completed successfully with 550x700px dimensions");
+          console.log("Standardized aura visualization completed successfully with 600x900px dimensions");
           console.log("Aura analysis generated successfully");
         } catch (analysisError) {
         console.error("Analysis generation failed:", analysisError);
@@ -1679,24 +1661,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     try {
       let imageData: string;
       
-      let imgBuffer: Buffer;
       if (req.file) {
-        imgBuffer = req.file.buffer;
         imageData = req.file.buffer.toString("base64");
       } else if (req.body.image) {
-        imgBuffer = Buffer.from(req.body.image, 'base64');
         imageData = req.body.image;
       } else {
         return res.status(400).json({ message: "No image provided" });
-      }
-
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
       }
 
       try {
@@ -2648,15 +2618,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       const imageBuffer = req.file.buffer;
-      
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imageBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
-      }
       
       // Detect human in image first
       const hasHuman = await detectHumanInImage(imageBuffer);
