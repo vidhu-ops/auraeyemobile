@@ -1380,22 +1380,27 @@ export default function AuraAnalysis() {
         const combinedCanvas = document.createElement('canvas');
         const ctx = combinedCanvas.getContext('2d')!;
         
-        // Calculate combined dimensions using enhanced width and scale factor
-        // Use adaptive scaling based on viewport size for optimal quality
+        // Calculate combined dimensions using enhanced width and scale factor  
+        // Use much higher scaling for crystal-clear PDF quality
         let scaleUsed;
         if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5; // Lower scale for large screens to prevent memory issues
+          scaleUsed = 6.0; // Significantly increased for maximum PDF clarity
         } else {
-          scaleUsed = viewportWidth > 1400 ? 2.9 : 3.5;
+          scaleUsed = 5.0; // Higher scale for other tabs too
         }
         
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
-        console.log(`🎨 Canvas dimensions: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x, viewport: ${viewportWidth}px)`);
+        console.log(`🎨 High-Resolution Canvas: ${finalWidth}x${finalHeight} (scale: ${scaleUsed}x for PDF clarity)`);
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
+        
+        // Set canvas context for high-quality rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.textRenderingOptimization = 'optimizeLegibility';
         
         // Draw each section onto the combined canvas with enhanced error handling and validation
         console.log(`🎨 Starting to combine ${screenshots.length} sections into final canvas`);
@@ -1484,21 +1489,22 @@ export default function AuraAnalysis() {
           }
         }
         
-        // Use PNG with higher quality for better PDF visibility
+        // Use PNG with maximum quality for crystal-clear PDF visibility
         let combinedImageDataUrl;
         try {
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.95);
-          console.log(`Canvas toDataURL successful: ${combinedImageDataUrl.length} bytes`);
+          // Use PNG for lossless quality - perfect for text and detailed content
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/png');
+          console.log(`High-quality PNG generated: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
           
           // Final validation - ensure we have a valid image
           if (combinedImageDataUrl.length < 1000) {
-            console.error('❌ Generated image too small, trying JPEG fallback');
-            combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
-            console.log(`JPEG fallback result: ${combinedImageDataUrl.length} bytes`);
+            console.error('❌ Generated image too small, trying high-quality JPEG fallback');
+            combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 1.0); // Maximum JPEG quality
+            console.log(`Max quality JPEG fallback: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
           }
         } catch (canvasError) {
-          console.error('Canvas toDataURL failed, trying JPEG:', canvasError);
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.95);
+          console.error('Canvas PNG failed, trying maximum quality JPEG:', canvasError);
+          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 1.0);
         }
         
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
@@ -1845,7 +1851,7 @@ export default function AuraAnalysis() {
         }
       };
 
-      // Helper function to add screenshot images (simplified for synchronous use)
+      // Helper function to add screenshot images with maximum quality and size
       const addScreenshotImage = (imageDataUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
             try {
                 // Ensure y is a valid number
@@ -1853,17 +1859,25 @@ export default function AuraAnalysis() {
                     y = 20;
                 }
 
-                if (y + maxHeight > pageHeight - 20) {
+                // Use much larger dimensions for crystal-clear PDF images
+                const enhancedWidth = Math.min(maxWidth * 1.5, pageWidth - 20); // 50% larger width
+                const enhancedHeight = Math.min(maxHeight * 1.8, pageHeight * 0.7); // 80% larger height, max 70% of page
+                
+                console.log(`📄 Adding screenshot to PDF: ${enhancedWidth}x${enhancedHeight}mm at position ${x},${y}`);
+
+                if (y + enhancedHeight > pageHeight - 20) {
                     pdf.addPage();
                     y = 20;
                 }
 
-                // Add image with fixed dimensions for consistent layout
-                pdf.addImage(imageDataUrl, 'PNG', x, y, maxWidth, maxHeight);
-                return y + maxHeight + 5;
+                // Add image with enhanced dimensions and specify format for best quality
+                const imageFormat = imageDataUrl.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                pdf.addImage(imageDataUrl, imageFormat, x, y, enhancedWidth, enhancedHeight, undefined, 'FAST'); // FAST compression for quality
+                
+                return y + enhancedHeight + 10; // More spacing after larger image
             } catch (error) {
                 console.error('Error adding screenshot image:', error);
-                return y + 10;
+                return y + 15; // More fallback spacing
             }
         };
 
@@ -1968,7 +1982,7 @@ export default function AuraAnalysis() {
                   compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Still maintain good visibility
                 }
                 
-                console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
+                console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(3)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
                 resolve(compressedDataUrl);
               } catch (canvasError) {
                 console.error('Canvas processing error:', canvasError);
@@ -2286,19 +2300,27 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // CRITICAL FIX: Maintain original aspect ratio without squishing
-            const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
-            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
+            // ENHANCED FIX: Use much larger dimensions for crystal-clear PDF images
+            const pageMaxWidth = 190; // Use almost full page width for maximum clarity
+            const pageMaxHeight = 260; // Use most of the page height for detailed visibility
             
-            // Calculate proper dimensions maintaining original aspect ratio
-            let finalWidth = pageMaxWidth;
+            // Calculate proper dimensions maintaining original aspect ratio but much larger
+            let finalWidth = pageMaxWidth; // Start with maximum width
             let finalHeight = finalWidth * trueAspectRatio;
             
-            // If height exceeds page, scale down proportionally
+            // If height exceeds page, scale down but keep as large as possible
             if (finalHeight > pageMaxHeight) {
               finalHeight = pageMaxHeight;
               finalWidth = finalHeight / trueAspectRatio;
+              
+              // Ensure we still use substantial width for readability  
+              if (finalWidth < pageMaxWidth * 0.7) { // If width gets too small
+                finalWidth = pageMaxWidth * 0.8; // Use 80% of page width minimum
+                finalHeight = finalWidth * trueAspectRatio; 
+              }
             }
+            
+            console.log(`📄 PDF screenshot dimensions: ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}mm (aspect ratio: ${trueAspectRatio.toFixed(2)})`);
             
             // If the image is very long (tall), we need to handle it differently
             // Force chakras tab to always use multi-section approach for 4-part breakdown
@@ -2338,7 +2360,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
+                const sectionDataUrl = sectionCanvas.toDataURL('image/png'); // Use PNG for highest quality sections
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -2351,10 +2373,10 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Larger size for chakras tab for maximum visibility in PDF
+                // Maximum size for chakras tab for crystal-clear PDF visibility
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 2.8; // Increased from 2.2 to 2.8 for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 2.8; // Increased from 2.2 to 2.8 for better visibility
+                  sectionFinalWidth = sectionFinalWidth * 3.5; // Significantly increased for maximum clarity
+                  sectionFinalHeight = sectionFinalHeight * 3.5; // Significantly increased for maximum clarity
                 }
                 
                 // Section titles removed for continuous image flow as requested
@@ -2362,7 +2384,8 @@ export default function AuraAnalysis() {
                 // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  const imageFormat = compressedSectionDataUrl.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                  pdf.addImage(compressedSectionDataUrl, imageFormat, 20, yPosition, sectionFinalWidth, sectionFinalHeight, undefined, 'FAST');
                   yPosition += sectionFinalHeight + 10;
                   console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
                 } catch (sectionError) {
