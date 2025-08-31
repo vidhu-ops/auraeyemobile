@@ -969,33 +969,9 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      // Enhanced element selection for detailed chakras tab
-      let element: Element | null = null;
-      
-      if (tabId === 'chakras') {
-        // Special handling for detailed chakras tab (3rd tab)
-        element = document.querySelector('[data-tab="chakras"]') || 
-                 document.querySelector('[data-value="chakras"]') ||
-                 document.querySelector('[role="tabpanel"][data-state="active"]');
-        
-        // If still not found, try to find the active tab content
-        if (!element) {
-          const allTabPanels = document.querySelectorAll('[role="tabpanel"]');
-          // Try to get the 3rd tab panel (detailed chakras should be 3rd)
-          if (allTabPanels.length >= 3) {
-            element = allTabPanels[2]; // 0-indexed, so 2 = 3rd tab
-          } else if (allTabPanels.length > 0) {
-            // Fallback to active tab panel
-            element = document.querySelector('[role="tabpanel"][data-state="active"]') || allTabPanels[0];
-          }
-        }
-      } else {
-        // Standard element selection for other tabs
-        element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
-      }
-      
+      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
       if (!element) {
-        throw new Error(`Tab content not found for ${tabId}`);
+        throw new Error('Tab content not found');
       }
 
       const htmlElement = element as HTMLElement;
@@ -1197,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5, // Maximum scale for crystal clear text readability
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0, // Optimized scale for better compression while maintaining readability
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1288,7 +1264,7 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5;
+        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
@@ -1307,12 +1283,12 @@ export default function AuraAnalysis() {
           });
         }
         
-        // Use maximum quality PNG for text clarity
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
+        // Use PNG with 10% more compression
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // Ultra-high size limits for perfect text legibility
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 70 * 1024 * 1024 : 40 * 1024 * 1024; // Further increased for perfect clarity
+        // Optimized size limits for better compression while maintaining visibility
+        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 18 * 1024 * 1024 : 10 * 1024 * 1024; // Reduced by ~30%
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1433,11 +1409,11 @@ export default function AuraAnalysis() {
         htmlElement.style.maxWidth = '';
 
         // Use PNG with 10% more compression  
-        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 60 * 1024 * 1024 : 35 * 1024 * 1024; // Ultra-high limits for perfect text legibility
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 14 * 1024 * 1024 : 8 * 1024 * 1024; // Reduced by ~30%
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1514,46 +1490,25 @@ export default function AuraAnalysis() {
       if (!capturedScreenshots.has('chakras')) {
         console.log('Auto-capturing chakras tab for PDF generation...');
         try {
-          // First, ensure the detailed chakras tab is active/visible (3rd tab)
-          console.log('Searching for detailed chakras tab (3rd tab)...');
-          
-          // Try multiple selectors to find the detailed chakras tab
-          let chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
-          
-          if (!chakrasTabTrigger) {
-            // Alternative 1: Try data-value attribute
-            chakrasTabTrigger = document.querySelector('[data-value="chakras"]') as HTMLElement;
-          }
-          
-          if (!chakrasTabTrigger) {
-            // Alternative 2: Find by text content containing "Detailed" or "Chakras"
+          // First, ensure the chakras tab is active/visible
+          const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
+          if (chakrasTabTrigger) {
+            console.log('Clicking chakras tab trigger to activate tab');
+            chakrasTabTrigger.click();
+            // Wait for tab to become active and content to render
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            console.warn('Chakras tab trigger not found, trying alternative selector');
+            // Alternative selector - try finding the tab trigger by text content
             const allTabs = document.querySelectorAll('[role="tab"]');
             for (const tab of allTabs) {
-              const tabText = tab.textContent?.toLowerCase() || '';
-              if (tabText.includes('detailed') && tabText.includes('chakras')) {
-                console.log('Found detailed chakras tab by text content:', tabText);
-                chakrasTabTrigger = tab as HTMLElement;
+              if (tab.textContent?.toLowerCase().includes('chakras')) {
+                console.log('Found chakras tab by text content, clicking...');
+                (tab as HTMLElement).click();
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 break;
               }
             }
-          }
-          
-          if (!chakrasTabTrigger) {
-            // Alternative 3: Try the 3rd tab (index 2)
-            const allTabs = document.querySelectorAll('[role="tab"]');
-            if (allTabs.length >= 3) {
-              console.log('Using 3rd tab as detailed chakras tab');
-              chakrasTabTrigger = allTabs[2] as HTMLElement;
-            }
-          }
-          
-          if (chakrasTabTrigger) {
-            console.log('Clicking detailed chakras tab to activate...');
-            chakrasTabTrigger.click();
-            // Wait for tab to become active and content to render
-            await new Promise(resolve => setTimeout(resolve, 1500));
-          } else {
-            console.warn('Detailed chakras tab trigger not found with any selector');
           }
           
           await captureTabScreenshot('chakras');
@@ -1578,7 +1533,7 @@ export default function AuraAnalysis() {
           }
         }
       } else {
-        console.log('🔮 Detailed chakras tab already captured, proceeding with PDF generation with guaranteed 4-part breakdown');
+        console.log('Chakras tab already captured, proceeding with PDF generation');
       }
 
       // Test jsPDF initialization
@@ -1727,10 +1682,10 @@ export default function AuraAnalysis() {
           return new Promise<string>((resolve, reject) => {
             img.onload = () => {
               try {
-                // Maximum canvas size for crystal clear text
-                const maxCanvasSize = 6144; // Significantly increased for text legibility
-                let canvasWidth = Math.min(targetWidth * 5, maxCanvasSize); // High multiplier for text clarity
-                let canvasHeight = Math.min(targetHeight * 5, maxCanvasSize);
+                // Enhanced canvas size for better PDF visibility
+                const maxCanvasSize = 3072; // Reduced from 4096 for better compression while maintaining quality
+                let canvasWidth = Math.min(targetWidth * 3, maxCanvasSize); // Reduced multiplier from 4 to 3
+                let canvasHeight = Math.min(targetHeight * 3, maxCanvasSize);
                 
                 // Preserve aspect ratio
                 const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -1754,16 +1709,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Ultra-high quality compression for crystal clear text (additional 15% improvement)
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Near-maximum quality for perfect text legibility
+                // Enhanced compression with 30% reduction while maintaining visibility
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Reduced from 0.95 to 0.75 (30% less quality)
                 
-                // If still too large, reduce quality minimally to maintain perfect readability
-                const maxSize = 20 * 1024 * 1024; // Further increased size limit for ultra-high quality
+                // If still too large, reduce quality progressively but maintain minimum visibility
+                const maxSize = 6 * 1024 * 1024; // Reduced from 8MB to 6MB (25% reduction)
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.96); // Ultra-high quality maintained
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65); // Reduced from 0.85
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.94); // Still ultra-high quality for perfect text clarity
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55); // Reduced from 0.7 but still visible
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2051,77 +2006,23 @@ export default function AuraAnalysis() {
       }
       yPosition += 15;
 
-      // SECTION 8: CAPTURED TAB SCREENSHOTS (FORCE CHAKRAS TAB INCLUSION)
-      // Always ensure chakras tab is captured and included
-      console.log(`Capturedscreenshots size: ${capturedScreenshots.size}`);
-      console.log(`Available screenshots:`, Array.from(capturedScreenshots.keys()));
-      
-      // Force detailed chakras tab capture if missing
-      if (!capturedScreenshots.has('chakras')) {
-        console.log('Detailed chakras tab missing from captured screenshots, attempting auto-capture...');
-        try {
-          // Make sure we're clicking the right tab first
-          const detailedChakrasTab = document.querySelector('[role="tab"]');
-          const allTabs = document.querySelectorAll('[role="tab"]');
-          
-          // Find and click the detailed chakras tab (should be 3rd tab)
-          for (let i = 0; i < allTabs.length; i++) {
-            const tab = allTabs[i] as HTMLElement;
-            const tabText = tab.textContent?.toLowerCase() || '';
-            if ((tabText.includes('detailed') && tabText.includes('chakras')) || i === 2) {
-              console.log(`Clicking tab ${i + 1} for detailed chakras capture`);
-              tab.click();
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              break;
-            }
-          }
-          
-          await captureTabScreenshot('chakras');
-          console.log('Detailed chakras tab capture completed');
-        } catch (error) {
-          console.error('Failed to auto-capture detailed chakras tab:', error);
-        }
-      }
-      
+      // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
       if (capturedScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
         
         pdf.setFontSize(18);
         pdf.setTextColor(75, 0, 130);
-        yPosition = addTextWithPageBreak('DETAILED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
+        yPosition = addTextWithPageBreak('CAPTURED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
         yPosition += 15;
         
         pdf.setFontSize(11);
         pdf.setTextColor(60, 60, 60);
-        yPosition = addWrappedText('These screenshots provide detailed visual analysis from different tabs including the chakras analysis.', 20, yPosition, 170);
+        yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
         yPosition += 10;
         
-        // Process chakras tab first (priority)
-        const priorityOrder = ['chakras', 'analysis', 'detailed', 'energy-map', 'energy-reading', 'guidance', 'spectrum'];
-        const sortedScreenshots = new Map();
-        
-        // Add screenshots in priority order
-        priorityOrder.forEach(tabId => {
-          if (capturedScreenshots.has(tabId)) {
-            sortedScreenshots.set(tabId, capturedScreenshots.get(tabId));
-          }
-        });
-        
-        // Add any remaining screenshots
-        capturedScreenshots.forEach((value, key) => {
-          if (!sortedScreenshots.has(key)) {
-            sortedScreenshots.set(key, value);
-          }
-        });
-        
         // Add each captured screenshot with proper sizing and multi-page support
-        for (const [tabId, imageDataUrl] of Array.from(sortedScreenshots.entries())) {
-          
-          // Special logging for chakras tab
-          if (tabId === 'chakras') {
-            console.log(`🔮 Processing detailed chakras tab for PDF (3rd tab) - guaranteed 4-part breakdown`);
-          }
+        for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           
           try {
             // Create a temporary image to get exact dimensions
@@ -2154,24 +2055,19 @@ export default function AuraAnalysis() {
             
             // If the image is very long (tall), we need to handle it differently
             // Force chakras tab to always use multi-section approach for 4-part breakdown
-            const isLongScreenshot = trueAspectRatio > 2.5 || tabId === 'chakras'; // Force chakras tab to use 4-part breakdown
+            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
             
             if (isLongScreenshot) {
               // Special handling for chakras tab - force exactly 4 sections
               let sectionsNeeded;
               if (tabId === 'chakras') {
-                sectionsNeeded = 4; // Force exactly 4 sections for detailed chakras tab
-                console.log(`Chakras tab detected - forcing 4-section breakdown for detailed analysis`);
+                sectionsNeeded = 4; // Force exactly 4 sections for chakras
               } else {
-                sectionsNeeded = Math.ceil(trueAspectRatio / 2.5); // Reduced ratio for better section breaks
+                sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
               }
               const sectionHeight = pageMaxHeight;
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
-            
-            if (tabId === 'chakras') {
-              console.log(`🔮 DETAILED CHAKRAS TAB: Forcing ${sectionsNeeded} sections for comprehensive chakra analysis`);
-            }
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
@@ -2208,155 +2104,78 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Maximum size for chakras tab for crystal clear text
+                // Enhanced size for chakras tab with optimized compression balance
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 3.5; // Maximum size for text legibility
-                  sectionFinalHeight = sectionFinalHeight * 3.5; // Maximum size for text legibility
+                  sectionFinalWidth = sectionFinalWidth * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
                 
-                // Enhanced error handling and compression for chakras tab sections
+                // Compress and add the section with error handling
                 try {
-                  // Special high-quality handling for chakras tab
-                  let finalSectionDataUrl = sectionDataUrl;
-                  if (tabId === 'chakras') {
-                    // Use maximum quality for chakras tab sections
-                    finalSectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.98);
-                    console.log(`Chakras section ${section + 1} using maximum quality compression`);
-                  }
-                  
-                  const compressedSectionDataUrl = await compressImageForPDF(finalSectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                  
-                  // Add with enhanced error recovery
+                  const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   yPosition += sectionFinalHeight + 10;
-                  console.log(`✅ Successfully added ${tabId} section ${section + 1}/${sectionsNeeded} to PDF`);
-                  
-                  if (tabId === 'chakras') {
-                    console.log(`🔮 Detailed chakras section ${section + 1} added with dimensions: ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
-                  }
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
                 } catch (sectionError) {
-                  console.error(`❌ Failed to add ${tabId} section ${section + 1}:`, sectionError);
-                  
-                  // Enhanced fallback for chakras tab
-                  if (tabId === 'chakras') {
-                    try {
-                      // Try with lower quality as fallback for chakras
-                      const fallbackDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85);
-                      const fallbackCompressed = await compressImageForPDF(fallbackDataUrl, sectionFinalWidth * 0.8, sectionFinalHeight * 0.8);
-                      pdf.addImage(fallbackCompressed, 'JPEG', 20, yPosition, sectionFinalWidth * 0.8, sectionFinalHeight * 0.8);
-                      yPosition += (sectionFinalHeight * 0.8) + 10;
-                      console.log(`✅ Chakras section ${section + 1} added with fallback compression`);
-                    } catch (fallbackError) {
-                      console.error(`❌ Chakras section ${section + 1} fallback also failed:`, fallbackError);
-                      // Add placeholder only if both attempts fail
-                      pdf.setFontSize(10);
-                      pdf.setTextColor(150, 150, 150);
-                      yPosition = addTextWithPageBreak(`Detailed Chakras section ${section + 1} could not be embedded`, 20, yPosition);
-                      yPosition += 15;
-                    }
-                  } else {
-                    // Standard placeholder for other tabs
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(150, 150, 150);
-                    yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
-                    yPosition += 15;
-                  }
+                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
+                  // Add placeholder text for failed section
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(150, 150, 150);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
+                  yPosition += 15;
                 }
                 
+                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
-              // SPECIAL OVERRIDE FOR CHAKRAS TAB: Force 4-section breakdown regardless of aspect ratio
-              if (tabId === 'chakras') {
-                console.log(`🔮 CHAKRAS TAB OVERRIDE: Forcing 4-section breakdown even in single mode`);
-                
-                const sectionsNeeded = 4;
-                const sectionHeight = originalHeight / sectionsNeeded;
-                const sectionFinalHeight = pageMaxHeight / 4;
-                
-                for (let section = 0; section < sectionsNeeded; section++) {
-                  const sectionCanvas = document.createElement('canvas');
-                  const sectionCtx = sectionCanvas.getContext('2d');
-                  
-                  sectionCanvas.width = originalWidth;
-                  sectionCanvas.height = sectionHeight;
-                  
-                  const sectionImg = new Image();
-                  sectionImg.src = imageDataUrl;
-                  await new Promise(resolve => { sectionImg.onload = resolve; });
-                  
-                  sectionCtx?.drawImage(sectionImg, 0, section * sectionHeight, originalWidth, sectionHeight, 0, 0, originalWidth, sectionHeight);
-                  
-                  const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.98);
-                  
-                  try {
-                    const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, pageMaxWidth, sectionFinalHeight);
-                    
-                    if (yPosition + sectionFinalHeight > pageHeight - 40) {
-                      pdf.addPage();
-                      yPosition = 20;
-                    }
-                    
-                    pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, pageMaxWidth, sectionFinalHeight);
-                    yPosition += sectionFinalHeight + 10;
-                    console.log(`🔮 Detailed chakras section ${section + 1}/4 added to PDF (override mode)`);
-                  } catch (sectionError) {
-                    console.error(`❌ Failed to add chakras section ${section + 1}:`, sectionError);
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(150, 150, 150);
-                    yPosition = addTextWithPageBreak(`Detailed Chakras section ${section + 1} could not be embedded`, 20, yPosition);
-                    yPosition += 15;
-                  }
-                }
-              } else {
-                // For normal screenshots (non-chakras), use single page with proper aspect ratio
-                const minWidth = 120;
-                const minHeight = 160;
-                
-                // Only increase size if we have room and it improves readability
-                if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
-                  finalWidth = minWidth;
-                  finalHeight = minWidth * trueAspectRatio;
-                }
-                
-                // Final check: ensure we don't exceed page boundaries
-                if (finalWidth > pageMaxWidth) {
-                  finalWidth = pageMaxWidth;
-                  finalHeight = finalWidth * trueAspectRatio;
-                }
-                
-                if (finalHeight > pageMaxHeight) {
-                  finalHeight = pageMaxHeight;
-                  finalWidth = finalHeight / trueAspectRatio;
-                }
-                
-                console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
-                
-                // Check if screenshot would exceed page height
-                if (yPosition + finalHeight > pageHeight - 40) {
-                  pdf.addPage();
-                  yPosition = 20;
-                }
-                
-                // Compress the image data before adding to PDF to prevent memory issues
-                const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-                
-                // Add the screenshot with preserved aspect ratio and improved error handling
-                try {
-                  pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                  yPosition += finalHeight + 15;
-                  console.log(`Successfully added ${tabId} screenshot to PDF`);
-                  console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
-                } catch (addImageError) {
-                  console.error(`Error adding screenshot image:`, addImageError);
-                  // Add a placeholder text instead
-                  pdf.setFontSize(12);
-                  pdf.setTextColor(100, 100, 100);
-                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
-                  yPosition += 20;
-                }
+              // For normal screenshots, use single page with proper aspect ratio - already calculated above
+              // Ensure minimum readability while respecting page constraints
+              const minWidth = 120;
+              const minHeight = 160;
+              
+              // Only increase size if we have room and it improves readability
+              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
+                finalWidth = minWidth;
+                finalHeight = minWidth * trueAspectRatio;
+              }
+              
+              // Final check: ensure we don't exceed page boundaries
+              if (finalWidth > pageMaxWidth) {
+                finalWidth = pageMaxWidth;
+                finalHeight = finalWidth * trueAspectRatio;
+              }
+              
+              if (finalHeight > pageMaxHeight) {
+                finalHeight = pageMaxHeight;
+                finalWidth = finalHeight / trueAspectRatio;
+              }
+              
+              console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
+              
+              // Check if screenshot would exceed page height
+              if (yPosition + finalHeight > pageHeight - 40) {
+                pdf.addPage();
+                yPosition = 20;
+              }
+              
+              // Compress the image data before adding to PDF to prevent memory issues
+              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+              
+              // Add the screenshot with preserved aspect ratio and improved error handling
+              try {
+                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                yPosition += finalHeight + 15;
+                console.log(`Successfully added ${tabId} screenshot to PDF`);
+              } catch (addImageError) {
+                console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
+                // Add a placeholder text instead
+                pdf.setFontSize(12);
+                pdf.setTextColor(100, 100, 100);
+                yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
+                yPosition += 20;
               }
             }
             
@@ -2367,14 +2186,6 @@ export default function AuraAnalysis() {
             yPosition += 25;
           }
         }
-      } else {
-        console.log('⚠️ No screenshots captured for PDF generation');
-        // Add a note about missing screenshots
-        pdf.addPage();
-        yPosition = 20;
-        pdf.setFontSize(16);
-        pdf.setTextColor(200, 100, 100);
-        yPosition = addTextWithPageBreak('Screenshots could not be captured for this analysis', pageWidth/2, yPosition, { align: 'center' });
       }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
@@ -9406,7 +9217,10 @@ export default function AuraAnalysis() {
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                    
+                                      <div 
+                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
+                                      ></div>
                                       <div>
                                         <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -9435,7 +9249,10 @@ export default function AuraAnalysis() {
                                     
                                     {result.secondaryColor && (
                                       <div className="flex items-start gap-3">
-                                        
+                                        <div 
+                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
+                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
+                                        ></div>
                                         <div>
                                           <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
