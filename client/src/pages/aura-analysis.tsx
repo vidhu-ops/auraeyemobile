@@ -969,10 +969,29 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      console.log(`🔍 Looking for tab content with tabId: ${tabId}`);
+      
+      // Multiple selector attempts to ensure we find the chakras tab
+      let element = document.querySelector(`[data-tab="${tabId}"]`);
+      
       if (!element) {
-        throw new Error('Tab content not found');
+        // Alternative selector - try by attribute value combination
+        element = document.querySelector(`[data-value="${tabId}"][data-tab="${tabId}"]`);
+        console.log(`🔍 Trying alternative selector [data-value="${tabId}"][data-tab="${tabId}"]`);
       }
+      
+      if (!element) {
+        // Final fallback - find the active tab content
+        element = document.querySelector('[data-state="active"]');
+        console.log(`🔍 Falling back to active tab selector`);
+      }
+      
+      if (!element) {
+        console.error(`❌ No element found for tabId: ${tabId}`);
+        throw new Error(`Tab content not found for ${tabId}`);
+      }
+      
+      console.log(`✅ Found element for ${tabId}:`, element);
 
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
@@ -1417,6 +1436,12 @@ export default function AuraAnalysis() {
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Special verification for chakras tab
+          if (tabId === 'chakras') {
+            console.log(`🎯 CHAKRAS TAB: Screenshot captured and stored in capturedScreenshots map`);
+            console.log(`🎯 CHAKRAS TAB: Current capturedScreenshots size:`, capturedScreenshots.size + 1);
+          }
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
           // Fallback to JPEG with 10% more compression
@@ -1424,12 +1449,25 @@ export default function AuraAnalysis() {
           if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
+          
+          // Special verification for chakras tab
+          if (tabId === 'chakras') {
+            console.log(`🎯 CHAKRAS TAB: Screenshot captured with JPEG compression and stored`);
+          }
           } else {
             console.error(`❌ ${tabId} single screenshot too large even with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
           }
         }
         
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
+      }
+      
+      // Final verification for chakras tab
+      if (tabId === 'chakras') {
+        setTimeout(() => {
+          console.log(`🎯 CHAKRAS TAB FINAL CHECK: Is in capturedScreenshots?`, capturedScreenshots.has('chakras'));
+          console.log(`🎯 CHAKRAS TAB FINAL CHECK: All captured tabs:`, Array.from(capturedScreenshots.keys()));
+        }, 500);
       }
       
       toast({
