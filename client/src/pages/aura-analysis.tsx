@@ -1486,6 +1486,26 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
+      // CRITICAL FIX: Ensure detailed chakras tab and other essential tabs are always captured for PDF
+      const essentialTabs = ['chakras', 'analysis', 'energy-map'];
+      
+      for (const tabId of essentialTabs) {
+        if (!capturedScreenshots.has(tabId)) {
+          console.log(`📸 Auto-capturing ${getTabDisplayName(tabId)} tab for PDF generation...`);
+          try {
+            await captureTabScreenshot(tabId);
+            console.log(`✅ ${getTabDisplayName(tabId)} tab captured successfully for PDF`);
+            // Add a small delay between captures to prevent issues
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } catch (captureError) {
+            console.warn(`⚠️ Failed to capture ${getTabDisplayName(tabId)} tab:`, captureError);
+            // Continue with PDF generation even if capture fails
+          }
+        } else {
+          console.log(`✅ ${getTabDisplayName(tabId)} tab already captured, ready for PDF`);
+        }
+      }
+
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
       const pdf = new jsPDF({
