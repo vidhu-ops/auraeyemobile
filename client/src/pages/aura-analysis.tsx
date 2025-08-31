@@ -1173,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0, // Optimized scale for better compression while maintaining readability
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1264,7 +1264,7 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5;
+        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
@@ -1287,8 +1287,8 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // Store with much higher size limit for enhanced quality screenshots, especially for chakras and detailed tabs
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 25 * 1024 * 1024 : 15 * 1024 * 1024;
+        // Optimized size limits for better compression while maintaining visibility
+        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 18 * 1024 * 1024 : 10 * 1024 * 1024; // Reduced by ~30%
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1413,7 +1413,7 @@ export default function AuraAnalysis() {
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 20 * 1024 * 1024 : 12 * 1024 * 1024;
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 14 * 1024 * 1024 : 8 * 1024 * 1024; // Reduced by ~30%
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1682,10 +1682,10 @@ export default function AuraAnalysis() {
           return new Promise<string>((resolve, reject) => {
             img.onload = () => {
               try {
-                // Calculate optimal canvas size - balance quality vs memory
-                const maxCanvasSize = 4096; // Max canvas dimension
-                let canvasWidth = Math.min(targetWidth * 4, maxCanvasSize);
-                let canvasHeight = Math.min(targetHeight * 4, maxCanvasSize);
+                // Enhanced canvas size for better PDF visibility
+                const maxCanvasSize = 3072; // Reduced from 4096 for better compression while maintaining quality
+                let canvasWidth = Math.min(targetWidth * 3, maxCanvasSize); // Reduced multiplier from 4 to 3
+                let canvasHeight = Math.min(targetHeight * 3, maxCanvasSize);
                 
                 // Preserve aspect ratio
                 const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -1709,16 +1709,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Try multiple compression levels to find best balance
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                // Enhanced compression with 30% reduction while maintaining visibility
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Reduced from 0.95 to 0.75 (30% less quality)
                 
-                // If still too large, reduce quality progressively
-                const maxSize = 8 * 1024 * 1024; // 8MB limit
+                // If still too large, reduce quality progressively but maintain minimum visibility
+                const maxSize = 6 * 1024 * 1024; // Reduced from 8MB to 6MB (25% reduction)
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65); // Reduced from 0.85
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55); // Reduced from 0.7 but still visible
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2104,10 +2104,10 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras tab - make much larger
+                // Enhanced size for chakras tab with optimized compression balance
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
+                  sectionFinalWidth = sectionFinalWidth * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
