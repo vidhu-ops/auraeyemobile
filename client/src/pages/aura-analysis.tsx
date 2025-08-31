@@ -1213,11 +1213,11 @@ export default function AuraAnalysis() {
             allowTaint: false,
             x: 0,
             y: startY,
-            width: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, viewportWidth, 900) : enhancedCaptureWidth, // Optimized width for chakras
+            width: htmlElement.scrollWidth, // Use actual content width to avoid black areas
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, viewportWidth, 900) : enhancedCaptureWidth, // Match optimized width
+            windowWidth: htmlElement.scrollWidth, // Match actual content width
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
@@ -1230,18 +1230,29 @@ export default function AuraAnalysis() {
                 elem.style.overflow = 'visible';
                 elem.style.height = 'auto';
                 elem.style.maxHeight = 'none';
-                // Special layout handling for chakras tab to prevent black areas
-                if (tabId === 'chakras') {
-                  elem.style.width = '100%';
-                  elem.style.maxWidth = '900px';
-                  elem.style.minWidth = '700px';
-                  elem.style.margin = '0';
-                  elem.style.padding = '10px';
-                  elem.style.boxSizing = 'border-box';
-                } else {
-                  elem.style.width = 'auto';
-                  elem.style.maxWidth = 'none';
+                // Force white background and proper layout for all tabs
+                elem.style.backgroundColor = '#ffffff';
+                elem.style.width = '100%';
+                elem.style.margin = '0';
+                elem.style.padding = '20px';
+                elem.style.boxSizing = 'border-box';
+                
+                // Ensure document body has white background
+                const clonedBody = clonedDoc.body;
+                if (clonedBody) {
+                  clonedBody.style.backgroundColor = '#ffffff';
+                  clonedBody.style.margin = '0';
+                  clonedBody.style.padding = '0';
                 }
+                
+                // Set background for all child elements to ensure no black areas
+                const allElements = elem.querySelectorAll('*');
+                allElements.forEach(child => {
+                  const childEl = child as HTMLElement;
+                  if (!childEl.style.backgroundColor || childEl.style.backgroundColor === 'transparent') {
+                    childEl.style.backgroundColor = '#ffffff';
+                  }
+                });
                 // Enhanced text rendering for all tabs with special boost for critical tabs
                 if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
@@ -1395,11 +1406,11 @@ export default function AuraAnalysis() {
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, viewportWidth, 900) : captureWidth, // Optimized width for chakras
+          width: htmlElement.scrollWidth, // Use actual content width to avoid black areas
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: tabId === 'chakras' ? Math.min(htmlElement.scrollWidth, viewportWidth, 900) : captureWidth, // Match optimized width
+          windowWidth: htmlElement.scrollWidth, // Match actual content width
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
@@ -1418,18 +1429,29 @@ export default function AuraAnalysis() {
               elem.style.overflow = 'visible';
               elem.style.height = 'auto';
               elem.style.maxHeight = 'none';
-              // Special layout handling for chakras tab to prevent black areas
-              if (tabId === 'chakras') {
-                elem.style.width = '100%';
-                elem.style.maxWidth = '900px';
-                elem.style.minWidth = '700px';
-                elem.style.margin = '0';
-                elem.style.padding = '10px';
-                elem.style.boxSizing = 'border-box';
-              } else {
-                elem.style.width = 'auto';
-                elem.style.maxWidth = 'none';
+              // Force white background and proper layout for all tabs
+              elem.style.backgroundColor = '#ffffff';
+              elem.style.width = '100%';
+              elem.style.margin = '0';
+              elem.style.padding = '20px';
+              elem.style.boxSizing = 'border-box';
+              
+              // Ensure document body has white background
+              const clonedBody = clonedDoc.body;
+              if (clonedBody) {
+                clonedBody.style.backgroundColor = '#ffffff';
+                clonedBody.style.margin = '0';
+                clonedBody.style.padding = '0';
               }
+              
+              // Set background for all child elements to ensure no black areas
+              const allElements = elem.querySelectorAll('*');
+              allElements.forEach(child => {
+                const childEl = child as HTMLElement;
+                if (!childEl.style.backgroundColor || childEl.style.backgroundColor === 'transparent') {
+                  childEl.style.backgroundColor = '#ffffff';
+                }
+              });
               
               // Ensure all child elements are visible with enhanced text rendering
               const allChildren = elem.querySelectorAll('*');
