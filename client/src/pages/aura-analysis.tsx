@@ -1213,11 +1213,11 @@ export default function AuraAnalysis() {
             allowTaint: false,
             x: 0,
             y: startY,
-            width: htmlElement.scrollWidth, // Use actual content width to avoid black areas
+            width: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Constrained content width
             height: actualSectionHeight,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: htmlElement.scrollWidth, // Match actual content width
+            windowWidth: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Match constrained width
             windowHeight: actualSectionHeight,
             removeContainer: false,
             foreignObjectRendering: false,
@@ -1237,21 +1237,27 @@ export default function AuraAnalysis() {
                 elem.style.padding = '20px';
                 elem.style.boxSizing = 'border-box';
                 
-                // Ensure document body has white background
+                // Set comprehensive white background for entire document
+                const clonedDoc_html = clonedDoc.documentElement;
                 const clonedBody = clonedDoc.body;
+                if (clonedDoc_html) {
+                  clonedDoc_html.style.backgroundColor = '#ffffff';
+                  clonedDoc_html.style.margin = '0';
+                  clonedDoc_html.style.padding = '0';
+                }
                 if (clonedBody) {
                   clonedBody.style.backgroundColor = '#ffffff';
                   clonedBody.style.margin = '0';
                   clonedBody.style.padding = '0';
                 }
                 
-                // Set background for all child elements to ensure no black areas
-                const allElements = elem.querySelectorAll('*');
+                // Ensure all elements have white background, no exceptions
+                const allElements = clonedDoc.querySelectorAll('*');
                 allElements.forEach(child => {
                   const childEl = child as HTMLElement;
-                  if (!childEl.style.backgroundColor || childEl.style.backgroundColor === 'transparent') {
-                    childEl.style.backgroundColor = '#ffffff';
-                  }
+                  childEl.style.backgroundColor = '#ffffff';
+                  childEl.style.border = 'none';
+                  childEl.style.outline = 'none';
                 });
                 // Enhanced text rendering for all tabs with special boost for critical tabs
                 if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
@@ -1406,11 +1412,11 @@ export default function AuraAnalysis() {
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: htmlElement.scrollWidth, // Use actual content width to avoid black areas
+          width: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Constrained content width
           height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: htmlElement.scrollWidth, // Match actual content width
+          windowWidth: Math.min(htmlElement.scrollWidth, htmlElement.clientWidth, viewportWidth), // Match constrained width
           windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
@@ -1436,21 +1442,27 @@ export default function AuraAnalysis() {
               elem.style.padding = '20px';
               elem.style.boxSizing = 'border-box';
               
-              // Ensure document body has white background
+              // Set comprehensive white background for entire document
+              const clonedDoc_html = clonedDoc.documentElement;
               const clonedBody = clonedDoc.body;
+              if (clonedDoc_html) {
+                clonedDoc_html.style.backgroundColor = '#ffffff';
+                clonedDoc_html.style.margin = '0';
+                clonedDoc_html.style.padding = '0';
+              }
               if (clonedBody) {
                 clonedBody.style.backgroundColor = '#ffffff';
                 clonedBody.style.margin = '0';
                 clonedBody.style.padding = '0';
               }
               
-              // Set background for all child elements to ensure no black areas
-              const allElements = elem.querySelectorAll('*');
+              // Ensure all elements have white background, no exceptions
+              const allElements = clonedDoc.querySelectorAll('*');
               allElements.forEach(child => {
                 const childEl = child as HTMLElement;
-                if (!childEl.style.backgroundColor || childEl.style.backgroundColor === 'transparent') {
-                  childEl.style.backgroundColor = '#ffffff';
-                }
+                childEl.style.backgroundColor = '#ffffff';
+                childEl.style.border = 'none';
+                childEl.style.outline = 'none';
               });
               
               // Ensure all child elements are visible with enhanced text rendering
