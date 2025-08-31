@@ -969,10 +969,42 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
+      // Try multiple selectors to find the tab content
+      let element = document.querySelector(`[data-tab="${tabId}"]`);
       if (!element) {
-        throw new Error('Tab content not found');
+        element = document.querySelector(`[data-value="${tabId}"][data-state="active"]`);
       }
+      if (!element) {
+        element = document.querySelector('[data-state="active"]');
+      }
+      if (!element) {
+        // For chakras tab specifically, try to find by content using standard selectors
+        if (tabId === 'chakras') {
+          // Look for the chakras content by finding the specific heading
+          const chakrasHeading = Array.from(document.querySelectorAll('h4')).find(h => 
+            h.textContent?.includes('Detailed Chakra Scoring Analysis')
+          );
+          if (chakrasHeading) {
+            element = chakrasHeading.closest('.space-y-6') || chakrasHeading.closest('[data-tab]') || chakrasHeading.parentElement;
+          }
+        }
+      }
+      
+      if (!element) {
+        // Debug: log available elements to help diagnose the issue
+        const availableDataTabs = Array.from(document.querySelectorAll('[data-tab]')).map(el => el.getAttribute('data-tab'));
+        const availableDataValues = Array.from(document.querySelectorAll('[data-value]')).map(el => el.getAttribute('data-value'));
+        const activeElements = Array.from(document.querySelectorAll('[data-state="active"]'));
+        
+        console.error(`Tab content not found for ${tabId}`);
+        console.error('Available data-tab values:', availableDataTabs);
+        console.error('Available data-value values:', availableDataValues);
+        console.error('Active elements count:', activeElements.length);
+        
+        throw new Error(`Tab content not found for ${tabId}. Available data-tab: [${availableDataTabs.join(', ')}], data-value: [${availableDataValues.join(', ')}]`);
+      }
+      
+      console.log(`Found element for ${tabId}:`, element.tagName, element.className);
 
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
@@ -1493,12 +1525,30 @@ export default function AuraAnalysis() {
         if (!capturedScreenshots.has(tabId)) {
           console.log(`Auto-capturing ${tabId} tab for PDF generation...`);
           try {
-            // First, ensure the tab is active/visible
-            const tabElement = document.querySelector(`[data-value="${tabId}"]`) as HTMLElement;
+            // First, ensure the tab is active/visible with multiple attempts
+            let tabElement = document.querySelector(`[data-value="${tabId}"]`) as HTMLElement;
+            if (!tabElement) {
+              // Try alternative selectors for tab triggers
+              tabElement = document.querySelector(`button[data-value="${tabId}"]`) as HTMLElement ||
+                          document.querySelector(`[role="tab"][data-value="${tabId}"]`) as HTMLElement ||
+                          document.querySelector(`.tab-${tabId}`) as HTMLElement;
+            }
+            
             if (tabElement) {
+              console.log(`Activating ${tabId} tab...`);
               tabElement.click();
-              // Wait for tab to become active and content to load
-              await new Promise(resolve => setTimeout(resolve, 800));
+              // Wait longer for chakras tab due to complex content
+              const waitTime = tabId === 'chakras' ? 1200 : 800;
+              await new Promise(resolve => setTimeout(resolve, waitTime));
+              
+              // Verify the tab is actually active
+              const activeTabContent = document.querySelector(`[data-tab="${tabId}"]`) || 
+                                     document.querySelector(`[data-value="${tabId}"][data-state="active"]`);
+              if (!activeTabContent) {
+                console.warn(`${tabId} tab did not become active after clicking`);
+              }
+            } else {
+              console.warn(`Could not find tab trigger for ${tabId}`);
             }
             
             await captureTabScreenshot(tabId);
