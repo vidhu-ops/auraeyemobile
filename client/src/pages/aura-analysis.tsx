@@ -1173,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 3.5 : 2.5, // Balanced scale for clear screenshots with manageable file sizes
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5, // Maximum scale for crystal clear text readability
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1264,7 +1264,7 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 3.5 : 2.5;
+        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
@@ -1283,12 +1283,12 @@ export default function AuraAnalysis() {
           });
         }
         
-        // Use PNG with 10% more compression
-        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
+        // Use maximum quality PNG for text clarity
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 1.0);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // Further optimized size limits for much clearer screenshots
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 12 * 1024 * 1024 : 8 * 1024 * 1024; // Additional reduction for better compression
+        // High size limits for crystal clear text legibility
+        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 50 * 1024 * 1024 : 30 * 1024 * 1024; // Increased for text clarity
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1409,11 +1409,11 @@ export default function AuraAnalysis() {
         htmlElement.style.maxWidth = '';
 
         // Use PNG with 10% more compression  
-        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
+        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 10 * 1024 * 1024 : 6 * 1024 * 1024; // Further optimized for clearer output
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 40 * 1024 * 1024 : 25 * 1024 * 1024; // High limits for text legibility
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1682,10 +1682,10 @@ export default function AuraAnalysis() {
           return new Promise<string>((resolve, reject) => {
             img.onload = () => {
               try {
-                // Increased canvas size for much clearer screenshots
-                const maxCanvasSize = 2048; // Further optimized for balance of clarity and file size
-                let canvasWidth = Math.min(targetWidth * 2.5, maxCanvasSize); // Increased multiplier to 2.5 for better clarity
-                let canvasHeight = Math.min(targetHeight * 2.5, maxCanvasSize);
+                // Maximum canvas size for crystal clear text
+                const maxCanvasSize = 6144; // Significantly increased for text legibility
+                let canvasWidth = Math.min(targetWidth * 5, maxCanvasSize); // High multiplier for text clarity
+                let canvasHeight = Math.min(targetHeight * 5, maxCanvasSize);
                 
                 // Preserve aspect ratio
                 const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -1709,16 +1709,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Further reduced compression for much clearer screenshots (additional 30% reduction)
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.52); // Reduced from 0.75 to 0.52 (additional 30% reduction)
+                // High quality compression for crystal clear text readability
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Maximum quality for legible text
                 
-                // If still too large, reduce quality progressively but maintain good visibility
-                const maxSize = 4 * 1024 * 1024; // Reduced from 6MB to 4MB for better compression
+                // If still too large, reduce quality minimally to maintain readability
+                const maxSize = 15 * 1024 * 1024; // Increased size limit for high quality screenshots
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.45); // Reduced from 0.65
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // High quality maintained
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.38); // Reduced from 0.55 but still clear
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // Still very high quality for text clarity
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2104,10 +2104,10 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Increased size for chakras tab for much clearer visibility
+                // Maximum size for chakras tab for crystal clear text
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 1.8; // Optimized for clarity and file size balance
-                  sectionFinalHeight = sectionFinalHeight * 1.8; // Optimized for clarity and file size balance
+                  sectionFinalWidth = sectionFinalWidth * 3.5; // Maximum size for text legibility
+                  sectionFinalHeight = sectionFinalHeight * 3.5; // Maximum size for text legibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
