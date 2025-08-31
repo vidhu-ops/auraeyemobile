@@ -1105,7 +1105,7 @@ export default function AuraAnalysis() {
       );
       
       // For full-screen windows, use a more generous width increase
-      const widthMultiplier = viewportWidth > 1400 ? 1.25 : 1.15; // 25% increase for full-screen
+      const widthMultiplier = viewportWidth > 1400 ? 1.15 : 1.25; // 25% increase for full-screen
       const contentWidth = Math.floor(baseContentWidth * widthMultiplier);
       console.log(`📏 Content width calculation: base=${baseContentWidth}, final=${contentWidth} (${widthMultiplier}x multiplier)`);
       
@@ -1384,9 +1384,9 @@ export default function AuraAnalysis() {
         // Use adaptive scaling based on viewport size for optimal quality
         let scaleUsed;
         if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-          scaleUsed = viewportWidth > 1400 ? 3.5 : 4.5; // Lower scale for large screens to prevent memory issues
+          scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5; // Lower scale for large screens to prevent memory issues
         } else {
-          scaleUsed = viewportWidth > 1400 ? 2.5 : 3.5;
+          scaleUsed = viewportWidth > 1400 ? 2.9 : 3.5;
         }
         
         const finalWidth = enhancedCaptureWidth * scaleUsed;
