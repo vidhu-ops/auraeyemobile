@@ -1578,7 +1578,7 @@ export default function AuraAnalysis() {
           }
         }
       } else {
-        console.log('Chakras tab already captured, proceeding with PDF generation');
+        console.log('🔮 Detailed chakras tab already captured, proceeding with PDF generation with guaranteed 4-part breakdown');
       }
 
       // Test jsPDF initialization
@@ -2118,6 +2118,11 @@ export default function AuraAnalysis() {
         // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(sortedScreenshots.entries())) {
           
+          // Special logging for chakras tab
+          if (tabId === 'chakras') {
+            console.log(`🔮 Processing detailed chakras tab for PDF (3rd tab) - guaranteed 4-part breakdown`);
+          }
+          
           try {
             // Create a temporary image to get exact dimensions
             const tempImg = new Image();
@@ -2149,19 +2154,24 @@ export default function AuraAnalysis() {
             
             // If the image is very long (tall), we need to handle it differently
             // Force chakras tab to always use multi-section approach for 4-part breakdown
-            const isLongScreenshot = trueAspectRatio > 3.0 || tabId === 'chakras'; // More than 3:1 ratio or chakras tab
+            const isLongScreenshot = trueAspectRatio > 2.5 || tabId === 'chakras'; // Force chakras tab to use 4-part breakdown
             
             if (isLongScreenshot) {
               // Special handling for chakras tab - force exactly 4 sections
               let sectionsNeeded;
               if (tabId === 'chakras') {
-                sectionsNeeded = 4; // Force exactly 4 sections for chakras
+                sectionsNeeded = 4; // Force exactly 4 sections for detailed chakras tab
+                console.log(`Chakras tab detected - forcing 4-section breakdown for detailed analysis`);
               } else {
-                sectionsNeeded = Math.ceil(trueAspectRatio / 3.0); // One section per 3:1 ratio for other tabs
+                sectionsNeeded = Math.ceil(trueAspectRatio / 2.5); // Reduced ratio for better section breaks
               }
               const sectionHeight = pageMaxHeight;
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
+            
+            if (tabId === 'chakras') {
+              console.log(`🔮 DETAILED CHAKRAS TAB: Forcing ${sectionsNeeded} sections for comprehensive chakra analysis`);
+            }
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
@@ -2206,71 +2216,147 @@ export default function AuraAnalysis() {
                 
                 // Section titles removed for continuous image flow as requested
                 
-                // Compress and add the section with error handling
+                // Enhanced error handling and compression for chakras tab sections
                 try {
-                  const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  // Special high-quality handling for chakras tab
+                  let finalSectionDataUrl = sectionDataUrl;
+                  if (tabId === 'chakras') {
+                    // Use maximum quality for chakras tab sections
+                    finalSectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.98);
+                    console.log(`Chakras section ${section + 1} using maximum quality compression`);
+                  }
+                  
+                  const compressedSectionDataUrl = await compressImageForPDF(finalSectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  
+                  // Add with enhanced error recovery
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   yPosition += sectionFinalHeight + 10;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
-                  console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
+                  console.log(`✅ Successfully added ${tabId} section ${section + 1}/${sectionsNeeded} to PDF`);
+                  
+                  if (tabId === 'chakras') {
+                    console.log(`🔮 Detailed chakras section ${section + 1} added with dimensions: ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
+                  }
                 } catch (sectionError) {
-                  console.error(`Error adding screenshot image:`, sectionError);
-                  // Add placeholder text for failed section
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(150, 150, 150);
-                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
-                  yPosition += 15;
+                  console.error(`❌ Failed to add ${tabId} section ${section + 1}:`, sectionError);
+                  
+                  // Enhanced fallback for chakras tab
+                  if (tabId === 'chakras') {
+                    try {
+                      // Try with lower quality as fallback for chakras
+                      const fallbackDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85);
+                      const fallbackCompressed = await compressImageForPDF(fallbackDataUrl, sectionFinalWidth * 0.8, sectionFinalHeight * 0.8);
+                      pdf.addImage(fallbackCompressed, 'JPEG', 20, yPosition, sectionFinalWidth * 0.8, sectionFinalHeight * 0.8);
+                      yPosition += (sectionFinalHeight * 0.8) + 10;
+                      console.log(`✅ Chakras section ${section + 1} added with fallback compression`);
+                    } catch (fallbackError) {
+                      console.error(`❌ Chakras section ${section + 1} fallback also failed:`, fallbackError);
+                      // Add placeholder only if both attempts fail
+                      pdf.setFontSize(10);
+                      pdf.setTextColor(150, 150, 150);
+                      yPosition = addTextWithPageBreak(`Detailed Chakras section ${section + 1} could not be embedded`, 20, yPosition);
+                      yPosition += 15;
+                    }
+                  } else {
+                    // Standard placeholder for other tabs
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(150, 150, 150);
+                    yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
+                    yPosition += 15;
+                  }
                 }
                 
               }
               
             } else {
-              // For normal screenshots, use single page with proper aspect ratio - already calculated above
-              // Ensure minimum readability while respecting page constraints
-              const minWidth = 120;
-              const minHeight = 160;
-              
-              // Only increase size if we have room and it improves readability
-              if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
-                finalWidth = minWidth;
-                finalHeight = minWidth * trueAspectRatio;
-              }
-              
-              // Final check: ensure we don't exceed page boundaries
-              if (finalWidth > pageMaxWidth) {
-                finalWidth = pageMaxWidth;
-                finalHeight = finalWidth * trueAspectRatio;
-              }
-              
-              if (finalHeight > pageMaxHeight) {
-                finalHeight = pageMaxHeight;
-                finalWidth = finalHeight / trueAspectRatio;
-              }
-              
-              console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
-              
-              // Check if screenshot would exceed page height
-              if (yPosition + finalHeight > pageHeight - 40) {
-                pdf.addPage();
-                yPosition = 20;
-              }
-              
-              // Compress the image data before adding to PDF to prevent memory issues
-              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-              
-              // Add the screenshot with preserved aspect ratio and improved error handling
-              try {
-                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                yPosition += finalHeight + 15;
-                console.log(`Successfully added ${tabId} screenshot to PDF`);
-                console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
-              } catch (addImageError) {
-                console.error(`Error adding screenshot image:`, addImageError);
-                // Add a placeholder text instead
-                pdf.setFontSize(12);
-                pdf.setTextColor(100, 100, 100);
-                yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
-                yPosition += 20;
+              // SPECIAL OVERRIDE FOR CHAKRAS TAB: Force 4-section breakdown regardless of aspect ratio
+              if (tabId === 'chakras') {
+                console.log(`🔮 CHAKRAS TAB OVERRIDE: Forcing 4-section breakdown even in single mode`);
+                
+                const sectionsNeeded = 4;
+                const sectionHeight = originalHeight / sectionsNeeded;
+                const sectionFinalHeight = pageMaxHeight / 4;
+                
+                for (let section = 0; section < sectionsNeeded; section++) {
+                  const sectionCanvas = document.createElement('canvas');
+                  const sectionCtx = sectionCanvas.getContext('2d');
+                  
+                  sectionCanvas.width = originalWidth;
+                  sectionCanvas.height = sectionHeight;
+                  
+                  const sectionImg = new Image();
+                  sectionImg.src = imageDataUrl;
+                  await new Promise(resolve => { sectionImg.onload = resolve; });
+                  
+                  sectionCtx?.drawImage(sectionImg, 0, section * sectionHeight, originalWidth, sectionHeight, 0, 0, originalWidth, sectionHeight);
+                  
+                  const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.98);
+                  
+                  try {
+                    const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, pageMaxWidth, sectionFinalHeight);
+                    
+                    if (yPosition + sectionFinalHeight > pageHeight - 40) {
+                      pdf.addPage();
+                      yPosition = 20;
+                    }
+                    
+                    pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, pageMaxWidth, sectionFinalHeight);
+                    yPosition += sectionFinalHeight + 10;
+                    console.log(`🔮 Detailed chakras section ${section + 1}/4 added to PDF (override mode)`);
+                  } catch (sectionError) {
+                    console.error(`❌ Failed to add chakras section ${section + 1}:`, sectionError);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(150, 150, 150);
+                    yPosition = addTextWithPageBreak(`Detailed Chakras section ${section + 1} could not be embedded`, 20, yPosition);
+                    yPosition += 15;
+                  }
+                }
+              } else {
+                // For normal screenshots (non-chakras), use single page with proper aspect ratio
+                const minWidth = 120;
+                const minHeight = 160;
+                
+                // Only increase size if we have room and it improves readability
+                if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
+                  finalWidth = minWidth;
+                  finalHeight = minWidth * trueAspectRatio;
+                }
+                
+                // Final check: ensure we don't exceed page boundaries
+                if (finalWidth > pageMaxWidth) {
+                  finalWidth = pageMaxWidth;
+                  finalHeight = finalWidth * trueAspectRatio;
+                }
+                
+                if (finalHeight > pageMaxHeight) {
+                  finalHeight = pageMaxHeight;
+                  finalWidth = finalHeight / trueAspectRatio;
+                }
+                
+                console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
+                
+                // Check if screenshot would exceed page height
+                if (yPosition + finalHeight > pageHeight - 40) {
+                  pdf.addPage();
+                  yPosition = 20;
+                }
+                
+                // Compress the image data before adding to PDF to prevent memory issues
+                const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+                
+                // Add the screenshot with preserved aspect ratio and improved error handling
+                try {
+                  pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                  yPosition += finalHeight + 15;
+                  console.log(`Successfully added ${tabId} screenshot to PDF`);
+                  console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
+                } catch (addImageError) {
+                  console.error(`Error adding screenshot image:`, addImageError);
+                  // Add a placeholder text instead
+                  pdf.setFontSize(12);
+                  pdf.setTextColor(100, 100, 100);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
+                  yPosition += 20;
+                }
               }
             }
             
