@@ -1173,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5, // Enhanced scale for maximum screenshot clarity
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0, // Optimized scale for better compression while maintaining readability
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1264,7 +1264,7 @@ export default function AuraAnalysis() {
         const ctx = combinedCanvas.getContext('2d')!;
         
         // Calculate combined dimensions using enhanced width and scale factor
-        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 6.0 : 4.5;
+        const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 4.0 : 3.0;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
@@ -1287,8 +1287,8 @@ export default function AuraAnalysis() {
         const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
         console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
-        // Increased size limits for maximum screenshot clarity
-        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 35 * 1024 * 1024 : 25 * 1024 * 1024; // Increased for better quality
+        // Optimized size limits for better compression while maintaining visibility
+        const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 18 * 1024 * 1024 : 10 * 1024 * 1024; // Reduced by ~30%
         if (combinedImageDataUrl.length < sizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1413,7 +1413,7 @@ export default function AuraAnalysis() {
         console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
         
         // Store with higher size limit for enhanced quality screenshots
-        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 30 * 1024 * 1024 : 20 * 1024 * 1024; // Increased for better quality
+        const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 14 * 1024 * 1024 : 8 * 1024 * 1024; // Reduced by ~30%
         if (imageDataUrl.length < singleSizeLimit) {
           setCapturedScreenshots(prev => new Map(prev).set(tabId, imageDataUrl));
           console.log(`✅ ${tabId} single screenshot captured successfully: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
@@ -1486,61 +1486,55 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // Auto-capture all important tabs for comprehensive PDF
-      const criticalTabs = ['chakras', 'analysis', 'guidance', 'energy-reading', 'detailed'];
-      
-      for (const tabToCapture of criticalTabs) {
-        if (!capturedScreenshots.has(tabToCapture)) {
-          console.log(`Auto-capturing ${tabToCapture} tab for PDF generation...`);
-          try {
-            // First, ensure the tab is active/visible
-            const tabTrigger = document.querySelector(`[value="${tabToCapture}"]`) as HTMLElement;
-            if (tabTrigger) {
-              console.log(`Clicking ${tabToCapture} tab trigger to activate tab`);
-              tabTrigger.click();
-              // Wait for tab to become active and content to render
-              await new Promise(resolve => setTimeout(resolve, 1200));
-            } else {
-              console.warn(`${tabToCapture} tab trigger not found, trying alternative selector`);
-              // Alternative selector - try finding the tab trigger by text content
-              const allTabs = document.querySelectorAll('[role="tab"]');
-              for (const tab of allTabs) {
-                if (tab.textContent?.toLowerCase().includes(tabToCapture.replace('-', ' '))) {
-                  console.log(`Found ${tabToCapture} tab by text content, clicking...`);
-                  (tab as HTMLElement).click();
-                  await new Promise(resolve => setTimeout(resolve, 1200));
-                  break;
-                }
+      // Auto-capture chakras tab if not already captured
+      if (!capturedScreenshots.has('chakras')) {
+        console.log('Auto-capturing chakras tab for PDF generation...');
+        try {
+          // First, ensure the chakras tab is active/visible
+          const chakrasTabTrigger = document.querySelector('[value="chakras"]') as HTMLElement;
+          if (chakrasTabTrigger) {
+            console.log('Clicking chakras tab trigger to activate tab');
+            chakrasTabTrigger.click();
+            // Wait for tab to become active and content to render
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            console.warn('Chakras tab trigger not found, trying alternative selector');
+            // Alternative selector - try finding the tab trigger by text content
+            const allTabs = document.querySelectorAll('[role="tab"]');
+            for (const tab of allTabs) {
+              if (tab.textContent?.toLowerCase().includes('chakras')) {
+                console.log('Found chakras tab by text content, clicking...');
+                (tab as HTMLElement).click();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                break;
               }
             }
-            
-            await captureTabScreenshot(tabToCapture);
-            console.log(`${tabToCapture} tab captured successfully for PDF`);
-            
-            // Verify the screenshot was actually captured
-            if (capturedScreenshots.has(tabToCapture)) {
-              console.log(`✅ ${tabToCapture} tab screenshot confirmed in capturedScreenshots`);
-            } else {
-              console.error(`❌ ${tabToCapture} tab screenshot NOT found in capturedScreenshots after capture`);
-            }
-          } catch (captureError) {
-            console.error(`Failed to auto-capture ${tabToCapture} tab:`, captureError);
-            // Try manual retry with different approach
-            try {
-              console.log(`Attempting manual retry for ${tabToCapture} tab capture...`);
-              setActiveTab(tabToCapture);
-              await new Promise(resolve => setTimeout(resolve, 1500));
-              await captureTabScreenshot(tabToCapture);
-            } catch (retryError) {
-              console.error(`Manual retry also failed for ${tabToCapture}:`, retryError);
-            }
           }
-        } else {
-          console.log(`${tabToCapture} tab already captured, skipping...`);
+          
+          await captureTabScreenshot('chakras');
+          console.log('Chakras tab captured successfully for PDF');
+          
+          // Verify the screenshot was actually captured
+          if (capturedScreenshots.has('chakras')) {
+            console.log('✅ Chakras tab screenshot confirmed in capturedScreenshots');
+          } else {
+            console.error('❌ Chakras tab screenshot NOT found in capturedScreenshots after capture');
+          }
+        } catch (captureError) {
+          console.error('Failed to auto-capture chakras tab:', captureError);
+          // Try manual retry with different approach
+          try {
+            console.log('Attempting manual retry for chakras tab capture...');
+            setActiveTab('chakras');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            await captureTabScreenshot('chakras');
+          } catch (retryError) {
+            console.error('Manual retry also failed:', retryError);
+          }
         }
+      } else {
+        console.log('Chakras tab already captured, proceeding with PDF generation');
       }
-      
-      console.log('All critical tabs processed for PDF generation. Captured screenshots:', Array.from(capturedScreenshots.keys()));
 
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
@@ -1688,10 +1682,10 @@ export default function AuraAnalysis() {
           return new Promise<string>((resolve, reject) => {
             img.onload = () => {
               try {
-                // Increased canvas size for maximum PDF screenshot clarity
-                const maxCanvasSize = 5120; // Increased from 3072 for better resolution
-                let canvasWidth = Math.min(targetWidth * 5, maxCanvasSize); // Increased multiplier from 3 to 5
-                let canvasHeight = Math.min(targetHeight * 5, maxCanvasSize);
+                // Enhanced canvas size for better PDF visibility
+                const maxCanvasSize = 3072; // Reduced from 4096 for better compression while maintaining quality
+                let canvasWidth = Math.min(targetWidth * 3, maxCanvasSize); // Reduced multiplier from 4 to 3
+                let canvasHeight = Math.min(targetHeight * 3, maxCanvasSize);
                 
                 // Preserve aspect ratio
                 const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -1715,16 +1709,16 @@ export default function AuraAnalysis() {
                 // Draw the image
                 ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Enhanced quality with reduced compression for clearer screenshots
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Increased from 0.75 to 0.92 for better clarity
+                // Enhanced compression with 30% reduction while maintaining visibility
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75); // Reduced from 0.95 to 0.75 (30% less quality)
                 
-                // Progressive quality reduction with higher minimum threshold for legibility
-                const maxSize = 12 * 1024 * 1024; // Increased from 6MB to 12MB for better quality
+                // If still too large, reduce quality progressively but maintain minimum visibility
+                const maxSize = 6 * 1024 * 1024; // Reduced from 8MB to 6MB (25% reduction)
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // Higher quality than before
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65); // Reduced from 0.85
                 }
                 if (compressedDataUrl.length > maxSize) {
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82); // Still maintaining high legibility
+                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55); // Reduced from 0.7 but still visible
                 }
                 
                 console.log(`Image compressed: ${(compressedDataUrl.length / 1024 / 1024).toFixed(2)}MB, canvas: ${canvasWidth}x${canvasHeight}`);
@@ -2110,61 +2104,27 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Maximum size for chakras tab for crystal clear PDF visibility
+                // Enhanced size for chakras tab with optimized compression balance
                 if (tabId === 'chakras') {
-                  sectionFinalWidth = sectionFinalWidth * 3.5; // Increased from 2.2 to 3.5 for maximum clarity
-                  sectionFinalHeight = sectionFinalHeight * 3.5; // Increased from 2.2 to 3.5 for maximum clarity
+                  sectionFinalWidth = sectionFinalWidth * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.2; // Reduced from 3.0 to 2.2 for better compression while maintaining visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
                 
-                // Enhanced compression and safe addition with retry mechanism
+                // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                  
-                  // Validate image data before adding to PDF
-                  if (compressedSectionDataUrl && compressedSectionDataUrl.startsWith('data:image/')) {
-                    pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                    yPosition += sectionFinalHeight + 10;
-                    console.log(`✅ Successfully added ${tabId} section ${section + 1} to PDF with enhanced quality`);
-                  } else {
-                    throw new Error('Invalid compressed image data');
-                  }
+                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                  yPosition += sectionFinalHeight + 10;
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
                 } catch (sectionError) {
-                  console.error(`❌ Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
-                  
-                  // Retry with different compression settings
-                  try {
-                    console.log(`🔄 Retrying ${tabId} section ${section + 1} with alternative compression...`);
-                    const fallbackCanvas = document.createElement('canvas');
-                    const fallbackCtx = fallbackCanvas.getContext('2d');
-                    const fallbackImg = new Image();
-                    
-                    await new Promise((resolve, reject) => {
-                      fallbackImg.onload = () => {
-                        fallbackCanvas.width = sectionFinalWidth * 2;
-                        fallbackCanvas.height = sectionFinalHeight * 2;
-                        fallbackCtx!.fillStyle = 'white';
-                        fallbackCtx!.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
-                        fallbackCtx!.drawImage(fallbackImg, 0, 0, fallbackCanvas.width, fallbackCanvas.height);
-                        
-                        const fallbackDataUrl = fallbackCanvas.toDataURL('image/jpeg', 0.85);
-                        pdf.addImage(fallbackDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                        yPosition += sectionFinalHeight + 10;
-                        console.log(`✅ Successfully added ${tabId} section ${section + 1} to PDF via fallback method`);
-                        resolve(null);
-                      };
-                      fallbackImg.onerror = reject;
-                      fallbackImg.src = sectionDataUrl;
-                    });
-                  } catch (fallbackError) {
-                    console.error(`❌ Fallback method also failed for ${tabId} section ${section + 1}:`, fallbackError);
-                    // Add placeholder text for failed section
-                    pdf.setFontSize(12);
-                    pdf.setTextColor(100, 100, 100);
-                    yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} - Screenshot capture completed but could not be embedded in PDF`, 20, yPosition);
-                    yPosition += 20;
-                  }
+                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
+                  // Add placeholder text for failed section
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(150, 150, 150);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} section ${section + 1} could not be embedded`, 20, yPosition);
+                  yPosition += 15;
                 }
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
@@ -2204,51 +2164,18 @@ export default function AuraAnalysis() {
               // Compress the image data before adding to PDF to prevent memory issues
               const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
               
-              // Enhanced single screenshot addition with validation and retry
+              // Add the screenshot with preserved aspect ratio and improved error handling
               try {
-                // Validate image data before adding to PDF
-                if (compressedImageDataUrl && compressedImageDataUrl.startsWith('data:image/')) {
-                  pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                  yPosition += finalHeight + 15;
-                  console.log(`✅ Successfully added ${tabId} screenshot to PDF with enhanced quality`);
-                } else {
-                  throw new Error('Invalid compressed image data');
-                }
+                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                yPosition += finalHeight + 15;
+                console.log(`Successfully added ${tabId} screenshot to PDF`);
               } catch (addImageError) {
-                console.error(`❌ Failed to add ${tabId} screenshot to PDF:`, addImageError);
-                
-                // Retry with fallback compression
-                try {
-                  console.log(`🔄 Retrying ${tabId} screenshot with fallback compression...`);
-                  const fallbackCanvas = document.createElement('canvas');
-                  const fallbackCtx = fallbackCanvas.getContext('2d');
-                  const fallbackImg = new Image();
-                  
-                  await new Promise((resolve, reject) => {
-                    fallbackImg.onload = () => {
-                      fallbackCanvas.width = finalWidth * 3;
-                      fallbackCanvas.height = finalHeight * 3;
-                      fallbackCtx!.fillStyle = 'white';
-                      fallbackCtx!.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
-                      fallbackCtx!.drawImage(fallbackImg, 0, 0, fallbackCanvas.width, fallbackCanvas.height);
-                      
-                      const fallbackDataUrl = fallbackCanvas.toDataURL('image/jpeg', 0.88);
-                      pdf.addImage(fallbackDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                      yPosition += finalHeight + 15;
-                      console.log(`✅ Successfully added ${tabId} screenshot to PDF via fallback method`);
-                      resolve(null);
-                    };
-                    fallbackImg.onerror = reject;
-                    fallbackImg.src = imageDataUrl;
-                  });
-                } catch (fallbackError) {
-                  console.error(`❌ Fallback method also failed for ${tabId}:`, fallbackError);
-                  // Add informative placeholder text
-                  pdf.setFontSize(12);
-                  pdf.setTextColor(100, 100, 100);
-                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Screenshot captured successfully but could not be embedded in PDF`, 20, yPosition);
-                  yPosition += 20;
-                }
+                console.error(`Failed to add ${tabId} screenshot to PDF:`, addImageError);
+                // Add a placeholder text instead
+                pdf.setFontSize(12);
+                pdf.setTextColor(100, 100, 100);
+                yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, 20, yPosition);
+                yPosition += 20;
               }
             }
             
