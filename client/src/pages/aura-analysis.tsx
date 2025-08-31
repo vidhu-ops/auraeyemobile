@@ -1225,8 +1225,14 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
-          // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
+        if (tabId === 'analysis' || tabId === 'energy-map') {
+          // Force exactly 4 sections for analysis and energy-map tabs with enhanced dimensions
+          totalSections = 4;
+          sectionHeight = Math.ceil(contentHeight / 4);
+          // Additional 25% width increase for critical tabs text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+        } else if (tabId === 'detailed' || tabId === 'chakras') {
+          // Force exactly 4 sections for detailed and chakras tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
@@ -2439,13 +2445,22 @@ export default function AuraAnalysis() {
               
               console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
               
+              // Special handling for analysis and energy-map tabs: 2 sections per page
+              const isAnalysisOrEnergyMap = tabId === 'analysis' || tabId === 'energy-map';
+              const sectionsPerPage = isAnalysisOrEnergyMap ? 2 : 1; // 2 sections per page for analysis/energy-map
+              
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section after the first, with better spacing
-                if (section > 0) {
+                // For analysis and energy-map: start new page every 2 sections
+                // For other tabs: start new page for each section after the first
+                const shouldStartNewPage = isAnalysisOrEnergyMap 
+                  ? (section > 0 && section % sectionsPerPage === 0)
+                  : (section > 0);
+                
+                if (shouldStartNewPage) {
                   pdf.addPage();
                   yPosition = 20;
-                  console.log(`Started new page for ${tabId} section ${section + 1} to prevent overlapping`);
+                  console.log(`Started new page for ${tabId} - page ${Math.floor(section / sectionsPerPage) + 1}`);
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2486,17 +2501,32 @@ export default function AuraAnalysis() {
                   sectionFinalHeight = sectionFinalHeight * 2.0; // Double height
                 }
                 
-                // Section titles removed for continuous image flow as requested
+                // Add section titles for analysis and energy-map tabs for clarity
+                if (isAnalysisOrEnergyMap) {
+                  pdf.setFontSize(12);
+                  pdf.setTextColor(100, 100, 100);
+                  yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} - Section ${section + 1} of ${sectionsNeeded}`, 20, yPosition);
+                  yPosition += 8;
+                }
+                // Section titles removed for other tabs for continuous image flow as requested
                 
                 // Compress and add the section with error handling
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
                   
-                  // Add proper spacing after each section to prevent overlapping
-                  const spacingAfterSection = 15; // Increased spacing between sections
+                  // Calculate spacing based on tab type and section position
+                  let spacingAfterSection;
+                  if (isAnalysisOrEnergyMap) {
+                    // For analysis/energy-map tabs: different spacing for first vs second section on page
+                    const sectionOnPage = section % sectionsPerPage;
+                    spacingAfterSection = sectionOnPage === 0 ? 25 : 15; // More space after first section on page
+                  } else {
+                    spacingAfterSection = 15; // Standard spacing for other tabs
+                  }
+                  
                   yPosition += sectionFinalHeight + spacingAfterSection;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)})`);
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}) with ${spacingAfterSection}px spacing`);
                 } catch (sectionError) {
                   console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
                   // Add placeholder text for failed section
