@@ -1104,16 +1104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
-      }
-
-      // Resize image to standard dimensions (550x700px)
+      // Resize image to standard dimensions (1600x900px)
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // Check if image contains a human using Gemini vision API - object analysis should reject human images
@@ -1390,15 +1381,6 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         imgBuffer = Buffer.from(req.body.image, 'base64');
       } else {
         return res.status(400).json({ message: "No image provided" });
-      }
-
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
       }
 
       // For aura analysis, we'll be more permissive to ensure processing
@@ -1679,24 +1661,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     try {
       let imageData: string;
       
-      let imgBuffer: Buffer;
       if (req.file) {
-        imgBuffer = req.file.buffer;
         imageData = req.file.buffer.toString("base64");
       } else if (req.body.image) {
-        imgBuffer = Buffer.from(req.body.image, 'base64');
         imageData = req.body.image;
       } else {
         return res.status(400).json({ message: "No image provided" });
-      }
-
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imgBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
       }
 
       try {
@@ -2648,15 +2618,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       const imageBuffer = req.file.buffer;
-      
-      // Check image size - reject files over 3MB (3000KB)
-      const imageSizeKB = imageBuffer.length / 1024;
-      if (imageSizeKB > 3000) {
-        console.log(`Image rejected: ${imageSizeKB.toFixed(1)}KB exceeds 3000KB limit`);
-        return res.status(400).json({ 
-          message: `Image size too large (${imageSizeKB.toFixed(1)}KB). Please upload a smaller size image (max 3MB).` 
-        });
-      }
       
       // Detect human in image first
       const hasHuman = await detectHumanInImage(imageBuffer);
