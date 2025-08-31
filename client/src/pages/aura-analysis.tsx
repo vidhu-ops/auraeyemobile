@@ -965,157 +965,141 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
-  // Enhanced screenshot capture function with deployment compatibility
+  // Simplified manual screenshot capture for normal screen sizes
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
-    
-    // Production environment compatibility check
-    const isProduction = window.location.hostname !== 'localhost' && !window.location.hostname.includes('preview');
-    console.log(`📸 Capturing ${tabId} screenshot in ${isProduction ? 'production' : 'development'} mode`);
+    console.log(`📸 Manual capture: ${tabId} tab`);
     
     try {
+      // Find the active tab content
       const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
       if (!element) {
-        throw new Error('Tab content not found');
+        throw new Error(`Tab content for ${tabId} not found`);
       }
 
       const htmlElement = element as HTMLElement;
+      
+      // Get the actual content dimensions
       const rect = htmlElement.getBoundingClientRect();
+      const contentWidth = Math.max(htmlElement.scrollWidth, htmlElement.offsetWidth, rect.width);
+      let contentHeight = Math.max(htmlElement.scrollHeight, htmlElement.offsetHeight, rect.height);
       
-      // Get viewport dimensions for proper sizing reference
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      // Ensure minimum height for tabs with dynamic content
+      const minHeights: Record<string, number> = {
+        'chakras': 800,
+        'analysis': 1200,
+        'guidance': 800,
+        'spectrum': 600,
+        'energy-reading': 600,
+        'energy-map': 400,
+        'detailed': 1000
+      };
       
-      // Calculate the full scrollable content size with 15% width increase as requested
-      const baseContentWidth = Math.max(
-        htmlElement.scrollWidth,
-        htmlElement.offsetWidth,
-        htmlElement.clientWidth,
-        rect.width
-      );
+      contentHeight = Math.max(contentHeight, minHeights[tabId] || 400);
       
-      // Increase width by 15% for better readability and visibility
-      const contentWidth = Math.floor(baseContentWidth * 1.15);
+      console.log(`${tabId}: Capturing ${contentWidth}x${contentHeight}`);
       
-      // Ensure comprehensive content height capture for all tabs
-      let contentHeight = Math.max(
-        htmlElement.scrollHeight,
-        htmlElement.offsetHeight,
-        htmlElement.clientHeight,
-        rect.height
-      );
+      // Scroll to top to start capture
+      htmlElement.scrollTop = 0;
+      window.scrollTo(0, 0);
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Enhanced height detection for all tabs to ensure full content capture
-      if (['chakras', 'analysis', 'guidance', 'energy-reading', 'spectrum', 'energy-map', 'detailed', 'combined'].includes(tabId)) {
-        // Scroll to bottom first to ensure all content is rendered and measurable
-        const originalScrollTop = htmlElement.scrollTop;
-        htmlElement.scrollTop = htmlElement.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 100)); // Let content render
+      // Capture in 4 sections for consistency
+      const sections = 4;
+      const sectionHeight = Math.ceil(contentHeight / sections);
+      const screenshots: string[] = [];
+      
+      for (let i = 0; i < sections; i++) {
+        const startY = i * sectionHeight;
+        const actualHeight = Math.min(sectionHeight, contentHeight - startY);
         
-        // Now scroll back to top for measurement
-        htmlElement.scrollTop = 0;
-        await new Promise(resolve => setTimeout(resolve, 100)); // Let layout stabilize
-        
-        // Temporarily expand element to full content size for accurate measurement
-        const tempStyles = {
-          overflow: htmlElement.style.overflow,
-          height: htmlElement.style.height,
-          maxHeight: htmlElement.style.maxHeight,
-          minHeight: htmlElement.style.minHeight
-        };
-        
-        htmlElement.style.overflow = 'visible';
-        htmlElement.style.height = 'auto';
-        htmlElement.style.maxHeight = 'none';
-        htmlElement.style.minHeight = 'auto';
-        
-        // Wait for layout recalculation
+        // Scroll to this section
+        if (htmlElement.scrollTo) {
+          htmlElement.scrollTo({ top: startY, behavior: 'instant' });
+        }
         await new Promise(resolve => setTimeout(resolve, 200));
         
-        // Re-measure after expansion
-        const expandedRect = htmlElement.getBoundingClientRect();
-        let realContentHeight = Math.max(
-          htmlElement.scrollHeight,
-          htmlElement.offsetHeight,
-          htmlElement.clientHeight,
-          expandedRect.height
-        );
-        
-        // Find all child elements and calculate total height
-        const children = htmlElement.querySelectorAll('*');
-        let maxBottom = 0;
-        children.forEach(child => {
-          const childRect = child.getBoundingClientRect();
-          const elementRect = htmlElement.getBoundingClientRect();
-          const relativeBottom = childRect.bottom - elementRect.top;
-          maxBottom = Math.max(maxBottom, relativeBottom);
+        // Capture this section
+        const canvas = await html2canvas(htmlElement, {
+          backgroundColor: '#ffffff',
+          scale: 2, // Good quality for normal screens
+          logging: false,
+          useCORS: true,
+          allowTaint: false,
+          x: 0,
+          y: startY,
+          width: contentWidth,
+          height: actualHeight,
+          windowWidth: contentWidth,
+          windowHeight: actualHeight
         });
         
-        // Use the larger of the two measurements
-        realContentHeight = Math.max(realContentHeight, maxBottom);
-        
-        // Restore original styles
-        htmlElement.style.overflow = tempStyles.overflow;
-        htmlElement.style.height = tempStyles.height;
-        htmlElement.style.maxHeight = tempStyles.maxHeight;
-        htmlElement.style.minHeight = tempStyles.minHeight;
-        
-        // Extra padding for tabs with complex content
-        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 150));
-        
-        contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
-        console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
-        
-        // Special handling for specific tabs to ensure complete capture
-        if (['analysis', 'guidance', 'spectrum'].includes(tabId)) {
-          // Look for the last meaningful content section
-          const lastSections = htmlElement.querySelectorAll('.space-y-4 > div:last-child, .space-y-6 > div:last-child, .grid:last-child, .bg-gradient-to-br:last-child');
-          if (lastSections.length > 0) {
-            const lastSection = lastSections[lastSections.length - 1];
-            const sectionRect = lastSection.getBoundingClientRect();
-            const elementRect = htmlElement.getBoundingClientRect();
-            const sectionBottom = sectionRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, sectionBottom + 200);
-            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
-          }
-          
-          // Force minimum height for complex tabs
-          const minHeights: Record<string, number> = {
-            'guidance': 2000,
-            'spectrum': 1800,
-            'analysis': 3000
-          };
-          contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
-        }
+        screenshots.push(canvas.toDataURL('image/png', 0.8));
+        console.log(`Section ${i + 1}/${sections}: ${canvas.width}x${canvas.height}`);
       }
+      
+      // Reset scroll position
+      htmlElement.scrollTop = 0;
+      window.scrollTo(0, 0);
+      
+      // Combine all sections into one image
+      const combinedCanvas = document.createElement('canvas');
+      const ctx = combinedCanvas.getContext('2d')!;
+      
+      combinedCanvas.width = contentWidth * 2; // Account for scale
+      combinedCanvas.height = screenshots.length * sectionHeight * 2; // Account for scale
+      
+      // Draw each section
+      for (let i = 0; i < screenshots.length; i++) {
+        const img = new Image();
+        img.src = screenshots[i];
+        await new Promise((resolve) => {
+          img.onload = () => {
+            ctx.drawImage(img, 0, i * sectionHeight * 2);
+            resolve(true);
+          };
+        });
+      }
+      
+      // Store the combined screenshot
+      const finalImageData = combinedCanvas.toDataURL('image/png', 0.8);
+      setCapturedScreenshots(prev => new Map(prev).set(tabId, finalImageData));
+      
+      console.log(`✅ ${tabId} screenshot captured: ${(finalImageData.length / 1024 / 1024).toFixed(2)}MB`);
+      
+      toast({
+        title: "Screenshot Captured",
+        description: `${getTabDisplayName(tabId)} screenshot captured successfully.`,
+      });
+      
+    } catch (error) {
+      console.error('Screenshot capture failed:', error);
+      toast({
+        title: "Screenshot Failed", 
+        description: "Could not capture screenshot. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCapturingScreenshot(null);
+    }
+  };
 
-      // Enhanced capture width with 15% increase for better readability and minimum thresholds
-      const baseCaptureWidth = Math.max(viewportWidth, contentWidth, 1200);
-      const captureWidth = Math.floor(baseCaptureWidth * 1.15); // 15% width increase as requested
-      
-      // Enhanced section thresholds for better PDF quality - force multi-section for long content
-      const maxSingleCaptureHeight = Math.max(viewportHeight * 4, 6000); // Reduced threshold for better section quality
-      const needsMultiSection = contentHeight > maxSingleCaptureHeight;
-      
-      // FORCE ALL TABS TO USE EXACTLY 4 SECTIONS AS REQUESTED BY USER
-      const forceMultiSection = true; // Always use 4-section capture for all tabs
-      
-      console.log(`Enhanced capture: Base ${baseCaptureWidth}x${contentHeight} → Enhanced ${captureWidth}x${contentHeight} (+15% width)`);
-      console.log(`Multi-section capture: FORCED 4 sections for all tabs`);
+  // Helper function to get display names for tabs
+  const getTabDisplayName = (tabId: string): string => {
+    const names: Record<string, string> = {
+      'analysis': 'Analysis',
+      'energy-reading': 'Chakra Score',
+      'chakras': 'Detailed Chakras',
+      'guidance': 'Guidance',
+      'spectrum': 'Color Spectrum',
+      'energy-map': 'Energy Map',
+      'detailed': 'Detailed Analysis',
+      'combined': 'Combined Analysis'
+    };
+    return names[tabId] || tabId;
+  };
 
-      if (forceMultiSection) {
-        // Capture ALL tabs in exactly 4 sections for optimal PDF display
-        const screenshots: string[] = [];
-        
-        // STANDARDIZED: All tabs use exactly 4 sections
-        const totalSections = 4;
-        const sectionHeight = Math.ceil(contentHeight / 4);
-        // Enhanced width for better readability (25% increase for all tabs)
-        const enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
-        
-        console.log(`Capturing ${totalSections} sections for ${tabId} tab with enhanced width ${enhancedCaptureWidth}px, each section optimized for PDF readability`);
-        
-        for (let section = 0; section < totalSections; section++) {
+  const downloadComprehensiveAuraPDF = async () => {
           const startY = section * sectionHeight;
           const endY = Math.min(startY + sectionHeight, contentHeight);
           const actualSectionHeight = endY - startY;
@@ -1498,25 +1482,8 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // CAPTURE ALL AVAILABLE TABS FOR PDF GENERATION
-      const essentialTabs = ['analysis', 'energy-reading', 'guidance', 'spectrum', 'energy-map', 'detailed'];
-      
-      for (const tabId of essentialTabs) {
-        if (!capturedScreenshots.has(tabId)) {
-          console.log(`📸 Auto-capturing ${getTabDisplayName(tabId)} tab for PDF generation...`);
-          try {
-            await captureTabScreenshot(tabId);
-            console.log(`✅ ${getTabDisplayName(tabId)} tab captured successfully for PDF`);
-            // Add a small delay between captures to prevent issues
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (captureError) {
-            console.warn(`⚠️ Failed to capture ${getTabDisplayName(tabId)} tab:`, captureError);
-            // Continue with PDF generation even if capture fails
-          }
-        } else {
-          console.log(`✅ ${getTabDisplayName(tabId)} tab already captured, ready for PDF`);
-        }
-      }
+      // PDF will only include manually captured screenshots (no auto-capture)
+      console.log(`PDF: Using ${capturedScreenshots.size} manually captured screenshots only`);
 
       // Test jsPDF initialization
       console.log('Initializing jsPDF...');
