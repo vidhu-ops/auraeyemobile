@@ -1315,8 +1315,21 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering for all tabs with special boost for critical tabs
-                if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
+                // Enhanced text rendering with maximum quality for life score tab
+                if (tabId === 'life-score') {
+                  elem.style.fontSize = '24px'; // Maximum font specifically for life score
+                  elem.style.lineHeight = '2.0';
+                  elem.style.fontWeight = '800';
+                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+                  textElements.forEach(textEl => {
+                    const textElement = textEl as HTMLElement;
+                    textElement.style.fontSize = '24px';
+                    textElement.style.fontWeight = '800';
+                    textElement.style.letterSpacing = '0.5px';
+                    textElement.style.textRendering = 'optimizeLegibility';
+                    textElement.style.fontSmooth = 'always';
+                  });
+                } else if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
                   elem.style.fontSize = '20px'; // Maximum font for critical tabs
                   elem.style.lineHeight = '1.8';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
@@ -1386,7 +1399,10 @@ export default function AuraAnalysis() {
         if (tabId === 'chakras') {
           // Keep chakras tab unchanged as requested - use existing high quality settings
           scaleUsed = viewportWidth > 1400 ? 3.9 : 4.5;
-        } else if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score') {
+        } else if (tabId === 'life-score') {
+          // Extra enhanced scale specifically for life score tab
+          scaleUsed = viewportWidth > 1400 ? 5.0 : 6.0; // Maximum scaling for life score tab clarity
+        } else if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
           // Double the scale for specific tabs to improve visibility
           scaleUsed = viewportWidth > 1400 ? 4.0 : 5.0; // Enhanced scaling for better visibility
         } else {
@@ -1605,10 +1621,13 @@ export default function AuraAnalysis() {
         // Wait for layout to stabilize
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Enhanced scale factor for specific tabs to double their size and improve visibility
+        // Enhanced scale factor for specific tabs with extra enhancement for life score tab
         const getOptimizedScale = (tabId: string) => {
           if (tabId === 'chakras') return 3.5; // Keep chakras unchanged as requested
-          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score') {
+          if (tabId === 'life-score') {
+            return 6.5; // Extra high scale specifically for life score tab to improve clarity
+          }
+          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
             return 5.6; // Double the size (2.8 * 2) for better visibility
           }
           return 2.8; // Standard scale for other tabs
@@ -1656,17 +1675,33 @@ export default function AuraAnalysis() {
                 childElem.style.height = 'auto';
               });
               
-              // Enhanced text rendering for single captures - larger text for specific tabs
-              const isEnhancedTab = tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score';
-              const baseFontSize = isEnhancedTab ? '18px' : '15px'; // Larger font for enhanced tabs
-              const baseLineHeight = isEnhancedTab ? '1.8' : '1.6';
+              // Enhanced text rendering with maximum settings for life score tab
+              const isLifeScoreTab = tabId === 'life-score';
+              const isEnhancedTab = tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed';
+              
+              let baseFontSize, baseLineHeight, fontWeight;
+              if (isLifeScoreTab) {
+                baseFontSize = '22px'; // Extra large font for life score tab
+                baseLineHeight = '2.0'; // Extra spacing
+                fontWeight = '700'; // Bold text
+              } else if (isEnhancedTab) {
+                baseFontSize = '18px'; // Larger font for enhanced tabs
+                baseLineHeight = '1.8';
+                fontWeight = '600'; // Semi-bold
+              } else {
+                baseFontSize = '15px'; // Standard font
+                baseLineHeight = '1.6';
+                fontWeight = '500'; // Medium
+              }
               
               elem.style.fontSize = baseFontSize;
               elem.style.lineHeight = baseLineHeight;
+              elem.style.fontWeight = fontWeight;
               const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
               textElements.forEach(textEl => {
                 const textElement = textEl as HTMLElement;
                 textElement.style.fontSize = baseFontSize;
+                textElement.style.fontWeight = fontWeight;
                 textElement.style.fontWeight = isEnhancedTab ? '600' : '500'; // Bolder text for enhanced tabs
                 textElement.style.letterSpacing = isEnhancedTab ? '0.3px' : '0.2px';
               });
@@ -1689,7 +1724,10 @@ export default function AuraAnalysis() {
         // Store with higher size limit for enhanced quality screenshots
         const getSizeLimit = (tabId: string) => {
           if (tabId === 'chakras') return 22 * 1024 * 1024; // Keep chakras unchanged
-          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed' || tabId === 'life-score') {
+          if (tabId === 'life-score') {
+            return 50 * 1024 * 1024; // Maximum limit specifically for life score tab
+          }
+          if (tabId === 'guidance' || tabId === 'energy-reading' || tabId === 'detailed') {
             return 35 * 1024 * 1024; // Much higher limit for doubled-size tabs
           }
           return 15 * 1024 * 1024; // Standard limit for other tabs
@@ -2339,15 +2377,27 @@ export default function AuraAnalysis() {
             const originalHeight = tempImg.naturalHeight;
             const trueAspectRatio = originalHeight / originalWidth;
             
-            // Enhanced sizing for specific tabs to double their visibility in PDF
-            const isEnhancedTab = tabId === 'guidance' || tabId === 'life-score' || tabId === 'detailed';
+            // Enhanced sizing with extra enhancement for life score tab
+            const isLifeScoreTab = tabId === 'life-score';
+            const isEnhancedTab = tabId === 'guidance' || tabId === 'detailed';
             
-            // Increase base dimensions for enhanced tabs to make them much more visible
-            const baseMaxWidth = isEnhancedTab ? 340 : 170; // Double width for enhanced tabs
-            const baseMaxHeight = isEnhancedTab ? 480 : 240; // Double height for enhanced tabs
+            // Increase base dimensions with extra size for life score tab
+            let baseMaxWidth, baseMaxHeight;
+            if (isLifeScoreTab) {
+              // Extra large dimensions specifically for life score tab to improve clarity
+              baseMaxWidth = 420; // Even larger width for life score
+              baseMaxHeight = 600; // Even larger height for life score
+            } else if (isEnhancedTab) {
+              baseMaxWidth = 340; // Double width for enhanced tabs
+              baseMaxHeight = 480; // Double height for enhanced tabs
+            } else {
+              baseMaxWidth = 170; // Standard width
+              baseMaxHeight = 240; // Standard height
+            }
             
-            const pageMaxWidth = Math.min(baseMaxWidth, 380); // Prevent overflow
-            const pageMaxHeight = Math.min(baseMaxHeight, 500); // Prevent overflow
+            // Adjust page limits based on tab type - allow larger dimensions for life score
+            const pageMaxWidth = isLifeScoreTab ? Math.min(baseMaxWidth, 450) : Math.min(baseMaxWidth, 380);
+            const pageMaxHeight = isLifeScoreTab ? Math.min(baseMaxHeight, 650) : Math.min(baseMaxHeight, 500);
             
             // Calculate proper dimensions maintaining original aspect ratio (critical to prevent squishing/stretching)
             let finalWidth, finalHeight;
