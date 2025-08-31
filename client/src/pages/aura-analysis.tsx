@@ -965,6 +965,67 @@ export default function AuraAnalysis() {
     return meanings[colorName] || `${colorName} energy carries unique spiritual significance that supports your personal growth and spiritual development journey.`;
   };
 
+  // Function to crop canvas and remove black/transparent areas
+  const cropCanvasToContent = (canvas: HTMLCanvasElement): HTMLCanvasElement => {
+    const ctx = canvas.getContext('2d')!;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    let minX = canvas.width;
+    let minY = canvas.height;
+    let maxX = 0;
+    let maxY = 0;
+    
+    // Find the bounds of non-transparent and non-black pixels
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const index = (y * canvas.width + x) * 4;
+        const r = data[index];
+        const g = data[index + 1];
+        const b = data[index + 2];
+        const a = data[index + 3];
+        
+        // Check if pixel is not transparent and not pure black
+        if (a > 0 && !(r === 0 && g === 0 && b === 0)) {
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    
+    // If no content found, return the original canvas
+    if (minX >= maxX || minY >= maxY) {
+      return canvas;
+    }
+    
+    // Add small padding to ensure content isn't too tight
+    const padding = 10;
+    minX = Math.max(0, minX - padding);
+    minY = Math.max(0, minY - padding);
+    maxX = Math.min(canvas.width, maxX + padding);
+    maxY = Math.min(canvas.height, maxY + padding);
+    
+    // Create cropped canvas
+    const croppedCanvas = document.createElement('canvas');
+    const croppedCtx = croppedCanvas.getContext('2d')!;
+    const croppedWidth = maxX - minX;
+    const croppedHeight = maxY - minY;
+    
+    croppedCanvas.width = croppedWidth;
+    croppedCanvas.height = croppedHeight;
+    
+    // Fill with white background
+    croppedCtx.fillStyle = '#ffffff';
+    croppedCtx.fillRect(0, 0, croppedWidth, croppedHeight);
+    
+    // Copy the cropped content
+    croppedCtx.drawImage(canvas, minX, minY, croppedWidth, croppedHeight, 0, 0, croppedWidth, croppedHeight);
+    
+    return croppedCanvas;
+  };
+
   // Enhanced screenshot capture function with 15% increased width and improved quality
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
@@ -1287,8 +1348,10 @@ export default function AuraAnalysis() {
             }
           });
           
-          screenshots.push(sectionCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
-          console.log(`Section ${section + 1}/${totalSections}: ${sectionCanvas.width}x${sectionCanvas.height}`);
+          // Crop the canvas to remove any black areas around the content
+          const croppedCanvas = cropCanvasToContent(sectionCanvas);
+          screenshots.push(croppedCanvas.toDataURL('image/png', 1.0)); // Maximum quality PNG
+          console.log(`Section ${section + 1}/${totalSections}: ${croppedCanvas.width}x${croppedCanvas.height}`);
         }
         
         // Reset scroll position for all scrollable containers
@@ -1496,9 +1559,12 @@ export default function AuraAnalysis() {
         htmlElement.style.width = '';
         htmlElement.style.maxWidth = '';
 
+        // Crop the canvas to remove any black areas around the content
+        const croppedCanvas = cropCanvasToContent(canvas);
+        
         // Use PNG with 10% more compression  
-        const imageDataUrl = canvas.toDataURL('image/png', 0.9);
-        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality`);
+        const imageDataUrl = croppedCanvas.toDataURL('image/png', 0.9);
+        console.log(`Enhanced single image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved quality, cropped to ${croppedCanvas.width}x${croppedCanvas.height}`);
         
         // Store with higher size limit for enhanced quality screenshots
         const singleSizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 20 * 1024 * 1024 : 12 * 1024 * 1024;
@@ -1508,7 +1574,7 @@ export default function AuraAnalysis() {
         } else {
           console.warn(`Single image too large for ${tabId} (${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
           // Fallback to JPEG with 10% more compression
-          const jpegVersion = canvas.toDataURL('image/jpeg', 0.9);
+          const jpegVersion = croppedCanvas.toDataURL('image/jpeg', 0.9);
           if (jpegVersion.length < 15 * 1024 * 1024) { // Higher fallback limit
             setCapturedScreenshots(prev => new Map(prev).set(tabId, jpegVersion));
             console.log(`✅ ${tabId} single screenshot captured with JPEG compression: ${(jpegVersion.length / 1024 / 1024).toFixed(2)} MB`);
