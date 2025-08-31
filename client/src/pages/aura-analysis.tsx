@@ -975,8 +975,10 @@ export default function AuraAnalysis() {
       if (activeTab !== tabId) {
         console.log(`🔄 Switching from ${activeTab} to ${tabId} tab`);
         setActiveTab(tabId);
-        // Wait for tab switch to complete
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Extended wait for chakras tab due to complex content
+        const waitTime = tabId === 'chakras' ? 1500 : 1000;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        console.log(`✅ Tab switch completed, waiting ${waitTime}ms for ${tabId} content`);
       }
       
       const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
@@ -988,6 +990,17 @@ export default function AuraAnalysis() {
       console.log(`✅ Found ${tabId} element, proceeding with capture...`);
 
       const htmlElement = element as HTMLElement;
+      
+      // Special chakras tab debugging
+      if (tabId === 'chakras') {
+        console.log(`🔍 CHAKRAS TAB DEBUG:`);
+        console.log(`- Element found: ${!!htmlElement}`);
+        console.log(`- Element visible: ${htmlElement.offsetWidth > 0 && htmlElement.offsetHeight > 0}`);
+        console.log(`- Element dimensions: ${htmlElement.offsetWidth}x${htmlElement.offsetHeight}`);
+        console.log(`- Scroll dimensions: ${htmlElement.scrollWidth}x${htmlElement.scrollHeight}`);
+        console.log(`- Tab data attribute: ${htmlElement.getAttribute('data-tab')}`);
+        console.log(`- Active tab state: ${activeTab}`);
+      }
       const rect = htmlElement.getBoundingClientRect();
       
       // Get viewport dimensions for proper sizing reference
@@ -1445,12 +1458,22 @@ export default function AuraAnalysis() {
         console.log(`Single screenshot: ${canvas.width}x${canvas.height}, ratio: ${(canvas.width/canvas.height).toFixed(2)}`);
       }
       
+      // Enhanced success feedback for chakras tab
+      const successMessage = tabId === 'chakras' 
+        ? "Detailed Chakras screenshot captured successfully! This comprehensive analysis will be split into multiple sections in your PDF for optimal readability."
+        : `${getTabDisplayName(tabId)} tab screenshot captured and will be included in PDF download.`;
+        
       toast({
         title: "Screenshot Captured Successfully ✅",
-        description: `${getTabDisplayName(tabId)} tab screenshot captured and will be included in PDF download.`,
+        description: successMessage,
       });
       
-      console.log(`🎉 Screenshot capture completed for ${tabId}. Total screenshots: ${capturedScreenshots.size}`);
+      console.log(`🎉 Screenshot capture completed for ${tabId}. Total screenshots: ${capturedScreenshots.size + 1}`);
+      
+      // Special success logging for chakras tab
+      if (tabId === 'chakras') {
+        console.log(`✅ CHAKRAS TAB SUCCESS: Screenshot captured and ready for PDF inclusion with multi-section layout`);
+      }
       
     } catch (error) {
       console.error('Screenshot capture failed:', error);
