@@ -1498,8 +1498,8 @@ export default function AuraAnalysis() {
         description: "Creating your comprehensive aura analysis report with all sections...",
       });
 
-      // CRITICAL FIX: Ensure essential tabs are always captured for PDF (excluding detailed chakras tab - only manual capture)
-      const essentialTabs = ['analysis', 'energy-map'];
+      // CAPTURE ALL AVAILABLE TABS FOR PDF GENERATION
+      const essentialTabs = ['analysis', 'energy-reading', 'guidance', 'spectrum', 'energy-map', 'detailed'];
       
       for (const tabId of essentialTabs) {
         if (!capturedScreenshots.has(tabId)) {
@@ -1957,6 +1957,8 @@ export default function AuraAnalysis() {
       yPosition += 15;
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
+      console.log(`PDF: Checking captured screenshots. Count: ${capturedScreenshots.size}`);
+      
       if (capturedScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
@@ -1966,20 +1968,16 @@ export default function AuraAnalysis() {
         yPosition = addTextWithPageBreak('CAPTURED ANALYSIS SCREENSHOTS', pageWidth/2, yPosition, { align: 'center' });
         yPosition += 15;
         
-        pdf.setFontSize(11);
-        pdf.setTextColor(60, 60, 60);
-        yPosition = addWrappedText('These screenshots were captured from different analysis tabs for your reference.', 20, yPosition, 170);
-        yPosition += 10;
+        console.log(`PDF: Processing ${capturedScreenshots.size} screenshots`);
         
-        // Add each captured screenshot - these are already in 4-section format from capture
+        // Process each captured screenshot with simplified logic
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
+          console.log(`PDF: Processing ${tabId} screenshot, size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)}MB`);
           
           try {
-            // Add page break before each screenshot
-            if (yPosition > 40) {
-              pdf.addPage();
-              yPosition = 20;
-            }
+            // Start new page for each screenshot
+            pdf.addPage();
+            yPosition = 20;
             
             // Add tab title
             pdf.setFontSize(16);
@@ -1988,68 +1986,35 @@ export default function AuraAnalysis() {
             yPosition += 15;
             
             // Validate image data
-            if (!imageDataUrl || !imageDataUrl.startsWith('data:image') || imageDataUrl.length < 100) {
-              throw new Error(`Invalid image data for ${tabId}`);
+            if (!imageDataUrl || !imageDataUrl.startsWith('data:image') || imageDataUrl.length < 1000) {
+              throw new Error(`Invalid or empty image data for ${tabId}`);
             }
             
-            // Create temporary image to get dimensions
-            const tempImg = new Image();
-            tempImg.src = imageDataUrl;
+            // Simple image addition with fixed dimensions to avoid complexity
+            const pdfWidth = 160; // Fixed width that fits page
+            const pdfHeight = 200; // Fixed height that fits page
             
-            await new Promise((resolve, reject) => {
-              tempImg.onload = resolve;
-              tempImg.onerror = reject;
-              setTimeout(() => reject(new Error('Image load timeout')), 5000);
-            });
+            console.log(`PDF: Adding ${tabId} image at dimensions ${pdfWidth}x${pdfHeight}`);
             
-            const originalWidth = tempImg.naturalWidth;
-            const originalHeight = tempImg.naturalHeight;
-            const aspectRatio = originalHeight / originalWidth;
+            // Add image directly without complex processing
+            pdf.addImage(imageDataUrl, 'PNG', 25, yPosition, pdfWidth, pdfHeight);
             
-            // Calculate optimal dimensions for PDF (maintain aspect ratio)
-            const maxPageWidth = 170; // A4 page width minus margins
-            const maxPageHeight = 240; // A4 page height minus margins
-            
-            let finalWidth = maxPageWidth;
-            let finalHeight = finalWidth * aspectRatio;
-            
-            // If too tall, scale down
-            if (finalHeight > maxPageHeight) {
-              finalHeight = maxPageHeight;
-              finalWidth = finalHeight / aspectRatio;
-            }
-            
-            console.log(`Screenshot ${tabId}: ${originalWidth}x${originalHeight} → PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}`);
-            
-            // Compress image for PDF
-            const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-            
-            if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
-              throw new Error(`Compression failed for ${tabId}`);
-            }
-            
-            // Check if screenshot fits on current page
-            if (yPosition + finalHeight > pageHeight - 40) {
-              pdf.addPage();
-              yPosition = 20;
-            }
-            
-            // Add the screenshot to PDF
-            pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-            yPosition += finalHeight + 20;
-            
-            console.log(`✅ Screenshot ${tabId} added to PDF successfully`);
+            console.log(`✅ PDF: Successfully added ${tabId} screenshot`);
             
           } catch (error) {
-            console.error(`Error adding screenshot for ${tabId}:`, error);
+            console.error(`PDF Error adding ${tabId}:`, error);
             
-            // Simple fallback: add error message
+            // Fallback: add error message
             pdf.setFontSize(12);
             pdf.setTextColor(150, 150, 150);
             yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} screenshot could not be embedded`, pageWidth/2, yPosition, { align: 'center' });
             yPosition += 30;
           }
         }
+        
+        console.log(`PDF: Finished processing all screenshots`);
+      } else {
+        console.log(`PDF: No screenshots captured to add to PDF`);
       }
 
       // SECTION 9: FINAL SUMMARY AND RECOMMENDATIONS
