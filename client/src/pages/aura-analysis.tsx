@@ -2299,8 +2299,31 @@ export default function AuraAnalysis() {
         yPosition += 10;
         
         // Add each captured screenshot with proper sizing and multi-page support
+        // Use separate pages for each tab to prevent overlapping
+        let isFirstTab = true;
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
           
+          // Start each tab on a new page to prevent overlapping (except the first one)
+          if (!isFirstTab) {
+            pdf.addPage();
+            yPosition = 20;
+            
+            // Add tab title on new page
+            pdf.setFontSize(16);
+            pdf.setTextColor(75, 0, 130);
+            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, pageWidth/2, yPosition, { align: 'center' });
+            yPosition += 15;
+          } else {
+            // Add spacing for first tab
+            yPosition += 10;
+            // Add tab title for first tab too
+            pdf.setFontSize(16);
+            pdf.setTextColor(75, 0, 130);
+            yPosition = addTextWithPageBreak(`${getTabDisplayName(tabId)} Analysis`, pageWidth/2, yPosition, { align: 'center' });
+            yPosition += 15;
+            isFirstTab = false;
+          }
+
           try {
             // Create a temporary image to get exact dimensions
             const tempImg = new Image();
@@ -2326,11 +2349,25 @@ export default function AuraAnalysis() {
             const pageMaxWidth = Math.min(baseMaxWidth, 380); // Prevent overflow
             const pageMaxHeight = Math.min(baseMaxHeight, 500); // Prevent overflow
             
-            // Calculate proper dimensions maintaining original aspect ratio
-            let finalWidth = pageMaxWidth;
-            let finalHeight = finalWidth * trueAspectRatio;
+            // Calculate proper dimensions maintaining original aspect ratio (critical to prevent squishing/stretching)
+            let finalWidth, finalHeight;
             
-            // If height exceeds page, scale down proportionally
+            // Always maintain aspect ratio - scale based on which dimension is the limiting factor
+            if (trueAspectRatio > pageMaxHeight / pageMaxWidth) {
+              // Image is relatively tall, limit by height
+              finalHeight = pageMaxHeight;
+              finalWidth = finalHeight / trueAspectRatio;
+            } else {
+              // Image is relatively wide, limit by width
+              finalWidth = pageMaxWidth;
+              finalHeight = finalWidth * trueAspectRatio;
+            }
+            
+            // Double-check to ensure no dimension exceeds limits (safety check)
+            if (finalWidth > pageMaxWidth) {
+              finalWidth = pageMaxWidth;
+              finalHeight = finalWidth * trueAspectRatio;
+            }
             if (finalHeight > pageMaxHeight) {
               finalHeight = pageMaxHeight;
               finalWidth = finalHeight / trueAspectRatio;
@@ -2354,10 +2391,11 @@ export default function AuraAnalysis() {
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
-                // Start a new page for each section after the first
-                if (section > 0 || yPosition > 40) {
+                // Start a new page for each section after the first, with better spacing
+                if (section > 0) {
                   pdf.addPage();
                   yPosition = 20;
+                  console.log(`Started new page for ${tabId} section ${section + 1} to prevent overlapping`);
                 }
                 
                 // Calculate the portion of the image for this section
@@ -2404,8 +2442,11 @@ export default function AuraAnalysis() {
                 try {
                   const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  yPosition += sectionFinalHeight + 10;
-                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF`);
+                  
+                  // Add proper spacing after each section to prevent overlapping
+                  const spacingAfterSection = 15; // Increased spacing between sections
+                  yPosition += sectionFinalHeight + spacingAfterSection;
+                  console.log(`Successfully added ${tabId} section ${section + 1} to PDF (${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)})`);
                 } catch (sectionError) {
                   console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionError);
                   // Add placeholder text for failed section
@@ -2494,6 +2535,9 @@ export default function AuraAnalysis() {
             console.error('Error adding screenshot image:', error);
             yPosition += 25;
           }
+          
+          // Ensure adequate spacing after each complete tab to prevent any overlapping
+          yPosition += 20; // Extra spacing between different tabs
         }
       }
 
