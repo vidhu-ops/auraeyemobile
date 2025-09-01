@@ -7213,65 +7213,7 @@ export default function AuraAnalysis() {
                                 </div>
 
                                 {/* Complete Aura Color Profile - All 4 Colors */}
-                                <div className="bg-white border rounded-lg p-6 shadow-sm mb-2">
-                                  
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-                                    {(() => {
-                                      const detectedColors = extractAllAuraColors(result);
-                                      return [
-                                        { 
-                                          name: getColorNameFromHex(detectedColors.receiving), 
-                                          hex: detectedColors.receiving, 
-                                          type: 'Receiving Energy', 
-                                          icon: '➜',
-                                          meaning: getReceivingEnergyMeaning(getColorNameFromHex(detectedColors.receiving))
-                                        },
-                                        { 
-                                          name: getColorNameFromHex(detectedColors.thinking), 
-                                          hex: detectedColors.thinking, 
-                                          type: 'Crown/Thinking', 
-                                          icon: '🧠',
-                                          meaning: getThinkingEnergyMeaning(getColorNameFromHex(detectedColors.thinking))
-                                        },
-                                        { 
-                                          name: getColorNameFromHex(detectedColors.personality), 
-                                          hex: detectedColors.personality, 
-                                          type: 'Personality Color', 
-                                          icon: '🌟',
-                                          meaning: getPersonalityEnergyMeaning(getColorNameFromHex(detectedColors.personality))
-                                        },
-                                        
-                                        { 
-                                          name: getColorNameFromHex(detectedColors.giving), 
-                                          hex: detectedColors.giving, 
-                                          type: 'Giving Energy', 
-                                          icon: '➜',
-                                          meaning: getGivingEnergyMeaning(getColorNameFromHex(detectedColors.giving))
-                                        },
-                                        
-                                      ].map((colorData, index) => (
-                                        <div key={index} className="border rounded-lg p-4 bg-gradient-to-br from-white to-gray-50">
-                                          <div className="flex items-center space-x-3 mb-3">
-                                            <div 
-                                              className="w-12 h-12 rounded-full flex items-center justify-center"
-                                              style={{backgroundColor: colorData.hex}}
-                                            >
-                                              <span className="text-white text-lg">{colorData.icon}</span>
-                                            </div>
-                                            <div>
-                                              <h4 className="font-bold text-purple-800">{colorData.name}</h4>
-                                              <p className="text-xs text-gray-600">{colorData.type}</p>
-                                            </div>
-                                          </div>
-                                          <p className="text-xs text-gray-700 leading-relaxed">
-                                            {colorData.meaning.split(' - ')[0]}
-                                          </p>
-                                        </div>
-                                      ));
-                                    })()}
-                                  </div>
-                                </div>
+                               
 
                                 {/* Detailed Analysis Section - Specialized Aura Interpretation */}
                                 <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
