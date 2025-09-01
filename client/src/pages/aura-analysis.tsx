@@ -1642,12 +1642,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // Use PNG with reduced compression for clearer images
-              let compressedDataUrl = canvas.toDataURL('image/png', 0.98);
+              // Use PNG with minimal compression for crystal clear images
+              let compressedDataUrl = canvas.toDataURL('image/png', 1.0);
               
-              // If PNG is too large, fallback to JPEG with reduced compression for clearer images
-              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Reduced compression for clearer images
+              // If PNG is too large, fallback to JPEG with minimal compression for crystal clear images
+              if (compressedDataUrl.length > 8 * 1024 * 1024) { // Increased threshold to 8MB for better quality
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98); // Minimal compression for crystal clear images
               }
               
               resolve(compressedDataUrl);
@@ -2028,6 +2028,12 @@ export default function AuraAnalysis() {
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
+                // Special size enhancement for guidance tab - double the size
+                if (tabId === 'guidance') {
+                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double the width for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double the height for better visibility
+                }
+                
                 // Section titles removed for continuous image flow as requested
                 
                 // Compress and add the section
@@ -2059,6 +2065,12 @@ export default function AuraAnalysis() {
               if (finalHeight > pageMaxHeight) {
                 finalHeight = pageMaxHeight;
                 finalWidth = finalHeight / trueAspectRatio;
+              }
+              
+              // Special size enhancement for guidance tab single screenshots - double the size
+              if (tabId === 'guidance') {
+                finalWidth = finalWidth * 2.0; // Double the width for better visibility
+                finalHeight = finalHeight * 2.0; // Double the height for better visibility
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
