@@ -1115,12 +1115,12 @@ export default function AuraAnalysis() {
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
           enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
-          // Optimized sectioning for complex tabs with DOUBLE size for guidance tab
+          // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
-          sectionHeight = idealSectionHeight * 2.0; // DOUBLE the height for guidance tab
+          sectionHeight = idealSectionHeight;
           totalSections = Math.ceil(contentHeight / sectionHeight);
-          // DOUBLE the width for guidance tab (200% increase)
-          enhancedCaptureWidth = Math.floor(captureWidth * 2.0);
+          // Additional 10% width increase for complex tabs
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.10);
         } else {
           // Standard sectioning for other tabs with optimal aspect ratio
           const targetAspectRatio = 16 / 9;
@@ -1345,22 +1345,18 @@ export default function AuraAnalysis() {
         // Wait for layout to stabilize
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Special size handling for guidance tab - DOUBLE the dimensions
-        const finalCaptureWidth = tabId === 'guidance' ? captureWidth * 2.0 : captureWidth;
-        const finalContentHeight = tabId === 'guidance' ? contentHeight * 2.0 : contentHeight;
-        
         const canvas = await html2canvas(htmlElement, {
           backgroundColor: '#ffffff',
           scale: 3.5, // Enhanced scale for all single captures
           logging: false,
           useCORS: true,
           allowTaint: false,
-          width: finalCaptureWidth, // DOUBLE for guidance tab
-          height: finalContentHeight, // DOUBLE for guidance tab
+          width: captureWidth, // Already enhanced with 15% increase
+          height: contentHeight,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: finalCaptureWidth, // DOUBLE for guidance tab
-          windowHeight: finalContentHeight, // DOUBLE for guidance tab
+          windowWidth: captureWidth,
+          windowHeight: contentHeight,
           removeContainer: false,
           foreignObjectRendering: false,
           imageTimeout: 8000, // Longer timeout for complex content
