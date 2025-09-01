@@ -6468,6 +6468,219 @@ export default function AuraAnalysis() {
                                 </div>
                               </div>
 
+                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              
+                              <div className="space-y-4">
+
+                                {/* Soul Star Chakra */}
+                                <div className="bg-gradient-to-r from-white to-yellow-50 rounded-lg p-4 border border-gray-300">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Soul Star Chakra connects you to your soul's purpose, divine guidance, and highest spiritual potential beyond the physical realm.
+                                    </p>
+                                    {(() => {
+                                      const soulStarScore = Math.round(calculateSoulStarChakra(result)/10);
+                                      const karmic = getKarmicIndication(soulStarScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Remembering your soul purpose & Connection with your soul
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Soul Star Chakra</span>
+                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
+                                </div>
+
+                                {/* Crown Chakra - Number 3 */}
+                                <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.
+                                    </p>
+                                    {(() => {
+                                      const crownScore = result.chakraActivity?.crown || 5;
+                                      const karmic = getKarmicIndication(crownScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Reconnecting with Source beyond and trusting the divine timing
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Crown Chakra</span>
+                                      <span className="text-violet-600">{result.chakraActivity?.crown || 5}/10 ({(result.chakraActivity?.crown || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.crown || 5) * 10} className="h-3 bg-violet-100" />
+                                </div>
+                                
+                                {/* Third Eye Chakra - Number 8 */}
+                                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.
+                                    </p>
+                                    {(() => {
+                                      const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
+                                      const karmic = getKarmicIndication(thirdEyeScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Breaking illusions and mental control to trust intuition and remove self doubt
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Third Eye Chakra</span>
+                                      <span className="text-indigo-600">{result.chakraActivity?.thirdEye || 5}/10 ({(result.chakraActivity?.thirdEye || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.thirdEye || 5) * 10} className="h-3 bg-indigo-100" />
+                                </div>
+                                
+                                {/* Throat Chakra - Number 5 */}
+                                <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg p-4 border border-blue-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.
+                                    </p>
+                                    {(() => {
+                                      const throatScore = result.chakraActivity?.throat || 5;
+                                      const karmic = getKarmicIndication(throatScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Healing silenced expression from past lifetimes and speaking your truth and sharing what you feel
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Throat Chakra</span>
+                                      <span className="text-blue-600">{result.chakraActivity?.throat || 5}/10 ({(result.chakraActivity?.throat || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.throat || 5) * 10} className="h-3 bg-blue-100" />
+                                </div>
+                                
+                                {/* Heart Chakra - Number 2 */}
+                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Heart Chakra controls love, compassion, emotional healing, relationships, and your ability to give and receive love.
+                                    </p>
+                                    {(() => {
+                                      const heartScore = result.chakraActivity?.heart || 5;
+                                      const karmic = getKarmicIndication(heartScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Releasing fear of vulnerability and being able to give and receive with balanced boundaries
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Heart Chakra</span>
+                                      <span className="text-green-600">{result.chakraActivity?.heart || 5}/10 ({(result.chakraActivity?.heart || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.heart || 5) * 10} className="h-3 bg-green-100" />
+                                </div>
+                                
+                                {/* Solar Plexus Chakra - Number 1 */}
+                                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-4 border border-yellow-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Solar Plexus Chakra governs personal power, confidence, willpower, and your sense of identity and self-worth.
+                                    </p>
+                                    {(() => {
+                                      const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
+                                      const karmic = getKarmicIndication(solarPlexusScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Stepping into your personal power & confidence to letting go of the self-sacrificial nature
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Solar Plexus Chakra</span>
+                                      <span className="text-yellow-600">{result.chakraActivity?.solarPlexus || 5}/10 ({(result.chakraActivity?.solarPlexus || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.solarPlexus || 5) * 10} className="h-3 bg-yellow-100" />
+                                </div>
+                                
+                                {/* Sacral Chakra - Number 6 */}
+                                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Sacral Chakra influences creativity, sexuality, emotional flow, pleasure, and your capacity for joy and passion.
+                                    </p>
+                                    {(() => {
+                                      const sacralScore = result.chakraActivity?.sacral || 5;
+                                      const karmic = getKarmicIndication(sacralScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Reclaiming emotional freedom and self-worth and letting go of guilt, shame, unworthiness around pleasure and emotional feelings
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Sacral Chakra</span>
+                                      <span className="text-orange-600">{result.chakraActivity?.sacral || 5}/10 ({(result.chakraActivity?.sacral || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.sacral || 5) * 10} className="h-3 bg-orange-100" />
+                                </div>
+                                
+                                {/* Root Chakra - Number 9 */}
+                                <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border border-red-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Root Chakra provides grounding, survival instincts, physical vitality, and your connection to earth energy and stability.
+                                    </p>
+                                    {(() => {
+                                      const rootScore = result.chakraActivity?.root || 5;
+                                      const karmic = getKarmicIndication(rootScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Ability to trust life decisions, take actions to create stability & security in life
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Root Chakra</span>
+                                      <span className="text-red-600">{result.chakraActivity?.root || 5}/10 ({(result.chakraActivity?.root || 5) * 10}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={(result.chakraActivity?.root || 5) * 10} className="h-3 bg-red-100" />
+                                </div>
+
+                                {/* Earth Star Chakra - Number 8 */}
+                                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-4 border border-amber-200">
+                                  <div className="mb-2">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      The Earth Star Chakra anchors you to earth energy and ansectral energy, creates a support system nad monetary stability.
+                                    </p>
+                                    {(() => {
+                                      const earthStarScore = Math.round(calculateEarthStarChakra(result)/10);
+                                      const karmic = getKarmicIndication(earthStarScore);
+                                      return (
+                                        <p className="text-sm text-gray-600 mb-3">
+                                          <span className={`font-semibold ${karmic.color}`}>{karmic.status}</span> - Karmic Lesson: Ancestral karmic inheritance, Money, Support from your blood line and Living your life as per your soul contract
+                                        </p>
+                                      );
+                                    })()}
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium">Earth Star Chakra</span>
+                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
+                                    </div>
+                                  </div>
+                                  <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
+                                </div>
+
+                              </div>
+
 
                             </div>
                           </TabsContent>
