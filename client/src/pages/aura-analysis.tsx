@@ -969,10 +969,33 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
-      if (!element) {
-        throw new Error('Tab content not found');
+      // Enhanced element selection with multiple fallback strategies
+      let element: Element | null = null;
+      
+      // Primary selection by data-tab attribute
+      element = document.querySelector(`[data-tab="${tabId}"]`);
+      
+      // Fallback for chakras tab with specific ID
+      if (!element && tabId === 'chakras') {
+        element = document.querySelector('#chakras-tab-content') || 
+                  document.querySelector('#chakras-content-container');
       }
+      
+      // General fallback for active tab
+      if (!element) {
+        element = document.querySelector('[data-state="active"]');
+      }
+      
+      // Final fallback by tab content class
+      if (!element) {
+        element = document.querySelector('.tab-content[data-state="active"]');
+      }
+      
+      if (!element) {
+        throw new Error(`Tab content not found for ${tabId}. Checked selectors: [data-tab="${tabId}"], #${tabId}-tab-content, [data-state="active"]`);
+      }
+      
+      console.log(`🎯 Successfully selected element for ${tabId} tab:`, element.className, element.id);
 
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
@@ -2024,6 +2047,7 @@ export default function AuraAnalysis() {
                 const scaleX = maxCanvasWidth / originalWidth;
                 const scaleY = maxCanvasHeight / sectionImageHeight;
                 
+                let sectionDataUrl: string;
                 try {
                   // Draw the section of the image with scaling
                   sectionCtx.drawImage(tempImg, 
@@ -2032,7 +2056,7 @@ export default function AuraAnalysis() {
                   
                   // Use more aggressive compression for chakras tab (0.0-1.0 range)
                   const compressionQuality = tabId === 'chakras' ? 0.7 : 0.85;
-                  const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
+                  sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
                   
                   // Validate the section data
                   if (!sectionDataUrl || sectionDataUrl === 'data:,') {
@@ -8366,7 +8390,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="chakras" data-tab="chakras">
+                          <TabsContent value="chakras" data-tab="chakras" id="chakras-tab-content">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
                               <Button
@@ -8385,7 +8409,7 @@ export default function AuraAnalysis() {
                               </Button>
                             </div>
                             
-                            <div className="space-y-6">
+                            <div className="space-y-6" id="chakras-content-container">
                               {/* Detailed Chakra Scoring Analysis Section */}
                               <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
                                 <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
