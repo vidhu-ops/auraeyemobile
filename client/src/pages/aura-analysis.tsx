@@ -2000,16 +2000,44 @@ export default function AuraAnalysis() {
                 const sectionEndY = Math.min(((section + 1) * originalHeight) / sectionsNeeded, originalHeight);
                 const sectionImageHeight = sectionEndY - sectionStartY;
                 
-                // Create a canvas to extract this section
+                // Create a canvas to extract this section with enhanced error handling
                 const sectionCanvas = document.createElement('canvas');
                 const sectionCtx = sectionCanvas.getContext('2d');
-                sectionCanvas.width = originalWidth;
-                sectionCanvas.height = sectionImageHeight;
+                if (!sectionCtx) {
+                  console.error(`Failed to get canvas context for ${tabId} section ${section}`);
+                  continue;
+                }
                 
-                // Draw the section of the image
-                sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
+                // Ensure reasonable canvas dimensions to prevent memory issues
+                const maxCanvasWidth = Math.min(originalWidth, 2000);
+                const maxCanvasHeight = Math.min(sectionImageHeight, 2000);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
+                sectionCanvas.width = maxCanvasWidth;
+                sectionCanvas.height = maxCanvasHeight;
+                
+                // Calculate scaling if needed
+                const scaleX = maxCanvasWidth / originalWidth;
+                const scaleY = maxCanvasHeight / sectionImageHeight;
+                
+                try {
+                  // Draw the section of the image with scaling
+                  sectionCtx.drawImage(tempImg, 
+                    0, sectionStartY, originalWidth, sectionImageHeight,
+                    0, 0, maxCanvasWidth, maxCanvasHeight);
+                  
+                  // Use more aggressive compression for chakras tab
+                  const compressionQuality = tabId === 'chakras' ? 0.7 : 0.85;
+                  const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
+                  
+                  // Validate the section data
+                  if (!sectionDataUrl || sectionDataUrl === 'data:,') {
+                    console.error(`Failed to generate section data for ${tabId} section ${section}`);
+                    continue;
+                  }
+                } catch (canvasError) {
+                  console.error(`Canvas drawing failed for ${tabId} section ${section}:`, canvasError);
+                  continue;
+                }
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -2069,12 +2097,41 @@ export default function AuraAnalysis() {
                 yPosition = 20;
               }
               
-              // Compress the image data before adding to PDF to prevent memory issues
-              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-              
-              // Add the screenshot with preserved aspect ratio
-              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 15;
+              // Enhanced compression for chakras tab to prevent PDF errors
+              let compressedImageDataUrl;
+              try {
+                // More aggressive compression for chakras tab to ensure PDF compatibility
+                if (tabId === 'chakras') {
+                  compressedImageDataUrl = await compressImageForPDF(imageDataUrl, Math.min(finalWidth, 150), Math.min(finalHeight, 200));
+                } else {
+                  compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+                }
+                
+                // Validate image data before adding to PDF
+                if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
+                  throw new Error(`Invalid compressed image data for tab ${tabId}`);
+                }
+                
+                // Add the screenshot with preserved aspect ratio
+                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+                yPosition += finalHeight + 15;
+              } catch (compressionError) {
+                console.error(`Image compression failed for ${tabId}:`, compressionError);
+                // Fallback: try with original image but smaller dimensions
+                try {
+                  const fallbackWidth = Math.min(finalWidth * 0.5, 100);
+                  const fallbackHeight = Math.min(finalHeight * 0.5, 150);
+                  pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, fallbackWidth, fallbackHeight);
+                  yPosition += fallbackHeight + 15;
+                } catch (fallbackError) {
+                  console.error(`Fallback image addition failed for ${tabId}:`, fallbackError);
+                  // Skip this image and add text placeholder
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(100, 100, 100);
+                  pdf.text(`[${getTabDisplayName(tabId)} screenshot could not be included due to size limitations]`, 20, yPosition);
+                  yPosition += 20;
+                }
+              }
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
