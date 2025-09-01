@@ -1642,12 +1642,12 @@ export default function AuraAnalysis() {
               // Draw the image with high quality
               ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
               
-              // Use PNG with 10% more compression
-              let compressedDataUrl = canvas.toDataURL('image/png', 0.9);
+              // Use PNG with reduced compression for clearer images
+              let compressedDataUrl = canvas.toDataURL('image/png', 0.98);
               
-              // If PNG is too large, fallback to JPEG with 10% more compression
+              // If PNG is too large, fallback to JPEG with reduced compression for clearer images
               if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
-                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // 10% more compression
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95); // Reduced compression for clearer images
               }
               
               resolve(compressedDataUrl);
