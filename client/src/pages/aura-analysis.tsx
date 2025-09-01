@@ -6273,7 +6273,7 @@ export default function AuraAnalysis() {
                               </span>
                             </TabsTrigger>
                             <TabsTrigger value="chakras" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">
-                              <span className="hidden lg:inline">Chakra Details</span>
+                              <span className="hidden lg:inline">Remedies</span>
                               <span className="lg:hidden">Details</span>
                             </TabsTrigger>
                             <TabsTrigger value="guidance" className="text-xs sm:text-sm px-1 sm:px-2 py-2 h-auto">Guidance</TabsTrigger>
@@ -6374,24 +6374,12 @@ export default function AuraAnalysis() {
                               </div>
 
                               {/* 8 Chakra Graph */}
-                              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                                <h3 className="font-medium text-lg mb-4">Your 9-Chakra Energy System</h3>
+                              <div className="bg-white rounded-xl p-1 border border-gray-200">
+                             
                                 
-                                <div className="space-y-3">
+                                <div className="space-y-0">
                                   {/* Soul Star Chakra */}
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-24 text-sm text-gray-600">Soul Star</div>
-                                    <div className="flex-1">
-                                      <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div 
-                                          className="bg-red-600 h-3 rounded-full transition-all duration-500"
-                                          style={{ width: `${Math.round(calculateSoulStarChakra(result)/10) * 10}%` }}
-                                        ></div>
-                                      </div>
-                                    </div>
-                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateSoulStarChakra(result)/10)}/10
-                                    </div>
-                                  </div>
+                                  
                                   
                                   {/* All Chakras in consistent order */}
                                   {[
@@ -6404,32 +6392,14 @@ export default function AuraAnalysis() {
                                     { key: 'root', name: 'Root', color: 'bg-red-500' }
                                   ].map((chakra) => (
                                     <div key={chakra.key} className="flex items-center space-x-3">
-                                      <div className="w-24 text-sm text-gray-600">{chakra.name}</div>
-                                      <div className="flex-1">
-                                        <div className="w-full bg-gray-200 rounded-full h-3">
-                                          <div 
-                                            className={`h-3 rounded-full transition-all duration-500 ${chakra.color}`}
-                                            style={{ width: `${(result.chakraActivity?.[chakra.key as keyof typeof result.chakraActivity] || 5) * 10}%` }}
-                                          ></div>
-                                        </div>
-                                      </div>
-                                      <div className="w-12 text-sm text-gray-500">{result.chakraActivity?.[chakra.key as keyof typeof result.chakraActivity] || 5}/10</div>
+                                    
+                                      
+                                      
                                     </div>
                                   ))}
                                   
                                   {/* Earth Star Chakra */}
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-24 text-sm text-gray-600">Earth Star</div>
-                                    <div className="flex-1">
-                                      <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div 
-                                          className="bg-gradient-to-r from-amber-600 to-yellow-500 h-3 rounded-full transition-all duration-500"
-                                          style={{ width: `${Math.round(calculateEarthStarChakra(result)/10) * 10}%` }}
-                                        ></div>
-                                      </div>
-                                    </div>
-                                    <div className="w-12 text-sm text-gray-500">{Math.round(calculateEarthStarChakra(result)/10)}/10</div>
-                                  </div>
+                                 
                                 </div>
                               </div>
 
@@ -7053,8 +7023,8 @@ export default function AuraAnalysis() {
                               </div>
 
                               {/* Visual Energy Map - Moved to Top */}
-                              <div className="bg-black rounded-lg p-6 relative overflow-hidden">
-                                <h4 className="text-white font-semibold text-lg mb-4">Your Personal Energy Signature</h4>
+                              <div className="bg-black rounded-lg p-4 relative overflow-hidden">
+                                
                                 <div className="flex justify-center items-center space-x-8">
                                   <div className="relative">
                                     {/* Dominant Energy Visualization */}
@@ -7092,7 +7062,7 @@ export default function AuraAnalysis() {
                                   ))}
                                 </div>
                                 <div className="text-center mt-4">
-                                  <p className="text-white/80 text-sm">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
+                                  <p className="text-white/80 text-xs">Energy radiating from {result.dominantColor} core through {result.secondaryColor || result.dominantColor} pathways</p>
                                 </div>
                               </div>
 
@@ -7226,13 +7196,10 @@ export default function AuraAnalysis() {
                                 </div>
 
                                 {/* Complete Aura Color Profile - All 4 Colors */}
-                                <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
-                                  <h3 className="text-xl font-bold text-purple-800 mb-6 flex items-center">
-                                    <span className="mr-3">🌈</span>
-                                    Complete Aura Color Profile
-                                  </h3>
+                                <div className="bg-white border rounded-lg p-6 shadow-sm mb-2">
                                   
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
                                     {(() => {
                                       const detectedColors = extractAllAuraColors(result);
                                       return [
@@ -7291,10 +7258,7 @@ export default function AuraAnalysis() {
 
                                 {/* Detailed Analysis Section - Specialized Aura Interpretation */}
                                 <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
-                                  <h3 className="text-xl font-bold text-purple-800 mb-6 flex items-center">
-                                    <span className="mr-3">🔮</span>
-                                    Specialized Aura Interpretation - Detailed Analysis
-                                  </h3>
+                                  
                                   
 
 
@@ -8452,21 +8416,11 @@ export default function AuraAnalysis() {
                           
                           <TabsContent value="chakras" data-tab="chakras">
                             {/* Screenshot Button */}
-                            <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('chakras')}
-                                disabled={isCapturingScreenshot === 'chakras'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'chakras' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'chakras' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                            <div className="flex justify-center mb-4">
+                              <p className="text-sm text-gray-600 mb-6">
+                          This tab is for reference only. Please copy and paste the remedies you need in the healers notes at the bottom of the tab.
+                              </p>
+                              
                             </div>
                             
                             <div className="space-y-6">
@@ -9328,10 +9282,7 @@ export default function AuraAnalysis() {
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
-                                      <div 
-                                        className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                        style={{ backgroundColor: getAccurateColorCode(result.dominantColor) }}
-                                      ></div>
+                                     
                                       <div>
                                         <p className="font-medium text-sm text-gray-800">{result.dominantColor} (Thinking)</p>
                                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -9360,10 +9311,7 @@ export default function AuraAnalysis() {
                                     
                                     {result.secondaryColor && (
                                       <div className="flex items-start gap-3">
-                                        <div 
-                                          className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5 border border-gray-200"
-                                          style={{ backgroundColor: getAccurateColorCode(result.secondaryColor) }}
-                                        ></div>
+                                      
                                         <div>
                                           <p className="font-medium text-sm text-gray-800">{result.secondaryColor} (Receiving)</p>
                                           <p className="text-xs text-gray-600 leading-relaxed">
