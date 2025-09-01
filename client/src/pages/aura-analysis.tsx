@@ -1631,9 +1631,9 @@ export default function AuraAnalysis() {
           
           return new Promise<string>((resolve) => {
             img.onload = () => {
-              // Set canvas size with higher resolution for better PDF quality
-              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
-              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
+              // Set canvas size with maximum resolution for crystal clear PDF quality
+              canvas.width = Math.min(targetWidth * 10, 3000); // Maximum resolution for crystal clear quality
+              canvas.height = Math.min(targetHeight * 10, 4000); // Maximum resolution for crystal clear quality
               
               // Use high-quality image rendering
               ctx!.imageSmoothingEnabled = true;
@@ -1646,7 +1646,7 @@ export default function AuraAnalysis() {
               let compressedDataUrl = canvas.toDataURL('image/png');
               
               // If PNG is too large, fallback to maximum quality JPEG for crystal clear images
-              if (compressedDataUrl.length > 12 * 1024 * 1024) { // Increased threshold to 12MB for maximum quality
+              if (compressedDataUrl.length > 20 * 1024 * 1024) { // Increased threshold to 20MB for maximum quality
                 compressedDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Maximum quality JPEG for crystal clear images
               }
               
@@ -2009,7 +2009,7 @@ export default function AuraAnalysis() {
                 // Draw the section of the image
                 sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
+                const sectionDataUrl = sectionCanvas.toDataURL('image/png'); // Maximum quality for crystal clear sections
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -2022,16 +2022,17 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras tab - make much larger
+                // Special size enhancement for all tabs to make screenshots more legible
                 if (tabId === 'chakras') {
                   sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
-                }
-                
-                // Special size enhancement for guidance tab - double the size
-                if (tabId === 'guidance') {
-                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double the width for better visibility
-                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double the height for better visibility
+                } else if (tabId === 'guidance') {
+                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double the size for better visibility  
+                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double the size for better visibility
+                } else {
+                  // Increase all other tabs by 1.5x for better legibility
+                  sectionFinalWidth = sectionFinalWidth * 1.5; // 50% larger for better legibility
+                  sectionFinalHeight = sectionFinalHeight * 1.5; // 50% larger for better legibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
@@ -2067,10 +2068,14 @@ export default function AuraAnalysis() {
                 finalWidth = finalHeight / trueAspectRatio;
               }
               
-              // Special size enhancement for guidance tab single screenshots - double the size
+              // Special size enhancement for all tabs single screenshots for better legibility
               if (tabId === 'guidance') {
-                finalWidth = finalWidth * 2.0; // Double the width for better visibility
-                finalHeight = finalHeight * 2.0; // Double the height for better visibility
+                finalWidth = finalWidth * 2.0; // Double the size for better visibility
+                finalHeight = finalHeight * 2.0; // Double the size for better visibility
+              } else {
+                // Increase all other tabs by 1.5x for better legibility
+                finalWidth = finalWidth * 1.5; // 50% larger for better legibility
+                finalHeight = finalHeight * 1.5; // 50% larger for better legibility
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
