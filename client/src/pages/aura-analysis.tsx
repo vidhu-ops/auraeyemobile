@@ -1317,7 +1317,15 @@ export default function AuraAnalysis() {
         // Store with much higher size limit for enhanced quality screenshots, especially for chakras and detailed tabs
         const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 25 * 1024 * 1024 : 15 * 1024 * 1024;
         if (combinedImageDataUrl.length < sizeLimit) {
-          setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
+          setCapturedScreenshots(prev => {
+            const newMap = new Map(prev);
+            newMap.set(tabId, combinedImageDataUrl);
+            console.log(`💾 Storing ${tabId} screenshot in state. Total screenshots: ${newMap.size}`);
+            if (tabId === 'chakras') {
+              console.log(`🔮 CHAKRAS screenshot successfully stored! Size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
+            }
+            return newMap;
+          });
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
           console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
@@ -1952,6 +1960,9 @@ export default function AuraAnalysis() {
       yPosition += 15;
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
+      console.log(`🖼️ PDF Generation: Checking captured screenshots. Total: ${capturedScreenshots.size}`);
+      console.log(`🖼️ Available screenshot tabs:`, Array.from(capturedScreenshots.keys()));
+      
       if (capturedScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
@@ -1968,6 +1979,7 @@ export default function AuraAnalysis() {
         
         // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
+          console.log(`🔄 Processing screenshot for tab: ${tabId}, image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
           
           try {
             // Create a temporary image to get exact dimensions
@@ -2012,7 +2024,12 @@ export default function AuraAnalysis() {
               }
               const sectionHeight = pageMaxHeight;
               
-              console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
+              console.log(`📸 Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
+              
+              if (tabId === 'chakras') {
+                console.log(`🔮 Processing CHAKRAS tab - this is the detailed chakra analysis tab`);
+                console.log(`🔮 Chakras image data preview:`, imageDataUrl.substring(0, 100) + '...');
+              }
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
