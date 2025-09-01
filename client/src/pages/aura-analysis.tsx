@@ -969,60 +969,10 @@ export default function AuraAnalysis() {
   const captureTabScreenshot = async (tabId: string) => {
     setIsCapturingScreenshot(tabId);
     try {
-      // Enhanced element selection with multiple fallback strategies
-      let element: Element | null = null;
-      
-      // Primary selection by data-tab attribute
-      element = document.querySelector(`[data-tab="${tabId}"]`);
-      console.log(`🎯 Primary selector [data-tab="${tabId}"] found:`, !!element);
-      
-      // Fallback for chakras tab with specific ID and detailed logging
-      if (!element && tabId === 'chakras') {
-        console.log(`🔮 Looking for chakras-specific selectors...`);
-        element = document.querySelector('#chakras-tab-content');
-        if (!element) {
-          element = document.querySelector('#chakras-content-container');
-        }
-        if (!element) {
-          element = document.querySelector('[data-value="chakras"]');
-        }
-        if (!element) {
-          element = document.querySelector('.tabcontent[data-state="active"]');
-        }
-        console.log(`🔮 Chakras element found with fallback:`, !!element, element?.tagName, element?.className);
-      }
-      
-      // General fallback for active tab
+      const element = document.querySelector(`[data-tab="${tabId}"]`) || document.querySelector('[data-state="active"]');
       if (!element) {
-        element = document.querySelector('[data-state="active"]');
-        console.log(`📋 Active tab fallback found:`, !!element);
+        throw new Error('Tab content not found');
       }
-      
-      // Final fallback by tab content class
-      if (!element) {
-        element = document.querySelector('.tab-content[data-state="active"]');
-        console.log(`📋 Tab content fallback found:`, !!element);
-      }
-      
-      // Emergency fallback - find any visible content area
-      if (!element) {
-        const allTabs = document.querySelectorAll('[role="tabpanel"]');
-        for (let i = 0; i < allTabs.length; i++) {
-          const tab = allTabs[i];
-          const tabElement = tab as HTMLElement;
-          if (tabElement.offsetHeight > 0 && tabElement.offsetWidth > 0) {
-            element = tabElement;
-            console.log(`⚡ Emergency fallback found visible tab:`, tabElement.id, tabElement.className);
-            break;
-          }
-        }
-      }
-      
-      if (!element) {
-        throw new Error(`Tab content not found for ${tabId}. Checked selectors: [data-tab="${tabId}"], #${tabId}-tab-content, [data-state="active"]`);
-      }
-      
-      console.log(`🎯 Successfully selected element for ${tabId} tab:`, element.className, element.id);
 
       const htmlElement = element as HTMLElement;
       const rect = htmlElement.getBoundingClientRect();
@@ -1162,12 +1112,8 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Use larger width for chakras tab for better clarity in PDF
-          if (tabId === 'chakras') {
-            enhancedCaptureWidth = Math.floor(captureWidth * 1.8); // Significantly larger for chakras (80% increase)
-          } else {
-            enhancedCaptureWidth = Math.floor(captureWidth * 1.25); // Additional 25% width increase for other critical tabs
-          }
+          // Additional 25% width increase for critical tabs text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
@@ -1227,7 +1173,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: tabId === 'chakras' ? 4.0 : (tabId === 'detailed' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Higher scale for chakras for crystal clear quality
+            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -1325,63 +1271,26 @@ export default function AuraAnalysis() {
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
         
-        // Draw each section onto the combined canvas with proper error handling
+        // Draw each section onto the combined canvas
         for (let i = 0; i < screenshots.length; i++) {
           const img = new Image();
           img.src = screenshots[i];
-          
-          try {
-            await new Promise((resolve, reject) => {
-              img.onload = () => {
-                console.log(`Drawing section ${i + 1}/${screenshots.length} onto combined canvas`);
-                ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
-                resolve(true);
-              };
-              img.onerror = (error) => {
-                console.error(`Failed to load screenshot section ${i + 1}:`, error);
-                reject(error);
-              };
-              // Timeout after 5 seconds
-              setTimeout(() => reject(new Error(`Timeout loading section ${i + 1}`)), 5000);
-            });
-          } catch (error) {
-            console.error(`Error processing section ${i + 1}:`, error);
-            // Continue with other sections even if one fails
-            continue;
-          }
+          await new Promise((resolve) => {
+            img.onload = () => {
+              ctx.drawImage(img, 0, i * (sectionHeight * scaleUsed));
+              resolve(true);
+            };
+          });
         }
         
-        // Validate canvas has content before generating data URL
-        const imageData = ctx.getImageData(0, 0, combinedCanvas.width, combinedCanvas.height);
-        const hasContent = Array.from(imageData.data).some(pixel => pixel !== 0);
-        
-        if (!hasContent) {
-          console.error(`❌ Canvas appears to be empty for ${tabId} tab`);
-          throw new Error(`Failed to generate valid canvas content for ${tabId}`);
-        }
-        
-        // Use PNG with high quality for chakras tab, JPEG for others
-        let combinedImageDataUrl: string;
-        if (tabId === 'chakras') {
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.95);
-          console.log(`🔮 CHAKRAS PNG generated: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-        } else {
-          combinedImageDataUrl = combinedCanvas.toDataURL('image/jpeg', 0.9);
-          console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
-        }
+        // Use PNG with 10% more compression
+        const combinedImageDataUrl = combinedCanvas.toDataURL('image/png', 0.9);
+        console.log(`Enhanced combined image size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB with improved dimensions`);
         
         // Store with much higher size limit for enhanced quality screenshots, especially for chakras and detailed tabs
         const sizeLimit = (tabId === 'chakras' || tabId === 'detailed' || tabId === 'energy-map') ? 25 * 1024 * 1024 : 15 * 1024 * 1024;
         if (combinedImageDataUrl.length < sizeLimit) {
-          setCapturedScreenshots(prev => {
-            const newMap = new Map(prev);
-            newMap.set(tabId, combinedImageDataUrl);
-            console.log(`💾 Storing ${tabId} screenshot in state. Total screenshots: ${newMap.size}`);
-            if (tabId === 'chakras') {
-              console.log(`🔮 CHAKRAS screenshot successfully stored! Size: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
-            }
-            return newMap;
-          });
+          setCapturedScreenshots(prev => new Map(prev).set(tabId, combinedImageDataUrl));
           console.log(`✅ ${tabId} screenshot captured successfully: ${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
         } else {
           console.warn(`Combined image too large for ${tabId} (${(combinedImageDataUrl.length / 1024 / 1024).toFixed(2)} MB), attempting JPEG compression`);
@@ -2016,9 +1925,6 @@ export default function AuraAnalysis() {
       yPosition += 15;
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
-      console.log(`🖼️ PDF Generation: Checking captured screenshots. Total: ${capturedScreenshots.size}`);
-      console.log(`🖼️ Available screenshot tabs:`, Array.from(capturedScreenshots.keys()));
-      
       if (capturedScreenshots.size > 0) {
         pdf.addPage();
         yPosition = 20;
@@ -2035,27 +1941,16 @@ export default function AuraAnalysis() {
         
         // Add each captured screenshot with proper sizing and multi-page support
         for (const [tabId, imageDataUrl] of Array.from(capturedScreenshots.entries())) {
-          console.log(`🔄 Processing screenshot for tab: ${tabId}, image size: ${(imageDataUrl.length / 1024 / 1024).toFixed(2)} MB`);
           
           try {
             // Create a temporary image to get exact dimensions
             const tempImg = new Image();
             tempImg.src = imageDataUrl;
             
-            // Wait for image to load and get true dimensions with timeout
+            // Wait for image to load and get true dimensions
             await new Promise((resolve, reject) => {
-              tempImg.onload = () => {
-                console.log(`✅ Successfully loaded image for ${tabId} tab: ${tempImg.naturalWidth}x${tempImg.naturalHeight}`);
-                resolve(true);
-              };
-              tempImg.onerror = (error) => {
-                console.error(`❌ Failed to load image for ${tabId} tab:`, error);
-                reject(error);
-              };
-              // Add timeout to prevent hanging
-              setTimeout(() => {
-                reject(new Error(`Timeout loading image for ${tabId} tab`));
-              }, 10000);
+              tempImg.onload = resolve;
+              tempImg.onerror = reject;
             });
             
             const originalWidth = tempImg.naturalWidth;
@@ -2090,12 +1985,7 @@ export default function AuraAnalysis() {
               }
               const sectionHeight = pageMaxHeight;
               
-              console.log(`📸 Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
-              
-              if (tabId === 'chakras') {
-                console.log(`🔮 Processing CHAKRAS tab - this is the detailed chakra analysis tab`);
-                console.log(`🔮 Chakras image data preview:`, imageDataUrl.substring(0, 100) + '...');
-              }
+              console.log(`Screenshot ${tabId}: Long image detected. Original ${originalWidth}x${originalHeight}, splitting into ${sectionsNeeded} sections`);
               
               // Split the image into multiple sections
               for (let section = 0; section < sectionsNeeded; section++) {
@@ -2118,9 +2008,9 @@ export default function AuraAnalysis() {
                   continue;
                 }
                 
-                // Use larger canvas dimensions for chakras tab for crystal clear quality
-                const maxCanvasWidth = tabId === 'chakras' ? Math.min(originalWidth, 3000) : Math.min(originalWidth, 2000);
-                const maxCanvasHeight = tabId === 'chakras' ? Math.min(sectionImageHeight, 3000) : Math.min(sectionImageHeight, 2000);
+                // Ensure reasonable canvas dimensions to prevent memory issues
+                const maxCanvasWidth = Math.min(originalWidth, 2000);
+                const maxCanvasHeight = Math.min(sectionImageHeight, 2000);
                 
                 sectionCanvas.width = maxCanvasWidth;
                 sectionCanvas.height = maxCanvasHeight;
@@ -2129,16 +2019,15 @@ export default function AuraAnalysis() {
                 const scaleX = maxCanvasWidth / originalWidth;
                 const scaleY = maxCanvasHeight / sectionImageHeight;
                 
-                let sectionDataUrl: string;
                 try {
                   // Draw the section of the image with scaling
                   sectionCtx.drawImage(tempImg, 
                     0, sectionStartY, originalWidth, sectionImageHeight,
                     0, 0, maxCanvasWidth, maxCanvasHeight);
                   
-                  // Use higher quality compression for chakras tab for crystal clear PDF
-                  const compressionQuality = tabId === 'chakras' ? 0.95 : 0.85;
-                  sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
+                  // Use more aggressive compression for chakras tab
+                  const compressionQuality = tabId === 'chakras' ? 0.7 : 0.85;
+                  const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
                   
                   // Validate the section data
                   if (!sectionDataUrl || sectionDataUrl === 'data:,') {
@@ -2161,97 +2050,27 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size adjustment for chakras tab - double the size for crystal clarity
+                // Special size enhancement for chakras tab - make much larger
                 if (tabId === 'chakras') {
-                  // Double the dimensions for much better visibility in PDF
-                  sectionFinalWidth = sectionFinalWidth * 2.5; // Much larger for crystal clear visibility
-                  sectionFinalHeight = sectionFinalHeight * 2.5; // Much larger for crystal clear visibility
+                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
                 
-                try {
-                  // Enhanced high-quality processing for chakras tab
-                  let compressedSectionDataUrl;
-                  if (tabId === 'chakras') {
-                    // Use high-quality processing for chakras sections to ensure crystal clear PDF
-                    const highQualityCanvas = document.createElement('canvas');
-                    const highQualityCtx = highQualityCanvas.getContext('2d');
-                    const tempImg = new Image();
-                    tempImg.src = sectionDataUrl;
-                    
-                    await new Promise((resolve) => {
-                      tempImg.onload = resolve;
-                    });
-                    
-                    // Use large dimensions for chakras for crystal clear quality
-                    const targetWidth = Math.min(tempImg.width, 1600); // Much larger for clarity
-                    const targetHeight = Math.min(tempImg.height, 1200); // Much larger for clarity
-                    const aspectRatio = tempImg.height / tempImg.width;
-                    
-                    let finalWidth = targetWidth;
-                    let finalHeight = finalWidth * aspectRatio;
-                    
-                    if (finalHeight > targetHeight) {
-                      finalHeight = targetHeight;
-                      finalWidth = finalHeight / aspectRatio;
-                    }
-                    
-                    highQualityCanvas.width = finalWidth;
-                    highQualityCanvas.height = finalHeight;
-                    
-                    // Use image smoothing for highest quality
-                    highQualityCtx!.imageSmoothingEnabled = true;
-                    highQualityCtx!.imageSmoothingQuality = 'high';
-                    highQualityCtx!.drawImage(tempImg, 0, 0, finalWidth, finalHeight);
-                    
-                    compressedSectionDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95); // High quality compression
-                  } else {
-                    compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                  }
-                  
-                  // Validate compressed data before adding to PDF
-                  if (!compressedSectionDataUrl || compressedSectionDataUrl.length < 100) {
-                    console.error(`Invalid compressed section data for ${tabId} section ${section + 1}`);
-                    continue;
-                  }
-                  
-                  // Add new page if needed
-                  if (yPosition + sectionFinalHeight > pageHeight - 40) {
-                    pdf.addPage();
-                    yPosition = 20;
-                  }
-                  
-                  // Add section to PDF with error handling
-                  // Use large dimensions for chakras in PDF for crystal clear visibility
-                  let pdfWidth = sectionFinalWidth;
-                  let pdfHeight = sectionFinalHeight;
-                  
-                  if (tabId === 'chakras') {
-                    pdfWidth = Math.min(sectionFinalWidth, 170); // Much larger PDF dimensions for chakras
-                    pdfHeight = Math.min(sectionFinalHeight, 240); // Much larger PDF dimensions for chakras
-                  }
-                  
-                  console.log(`🔄 Adding ${tabId} section ${section + 1} to PDF: ${pdfWidth.toFixed(1)}x${pdfHeight.toFixed(1)} at position y=${yPosition}`);
-                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, pdfWidth, pdfHeight);
-                  yPosition += pdfHeight + 10;
-                  
-                  console.log(`✅ Screenshot ${tabId} section ${section + 1}/${sectionsNeeded} successfully added to PDF at page ${pdf.getCurrentPageInfo().pageNumber}`);
-                } catch (sectionPdfError) {
-                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, sectionPdfError);
-                  // Add a placeholder text for failed sections
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  pdf.text(`[Chakras section ${section + 1} could not be included - image processing error]`, 20, yPosition);
-                  yPosition += 20;
-                }
+                // Compress and add the section
+                const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                yPosition += sectionFinalHeight + 10;
+                
+                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
               // For normal screenshots, use single page with proper aspect ratio - already calculated above
               // Ensure minimum readability while respecting page constraints
-              const minWidth = 170;
-              const minHeight = 240;
+              const minWidth = 120;
+              const minHeight = 160;
               
               // Only increase size if we have room and it improves readability
               if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
@@ -2318,49 +2137,8 @@ export default function AuraAnalysis() {
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
             
           } catch (error) {
-            console.error(`❌ CRITICAL ERROR adding ${tabId} screenshot to PDF:`, error);
-            console.error(`Image data length: ${imageDataUrl.length}`);
-            console.error(`Image data starts with: ${imageDataUrl.substring(0, 50)}`);
-            
-            // For chakras tab, this is critical - try alternative approach
-            if (tabId === 'chakras') {
-              console.log(`🔮 Attempting fallback approach for chakras screenshot`);
-              try {
-                // Simple fallback - add as single image without sections
-                const fallbackImg = new Image();
-                fallbackImg.src = imageDataUrl;
-                await new Promise((resolve, reject) => {
-                  fallbackImg.onload = resolve;
-                  fallbackImg.onerror = reject;
-                  setTimeout(() => reject(new Error('Fallback timeout')), 5000);
-                });
-                
-                // Add title
-                pdf.setFontSize(14);
-                pdf.setTextColor(75, 0, 130);
-                yPosition = addTextWithPageBreak(`${tabId.toUpperCase()} ANALYSIS (Fallback)`, pageWidth/2, yPosition, { align: 'center' });
-                yPosition += 10;
-                
-                // Add image at smaller size to ensure it fits
-                const fallbackWidth = Math.min(170 * 0.8, 150);
-                const fallbackHeight = fallbackWidth * (fallbackImg.naturalHeight / fallbackImg.naturalWidth);
-                
-                if (yPosition + fallbackHeight > 240) {
-                  pdf.addPage();
-                  yPosition = 20;
-                }
-                
-                pdf.addImage(imageDataUrl, 'PNG', (pageWidth - fallbackWidth) / 2, yPosition, fallbackWidth, fallbackHeight);
-                yPosition += fallbackHeight + 15;
-                
-                console.log(`✅ CHAKRAS fallback image added successfully`);
-              } catch (fallbackError) {
-                console.error(`❌ Chakras fallback also failed:`, fallbackError);
-                yPosition += 25;
-              }
-            } else {
-              yPosition += 25;
-            }
+            console.error('Error adding screenshot image:', error);
+            yPosition += 25;
           }
         }
       }
@@ -8516,7 +8294,7 @@ export default function AuraAnalysis() {
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="chakras" data-tab="chakras" id="chakras-tab-content">
+                          <TabsContent value="chakras" data-tab="chakras">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
                               <Button
@@ -8535,7 +8313,7 @@ export default function AuraAnalysis() {
                               </Button>
                             </div>
                             
-                            <div className="space-y-6" id="chakras-content-container">
+                            <div className="space-y-6">
                               {/* Detailed Chakra Scoring Analysis Section */}
                               <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
                                 <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
