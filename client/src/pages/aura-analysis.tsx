@@ -1112,8 +1112,12 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Additional 25% width increase for critical tabs text legibility (40% total increase)
-          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+          // Use smaller width for chakras tab to prevent PDF memory issues
+          if (tabId === 'chakras') {
+            enhancedCaptureWidth = Math.min(captureWidth, 800); // Keep chakras screenshots smaller for PDF compatibility
+          } else {
+            enhancedCaptureWidth = Math.floor(captureWidth * 1.25); // Additional 25% width increase for other critical tabs
+          }
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
           const idealSectionHeight = Math.min(4000, Math.ceil(contentHeight / 3)); // Target 3-4 sections max
@@ -1173,7 +1177,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Maximum scale for critical tabs
+            scale: tabId === 'chakras' ? 2.0 : (tabId === 'detailed' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Reduced scale for chakras to prevent memory issues
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -2062,7 +2066,40 @@ export default function AuraAnalysis() {
                 
                 try {
                   // Compress and add the section with enhanced error handling for chakras tab
-                  const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  // Use more aggressive compression specifically for chakras sections
+                  let compressedSectionDataUrl;
+                  if (tabId === 'chakras') {
+                    // Create a much smaller canvas for chakras sections to prevent memory issues
+                    const smallCanvas = document.createElement('canvas');
+                    const smallCtx = smallCanvas.getContext('2d');
+                    const tempImg = new Image();
+                    tempImg.src = sectionDataUrl;
+                    
+                    await new Promise((resolve) => {
+                      tempImg.onload = resolve;
+                    });
+                    
+                    // Use very conservative dimensions for chakras
+                    const maxWidth = 400;
+                    const maxHeight = 300;
+                    const aspectRatio = tempImg.height / tempImg.width;
+                    
+                    let finalWidth = maxWidth;
+                    let finalHeight = finalWidth * aspectRatio;
+                    
+                    if (finalHeight > maxHeight) {
+                      finalHeight = maxHeight;
+                      finalWidth = finalHeight / aspectRatio;
+                    }
+                    
+                    smallCanvas.width = finalWidth;
+                    smallCanvas.height = finalHeight;
+                    smallCtx!.drawImage(tempImg, 0, 0, finalWidth, finalHeight);
+                    
+                    compressedSectionDataUrl = smallCanvas.toDataURL('image/jpeg', 0.6); // Very aggressive compression
+                  } else {
+                    compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                  }
                   
                   // Validate compressed data before adding to PDF
                   if (!compressedSectionDataUrl || compressedSectionDataUrl.length < 100) {
@@ -2077,9 +2114,18 @@ export default function AuraAnalysis() {
                   }
                   
                   // Add section to PDF with error handling
-                  console.log(`🔄 Adding ${tabId} section ${section + 1} to PDF: ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)} at position y=${yPosition}`);
-                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  yPosition += sectionFinalHeight + 10;
+                  // Use smaller dimensions for chakras in PDF to match compressed image
+                  let pdfWidth = sectionFinalWidth;
+                  let pdfHeight = sectionFinalHeight;
+                  
+                  if (tabId === 'chakras') {
+                    pdfWidth = Math.min(sectionFinalWidth, 120); // Smaller PDF dimensions for chakras
+                    pdfHeight = Math.min(sectionFinalHeight, 90);
+                  }
+                  
+                  console.log(`🔄 Adding ${tabId} section ${section + 1} to PDF: ${pdfWidth.toFixed(1)}x${pdfHeight.toFixed(1)} at position y=${yPosition}`);
+                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, pdfWidth, pdfHeight);
+                  yPosition += pdfHeight + 10;
                   
                   console.log(`✅ Screenshot ${tabId} section ${section + 1}/${sectionsNeeded} successfully added to PDF at page ${pdf.getCurrentPageInfo().pageNumber}`);
                 } catch (sectionPdfError) {
