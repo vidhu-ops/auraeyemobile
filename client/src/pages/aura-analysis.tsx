@@ -1627,62 +1627,31 @@ export default function AuraAnalysis() {
         try {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          if (!ctx) {
-            console.warn('Canvas context not available, using original image');
-            return imageDataUrl;
-          }
-          
           const img = new Image();
           
-          return new Promise<string>((resolve, reject) => {
+          return new Promise<string>((resolve) => {
             img.onload = () => {
-              try {
-                // Conservative sizing to prevent memory issues
-                const multiplier = Math.min(2.5, Math.max(1, 500 / Math.max(targetWidth, targetHeight))); // Adaptive multiplier
-                canvas.width = Math.min(targetWidth * multiplier, 1000); // Reduced max resolution
-                canvas.height = Math.min(targetHeight * multiplier, 1300); // Reduced max resolution
-                
-                // Use high-quality image rendering
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                
-                // Draw the image with controlled quality
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                // Start with JPEG for better compression and PDF compatibility
-                let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // More aggressive compression
-                
-                // If still too large, reduce quality further
-                if (compressedDataUrl.length > 1.5 * 1024 * 1024) { // 1.5MB threshold (reduced)
-                  compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6); // Even more compression
-                }
-                
-                // Final fallback for very large images
-                if (compressedDataUrl.length > 2 * 1024 * 1024) { // 2MB final threshold
-                  // Create smaller canvas for extreme compression
-                  const smallCanvas = document.createElement('canvas');
-                  const smallCtx = smallCanvas.getContext('2d');
-                  if (smallCtx) {
-                    smallCanvas.width = Math.min(canvas.width * 0.6, 600);
-                    smallCanvas.height = Math.min(canvas.height * 0.6, 800);
-                    smallCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
-                    compressedDataUrl = smallCanvas.toDataURL('image/jpeg', 0.5);
-                  }
-                }
-                
-                console.log(`Image compressed from ${Math.round(imageDataUrl.length / 1024)}KB to ${Math.round(compressedDataUrl.length / 1024)}KB (${Math.round(compressedDataUrl.length / imageDataUrl.length * 100)}% of original)`);
-                resolve(compressedDataUrl);
-              } catch (canvasError) {
-                console.error('Canvas processing error:', canvasError);
-                reject(canvasError);
+              // Set canvas size with higher resolution for better PDF quality
+              canvas.width = Math.min(targetWidth * 6, 1800); // Increased resolution
+              canvas.height = Math.min(targetHeight * 6, 2400); // Increased resolution
+              
+              // Use high-quality image rendering
+              ctx!.imageSmoothingEnabled = true;
+              ctx!.imageSmoothingQuality = 'high';
+              
+              // Draw the image with high quality
+              ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
+              
+              // Use PNG with 10% more compression
+              let compressedDataUrl = canvas.toDataURL('image/png', 0.9);
+              
+              // If PNG is too large, fallback to JPEG with 10% more compression
+              if (compressedDataUrl.length > 5 * 1024 * 1024) { // 5MB threshold
+                compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88); // 10% more compression
               }
+              
+              resolve(compressedDataUrl);
             };
-            
-            img.onerror = (error) => {
-              console.error('Image loading error:', error);
-              reject(error);
-            };
-            
             img.src = imageDataUrl;
           });
         } catch (error) {
@@ -2031,46 +2000,16 @@ export default function AuraAnalysis() {
                 const sectionEndY = Math.min(((section + 1) * originalHeight) / sectionsNeeded, originalHeight);
                 const sectionImageHeight = sectionEndY - sectionStartY;
                 
-                // Create a canvas to extract this section with enhanced error handling
+                // Create a canvas to extract this section
                 const sectionCanvas = document.createElement('canvas');
                 const sectionCtx = sectionCanvas.getContext('2d');
-                if (!sectionCtx) {
-                  console.error(`Failed to get canvas context for ${tabId} section ${section}`);
-                  continue;
-                }
+                sectionCanvas.width = originalWidth;
+                sectionCanvas.height = sectionImageHeight;
                 
-                // Ensure reasonable canvas dimensions to prevent memory issues
-                const maxCanvasWidth = Math.min(originalWidth, 2000);
-                const maxCanvasHeight = Math.min(sectionImageHeight, 2000);
+                // Draw the section of the image
+                sectionCtx!.drawImage(tempImg, 0, -sectionStartY);
                 
-                sectionCanvas.width = maxCanvasWidth;
-                sectionCanvas.height = maxCanvasHeight;
-                
-                // Calculate scaling if needed
-                const scaleX = maxCanvasWidth / originalWidth;
-                const scaleY = maxCanvasHeight / sectionImageHeight;
-                
-                let sectionDataUrl: string;
-                try {
-                  // Draw the section of the image with scaling
-                  sectionCtx.drawImage(tempImg, 
-                    0, sectionStartY, originalWidth, sectionImageHeight,
-                    0, 0, maxCanvasWidth, maxCanvasHeight);
-                  
-                  // Use more aggressive compression for chakras tab
-                  const compressionQuality = tabId === 'chakras' ? 0.7 : 0.85;
-                  sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
-                  
-                  // Validate the section data
-                  if (!sectionDataUrl || sectionDataUrl === 'data:,') {
-                    console.error(`Failed to generate section data for ${tabId} section ${section}`);
-                    continue;
-                  }
-                } catch (canvasError) {
-                  console.error(`Canvas drawing failed for ${tabId} section ${section}:`, canvasError);
-                  continue;
-                }
-                
+                const sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', 0.85); // 10% more compression
                 const sectionAspectRatio = sectionImageHeight / originalWidth;
                 
                 // Calculate final dimensions for this section
@@ -2083,35 +2022,20 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size enhancement for chakras tab - make much larger but controlled
+                // Special size enhancement for chakras tab - make much larger
                 if (tabId === 'chakras') {
-                  // Limit enhancement to prevent PDF issues while improving readability
-                  sectionFinalWidth = Math.min(sectionFinalWidth * 2.0, 160); // Controlled width increase
-                  sectionFinalHeight = Math.min(sectionFinalHeight * 2.0, 200); // Controlled height increase
+                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 }
                 
-                try {
-                  // Enhanced compression and error handling for PDF addition
-                  const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                  
-                  // Validate compressed data before adding to PDF
-                  if (!compressedSectionDataUrl || compressedSectionDataUrl.length < 100) {
-                    throw new Error(`Invalid compressed section data for ${tabId} section ${section}`);
-                  }
-                  
-                  // Add section to PDF with enhanced error handling
-                  pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
-                  yPosition += sectionFinalHeight + 10;
-                  
-                  console.log(`✅ Screenshot ${tabId} section ${section + 1}/${sectionsNeeded} added successfully: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
-                } catch (pdfError) {
-                  console.error(`Failed to add ${tabId} section ${section + 1} to PDF:`, pdfError);
-                  // Add fallback text instead of failing completely
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  pdf.text(`[${getTabDisplayName(tabId)} section ${section + 1} could not be included]`, 20, yPosition);
-                  yPosition += 20;
-                }
+                // Section titles removed for continuous image flow as requested
+                
+                // Compress and add the section
+                const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                yPosition += sectionFinalHeight + 10;
+                
+                console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
               }
               
             } else {
@@ -2145,41 +2069,12 @@ export default function AuraAnalysis() {
                 yPosition = 20;
               }
               
-              // Enhanced compression for chakras tab to prevent PDF errors
-              let compressedImageDataUrl;
-              try {
-                // More aggressive compression for chakras tab to ensure PDF compatibility
-                if (tabId === 'chakras') {
-                  compressedImageDataUrl = await compressImageForPDF(imageDataUrl, Math.min(finalWidth, 150), Math.min(finalHeight, 200));
-                } else {
-                  compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
-                }
-                
-                // Validate image data before adding to PDF
-                if (!compressedImageDataUrl || compressedImageDataUrl.length < 100) {
-                  throw new Error(`Invalid compressed image data for tab ${tabId}`);
-                }
-                
-                // Add the screenshot with preserved aspect ratio
-                pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-                yPosition += finalHeight + 15;
-              } catch (compressionError) {
-                console.error(`Image compression failed for ${tabId}:`, compressionError);
-                // Fallback: try with original image but smaller dimensions
-                try {
-                  const fallbackWidth = Math.min(finalWidth * 0.5, 100);
-                  const fallbackHeight = Math.min(finalHeight * 0.5, 150);
-                  pdf.addImage(imageDataUrl, 'JPEG', 20, yPosition, fallbackWidth, fallbackHeight);
-                  yPosition += fallbackHeight + 15;
-                } catch (fallbackError) {
-                  console.error(`Fallback image addition failed for ${tabId}:`, fallbackError);
-                  // Skip this image and add text placeholder
-                  pdf.setFontSize(10);
-                  pdf.setTextColor(100, 100, 100);
-                  pdf.text(`[${getTabDisplayName(tabId)} screenshot could not be included due to size limitations]`, 20, yPosition);
-                  yPosition += 20;
-                }
-              }
+              // Compress the image data before adding to PDF to prevent memory issues
+              const compressedImageDataUrl = await compressImageForPDF(imageDataUrl, finalWidth, finalHeight);
+              
+              // Add the screenshot with preserved aspect ratio
+              pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
+              yPosition += finalHeight + 15;
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
