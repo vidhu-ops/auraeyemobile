@@ -1135,9 +1135,9 @@ export default function AuraAnalysis() {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
-          // Use smaller width for chakras tab to prevent PDF memory issues
+          // Use larger width for chakras tab for better clarity in PDF
           if (tabId === 'chakras') {
-            enhancedCaptureWidth = Math.min(captureWidth, 800); // Keep chakras screenshots smaller for PDF compatibility
+            enhancedCaptureWidth = Math.floor(captureWidth * 1.8); // Significantly larger for chakras (80% increase)
           } else {
             enhancedCaptureWidth = Math.floor(captureWidth * 1.25); // Additional 25% width increase for other critical tabs
           }
@@ -1200,7 +1200,7 @@ export default function AuraAnalysis() {
           // Use enhanced width for all tabs with tab-specific optimizations
           const sectionCanvas = await html2canvas(htmlElement, {
             backgroundColor: '#ffffff',
-            scale: tabId === 'chakras' ? 2.0 : (tabId === 'detailed' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Reduced scale for chakras to prevent memory issues
+            scale: tabId === 'chakras' ? 4.0 : (tabId === 'detailed' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5, // Higher scale for chakras for crystal clear quality
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -2035,10 +2035,9 @@ export default function AuraAnalysis() {
                   continue;
                 }
                 
-                // Ensure reasonable canvas dimensions to prevent memory issues
-                // Use smaller dimensions for chakras tab to ensure PDF compatibility
-                const maxCanvasWidth = tabId === 'chakras' ? Math.min(originalWidth, 1200) : Math.min(originalWidth, 2000);
-                const maxCanvasHeight = tabId === 'chakras' ? Math.min(sectionImageHeight, 1500) : Math.min(sectionImageHeight, 2000);
+                // Use larger canvas dimensions for chakras tab for crystal clear quality
+                const maxCanvasWidth = tabId === 'chakras' ? Math.min(originalWidth, 3000) : Math.min(originalWidth, 2000);
+                const maxCanvasHeight = tabId === 'chakras' ? Math.min(sectionImageHeight, 3000) : Math.min(sectionImageHeight, 2000);
                 
                 sectionCanvas.width = maxCanvasWidth;
                 sectionCanvas.height = maxCanvasHeight;
@@ -2054,8 +2053,8 @@ export default function AuraAnalysis() {
                     0, sectionStartY, originalWidth, sectionImageHeight,
                     0, 0, maxCanvasWidth, maxCanvasHeight);
                   
-                  // Use more aggressive compression for chakras tab (0.0-1.0 range)
-                  const compressionQuality = tabId === 'chakras' ? 0.7 : 0.85;
+                  // Use higher quality compression for chakras tab for crystal clear PDF
+                  const compressionQuality = tabId === 'chakras' ? 0.95 : 0.85;
                   sectionDataUrl = sectionCanvas.toDataURL('image/jpeg', compressionQuality);
                   
                   // Validate the section data
@@ -2079,23 +2078,22 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Special size adjustment for chakras tab - optimize for PDF compatibility
+                // Special size adjustment for chakras tab - double the size for crystal clarity
                 if (tabId === 'chakras') {
-                  // Use smaller dimensions to prevent PDF memory issues while maintaining readability
-                  sectionFinalWidth = Math.min(sectionFinalWidth * 1.5, 160); // More reasonable size increase
-                  sectionFinalHeight = Math.min(sectionFinalHeight * 1.5, 200); // More reasonable size increase
+                  // Double the dimensions for much better visibility in PDF
+                  sectionFinalWidth = sectionFinalWidth * 2.5; // Much larger for crystal clear visibility
+                  sectionFinalHeight = sectionFinalHeight * 2.5; // Much larger for crystal clear visibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
                 
                 try {
-                  // Compress and add the section with enhanced error handling for chakras tab
-                  // Use more aggressive compression specifically for chakras sections
+                  // Enhanced high-quality processing for chakras tab
                   let compressedSectionDataUrl;
                   if (tabId === 'chakras') {
-                    // Create a much smaller canvas for chakras sections to prevent memory issues
-                    const smallCanvas = document.createElement('canvas');
-                    const smallCtx = smallCanvas.getContext('2d');
+                    // Use high-quality processing for chakras sections to ensure crystal clear PDF
+                    const highQualityCanvas = document.createElement('canvas');
+                    const highQualityCtx = highQualityCanvas.getContext('2d');
                     const tempImg = new Image();
                     tempImg.src = sectionDataUrl;
                     
@@ -2103,24 +2101,28 @@ export default function AuraAnalysis() {
                       tempImg.onload = resolve;
                     });
                     
-                    // Use very conservative dimensions for chakras
-                    const maxWidth = 400;
-                    const maxHeight = 300;
+                    // Use large dimensions for chakras for crystal clear quality
+                    const targetWidth = Math.min(tempImg.width, 1600); // Much larger for clarity
+                    const targetHeight = Math.min(tempImg.height, 1200); // Much larger for clarity
                     const aspectRatio = tempImg.height / tempImg.width;
                     
-                    let finalWidth = maxWidth;
+                    let finalWidth = targetWidth;
                     let finalHeight = finalWidth * aspectRatio;
                     
-                    if (finalHeight > maxHeight) {
-                      finalHeight = maxHeight;
+                    if (finalHeight > targetHeight) {
+                      finalHeight = targetHeight;
                       finalWidth = finalHeight / aspectRatio;
                     }
                     
-                    smallCanvas.width = finalWidth;
-                    smallCanvas.height = finalHeight;
-                    smallCtx!.drawImage(tempImg, 0, 0, finalWidth, finalHeight);
+                    highQualityCanvas.width = finalWidth;
+                    highQualityCanvas.height = finalHeight;
                     
-                    compressedSectionDataUrl = smallCanvas.toDataURL('image/jpeg', 0.6); // Very aggressive compression
+                    // Use image smoothing for highest quality
+                    highQualityCtx!.imageSmoothingEnabled = true;
+                    highQualityCtx!.imageSmoothingQuality = 'high';
+                    highQualityCtx!.drawImage(tempImg, 0, 0, finalWidth, finalHeight);
+                    
+                    compressedSectionDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95); // High quality compression
                   } else {
                     compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
                   }
@@ -2138,13 +2140,13 @@ export default function AuraAnalysis() {
                   }
                   
                   // Add section to PDF with error handling
-                  // Use smaller dimensions for chakras in PDF to match compressed image
+                  // Use large dimensions for chakras in PDF for crystal clear visibility
                   let pdfWidth = sectionFinalWidth;
                   let pdfHeight = sectionFinalHeight;
                   
                   if (tabId === 'chakras') {
-                    pdfWidth = Math.min(sectionFinalWidth, 120); // Smaller PDF dimensions for chakras
-                    pdfHeight = Math.min(sectionFinalHeight, 90);
+                    pdfWidth = Math.min(sectionFinalWidth, 170); // Much larger PDF dimensions for chakras
+                    pdfHeight = Math.min(sectionFinalHeight, 240); // Much larger PDF dimensions for chakras
                   }
                   
                   console.log(`🔄 Adding ${tabId} section ${section + 1} to PDF: ${pdfWidth.toFixed(1)}x${pdfHeight.toFixed(1)} at position y=${yPosition}`);
