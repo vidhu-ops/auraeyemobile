@@ -1062,23 +1062,51 @@ export default function AuraAnalysis() {
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
         
         // Special handling for specific tabs to ensure complete capture
-        if (['analysis', 'guidance', 'spectrum'].includes(tabId)) {
-          // Look for the last meaningful content section
+        if (['analysis', 'guidance', 'spectrum', 'energy-map'].includes(tabId)) {
+          // Look for the last meaningful content section including Energy Interaction Map
           const lastSections = htmlElement.querySelectorAll('.space-y-4 > div:last-child, .space-y-6 > div:last-child, .grid:last-child, .bg-gradient-to-br:last-child');
           if (lastSections.length > 0) {
             const lastSection = lastSections[lastSections.length - 1];
             const sectionRect = lastSection.getBoundingClientRect();
             const elementRect = htmlElement.getBoundingClientRect();
             const sectionBottom = sectionRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, sectionBottom + 200);
-            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
+            
+            // Extra padding for energy-map to ensure Energy Interaction Map is fully visible
+            const extraPadding = tabId === 'energy-map' ? 400 : 200;
+            contentHeight = Math.max(contentHeight, sectionBottom + extraPadding);
+            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight} (extra padding: ${extraPadding}px)`);
           }
           
-          // Force minimum height for complex tabs
+          // Additional check for energy-map specifically - look for Energy Interaction Map section
+          if (tabId === 'energy-map') {
+            const energyMapSections = htmlElement.querySelectorAll('h4');
+            let energyMapFound = false;
+            energyMapSections.forEach(section => {
+              if (section.textContent?.includes('Energy Interaction Map')) {
+                const mapRect = section.parentElement?.getBoundingClientRect();
+                const elementRect = htmlElement.getBoundingClientRect();
+                if (mapRect) {
+                  const mapBottom = mapRect.bottom - elementRect.top;
+                  contentHeight = Math.max(contentHeight, mapBottom + 300); // Extra space for full visibility
+                  console.log(`Energy Interaction Map section found at bottom: ${mapBottom}, ensuring full visibility`);
+                  energyMapFound = true;
+                }
+              }
+            });
+            
+            if (!energyMapFound) {
+              console.warn('Energy Interaction Map section not found, using enhanced fallback height');
+              contentHeight = Math.max(contentHeight, 3000); // Fallback minimum
+            }
+          }
+        }
+          
+          // Force minimum height for complex tabs - including energy-map
           const minHeights: Record<string, number> = {
             'guidance': 2000,
             'spectrum': 1800,
-            'analysis': 3000
+            'analysis': 3000,
+            'energy-map': 2500  // Ensure full visibility of Energy Interaction Map section
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -7100,7 +7128,7 @@ export default function AuraAnalysis() {
 
                               <div className="space-y-6">
                                 {/* 4-Zone Energy Visualization */}
-                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+                                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-10 border border-purple-200">
                                   <h4 className="font-semibold text-lg mb-4 text-center">Your 4-Zone Energy Map</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {/* Receiving Energy */}
