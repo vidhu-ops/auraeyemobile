@@ -1055,8 +1055,10 @@ export default function AuraAnalysis() {
         htmlElement.style.maxHeight = tempStyles.maxHeight;
         htmlElement.style.minHeight = tempStyles.minHeight;
         
-        // Extra padding for tabs with complex content
-        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 150));
+        // Extra padding for tabs with complex content - special handling for energy-map
+        const paddingMultiplier = (['analysis', 'guidance', 'spectrum'].includes(tabId) ? 300 : 
+                                  (['chakras', 'detailed', 'combined'].includes(tabId) ? 200 : 
+                                  (tabId === 'energy-map' ? 400 : 150))); // Extra padding for energy-map
         
         contentHeight = Math.max(contentHeight, realContentHeight + paddingMultiplier);
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
@@ -1070,8 +1072,8 @@ export default function AuraAnalysis() {
             const sectionRect = lastSection.getBoundingClientRect();
             const elementRect = htmlElement.getBoundingClientRect();
             const sectionBottom = sectionRect.bottom - elementRect.top;
-            // Extra padding for energy-map to ensure Energy Interaction Map is fully captured
-            const extraPadding = (tabId === 'energy-map') ? 400 : 200;
+            // Moderate padding for energy-map for PDF fitting while ensuring content capture
+            const extraPadding = (tabId === 'energy-map') ? 150 : 200;
             contentHeight = Math.max(contentHeight, sectionBottom + extraPadding);
             console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight} (padding: ${extraPadding}px)`);
           }
@@ -1084,7 +1086,7 @@ export default function AuraAnalysis() {
               const energyRect = lastEnergySection.getBoundingClientRect();
               const elementRect = htmlElement.getBoundingClientRect();
               const energyBottom = energyRect.bottom - elementRect.top;
-              contentHeight = Math.max(contentHeight, energyBottom + 500); // Extra buffer for Energy Interaction Map
+              contentHeight = Math.max(contentHeight, energyBottom + 100); // Moderate buffer for Energy Interaction Map
               console.log(`Energy Interaction Map detected at bottom: ${energyBottom}, adjusted height: ${contentHeight}`);
             }
           }
@@ -1094,7 +1096,7 @@ export default function AuraAnalysis() {
             'guidance': 2000,
             'spectrum': 1800,
             'analysis': 3000,
-            'energy-map': 3200  // Significantly increased height to ensure full content capture
+            'energy-map': 2800  // Optimized height for 6-section PDF fitting
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1124,11 +1126,18 @@ export default function AuraAnalysis() {
         let totalSections: number;
         let enhancedCaptureWidth = captureWidth;
         
-        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis' || tabId === 'energy-map') {
+        if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'analysis') {
           // Force exactly 4 sections for critical analysis tabs with enhanced dimensions
           totalSections = 4;
           sectionHeight = Math.ceil(contentHeight / 4);
           // Additional 25% width increase for critical tabs text legibility (40% total increase)
+          enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
+        } else if (tabId === 'energy-map') {
+          // Optimized sectioning for energy-map to fit properly in PDF pages
+          // Use more sections to reduce individual section height for better PDF fitting
+          totalSections = 6;  // More sections for better page fitting
+          sectionHeight = Math.ceil(contentHeight / 6);
+          // Additional width increase for text legibility
           enhancedCaptureWidth = Math.floor(captureWidth * 1.25);
         } else if (['guidance'].includes(tabId)) {
           // Optimized sectioning for complex tabs
@@ -1299,8 +1308,8 @@ export default function AuraAnalysis() {
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const baseFinalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
-        // Add substantial bottom padding for energy-map tab to ensure full content visibility in PDF
-        const bottomPadding = (tabId === 'energy-map') ? 100 * scaleUsed : 0; // 100px padding scaled for high-res capture
+        // Add minimal bottom padding for energy-map tab for proper PDF page fitting
+        const bottomPadding = (tabId === 'energy-map') ? 5 * scaleUsed : 0; // 5px padding as requested
         const finalHeight = baseFinalHeight + bottomPadding;
         
         combinedCanvas.width = finalWidth;
