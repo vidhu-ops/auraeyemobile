@@ -7400,99 +7400,17 @@ export default function AuraAnalysis() {
                                 {/* Traditional Color Analysis */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                   {/* Primary Color Details */}
-                                  <div className="bg-white border rounded-lg p-6 shadow-sm">
-                                    <div className="flex items-center space-x-4 mb-4">
-                                      <div 
-                                        className="w-16 h-16 rounded-full flex items-center justify-center "
-                                        style={{backgroundColor: getAccurateColorCode(result.dominantColor)}}
-                                      >
-                                        <span className="text-white font-bold text-lg">
-                                          {result.dominantColor.charAt(0)}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <h4 className="font-bold text-lg">{result.dominantColor}</h4>
-                                        <p className="text-sm text-gray-600">Primary Crown Energy</p>
-                                      </div>
-                                    </div>
-
-                                    {/* Positive Aspects */}
-                                    <div className="mb-4">
-                                      <h5 className="font-semibold text-sm text-green-700 mb-2">
-                                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                        Positive: {getPositiveTraits(result.dominantColor)}
-                                      </h5>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        {getPositiveDescription(result.dominantColor)}
-                                      </p>
-                                    </div>
-
-                                    {/* Shadow Aspects */}
-                                    <div className="mb-4">
-                                      <h5 className="font-semibold text-sm text-amber-700 mb-2">
-                                        <span className="inline-block w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
-                                        Areas for Growth: {getShadowTraits(result.dominantColor)}
-                                      </h5>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        {getShadowDescription(result.dominantColor)}
-                                      </p>
-                                    </div>
-
-                                    {/* Spiritual Placement */}
-                                    <div>
-                                      <h5 className="font-semibold text-sm text-blue-700 mb-2">
-                                        <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                                        Energy Placement: {getPlacementDescription(result.dominantColor)}
-                                      </h5>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
-                                        {getDetailedPlacement(result.dominantColor)}
-                                      </p>
-                                    </div>
-                                  </div>
+                                 
 
                                   {/* Secondary & Supporting Colors */}
                                   <div className="space-y-4">
-                                    <h4 className="font-semibold text-lg">Secondary & Supporting Colors</h4>
+                                    
                                     
                                     {/* Secondary Color */}
-                                    <div className="bg-gray-50 border rounded-lg p-4">
-                                    <div className="flex items-center space-x-3 mb-3">
-                                      <div 
-                                        className="w-8 h-8 rounded-full"
-                                        style={{backgroundColor: getAccurateColorCode(result.secondaryColor)}}
-                                      ></div>
-                                      <div>
-                                        <h5 className="font-medium">{result.secondaryColor}</h5>
-                                        <p className="text-xs text-gray-600">Location: Right side of lower abdomen, 2 inches below navel</p>
-                                      </div>
-                                    </div>
-                                    <p className="text-sm text-gray-700">
-                                      {getSecondaryColorDescription(result.secondaryColor)}
-                                    </p>
-                                  </div>
+                                    
 
                                   {/* Extended Color Spectrum */}
-                                  {result.auraColorSpectrum && result.auraColorSpectrum.length > 2 && (
-                                    <>
-                                      {result.auraColorSpectrum.slice(2, 5).map((color, index) => (
-                                        <div key={index} className="bg-gray-50 border rounded-lg p-4">
-                                          <div className="flex items-center space-x-3 mb-3">
-                                            <div 
-                                              className="w-8 h-8 rounded-full"
-                                              style={{backgroundColor: getAccurateColorCode(color)}}
-                                            ></div>
-                                            <div>
-                                              <h5 className="font-medium">{color}</h5>
-                                              <p className="text-xs text-gray-600">{getSupportingColorLocation(color, index)}</p>
-                                            </div>
-                                          </div>
-                                          <p className="text-sm text-gray-700">
-                                            {getSupportingColorDescription(color)}
-                                          </p>
-                                        </div>
-                                      ))}
-                                    </>
-                                  )}
+                                  
                                 </div>
                               </div>
 
