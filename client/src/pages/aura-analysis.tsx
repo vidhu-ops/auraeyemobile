@@ -1198,9 +1198,10 @@ export default function AuraAnalysis() {
                 elem.style.maxHeight = 'none';
                 elem.style.width = 'auto';
                 elem.style.maxWidth = 'none';
-                // Enhanced text rendering for all tabs with special boost for critical tabs
-                if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') {
-                  elem.style.fontSize = '20px'; // Maximum font for critical tabs
+                // Enhanced text rendering for all tabs with proper sizing for analysis tab
+                if (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map') {
+                  // High resolution for complex tabs
+                  elem.style.fontSize = '20px';
                   elem.style.lineHeight = '1.8';
                   const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
                   textElements.forEach(textEl => {
@@ -1208,6 +1209,20 @@ export default function AuraAnalysis() {
                     textElement.style.fontSize = '20px';
                     textElement.style.fontWeight = '700';
                     textElement.style.letterSpacing = '0.4px';
+                    textElement.style.textRendering = 'optimizeLegibility';
+                  });
+                } else if (tabId === 'analysis') {
+                  // Maintain original proportions for analysis tab to match interface display exactly
+                  // Don't modify fontSize at root level - preserve original element sizes
+                  const textElements = elem.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6');
+                  textElements.forEach(textEl => {
+                    const textElement = textEl as HTMLElement;
+                    // Keep original computed font size but enhance clarity
+                    const originalStyles = window.getComputedStyle(textElement);
+                    textElement.style.fontSize = originalStyles.fontSize; // Preserve exact original size
+                    textElement.style.lineHeight = originalStyles.lineHeight || '1.4';
+                    textElement.style.fontWeight = originalStyles.fontWeight || 'normal';
+                    textElement.style.letterSpacing = '0.1px'; // Minimal adjustment for clarity
                     textElement.style.textRendering = 'optimizeLegibility';
                   });
                 } else {
@@ -7040,7 +7055,7 @@ export default function AuraAnalysis() {
                               </div>
 
                               {/* Visual Energy Map - Moved to Top */}
-                              <div className="bg-black rounded-lg p-4 relative overflow-hidden">
+                              <div className="bg-black rounded-lg p-10 relative overflow-hidden">
                                 
                                 <div className="flex justify-center items-center space-x-8">
                                   <div className="relative">
@@ -7222,7 +7237,7 @@ export default function AuraAnalysis() {
 
 
                                   {/* Color Composition Analysis */}
-                                  <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border">
+                                  <div className="mb-8 p-10 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border">
                                     <h4 className="font-bold text-amber-800 mb-3 flex items-center">
                                       <span className="mr-2">🎨</span>
                                       Aura Color Composition & Balance
@@ -7267,7 +7282,7 @@ export default function AuraAnalysis() {
                                   </div>
 
                                   {/* Comprehensive Color Meanings */}
-                                  <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border">
+                                  <div className="mb-6 p-10 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border">
                                     <h4 className="font-bold text-green-800 mb-3 flex items-center">
                                       <span className="mr-2">📚</span>
                                       Comprehensive Color Meanings & Interpretations
@@ -7314,7 +7329,7 @@ export default function AuraAnalysis() {
                                   </div>
 
                                   {/* Spiritual & Emotional Insights */}
-                                  <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border">
+                                  <div className="p-10 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border">
                                     <h4 className="font-bold text-indigo-800 mb-3 flex items-center">
                                       <span className="mr-2">🔮</span>
                                       Spiritual & Emotional Insights
@@ -9428,9 +9443,7 @@ export default function AuraAnalysis() {
                             </div>
                             <div>
                               <div className="mb-6 relative">
-                                <div className="absolute -top-3 -right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-300 z-17 mb-5">
-                                  Advanced Feature
-                                </div>
+                              
                                 <h3 className="font-medium text-lg mb-5 text-primary">Advanced Aura Field Analysis</h3>
                                 
                                 {/* Premium Aura Visualization */}
@@ -9763,9 +9776,7 @@ export default function AuraAnalysis() {
                               
                               {/* Demo mode - showing premium features without upgrade */}
                               <div className="flex justify-center mt-4">
-                                <div className="inline-flex items-center px-3 py-1 text-sm rounded-full bg-green-100 text-green-800 border border-green-200">
-                                  <span className="mr-1.5">✓</span> Premium Analysis Demo Mode Active
-                                </div>
+                                
                               </div>
                             </div>
                           </TabsContent>
