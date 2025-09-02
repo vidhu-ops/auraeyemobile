@@ -1078,7 +1078,8 @@ export default function AuraAnalysis() {
           const minHeights: Record<string, number> = {
             'guidance': 2000,
             'spectrum': 1800,
-            'analysis': 3000
+            'analysis': 3000,
+            'energy-map': 2400  // Increased height for energy map with proper PDF fitting
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1281,10 +1282,20 @@ export default function AuraAnalysis() {
         // Calculate combined dimensions using enhanced width and scale factor
         const scaleUsed = (tabId === 'detailed' || tabId === 'chakras' || tabId === 'energy-map' || tabId === 'analysis') ? 5.0 : 3.5;
         const finalWidth = enhancedCaptureWidth * scaleUsed;
-        const finalHeight = screenshots.length * (sectionHeight * scaleUsed);
+        const baseFinalHeight = screenshots.length * (sectionHeight * scaleUsed);
+        
+        // Add 5px bottom padding for energy-map tab to ensure proper PDF fitting
+        const bottomPadding = (tabId === 'energy-map') ? 5 * scaleUsed : 0;
+        const finalHeight = baseFinalHeight + bottomPadding;
         
         combinedCanvas.width = finalWidth;
         combinedCanvas.height = finalHeight;
+        
+        // Fill canvas with white background (especially important for energy-map bottom padding)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, finalWidth, finalHeight);
+        
+        console.log(`Canvas dimensions for ${tabId}: ${finalWidth}x${finalHeight} (base: ${baseFinalHeight}, padding: ${bottomPadding}px)`);
         
         // Draw each section onto the combined canvas
         for (let i = 0; i < screenshots.length; i++) {
