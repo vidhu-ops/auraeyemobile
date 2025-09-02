@@ -1062,7 +1062,7 @@ export default function AuraAnalysis() {
         console.log(`${tabId} tab enhanced height detection: original=${htmlElement.scrollHeight}, measured=${realContentHeight}, detected=${maxBottom}, final=${contentHeight}, padding=${paddingMultiplier}px`);
         
         // Special handling for specific tabs to ensure complete capture
-        if (['analysis', 'guidance', 'spectrum'].includes(tabId)) {
+        if (['analysis', 'guidance', 'spectrum', 'energy-map'].includes(tabId)) {
           // Look for the last meaningful content section
           const lastSections = htmlElement.querySelectorAll('.space-y-4 > div:last-child, .space-y-6 > div:last-child, .grid:last-child, .bg-gradient-to-br:last-child');
           if (lastSections.length > 0) {
@@ -1070,8 +1070,23 @@ export default function AuraAnalysis() {
             const sectionRect = lastSection.getBoundingClientRect();
             const elementRect = htmlElement.getBoundingClientRect();
             const sectionBottom = sectionRect.bottom - elementRect.top;
-            contentHeight = Math.max(contentHeight, sectionBottom + 200);
-            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight}`);
+            // Extra padding for energy-map to ensure Energy Interaction Map is fully captured
+            const extraPadding = (tabId === 'energy-map') ? 400 : 200;
+            contentHeight = Math.max(contentHeight, sectionBottom + extraPadding);
+            console.log(`${tabId} last section detected at bottom: ${sectionBottom}, adjusted height: ${contentHeight} (padding: ${extraPadding}px)`);
+          }
+          
+          // Special detection for energy-map's Energy Interaction Map section
+          if (tabId === 'energy-map') {
+            const energyMapSections = htmlElement.querySelectorAll('.bg-gradient-to-br.from-purple-50');
+            if (energyMapSections.length > 0) {
+              const lastEnergySection = energyMapSections[energyMapSections.length - 1];
+              const energyRect = lastEnergySection.getBoundingClientRect();
+              const elementRect = htmlElement.getBoundingClientRect();
+              const energyBottom = energyRect.bottom - elementRect.top;
+              contentHeight = Math.max(contentHeight, energyBottom + 500); // Extra buffer for Energy Interaction Map
+              console.log(`Energy Interaction Map detected at bottom: ${energyBottom}, adjusted height: ${contentHeight}`);
+            }
           }
           
           // Force minimum height for complex tabs
@@ -1079,7 +1094,7 @@ export default function AuraAnalysis() {
             'guidance': 2000,
             'spectrum': 1800,
             'analysis': 3000,
-            'energy-map': 2400  // Increased height for energy map with proper PDF fitting
+            'energy-map': 3200  // Significantly increased height to ensure full content capture
           };
           contentHeight = Math.max(contentHeight, minHeights[tabId] || contentHeight);
         }
@@ -1284,8 +1299,8 @@ export default function AuraAnalysis() {
         const finalWidth = enhancedCaptureWidth * scaleUsed;
         const baseFinalHeight = screenshots.length * (sectionHeight * scaleUsed);
         
-        // Add 5px bottom padding for energy-map tab to ensure proper PDF fitting
-        const bottomPadding = (tabId === 'energy-map') ? 5 * scaleUsed : 0;
+        // Add substantial bottom padding for energy-map tab to ensure full content visibility in PDF
+        const bottomPadding = (tabId === 'energy-map') ? 100 * scaleUsed : 0; // 100px padding scaled for high-res capture
         const finalHeight = baseFinalHeight + bottomPadding;
         
         combinedCanvas.width = finalWidth;
