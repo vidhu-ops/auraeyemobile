@@ -1065,12 +1065,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Pre-processed to manageable size: ${(preprocessedBuffer.length / 1024).toFixed(1)}KB`);
       }
       
-      // Start with moderate quality and progressively reduce to hit 50KB target
-      let quality = 85;
+      // Start with moderate quality and progressively reduce to hit 20KB target for better consistency
+      let quality = 75;
       let compressedBuffer: Buffer;
-      const targetSizeKB = 50;
+      const targetSizeKB = 20;
       
-      // Keep compressing until we reach 50KB or lower for consistent processing
+      // Keep compressing until we reach 20KB or lower for optimal consistent processing
       do {
         compressedBuffer = await sharp(preprocessedBuffer)
           .resize(600, 900, {
@@ -1088,16 +1088,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const fileSizeKB = compressedBuffer.length / 1024;
         console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality} (target: ${targetSizeKB}KB)`);
         
-        // If still too large, reduce quality by 5 for finer control
-        if (fileSizeKB > targetSizeKB && quality > 25) {
-          quality -= 5;
+        // If still too large, reduce quality more aggressively for 20KB target
+        if (fileSizeKB > targetSizeKB && quality > 20) {
+          quality -= 5; // More aggressive reduction for smaller target
         } else {
           break; // Either small enough or minimum quality reached
         }
-      } while (quality >= 25);
+      } while (quality >= 20);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px (target: 20KB)`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();
@@ -1122,13 +1122,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error resizing image:", error);
       
-      // Fallback: try a simpler resize approach
+      // Fallback: try a simpler resize approach with 20KB target
       try {
-        console.log("🚨 Attempting fallback resize method");
-        const fallbackBuffer = await sharp(inputBuffer)
-          .resize(600, 900, { fit: 'fill' })
-          .jpeg({ quality: 70 })
-          .toBuffer();
+        console.log("🚨 Attempting fallback resize method for 20KB target");
+        
+        // Try multiple quality levels to reach 20KB target
+        const targetSizeKB = 20;
+        let fallbackQuality = 60;
+        let fallbackBuffer: Buffer;
+        
+        do {
+          fallbackBuffer = await sharp(inputBuffer)
+            .resize(600, 900, { fit: 'fill' })
+            .jpeg({ quality: fallbackQuality })
+            .toBuffer();
+          
+          const fallbackSizeKB = fallbackBuffer.length / 1024;
+          console.log(`Fallback: ${fallbackSizeKB.toFixed(1)}KB with quality ${fallbackQuality} (target: 20KB)`);
+          
+          if (fallbackSizeKB <= targetSizeKB || fallbackQuality <= 20) {
+            break;
+          }
+          fallbackQuality -= 10;
+        } while (fallbackQuality >= 20);
         
         console.log(`✅ Fallback resize successful: ${(fallbackBuffer.length / 1024).toFixed(1)}KB`);
         return fallbackBuffer;

@@ -22,7 +22,7 @@ export async function generateAuraVisualization(
     // Calculate input image size for verification
     const base64Data = originalImageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     const inputSizeKB = (Buffer.byteLength(base64Data, 'base64') / 1024).toFixed(1);
-    console.log(`Input image size: ${inputSizeKB}KB (target: ~50KB)`);
+    console.log(`Input image size: ${inputSizeKB}KB (target: ~20KB for optimal consistency)`);
     
     // CRITICAL FIX: Standardized dimensions as specified: 600px width × 900px height
     const STANDARD_WIDTH = 600;
