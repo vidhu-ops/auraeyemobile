@@ -1950,28 +1950,25 @@ export default function AuraAnalysis() {
       pdf.setFontSize(12);
       pdf.setTextColor(50, 50, 50);
       
-      if (result.chakraActivity) {
-        const chakraNames = {
-          soulStar: 'Soul Star Chakra',
-          crown: 'Crown Chakra',
-          thirdEye: 'Third Eye Chakra',
-          throat: 'Throat Chakra',
-          heart: 'Heart Chakra',
-          solarPlexus: 'Solar Plexus Chakra',
-          sacral: 'Sacral Chakra',
-          root: 'Root Chakra',
-          earthStar: 'Earth Star Chakra'
-        };
+      // Use the same chakra values that are displayed in the detailed chakra analysis tab
+      const chakrasForPDF = [
+        { name: 'Soul Star Chakra', score: Math.round(calculateSoulStarChakra(result)/10) },
+        { name: 'Crown Chakra', score: result.chakraActivity?.crown || 5 },
+        { name: 'Third Eye Chakra', score: result.chakraActivity?.thirdEye || 5 },
+        { name: 'Throat Chakra', score: result.chakraActivity?.throat || 5 },
+        { name: 'Heart Chakra', score: result.chakraActivity?.heart || 5 },
+        { name: 'Solar Plexus Chakra', score: result.chakraActivity?.solarPlexus || 5 },
+        { name: 'Sacral Chakra', score: result.chakraActivity?.sacral || 5 },
+        { name: 'Root Chakra', score: result.chakraActivity?.root || 5 },
+        { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
+      ];
 
-        Object.entries(result.chakraActivity).forEach(([key, value]) => {
-          const name = chakraNames[key as keyof typeof chakraNames] || key;
-          const percentage = Math.round((value / 10) * 100);
-          yPosition = addTextWithPageBreak(`${name}: ${value}/10 (${percentage}%)`, pageWidth/2, yPosition, { align: 'center' });
-          yPosition += 6;
-        });
-      } else {
-        yPosition = addWrappedText("Chakra analysis shows balanced energy flow across all seven main energy centers, supporting overall spiritual well-being.", 20, yPosition, pageWidth - 40);
-      }
+      chakrasForPDF.forEach((chakra) => {
+        const percentage = Math.round((chakra.score / 10) * 100);
+        yPosition = addTextWithPageBreak(`${chakra.name}: ${chakra.score}/10 (${percentage}%)`, pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 6;
+      });
+      
       yPosition += 15;
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
