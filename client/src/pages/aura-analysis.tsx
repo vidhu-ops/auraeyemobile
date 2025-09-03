@@ -6204,7 +6204,7 @@ export default function AuraAnalysis() {
           </div>
         </section>
 
-        <section className="items-center align-center bg-gray-50 py-8 px-8">
+        <section className="w-auto items-center align-center bg-gray-50 py-8 px-8mx -auto">
           <div className="container items-center align-center px-40">
             <ImageManipulator onImageProcessed={(blob) => {
               console.log('Processed image blob:', blob);
