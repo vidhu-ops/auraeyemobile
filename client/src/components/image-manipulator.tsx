@@ -103,10 +103,21 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
       return;
     }
 
+    console.log('File selected:', file.name, file.type);
+    
     const img = new Image();
     img.onload = () => {
+      console.log('Image loaded successfully');
       setOriginalImage(img);
       processImage(img, false); // Process without flipping initially
+    };
+    img.onerror = () => {
+      console.error('Failed to load image');
+      toast({
+        title: "Error loading image",
+        description: "Please try a different image",
+        variant: "destructive",
+      });
     };
     img.src = URL.createObjectURL(file);
   };
@@ -140,6 +151,11 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     }
   };
 
+  const handleSelectClick = () => {
+    console.log('Select Image button clicked');
+    fileInputRef.current?.click();
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -156,10 +172,12 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
             onChange={handleFileSelect}
             ref={fileInputRef}
             className="hidden"
+            id="file-upload-input"
           />
           <Button 
-            onClick={() => fileInputRef.current?.click()}
+            onClick={handleSelectClick}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            type="button"
           >
             <Upload className="h-4 w-4 mr-2" />
             Select Image
@@ -170,6 +188,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               onClick={handleClear}
               variant="outline"
               size="sm"
+              type="button"
             >
               <X className="h-4 w-4 mr-2" />
               Clear
@@ -185,6 +204,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               disabled={isProcessing}
               variant="outline"
               size="lg"
+              type="button"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Flip Left
@@ -195,6 +215,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               disabled={isProcessing}
               variant="outline"
               size="lg"
+              type="button"
             >
               <RotateCw className="h-4 w-4 mr-2" />
               Flip Right
@@ -205,6 +226,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
                 onClick={handleDownload}
                 variant="outline"
                 size="lg"
+                type="button"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download
