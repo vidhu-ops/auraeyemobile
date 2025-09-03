@@ -6,19 +6,22 @@ import { eq } from "drizzle-orm";
 const specificHealerNames = [
   "Nishthaa.duseja",
   "Sharmila.Nagwekar", 
-  "Ramona_Jind"
+  "Ramona_Jind",
+  "Sweta.Verma.Rawat"
 ];
 
 const specialties = [
   "Spiritual Energy Healer",
   "Chakra Alignment Specialist", 
-  "Aura Cleansing Expert"
+  "Aura Cleansing Expert",
+  "Vedic Astrology Expert"
 ];
 
 const locations = [
   "Delhi, India",
   "Mumbai, India",
-  "Bangalore, India"
+  "Bangalore, India",
+  "Chennai, India"
 ];
 
 async function addSpecificHealers() {
