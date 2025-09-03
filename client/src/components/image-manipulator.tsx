@@ -17,7 +17,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
   const { toast } = useToast();
 
   // Compress image to under 20KB
-  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 40): Promise<Blob> => {
+  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 20): Promise<Blob> => {
     return new Promise((resolve) => {
       let quality = 0.8;
       const tryCompress = () => {
@@ -47,7 +47,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     setIsProcessing(true);
 
     // Reduce dimensions for smaller file size (max 400px width)
-    const maxWidth = 600;
+    const maxWidth = 400;
     const ratio = Math.min(maxWidth / image.width, maxWidth / image.height);
     const newWidth = image.width * ratio;
     const newHeight = image.height * ratio;
@@ -68,7 +68,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     }
 
     try {
-      const compressedBlob = await compressImage(canvas, 40);
+      const compressedBlob = await compressImage(canvas, 20);
       const processedUrl = URL.createObjectURL(compressedBlob);
       setProcessedImageUrl(processedUrl);
       
@@ -103,21 +103,10 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
       return;
     }
 
-    console.log('File selected:', file.name, file.type);
-    
     const img = new Image();
     img.onload = () => {
-      console.log('Image loaded successfully');
       setOriginalImage(img);
       processImage(img, false); // Process without flipping initially
-    };
-    img.onerror = () => {
-      console.error('Failed to load image');
-      toast({
-        title: "Error loading image",
-        description: "Please try a different image",
-        variant: "destructive",
-      });
     };
     img.src = URL.createObjectURL(file);
   };
@@ -151,33 +140,27 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     }
   };
 
-  const handleSelectClick = () => {
-    console.log('Select Image button clicked');
-    fileInputRef.current?.click();
-  };
-
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-xl align-center items-center mx-auto">
       <CardHeader>
-        <CardTitle className="text-center">
+        <CardTitle className="flex items-center align-center gap-2">
+          <Upload className="h-5 w-5 align-canter items-center" />
           Image Manipulation Tool
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="items-center align-center space-y-4">
         {/* File Upload */}
-        <div className="flex justify-center items-center gap-4">
+        <div className="flex align-center items-center gap-4">
           <input
             type="file"
             accept="image/*"
             onChange={handleFileSelect}
             ref={fileInputRef}
             className="hidden"
-            id="file-upload-input"
           />
           <Button 
-            onClick={handleSelectClick}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className=" align-center items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
             <Upload className="h-4 w-4 mr-2" />
             Select Image
@@ -188,7 +171,6 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               onClick={handleClear}
               variant="outline"
               size="sm"
-              type="button"
             >
               <X className="h-4 w-4 mr-2" />
               Clear
@@ -198,13 +180,12 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
 
         {/* Control Buttons */}
         {originalImage && (
-          <div className="flex flex-wrap justify-center items-center gap-4">
+          <div className="flex align-center items-center gap-2 flex-wrap">
             <Button 
               onClick={handleFlipLeft}
               disabled={isProcessing}
               variant="outline"
-              size="lg"
-              type="button"
+              size="sm"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Flip Left
@@ -214,8 +195,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               onClick={handleFlipRight}
               disabled={isProcessing}
               variant="outline"
-              size="lg"
-              type="button"
+              size="sm"
             >
               <RotateCw className="h-4 w-4 mr-2" />
               Flip Right
@@ -225,8 +205,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               <Button 
                 onClick={handleDownload}
                 variant="outline"
-                size="lg"
-                type="button"
+                size="sm"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download
@@ -237,22 +216,19 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
 
         {/* Image Preview */}
         {processedImageUrl && (
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-center text-sm font-medium text-gray-700">Processed Image:</p>
-            
-            <div className="flex justify-center">
-              <img 
-                src={processedImageUrl} 
-                alt="Processed" 
-                className="max-w-full max-h-96 h-auto rounded-lg border shadow-sm"
-              />
-            </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700">Processed Image:</p>
+            <img 
+              src={processedImageUrl} 
+              alt="Processed" 
+              className="max-w-full h-auto rounded-lg border shadow-sm"
+            />
           </div>
         )}
 
         {isProcessing && (
-          <div className="flex flex-col items-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
             <p className="text-sm text-gray-600 mt-2">Processing image...</p>
           </div>
         )}

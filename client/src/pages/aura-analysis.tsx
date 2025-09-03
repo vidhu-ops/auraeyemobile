@@ -6183,18 +6183,24 @@ export default function AuraAnalysis() {
       <Navbar />
       
       {/* Image Manipulation Tool */}
+      <section className="items-center align-center bg-gray-50 py-8">
+        <div className="container align-center mx-auto px-4">
+          <ImageManipulator onImageProcessed={(blob) => {
+            console.log('Processed image blob:', blob);
+            // You can handle the processed image here if needed
+          }} />
+        </div>
+      </section>
       
-      
-      <main className="w-auto mx-auto">
+      <main className="flex-grow">
         {/* Header section */}
-        <section className="w-auto overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16 mx-auto">
+        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
           <AuraGlow 
             colors={[
               { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
               { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
             ]} 
           />
-          
           
           <div className="container mx-auto px-4 relative z-10">
             <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4 text-center">Aura Analysis</h1>
@@ -6203,15 +6209,7 @@ export default function AuraAnalysis() {
             </p>
           </div>
         </section>
-
-        <section className="w-auto items-center align-center bg-gray-50 py-8 px-8mx -auto">
-          <div className="container items-center align-center px-40">
-            <ImageManipulator onImageProcessed={(blob) => {
-              console.log('Processed image blob:', blob);
-              // You can handle the processed image here if needed
-            }} />
-          </div>
-        </section>
+        
         {/* Upload and Analysis section */}
         <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
           <div className="container mx-auto px-4">
