@@ -1045,10 +1045,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const originalMetadata = await sharp(inputBuffer).metadata();
       console.log(`Original dimensions: ${originalMetadata.width}x${originalMetadata.height}px, format: ${originalMetadata.format}`);
       
-      // Reject images larger than 3000px in width or height
+      // For human aura analysis: reject images with width >= 3000px OR height >= 2000px
       if (originalMetadata.width && originalMetadata.height && 
-          (originalMetadata.width > 3000 || originalMetadata.height > 3000)) {
-        throw new Error(`IMAGE_TOO_LARGE: Image dimensions ${originalMetadata.width}x${originalMetadata.height}px exceed maximum allowed size. Please use an image smaller than 3000x3000 pixels.`);
+          (originalMetadata.width >= 3000 || originalMetadata.height >= 2000)) {
+        throw new Error(`IMAGE_TOO_LARGE: Image dimensions ${originalMetadata.width}x${originalMetadata.height}px exceed maximum allowed size for human aura analysis. Please use an image smaller than 3000x2000 pixels.`);
       }
       
       // Handle extremely large images by pre-processing if needed
@@ -1485,8 +1485,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (compressionError instanceof Error && compressionError.message.includes('IMAGE_TOO_LARGE')) {
           return res.status(400).json({ 
             error: "IMAGE_TOO_LARGE",
-            message: "Image too large. Please use a smaller image with dimensions less than 3000x3000 pixels.",
-            details: compressionError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size"
+            message: "Image too large. Please use a smaller image with dimensions less than 3000x2000 pixels.",
+            details: compressionError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size for human aura analysis"
           });
         }
         
