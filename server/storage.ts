@@ -138,29 +138,33 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     // Set credits based on user type: clients get 30, healers get 100
+    // SECURITY: Always ignore user-supplied credits to prevent privilege escalation
     const userType = insertUser.userType || "client";
     const isHealer = userType === 'healer';
     const initialCredits = isHealer ? 100 : 30;
     
-    const [user] = await db
-      .insert(users)
-      .values({
-        ...insertUser,
-        userType,
-        credits: insertUser.credits || initialCredits
-      })
-      .returning();
-    
-    // Log the initial credit grant
-    await this.createCreditTransaction({
-      userId: user.id,
-      amount: initialCredits,
-      transactionType: "registration",
-      description: `Welcome bonus - ${initialCredits} free credits (${isHealer ? 'healer' : 'client'} account)`,
-      balanceAfter: initialCredits,
+    // Use database transaction to ensure atomicity
+    return await db.transaction(async (tx) => {
+      const [user] = await tx
+        .insert(users)
+        .values({
+          ...insertUser,
+          userType,
+          credits: initialCredits // Always use role-based credits, ignore user input
+        })
+        .returning();
+      
+      // Log the initial credit grant in same transaction
+      await tx.insert(creditTransactions).values({
+        userId: user.id,
+        amount: initialCredits,
+        transactionType: "registration",
+        description: `Welcome bonus - ${initialCredits} free credits (${isHealer ? 'healer' : 'client'} account)`,
+        balanceAfter: initialCredits,
+      });
+      
+      return user;
     });
-    
-    return user;
   }
 
   async updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined> {
@@ -507,31 +511,45 @@ export class DatabaseStorage implements IStorage {
       throw new Error('Invalid amount for credit deduction');
     }
     
-    const currentCredits = await this.getUserCredits(userId);
-    if (currentCredits < amount) {
-      return false; // Insufficient credits
-    }
-    
-    const newBalance = currentCredits - amount;
-    
-    // Ensure balance doesn't go negative
-    if (newBalance < 0) {
-      return false;
-    }
-    
-    // Update user credits atomically
-    await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
-    
-    // Log transaction
-    await this.createCreditTransaction({
-      userId,
-      amount: -amount,
-      transactionType: type,
-      description,
-      balanceAfter: newBalance,
+    // Use database transaction with row locking to prevent race conditions
+    return await db.transaction(async (tx) => {
+      // Lock the user row to prevent concurrent modifications
+      const [user] = await tx
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .for('update');
+      
+      if (!user) {
+        throw new Error('User not found for credit deduction');
+      }
+      
+      const currentCredits = user.credits || 0;
+      if (currentCredits < amount) {
+        return false; // Insufficient credits
+      }
+      
+      const newBalance = currentCredits - amount;
+      
+      // Ensure balance doesn't go negative
+      if (newBalance < 0) {
+        return false;
+      }
+      
+      // Update user credits atomically
+      await tx.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
+      
+      // Log transaction in same atomic operation
+      await tx.insert(creditTransactions).values({
+        userId,
+        amount: -amount,
+        transactionType: type,
+        description,
+        balanceAfter: newBalance,
+      });
+      
+      return true;
     });
-    
-    return true;
   }
 
   async addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
@@ -543,22 +561,36 @@ export class DatabaseStorage implements IStorage {
       throw new Error('Invalid amount for credit addition');
     }
     
-    const currentCredits = await this.getUserCredits(userId);
-    const newBalance = currentCredits + amount;
-    
-    // Update user credits atomically
-    await db.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
-    
-    // Log transaction
-    await this.createCreditTransaction({
-      userId,
-      amount,
-      transactionType: type,
-      description,
-      balanceAfter: newBalance,
+    // Use database transaction with row locking to prevent race conditions
+    return await db.transaction(async (tx) => {
+      // Lock the user row to prevent concurrent modifications
+      const [user] = await tx
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .for('update');
+      
+      if (!user) {
+        throw new Error('User not found for credit addition');
+      }
+      
+      const currentCredits = user.credits || 0;
+      const newBalance = currentCredits + amount;
+      
+      // Update user credits atomically
+      await tx.update(users).set({ credits: newBalance }).where(eq(users.id, userId));
+      
+      // Log transaction in same atomic operation
+      await tx.insert(creditTransactions).values({
+        userId,
+        amount,
+        transactionType: type,
+        description,
+        balanceAfter: newBalance,
+      });
+      
+      return true;
     });
-    
-    return true;
   }
 
   async getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]> {

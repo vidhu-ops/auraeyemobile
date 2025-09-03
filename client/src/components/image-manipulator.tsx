@@ -141,16 +141,16 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-xl align-center items-center mx-auto">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5" />
+        <CardTitle className="flex items-center align-center gap-2">
+          <Upload className="h-5 w-5 align-canter items-center" />
           Image Manipulation Tool
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="items-center align-center space-y-4">
         {/* File Upload */}
-        <div className="flex items-center gap-4">
+        <div className="flex align-center items-center gap-4">
           <input
             type="file"
             accept="image/*"
@@ -160,7 +160,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
           />
           <Button 
             onClick={() => fileInputRef.current?.click()}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            className=" align-center items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
             <Upload className="h-4 w-4 mr-2" />
             Select Image
@@ -180,7 +180,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
 
         {/* Control Buttons */}
         {originalImage && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex align-center items-center gap-2 flex-wrap">
             <Button 
               onClick={handleFlipLeft}
               disabled={isProcessing}
