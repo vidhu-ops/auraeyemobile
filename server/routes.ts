@@ -2610,6 +2610,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get vibe readings for healer dashboard
+  app.get("/api/vibe-readings", isAuthenticated, async (req, res) => {
+    try {
+      const vibeReadings = await storage.getVibeReadingsByUserId(req.user.id);
+      res.json(vibeReadings);
+    } catch (error) {
+      console.error("Error retrieving vibe readings:", error);
+      res.status(500).json({ message: "Failed to retrieve vibe readings" });
+    }
+  });
+
   // Quick vibe check - simplified aura analysis for home page
   app.post("/api/quick-vibe", isAuthenticated, checkCredits('vibe_check'), upload.single('image'), async (req, res) => {
     try {
@@ -2725,8 +2736,44 @@ function calculateDominantSoulChakra(birthDate: string): number {
         negative: 'Your energy may need balancing and harmonizing.'
       };
 
-      // Deduct credits for successful analysis
+      // Save vibe reading to database for healer dashboard tracking
+      let savedVibeReading = null;
       if (req.user) {
+        try {
+          // Generate session ID for tracking
+          const sessionId = Date.now().toString() + '-' + req.user.id;
+          
+          // Convert image buffer to base64 for storage
+          const uploadedImageBase64 = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
+          
+          // Create analysis result for storage
+          const fullAnalysisData = {
+            dominantColor: personalityColor,
+            colorMeaning: meaning,
+            energyLevel: fastAnalysis.energyLevel,
+            message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
+            timestamp: new Date().toISOString(),
+            sessionId
+          };
+
+          savedVibeReading = await storage.saveVibeReading({
+            userId: req.user.id,
+            personalityColor: personalityColor,
+            colorMeaning: JSON.stringify(meaning),
+            uploadedImage: uploadedImageBase64,
+            visualizedImage: null, // No color visualization for quick vibe
+            sessionId: sessionId,
+            clientName: req.body.clientName || null,
+            fullAnalysis: JSON.stringify(fullAnalysisData)
+          });
+
+          console.log(`✅ Vibe reading saved to dashboard for user ${req.user.id}, reading ID: ${savedVibeReading.id}`);
+        } catch (error) {
+          console.error('Failed to save vibe reading to dashboard:', error);
+          // Don't fail the request if saving fails, just log the error
+        }
+        
+        // Deduct credits for successful analysis
         await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
       }
 
@@ -2734,7 +2781,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         dominantColor: personalityColor,
         colorMeaning: meaning,
         energyLevel: fastAnalysis.energyLevel,
-        message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`
+        message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
+        readingId: savedVibeReading?.id || null
       });
 
     } catch (error) {

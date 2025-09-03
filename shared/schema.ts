@@ -182,6 +182,25 @@ export const insertVibeFeedbackSchema = createInsertSchema(vibeFeedback).omit({
   createdAt: true,
 });
 
+// Vibe readings performed by healers (for healer dashboard tracking)
+export const vibeReadings = pgTable("vibe_readings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id), // The healer who performed the reading
+  personalityColor: text("personality_color").notNull(),
+  colorMeaning: text("color_meaning").notNull(),
+  uploadedImage: text("uploaded_image"), // Base64 image data of uploaded image
+  visualizedImage: text("visualized_image"), // Base64 image data of color visualization
+  sessionId: text("session_id"), // To track unique vibe analysis sessions
+  clientName: text("client_name"), // Optional client name if provided
+  fullAnalysis: text("full_analysis"), // Complete analysis result as JSON
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertVibeReadingSchema = createInsertSchema(vibeReadings).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const creditTransactions = pgTable("credit_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -260,6 +279,8 @@ export type HealerBooking = typeof healerBookings.$inferSelect;
 export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;
 export type VibeFeedback = typeof vibeFeedback.$inferSelect;
 export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;
+export type VibeReading = typeof vibeReadings.$inferSelect;
+export type InsertVibeReading = z.infer<typeof insertVibeReadingSchema>;
 export type CreditTransaction = typeof creditTransactions.$inferSelect;
 export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
 export type OtpVerification = typeof otpVerifications.$inferSelect;

@@ -95,6 +95,40 @@ interface NumerologyReading {
   createdAt: string;
 }
 
+interface VibeReading {
+  id: number;
+  userId: number;
+  personalityColor: string;
+  colorMeaning: string;
+  uploadedImage?: string;
+  visualizedImage?: string;
+  sessionId?: string;
+  clientName?: string;
+  fullAnalysis?: string;
+  createdAt: string;
+}
+
+// Helper function to get color codes for vibe colors
+const getVibeColorCode = (colorName: string): string => {
+  const colorCodes: Record<string, string> = {
+    'Pink': '#FF69B4',
+    'Gray': '#A9A9A9', 'Grey': '#A9A9A9',
+    'Blue': '#1E90FF',
+    'Green': '#32CD32',
+    'Violet': '#9400D3', 'Purple': '#8A2BE2',
+    'Indigo': '#4B0082',
+    'White': '#FFFFFF',
+    'Gold': '#FFD700',
+    'Yellow': '#FFE600',
+    'Orange': '#FF8C00',
+    'Silver': '#C0C0C0',
+    'Black': '#2F2F2F',
+    'Red': '#FF3232',
+    'Brown': '#A52A2A'
+  };
+  return colorCodes[colorName] || '#1E90FF';
+};
+
 // Numerology Input Form Component for Spiritual Tools
 function NumerologyInputForm() {
   const [fullName, setFullName] = useState("");
@@ -1872,6 +1906,15 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
+  // Fetch healer's own vibe readings
+  const { data: healerVibeReadings = [], isLoading: isLoadingVibeReadings, refetch: refetchVibeReadings } = useQuery<VibeReading[]>({
+    queryKey: ["/api/vibe-readings"],
+    enabled: !!user,
+    staleTime: 0, // Always refetch to get latest data
+    gcTime: 30 * 1000, // Keep in cache for 30 seconds only for immediate updates
+    refetchInterval: 10000, // Refetch every 10 seconds for updates
+  });
+
   // State for live numerology calculator
   // Removed numerology state variables as numerology analysis was removed from Spiritual Tools tab
 
@@ -2259,7 +2302,7 @@ export default function HealerDashboard() {
 
         {/* My Readings Tab */}
         <TabsContent value="readings" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Aura Readings */}
             <Card>
               <CardHeader>
@@ -2415,6 +2458,118 @@ export default function HealerDashboard() {
                             </div>
                         </div>
                     ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* What's My Vibe Readings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-green-500" />
+                    What's My Vibe History
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => refetchVibeReadings()}
+                    disabled={isLoadingVibeReadings}
+                    className="text-xs"
+                  >
+                    {isLoadingVibeReadings ? 'Refreshing...' : 'Refresh'}
+                  </Button>
+                </CardTitle>
+                <CardDescription>Your vibe analysis readings history</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingVibeReadings ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="bg-gray-200 rounded-lg h-32 mb-4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : healerVibeReadings.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Activity className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-500 mb-4">No vibe readings yet</p>
+                    <Link to="/">
+                      <Button>Try What's My Vibe</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[800px] overflow-y-auto">
+                    <div className="text-sm text-gray-600 mb-2">
+                      Showing latest {healerVibeReadings.length} vibe readings
+                    </div>
+                    {healerVibeReadings.map((reading) => {
+                      let colorMeaningData;
+                      let fullAnalysisData;
+                      
+                      try {
+                        colorMeaningData = JSON.parse(reading.colorMeaning);
+                        fullAnalysisData = reading.fullAnalysis ? JSON.parse(reading.fullAnalysis) : null;
+                      } catch (e) {
+                        colorMeaningData = { positive: reading.colorMeaning, negative: '' };
+                        fullAnalysisData = null;
+                      }
+
+                      return (
+                        <div key={reading.id} className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              {reading.uploadedImage && (
+                                <img 
+                                  src={reading.uploadedImage} 
+                                  alt="Uploaded for vibe analysis"
+                                  className="w-16 h-16 rounded-lg object-cover border"
+                                />
+                              )}
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div 
+                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                    style={{ backgroundColor: getVibeColorCode(reading.personalityColor) }}
+                                  />
+                                  <h3 className="font-semibold text-lg text-green-800">
+                                    {reading.personalityColor} Vibe
+                                  </h3>
+                                </div>
+                                {reading.clientName && (
+                                  <p className="text-sm text-gray-600">Client: {reading.clientName}</p>
+                                )}
+                                <p className="text-sm text-gray-500">
+                                  {format(new Date(reading.createdAt), "PPp")}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <div className="p-3 bg-white rounded-lg border">
+                              <h4 className="font-medium text-green-700 mb-2">Positive Traits</h4>
+                              <p className="text-sm text-gray-700">{colorMeaningData.positive}</p>
+                            </div>
+                            
+                            {colorMeaningData.negative && (
+                              <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                <h4 className="font-medium text-orange-700 mb-2">Areas to Watch</h4>
+                                <p className="text-sm text-gray-700">{colorMeaningData.negative}</p>
+                              </div>
+                            )}
+                            
+                            {fullAnalysisData?.message && (
+                              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                                <p className="text-sm text-green-700 font-medium">{fullAnalysisData.message}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>

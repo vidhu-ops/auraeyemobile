@@ -2074,8 +2074,8 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 } else if (tabId === 'guidance') {
-                  sectionFinalWidth = sectionFinalWidth * 2.0; // Double the size for better visibility  
-                  sectionFinalHeight = sectionFinalHeight * 2.0; // Double the size for better visibility
+                  sectionFinalWidth = sectionFinalWidth * 1.2; // Double the size for better visibility  
+                  sectionFinalHeight = sectionFinalHeight * 1.2; // Double the size for better visibility
                 } else {
                   // Increase all other tabs by 1.5x for better legibility
                   sectionFinalWidth = sectionFinalWidth * 1.5; // 50% larger for better legibility

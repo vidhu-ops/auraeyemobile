@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -81,6 +81,10 @@ export interface IStorage {
   // Vibe feedback
   saveVibeFeedback(feedback: InsertVibeFeedback): Promise<VibeFeedback>;
   getVibeFeedbackByUser(userId: number): Promise<VibeFeedback[]>;
+  
+  // Vibe readings for healer dashboard
+  saveVibeReading(reading: InsertVibeReading): Promise<VibeReading>;
+  getVibeReadingsByUserId(userId: number): Promise<VibeReading[]>;
   
   // Credit management
   getUserCredits(userId: number): Promise<number>;
@@ -461,6 +465,23 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(vibeFeedback)
       .where(eq(vibeFeedback.userId, userId));
+  }
+
+  // Vibe reading methods for healer dashboard
+  async saveVibeReading(reading: InsertVibeReading): Promise<VibeReading> {
+    const [vibeReading] = await db
+      .insert(vibeReadings)
+      .values(reading)
+      .returning();
+    return vibeReading;
+  }
+
+  async getVibeReadingsByUserId(userId: number): Promise<VibeReading[]> {
+    return await db
+      .select()
+      .from(vibeReadings)
+      .where(eq(vibeReadings.userId, userId))
+      .orderBy(desc(vibeReadings.createdAt));
   }
 
   // Credit management methods
