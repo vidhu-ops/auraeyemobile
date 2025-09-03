@@ -8,6 +8,7 @@ import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
+import { ImageManipulator } from "@/components/image-manipulator";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PremiumFeature } from "@/components/premium/premium-feature";
@@ -6180,6 +6181,16 @@ export default function AuraAnalysis() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      
+      {/* Image Manipulation Tool */}
+      <section className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <ImageManipulator onImageProcessed={(blob) => {
+            console.log('Processed image blob:', blob);
+            // You can handle the processed image here if needed
+          }} />
+        </div>
+      </section>
       
       <main className="flex-grow">
         {/* Header section */}
