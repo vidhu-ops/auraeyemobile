@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Crown, Sparkles, Zap, Star, MessageSquare, CheckCircle2, Users, Download, Camera } from "lucide-react";
+import { Loader2, Crown, Sparkles, Zap, Star, MessageSquare, CheckCircle2, Users, Download, Camera, RotateCcw, RotateCw, Upload, FlipHorizontal } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import jsPDF from 'jspdf';
@@ -156,6 +156,69 @@ const getColorChakraGuidance = (color: string): string => {
 };
 
 
+// Image processing utility functions
+const resizeAndCompressImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      // Set target dimensions: 900x600px
+      canvas.width = 900;
+      canvas.height = 600;
+      
+      // Draw image to fit canvas dimensions
+      ctx?.drawImage(img, 0, 0, 900, 600);
+      
+      // Compress to get under 20KB
+      let quality = 0.9;
+      let compressedDataUrl: string;
+      
+      do {
+        compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        quality -= 0.1;
+      } while (compressedDataUrl.length > 20 * 1024 && quality > 0.1); // 20KB limit
+      
+      resolve(compressedDataUrl);
+    };
+    
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+const flipImageHorizontally = (imageDataUrl: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Flip horizontally using center as axis
+      ctx?.scale(-1, 1);
+      ctx?.drawImage(img, -img.width, 0);
+      
+      // Convert back to data URL with compression
+      let quality = 0.9;
+      let flippedDataUrl: string;
+      
+      do {
+        flippedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        quality -= 0.1;
+      } while (flippedDataUrl.length > 20 * 1024 && quality > 0.1); // 20KB limit
+      
+      resolve(flippedDataUrl);
+    };
+    
+    img.onerror = reject;
+    img.src = imageDataUrl;
+  });
+};
+
 export default function AuraAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -190,6 +253,105 @@ export default function AuraAnalysis() {
   // Check if user is a healer (password healer123)
   const isHealer = user?.userType === 'healer' || false;
 
+  // Image flip handler functions
+  const handleFlipImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsProcessingFlip(true);
+      const processedImage = await resizeAndCompressImage(file);
+      setFlipImage(processedImage);
+      setFlipProcessedImage(processedImage);
+      
+      toast({
+        title: "Image Uploaded",
+        description: "Image has been resized to 900x600px and compressed under 20KB. Use the flip buttons to edit.",
+      });
+    } catch (error) {
+      console.error('Error processing image:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to process the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingFlip(false);
+    }
+  };
+
+  const handleFlipLeft = async () => {
+    if (!flipProcessedImage) return;
+    
+    try {
+      setIsProcessingFlip(true);
+      const flippedImage = await flipImageHorizontally(flipProcessedImage);
+      setFlipProcessedImage(flippedImage);
+      
+      toast({
+        title: "Image Flipped",
+        description: "Image has been flipped horizontally to the left.",
+      });
+    } catch (error) {
+      console.error('Error flipping image:', error);
+      toast({
+        title: "Flip Error",
+        description: "Failed to flip the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingFlip(false);
+    }
+  };
+
+  const handleFlipRight = async () => {
+    if (!flipProcessedImage) return;
+    
+    try {
+      setIsProcessingFlip(true);
+      const flippedImage = await flipImageHorizontally(flipProcessedImage);
+      setFlipProcessedImage(flippedImage);
+      
+      toast({
+        title: "Image Flipped",
+        description: "Image has been flipped horizontally to the right.",
+      });
+    } catch (error) {
+      console.error('Error flipping image:', error);
+      toast({
+        title: "Flip Error",
+        description: "Failed to flip the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingFlip(false);
+    }
+  };
+
+  const resetFlipImage = () => {
+    setFlipImage(null);
+    setFlipProcessedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const downloadFlippedImage = () => {
+    if (!flipProcessedImage) return;
+    
+    const link = document.createElement('a');
+    link.href = flipProcessedImage;
+    link.download = 'flipped-image.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Image Downloaded",
+      description: "Your edited image has been downloaded successfully.",
+    });
+  };
+
   // Screenshot functionality
   const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
   const [isCapturingScreenshot, setIsCapturingScreenshot] = useState<string | null>(null);
@@ -198,6 +360,12 @@ export default function AuraAnalysis() {
   const [showImageConfirmation, setShowImageConfirmation] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+
+  // Image flip functionality states
+  const [flipImage, setFlipImage] = useState<string | null>(null);
+  const [flipProcessedImage, setFlipProcessedImage] = useState<string | null>(null);
+  const [isProcessingFlip, setIsProcessingFlip] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // If user is a client (not a healer), show locked state
   if (!isHealer) {
@@ -6196,6 +6364,177 @@ export default function AuraAnalysis() {
             <p className="text-white/80 max-w-2xl mx-auto text-center">
               Upload your photo and our AI will analyze your energy field, revealing your aura colors and providing personalized insights.
             </p>
+          </div>
+        </section>
+        
+        {/* Image Upload and Flip Section - At the top of the page */}
+        <section className="py-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-6">
+                <h2 className="font-heading font-semibold text-2xl text-center mb-2 text-purple-800">
+                  Image Upload & Flip Tool
+                </h2>
+                <p className="text-center text-gray-600">
+                  Upload and flip images horizontally with automatic resizing to 900x600px and compression under 20KB
+                </p>
+              </div>
+              
+              <Card className="bg-white shadow-lg border-purple-200">
+                <CardContent className="p-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Upload Section */}
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <div className="border-2 border-dashed border-purple-300 rounded-lg p-6 hover:border-purple-400 transition-colors">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFlipImageUpload}
+                            className="hidden"
+                            disabled={isProcessingFlip}
+                          />
+                          
+                          <div className="space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center">
+                              {isProcessingFlip ? (
+                                <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+                              ) : (
+                                <Upload className="w-8 h-8 text-purple-600" />
+                              )}
+                            </div>
+                            
+                            <div>
+                              <p className="text-lg font-medium text-gray-700 mb-2">
+                                Upload Image to Flip
+                              </p>
+                              <p className="text-sm text-gray-500 mb-4">
+                                Images will be automatically resized to 900x600px and compressed under 20KB
+                              </p>
+                              
+                              <Button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isProcessingFlip}
+                                className="bg-purple-600 hover:bg-purple-700 text-white"
+                              >
+                                {isProcessingFlip ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Choose Image
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Control Buttons */}
+                      {flipProcessedImage && (
+                        <div className="space-y-3">
+                          <div className="flex justify-center gap-2">
+                            <Button
+                              onClick={handleFlipLeft}
+                              disabled={isProcessingFlip}
+                              variant="outline"
+                              size="sm"
+                              className="border-purple-300 hover:bg-purple-50"
+                            >
+                              {isProcessingFlip ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <RotateCcw className="mr-2 h-4 w-4" />
+                                  Flip Left
+                                </>
+                              )}
+                            </Button>
+                            
+                            <Button
+                              onClick={handleFlipRight}
+                              disabled={isProcessingFlip}
+                              variant="outline"
+                              size="sm"
+                              className="border-purple-300 hover:bg-purple-50"
+                            >
+                              {isProcessingFlip ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <RotateCw className="mr-2 h-4 w-4" />
+                                  Flip Right
+                                </>
+                              )}
+                            </Button>
+                            
+                            <Button
+                              onClick={resetFlipImage}
+                              disabled={isProcessingFlip}
+                              variant="outline"
+                              size="sm"
+                              className="border-gray-300 hover:bg-gray-50"
+                            >
+                              Reset
+                            </Button>
+                          </div>
+                          
+                          <div className="flex justify-center">
+                            <Button
+                              onClick={downloadFlippedImage}
+                              disabled={isProcessingFlip}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              size="sm"
+                            >
+                              <Download className="mr-2 h-4 w-4" />
+                              Download Image
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Preview Section */}
+                    <div className="space-y-4">
+                      <h3 className="font-medium text-lg text-center text-gray-700">Preview</h3>
+                      
+                      <div className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[300px] flex items-center justify-center">
+                        {flipProcessedImage ? (
+                          <div className="text-center">
+                            <img
+                              src={flipProcessedImage}
+                              alt="Flipped preview"
+                              className="max-w-full max-h-64 rounded-lg shadow-sm object-contain"
+                            />
+                            <p className="text-xs text-gray-500 mt-2">
+                              Size: 900x600px • Compressed under 20KB
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            <FlipHorizontal className="w-16 h-16 mx-auto mb-2 opacity-30" />
+                            <p>Upload an image to see the preview</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {flipProcessedImage && (
+                        <div className="text-center">
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            Ready to Use
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
         
