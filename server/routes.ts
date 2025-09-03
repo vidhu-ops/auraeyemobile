@@ -1045,6 +1045,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const originalMetadata = await sharp(inputBuffer).metadata();
       console.log(`Original dimensions: ${originalMetadata.width}x${originalMetadata.height}px, format: ${originalMetadata.format}`);
       
+      // Reject images larger than 3000px in width or height
+      if (originalMetadata.width && originalMetadata.height && 
+          (originalMetadata.width > 3000 || originalMetadata.height > 3000)) {
+        throw new Error(`IMAGE_TOO_LARGE: Image dimensions ${originalMetadata.width}x${originalMetadata.height}px exceed maximum allowed size. Please use an image smaller than 3000x3000 pixels.`);
+      }
+      
       // Handle extremely large images by pre-processing if needed
       let preprocessedBuffer = inputBuffer;
       const maxDimension = 4000; // Maximum dimension before pre-processing
@@ -1173,8 +1179,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      // Resize image to standard dimensions (1600x900px)
-      imgBuffer = await resizeImageToStandard(imgBuffer);
+      // Resize image to standard dimensions (600x900px) with dimension validation
+      try {
+        imgBuffer = await resizeImageToStandard(imgBuffer);
+      } catch (resizeError) {
+        if (resizeError instanceof Error && resizeError.message.includes('IMAGE_TOO_LARGE')) {
+          return res.status(400).json({ 
+            error: "IMAGE_TOO_LARGE",
+            message: "Image too large. Please use a smaller image with dimensions less than 3000x3000 pixels.",
+            details: resizeError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size"
+          });
+        }
+        throw resizeError;
+      }
 
       // Check if image contains a human using Gemini vision API - object analysis should reject human images
       const hasHuman = await detectHumanInImage(imgBuffer);
@@ -1456,14 +1473,24 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (600x900px) and compress to 50KB with guaranteed success
+      // Resize image to standard dimensions (600x900px) and compress to 20KB with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);
         console.log("Image compression successful");
       } catch (compressionError) {
         console.error("Image compression failed:", compressionError);
-        // Use original buffer if compression fails
+        
+        // Check if it's an image too large error
+        if (compressionError instanceof Error && compressionError.message.includes('IMAGE_TOO_LARGE')) {
+          return res.status(400).json({ 
+            error: "IMAGE_TOO_LARGE",
+            message: "Image too large. Please use a smaller image with dimensions less than 3000x3000 pixels.",
+            details: compressionError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size"
+          });
+        }
+        
+        // Use original buffer if other compression issues occur
         compressedBuffer = imgBuffer;
       }
       
@@ -1745,7 +1772,17 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.log("Gemini analyze image standardization successful");
       } catch (compressionError) {
         console.error("Gemini analyze image compression failed:", compressionError);
-        // Continue with original buffer if compression fails
+        
+        // Check if it's an image too large error
+        if (compressionError instanceof Error && compressionError.message.includes('IMAGE_TOO_LARGE')) {
+          return res.status(400).json({ 
+            error: "IMAGE_TOO_LARGE",
+            message: "Image too large. Please use a smaller image with dimensions less than 3000x3000 pixels.",
+            details: compressionError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size"
+          });
+        }
+        
+        // Continue with original buffer if other compression issues occur
       }
       
       imageData = imgBuffer.toString("base64");
@@ -2706,7 +2743,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
         console.log("Quick vibe image standardization successful");
       } catch (compressionError) {
         console.error("Quick vibe image compression failed:", compressionError);
-        // Continue with original buffer if compression fails
+        
+        // Check if it's an image too large error
+        if (compressionError instanceof Error && compressionError.message.includes('IMAGE_TOO_LARGE')) {
+          return res.status(400).json({ 
+            error: "IMAGE_TOO_LARGE",
+            message: "Image too large. Please use a smaller image with dimensions less than 3000x3000 pixels.",
+            details: compressionError.message.split(': ')[1] || "Image dimensions exceed maximum allowed size"
+          });
+        }
+        
+        // Continue with original buffer if other compression issues occur
       }
       
       // Detect human in image first
