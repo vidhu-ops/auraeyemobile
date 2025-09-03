@@ -6183,8 +6183,8 @@ export default function AuraAnalysis() {
       <Navbar />
       
       {/* Image Manipulation Tool */}
-      <section className="bg-gray-50 py-8">
-        <div className="container mx-auto px-4">
+      <section className="items-center align-center bg-gray-50 py-8">
+        <div className="container align-center mx-auto px-4">
           <ImageManipulator onImageProcessed={(blob) => {
             console.log('Processed image blob:', blob);
             // You can handle the processed image here if needed
