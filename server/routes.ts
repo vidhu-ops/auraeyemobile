@@ -1036,10 +1036,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
+  // Enhanced helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
+      
+      // Get original image metadata first
+      const originalMetadata = await sharp(inputBuffer).metadata();
+      console.log(`Original dimensions: ${originalMetadata.width}x${originalMetadata.height}px, format: ${originalMetadata.format}`);
+      
+      // Handle extremely large images by pre-processing if needed
+      let preprocessedBuffer = inputBuffer;
+      const maxDimension = 4000; // Maximum dimension before pre-processing
+      
+      if (originalMetadata.width && originalMetadata.height && 
+          (originalMetadata.width > maxDimension || originalMetadata.height > maxDimension)) {
+        console.log(`🔧 Pre-processing extremely large image (${originalMetadata.width}x${originalMetadata.height}px)`);
+        
+        // Pre-resize extremely large images to manageable size first
+        preprocessedBuffer = await sharp(inputBuffer)
+          .resize(maxDimension, maxDimension, {
+            fit: 'inside', // Maintain aspect ratio during pre-processing
+            withoutEnlargement: true
+          })
+          .jpeg({ quality: 90 }) // High quality for pre-processing
+          .toBuffer();
+          
+        console.log(`Pre-processed to manageable size: ${(preprocessedBuffer.length / 1024).toFixed(1)}KB`);
+      }
       
       // Start with moderate quality and progressively reduce to hit 50KB target
       let quality = 85;
@@ -1048,7 +1072,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Keep compressing until we reach 50KB or lower for consistent processing
       do {
-        compressedBuffer = await sharp(inputBuffer)
+        compressedBuffer = await sharp(preprocessedBuffer)
           .resize(600, 900, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
@@ -1079,11 +1103,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const metadata = await sharp(compressedBuffer).metadata();
       console.log(`📐 Verified dimensions: ${metadata.width}x${metadata.height}px`);
       
+      // Final validation - ensure dimensions are exactly 600x900
+      if (metadata.width !== 600 || metadata.height !== 900) {
+        console.warn(`⚠️ Dimension mismatch detected: ${metadata.width}x${metadata.height}px, forcing exact resize`);
+        compressedBuffer = await sharp(compressedBuffer)
+          .resize(600, 900, {
+            fit: 'fill', // Force exact dimensions
+            kernel: sharp.kernel.lanczos3 // High-quality resizing
+          })
+          .jpeg({ quality: Math.max(quality, 60) }) // Maintain reasonable quality
+          .toBuffer();
+          
+        const correctedMetadata = await sharp(compressedBuffer).metadata();
+        console.log(`🔧 Corrected dimensions: ${correctedMetadata.width}x${correctedMetadata.height}px`);
+      }
+      
       return compressedBuffer;
     } catch (error) {
       console.error("Error resizing image:", error);
-      // Return original buffer if resize fails
-      return inputBuffer;
+      
+      // Fallback: try a simpler resize approach
+      try {
+        console.log("🚨 Attempting fallback resize method");
+        const fallbackBuffer = await sharp(inputBuffer)
+          .resize(600, 900, { fit: 'fill' })
+          .jpeg({ quality: 70 })
+          .toBuffer();
+        
+        console.log(`✅ Fallback resize successful: ${(fallbackBuffer.length / 1024).toFixed(1)}KB`);
+        return fallbackBuffer;
+      } catch (fallbackError) {
+        console.error("Fallback resize also failed:", fallbackError);
+        // Return original buffer as last resort
+        return inputBuffer;
+      }
     }
   };
 
@@ -1660,14 +1713,26 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
   app.post("/api/gemini-analyze", upload.single("image"), async (req, res) => {
     try {
       let imageData: string;
+      let imgBuffer: Buffer;
       
       if (req.file) {
-        imageData = req.file.buffer.toString("base64");
+        imgBuffer = req.file.buffer;
       } else if (req.body.image) {
-        imageData = req.body.image;
+        imgBuffer = Buffer.from(req.body.image, 'base64');
       } else {
         return res.status(400).json({ message: "No image provided" });
       }
+      
+      // Apply consistent image processing - resize to standard dimensions and compress
+      try {
+        imgBuffer = await resizeImageToStandard(imgBuffer);
+        console.log("Gemini analyze image standardization successful");
+      } catch (compressionError) {
+        console.error("Gemini analyze image compression failed:", compressionError);
+        // Continue with original buffer if compression fails
+      }
+      
+      imageData = imgBuffer.toString("base64");
 
       try {
         const geminiAnalysis = await analyzeImageWithGemini(imageData);
@@ -2617,7 +2682,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      const imageBuffer = req.file.buffer;
+      let imageBuffer = req.file.buffer;
+      
+      // Apply consistent image processing for all uploads - resize to standard dimensions and compress
+      try {
+        imageBuffer = await resizeImageToStandard(imageBuffer);
+        console.log("Quick vibe image standardization successful");
+      } catch (compressionError) {
+        console.error("Quick vibe image compression failed:", compressionError);
+        // Continue with original buffer if compression fails
+      }
       
       // Detect human in image first
       const hasHuman = await detectHumanInImage(imageBuffer);
