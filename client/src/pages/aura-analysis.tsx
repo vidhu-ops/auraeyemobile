@@ -9,6 +9,7 @@ import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PremiumFeature } from "@/components/premium/premium-feature";
 import { analyzeAuraImage, AuraAnalysisResult, calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -192,6 +193,11 @@ export default function AuraAnalysis() {
   // Screenshot functionality
   const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
   const [isCapturingScreenshot, setIsCapturingScreenshot] = useState<string | null>(null);
+
+  // Image confirmation states
+  const [showImageConfirmation, setShowImageConfirmation] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   // If user is a client (not a healer), show locked state
   if (!isHealer) {
@@ -5454,6 +5460,42 @@ export default function AuraAnalysis() {
   };
 
   const handleImageSelect = async (file: File) => {
+    // Store the selected file and show confirmation dialog
+    setSelectedImageFile(file);
+    
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreviewUrl(previewUrl);
+    
+    // Show confirmation dialog
+    setShowImageConfirmation(true);
+  };
+
+  const handleCancelConfirmation = () => {
+    // Clean up preview URL
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+      setImagePreviewUrl(null);
+    }
+    
+    // Reset states
+    setShowImageConfirmation(false);
+    setSelectedImageFile(null);
+  };
+
+  const handleConfirmAnalysis = async () => {
+    if (!selectedImageFile) return;
+    
+    // Close confirmation dialog
+    setShowImageConfirmation(false);
+    
+    // Clean up preview URL
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+      setImagePreviewUrl(null);
+    }
+    
+    // Start the analysis with the selected file
     setIsAnalyzing(true);
     setResult(null);
     setAnalysisProgress(0);
@@ -5469,7 +5511,7 @@ export default function AuraAnalysis() {
       setAnalysisProgress(10);
       setAnalysisStage("Scanning for human presence...");
       
-      const hasHuman = await detectHumanFace(file);
+      const hasHuman = await detectHumanFace(selectedImageFile);
       
       if (!hasHuman) {
         setIsAnalyzing(false);
@@ -5507,7 +5549,7 @@ export default function AuraAnalysis() {
 
       // Convert the image to base64
       const reader = new FileReader();
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(selectedImageFile);
       reader.onloadend = async () => {
         const base64String = reader.result?.toString();
         const base64data = base64String?.split(",")[1];
@@ -10256,6 +10298,48 @@ export default function AuraAnalysis() {
       </main>
       
       <Footer />
+      
+      {/* Image Confirmation Dialog */}
+      <Dialog open={showImageConfirmation} onOpenChange={setShowImageConfirmation}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-semibold text-gray-800">
+              Confirm Aura Analysis
+            </DialogTitle>
+            <DialogDescription className="text-center text-gray-600">
+              Are you ready to analyze this image? The process will take 30-60 seconds.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {imagePreviewUrl && (
+              <div className="flex justify-center">
+                <img 
+                  src={imagePreviewUrl} 
+                  alt="Image to analyze" 
+                  className="max-h-64 max-w-full rounded-lg object-contain border shadow-sm"
+                />
+              </div>
+            )}
+            
+            <div className="flex gap-3 justify-center pt-4">
+              <Button 
+                variant="outline" 
+                onClick={handleCancelConfirmation}
+                className="px-6"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleConfirmAnalysis}
+                className="px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                Yes, Analyze
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
