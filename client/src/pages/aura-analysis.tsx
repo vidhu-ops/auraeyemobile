@@ -6182,16 +6182,6 @@ export default function AuraAnalysis() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      {/* Image Manipulation Tool */}
-      <section className="items-center align-center bg-gray-50 py-8">
-        <div className="container align-center mx-auto px-4">
-          <ImageManipulator onImageProcessed={(blob) => {
-            console.log('Processed image blob:', blob);
-            // You can handle the processed image here if needed
-          }} />
-        </div>
-      </section>
-      
       <main className="flex-grow">
         {/* Header section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
@@ -6210,6 +6200,23 @@ export default function AuraAnalysis() {
           </div>
         </section>
         
+        {/* Image Manipulation Tool */}
+        <section className="bg-gray-50 py-8">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-6">
+                <h2 className="font-heading font-semibold text-2xl mb-2">Image Manipulation Tool</h2>
+                <p className="text-gray-600 text-sm">Upload and flip your images horizontally before analysis</p>
+              </div>
+              <div className="flex justify-center">
+                <ImageManipulator onImageProcessed={(blob) => {
+                  console.log('Processed image blob:', blob);
+                  // You can handle the processed image here if needed
+                }} />
+              </div>
+            </div>
+          </div>
+        </section>
         {/* Upload and Analysis section */}
         <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
           <div className="container mx-auto px-4">
