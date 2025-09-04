@@ -8536,7 +8536,8 @@ export default function AuraAnalysis() {
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Soul Star Chakra</span>
-                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
+                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%) - 
+                                        {getChakraStatus(result.chakraActivity?.soulstar || 5)})</span>
                                     </div>
                                   </div>
                                   <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
@@ -8720,7 +8721,7 @@ export default function AuraAnalysis() {
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Earth Star Chakra</span>
-                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
+                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%){getChakraStatus(result.chakraActivity?.EarthStar || 5)} </span>
                                     </div>
                                   </div>
                                   <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
