@@ -20,6 +20,8 @@ export interface AuraAnalysisResult {
   personalityTraits: string[];
   spiritualGuidance: string;
   chakraActivity: {
+    [x: string]: number;
+    EarthStar: number;
     soulStar: number;
     root: number;
     sacral: number;
