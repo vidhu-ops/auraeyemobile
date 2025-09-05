@@ -125,6 +125,7 @@ export function setupAuth(app: Express) {
         if (userRecord && userRecord.userType === 'healer') {
           const healer = await storage.getHealerByUsername(userRecord.username);
           if (healer) {
+            // Full healer with public profile
             const healerUser = {
               id: userRecord.id, // Use user record ID
               username: userRecord.username,
@@ -136,7 +137,17 @@ export function setupAuth(app: Express) {
             };
             done(null, healerUser);
           } else {
-            done(null, false);
+            // Backend-only healer account (not in public healers directory)
+            const backendHealerUser = {
+              id: userRecord.id,
+              username: userRecord.username,
+              password: userRecord.password,
+              userType: "healer" as const,
+              birthDate: userRecord.birthDate,
+              createdAt: userRecord.createdAt,
+              healerData: null // No public healer profile
+            };
+            done(null, backendHealerUser);
           }
         } else {
           done(null, false);
