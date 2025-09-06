@@ -3834,6 +3834,61 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Email PDF report endpoint
+  app.post('/api/reports/email', isAuthenticated, async (req, res) => {
+    try {
+      const { filename, pdfBase64, readingId, screenshots } = req.body;
+      
+      if (!filename || !pdfBase64) {
+        return res.status(400).json({ message: "Missing required fields: filename and pdfBase64" });
+      }
+
+      // Get user's email from database
+      const user = await storage.getUser(req.user.id);
+      if (!user || !user.email) {
+        return res.status(400).json({ message: "User email not found" });
+      }
+
+      // Validate attachment size (roughly 25MB limit for base64)
+      const estimatedSize = (pdfBase64.length * 3) / 4; // Convert base64 length to bytes
+      if (estimatedSize > 25 * 1024 * 1024) {
+        return res.status(413).json({ message: "PDF too large for email attachment" });
+      }
+
+      // Import email service dynamically to avoid startup errors
+      const { sendPDFReport } = await import('./email-service');
+
+      // Send email with PDF attachment
+      const emailSent = await sendPDFReport(
+        user.email,
+        user.username || 'User',
+        pdfBase64,
+        filename,
+        screenshots
+      );
+
+      if (emailSent) {
+        console.log(`✅ PDF report emailed successfully to ${user.email}`);
+        res.status(200).json({ 
+          success: true, 
+          message: "PDF report sent to your email successfully" 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: "Failed to send email" 
+        });
+      }
+
+    } catch (error) {
+      console.error("Error sending PDF via email:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to send PDF report via email" 
+      });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   
