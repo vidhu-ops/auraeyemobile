@@ -3839,14 +3839,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       const { filename, pdfBase64, readingId, screenshots } = req.body;
       
-      // Validate required fields
       if (!filename || !pdfBase64) {
         return res.status(400).json({ message: "Missing required fields: filename and pdfBase64" });
-      }
-
-      // Validate filename format
-      if (!/^[\w.-]+\.pdf$/i.test(filename)) {
-        return res.status(400).json({ message: "Invalid filename format" });
       }
 
       // Get user's email from database
@@ -3861,7 +3855,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(413).json({ message: "PDF too large for email attachment" });
       }
 
-      // Import email service dynamically
+      // Import email service dynamically to avoid startup errors
       const { sendPDFReport } = await import('./email-service');
 
       // Send email with PDF attachment
@@ -3874,15 +3868,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
       );
 
       if (emailSent) {
-        console.log(`✅ PDF report emailed successfully to ${user.email.replace(/(.{2}).*@/, '$1***@')}`);
+        console.log(`✅ PDF report emailed successfully to ${user.email}`);
         res.status(200).json({ 
           success: true, 
           message: "PDF report sent to your email successfully" 
         });
       } else {
-        res.status(503).json({ 
+        res.status(500).json({ 
           success: false, 
-          message: "Email service temporarily unavailable" 
+          message: "Failed to send email" 
         });
       }
 
