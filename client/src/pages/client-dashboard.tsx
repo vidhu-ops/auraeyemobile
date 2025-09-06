@@ -308,7 +308,30 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
           const imgX = (pageWidth - imgWidth) / 2;
           
           const imageToAdd = reading.processedAuraImage || reading.imageUrl;
-          pdf.addImage(imageToAdd, 'JPEG', imgX, yPos, imgWidth, imgHeight);
+          
+          // Improved image format detection and conversion
+          let imageFormat = 'JPEG'; // Default format
+          let imageSource = imageToAdd;
+          
+          // Check if the image is a data URI and extract format
+          if (typeof imageToAdd === 'string') {
+            if (imageToAdd.startsWith('data:image/')) {
+              const formatMatch = imageToAdd.match(/data:image\/(\w+);/);
+              if (formatMatch) {
+                const detectedFormat = formatMatch[1].toUpperCase();
+                // jsPDF supports JPEG, PNG, GIF, WEBP
+                if (['JPEG', 'JPG', 'PNG', 'GIF', 'WEBP'].includes(detectedFormat)) {
+                  imageFormat = detectedFormat === 'JPG' ? 'JPEG' : detectedFormat;
+                }
+              }
+              imageSource = imageToAdd;
+            } else {
+              // Handle URL-based images by constructing full path
+              imageSource = imageToAdd.startsWith('/api/') ? imageToAdd : `/api/image/${imageToAdd}`;
+            }
+          }
+          
+          pdf.addImage(imageSource, imageFormat, imgX, yPos, imgWidth, imgHeight);
           
           yPos += imgHeight + 15;
           
@@ -321,9 +344,25 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
           
         } catch (error) {
           console.error('Error adding aura image to PDF:', error);
+          
+          // Provide more detailed error feedback
+          let errorMessage = 'Aura visualization is being processed and will be available shortly.';
+          if (error instanceof Error) {
+            if (error.message.includes('format')) {
+              errorMessage = 'Image format not supported. Please try uploading a JPEG or PNG image.';
+            } else if (error.message.includes('Invalid')) {
+              errorMessage = 'Invalid image data. Please re-upload your image for analysis.';
+            }
+          }
+          
+          pdf.setFillColor(254, 243, 199); // Light warning background
+          pdf.rect(margin, yPos, contentWidth, 25, 'F');
+          
           pdf.setFontSize(12);
-          pdf.setTextColor(107, 114, 128);
-          pdf.text('Aura visualization is being processed and will be available shortly.', pageWidth / 2, yPos + 20, { align: 'center' });
+          pdf.setTextColor(120, 53, 15); // Warning text color
+          const errorLines = pdf.splitTextToSize(errorMessage, contentWidth - 20);
+          pdf.text(errorLines, pageWidth / 2, yPos + 12, { align: 'center' });
+          
           yPos += 40;
         }
       } else {
