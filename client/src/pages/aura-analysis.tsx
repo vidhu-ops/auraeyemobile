@@ -1736,7 +1736,7 @@ export default function AuraAnalysis() {
       }
 
       // PAGE 1 (or 2 if uploaded image was added): TITLE AND OVERVIEW
-      pdf.setFontSize(26);
+      pdf.setFontSize(28);
       pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('AURA & CHAKRA ALIGNMENT REPORT', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 15;
@@ -1753,9 +1753,9 @@ export default function AuraAnalysis() {
 
       // Add decorative line
       pdf.setLineWidth(0.5);
-      pdf.setDrawColor(200, 100, 200);
-      pdf.line(1, yPosition, pageWidth, yPosition);
-      yPosition += 20;
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(20, yPosition, pageWidth, yPosition);
+      yPosition += 15;
 
       // SECTION 1: AURA COLOR ANALYSIS
       pdf.setFontSize(20);
@@ -1763,12 +1763,12 @@ export default function AuraAnalysis() {
       yPosition = addTextWithPageBreak('AURA COLOR ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      pdf.setFontSize(16);
+      pdf.setFontSize(14);
       pdf.setTextColor(50, 50, 50);
-      yPosition = addTextWithPageBreak(`Personality Color: ${result.personalityColor || result.dominantColor}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition = addTextWithPageBreak(`Dominant Color: ${result.dominantColor}`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
-      if (result.thinkingColor || result.secondaryColor) {
-        yPosition = addTextWithPageBreak(`Thinking Color: ${result.thinkingColor || result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
+      if (result.secondaryColor) {
+        yPosition = addTextWithPageBreak(`Secondary Color: ${result.secondaryColor}`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
       }
       yPosition = addTextWithPageBreak(`Energy Level: ${result.energyLevel}/10`, pageWidth/2, yPosition, { align: 'center' });
@@ -1854,11 +1854,6 @@ export default function AuraAnalysis() {
       
       yPosition = addTextWithPageBreak(`Energy Classification: ${energyDescription}`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
-      
-      pdf.setLineWidth(0.5);
-      pdf.setDrawColor(200, 100, 200);
-      pdf.line(1, yPosition, pageWidth, yPosition);
-      yPosition += 30;
 
       // SECTION 4: DETAILED COLOR MEANINGS
       if (yPosition > pageHeight - 80) {
@@ -1871,29 +1866,27 @@ export default function AuraAnalysis() {
       yPosition = addTextWithPageBreak('DETAILED COLOR MEANINGS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
-      // Personality Color Analysis
+      // Dominant Color Analysis
       pdf.setFontSize(14);
       pdf.setTextColor(100, 0, 150);
-      const personalityColorToUse = result.personalityColor || result.dominantColor;
-      yPosition = addTextWithPageBreak(`Personality Color - ${personalityColorToUse}:`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition = addTextWithPageBreak(`Dominant Color - ${result.dominantColor}:`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      const personalityMeaning = getColorMeaningForPDF(personalityColorToUse);
-      yPosition = addWrappedText(personalityMeaning, 20, yPosition, pageWidth - 40);
+      const dominantMeaning = getColorMeaningForPDF(result.dominantColor);
+      yPosition = addWrappedText(dominantMeaning, 20, yPosition, pageWidth - 40);
       yPosition += 10;
 
-      // Thinking Color Analysis (if present)
-      const thinkingColorToUse = result.thinkingColor || result.secondaryColor;
-      if (thinkingColorToUse) {
+      // Secondary Color Analysis (if present)
+      if (result.secondaryColor) {
         pdf.setFontSize(14);
         pdf.setTextColor(100, 0, 150);
-        yPosition = addTextWithPageBreak(`Thinking Color - ${thinkingColorToUse}:`, pageWidth/2, yPosition, { align: 'center' });
+        yPosition = addTextWithPageBreak(`Secondary Color - ${result.secondaryColor}:`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
         pdf.setFontSize(11);
         pdf.setTextColor(60, 60, 60);
-        const thinkingMeaning = getColorMeaningForPDF(thinkingColorToUse);
-        yPosition = addWrappedText(thinkingMeaning, 20, yPosition, pageWidth - 40);
+        const secondaryMeaning = getColorMeaningForPDF(result.secondaryColor);
+        yPosition = addWrappedText(secondaryMeaning, 20, yPosition, pageWidth - 40);
         yPosition += 10;
       }
       yPosition += 5;
@@ -1913,9 +1906,8 @@ export default function AuraAnalysis() {
       pdf.setTextColor(50, 50, 50);
       
       // Color-based spiritual traits
-      const primaryColor = result.personalityColor || result.dominantColor;
       const spiritualTraits = result.personalityTraits || [
-        `${primaryColor} energy promotes spiritual growth and awareness`,
+        `${result.dominantColor} energy promotes spiritual growth and awareness`,
         'Natural ability to sense energy fields and spiritual presence',
         'Strong intuitive connection to higher consciousness',
         'Balanced approach to spiritual and material worlds'
