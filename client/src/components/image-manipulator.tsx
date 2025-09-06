@@ -17,9 +17,9 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
   const { toast } = useToast();
 
   // Compress image to under 20KB
-  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 50): Promise<Blob> => {
+  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 40): Promise<Blob> => {
     return new Promise((resolve) => {
-      let quality = 0.95;
+      let quality = 0.9;
       const tryCompress = () => {
         canvas.toBlob((blob) => {
           if (blob && blob.size <= maxSizeKB * 1024) {
@@ -47,7 +47,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     setIsProcessing(true);
 
     // Reduce dimensions for smaller file size (max 400px width)
-    const maxWidth = 700;
+    const maxWidth = 600;
     const ratio = Math.min(maxWidth / image.width, maxWidth / image.height);
     const newWidth = image.width * ratio;
     const newHeight = image.height * ratio;
@@ -68,7 +68,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     }
 
     try {
-      const compressedBlob = await compressImage(canvas, 50);
+      const compressedBlob = await compressImage(canvas, 40);
       const processedUrl = URL.createObjectURL(compressedBlob);
       setProcessedImageUrl(processedUrl);
       
