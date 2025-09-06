@@ -171,9 +171,16 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
         }
       };
       
-      // Helper function to create a professional table
+      // Helper function to create a professional table with overflow protection
       const createTable = (startY: number, headers: string[], data: any[], colWidths: number[]) => {
         let yPos = startY;
+        
+        // Check if we have enough space for the table header (minimum 20 units)
+        if (yPos + 20 > pageHeight - 30) {
+          pdf.addPage();
+          addHeader(pdf.internal.getNumberOfPages());
+          yPos = 90;
+        }
         
         // Table headers
         pdf.setFillColor(240, 240, 255);
@@ -196,6 +203,29 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
         pdf.setFontSize(9);
         
         data.forEach((row, rowIndex) => {
+          // Check if we need a new page for this row (minimum 10 units for row)
+          if (yPos + 10 > pageHeight - 30) {
+            pdf.addPage();
+            addHeader(pdf.internal.getNumberOfPages());
+            yPos = 90;
+            
+            // Re-add table headers on new page
+            pdf.setFillColor(240, 240, 255);
+            pdf.rect(margin, yPos, contentWidth, 8, 'F');
+            
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(50, 50, 50);
+            
+            let headerXPos = margin + 5;
+            headers.forEach((header, i) => {
+              pdf.text(header, headerXPos, yPos + 6);
+              headerXPos += colWidths[i];
+            });
+            
+            yPos += 8;
+          }
+          
           if (rowIndex % 2 === 0) {
             pdf.setFillColor(250, 250, 250);
             pdf.rect(margin, yPos, contentWidth, 7, 'F');
