@@ -766,14 +766,14 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.text('Your Chakra Profile', 20, yPos);
       yPos += 15;
       
-      // Calculate chakra percentages
-      const higherChakras = ['Soul Star Chakra', 'Crown Chakra', 'Third Eye Chakra'];
-      const middleChakras = ['Throat Chakra', 'Heart Chakra', 'Solar Plexus Chakra'];
-      const lowerChakras = ['Sacral Chakra', 'Root Chakra', 'Earth Star Chakra'];
+      // Calculate chakra percentages using actual chakra keys
+      const higherChakras = ['soulStar', 'crown', 'thirdEye'];
+      const middleChakras = ['throat', 'heart', 'solarPlexus'];
+      const lowerChakras = ['sacral', 'root', 'earthStar'];
       
-      const higherAvg = higherChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / higherChakras.length;
-      const middleAvg = middleChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / middleChakras.length;
-      const lowerAvg = lowerChakras.reduce((sum, chakra) => sum + (chakraActivity[chakra] || 5), 0) / lowerChakras.length;
+      const higherAvg = higherChakras.reduce((sum, chakra) => sum + (allChakraData[chakra] || 5), 0) / higherChakras.length;
+      const middleAvg = middleChakras.reduce((sum, chakra) => sum + (allChakraData[chakra] || 5), 0) / middleChakras.length;
+      const lowerAvg = lowerChakras.reduce((sum, chakra) => sum + (allChakraData[chakra] || 5), 0) / lowerChakras.length;
       
       const total = higherAvg + middleAvg + lowerAvg;
       const higherPercent = ((higherAvg / total) * 100).toFixed(1);
@@ -1533,17 +1533,32 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             <h4 className="font-semibold text-lg mb-3">Chakra Activity Levels</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(chakraActivity).map(([chakra, score]) => {
+                  const numScore = Number(score);
+                  // Status message logic: 1-3="blocked", 4-6="imbalanced patterns", 7-8="developing balance", 9-10="mastered or balanced"
+                  const getChakraStatus = (score: number) => {
+                    if (score >= 1 && score <= 3) return { status: "blocked", color: "text-red-600", bgColor: "from-red-50 to-red-100" };
+                    if (score >= 4 && score <= 6) return { status: "imbalanced patterns", color: "text-orange-600", bgColor: "from-orange-50 to-orange-100" };
+                    if (score >= 7 && score <= 8) return { status: "developing balance", color: "text-green-600", bgColor: "from-green-50 to-green-100" };
+                    if (score >= 9 && score <= 10) return { status: "mastered or balanced", color: "text-blue-600", bgColor: "from-blue-50 to-blue-100" };
+                    return { status: "unknown", color: "text-gray-600", bgColor: "from-gray-50 to-gray-100" };
+                  };
+                  
+                  const chakraStatus = getChakraStatus(numScore);
+                  
                   return (
-                      <div key={chakra} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                      <div key={chakra} className={`p-4 bg-gradient-to-r ${chakraStatus.bgColor} rounded-lg`}>
                           <div className="flex justify-between items-center mb-2">
                               <span className="font-medium capitalize">{chakra.replace(/([A-Z])/g, ' $1').trim()}</span>
-                              <span className="text-sm font-bold text-indigo-600">{Number(score)}/10</span>
+                              <span className="text-sm font-bold text-indigo-600">{numScore}/10</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                               <div
                                   className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
-                                  style={{ width: `${(Number(score) / 10) * 100}%` }}
+                                  style={{ width: `${(numScore / 10) * 100}%` }}
                               ></div>
+                          </div>
+                          <div className={`text-xs font-medium ${chakraStatus.color} capitalize`}>
+                              {chakraStatus.status}
                           </div>
                       </div>
                   );
