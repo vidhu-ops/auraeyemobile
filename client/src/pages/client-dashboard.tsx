@@ -122,213 +122,444 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const clientName = user?.username || 'Valued Client';
+      const margin = 25;
+      const contentWidth = pageWidth - (margin * 2);
       
       // Parse all data fields
       const spiritualGuidance = reading.spiritualGuidance || 'Your aura reveals unique energy patterns representing spiritual growth and development.';
       const detailedAnalysis = reading.detailedAnalysis || 'Advanced spiritual development with balanced energy flow.';
       
-      // PAGE 1: COVER PAGE & OVERVIEW
-      pdf.setFontSize(24);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('PERSONAL AURA ANALYSIS REPORT', pageWidth / 2, 40, { align: 'center' });
+      // Helper function to add professional header
+      const addHeader = (pageNum?: number) => {
+        // Get total pages dynamically
+        const totalPages = pdf.internal.getNumberOfPages();
+        // Top decorative border
+        pdf.setFillColor(147, 51, 234);
+        pdf.rect(0, 0, pageWidth, 8, 'F');
+        
+        // Sacred symbol placeholder (using ASCII decorative symbols)
+        pdf.setFontSize(16);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text('~* AuraEye Sacred Report *~', pageWidth / 2, 20, { align: 'center' });
+        
+        // Main title
+        pdf.setFontSize(22);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('AURA ANALYSIS REPORT', pageWidth / 2, 35, { align: 'center' });
+        
+        // Client name
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(75, 85, 99);
+        pdf.text(reading.name || 'Your Report', pageWidth / 2, 48, { align: 'center' });
+        
+        // Date and location
+        pdf.setFontSize(10);
+        pdf.text(`${format(new Date(reading.createdAt), "dd/MM/yyyy HH:mm")}`, pageWidth / 2, 58, { align: 'center' });
+        pdf.text('AuraEye Spiritual Analysis Center', pageWidth / 2, 68, { align: 'center' });
+        
+        // Decorative line
+        pdf.setDrawColor(147, 51, 234);
+        pdf.setLineWidth(0.5);
+        pdf.line(margin, 75, pageWidth - margin, 75);
+        
+        if (pageNum) {
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+        }
+      };
+      
+      // Helper function to create a professional table
+      const createTable = (startY: number, headers: string[], data: any[], colWidths: number[]) => {
+        let yPos = startY;
+        
+        // Table headers
+        pdf.setFillColor(240, 240, 255);
+        pdf.rect(margin, yPos, contentWidth, 8, 'F');
+        
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(50, 50, 50);
+        
+        let xPos = margin + 5;
+        headers.forEach((header, i) => {
+          pdf.text(header, xPos, yPos + 6);
+          xPos += colWidths[i];
+        });
+        
+        yPos += 8;
+        
+        // Table rows
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        
+        data.forEach((row, rowIndex) => {
+          if (rowIndex % 2 === 0) {
+            pdf.setFillColor(250, 250, 250);
+            pdf.rect(margin, yPos, contentWidth, 7, 'F');
+          }
+          
+          pdf.setTextColor(60, 60, 60);
+          xPos = margin + 5;
+          
+          row.forEach((cell: string, i: number) => {
+            const cellText = pdf.splitTextToSize(cell, colWidths[i] - 10);
+            pdf.text(cellText, xPos, yPos + 5);
+            xPos += colWidths[i];
+          });
+          
+          yPos += 7;
+        });
+        
+        // Table border
+        pdf.setDrawColor(200, 200, 200);
+        pdf.setLineWidth(0.3);
+        pdf.rect(margin, startY, contentWidth, yPos - startY);
+        
+        return yPos;
+      };
+      
+      // PAGE 1: COVER PAGE & BASIC DETAILS
+      addHeader();
+      
+      let yPos = 90;
+      
+      // Professional title section
+      pdf.setFillColor(248, 250, 252);
+      pdf.rect(margin, yPos, contentWidth, 20, 'F');
       
       pdf.setFontSize(16);
-      pdf.setTextColor(75, 85, 99);
-      pdf.text(`Client: ${reading.name}`, pageWidth / 2, 60, { align: 'center' });
-      pdf.text(`Report Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 75, { align: 'center' });
-      
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(1);
-      pdf.line(30, 90, pageWidth - 30, 90);
-      
-      // Aura Color Analysis
-      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Complete Aura Color Analysis', 20, 110);
-      
-      let yPos = 125;
-      if (reading.personalityColor) {
-        pdf.setFontSize(14);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`Personality Color: ${reading.personalityColor}`, 25, yPos);
-        yPos += 6;
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text('Your core essence and fundamental nature', 30, yPos);
-        yPos += 15;
-      }
-      
-      if (reading.givingColor) {
-        pdf.setFontSize(14);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`Giving Color: ${reading.givingColor}`, 25, yPos);
-        yPos += 6;
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text('How you share energy with others', 30, yPos);
-        yPos += 15;
-      }
-      
-      if (reading.receivingColor) {
-        pdf.setFontSize(14);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`Receiving Color: ${reading.receivingColor}`, 25, yPos);
-        yPos += 6;
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text('How you absorb energy from your environment', 30, yPos);
-        yPos += 15;
-      }
-      
-      if (reading.thinkingColor) {
-        pdf.setFontSize(14);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`Thinking Color: ${reading.thinkingColor}`, 25, yPos);
-        yPos += 6;
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text('Your mental and spiritual processing patterns', 30, yPos);
-        yPos += 20;
-      }
-      
-      // Energy Level Assessment
-      pdf.setFontSize(16);
-      pdf.setTextColor(30, 41, 59);
-      pdf.text('Energy Assessment', 20, yPos);
-      yPos += 15;
+      pdf.text('Basic Aura Details', margin + 10, yPos + 8);
       
       pdf.setFontSize(12);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 25, yPos);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Fundamental Energy Analysis', margin + 10, yPos + 16);
       
+      yPos += 30;
+      
+      // Basic details table
+      const basicHeaders = ['Aspect', 'Value', 'Significance'];
+      const basicData = [
+        ['Dominant Color', reading.dominantColor || 'Not specified', 'Primary energy signature'],
+        ['Secondary Color', reading.secondaryColor || 'Not specified', 'Supporting energy pattern'],
+        ['Energy Level', `${reading.energyLevel}/10`, 'Overall spiritual vitality'],
+        ['Analysis Date', format(new Date(reading.createdAt), "MMMM d, yyyy"), 'Report generation date'],
+        ['Analyzed By', 'AuraEye AI System', 'Analysis methodology']
+      ];
+      
+      yPos = createTable(yPos, basicHeaders, basicData, [60, 60, 60]);
+      yPos += 20;
+      
+      // Aura color zones section
+      pdf.setFillColor(248, 250, 252);
+      pdf.rect(margin, yPos, contentWidth, 15, 'F');
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Aura Zone Analysis', margin + 10, yPos + 10);
+      
+      yPos += 25;
+      
+      // Aura zones table
+      const zoneHeaders = ['Zone', 'Color', 'Interpretation'];
+      const zoneData = [
+        ['Personality', reading.personalityColor || 'Not specified', 'Core essence and fundamental nature'],
+        ['Giving Energy', reading.givingColor || 'Not specified', 'How you share energy with others'],
+        ['Receiving Energy', reading.receivingColor || 'Not specified', 'How you absorb environmental energy'],
+        ['Thinking Energy', reading.thinkingColor || 'Not specified', 'Mental and spiritual processing patterns']
+      ];
+      
+      yPos = createTable(yPos, zoneHeaders, zoneData, [45, 45, 90]);
+      
+      // Professional footer
       pdf.setFontSize(8);
-      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 1 of 4', 20, pageHeight - 10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', margin, pageHeight - 15);
+      pdf.text('Page 1 of 4', pageWidth - margin, pageHeight - 15, { align: 'right' });
 
-      // PAGE 2: AURA VISUALIZATION (if available)
+      // PAGE 2: AURA VISUALIZATION & CHAKRA ANALYSIS
+      pdf.addPage();
+      addHeader(2);
+      
+      yPos = 90;
+      
+      // Aura visualization section
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
-          pdf.addPage();
+          pdf.setFillColor(248, 250, 252);
+          pdf.rect(margin, yPos, contentWidth, 15, 'F');
           
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
+          pdf.setFontSize(16);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(30, 41, 59);
+          pdf.text('Aura Visualization', margin + 10, yPos + 10);
           
-          // Add image centered with proper aspect ratio
-          const imgWidth = 160;
-          const imgHeight = 90; // 16:9 aspect ratio
+          yPos += 25;
+          
+          // Add aura image centered
+          const imgWidth = 120;
+          const imgHeight = 80;
           const imgX = (pageWidth - imgWidth) / 2;
           
-          // Try to add the processed aura image, fall back to original if needed
           const imageToAdd = reading.processedAuraImage || reading.imageUrl;
-          pdf.addImage(imageToAdd, 'JPEG', imgX, 35, imgWidth, imgHeight);
+          pdf.addImage(imageToAdd, 'JPEG', imgX, yPos, imgWidth, imgHeight);
           
-          pdf.setFontSize(12);
-          pdf.setTextColor(107, 114, 128);
-          pdf.text('Your Personal Aura Analysis Visualization', pageWidth / 2, 135, { align: 'center' });
+          yPos += imgHeight + 15;
           
           pdf.setFontSize(10);
-          pdf.text('This image shows the spiritual energy colors surrounding your aura field.', pageWidth / 2, 150, { align: 'center' });
+          pdf.setTextColor(75, 85, 99);
+          pdf.text('Your Personal Aura Energy Field Visualization', pageWidth / 2, yPos, { align: 'center' });
+          pdf.text('This image reveals the spiritual energy colors and patterns surrounding your energy field.', pageWidth / 2, yPos + 8, { align: 'center' });
           
-          pdf.setFontSize(8);
-          pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 2 of 4', 20, pageHeight - 10);
+          yPos += 25;
           
         } catch (error) {
           console.error('Error adding aura image to PDF:', error);
-          // Add a page explaining the visualization issue
-          pdf.addPage();
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('AURA VISUALIZATION', pageWidth / 2, 25, { align: 'center' });
-          
           pdf.setFontSize(12);
           pdf.setTextColor(107, 114, 128);
-          pdf.text('Aura visualization processing in progress...', pageWidth / 2, 100, { align: 'center' });
-          pdf.text('Your aura analysis is complete but visualization is being processed.', pageWidth / 2, 120, { align: 'center' });
+          pdf.text('Aura visualization is being processed and will be available shortly.', pageWidth / 2, yPos + 20, { align: 'center' });
+          yPos += 40;
+        }
+      } else {
+        yPos += 20;
+      }
+      
+      // Chakra analysis section
+      if (reading.chakraActivity) {
+        try {
+          const chakraData = typeof reading.chakraActivity === 'string' ? 
+            JSON.parse(reading.chakraActivity) : reading.chakraActivity;
+          
+          pdf.setFillColor(248, 250, 252);
+          pdf.rect(margin, yPos, contentWidth, 15, 'F');
+          
+          pdf.setFontSize(16);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(30, 41, 59);
+          pdf.text('Chakra Energy Analysis', margin + 10, yPos + 10);
+          
+          yPos += 25;
+          
+          // Chakra table
+          const chakraHeaders = ['Chakra', 'Energy Level', 'Status', 'Significance'];
+          const chakraMap = {
+            root: 'Root Chakra',
+            sacral: 'Sacral Chakra', 
+            solarPlexus: 'Solar Plexus',
+            heart: 'Heart Chakra',
+            throat: 'Throat Chakra',
+            thirdEye: 'Third Eye',
+            crown: 'Crown Chakra'
+          };
+          
+          const chakraRows = Object.entries(chakraData).map(([key, value]) => {
+            const level = Number(value);
+            const status = level >= 7 ? 'Balanced' : level >= 4 ? 'Developing' : 'Blocked';
+            const significance = level >= 7 ? 'Optimal energy flow' : level >= 4 ? 'Growth potential' : 'Needs attention';
+            return [chakraMap[key as keyof typeof chakraMap] || key, `${level}/10`, status, significance];
+          });
+          
+          yPos = createTable(yPos, chakraHeaders, chakraRows, [45, 25, 30, 60]);
+          
+        } catch (error) {
+          console.error('Error parsing chakra data:', error);
         }
       }
+      
+      // Professional footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', margin, pageHeight - 15);
+      pdf.text('Page 2 of 4', pageWidth - margin, pageHeight - 15, { align: 'right' });
 
-      // PAGE 3: DETAILED ANALYSIS
+      // PAGE 3: DETAILED SPIRITUAL ANALYSIS
       pdf.addPage();
-      pdf.setFontSize(18);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('DETAILED SPIRITUAL ANALYSIS', pageWidth / 2, 25, { align: 'center' });
+      addHeader(3);
       
-      yPos = 45;
+      yPos = 90;
       
-      // Analysis text
-      pdf.setFontSize(14);
+      // Complete analysis section
+      pdf.setFillColor(248, 250, 252);
+      pdf.rect(margin, yPos, contentWidth, 15, 'F');
+      
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Complete Analysis', 20, yPos);
-      yPos += 10;
+      pdf.text('Detailed Spiritual Analysis', margin + 10, yPos + 10);
       
+      yPos += 25;
+      
+      // Analysis content with better formatting
       pdf.setFontSize(11);
       pdf.setTextColor(55, 65, 81);
-      const analysisText = reading.analysis || 'Your aura displays a beautiful balance of energies.';
-      const splitAnalysis = pdf.splitTextToSize(analysisText, pageWidth - 40);
-      pdf.text(splitAnalysis, 20, yPos);
-      yPos += splitAnalysis.length * 5 + 10;
+      const analysisText = reading.analysis || 'Your aura displays a beautiful balance of energies with unique spiritual characteristics.';
+      const splitAnalysis = pdf.splitTextToSize(analysisText, contentWidth - 20);
       
-      // Spiritual guidance
+      // Add background for analysis text
+      pdf.setFillColor(252, 252, 255);
+      pdf.rect(margin + 10, yPos - 5, contentWidth - 20, splitAnalysis.length * 5 + 15, 'F');
+      
+      pdf.text(splitAnalysis, margin + 15, yPos + 5);
+      yPos += splitAnalysis.length * 5 + 25;
+      
+      // Spiritual guidance section
       if (spiritualGuidance) {
-        pdf.setFontSize(14);
+        pdf.setFillColor(248, 250, 252);
+        pdf.rect(margin, yPos, contentWidth, 15, 'F');
+        
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(30, 41, 59);
-        pdf.text('Spiritual Guidance', 20, yPos);
-        yPos += 10;
+        pdf.text('Spiritual Guidance', margin + 10, yPos + 10);
+        
+        yPos += 25;
         
         pdf.setFontSize(11);
         pdf.setTextColor(55, 65, 81);
-        const splitGuidance = pdf.splitTextToSize(spiritualGuidance, pageWidth - 40);
-        pdf.text(splitGuidance, 20, yPos);
-        yPos += splitGuidance.length * 5 + 10;
+        const splitGuidance = pdf.splitTextToSize(spiritualGuidance, contentWidth - 20);
+        
+        // Add background for guidance text
+        pdf.setFillColor(252, 252, 255);
+        pdf.rect(margin + 10, yPos - 5, contentWidth - 20, splitGuidance.length * 5 + 15, 'F');
+        
+        pdf.text(splitGuidance, margin + 15, yPos + 5);
+        yPos += splitGuidance.length * 5 + 25;
       }
-
-      // PAGE 4: FINAL SUMMARY
-      pdf.addPage();
-      pdf.setFontSize(18);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('PERSONAL INSIGHTS & RECOMMENDATIONS', pageWidth / 2, 25, { align: 'center' });
       
-      yPos = 45;
+      // Professional footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', margin, pageHeight - 15);
+      pdf.text('Page 3 of 4', pageWidth - margin, pageHeight - 15, { align: 'right' });
+
+      // PAGE 4: RECOMMENDATIONS & SUMMARY
+      pdf.addPage();
+      addHeader(4);
+      
+      yPos = 90;
+      
+      // Summary section
+      pdf.setFillColor(248, 250, 252);
+      pdf.rect(margin, yPos, contentWidth, 15, 'F');
+      
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Personal Insights & Summary', margin + 10, yPos + 10);
+      
+      yPos += 25;
+      
+      // Enhanced summary with better formatting
+      const energyDesc = reading.energyLevel >= 7 ? 'highly active' : reading.energyLevel >= 5 ? 'balanced' : 'gentle';
+      const finalSummary = `Your comprehensive aura analysis reveals a ${reading.dominantColor?.toLowerCase() || 'vibrant'} dominant energy signature with an overall energy level of ${reading.energyLevel}/10, indicating a ${energyDesc} spiritual presence. This unique energy pattern suggests significant potential for spiritual growth and development.`;
       
       pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      const finalSummary = `Your aura analysis reveals a ${reading.dominantColor?.toLowerCase() || 'vibrant'} dominant energy with an energy level of ${reading.energyLevel}/10. This indicates a ${reading.energyLevel >= 7 ? 'highly active' : reading.energyLevel >= 5 ? 'balanced' : 'gentle'} spiritual presence. Continue developing your spiritual awareness through meditation, energy work, and conscious living practices. Your unique energy signature offers valuable gifts to the world - embrace your authentic spiritual self and share your light with others.`;
-      
-      const splitSummary = pdf.splitTextToSize(finalSummary, pageWidth - 40);
-      pdf.text(splitSummary, 20, yPos);
-      yPos += splitSummary.length * 5 + 20;
-      
-      pdf.setFontSize(12);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('Continue Your Spiritual Journey', 20, yPos);
-      yPos += 10;
-      
-      pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      const recommendations = [
-        '• Practice daily meditation to strengthen your energy field',
-        '• Keep a spiritual journal to track your energy patterns',
-        '• Connect with like-minded spiritual communities',
-        '• Consider working with a professional healer for deeper guidance',
-        '• Trust your intuition and follow your spiritual path'
+      const splitSummary = pdf.splitTextToSize(finalSummary, contentWidth - 20);
+      
+      // Add background for summary
+      pdf.setFillColor(252, 252, 255);
+      pdf.rect(margin + 10, yPos - 5, contentWidth - 20, splitSummary.length * 5 + 15, 'F');
+      
+      pdf.text(splitSummary, margin + 15, yPos + 5);
+      yPos += splitSummary.length * 5 + 30;
+      
+      // Recommendations section with professional table
+      pdf.setFillColor(248, 250, 252);
+      pdf.rect(margin, yPos, contentWidth, 15, 'F');
+      
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Spiritual Development Recommendations', margin + 10, yPos + 10);
+      
+      yPos += 25;
+      
+      // Recommendations table
+      const recHeaders = ['Category', 'Recommendation', 'Benefits'];
+      const recData = [
+        ['Meditation', 'Practice daily 10-15 minute meditation', 'Strengthens energy field & awareness'],
+        ['Journaling', 'Keep spiritual journal for energy tracking', 'Monitors patterns & growth'],
+        ['Community', 'Connect with like-minded individuals', 'Shared wisdom & support'],
+        ['Professional', 'Consider working with healers', 'Deeper guidance & healing'],
+        ['Intuition', 'Trust your inner guidance', 'Authentic spiritual development']
       ];
       
-      recommendations.forEach(rec => {
-        pdf.text(rec, 25, yPos);
-        yPos += 7;
-      });
+      yPos = createTable(yPos, recHeaders, recData, [30, 70, 60]);
+      yPos += 20;
       
+      // Closing message
+      pdf.setFillColor(240, 240, 255);
+      pdf.rect(margin, yPos, contentWidth, 25, 'F');
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('Your Spiritual Journey Continues', pageWidth / 2, yPos + 10, { align: 'center' });
+      
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(75, 85, 99);
+      pdf.text('Trust your unique energy signature and share your light with the world.', pageWidth / 2, yPos + 20, { align: 'center' });
+      
+      // Professional footer
       pdf.setFontSize(8);
-      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 4 of 4', 20, pageHeight - 10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', margin, pageHeight - 15);
+      pdf.text('Page 4 of 4', pageWidth - margin, pageHeight - 15, { align: 'right' });
       
-      // Save the PDF
-      pdf.save(`aura-analysis-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
+      // Generate filename
+      const filename = `aura-analysis-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`;
       
-      toast({
-        title: "PDF Downloaded",
-        description: "Your complete aura analysis report has been downloaded successfully.",
-      });
+      // Save the PDF locally
+      pdf.save(filename);
+      
+      // Also send via email
+      try {
+        const pdfBase64 = pdf.output('datauristring').split(',')[1]; // Get base64 without data URI prefix
+        
+        const emailResponse = await fetch('/api/reports/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            filename,
+            pdfBase64,
+            readingId: reading.id,
+            screenshots: [] // Optional: Add any screenshot data if needed
+          }),
+        });
+
+        if (emailResponse.ok) {
+          const result = await emailResponse.json();
+          toast({
+            title: "PDF Downloaded & Emailed",
+            description: "Your complete aura analysis report has been downloaded and sent to your email successfully.",
+          });
+        } else {
+          // PDF downloaded but email failed
+          const errorResult = await emailResponse.json();
+          toast({
+            title: "PDF Downloaded",
+            description: `Report downloaded successfully. Email delivery failed: ${errorResult.message}`,
+            variant: "default"
+          });
+        }
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+        toast({
+          title: "PDF Downloaded",
+          description: "Report downloaded successfully. Email delivery failed due to network error.",
+          variant: "default"
+        });
+      }
       
     } catch (error) {
       console.error('Error generating PDF:', error);
