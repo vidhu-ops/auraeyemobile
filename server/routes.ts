@@ -1548,10 +1548,10 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             energyLevel: auraAnalysis.energyLevel,
             analysis: JSON.stringify(auraAnalysis),
             // Individual color zones for quick access
-            personalityColor: auraAnalysis.zones?.Aura?.colors?.[0] || auraAnalysis.dominantColor,
-            givingColor: auraAnalysis.zones?.Heart?.colors?.[0] || auraAnalysis.secondaryColor,
-            receivingColor: auraAnalysis.zones?.Solar?.colors?.[0] || auraAnalysis.dominantColor,
-            thinkingColor: auraAnalysis.zones?.Crown?.colors?.[0] || auraAnalysis.secondaryColor,
+            personalityColor: auraAnalysis.zones?.overall?.colors?.[0] || auraAnalysis.dominantColor,
+            givingColor: auraAnalysis.zones?.giving?.colors?.[0] || auraAnalysis.secondaryColor,
+            receivingColor: auraAnalysis.zones?.receiving?.colors?.[0] || auraAnalysis.dominantColor,
+            thinkingColor: auraAnalysis.zones?.thinking?.colors?.[0] || auraAnalysis.secondaryColor,
             // Spiritual guidance and traits
             spiritualGuidance: auraAnalysis.spiritualGuidance,
             personalityTraits: JSON.stringify(auraAnalysis.personalityTraits || []),
