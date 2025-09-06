@@ -1379,10 +1379,42 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // Download the PDF
       pdf.save(fileName);
       
-      toast({
-        title: "PDF Generated",
-        description: `Report downloaded successfully`,
-      });
+      // Get PDF as base64 for email
+      const pdfBase64 = pdf.output('datauristring');
+      const base64Data = pdfBase64.split(',')[1];
+      
+      // Send PDF via email (for healers only)
+      try {
+        const response = await fetch('/api/reports/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            filename: fileName,
+            pdfBase64: base64Data,
+            readingId: reading.id
+          })
+        });
+        
+        if (response.ok) {
+          toast({
+            title: "PDF Generated & Emailed",
+            description: "Report downloaded and sent to your email address successfully.",
+          });
+        } else {
+          toast({
+            title: "PDF Generated",
+            description: "Report downloaded successfully. Email delivery failed - please check your email settings.",
+          });
+        }
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+        toast({
+          title: "PDF Generated",
+          description: "Report downloaded successfully. Email delivery failed - please try again later.",
+        });
+      }
       
     } catch (error) {
       console.error('PDF generation error:', error);
