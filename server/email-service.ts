@@ -1,10 +1,20 @@
 import sgMail, { type MailDataRequired, type AttachmentData } from '@sendgrid/mail';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
+let emailServiceReady = false;
+
+if (process.env.SENDGRID_API_KEY) {
+  try {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    emailServiceReady = true;
+    console.log("✅ SendGrid email service initialized successfully");
+  } catch (error) {
+    console.warn("⚠️ SendGrid initialization failed:", error);
+    emailServiceReady = false;
+  }
+} else {
+  console.warn("⚠️ SENDGRID_API_KEY not configured, email notifications will be disabled");
 }
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com';
 
 interface EmailParams {
@@ -17,6 +27,11 @@ interface EmailParams {
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
+  if (!emailServiceReady) {
+    console.warn("Email service not ready, skipping email send");
+    return false;
+  }
+
   try {
     console.log("\n=== SENDING EMAIL ===");
     console.log("To:", params.to);
