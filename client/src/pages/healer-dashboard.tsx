@@ -1523,19 +1523,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             <h4 className="font-semibold text-lg mb-3">Chakra Activity Levels</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {CHAKRA_KEYS.map(chakraKey => {
-                  // Use proper default values to match actual analysis data
-                  const chakraDefaults = {
-                    'soulStar': 7,
-                    'crown': 6, 
-                    'thirdEye': 7,
-                    'throat': 6,
-                    'heart': 8,
-                    'solarPlexus': 7,
-                    'sacral': 6,
-                    'root': 8,
-                    'earthStar': 7
-                  };
-                  const score = chakraActivity[chakraKey] || chakraDefaults[chakraKey] || 0;
+                  const score = chakraActivity[chakraKey] || 0;
                   const numScore = Number(score);
                   const chakraStatus = getChakraStatus(numScore);
                   
