@@ -352,6 +352,21 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
 
   const { chakraActivity, zones, colorMeanings, personalityTraits, auraColorSpectrum } = parsedData;
 
+  // Chakra calculation functions - matches actual human aura analysis
+  const calculateSoulStarChakra = (reading: any): number => {
+    // Soul Star Chakra - based on energy level and dominant color
+    const baseValue = (reading.energyLevel || 5) * 7;
+    const colorModifier = ['White', 'Silver', 'Gold', 'Violet'].includes(reading.dominantColor) ? 20 : 0;
+    return Math.min(100, baseValue + colorModifier);
+  };
+
+  const calculateEarthStarChakra = (reading: any): number => {
+    // Earth Star Chakra - based on energy level and grounding colors
+    const baseValue = (reading.energyLevel || 5) * 8;
+    const colorModifier = ['Brown', 'Black', 'Gray', 'Maroon'].includes(reading.dominantColor) ? 15 : 0;
+    return Math.min(100, baseValue + colorModifier);
+  };
+
   // Color mapping for visualization
   const getColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
@@ -1523,23 +1538,28 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             <h4 className="font-semibold text-lg mb-3">Chakra Activity Levels</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {CHAKRA_KEYS.map(chakraKey => {
-                  // Use proper default values that match actual analysis and PDF generation
-                  const getChakraDefault = (key: ChakraKey): number => {
+                  // Use calculated values for Soul Star and Earth Star chakras, basic chakraActivity for others
+                  const getChakraScore = (key: ChakraKey): number => {
+                    if (key === 'soulStar') {
+                      return Math.round(calculateSoulStarChakra(reading) / 10);
+                    }
+                    if (key === 'earthStar') {
+                      return Math.round(calculateEarthStarChakra(reading) / 10);
+                    }
+                    // For all other chakras, use stored values with proper defaults
                     const defaults = {
-                      'soulStar': 7,
                       'crown': 6,
                       'thirdEye': 7,
                       'throat': 6,
                       'heart': 8,
                       'solarPlexus': 7,
                       'sacral': 6,
-                      'root': 8,
-                      'earthStar': 7
+                      'root': 8
                     };
-                    return defaults[key] || 5;
+                    return chakraActivity[key] || defaults[key] || 5;
                   };
                   
-                  const score = chakraActivity[chakraKey] || getChakraDefault(chakraKey);
+                  const score = getChakraScore(chakraKey);
                   const numScore = Number(score);
                   const chakraStatus = getChakraStatus(numScore);
                   
