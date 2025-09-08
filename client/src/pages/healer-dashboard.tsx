@@ -1845,13 +1845,15 @@ export default function HealerDashboard() {
     enabled: !!user,
   });
 
-  // Fetch healer's own vibe readings
+  // Fetch healer's own vibe readings with immediate updates
   const { data: healerVibeReadings = [], isLoading: isLoadingVibeReadings, refetch: refetchVibeReadings } = useQuery<VibeReading[]>({
     queryKey: ["/api/vibe-readings"],
     enabled: !!user,
     staleTime: 0, // Always refetch to get latest data
-    gcTime: 30 * 1000, // Keep in cache for 30 seconds only for immediate updates
-    refetchInterval: 10000, // Refetch every 10 seconds for updates
+    gcTime: 0, // Don't cache - always fetch fresh data
+    refetchInterval: 5000, // Refetch every 5 seconds for faster updates
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    refetchOnReconnect: true, // Refetch on reconnection
   });
 
   // State for live numerology calculator
