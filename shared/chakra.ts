@@ -55,9 +55,16 @@ export function getChakraStatus(score: number): ChakraStatus {
       bgColor: "from-green-50 to-green-100" 
     };
   }
-  if (score >= 9 && score <= 10) {
+  if (score === 10) {
     return { 
-      status: "mastered or balanced", 
+      status: "karmic overdrive", 
+      color: "text-purple-600", 
+      bgColor: "from-purple-50 to-purple-100" 
+    };
+  }
+  if (score === 9) {
+    return { 
+      status: "karmic mastery", 
       color: "text-blue-600", 
       bgColor: "from-blue-50 to-blue-100" 
     };

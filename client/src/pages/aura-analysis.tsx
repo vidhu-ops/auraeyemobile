@@ -5135,11 +5135,17 @@ export default function AuraAnalysis() {
         color: "text-green-600",
         description: "Healthy energy flow with minor refinements needed"
       };
-    } else if (score >= 9 && score <= 10) {
+    } else if (score === 10) {
       return {
-        status: "Karmic Mastery",
+        status: "karmic overdrive",
+        color: "text-purple-600",
+        description: "Extremely elevated spiritual energy requiring careful balance"
+      };
+    } else if (score === 9) {
+      return {
+        status: "karmic mastery",
         color: "text-blue-600",
-        description: "Highly developed spiritual center with mastery potential"
+        description: "Highly developed spiritual center with mastery achieved"
       };
     } else {
       return {
@@ -8431,12 +8437,28 @@ export default function AuraAnalysis() {
                                   {/* Chakra Score Ranges Guide */}
                                   <div className="bg-white rounded-lg p-5 border border-violet-200">
                                     <h5 className="font-semibold text-lg mb-4 text-violet-800">Chakra Score Interpretation Guide</h5>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                       
+                                      {/* Karmically Aligned (9-10) */}
+                                      <div className="bg-gradient-to-br from-purple-50 to-purple-50 rounded-lg p-4 border border-purple-200">
+                                        <div className="text-center mb-3">
+                                          <div className="text-2xl font-bold text-purple-600">10</div>
+                                          <div className="text-sm font-medium text-purple-700">Karmic Overdrive</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                          <p className="font-medium text-purple-800">Meaning:</p>
+                                          <p>Your soul is too attached for the manifestation of this lesson</p>
+                                        </div>
+                                        <div className="mt-3 flex justify-center">
+                                          <div className="px-3 py-1 bg-purple-100 rounded-full">
+                                            <span className="text-xs font-medium text-purple-700">! Overdrive</span>
+                                          </div>
+                                        </div>
+                                      </div>
                                       {/* Karmically Aligned (9-10) */}
                                       <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-200">
                                         <div className="text-center mb-3">
-                                          <div className="text-2xl font-bold text-emerald-600">9-10</div>
+                                          <div className="text-2xl font-bold text-emerald-600">9</div>
                                           <div className="text-sm font-medium text-emerald-700">Karmically Aligned</div>
                                         </div>
                                         <div className="text-xs text-gray-600 space-y-1">
