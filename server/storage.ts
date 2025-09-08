@@ -85,7 +85,7 @@ export interface IStorage {
   // Vibe readings for healer dashboard
   saveVibeReading(reading: InsertVibeReading): Promise<VibeReading>;
   getVibeReadingsByUserId(userId: number): Promise<VibeReading[]>;
-  getAllVibeReadings(): Promise<VibeReading[]>;
+  getAllVibeReadings(): Promise<any[]>;
   
   // Credit management
   getUserCredits(userId: number): Promise<number>;
@@ -490,8 +490,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get all vibe readings (for healer dashboard - shows all vibe readings from all users)
-  async getAllVibeReadings(): Promise<VibeReading[]> {
-    return await db
+  async getAllVibeReadings(): Promise<any[]> {
+    const results = await db
       .select({
         id: vibeReadings.id,
         userId: vibeReadings.userId,
@@ -509,6 +509,9 @@ export class DatabaseStorage implements IStorage {
       .from(vibeReadings)
       .leftJoin(users, eq(vibeReadings.userId, users.id))
       .orderBy(desc(vibeReadings.createdAt));
+    
+    console.log(`🔍 Raw query returned ${results.length} vibe readings`);
+    return results;
   }
 
   // Credit management methods
