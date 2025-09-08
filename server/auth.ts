@@ -72,10 +72,15 @@ export function setupAuth(app: Express) {
       try {
         // First check if this is a healer login
         const healer = await storage.getHealerByUsername(username);
-        if (healer && await comparePasswords(password, healer.password)) {
-          // Find or create corresponding user record for credit management
-          let userRecord = await storage.getUserByUsername(username);
-          if (!userRecord) {
+        if (healer) {
+          console.log(`Healer login attempt for: ${username}`);
+          console.log(`Stored healer password starts with: ${healer.password?.substring(0, 10)}...`);
+          const passwordMatch = await comparePasswords(password, healer.password);
+          console.log(`Password comparison result: ${passwordMatch}`);
+          if (passwordMatch) {
+            // Find or create corresponding user record for credit management
+            let userRecord = await storage.getUserByUsername(username);
+            if (!userRecord) {
             // Create user record for healer if it doesn't exist
             userRecord = await storage.createUser({
               username: healer.username,
@@ -96,6 +101,7 @@ export function setupAuth(app: Express) {
             healerData: healer // Store full healer data for dashboard access
           };
           return done(null, healerUser);
+          }
         }
         
         // If not a healer, check regular users
