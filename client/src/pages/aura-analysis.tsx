@@ -123,8 +123,8 @@ const getChakraStatus = (score: number): string => {
   if (score >= 1 && score <= 3) return "blocked";
   if (score >= 4 && score <= 6) return "imbalanced patterns";
   if (score >= 7 && score <= 8) return "developing balance";
-  if (score === 10) return "overactive";
-  if (score === 9) return "working";
+  if (score >= 9) return "mastered or balanced";
+  if (score >= 10) return "overworking or imbalanced";
   return "unknown";
 };
 
@@ -5136,18 +5136,18 @@ export default function AuraAnalysis() {
         color: "text-green-600",
         description: "Healthy energy flow with minor refinements needed"
       };
-    } else if (score >= 9) {
+    } else if (score === 10) {
+      return {
+        status: "Karmic Overdrive",
+        color: "text-purple-600",
+        description: "Extremely elevated spiritual energy requiring careful balance"
+      };
+    } else if (score === 9) {
       return {
         status: "Karmic Mastery",
         color: "text-blue-600",
-        description: "Highly developed spiritual center with mastery potential"
+        description: "Highly developed spiritual center with mastery achieved"
       };
-      } else if (score >= 10) {
-        return {
-          status: "Karmic Overdrive",
-          color: "text-purple-600",
-          description: "Highly developed spiritual center with mastery potential"
-        };
     } else {
       return {
         status: "Karmic Balance",
@@ -6599,7 +6599,7 @@ export default function AuraAnalysis() {
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Soul Star Chakra</span>
-                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%)</span>
+                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%) - {getChakraStatus(Math.round(calculateSoulStarChakra(result)/10))}</span>
                                     </div>
                                   </div>
                                   <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
@@ -6783,7 +6783,7 @@ export default function AuraAnalysis() {
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Earth Star Chakra</span>
-                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%)</span>
+                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%) - {getChakraStatus(Math.round(calculateEarthStarChakra(result)/10))}</span>
                                     </div>
                                   </div>
                                   <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
@@ -8744,7 +8744,7 @@ export default function AuraAnalysis() {
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Earth Star Chakra</span>
-                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%){getChakraStatus(result.chakraActivity?.EarthStar || 5)} </span>
+                                      <span className="text-amber-600">{Math.round(calculateEarthStarChakra(result)/10)}/10 ({calculateEarthStarChakra(result)}%) - {getChakraStatus(Math.round(calculateEarthStarChakra(result)/10))}</span>
                                     </div>
                                   </div>
                                   <Progress value={calculateEarthStarChakra(result)} className="h-3 bg-amber-100" />
