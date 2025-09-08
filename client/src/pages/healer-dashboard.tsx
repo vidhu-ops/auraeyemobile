@@ -1852,10 +1852,7 @@ export default function HealerDashboard() {
   // Password change mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: z.infer<typeof changePasswordSchema>) => {
-      return apiRequest("/api/change-password", {
-        method: "POST",
-        body: data
-      });
+      return apiRequest("POST", "/api/change-password", data);
     },
     onSuccess: () => {
       toast({
