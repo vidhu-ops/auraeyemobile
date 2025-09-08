@@ -1042,9 +1042,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Hash new password and update
+      // Hash new password and update both user and healer tables
       const hashedNewPassword = await hashPassword(newPassword);
       await storage.updateUserPassword(userId, hashedNewPassword);
+      
+      // Also update healer table if this is a healer account
+      if (user.userType === "healer") {
+        await storage.updateHealerPassword(user.username, hashedNewPassword);
+      }
       
       res.json({ 
         success: true, 
