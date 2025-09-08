@@ -6,6 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
@@ -30,12 +34,13 @@ import {
   Save,
   X,
   Plus,
-  FileText
+  FileText,
+  Key
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { CHAKRA_KEYS, CHAKRA_DISPLAY_NAMES, getChakraStatus, calculateChakraGroupPercentages, ChakraActivity, type ChakraKey } from "../../../shared/chakra";
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
@@ -1820,9 +1825,58 @@ export default function HealerDashboard() {
   const [selectedBooking, setSelectedBooking] = useState<HealerBooking | null>(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Password change form schema
+  const changePasswordSchema = z.object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your new password")
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"]
+  });
+
+  const passwordForm = useForm<z.infer<typeof changePasswordSchema>>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    }
+  });
+
+  // Password change mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof changePasswordSchema>) => {
+      return apiRequest("/api/change-password", {
+        method: "POST",
+        body: data
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password changed successfully",
+        description: "Your password has been updated. Please log in with your new password.",
+      });
+      passwordForm.reset();
+      setIsChangePasswordOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const onPasswordSubmit = (data: z.infer<typeof changePasswordSchema>) => {
+    changePasswordMutation.mutate(data);
+  };
 
   // Fetch healer's bookings with real-time updates
   const { data: bookings = [], isLoading: isLoadingBookings, refetch } = useQuery<HealerBooking[]>({
@@ -2012,7 +2066,18 @@ export default function HealerDashboard() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Healer Dashboard</h1>
-            <p className="text-gray-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+            <div className="flex items-center gap-4">
+              <p className="text-gray-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsChangePasswordOpen(true)}
+                className="flex items-center gap-2 text-purple-600 border-purple-600 hover:bg-purple-50"
+              >
+                <Key className="w-4 h-4" />
+                Change Password
+              </Button>
+            </div>
           </div>
           <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
             <div className="text-violet-600">💳</div>
@@ -2665,6 +2730,81 @@ export default function HealerDashboard() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Password Modal */}
+      <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+          </DialogHeader>
+          <Form {...passwordForm}>
+            <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+              <FormField
+                control={passwordForm.control}
+                name="currentPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={passwordForm.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={passwordForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex gap-2 pt-4">
+                <Button
+                  type="submit"
+                  disabled={changePasswordMutation.isPending}
+                  className="flex-1"
+                >
+                  {changePasswordMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  Change Password
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsChangePasswordOpen(false);
+                    passwordForm.reset();
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
         </div>
