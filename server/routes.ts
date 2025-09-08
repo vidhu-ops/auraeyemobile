@@ -2617,13 +2617,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const user = await storage.getUser(req.user.id);
       let vibeReadings;
       
+      // Both healers and clients see only their own vibe readings
+      vibeReadings = await storage.getVibeReadingsByUserId(req.user.id);
+      
       if (user?.userType === 'healer') {
-        // Healers see all vibe readings (from all users including themselves)
-        vibeReadings = await storage.getAllVibeReadings();
-        console.log(`✅ Retrieved ${vibeReadings.length} total vibe readings for healer ${user.username}`);
+        console.log(`✅ Retrieved ${vibeReadings.length} vibe readings for healer ${user.username} (own account only)`);
       } else {
-        // Clients see only their own readings
-        vibeReadings = await storage.getVibeReadingsByUserId(req.user.id);
         console.log(`✅ Retrieved ${vibeReadings.length} vibe readings for user ${req.user.id}`);
       }
       
