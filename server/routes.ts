@@ -1044,11 +1044,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Hash new password and update both user and healer tables
       const hashedNewPassword = await hashPassword(newPassword);
-      await storage.updateUserPassword(userId, hashedNewPassword);
+      console.log(`Updating password for user ${user.username} (ID: ${userId}, Type: ${user.userType})`);
+      
+      // Update user table
+      const updatedUser = await storage.updateUserPassword(userId, hashedNewPassword);
+      console.log(`User table password updated:`, updatedUser ? 'Success' : 'Failed');
       
       // Also update healer table if this is a healer account
       if (user.userType === "healer") {
-        await storage.updateHealerPassword(user.username, hashedNewPassword);
+        console.log(`Updating healer table password for username: ${user.username}`);
+        const updatedHealer = await storage.updateHealerPassword(user.username, hashedNewPassword);
+        console.log(`Healer table password updated:`, updatedHealer ? 'Success' : 'Failed');
       }
       
       res.json({ 
