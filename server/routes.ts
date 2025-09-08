@@ -2618,9 +2618,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       let vibeReadings;
       
       if (user?.userType === 'healer') {
-        // Healers see all client vibe readings
-        vibeReadings = await storage.getAllClientVibeReadings();
-        console.log(`✅ Retrieved ${vibeReadings.length} client vibe readings for healer ${user.username}`);
+        // Healers see all vibe readings (from all users including themselves)
+        vibeReadings = await storage.getAllVibeReadings();
+        console.log(`✅ Retrieved ${vibeReadings.length} total vibe readings for healer ${user.username}`);
       } else {
         // Clients see only their own readings
         vibeReadings = await storage.getVibeReadingsByUserId(req.user.id);
