@@ -480,40 +480,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 75, { align: 'center' });
       pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 90, { align: 'center' });
       
-      // Add original image if available
-      if (reading.imageUrl) {
-        try {
-          const imgWidth = 200;
-          const imgHeight = 160;
-          const imgX = (pageWidth - imgWidth);
-          const imgY = 100;
-          
-          // Handle different image formats
-          let imageSrc = reading.imageUrl;
-          
-          // If imageUrl is a hash/filename, use our image serving API
-          if (!reading.imageUrl.startsWith('http') && !reading.imageUrl.startsWith('data:')) {
-            imageSrc = `/api/image/${reading.imageUrl}`;
-          }
-          
-          console.log('Adding original image to PDF:', imageSrc);
-          pdf.addImage(imageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-          pdf.setFontSize(10);
-          pdf.setTextColor(100, 100, 100);
-          pdf.text('Original Image', pageWidth, imgY + imgHeight + 8, { align: 'center' });
-          console.log('Original image added successfully to PDF');
-        } catch (imageError) {
-          console.error('Error adding original image to PDF:', imageError);
-          // Add placeholder text if image fails
-          pdf.setFontSize(10);
-          pdf.setTextColor(150, 150, 150);
-          pdf.text('Original image not available', pageWidth / 2, 125, { align: 'center' });
-        }
-      }
+     
       
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(1);
-      pdf.line(30, 160, pageWidth - 30, 120);
       
       // Aura Color Analysis
       pdf.setFontSize(18);
@@ -700,9 +668,9 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.text('9-Chakra Energy System Activity', 20, yPos);
       yPos += 15;
       
-      // Extract ALL chakra data from the reading
+      // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
       const allChakraData = {
-        'soulStar': chakraActivity.soulStar || 7,
+        'soulStar': Math.round(calculateSoulStarChakra(reading) / 10),
         'crown': chakraActivity.crown || 6,
         'thirdEye': chakraActivity.thirdEye || 7,
         'throat': chakraActivity.throat || 6,
@@ -710,7 +678,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         'solarPlexus': chakraActivity.solarPlexus || 7,
         'sacral': chakraActivity.sacral || 6,
         'root': chakraActivity.root || 8,
-        'earthStar': chakraActivity.earthStar || 7
+        'earthStar': Math.round(calculateEarthStarChakra(reading) / 10)
       };
       
       const chakraDisplayNames = {
@@ -1443,10 +1411,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       <CardContent className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" data-reading-id={reading.id}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="chakras">Chakras</TabsTrigger>
-            <TabsTrigger value="colors">Colors</TabsTrigger>
+           
             <TabsTrigger value="analysis">Analysis</TabsTrigger>
           </TabsList>
           
@@ -1584,20 +1552,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             </div>
           </TabsContent>
           
-          <TabsContent value="colors" className="space-y-6">
-            <h4 className="font-semibold text-lg mb-3">Color Meanings</h4>
-            <div className="space-y-4">
-              {Object.entries(colorMeanings).map(([color, meaning]) => (
-                <div key={color} className="p-4 border rounded-lg bg-gradient-to-r from-gray-50 to-white">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(color)}`}></div>
-                    <h5 className="font-medium text-gray-800">{color}</h5>
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{String(meaning)}</p>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
+          
           
           <TabsContent value="analysis" className="space-y-6">
             <div>
