@@ -786,6 +786,28 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         { position: 'Personality', color: reading.thinkingColor, meaning: 'Your core and patterns' }
       ];
       
+      // Use same comprehensive color meanings from COMPLETE COLOR SPECTRUM section
+      const auraColorMeanings: { [key: string]: string } = {
+        'Red': 'Passion, vitality, courage, strength, leadership energy',
+        'Orange': 'Creativity, enthusiasm, confidence, social energy, motivation',  
+        'Yellow': 'Intelligence, wisdom, optimism, mental clarity, joy',
+        'Green': 'Healing, balance, growth, nature connection, heart energy',
+        'Blue': 'Communication, truth, peace, spiritual insight, self-expression',
+        'Indigo': 'Intuition, psychic abilities, deep wisdom, spiritual awareness',
+        'Violet': 'Spirituality, transformation, divine connection, mysticism',
+        'Purple': 'Royalty, mystery, spiritual mastery, higher consciousness',
+        'Pink': 'Love, compassion, nurturing, emotional healing, kindness',
+        'Brown': 'Grounding, stability, earth connection, practical wisdom',
+        'Black': 'Protection, mystery, transformation, shadow work, absorption',
+        'White': 'Purity, divine light, spiritual protection, clarity, truth',
+        'Gold': 'Divine wisdom, enlightenment, spiritual achievement, abundance',
+        'Silver': 'Intuitive insight, feminine energy, lunar connection, psychic gift',
+        'Gray': 'Neutrality, balance, contemplation, spiritual transition',
+        'Turquoise': 'Healing communication, emotional clarity, spiritual growth',
+        'Magenta': 'Universal love, spiritual service, compassion, divine purpose',
+        'Coral': 'Emotional warmth, creative expression, gentle strength'
+      };
+
       colorPositions.forEach((pos) => {
         pdf.setFontSize(14);
         pdf.setTextColor(147, 51, 234);
@@ -798,7 +820,22 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(posLines, 30, yPos);
         yPos += posLines.length * 5 + 3;
         
-        // Add color-specific meanings from the data
+        // Add comprehensive color meaning for the zone color
+        const comprehensiveColorMeaning = auraColorMeanings[pos.color];
+        if (comprehensiveColorMeaning) {
+          pdf.setFontSize(9);
+          pdf.setTextColor(34, 197, 94); // Green color for spiritual meaning
+          pdf.text(`${pos.color} Meaning:`, 35, yPos);
+          yPos += 5;
+          
+          pdf.setFontSize(9);
+          pdf.setTextColor(75, 85, 99);
+          const colorMeaningLines = pdf.splitTextToSize(comprehensiveColorMeaning, pageWidth - 70);
+          pdf.text(colorMeaningLines, 40, yPos);
+          yPos += colorMeaningLines.length * 4 + 5;
+        }
+        
+        // Add color-specific meanings from stored data (if available)
         const meaning = colorMeanings[pos.color];
         if (meaning && typeof meaning === 'object') {
           if (meaning.positive) {
