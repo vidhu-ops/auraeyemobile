@@ -963,6 +963,28 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(`Complete color spectrum detected: ${auraSpectrumData.join(', ')}`, 25, yPos);
         yPos += 20;
         
+        // Color meanings for comprehensive aura analysis
+        const auraColorMeanings: { [key: string]: string } = {
+          'Red': 'Passion, vitality, courage, strength, leadership energy',
+          'Orange': 'Creativity, enthusiasm, confidence, social energy, motivation',  
+          'Yellow': 'Intelligence, wisdom, optimism, mental clarity, joy',
+          'Green': 'Healing, balance, growth, nature connection, heart energy',
+          'Blue': 'Communication, truth, peace, spiritual insight, self-expression',
+          'Indigo': 'Intuition, psychic abilities, deep wisdom, spiritual awareness',
+          'Violet': 'Spirituality, transformation, divine connection, mysticism',
+          'Purple': 'Royalty, mystery, spiritual mastery, higher consciousness',
+          'Pink': 'Love, compassion, nurturing, emotional healing, kindness',
+          'Brown': 'Grounding, stability, earth connection, practical wisdom',
+          'Black': 'Protection, mystery, transformation, shadow work, absorption',
+          'White': 'Purity, divine light, spiritual protection, clarity, truth',
+          'Gold': 'Divine wisdom, enlightenment, spiritual achievement, abundance',
+          'Silver': 'Intuitive insight, feminine energy, lunar connection, psychic gift',
+          'Gray': 'Neutrality, balance, contemplation, spiritual transition',
+          'Turquoise': 'Healing communication, emotional clarity, spiritual growth',
+          'Magenta': 'Universal love, spiritual service, compassion, divine purpose',
+          'Coral': 'Emotional warmth, creative expression, gentle strength'
+        };
+
         // Individual color analysis from the spectrum
         auraSpectrumData.forEach((color: string, index: number) => {
           if (yPos > 240) {
@@ -978,40 +1000,47 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           pdf.text(`${index + 1}. ${color} Energy`, 25, yPos);
           yPos += 12;
           
-          // Get color meaning from colorMeanings if available
+          // Use comprehensive color meanings first, with stored data as fallback
           const colorMeaningsData = parseJsonField(reading.colorMeanings);
-          const meaning = colorMeaningsData && colorMeaningsData[color];
+          const storedMeaning = colorMeaningsData && colorMeaningsData[color];
+          const comprehensiveMeaning = auraColorMeanings[color];
           
-          if (meaning) {
-            if (meaning.description) {
-              pdf.setFontSize(10);
-              pdf.setTextColor(55, 65, 81);
-              const descLines = pdf.splitTextToSize(meaning.description, pageWidth - 60);
-              pdf.text(descLines, 30, yPos);
-              yPos += descLines.length * 4 + 5;
-            }
+          if (storedMeaning && storedMeaning.description) {
+            // Use stored detailed meaning if available
+            pdf.setFontSize(10);
+            pdf.setTextColor(55, 65, 81);
+            const descLines = pdf.splitTextToSize(storedMeaning.description, pageWidth - 60);
+            pdf.text(descLines, 30, yPos);
+            yPos += descLines.length * 4 + 5;
             
-            if (meaning.positive) {
+            if (storedMeaning.positive) {
               pdf.setFontSize(9);
               pdf.setTextColor(34, 197, 94);
               pdf.text('Positive Aspects:', 35, yPos);
               yPos += 5;
-              const positiveLines = pdf.splitTextToSize(meaning.positive, pageWidth - 70);
+              const positiveLines = pdf.splitTextToSize(storedMeaning.positive, pageWidth - 70);
               pdf.text(positiveLines, 40, yPos);
               yPos += positiveLines.length * 4 + 3;
             }
             
-            if (meaning.growth) {
+            if (storedMeaning.growth) {
               pdf.setFontSize(9);
               pdf.setTextColor(239, 68, 68);
               pdf.text('Growth Areas:', 35, yPos);
               yPos += 5;
-              const growthLines = pdf.splitTextToSize(meaning.growth, pageWidth - 70);
+              const growthLines = pdf.splitTextToSize(storedMeaning.growth, pageWidth - 70);
               pdf.text(growthLines, 40, yPos);
               yPos += growthLines.length * 4 + 8;
             }
+          } else if (comprehensiveMeaning) {
+            // Use comprehensive color meaning
+            pdf.setFontSize(10);
+            pdf.setTextColor(55, 65, 81);
+            const meaningLines = pdf.splitTextToSize(comprehensiveMeaning, pageWidth - 60);
+            pdf.text(meaningLines, 30, yPos);
+            yPos += meaningLines.length * 4 + 8;
           } else {
-            // Basic color information if detailed meaning not available
+            // Fallback message
             pdf.setFontSize(10);
             pdf.setTextColor(55, 65, 81);
             pdf.text(`${color} energy contributes to your overall aura composition and spiritual development.`, 30, yPos);
