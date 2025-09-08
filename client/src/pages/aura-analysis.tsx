@@ -123,7 +123,8 @@ const getChakraStatus = (score: number): string => {
   if (score >= 1 && score <= 3) return "blocked";
   if (score >= 4 && score <= 6) return "imbalanced patterns";
   if (score >= 7 && score <= 8) return "developing balance";
-  if (score >= 9 && score <= 10) return "mastered or balanced";
+  if (score === 10) return "overactive";
+  if (score === 9) return "working";
   return "unknown";
 };
 
@@ -5135,18 +5136,18 @@ export default function AuraAnalysis() {
         color: "text-green-600",
         description: "Healthy energy flow with minor refinements needed"
       };
-    } else if (score === 10) {
+    } else if (score >= 9) {
       return {
-        status: "karmic overdrive",
-        color: "text-purple-600",
-        description: "Extremely elevated spiritual energy requiring careful balance"
-      };
-    } else if (score === 9) {
-      return {
-        status: "karmic mastery",
+        status: "Karmic Mastery",
         color: "text-blue-600",
-        description: "Highly developed spiritual center with mastery achieved"
+        description: "Highly developed spiritual center with mastery potential"
       };
+      } else if (score >= 10) {
+        return {
+          status: "Karmic Overdrive",
+          color: "text-purple-600",
+          description: "Highly developed spiritual center with mastery potential"
+        };
     } else {
       return {
         status: "Karmic Balance",

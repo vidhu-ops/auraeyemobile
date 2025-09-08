@@ -57,14 +57,14 @@ export function getChakraStatus(score: number): ChakraStatus {
   }
   if (score === 10) {
     return { 
-      status: "karmic overdrive", 
+      status: "overdrive", 
       color: "text-purple-600", 
       bgColor: "from-purple-50 to-purple-100" 
     };
   }
   if (score === 9) {
     return { 
-      status: "karmic mastery", 
+      status: "balanced", 
       color: "text-blue-600", 
       bgColor: "from-blue-50 to-blue-100" 
     };
