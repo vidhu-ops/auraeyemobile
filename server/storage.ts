@@ -65,6 +65,7 @@ export interface IStorage {
   getHealer(id: number): Promise<Healer | undefined>;
   getHealerByUsername(username: string): Promise<Healer | undefined>;
   createHealer(healer: InsertHealer): Promise<Healer>;
+  updateHealerPassword(username: string, hashedPassword: string): Promise<Healer | undefined>;
   
   // Healer bookings
   createHealerBooking(booking: InsertHealerBooking): Promise<HealerBooking>;
@@ -344,6 +345,15 @@ export class DatabaseStorage implements IStorage {
       .values(healer)
       .returning();
     return newHealer;
+  }
+
+  async updateHealerPassword(username: string, hashedPassword: string): Promise<Healer | undefined> {
+    const [healer] = await db
+      .update(healers)
+      .set({ password: hashedPassword })
+      .where(eq(healers.username, username))
+      .returning();
+    return healer || undefined;
   }
 
   // Healer bookings
