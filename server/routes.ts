@@ -16,7 +16,7 @@ import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
-import { hashPassword } from "./auth";
+import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
@@ -1009,6 +1009,55 @@ import { seedHealers } from "./seed-data";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
+  
+  // Change password endpoint
+  app.post("/api/change-password", isAuthenticated, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ 
+          error: "Current password and new password are required" 
+        });
+      }
+      
+      if (newPassword.length < 6) {
+        return res.status(400).json({ 
+          error: "New password must be at least 6 characters long" 
+        });
+      }
+      
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Verify current password
+      const isCurrentPasswordValid = await comparePasswords(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ 
+          error: "Current password is incorrect" 
+        });
+      }
+      
+      // Hash new password and update
+      const hashedNewPassword = await hashPassword(newPassword);
+      await storage.updateUserPassword(userId, hashedNewPassword);
+      
+      res.json({ 
+        success: true, 
+        message: "Password updated successfully" 
+      });
+      
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ 
+        error: "Failed to change password" 
+      });
+    }
+  });
   
   // Serve attached assets
   app.use('/attached_assets', (req, res, next) => {
