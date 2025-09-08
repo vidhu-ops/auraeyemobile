@@ -470,7 +470,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         try {
           const imgWidth = 200;
           const imgHeight = 160;
-          const imgX = (pageWidth/2 - imgWidth);
+          const imgX = (pageWidth - imgWidth);
           const imgY = 100;
           
           // Handle different image formats
@@ -498,7 +498,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       pdf.setDrawColor(147, 51, 234);
       pdf.setLineWidth(1);
-      pdf.line(30, 160, pageWidth - 30, 160);
+      pdf.line(30, 160, pageWidth - 30, 120);
       
       // Aura Color Analysis
       pdf.setFontSize(18);
@@ -508,38 +508,38 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       let yPos = 185;
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
-      pdf.text(`Personality Color: ${reading.personalityColor}`, 25, yPos);
+      pdf.text(`Thinking Color: ${reading.personalityColor}`, 25, yPos);
       yPos += 6;
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      pdf.text('Your core essence and fundamental nature', 30, yPos);
+      pdf.text('Your thinking essence and nature', 30, yPos);
       yPos += 15;
       
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
-      pdf.text(`Receiving Color: ${reading.receivingColor}`, 25, yPos);
+      pdf.text(`Giving Color: ${reading.receivingColor}`, 25, yPos);
       yPos += 6;
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      pdf.text('How you receive energy from others', 30, yPos);
+      pdf.text('How you give energy to others', 30, yPos);
       yPos += 15;
       
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
-      pdf.text(`Giving Color: ${reading.givingColor}`, 25, yPos);
+      pdf.text(`Receiving Color: ${reading.givingColor}`, 25, yPos);
       yPos += 6;
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      pdf.text('How you share energy to your environment', 30, yPos);
+      pdf.text('How you receive energy from environment', 30, yPos);
       yPos += 15;
       
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
-      pdf.text(`Thinking Color: ${reading.thinkingColor}`, 25, yPos);
+      pdf.text(`Personality Color: ${reading.thinkingColor}`, 25, yPos);
       yPos += 6;
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      pdf.text('Your mental and spiritual processing patterns', 30, yPos);
+      pdf.text('Your core essence', 30, yPos);
       yPos += 20;
       
       // Energy Level Assessment
@@ -1474,22 +1474,22 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.personalityColor)}`}></div>
-                <p className="text-sm font-medium">Personality</p>
+                <p className="text-sm font-medium">Thinking</p>
                 <p className="text-xs text-gray-600">{reading.personalityColor}</p>
               </div>
               <div className="text-center">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.receivingColor)}`}></div>
-                <p className="text-sm font-medium">Receiving</p>
+                <p className="text-sm font-medium">Giving</p>
                 <p className="text-xs text-gray-600">{reading.receivingColor}</p>
               </div>
               <div className="text-center">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.givingColor)}`}></div>
-                <p className="text-sm font-medium">Giving</p>
+                <p className="text-sm font-medium">Receiving</p>
                 <p className="text-xs text-gray-600">{reading.givingColor}</p>
               </div>
               <div className="text-center">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.thinkingColor)}`}></div>
-                <p className="text-sm font-medium">Thinking</p>
+                <p className="text-sm font-medium">Personlaity</p>
                 <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
               </div>
             </div>
