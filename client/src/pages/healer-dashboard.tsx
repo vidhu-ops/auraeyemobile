@@ -823,6 +823,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 2: ASCENDANT REPORT DETAILS
       pdf.addPage();
+      addPaperBackground();
       yPos = drawTitleWithLine('Ascendant Report', 30);
       
       // Add decorative image area (similar to screenshot 2)
@@ -867,6 +868,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 3: ENERGY POSITIONS (similar to Planetary Positions from screenshot 3)
       pdf.addPage();
+      addPaperBackground();
       yPos = drawTitleWithLine('Energy Positions', 30);
       
       // Create a table similar to the planetary positions table in screenshot 3
@@ -948,6 +950,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 5: COMPREHENSIVE CHAKRA ANALYSIS WITH ENHANCED DATA
       pdf.addPage();
+      addPaperBackground();
       yPos = drawTitleWithLine('Comprehensive Chakra Analysis', 30);
       
       // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
@@ -1046,6 +1049,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         // Check if we need a new page
         if (yPos > 220) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('DETAILED CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1101,6 +1105,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
           pdf.addPage();
+          addPaperBackground();
           
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
@@ -1517,47 +1522,47 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text('Complete Life Assessment & Spiritual Development', 20, yPos);
         yPos += 15;
         
-        // Calculate comprehensive life scores based on chakra activity and aura analysis
+        // Calculate comprehensive life scores using exact formulas from aura analysis
         const comprehensiveLifeScores = {
           'Love & Relationships': {
-            score: Math.round((allChakraData.heart + allChakraData.sacral) / 2),
-            description: 'Capacity for love, intimacy, emotional connection',
-            guidance: 'Heart chakra healing, emotional expression, relationship work'
+            score: ((0.4 * allChakraData.heart) + (0.3 * allChakraData.sacral) + (0.3 * allChakraData.throat)).toFixed(1),
+            description: 'Emotional openness & authentic expression, capacity for love, intimacy, emotional connection',
+            guidance: 'Heart chakra healing, emotional expression, relationship work, authentic communication'
           },
-          'Career & Life Purpose': {
-            score: Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
-            description: 'Professional fulfillment and authentic self-expression',
-            guidance: 'Personal power development, authentic communication'
+          'Emotional Stability': {
+            score: ((0.4 * allChakraData.sacral) + (0.3 * allChakraData.heart) + (0.3 * allChakraData.root)).toFixed(1),
+            description: 'Emotional maturity & self-soothing ability, resilience under stress and emotional regulation',
+            guidance: 'Emotional healing, self-care practices, grounding work, stress management techniques'
           },
-          'Spiritual Development': {
-            score: Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
-            description: 'Connection to higher consciousness and spiritual growth',
-            guidance: 'Meditation practice, divine connection, spiritual study'
+          'Protection Score': {
+            score: ((0.4 * allChakraData.root) + (0.3 * allChakraData.soulStar) + (0.2 * allChakraData.solarPlexus) + (0.1 * allChakraData.thirdEye)).toFixed(1),
+            description: 'Spiritual boundary & auric shield strength, energetic protection and boundary maintenance',
+            guidance: 'Boundary setting, protection rituals, energy shielding practices, spiritual cleansing'
+          },
+          'Money & Abundance': {
+            score: ((0.3 * allChakraData.root) + (0.3 * allChakraData.solarPlexus) + (0.4 * allChakraData.earthStar)).toFixed(1),
+            description: 'Groundedness & wealth mindset, financial flow and material manifestation ability',
+            guidance: 'Abundance mindset work, financial healing, earth connection, material grounding practices'
+          },
+          'Career & Purpose': {
+            score: ((0.4 * allChakraData.solarPlexus) + (0.3 * allChakraData.thirdEye) + (0.3 * allChakraData.crown)).toFixed(1),
+            description: 'Vision, action & divine guidance alignment, professional fulfillment and life direction',
+            guidance: 'Personal power development, vision clarity work, spiritual guidance connection'
+          },
+          'Spiritual Growth': {
+            score: ((0.4 * allChakraData.crown) + (0.3 * allChakraData.thirdEye) + (0.3 * allChakraData.soulStar)).toFixed(1),
+            description: 'Higher wisdom & divine intuition, connection to higher consciousness and spiritual expansion',
+            guidance: 'Meditation practice, divine connection, spiritual study, crown chakra activation'
           },
           'Physical Vitality': {
-            score: Math.round((allChakraData.root + allChakraData.earthStar) / 2),
-            description: 'Physical health, energy levels, material world grounding',
-            guidance: 'Grounding exercises, physical activity, earth connection'
+            score: ((0.4 * allChakraData.root) + (0.3 * allChakraData.solarPlexus) + (0.3 * allChakraData.sacral)).toFixed(1),
+            description: 'Physical health, energy levels, material world grounding and bodily vitality',
+            guidance: 'Grounding exercises, physical activity, earth connection, energetic vitality work'
           },
-          'Mental Clarity': {
-            score: Math.round((allChakraData.thirdEye + allChakraData.throat) / 2),
-            description: 'Intuitive wisdom, clear thinking, truth perception',
-            guidance: 'Third eye activation, meditation, wisdom practices'
-          },
-          'Emotional Balance': {
-            score: Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
-            description: 'Emotional stability, healing capacity, inner strength',
-            guidance: 'Emotional healing work, self-compassion practices'
-          },
-          'Creative Expression': {
-            score: Math.round((allChakraData.sacral + allChakraData.throat) / 2),
-            description: 'Artistic abilities, creative flow, self-expression',
-            guidance: 'Creative pursuits, sacral chakra work, artistic expression'
-          },
-          'Leadership & Influence': {
-            score: Math.round((allChakraData.solarPlexus + allChakraData.crown) / 2),
-            description: 'Personal power, influence, spiritual leadership',
-            guidance: 'Confidence building, spiritual leadership development'
+          'Manifestation Power': {
+            score: ((0.4 * allChakraData.solarPlexus) + (0.3 * allChakraData.root) + (0.2 * allChakraData.thirdEye) + (0.1 * allChakraData.sacral)).toFixed(1),
+            description: 'Converting visions into tangible results, creative manifestation and reality creation ability',
+            guidance: 'Vision work, action taking skills, creative practices, manifestation techniques'
           }
         };
         
