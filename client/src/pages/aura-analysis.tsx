@@ -2095,7 +2095,7 @@ export default function AuraAnalysis() {
                 if (tabId === 'chakras') {
                   scaleFactor = 3.0; // Triple the size for better visibility
                 } else if (tabId === 'guidance') {
-                  scaleFactor = 1.2; // 20% larger for better visibility  
+                  scaleFactor = 1.8; // 80% larger for better visibility (50% increase from 1.2)
                 } else {
                   scaleFactor = 1.5; // 50% larger for better legibility
                 }
@@ -2157,7 +2157,7 @@ export default function AuraAnalysis() {
               // Special size enhancement with proper bounds checking
               let singleScaleFactor = 1.0;
               if (tabId === 'guidance') {
-                singleScaleFactor = 1.8; // Reduced from 2.0x to 1.8x for better fitting
+                singleScaleFactor = 2.7; // 170% larger for better visibility (50% increase from 1.8)
               } else {
                 singleScaleFactor = 1.5; // 50% larger for better legibility
               }
