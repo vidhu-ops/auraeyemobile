@@ -1488,47 +1488,74 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text('Complete Life Assessment & Spiritual Development', 20, yPos);
         yPos += 15;
         
-        // Calculate comprehensive life scores based on chakra activity and aura analysis
+        // Calculate detailed life scores exactly as shown in the aura analysis UI
+        const soulStarScore = calculateSoulStarChakra(reading) / 10;
         const comprehensiveLifeScores = {
-          'Love & Relationships': {
-            score: Math.round((allChakraData.heart + allChakraData.sacral) / 2),
-            description: 'Capacity for love, intimacy, emotional connection',
-            guidance: 'Heart chakra healing, emotional expression, relationship work'
+          'Career & Purpose': {
+            score: parseFloat(((0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * (chakraActivity.crown || 5))).toFixed(1)),
+            description: 'Vision, action & divine guidance alignment',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * (chakraActivity.crown || 5));
+              if (score <= 4) return "Feels lost or stuck, lacks clarity of life direction - Focus on exploring passions and seeking guidance";
+              if (score <= 6) return "Developing purpose clarity, some direction uncertainty - Continue exploring and trust the process";
+              if (score <= 8) return "Good career alignment, clear life direction - Build on current clarity and take action";
+              return "Excellent purpose clarity and career fulfillment - Share your gifts and inspire others";
+            })()
           },
-          'Career & Life Purpose': {
-            score: Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
-            description: 'Professional fulfillment and authentic self-expression',
-            guidance: 'Personal power development, authentic communication'
+          'Emotional Stability': {
+            score: parseFloat(((0.4 * (chakraActivity.sacral || 5)) + (0.3 * (chakraActivity.heart || 5)) + (0.3 * (chakraActivity.root || 5))).toFixed(1)),
+            description: 'Emotional maturity & self-soothing ability',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.sacral || 5)) + (0.3 * (chakraActivity.heart || 5)) + (0.3 * (chakraActivity.root || 5));
+              if (score <= 4) return "Emotionally reactive, overwhelmed easily - Practice grounding and emotional regulation techniques";
+              if (score <= 6) return "Moderate emotional stability, occasional overwhelm - Develop stronger emotional awareness";
+              if (score <= 8) return "Good emotional balance, handles stress well - Continue healthy emotional practices";
+              return "Excellent emotional stability and resilience - Support others in their emotional journey";
+            })()
           },
-          'Spiritual Development': {
-            score: Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
-            description: 'Connection to higher consciousness and spiritual growth',
-            guidance: 'Meditation practice, divine connection, spiritual study'
+          'Spiritual Growth': {
+            score: parseFloat(((0.4 * (chakraActivity.crown || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * soulStarScore)).toFixed(1)),
+            description: 'Higher wisdom & divine intuition',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.crown || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * soulStarScore);
+              if (score <= 4) return "Spiritually disconnected or resisting inner voice - Begin with simple meditation and trust exercises";
+              if (score <= 6) return "Developing spiritual awareness, some resistance - Continue practice and remain open";
+              if (score <= 8) return "Good spiritual connection, regular inner guidance - Deepen your practice and trust";
+              return "Excellent spiritual openness and divine connection - Guide others on their spiritual path";
+            })()
           },
-          'Physical Vitality': {
-            score: Math.round((allChakraData.root + allChakraData.earthStar) / 2),
-            description: 'Physical health, energy levels, material world grounding',
-            guidance: 'Grounding exercises, physical activity, earth connection'
+          'Physical Energy': {
+            score: parseFloat(((0.4 * (chakraActivity.root || 5)) + (0.3 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.sacral || 5))).toFixed(1)),
+            description: 'Stamina, vitality & body-mind connection',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.root || 5)) + (0.3 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.sacral || 5));
+              if (score <= 4) return "Low vitality, potential health or energy blocks - Focus on grounding, nutrition and energy healing";
+              if (score <= 6) return "Moderate energy levels, some vitality blocks - Improve physical practices and rest";
+              if (score <= 8) return "Good physical energy, healthy vitality - Maintain current healthy practices";
+              return "Excellent physical energy and vibrant health - Inspire others toward wellness";
+            })()
           },
-          'Mental Clarity': {
-            score: Math.round((allChakraData.thirdEye + allChakraData.throat) / 2),
-            description: 'Intuitive wisdom, clear thinking, truth perception',
-            guidance: 'Third eye activation, meditation, wisdom practices'
+          'Manifestation': {
+            score: parseFloat(((0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.root || 5)) + (0.2 * (chakraActivity.thirdEye || 5)) + (0.1 * (chakraActivity.sacral || 5))).toFixed(1)),
+            description: 'Converting visions into tangible results',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.root || 5)) + (0.2 * (chakraActivity.thirdEye || 5)) + (0.1 * (chakraActivity.sacral || 5));
+              if (score <= 4) return "Energies are scattered or sabotaged - Clear energy blocks and focus intentions";
+              if (score <= 6) return "Moderate manifestation ability, some blocks - Strengthen willpower and clear vision";
+              if (score <= 8) return "Good manifestation skills, visions becoming reality - Trust the process and take action";
+              return "Excellent manifestation power, dreams easily realized - Teach others manifestation principles";
+            })()
           },
-          'Emotional Balance': {
-            score: Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
-            description: 'Emotional stability, healing capacity, inner strength',
-            guidance: 'Emotional healing work, self-compassion practices'
-          },
-          'Creative Expression': {
-            score: Math.round((allChakraData.sacral + allChakraData.throat) / 2),
-            description: 'Artistic abilities, creative flow, self-expression',
-            guidance: 'Creative pursuits, sacral chakra work, artistic expression'
-          },
-          'Leadership & Influence': {
-            score: Math.round((allChakraData.solarPlexus + allChakraData.crown) / 2),
-            description: 'Personal power, influence, spiritual leadership',
-            guidance: 'Confidence building, spiritual leadership development'
+          'Protection': {
+            score: parseFloat(((0.4 * (chakraActivity.root || 5)) + (0.3 * soulStarScore) + (0.2 * (chakraActivity.solarPlexus || 5)) + (0.1 * (chakraActivity.thirdEye || 5))).toFixed(1)),
+            description: 'Spiritual boundary & auric shield strength',
+            guidance: (() => {
+              const score = (0.4 * (chakraActivity.root || 5)) + (0.3 * soulStarScore) + (0.2 * (chakraActivity.solarPlexus || 5)) + (0.1 * (chakraActivity.thirdEye || 5));
+              if (score <= 4) return "Highly vulnerable to others' energies - Practice energy protection and boundary setting";
+              if (score <= 6) return "Moderate protection, some energetic vulnerability - Strengthen auric boundaries";
+              if (score <= 8) return "Good energetic boundaries, stable protection - Maintain current protection practices";
+              return "Excellent auric shield, strong energetic protection - Help others strengthen their boundaries";
+            })()
           }
         };
         
