@@ -2023,7 +2023,7 @@ export default function AuraAnalysis() {
             
             // CRITICAL FIX: Maintain original aspect ratio without squishing
             const pageMaxWidth = 170; // Maximum usable page width (A4 page is 210mm, minus margins)
-            const pageMaxHeight = 240; // Maximum usable page height per section (A4 page is 297mm, minus margins)
+            const pageMaxHeight = 280; // Maximum usable page height per section (A4 page is 297mm, minus margins)
             
             // Calculate proper dimensions maintaining original aspect ratio
             let finalWidth = pageMaxWidth;
@@ -2091,8 +2091,11 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
                   sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 } else if (tabId === 'guidance') {
-                  sectionFinalWidth = sectionFinalWidth * 1.2; // Double the size for better visibility  
-                  sectionFinalHeight = sectionFinalHeight * 1.2; // Double the size for better visibility
+                  sectionFinalWidth = sectionFinalWidth * 1.1; // Double the size for better visibility  
+                  sectionFinalHeight = sectionFinalHeight * 1.1; // Double the size for better visibility
+                } else if (tabId === 'analysis') {
+                  sectionFinalWidth = sectionFinalWidth * 1.0; // Double the size for better visibility  
+                  sectionFinalHeight = sectionFinalHeight * 1.0; // Double the size for better visibility
                 } else {
                   // Increase all other tabs by 1.5x for better legibility
                   sectionFinalWidth = sectionFinalWidth * 1.5; // 50% larger for better legibility
@@ -2103,7 +2106,7 @@ export default function AuraAnalysis() {
                 
                 // Compress and add the section
                 const compressedSectionDataUrl = await compressImageForPDF(sectionDataUrl, sectionFinalWidth, sectionFinalHeight);
-                pdf.addImage(compressedSectionDataUrl, 'JPEG', 20, yPosition, sectionFinalWidth, sectionFinalHeight);
+                pdf.addImage(compressedSectionDataUrl, 'JPEG', 40, yPosition, sectionFinalWidth, sectionFinalHeight);
                 yPosition += sectionFinalHeight + 10;
                 
                 console.log(`Screenshot ${tabId} section ${section + 1}/${sectionsNeeded}: PDF ${sectionFinalWidth.toFixed(1)}x${sectionFinalHeight.toFixed(1)}`);
@@ -2113,7 +2116,7 @@ export default function AuraAnalysis() {
               // For normal screenshots, use single page with proper aspect ratio - already calculated above
               // Ensure minimum readability while respecting page constraints
               const minWidth = 120;
-              const minHeight = 160;
+              const minHeight = 260;
               
               // Only increase size if we have room and it improves readability
               if (finalWidth < minWidth && (minWidth * trueAspectRatio) <= pageMaxHeight) {
@@ -2134,12 +2137,16 @@ export default function AuraAnalysis() {
               
               // Special size enhancement for all tabs single screenshots for better legibility
               if (tabId === 'guidance') {
-                finalWidth = finalWidth * 2.0; // Double the size for better visibility
-                finalHeight = finalHeight * 2.0; // Double the size for better visibility
-              } else {
+                finalWidth = finalWidth * 1.8; // Double the size for better visibility
+                finalHeight = finalHeight * 1.8; // Double the size for better visibility
+              }  else if {
                 // Increase all other tabs by 1.5x for better legibility
-                finalWidth = finalWidth * 1.5; // 50% larger for better legibility
-                finalHeight = finalHeight * 1.5; // 50% larger for better legibility
+                finalWidth = finalWidth * 1.35; // 50% larger for better legibility
+                finalHeight = finalHeight * 1.35; // 50% larger for better legibility
+              }else {
+                // Increase all other tabs by 1.5x for better legibility
+                finalWidth = finalWidth * 1.35; // 50% larger for better legibility
+                finalHeight = finalHeight * 1.35; // 50% larger for better legibility
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
@@ -2155,7 +2162,7 @@ export default function AuraAnalysis() {
               
               // Add the screenshot with preserved aspect ratio
               pdf.addImage(compressedImageDataUrl, 'JPEG', 20, yPosition, finalWidth, finalHeight);
-              yPosition += finalHeight + 15;
+              yPosition += finalHeight + 25;
             }
             
             console.log(`Screenshot ${tabId} added to PDF with preserved dimensions and readability`);
