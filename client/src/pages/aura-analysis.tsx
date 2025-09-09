@@ -7227,7 +7227,7 @@ export default function AuraAnalysis() {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.receiving);
                                           })()}</h5>
-                                          <p className="text-sm text-blue-600">Receiving Energy (Dynamic) - What you recieve from the enviornment</p>
+                                          <p className="text-sm text-blue-600">Receiving Energy (Dynamic) - What you recieve from the environment</p>
                                         </div>
                                       </div>
                                       <div className="mt-3 p-2 bg-blue-50 rounded border-l-4 border-blue-300">
@@ -7288,7 +7288,7 @@ export default function AuraAnalysis() {
                                             const detectedColors = extractAllAuraColors(result);
                                             return getColorNameFromHex(detectedColors.giving);
                                           })()}</h5>
-                                          <p className="text-sm text-orange-600">Giving Energy (Dynamic) - What you give to the enviornment</p>
+                                          <p className="text-sm text-orange-600">Giving Energy (Dynamic) - What you give to the environment</p>
                                         </div>
                                       </div>
                                       <div className="mt-3 p-2 bg-orange-50 rounded border-l-4 border-orange-300">

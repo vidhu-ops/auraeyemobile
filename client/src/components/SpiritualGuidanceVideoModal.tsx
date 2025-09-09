@@ -73,6 +73,9 @@ export function SpiritualGuidanceVideoModal({ isOpen, onClose }: SpiritualGuidan
             <p className="text-purple-200">
               Let the universe guide you through this spiritual journey
             </p>
+            <p className="text-purple-200">
+             (4 minutes)
+            </p>
           </div>
 
           <div className="w-full max-w-2xl bg-black/20 rounded-lg overflow-hidden relative">
