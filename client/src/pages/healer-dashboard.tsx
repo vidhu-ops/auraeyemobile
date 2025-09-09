@@ -650,6 +650,35 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Import paper texture for background using @assets
+      let paperTextureDataUrl = '';
+      try {
+        const response = await fetch('/attached_assets/white-paper-texture-with-flecks_1757451226299.jpg');
+        const blob = await response.blob();
+        paperTextureDataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.log('Paper texture not loaded, using white background');
+      }
+      
+      // Helper function to add paper texture background to each page
+      const addPaperBackground = () => {
+        if (paperTextureDataUrl) {
+          try {
+            // Add paper texture as background covering the entire page
+            pdf.addImage(paperTextureDataUrl, 'JPEG', 0, 0, pageWidth, pageHeight);
+          } catch (error) {
+            console.log('Error adding paper texture:', error);
+          }
+        }
+      };
+      
+      // Add background to first page
+      addPaperBackground();
       const healerName = user?.username || 'Professional Healer';
       
       // Helper function to parse JSON fields safely
@@ -727,8 +756,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Helper function to draw info box (like in screenshots)
       const drawInfoBox = (title: string, info: any, startY: number) => {
-        pdf.setFillColor(254, 248, 220); // Light yellow background
-        pdf.setDrawColor(212, 175, 55); // Golden border
+        pdf.setFillColor(255, 255, 255); // Light yellow background
+        pdf.setDrawColor(255, 255, 255); // Golden border
         pdf.rect(30, startY, pageWidth - 60, 45, 'FD');
         
         pdf.setFontSize(12);
@@ -790,7 +819,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       yPos = drawTraitBubbles(positiveTraits, yPos, 'Positive Traits', true);
       
       // Negative Traits Section  
-      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'Negative Traits', false);
+      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'More Traits', false);
       
       // PAGE 2: ASCENDANT REPORT DETAILS
       pdf.addPage();
@@ -820,11 +849,11 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Ascendant Details Box (similar to screenshot 2)
       const ascendantInfo = {
-        'Lord': reading.personalityColor,
-        'Symbol': `${reading.thinkingColor} Energy`,
-        'Characteristics': `${reading.givingColor}, ${reading.receivingColor}, Spiritual`,
+        'Major Color': reading.personalityColor,
+        'Secondary': `${reading.thinkingColor} Energy`,
+        'Dynamic Colors': `${reading.givingColor}, ${reading.receivingColor}`,
         'Lucky Gems': getGemstoneForColor(reading.personalityColor),
-        'Day Of Fast': getDayForColor(reading.personalityColor)
+        
       };
       
       yPos = drawInfoBox('Ascendant Report Details', ascendantInfo, yPos + 100);
@@ -842,10 +871,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Create a table similar to the planetary positions table in screenshot 3
       const energyPositions = [
-        { position: 'Thinking', energy: reading.personalityColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Primary', nakshatra: 'Core', house: '1st' },
-        { position: 'Giving', energy: reading.receivingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Expression', nakshatra: 'Outward', house: '7th' },
-        { position: 'Receiving', energy: reading.givingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Absorption', nakshatra: 'Inward', house: '4th' },
-        { position: 'Personality', energy: reading.thinkingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Essence', nakshatra: 'Identity', house: '10th' }
+        { position: 'Thinking', energy: reading.personalityColor, degree: `Above head`, sign: 'Primary', nakshatra: 'Core' },
+        { position: 'Giving', energy: reading.receivingColor, degree: `Right`, sign: 'Expression', nakshatra: 'Outward' },
+        { position: 'Receiving', energy: reading.givingColor, degree: `Left`, sign: 'Absorption', nakshatra: 'Inward' },
+        { position: 'Personality', energy: reading.thinkingColor, degree: `overall`, sign: 'Essence', nakshatra: 'Identity' }
       ];
       
       // Draw table header
@@ -856,10 +885,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.setTextColor(255, 255, 255);
       pdf.text('Position', 25, yPos + 8);
       pdf.text('Energy', 55, yPos + 8);
-      pdf.text('Degree', 85, yPos + 8);
-      pdf.text('Sign/Nature', 115, yPos + 8);
-      pdf.text('Nakshatra', 145, yPos + 8);
-      pdf.text('House', 175, yPos + 8);
+      pdf.text('Position', 85, yPos + 8);
+      pdf.text('Nature', 115, yPos + 8);
+      pdf.text('Movement', 145, yPos + 8);
+     
       
       yPos += 12;
       
@@ -876,8 +905,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(row.energy, 55, yPos + 7);
         pdf.text(row.degree, 85, yPos + 7);
         pdf.text(row.sign, 115, yPos + 7);
-        pdf.text(row.nakshatra, 145, yPos + 7);
-        pdf.text(row.house, 175, yPos + 7);
+        pdf.text(row.nakshatra, 145, yPos + 7)
+        
         
         yPos += 10;
       });
