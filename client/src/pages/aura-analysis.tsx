@@ -2087,15 +2087,21 @@ export default function AuraAnalysis() {
                 }
                 
                 // Calculate maximum allowable dimensions for PDF page
-                const pageMaxWidth = pageWidth - 40; // 20mm margins on each side
-                const pageMaxHeight = pageHeight - 100; // Reserve space for headers/footers
+                let pageMaxWidth = pageWidth - 40; // 20mm margins on each side
+                let pageMaxHeight = pageHeight - 100; // Reserve space for headers/footers
+                
+                // Allow guidance tab to use more of the page area
+                if (tabId === 'guidance') {
+                  pageMaxWidth = pageWidth - 20; // Smaller margins for guidance tab - use more width
+                  pageMaxHeight = pageHeight - 60; // Smaller margins for guidance tab - use more height
+                }
                 
                 // Special size enhancement for tabs with proper bounds checking
                 let scaleFactor = 1.0;
                 if (tabId === 'chakras') {
                   scaleFactor = 3.0; // Triple the size for better visibility
                 } else if (tabId === 'guidance') {
-                  scaleFactor = 1.8; // 80% larger for better visibility (50% increase from 1.2)
+                  scaleFactor = 3.6; // Much larger for better visibility - covers more of the page
                 } else {
                   scaleFactor = 1.5; // 50% larger for better legibility
                 }
@@ -2151,13 +2157,19 @@ export default function AuraAnalysis() {
               }
               
               // Calculate maximum allowable dimensions for PDF page  
-              const pageMaxWidthSingle = pageWidth - 40; // 20mm margins on each side
-              const pageMaxHeightSingle = pageHeight - 100; // Reserve space for headers/footers
+              let pageMaxWidthSingle = pageWidth - 40; // 20mm margins on each side
+              let pageMaxHeightSingle = pageHeight - 100; // Reserve space for headers/footers
+              
+              // Allow guidance tab to use more of the page area
+              if (tabId === 'guidance') {
+                pageMaxWidthSingle = pageWidth - 20; // Smaller margins for guidance tab - use more width
+                pageMaxHeightSingle = pageHeight - 60; // Smaller margins for guidance tab - use more height
+              }
               
               // Special size enhancement with proper bounds checking
               let singleScaleFactor = 1.0;
               if (tabId === 'guidance') {
-                singleScaleFactor = 2.7; // 170% larger for better visibility (50% increase from 1.8)
+                singleScaleFactor = 5.4; // Much larger for better visibility - covers more of the page
               } else {
                 singleScaleFactor = 1.5; // 50% larger for better legibility
               }
