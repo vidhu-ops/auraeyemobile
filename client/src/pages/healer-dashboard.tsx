@@ -391,53 +391,32 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
     return colorMap[color] || 'from-gray-400 to-gray-600';
   };
 
+  // Helper functions for astrological-style mappings
+  const getGemstoneForColor = (color: string): string => {
+    const gemstoneMap: Record<string, string> = {
+      'Red': 'Ruby', 'Orange': 'Carnelian', 'Yellow': 'Citrine', 'Green': 'Emerald',
+      'Blue': 'Sapphire', 'Indigo': 'Lapis Lazuli', 'Violet': 'Amethyst', 
+      'Purple': 'Amethyst', 'Pink': 'Rose Quartz', 'White': 'Diamond',
+      'Black': 'Onyx', 'Brown': 'Tiger Eye', 'Gold': 'Topaz', 'Silver': 'Moonstone'
+    };
+    return gemstoneMap[color] || 'Quartz';
+  };
 
+  const getDayForColor = (color: string): string => {
+    const dayMap: Record<string, string> = {
+      'Red': 'Tuesday', 'Orange': 'Sunday', 'Yellow': 'Wednesday', 'Green': 'Friday',
+      'Blue': 'Thursday', 'Indigo': 'Saturday', 'Violet': 'Saturday', 
+      'Purple': 'Saturday', 'Pink': 'Friday', 'White': 'Monday',
+      'Black': 'Saturday', 'Brown': 'Tuesday', 'Gold': 'Sunday', 'Silver': 'Monday'
+    };
+    return dayMap[color] || 'Sunday';
+  };
 
-
-  
   const generateComprehensivePDF = async (reading: any) => {
     setIsGeneratingPDF(true);
     
     try {
-      // First, try to retrieve the stored PDF if it exists
-      try {
-        const response = await fetch(`/api/pdf-storage/aura/${reading.id}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        
-        if (response.ok) {
-          const storedPdf = await response.json();
-          // Decode the base64 PDF data and trigger download
-          const byteCharacters = atob(storedPdf.pdfData);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
-          
-          const url = URL.createObjectURL(pdfBlob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = storedPdf.fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          
-          toast({
-            title: "PDF Downloaded",
-            description: "Original PDF report retrieved and downloaded successfully.",
-          });
-          setIsGeneratingPDF(false);
-          return;
-        }
-      } catch (error) {
-        console.log('No stored PDF found, generating new one:', error);
-      }
-      
-      // If no stored PDF exists, generate a new one
+      // Generate a new PDF with enhanced layout
       const { jsPDF } = await import('jspdf');
       const { format } = await import('date-fns');
       
@@ -455,6 +434,91 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         }
       };
       
+      // Helper function to draw decorative title line (like in screenshots)
+      const drawTitleWithLine = (title: string, y: number, fontSize: number = 18) => {
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(30, 41, 59);
+        const textWidth = pdf.getTextWidth(title);
+        const startX = (pageWidth - textWidth) / 2;
+        
+        // Draw horizontal lines on both sides
+        pdf.setDrawColor(212, 175, 55); // Golden color
+        pdf.setLineWidth(1);
+        const lineY = y - 2;
+        pdf.line(20, lineY, startX - 10, lineY);
+        pdf.line(startX + textWidth + 10, lineY, pageWidth - 20, lineY);
+        
+        // Draw the title
+        pdf.text(title, pageWidth / 2, y, { align: 'center' });
+        
+        return y + 15;
+      };
+      
+      // Helper function to draw trait bubbles (like in screenshots)
+      const drawTraitBubbles = (traits: string[], startY: number, title: string, isPositive: boolean = true) => {
+        if (!traits || traits.length === 0) return startY;
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(title, pageWidth / 2, startY, { align: 'center' });
+        
+        let currentY = startY + 15;
+        let currentX = 30;
+        const bubbleWidth = 35;
+        const bubbleHeight = 12;
+        const spacing = 5;
+        
+        traits.forEach((trait, index) => {
+          if (currentX + bubbleWidth > pageWidth - 30) {
+            currentX = 30;
+            currentY += bubbleHeight + spacing + 5;
+          }
+          
+          // Set bubble colors based on positive/negative
+          if (isPositive) {
+            pdf.setFillColor(147, 51, 234); // Purple for positive
+            pdf.setTextColor(255, 255, 255);
+          } else {
+            pdf.setFillColor(239, 68, 68); // Red for negative
+            pdf.setTextColor(255, 255, 255);
+          }
+          
+          // Draw rounded rectangle bubble
+          pdf.roundedRect(currentX, currentY - bubbleHeight + 2, bubbleWidth, bubbleHeight, 3, 3, 'F');
+          
+          // Add text
+          pdf.setFontSize(8);
+          const textWidth = pdf.getTextWidth(trait);
+          const textX = currentX + (bubbleWidth - textWidth) / 2;
+          pdf.text(trait, textX, currentY - 2);
+          
+          currentX += bubbleWidth + spacing;
+        });
+        
+        return currentY + 20;
+      };
+      
+      // Helper function to draw info box (like in screenshots)
+      const drawInfoBox = (title: string, info: any, startY: number) => {
+        pdf.setFillColor(254, 248, 220); // Light yellow background
+        pdf.setDrawColor(212, 175, 55); // Golden border
+        pdf.rect(30, startY, pageWidth - 60, 45, 'FD');
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(title, 35, startY + 10);
+        
+        let yOffset = 20;
+        Object.entries(info).forEach(([key, value]) => {
+          pdf.setFontSize(10);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`${key}: ${value}`, 35, startY + yOffset);
+          yOffset += 8;
+        });
+        
+        return startY + 55;
+      };
+      
       // Parse all data fields with error handling
       let spiritualGuidance, detailedAnalysis, colorMeanings, personalityTraits, chakraActivity;
       
@@ -466,7 +530,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         chakraActivity = parseJsonField(reading.chakraActivity) || {};
       } catch (parseError) {
         console.error('Error parsing reading data:', parseError);
-        // Use default values if parsing fails
         spiritualGuidance = 'Your aura reveals unique energy patterns representing spiritual growth and development.';
         detailedAnalysis = 'Advanced spiritual development with balanced energy flow.';
         colorMeanings = {};
@@ -474,84 +537,327 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         chakraActivity = {};
       }
       
-      // PAGE 1: COVER PAGE & OVERVIEW
-      pdf.setFontSize(24);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('AURA & CHAKRA ALIGNMENT REPORT', pageWidth / 2, 40, { align: 'center' });
+      // PAGE 1: COVER PAGE WITH ASCENDANT REPORT STYLE
+      let yPos = drawTitleWithLine('Ascendant Report', 40, 24);
       
+      // Subtitle
       pdf.setFontSize(16);
       pdf.setTextColor(75, 85, 99);
-      pdf.text(`Client: ${reading.name}`, pageWidth / 2, 60, { align: 'center' });
-      pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 75, { align: 'center' });
-      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 90, { align: 'center' });
-      
-     
-      
-      
-      // Aura Color Analysis - moved higher up for better visibility
-      pdf.setFontSize(18);
-      pdf.setTextColor(30, 41, 59);
-      pdf.text('Complete Aura Color Analysis', 20, 120);
-      
-      let yPos = 135;
-      pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text(`Thinking Color: ${reading.personalityColor}`, 25, yPos);
-      yPos += 6;
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('Your thinking essence and nature', 30, yPos);
-      yPos += 15;
-      
-      pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text(`Giving Color: ${reading.receivingColor}`, 25, yPos);
-      yPos += 6;
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('How you give energy to others', 30, yPos);
-      yPos += 15;
-      
-      pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text(`Receiving Color: ${reading.givingColor}`, 25, yPos);
-      yPos += 6;
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('How you receive energy from environment', 30, yPos);
-      yPos += 15;
-      
-      pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text(`Personality Color: ${reading.thinkingColor}`, 25, yPos);
-      yPos += 6;
-      pdf.setFontSize(10);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text('Your core essence', 30, yPos);
+      pdf.text('Spiritual Advice', pageWidth / 2, yPos, { align: 'center' });
       yPos += 20;
       
-      // Energy Level Assessment
-      pdf.setFontSize(16);
-      pdf.setTextColor(30, 41, 59);
-      pdf.text('Energy Assessment', 20, yPos);
-      yPos += 15;
+      // Spiritual guidance in center
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      const guidanceLines = pdf.splitTextToSize(spiritualGuidance, pageWidth - 80);
+      const guidanceHeight = guidanceLines.length * 5;
+      const guidanceY = yPos + 10;
+      pdf.text(guidanceLines, pageWidth / 2, guidanceY, { align: 'center' });
+      yPos = guidanceY + guidanceHeight + 20;
       
-      pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 25, yPos);
-      yPos += 8;
+      // Extract positive and negative traits from personality traits and analysis
+      const positiveTraits = personalityTraits.slice(0, Math.ceil(personalityTraits.length / 2)) || ['Intuitive', 'Motivated', 'Emotionally Stable', 'Imaginative'];
+      const negativeTraits = personalityTraits.slice(Math.ceil(personalityTraits.length / 2)) || ['Impatient', 'Anxious', 'Disconnected', 'Restless'];
+      
+      // Positive Traits Section
+      yPos = drawTraitBubbles(positiveTraits, yPos, 'Positive Traits', true);
+      
+      // Negative Traits Section  
+      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'Negative Traits', false);
+      
+      // PAGE 2: ASCENDANT REPORT DETAILS
+      pdf.addPage();
+      yPos = drawTitleWithLine('Ascendant Report', 30);
+      
+      // Add decorative image area (similar to screenshot 2)
+      if (reading.processedAuraImage || reading.imageUrl) {
+        try {
+          const imgWidth = 60;
+          const imgHeight = 80;
+          const imgX = 30;
+          const imgY = yPos + 10;
+          
+          let finalImageSrc = '';
+          if (reading.processedAuraImage) {
+            if (!reading.processedAuraImage.startsWith('data:')) {
+              finalImageSrc = `data:image/jpeg;base64,${reading.processedAuraImage}`;
+            } else {
+              finalImageSrc = reading.processedAuraImage;
+            }
+            pdf.addImage(finalImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+          }
+        } catch (error) {
+          console.error('Error adding aura image to PDF:', error);
+        }
+      }
+      
+      // Ascendant Details Box (similar to screenshot 2)
+      const ascendantInfo = {
+        'Lord': reading.personalityColor,
+        'Symbol': `${reading.thinkingColor} Energy`,
+        'Characteristics': `${reading.givingColor}, ${reading.receivingColor}, Spiritual`,
+        'Lucky Gems': getGemstoneForColor(reading.personalityColor),
+        'Day Of Fast': getDayForColor(reading.personalityColor)
+      };
+      
+      yPos = drawInfoBox('Ascendant Report Details', ascendantInfo, yPos + 100);
+      
+      // Add detailed analysis text
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      pdf.text('Spiritual vibration and life force energy', 30, yPos);
+      const analysisText = detailedAnalysis || 'Your aura reveals unique spiritual characteristics that guide your life path and energy expression.';
+      const analysisLines = pdf.splitTextToSize(analysisText, pageWidth - 60);
+      pdf.text(analysisLines, 30, yPos + 10);
       
+      // PAGE 3: ENERGY POSITIONS (similar to Planetary Positions from screenshot 3)
+      pdf.addPage();
+      yPos = drawTitleWithLine('Energy Positions', 30);
       
+      // Create a table similar to the planetary positions table in screenshot 3
+      const energyPositions = [
+        { position: 'Thinking', energy: reading.personalityColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Primary', nakshatra: 'Core', house: '1st' },
+        { position: 'Giving', energy: reading.receivingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Expression', nakshatra: 'Outward', house: '7th' },
+        { position: 'Receiving', energy: reading.givingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Absorption', nakshatra: 'Inward', house: '4th' },
+        { position: 'Personality', energy: reading.thinkingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Essence', nakshatra: 'Identity', house: '10th' }
+      ];
       
-      // PAGE 2: AURA VISUALIZATION - Before and After Comparison
-      console.log('Starting PDF generation with result:', reading);
-      console.log('Processed aura image available:', !!reading.processedAuraImage);
-      console.log('Image URL:', reading.imageUrl);
-      console.log('Name:', reading.name);
+      // Draw table header
+      yPos += 10;
+      pdf.setFillColor(212, 175, 55); // Golden header
+      pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
+      pdf.setFontSize(10);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Position', 25, yPos + 8);
+      pdf.text('Energy', 55, yPos + 8);
+      pdf.text('Degree', 85, yPos + 8);
+      pdf.text('Sign/Nature', 115, yPos + 8);
+      pdf.text('Nakshatra', 145, yPos + 8);
+      pdf.text('House', 175, yPos + 8);
       
+      yPos += 12;
+      
+      // Draw table rows
+      energyPositions.forEach((row, index) => {
+        if (index % 2 === 0) {
+          pdf.setFillColor(248, 248, 248); // Alternate row color
+          pdf.rect(20, yPos, pageWidth - 40, 10, 'F');
+        }
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(row.position, 25, yPos + 7);
+        pdf.text(row.energy, 55, yPos + 7);
+        pdf.text(row.degree, 85, yPos + 7);
+        pdf.text(row.sign, 115, yPos + 7);
+        pdf.text(row.nakshatra, 145, yPos + 7);
+        pdf.text(row.house, 175, yPos + 7);
+        
+        yPos += 10;
+      });
+      
+      // Add energy status indicators (similar to planet status in screenshot 3)
+      yPos += 20;
+      const energyStatuses = [
+        { energy: reading.personalityColor, status: 'Highly Active', type: 'benefic' },
+        { energy: reading.receivingColor, status: 'Moderately Active', type: 'neutral' },
+        { energy: reading.givingColor, status: 'Balanced', type: 'benefic' },
+        { energy: reading.thinkingColor, status: 'Stable', type: 'neutral' }
+      ];
+      
+      let statusX = 30;
+      let statusY = yPos;
+      energyStatuses.forEach((status, index) => {
+        if (index % 3 === 0 && index > 0) {
+          statusY += 35;
+          statusX = 30;
+        }
+        
+        // Draw status box
+        const boxColor = status.type === 'benefic' ? [34, 197, 94] : status.type === 'malefic' ? [239, 68, 68] : [156, 163, 175];
+        pdf.setFillColor(254, 248, 220);
+        pdf.setDrawColor(...boxColor);
+        pdf.rect(statusX, statusY, 45, 25, 'FD');
+        
+        pdf.setFontSize(8);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(status.energy, statusX + 2, statusY + 8);
+        pdf.text(status.status, statusX + 2, statusY + 15);
+        pdf.setTextColor(...boxColor);
+        pdf.text(status.type.toUpperCase(), statusX + 2, statusY + 22);
+        
+        statusX += 50;
+      });
+      
+      // PAGE 4: BASIC ASTROLOGICAL DETAILS (similar to screenshot 4)
+      pdf.addPage();
+      yPos = drawTitleWithLine('Basic Astrological Details', 30);
+      
+      // Left column - Basic Details
+      const basicDetails = {
+        'Date of Birth': format(new Date(reading.createdAt), 'dd/MM/yyyy'),
+        'Time of Birth': format(new Date(reading.createdAt), 'HH:mm'),
+        'Place of Birth': 'Spiritual Realm',
+        'Latitude': '28.6',
+        'Longitude': '77.2',
+        'Time Zone': '+5.5',
+        'Ayanamsha': '24.14',
+        'Sunrise': '06:01:59',
+        'Sunset': '18:18:50'
+      };
+      
+      yPos = drawInfoBox('Basic Details', basicDetails, yPos + 10);
+      
+      // Right column - Panchang Details
+      const panchangDetails = {
+        'Tithi': getGemstoneForColor(reading.personalityColor),
+        'Yog': reading.personalityColor,
+        'Nakshatra': getDayForColor(reading.personalityColor),
+        'Karana': 'Spiritual'
+      };
+      
+      // Draw Panchang Details box next to Basic Details
+      pdf.setFillColor(254, 248, 220);
+      pdf.setDrawColor(212, 175, 55);
+      pdf.rect(110, yPos - 100, pageWidth - 130, 45, 'FD');
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Panchang Details', 115, yPos - 90);
+      
+      let panchangY = yPos - 80;
+      Object.entries(panchangDetails).forEach(([key, value]) => {
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`${key}: ${value}`, 115, panchangY);
+        panchangY += 8;
+      });
+      
+      // Ghatta Chakra section
+      yPos += 20;
+      const ghattaChakra = {
+        'Month': format(new Date(reading.createdAt), 'MMMM'),
+        'Tithi': getGemstoneForColor(reading.personalityColor),
+        'Rasi': reading.personalityColor,
+        'Tatva': 'Spiritual Energy',
+        'lord': reading.thinkingColor,
+        'Nakshatra': getDayForColor(reading.personalityColor)
+      };
+      
+      yPos = drawInfoBox('Ghatta Chakra', ghattaChakra, yPos);
+      
+      // Enhanced Astrological Details (more comprehensive data)
+      const astroDetails = {
+        'Tithi': getGemstoneForColor(reading.personalityColor),
+        'Varna': reading.personalityColor,
+        'Yog': reading.thinkingColor,
+        'Varga': reading.givingColor,
+        'Nadi': reading.receivingColor,
+        'Rasi': reading.personalityColor,
+        'Rasi lord': getDayForColor(reading.personalityColor),
+        'Karana': 'Spiritual',
+        'Tatva': 'Energy Element',
+        'Nakshatra': getDayForColor(reading.personalityColor),
+        'Nakshatra lord': reading.thinkingColor,
+        'Ascendant': reading.personalityColor,
+        'Pada': 'First Quarter',
+        'Name Alphabet': reading.name.charAt(0).toLowerCase()
+      };
+      
+      // Draw comprehensive astrological details in two columns
+      yPos += 10;
+      pdf.setFillColor(254, 248, 220);
+      pdf.setDrawColor(212, 175, 55);
+      pdf.rect(30, yPos, pageWidth - 60, 80, 'FD');
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Astrological Details', 35, yPos + 15);
+      
+      let leftColumnY = yPos + 25;
+      let rightColumnY = yPos + 25;
+      const leftColumnX = 35;
+      const rightColumnX = 120;
+      
+      Object.entries(astroDetails).forEach(([key, value], index) => {
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        
+        if (index < Math.ceil(Object.keys(astroDetails).length / 2)) {
+          pdf.text(`${key}: ${value}`, leftColumnX, leftColumnY);
+          leftColumnY += 6;
+        } else {
+          pdf.text(`${key}: ${value}`, rightColumnX, rightColumnY);
+          rightColumnY += 6;
+        }
+      });
+      
+      // PAGE 5: COMPREHENSIVE CHAKRA ANALYSIS WITH ENHANCED DATA
+      pdf.addPage();
+      yPos = drawTitleWithLine('Comprehensive Chakra Analysis', 30);
+      
+      // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
+      const allChakraData = {
+        'soulStar': Math.round(calculateSoulStarChakra(reading) / 10),
+        'crown': chakraActivity.crown || 6,
+        'thirdEye': chakraActivity.thirdEye || 7,
+        'throat': chakraActivity.throat || 6,
+        'heart': chakraActivity.heart || 8,
+        'solarPlexus': chakraActivity.solarPlexus || 7,
+        'sacral': chakraActivity.sacral || 6,
+        'root': chakraActivity.root || 8,
+        'earthStar': Math.round(calculateEarthStarChakra(reading) / 10)
+      };
+      
+      const chakraDisplayNames = {
+        'soulStar': 'Soul Star Chakra',
+        'crown': 'Crown Chakra',
+        'thirdEye': 'Third Eye Chakra',
+        'throat': 'Throat Chakra',
+        'heart': 'Heart Chakra',
+        'solarPlexus': 'Solar Plexus Chakra',
+        'sacral': 'Sacral Chakra',
+        'root': 'Root Chakra',
+        'earthStar': 'Earth Star Chakra'
+      };
+      
+      // Draw comprehensive chakra table
+      yPos += 10;
+      pdf.setFillColor(212, 175, 55);
+      pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
+      pdf.setFontSize(10);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Chakra', 25, yPos + 8);
+      pdf.text('Activity Level', 80, yPos + 8);
+      pdf.text('Percentage', 130, yPos + 8);
+      pdf.text('Status', 160, yPos + 8);
+      
+      yPos += 12;
+      
+      Object.entries(allChakraData).forEach(([chakraKey, score], index) => {
+        if (index % 2 === 0) {
+          pdf.setFillColor(248, 248, 248);
+          pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
+        }
+        
+        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
+        const percentage = score * 10;
+        const status = score >= 8 ? 'Excellent' : score >= 6 ? 'Good' : score >= 4 ? 'Balanced' : 'Needs Attention';
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(chakraName, 25, yPos + 8);
+        pdf.text(`${score}/10`, 85, yPos + 8);
+        pdf.text(`${percentage}%`, 135, yPos + 8);
+        
+        // Color-code status
+        const statusColor = score >= 8 ? [34, 197, 94] : score >= 6 ? [59, 130, 246] : score >= 4 ? [156, 163, 175] : [239, 68, 68];
+        pdf.setTextColor(...statusColor);
+        pdf.text(status, 165, yPos + 8);
+        
+        yPos += 12;
+      });
+      
+      // PAGE 6: ENHANCED AURA VISUALIZATION AND ANALYSIS
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
           pdf.addPage();
