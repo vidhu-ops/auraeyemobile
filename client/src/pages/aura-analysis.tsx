@@ -2141,8 +2141,8 @@ export default function AuraAnalysis() {
                 finalHeight = finalHeight * 1.8; // Double the size for better visibility
               } else {
                 // Increase all other tabs by 1.5x for better legibility
-                finalWidth = finalWidth * 1.35; // 50% larger for better legibility
-                finalHeight = finalHeight * 1.35; // 50% larger for better legibility
+                finalWidth = finalWidth * 1.4; // 50% larger for better legibility
+                finalHeight = finalHeight * 1.4; // 50% larger for better legibility
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
@@ -2201,11 +2201,7 @@ export default function AuraAnalysis() {
         yPosition += 20;
 
         // Add styled box background for notes
-        pdf.setFillColor(255, 255, 255); // Light yellow background
-        pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'F'); // Filled rectangle
-        pdf.setDrawColor(255, 255, 255); // Golden border
-        pdf.setLineWidth(1);
-        pdf.rect(15, yPosition - 5, pageWidth - 30, 50, 'S'); // Stroked rectangle
+       
 
         pdf.setFontSize(12);
         pdf.setTextColor(55, 65, 81);
