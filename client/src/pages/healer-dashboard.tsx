@@ -1503,25 +1503,29 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
               </div>
             </div>
 
-            {/* Spiritual Guidance */}
+            {/* Spiritual Guidance Section */}
             {reading.spiritualGuidance && (
-              <div>
-                <h4 className="font-semibold text-lg mb-3">Spiritual Guidance</h4>
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg border border-purple-200">
-                  <p className="text-sm text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
+              <div className="bg-white border border-slate-300 rounded-lg p-4">
+                <div className="border-b border-slate-200 pb-2 mb-4">
+                  <h3 className="text-lg font-bold text-slate-800">SPIRITUAL GUIDANCE</h3>
+                </div>
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200">
+                  <p className="text-sm text-slate-700 leading-relaxed font-medium">{reading.spiritualGuidance}</p>
                 </div>
               </div>
             )}
 
-            {/* Personality Traits */}
+            {/* Personality Traits Section */}
             {Array.isArray(personalityTraits) && personalityTraits.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-lg mb-3">Personality Traits</h4>
-                <div className="flex flex-wrap gap-2">
+              <div className="bg-white border border-slate-300 rounded-lg p-4">
+                <div className="border-b border-slate-200 pb-2 mb-4">
+                  <h3 className="text-lg font-bold text-slate-800">PERSONALITY TRAITS</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {personalityTraits.map((trait, index) => (
-                    <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
-                      {trait}
-                    </Badge>
+                    <div key={index} className="bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-lg px-3 py-2 text-center">
+                      <span className="text-sm font-semibold text-purple-800">{trait}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1710,66 +1714,138 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   };
 
   return (
-    <Card className="border-2 border-blue-100">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl font-bold text-blue-800">{reading.name}</CardTitle>
-            <CardDescription className="text-blue-600">
-              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
-            </CardDescription>
+    <Card className="border-2 border-slate-200 shadow-lg">
+      {/* Professional Numerology Report Header */}
+      <div className="bg-gradient-to-r from-slate-50 to-gray-100 border-b-2 border-slate-200">
+        <div className="px-6 py-4">
+          <div className="text-center mb-4">
+            <h2 className="text-2xl font-bold text-slate-800 mb-1">NUMEROLOGY READING REPORT</h2>
+            <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto w-36"></div>
           </div>
-          <div className="flex gap-2">
+          
+          {/* Report Info Table */}
+          <div className="bg-white rounded-lg border border-slate-300 p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-between py-1 border-b border-gray-200">
+                  <span className="font-semibold text-slate-700">Client Name:</span>
+                  <span className="text-slate-900 font-bold">{reading.name}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-gray-200">
+                  <span className="font-semibold text-slate-700">Birth Date:</span>
+                  <span className="text-slate-900">{reading.birthDate}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between py-1 border-b border-gray-200">
+                  <span className="font-semibold text-slate-700">Reading Date:</span>
+                  <span className="text-slate-900">{format(new Date(reading.createdAt), "MMMM d, yyyy")}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-gray-200">
+                  <span className="font-semibold text-slate-700">Reading Time:</span>
+                  <span className="text-slate-900">{format(new Date(reading.createdAt), "h:mm a")}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-3 mt-4">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={downloadPDF}
-              title="Download PDF"
+              className="border-blue-300 text-blue-700 hover:bg-blue-50"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-4 w-4 mr-2" />
+              Download Report
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setIsEditing(!isEditing)}
-              title={isEditing ? "Cancel Edit" : "Edit Notes"}
+              className="border-slate-300 text-slate-700 hover:bg-slate-50"
             >
-              {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+              {isEditing ? <X className="h-4 w-4 mr-2" /> : <Edit3 className="h-4 w-4 mr-2" />}
+              {isEditing ? 'Cancel Edit' : 'Edit Notes'}
             </Button>
           </div>
         </div>
-      </CardHeader>
+      </div>
       
       <CardContent className="p-6 space-y-6">
-        {/* Core Numbers */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{reading.lifePathNumber}</div>
-            <p className="text-sm font-medium">Life Path</p>
+        {/* Core Numbers Section */}
+        <div className="bg-white border border-slate-300 rounded-lg p-4">
+          <div className="border-b border-slate-200 pb-2 mb-4">
+            <h3 className="text-lg font-bold text-slate-800">CORE NUMEROLOGY NUMBERS</h3>
           </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
-            <p className="text-sm font-medium">Destiny</p>
-          </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{reading.soulUrgeNumber}</div>
-            <p className="text-sm font-medium">Soul Urge</p>
-          </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{reading.personalityNumber}</div>
-            <p className="text-sm font-medium">Personality</p>
-          </div>
-          <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
-            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
-            <p className="text-sm font-medium text-emerald-700">Personal Year 2025</p>
+          <div className="overflow-hidden">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="border border-slate-300 px-4 py-3 text-left font-semibold text-slate-700">Number Type</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold text-slate-700">Value</th>
+                  <th className="border border-slate-300 px-4 py-3 text-left font-semibold text-slate-700">Significance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Life Path Number</td>
+                  <td className="border border-slate-300 px-4 py-3 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-800 font-bold text-xl rounded-full">
+                      {reading.lifePathNumber}
+                    </div>
+                  </td>
+                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your soul's journey and life purpose</td>
+                </tr>
+                <tr className="bg-slate-25">
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Destiny Number</td>
+                  <td className="border border-slate-300 px-4 py-3 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 text-green-800 font-bold text-xl rounded-full">
+                      {reading.destinyNumber}
+                    </div>
+                  </td>
+                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your life mission and ultimate goal</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Soul Urge Number</td>
+                  <td className="border border-slate-300 px-4 py-3 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 text-purple-800 font-bold text-xl rounded-full">
+                      {reading.soulUrgeNumber}
+                    </div>
+                  </td>
+                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your heart's deepest desires and motivations</td>
+                </tr>
+                <tr className="bg-slate-25">
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Personality Number</td>
+                  <td className="border border-slate-300 px-4 py-3 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 text-orange-800 font-bold text-xl rounded-full">
+                      {reading.personalityNumber}
+                    </div>
+                  </td>
+                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">How others perceive you externally</td>
+                </tr>
+                <tr className="bg-gradient-to-r from-emerald-25 to-green-25">
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-emerald-700">Personal Year 2025</td>
+                  <td className="border border-slate-300 px-4 py-3 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 font-bold text-xl rounded-full border-2 border-emerald-300">
+                      {reading.personalYearNumber}
+                    </div>
+                  </td>
+                  <td className="border border-slate-300 px-4 py-3 text-sm text-emerald-700 font-medium">Your current year's energy and opportunities</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Full Interpretation */}
-        <div>
-          <h4 className="font-semibold text-lg mb-3">Complete Interpretation</h4>
-          <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.interpretation}</p>
+        {/* Complete Interpretation Section */}
+        <div className="bg-white border border-slate-300 rounded-lg p-4">
+          <div className="border-b border-slate-200 pb-2 mb-4">
+            <h3 className="text-lg font-bold text-slate-800">COMPLETE NUMEROLOGY INTERPRETATION</h3>
+          </div>
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg border border-blue-200 max-h-96 overflow-y-auto">
+            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">{reading.interpretation}</p>
           </div>
         </div>
 
