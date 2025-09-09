@@ -675,14 +675,14 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         // Draw status box
         const boxColor = status.type === 'benefic' ? [34, 197, 94] : status.type === 'malefic' ? [239, 68, 68] : [156, 163, 175];
         pdf.setFillColor(254, 248, 220);
-        pdf.setDrawColor(...boxColor);
+        pdf.setDrawColor(boxColor[0], boxColor[1], boxColor[2]);
         pdf.rect(statusX, statusY, 45, 25, 'FD');
         
         pdf.setFontSize(8);
         pdf.setTextColor(30, 41, 59);
         pdf.text(status.energy, statusX + 2, statusY + 8);
         pdf.text(status.status, statusX + 2, statusY + 15);
-        pdf.setTextColor(...boxColor);
+        pdf.setTextColor(boxColor[0], boxColor[1], boxColor[2]);
         pdf.text(status.type.toUpperCase(), statusX + 2, statusY + 22);
         
         statusX += 50;
@@ -851,7 +851,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         
         // Color-code status
         const statusColor = score >= 8 ? [34, 197, 94] : score >= 6 ? [59, 130, 246] : score >= 4 ? [156, 163, 175] : [239, 68, 68];
-        pdf.setTextColor(...statusColor);
+        pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
         pdf.text(status, 165, yPos + 8);
         
         yPos += 12;
@@ -939,89 +939,105 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         console.log('No processed aura image found in reading data');
       }
       
-      // PAGE 3: COMPREHENSIVE CHAKRA ANALYSIS
+      // PAGE 7: DETAILED SPIRITUAL ANALYSIS AND HEALING RECOMMENDATIONS
       pdf.addPage();
-      pdf.setFontSize(18);
-      pdf.setTextColor(147, 51, 234);
-      pdf.text('COMPREHENSIVE CHAKRA ANALYSIS', pageWidth / 2, 25, { align: 'center' });
+      yPos = drawTitleWithLine('Detailed Spiritual Analysis', 30);
       
-      pdf.setDrawColor(147, 51, 234);
-      pdf.setLineWidth(0.5);
-      pdf.line(30, 35, pageWidth - 30, 35);
-      
-      yPos = 50;
-      
-      // Complete Chakra Activity from actual data
-      pdf.setFontSize(16);
-      pdf.setTextColor(30, 41, 59);
-      pdf.text('9-Chakra Energy System Activity', 20, yPos);
-      yPos += 15;
-      
-      // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
-      const allChakraData = {
-        'soulStar': Math.round(calculateSoulStarChakra(reading) / 10),
-        'crown': chakraActivity.crown || 6,
-        'thirdEye': chakraActivity.thirdEye || 7,
-        'throat': chakraActivity.throat || 6,
-        'heart': chakraActivity.heart || 8,
-        'solarPlexus': chakraActivity.solarPlexus || 7,
-        'sacral': chakraActivity.sacral || 6,
-        'root': chakraActivity.root || 8,
-        'earthStar': Math.round(calculateEarthStarChakra(reading) / 10)
-      };
-      
-      const chakraDisplayNames = {
-        'soulStar': 'Soul Star Chakra',
-        'crown': 'Crown Chakra',
-        'thirdEye': 'Third Eye Chakra',
-        'throat': 'Throat Chakra',
-        'heart': 'Heart Chakra',
-        'solarPlexus': 'Solar Plexus Chakra',
-        'sacral': 'Sacral Chakra',
-        'root': 'Root Chakra',
-        'earthStar': 'Earth Star Chakra'
-      };
-      
-      const chakraDescriptions = {
-        'soulStar': 'Higher spiritual purpose, divine connection, soul mission',
-        'crown': 'Spiritual connection, divine wisdom, universal consciousness',
-        'thirdEye': 'Intuition, inner wisdom, psychic abilities',
-        'throat': 'Communication, truth, self-expression',
-        'heart': 'Love, compassion, emotional healing',
-        'solarPlexus': 'Personal power, confidence, willpower',
-        'sacral': 'Creativity, sexuality, emotional flow',
-        'root': 'Grounding, survival, physical vitality',
-        'earthStar': 'Earth connection, grounding, ancestral wisdom'
-      };
-      
-      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
-        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
-        const description = chakraDescriptions[chakraKey as keyof typeof chakraDescriptions];
+      // Complete Detailed Analysis Text
+      if (detailedAnalysis && detailedAnalysis !== 'Advanced spiritual development with balanced energy flow.') {
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Complete Detailed Analysis', 20, yPos);
+        yPos += 15;
         
-        pdf.setFontSize(12);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`${chakraName}: ${score}/10 (${score * 10}%)`, 20, yPos);
-        yPos += 8;
-        
-        pdf.setFontSize(9);
+        pdf.setFontSize(10);
         pdf.setTextColor(55, 65, 81);
-        const descLines = pdf.splitTextToSize(description, pageWidth - 45);
-        pdf.text(descLines, 25, yPos);
-        yPos += descLines.length * 4 + 8;
+        const analysisLines = pdf.splitTextToSize(detailedAnalysis, pageWidth - 40);
+        pdf.text(analysisLines, 25, yPos);
+        yPos += analysisLines.length * 4 + 20;
+      }
+      
+      // Healing Recommendations
+      yPos = drawInfoBox('Professional Healing Recommendations', {
+        'Color Therapy': `Use ${reading.personalityColor.toLowerCase()} in meditation and surroundings`,
+        'Gemstone Healing': `Carry ${getGemstoneForColor(reading.personalityColor)} for energy balance`,
+        'Chakra Work': 'Focus on balancing your most active energy centers',
+        'Daily Practice': `Meditate on ${getDayForColor(reading.personalityColor)} for optimal results`,
+        'Energy Protection': 'Use white light visualization for spiritual protection'
+      }, yPos);
+      
+      // Professional Healer Notes
+      if (reading.healerNotes || editedNotes) {
+        yPos += 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Professional Healer Notes', 20, yPos);
+        yPos += 15;
         
-        if (yPos > 250) {
-          pdf.addPage();
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
-          yPos = 40;
-        }
+        // Add notes in a styled box
+        pdf.setFillColor(254, 252, 232);
+        pdf.rect(15, yPos - 5, pageWidth - 30, 40, 'F');
+        pdf.setDrawColor(251, 191, 36);
+        pdf.setLineWidth(1);
+        pdf.rect(15, yPos - 5, pageWidth - 30, 40, 'S');
+        
+        pdf.setFontSize(11);
+        pdf.setTextColor(55, 65, 81);
+        const notes = editedNotes || reading.healerNotes || "Professional insights and recommendations will be added here.";
+        const notesLines = pdf.splitTextToSize(notes, pageWidth - 40);
+        pdf.text(notesLines, 20, yPos + 5);
+      }
+      
+      // Footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(`Generated by AuraEye - Professional Report for ${reading.name}`, 20, pageHeight - 10);
+      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth - 80, pageHeight - 10);
+      
+      // Save the PDF and store it for future retrieval
+      const timestamp = format(new Date(), 'yyyy-MM-dd');
+      const fileName = `ascendant-aura-report-${reading.name}-${timestamp}.pdf`;
+      
+      // Get PDF as base64 string for storage
+      let pdfData;
+      try {
+        pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
+        console.log('PDF generated successfully, size:', pdfData.length, 'characters');
+      } catch (pdfError: any) {
+        console.error('Error converting PDF to base64:', pdfError);
+        throw new Error('Failed to convert PDF to base64: ' + String(pdfError?.message || pdfError));
+      }
+      
+      // Store the PDF in database for exact retrieval later
+      try {
+        await fetch('/api/pdf-storage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            auraReadingId: reading.id,
+            fileName: fileName,
+            pdfData: pdfData,
+            clientName: reading.name
+          }),
+        });
+        console.log('PDF stored successfully for future retrieval');
+      } catch (error) {
+        console.error('Error storing PDF:', error);
+        // Continue with download even if storage fails
+      }
+      
+      // Download the PDF
+      pdf.save(fileName);
+      
+      toast({
+        title: "PDF Generated",
+        description: `Enhanced Ascendant Report downloaded successfully`,
       });
       
-      pdf.setFontSize(8);
-      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', 20, pageHeight - 10);
-      
-      // PAGE 4: DETAILED CHAKRA ANALYSIS
+      // PAGE 4: OLD DETAILED CHAKRA ANALYSIS (keeping this for compatibility)
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
@@ -1643,51 +1659,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(notesLines, 20, yPos + 5);
       }
       
-      pdf.setFontSize(8);
-      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 8 of 8', 20, pageHeight - 10);
-      
-      // Save the PDF and store it for future retrieval
-      const timestamp = format(new Date(), 'yyyy-MM-dd');
-      const fileName = `aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`;
-      
-      // Get PDF as base64 string for storage
-      let pdfData;
-      try {
-        pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
-        console.log('PDF generated successfully, size:', pdfData.length, 'characters');
-      } catch (pdfError: any) {
-        console.error('Error converting PDF to base64:', pdfError);
-        throw new Error('Failed to convert PDF to base64: ' + String(pdfError?.message || pdfError));
-      }
-      
-      // Store the PDF in database for exact retrieval later
-      try {
-        await fetch('/api/pdf-storage', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            auraReadingId: reading.id,
-            fileName: fileName,
-            pdfData: pdfData,
-            clientName: reading.name
-          }),
-        });
-        console.log('PDF stored successfully for future retrieval');
-      } catch (error) {
-        console.error('Error storing PDF:', error);
-        // Continue with download even if storage fails
-      }
-      
-      // Download the PDF
-      pdf.save(fileName);
-      
-      toast({
-        title: "PDF Generated",
-        description: `Report downloaded successfully`,
-      });
+      // This duplicate section removed - PDF completion handled above
       
     } catch (error) {
       console.error('PDF generation error:', error);
