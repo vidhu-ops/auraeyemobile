@@ -1902,10 +1902,15 @@ export default function HealerDashboard() {
     refetchInterval: 3000, // Refetch every 3 seconds for very fast updates
   });
 
-  // Fetch healer's own numerology readings
+  // Fetch healer's own numerology readings with real-time updates
   const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
     queryKey: ["/api/healer-numerology-readings"],
     enabled: !!user,
+    staleTime: 0, // Always refetch to get latest data
+    gcTime: 0, // Don't cache - always fetch fresh data
+    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    refetchOnReconnect: true, // Refetch on reconnection
   });
 
   // Fetch healer's own vibe readings with immediate updates
