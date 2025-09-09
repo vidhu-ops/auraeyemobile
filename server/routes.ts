@@ -2840,6 +2840,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
           });
 
           console.log(`✅ Vibe reading saved to dashboard for user ${req.user.id}, reading ID: ${savedVibeReading.id}`);
+          console.log(`📊 Healer ${req.user.username} completed vibe reading - should appear in dashboard immediately`);
         } catch (error) {
           console.error('Failed to save vibe reading to dashboard:', error);
           // Don't fail the request if saving fails, just log the error

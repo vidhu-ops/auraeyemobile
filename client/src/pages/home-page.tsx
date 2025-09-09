@@ -292,8 +292,9 @@ export default function HomePage() {
       if (imagePreview) {
         processImageWithVibeAura(imagePreview, data.dominantColor);
       }
-      // Invalidate credits cache to update the display
+      // Invalidate caches to update the display immediately
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
       toast({
         title: "Vibe Analysis Complete!",
         description: data.message,
