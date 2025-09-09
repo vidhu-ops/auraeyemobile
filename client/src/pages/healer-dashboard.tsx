@@ -1038,7 +1038,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       yPos += 15;
       
       // Enhanced personality traits based on aura colors and energy patterns
-      const personalityTraits = {
+      const enhancedPersonalityTraits = {
         'Core Personality Traits': {
           'Primary Energy': `Your ${reading.personalityColor} aura reveals strong ${getPersonalityTrait(reading.personalityColor)} characteristics`,
           'Energy Expression': `With an energy level of ${reading.energyLevel}/10, you demonstrate ${getEnergyLevelTrait(reading.energyLevel)} spiritual presence`,
@@ -1059,7 +1059,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         }
       };
       
-      Object.entries(personalityTraits).forEach(([category, traits]) => {
+      Object.entries(enhancedPersonalityTraits).forEach(([category, traits]) => {
         if (yPos > 240) {
           pdf.addPage();
           pdf.setFontSize(18);
@@ -1073,7 +1073,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(category, 20, yPos);
         yPos += 12;
         
-        Object.entries(traits).forEach(([trait, description]) => {
+        Object.entries(traits as Record<string, string>).forEach(([trait, description]) => {
           if (yPos > 250) {
             pdf.addPage();
             pdf.setFontSize(18);
