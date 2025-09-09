@@ -601,6 +601,64 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
     return (pathGuidance[color] || 'Your unique spiritual path involves discovering and expressing your authentic gifts') + levelGuidance;
   };
 
+  const getComprehensiveCareerGuidance = (color: string, energyLevel: number, chakraData: any) => {
+    const strongestChakras = Object.entries(chakraData)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
+      .slice(0, 3)
+      .map(([chakra]) => chakra);
+
+    const careerPaths: Record<string, string> = {
+      'Red': 'Leadership roles, emergency services, military, sports, entrepreneurship, law enforcement',
+      'Orange': 'Creative fields, entertainment, marketing, social media, event planning, hospitality',
+      'Yellow': 'Education, research, writing, consulting, finance, technology, analysis',
+      'Green': 'Healthcare, counseling, environmental work, healing arts, veterinary, nature conservation',
+      'Blue': 'Communication, media, teaching, therapy, public speaking, customer service',
+      'Indigo': 'Psychology, spiritual counseling, research, investigation, intuitive services',
+      'Violet': 'Spiritual leadership, alternative healing, metaphysics, philosophy, transformation work',
+      'White': 'Nursing, caregiving, humanitarian work, spiritual guidance, purity-focused fields',
+      'Black': 'Security, protection services, investigation, crisis management, boundary work',
+      'Pink': 'Childcare, eldercare, social work, emotional healing, nurturing professions',
+      'Gold': 'Financial services, luxury goods, spiritual teaching, wisdom sharing, mentoring',
+      'Silver': 'Intuitive services, counseling, receptive roles, support positions, lunar-based work'
+    };
+
+    const strengthBasedRoles = energyLevel >= 8 ? 'High-energy leadership and dynamic roles' : 
+                              energyLevel >= 6 ? 'Balanced collaborative and independent work' : 
+                              energyLevel >= 4 ? 'Supportive and nurturing roles' : 
+                              'Behind-the-scenes and restorative work';
+
+    const workEnvironment = energyLevel >= 7 ? 'Fast-paced, high-energy environments with room for innovation and leadership' :
+                            energyLevel >= 5 ? 'Balanced environments with both interaction and quiet time' :
+                            'Calm, peaceful environments with minimal stress and good support systems';
+
+    const chakraGuidance = strongestChakras.map(chakra => {
+      const guidance: Record<string, string> = {
+        'soulStar': 'Purpose-driven work that aligns with your spiritual mission',
+        'crown': 'Roles involving wisdom, spirituality, or higher consciousness',
+        'thirdEye': 'Intuitive work, consulting, analysis, or guidance roles',
+        'throat': 'Communication-based careers, teaching, or creative expression',
+        'heart': 'Healing, counseling, or heart-centered service work',
+        'solarPlexus': 'Leadership positions, management, or personal empowerment roles',
+        'sacral': 'Creative fields, artistic expression, or emotional work',
+        'root': 'Practical, grounding work with tangible results',
+        'earthStar': 'Nature-based work, environmental fields, or ancestral work'
+      };
+      return guidance[chakra] || 'Balanced professional development';
+    });
+
+    return {
+      'Ideal Career Paths': careerPaths[color] || 'Diverse fields that match your unique energy signature',
+      'Energy-Based Role Suitability': strengthBasedRoles,
+      'Optimal Work Environment': workEnvironment,
+      'Chakra-Aligned Career Focus': chakraGuidance.join(', '),
+      'Professional Development Areas': getEnergyWorkFocus(chakraData),
+      'Leadership Style': energyLevel >= 7 ? 'Dynamic, inspiring, transformational leadership' : 
+                         energyLevel >= 5 ? 'Collaborative, supportive, balanced leadership' : 
+                         'Gentle, nurturing, behind-the-scenes leadership',
+      'Success Indicators': `Focus on ${color.toLowerCase()} energy qualities and develop your strongest chakra abilities for maximum professional fulfillment`
+    };
+  };
+
   const generateComprehensivePDF = async (reading: any) => {
     setIsGeneratingPDF(true);
     
@@ -1549,6 +1607,351 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         });
         yPos += 15;
       }
+      
+      // COMPREHENSIVE CHAKRA MEANINGS & INTERPRETATIONS
+      if (yPos > 180) {
+        pdf.addPage();
+        yPos = drawTitleWithLine('Complete Chakra System Analysis', 30);
+      } else {
+        yPos += 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Complete Chakra System Analysis', 20, yPos);
+        yPos += 15;
+      }
+      
+      const detailedChakraMeanings = {
+        'soulStar': {
+          name: 'Soul Star Chakra',
+          location: 'Above the crown, connecting to divine purpose',
+          meaning: 'Your connection to divine purpose and soul mission. Governs spiritual awakening and cosmic consciousness.',
+          functions: 'Divine connection, soul purpose clarity, spiritual awakening, cosmic awareness',
+          blockageSignsIfLow: 'Feeling disconnected from purpose, spiritual confusion, lack of meaning',
+          balancedSigns: 'Clear life purpose, strong spiritual connection, divine guidance awareness',
+          healingPractices: 'Meditation on divine purpose, spiritual study, prayer, cosmic consciousness work'
+        },
+        'crown': {
+          name: 'Crown Chakra (Sahasrara)',
+          location: 'Top of the head, connecting to universal consciousness',
+          meaning: 'Your spiritual connection and divine wisdom. Gateway to higher consciousness and enlightenment.',
+          functions: 'Spiritual connection, divine wisdom, universal consciousness, enlightenment',
+          blockageSignsIfLow: 'Spiritual disconnection, closed-mindedness, lack of inspiration',
+          balancedSigns: 'Spiritual awareness, divine connection, inner wisdom, peace',
+          healingPractices: 'Meditation, prayer, spiritual study, crown chakra visualization'
+        },
+        'thirdEye': {
+          name: 'Third Eye Chakra (Ajna)',
+          location: 'Between the eyebrows, center of intuition',
+          meaning: 'Your intuitive wisdom and psychic abilities. Center of inner sight and spiritual perception.',
+          functions: 'Intuition, psychic abilities, inner vision, spiritual insight, wisdom',
+          blockageSignsIfLow: 'Poor intuition, confusion, difficulty making decisions, mental fog',
+          balancedSigns: 'Clear intuition, psychic awareness, good judgment, inner knowing',
+          healingPractices: 'Third eye meditation, visualization, dreamwork, intuitive development'
+        },
+        'throat': {
+          name: 'Throat Chakra (Vishuddha)',
+          location: 'Throat area, center of communication',
+          meaning: 'Your authentic self-expression and truth communication. Gateway for creative expression.',
+          functions: 'Communication, truth expression, creativity, authentic self-expression',
+          blockageSignsIfLow: 'Difficulty expressing thoughts, fear of speaking, creative blocks',
+          balancedSigns: 'Clear communication, authentic expression, creative flow, truth telling',
+          healingPractices: 'Chanting, singing, authentic expression, throat chakra breathing'
+        },
+        'heart': {
+          name: 'Heart Chakra (Anahata)',
+          location: 'Center of chest, bridge between lower and upper chakras',
+          meaning: 'Your capacity for love, compassion, and emotional healing. Center of unconditional love.',
+          functions: 'Love, compassion, emotional healing, relationships, empathy',
+          blockageSignsIfLow: 'Difficulty loving others or yourself, emotional numbness, relationship issues',
+          balancedSigns: 'Unconditional love, compassion, emotional balance, healthy relationships',
+          healingPractices: 'Heart-opening meditation, loving-kindness practice, forgiveness work'
+        },
+        'solarPlexus': {
+          name: 'Solar Plexus Chakra (Manipura)',
+          location: 'Upper abdomen, center of personal power',
+          meaning: 'Your personal power, confidence, and willpower. Center of self-esteem and inner strength.',
+          functions: 'Personal power, confidence, willpower, self-esteem, inner strength',
+          blockageSignsIfLow: 'Low self-esteem, powerlessness, digestive issues, lack of confidence',
+          balancedSigns: 'Strong personal power, confidence, good boundaries, leadership',
+          healingPractices: 'Confidence building, personal power work, solar plexus breathing'
+        },
+        'sacral': {
+          name: 'Sacral Chakra (Svadhisthana)',
+          location: 'Lower abdomen, center of creativity and sexuality',
+          meaning: 'Your creativity, sexuality, and emotional flow. Center of pleasure and creative expression.',
+          functions: 'Creativity, sexuality, emotions, pleasure, artistic expression, passion',
+          blockageSignsIfLow: 'Creative blocks, sexual dysfunction, emotional numbness, guilt',
+          balancedSigns: 'Creative flow, healthy sexuality, emotional balance, joy',
+          healingPractices: 'Creative expression, emotional healing, sacral chakra movement'
+        },
+        'root': {
+          name: 'Root Chakra (Muladhara)',
+          location: 'Base of spine, foundation of energy system',
+          meaning: 'Your grounding, survival, and connection to physical world. Foundation of security.',
+          functions: 'Grounding, survival, security, material needs, physical vitality',
+          blockageSignsIfLow: 'Insecurity, fear, financial worries, disconnection from body',
+          balancedSigns: 'Feeling grounded, secure, physically healthy, material stability',
+          healingPractices: 'Grounding exercises, earth connection, physical activity, security work'
+        },
+        'earthStar': {
+          name: 'Earth Star Chakra',
+          location: 'Below the feet, connecting to Earth energy',
+          meaning: 'Your connection to Earth energy and ancestral wisdom. Grounding to planetary consciousness.',
+          functions: 'Earth connection, ancestral wisdom, planetary consciousness, deep grounding',
+          blockageSignsIfLow: 'Feeling ungrounded, disconnected from nature, unstable foundation',
+          balancedSigns: 'Deep earth connection, ancestral wisdom, planetary awareness',
+          healingPractices: 'Earth connection rituals, nature work, ancestral healing, grounding'
+        }
+      };
+      
+      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
+        const chakraInfo = detailedChakraMeanings[chakraKey as keyof typeof detailedChakraMeanings];
+        if (!chakraInfo) return;
+        
+        if (yPos > 220) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        // Chakra header with score
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`${chakraInfo.name}: ${score}/10 (${score * 10}%)`, 20, yPos);
+        yPos += 8;
+        
+        // Status indicator
+        const status = score >= 8 ? 'Highly Active' : score >= 6 ? 'Balanced' : score >= 4 ? 'Developing' : 'Needs Attention';
+        const statusColor = score >= 8 ? [34, 197, 94] : score >= 6 ? [59, 130, 246] : score >= 4 ? [156, 163, 175] : [239, 68, 68];
+        pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+        pdf.setFontSize(10);
+        pdf.text(`Status: ${status}`, 25, yPos);
+        yPos += 10;
+        
+        // Location and meaning
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`Location: ${chakraInfo.location}`, 25, yPos);
+        yPos += 6;
+        
+        const meaningLines = pdf.splitTextToSize(`Meaning: ${chakraInfo.meaning}`, pageWidth - 50);
+        pdf.text(meaningLines, 25, yPos);
+        yPos += meaningLines.length * 4 + 3;
+        
+        const functionsLines = pdf.splitTextToSize(`Functions: ${chakraInfo.functions}`, pageWidth - 50);
+        pdf.text(functionsLines, 25, yPos);
+        yPos += functionsLines.length * 4 + 3;
+        
+        // Status-specific guidance
+        const guidance = score >= 6 ? chakraInfo.balancedSigns : chakraInfo.blockageSignsIfLow;
+        const guidanceLabel = score >= 6 ? 'Balanced Signs:' : 'Areas for Growth:';
+        
+        pdf.setFontSize(8);
+        pdf.setTextColor(34, 197, 94);
+        const guidanceLines = pdf.splitTextToSize(`${guidanceLabel} ${guidance}`, pageWidth - 50);
+        pdf.text(guidanceLines, 25, yPos);
+        yPos += guidanceLines.length * 3 + 3;
+        
+        const practicesLines = pdf.splitTextToSize(`Healing Practices: ${chakraInfo.healingPractices}`, pageWidth - 50);
+        pdf.text(practicesLines, 25, yPos);
+        yPos += practicesLines.length * 3 + 10;
+      });
+      
+      // AURA ZONES ANALYSIS (GIVING/RECEIVING)
+      if (yPos > 200) {
+        pdf.addPage();
+        yPos = drawTitleWithLine('Aura Zones & Energy Flow Analysis', 30);
+      } else {
+        yPos += 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Aura Zones & Energy Flow Analysis', 20, yPos);
+        yPos += 15;
+      }
+      
+      const zoneAnalysis = {
+        'Personality Zone (Left Side)': {
+          color: reading.personalityColor,
+          meaning: 'Your core personality traits and how you express yourself to the world',
+          energyType: 'Personal expression energy - how others perceive you',
+          characteristics: getColorInfluence(reading.personalityColor),
+          guidance: `Strengthen this energy through ${getPersonalityTrait(reading.personalityColor)} practices`
+        },
+        'Giving Zone (Right Side)': {
+          color: reading.givingColor,
+          meaning: 'The energy you give to others and how you serve the world',
+          energyType: 'Outward flowing energy - what you offer to others',
+          characteristics: reading.givingColor ? getColorInfluence(reading.givingColor) : 'Balanced giving energy',
+          guidance: reading.givingColor ? `Express your giving nature through ${getPersonalityTrait(reading.givingColor)} service` : 'Focus on balanced giving and receiving'
+        },
+        'Receiving Zone (Upper Area)': {
+          color: reading.receivingColor,
+          meaning: 'Your capacity to receive blessings, guidance, and support from the universe',
+          energyType: 'Inward flowing energy - what you attract and receive',
+          characteristics: reading.receivingColor ? getColorInfluence(reading.receivingColor) : 'Open to receiving universal blessings',
+          guidance: reading.receivingColor ? `Enhance your receiving capacity through ${getPersonalityTrait(reading.receivingColor)} openness` : 'Practice receptivity and gratitude'
+        },
+        'Thinking Zone (Crown Area)': {
+          color: reading.thinkingColor,
+          meaning: 'Your mental processes, thought patterns, and intellectual approach',
+          energyType: 'Mental energy - how you process information and make decisions',
+          characteristics: reading.thinkingColor ? getColorInfluence(reading.thinkingColor) : 'Clear and balanced thinking',
+          guidance: reading.thinkingColor ? `Develop your mental clarity through ${getPersonalityTrait(reading.thinkingColor)} practices` : 'Focus on mental clarity and wisdom development'
+        }
+      };
+      
+      Object.entries(zoneAnalysis).forEach(([zoneName, zoneInfo]) => {
+        if (yPos > 230) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('AURA ZONES (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(13);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(zoneName, 20, yPos);
+        if (zoneInfo.color) {
+          pdf.text(`(${zoneInfo.color} Energy)`, 20 + pdf.getTextWidth(zoneName) + 5, yPos);
+        }
+        yPos += 10;
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        const meaningLines = pdf.splitTextToSize(`Meaning: ${zoneInfo.meaning}`, pageWidth - 45);
+        pdf.text(meaningLines, 25, yPos);
+        yPos += meaningLines.length * 4 + 3;
+        
+        const typeLines = pdf.splitTextToSize(`Energy Type: ${zoneInfo.energyType}`, pageWidth - 45);
+        pdf.text(typeLines, 25, yPos);
+        yPos += typeLines.length * 4 + 3;
+        
+        const charLines = pdf.splitTextToSize(`Characteristics: ${zoneInfo.characteristics}`, pageWidth - 45);
+        pdf.text(charLines, 25, yPos);
+        yPos += charLines.length * 4 + 3;
+        
+        pdf.setFontSize(8);
+        pdf.setTextColor(34, 197, 94);
+        const guidanceLines = pdf.splitTextToSize(`Guidance: ${zoneInfo.guidance}`, pageWidth - 45);
+        pdf.text(guidanceLines, 25, yPos);
+        yPos += guidanceLines.length * 3 + 12;
+      });
+      
+      // AURA STRENGTH & ENERGY LEVELS ASSESSMENT
+      if (yPos > 200) {
+        pdf.addPage();
+        yPos = drawTitleWithLine('Aura Strength & Energy Assessment', 30);
+      } else {
+        yPos += 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Aura Strength & Energy Assessment', 20, yPos);
+        yPos += 15;
+      }
+      
+      const energyLevel = reading.energyLevel;
+      const auraStrength = energyLevel >= 8 ? 'Very Strong' : energyLevel >= 6 ? 'Strong' : energyLevel >= 4 ? 'Moderate' : 'Developing';
+      const strengthColor = energyLevel >= 8 ? [34, 197, 94] : energyLevel >= 6 ? [59, 130, 246] : energyLevel >= 4 ? [156, 163, 175] : [239, 68, 68];
+      
+      // Energy level overview
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(15, yPos - 5, pageWidth - 30, 35, 'F');
+      pdf.setDrawColor(147, 51, 234);
+      pdf.setLineWidth(1);
+      pdf.rect(15, yPos - 5, pageWidth - 30, 35, 'S');
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Overall Energy Level: ${energyLevel}/10`, 20, yPos + 8);
+      
+      pdf.setTextColor(strengthColor[0], strengthColor[1], strengthColor[2]);
+      pdf.text(`Aura Strength: ${auraStrength}`, 20, yPos + 20);
+      yPos += 45;
+      
+      const energyAssessment = {
+        'Energy Intensity': {
+          level: energyLevel,
+          description: energyLevel >= 8 ? 'Your aura radiates with powerful, dynamic energy that influences others positively' :
+                      energyLevel >= 6 ? 'Your aura shows strong, balanced energy with good spiritual vitality' :
+                      energyLevel >= 4 ? 'Your aura demonstrates moderate energy that is building and developing' :
+                      'Your aura shows gentle energy that is in a phase of restoration and growth'
+        },
+        'Spiritual Presence': {
+          level: Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
+          description: 'Your spiritual presence and connection to higher consciousness'
+        },
+        'Emotional Resilience': {
+          level: Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
+          description: 'Your emotional strength and ability to maintain balance under stress'
+        },
+        'Mental Clarity': {
+          level: Math.round((allChakraData.thirdEye + allChakraData.throat) / 2),
+          description: 'Your mental focus, decision-making ability, and clarity of thought'
+        },
+        'Physical Vitality': {
+          level: Math.round((allChakraData.root + allChakraData.earthStar) / 2),
+          description: 'Your physical energy, grounding, and connection to material world'
+        }
+      };
+      
+      Object.entries(energyAssessment).forEach(([aspect, info]) => {
+        if (yPos > 240) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('ENERGY ASSESSMENT (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(12);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`${aspect}: ${info.level}/10`, 25, yPos);
+        yPos += 8;
+        
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        const descLines = pdf.splitTextToSize(info.description, pageWidth - 50);
+        pdf.text(descLines, 30, yPos);
+        yPos += descLines.length * 4 + 10;
+      });
+      
+      // COMPREHENSIVE CAREER GUIDANCE
+      if (yPos > 180) {
+        pdf.addPage();
+        yPos = drawTitleWithLine('Career & Life Purpose Guidance', 30);
+      } else {
+        yPos += 20;
+        pdf.setFontSize(16);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('Career & Life Purpose Guidance', 20, yPos);
+        yPos += 15;
+      }
+      
+      const careerGuidance = getComprehensiveCareerGuidance(reading.personalityColor, energyLevel, allChakraData);
+      
+      Object.entries(careerGuidance).forEach(([category, guidance]) => {
+        if (yPos > 230) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('CAREER GUIDANCE (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(13);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(category, 20, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        const guidanceLines = pdf.splitTextToSize(guidance, pageWidth - 40);
+        pdf.text(guidanceLines, 25, yPos);
+        yPos += guidanceLines.length * 4 + 12;
+      });
       
       pdf.setFontSize(8);
       pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', 20, pageHeight - 10);
