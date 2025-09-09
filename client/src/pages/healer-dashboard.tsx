@@ -1569,6 +1569,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         Object.entries(comprehensiveLifeScores).forEach(([area, details]) => {
           if (yPos > 240) {
             pdf.addPage();
+            addPaperBackground();
             pdf.setFontSize(18);
             pdf.setTextColor(147, 51, 234);
             pdf.text('LIFE ASSESSMENT (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1600,6 +1601,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         
         if (yPos > 240) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('OVERALL ASSESSMENT', pageWidth / 2, 25, { align: 'center' });
@@ -1633,6 +1635,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 6: DETAILED ANALYSIS FROM ANALYSIS TABS
       pdf.addPage();
+      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('DETAILED AURA ANALYSIS', pageWidth / 2, 25, { align: 'center' });
@@ -1659,6 +1662,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         // Check if we need a new page
         if (yPos > 220) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('DETAILED ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1687,6 +1691,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       if (personalityTraits && personalityTraits.length > 0) {
         if (yPos > 200) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('PERSONALITY TRAITS', pageWidth / 2, 25, { align: 'center' });
@@ -1714,6 +1719,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const auraSpectrumData = parseJsonField(reading.auraColorSpectrum);
       if (auraSpectrumData && Array.isArray(auraSpectrumData) && auraSpectrumData.length > 0) {
         pdf.addPage();
+        addPaperBackground();
         pdf.setFontSize(18);
         pdf.setTextColor(147, 51, 234);
         pdf.text('COMPLETE AURA COLOR SPECTRUM', pageWidth / 2, 25, { align: 'center' });
@@ -1760,6 +1766,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         auraSpectrumData.forEach((color: string, index: number) => {
           if (yPos > 240) {
             pdf.addPage();
+            addPaperBackground();
             pdf.setFontSize(18);
             pdf.setTextColor(147, 51, 234);
             pdf.text('COLOR SPECTRUM (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1827,6 +1834,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 8: HEALING RECOMMENDATIONS & REMEDIES
       pdf.addPage();
+      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('HEALING RECOMMENDATIONS', pageWidth / 2, 25, { align: 'center' });
@@ -1866,6 +1874,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       healingRecommendations.forEach((rec) => {
         if (yPos > 220) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('HEALING GUIDANCE (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1887,6 +1896,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // General healing practices
       if (yPos > 180) {
         pdf.addPage();
+        addPaperBackground();
         pdf.setFontSize(18);
         pdf.setTextColor(147, 51, 234);
         pdf.text('GENERAL HEALING PRACTICES', pageWidth / 2, 25, { align: 'center' });
@@ -1919,6 +1929,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 7: CHAKRA REMEDIES & HEALING GUIDANCE
       pdf.addPage();
+      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('CHAKRA REMEDIES & HEALING GUIDANCE', pageWidth / 2, 25, { align: 'center' });
@@ -2013,6 +2024,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       Object.entries(chakraRemedies).forEach(([chakraName, remedies]) => {
         if (yPos > 220) {
           pdf.addPage();
+          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('CHAKRA REMEDIES (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
