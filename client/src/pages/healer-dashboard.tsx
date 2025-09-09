@@ -1400,65 +1400,40 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
   };
 
   return (
-    <Card className="border-2 border-slate-200 shadow-lg">
-      {/* Professional Report Header */}
-      <div className="bg-gradient-to-r from-slate-50 to-gray-100 border-b-2 border-slate-200">
-        <div className="px-6 py-4">
-          <div className="text-center mb-4">
-            <h2 className="text-2xl font-bold text-slate-800 mb-1">AURA ANALYSIS REPORT</h2>
-            <div className="h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto w-32"></div>
+    <Card className="border-2 border-purple-100">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-purple-800">{reading.name}</CardTitle>
+            <CardDescription className="text-purple-600">
+              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+            </CardDescription>
           </div>
-          
-          {/* Report Info Table */}
-          <div className="bg-white rounded-lg border border-slate-300 p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Client Name:</span>
-                  <span className="text-slate-900 font-bold">{reading.name}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Reading Date:</span>
-                  <span className="text-slate-900">{format(new Date(reading.createdAt), "MMMM d, yyyy")}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Energy Level:</span>
-                  <span className="text-slate-900 font-bold">{reading.energyLevel}/10</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Reading Time:</span>
-                  <span className="text-slate-900">{format(new Date(reading.createdAt), "h:mm a")}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-3 mt-4">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-white">
+              Energy: {reading.energyLevel}/10
+            </Badge>
+            
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => generateComprehensivePDF(reading)}
               disabled={isGeneratingPDF}
-              className="border-purple-300 text-purple-700 hover:bg-purple-50"
+              title="Download Complete PDF Report"
             >
-              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Download className="h-4 w-4 mr-2" />}
-              Download Report
+              {isGeneratingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             </Button>
+            
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsEditing(!isEditing)}
-              className="border-slate-300 text-slate-700 hover:bg-slate-50"
             >
-              {isEditing ? <X className="h-4 w-4 mr-2" /> : <Edit3 className="h-4 w-4 mr-2" />}
-              {isEditing ? 'Cancel Edit' : 'Edit Notes'}
+              {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
             </Button>
           </div>
         </div>
-      </div>
+      </CardHeader>
       
       <CardContent className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" data-reading-id={reading.id}>
@@ -1470,88 +1445,61 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
           </TabsList>
           
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Aura Visualization Section */}
-              <div className="bg-white border border-slate-300 rounded-lg p-4">
-                <div className="border-b border-slate-200 pb-2 mb-4">
-                  <h3 className="text-lg font-bold text-slate-800">AURA VISUALIZATION</h3>
-                </div>
-                {(reading.processedAuraImage || reading.imageUrl) && (
-                  <div className="text-center">
-                    <div className="relative rounded-lg overflow-hidden shadow-md border border-slate-200 mx-auto inline-block">
-                      <img
-                        src={reading.processedAuraImage ? 
-                          (reading.processedAuraImage.startsWith('data:') ? 
-                            reading.processedAuraImage : 
-                            `data:image/jpeg;base64,${reading.processedAuraImage}`
-                          ) : 
-                          (reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
+            {/* Aura Visualization Image */}
+            {(reading.processedAuraImage || reading.imageUrl) && (
+              <div className="text-center mb-6">
+                <h4 className="font-semibold text-lg mb-3">Aura Visualization</h4>
+                <div className="flex justify-center">
+                  <div className="relative rounded-lg overflow-hidden shadow-lg border-2 border-purple-200">
+                    <img
+                      src={reading.processedAuraImage ? 
+                        (reading.processedAuraImage.startsWith('data:') ? 
+                          reading.processedAuraImage : 
+                          `data:image/jpeg;base64,${reading.processedAuraImage}`
+                        ) : 
+                        (reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
+                          reading.imageUrl : 
+                          `/api/image/${reading.imageUrl}`
+                        )
+                      }
+                      alt={`Aura visualization for ${reading.name}`}
+                      className="max-w-sm max-h-64 object-contain"
+                      onError={(e) => {
+                        // Fallback to original image if processed image fails
+                        const img = e.target as HTMLImageElement;
+                        if (reading.imageUrl && !img.src.includes(reading.imageUrl)) {
+                          img.src = reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
                             reading.imageUrl : 
-                            `/api/image/${reading.imageUrl}`
-                          )
+                            `/api/image/${reading.imageUrl}`;
                         }
-                        alt={`Aura visualization for ${reading.name}`}
-                        className="max-w-full max-h-56 object-contain"
-                        onError={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          if (reading.imageUrl && !img.src.includes(reading.imageUrl)) {
-                            img.src = reading.imageUrl.startsWith('http') || reading.imageUrl.startsWith('data:') ? 
-                              reading.imageUrl : 
-                              `/api/image/${reading.imageUrl}`;
-                          }
-                        }}
-                      />
-                    </div>
+                      }}
+                    />
                   </div>
-                )}
+                </div>
               </div>
-              
-              {/* Aura Color Analysis Table */}
-              <div className="bg-white border border-slate-300 rounded-lg p-4">
-                <div className="border-b border-slate-200 pb-2 mb-4">
-                  <h3 className="text-lg font-bold text-slate-800">AURA COLOR ANALYSIS</h3>
-                </div>
-                <div className="overflow-hidden">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50">
-                        <th className="border border-slate-300 px-3 py-2 text-left font-semibold text-slate-700">Zone</th>
-                        <th className="border border-slate-300 px-3 py-2 text-left font-semibold text-slate-700">Color</th>
-                        <th className="border border-slate-300 px-3 py-2 text-left font-semibold text-slate-700">Preview</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-slate-300 px-3 py-2 font-medium text-slate-700">Thinking Energy</td>
-                        <td className="border border-slate-300 px-3 py-2 text-slate-900">{reading.personalityColor}</td>
-                        <td className="border border-slate-300 px-3 py-2">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(reading.personalityColor)} border border-gray-300`}></div>
-                        </td>
-                      </tr>
-                      <tr className="bg-slate-25">
-                        <td className="border border-slate-300 px-3 py-2 font-medium text-slate-700">Giving Energy</td>
-                        <td className="border border-slate-300 px-3 py-2 text-slate-900">{reading.receivingColor}</td>
-                        <td className="border border-slate-300 px-3 py-2">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(reading.receivingColor)} border border-gray-300`}></div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-slate-300 px-3 py-2 font-medium text-slate-700">Receiving Energy</td>
-                        <td className="border border-slate-300 px-3 py-2 text-slate-900">{reading.givingColor}</td>
-                        <td className="border border-slate-300 px-3 py-2">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(reading.givingColor)} border border-gray-300`}></div>
-                        </td>
-                      </tr>
-                      <tr className="bg-slate-25">
-                        <td className="border border-slate-300 px-3 py-2 font-medium text-slate-700">Personality Energy</td>
-                        <td className="border border-slate-300 px-3 py-2 text-slate-900">{reading.thinkingColor}</td>
-                        <td className="border border-slate-300 px-3 py-2">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getColorClass(reading.thinkingColor)} border border-gray-300`}></div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            )}
+            
+            {/* Aura Colors Display */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.personalityColor)}`}></div>
+                <p className="text-sm font-medium">Thinking</p>
+                <p className="text-xs text-gray-600">{reading.personalityColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.receivingColor)}`}></div>
+                <p className="text-sm font-medium">Giving</p>
+                <p className="text-xs text-gray-600">{reading.receivingColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.givingColor)}`}></div>
+                <p className="text-sm font-medium">Receiving</p>
+                <p className="text-xs text-gray-600">{reading.givingColor}</p>
+              </div>
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.thinkingColor)}`}></div>
+                <p className="text-sm font-medium">Personality</p>
+                <p className="text-xs text-gray-600">{reading.thinkingColor}</p>
               </div>
             </div>
 
