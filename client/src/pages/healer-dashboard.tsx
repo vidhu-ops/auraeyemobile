@@ -601,6 +601,44 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
     return (pathGuidance[color] || 'Your unique spiritual path involves discovering and expressing your authentic gifts') + levelGuidance;
   };
 
+  // Chakra karmic lessons helper function
+  const getChakraKarmicLesson = (chakraKey: string): string => {
+    const karmicLessons: Record<string, string> = {
+      'soulStar': 'Remembering your soul purpose & connection with your soul mission and divine calling',
+      'crown': 'Reconnecting with Source beyond and trusting the divine timing of your spiritual journey',
+      'thirdEye': 'Breaking illusions and mental control to trust intuition and remove self doubt',
+      'throat': 'Healing silenced expression from past lifetimes and speaking your truth and sharing what you feel',
+      'heart': 'Releasing fear of vulnerability and being able to give and receive with balanced boundaries',
+      'solarPlexus': 'Stepping into your personal power & confidence by letting go of the self-sacrificial nature',
+      'sacral': 'Reclaiming emotional freedom and self-worth by letting go of guilt, shame, unworthiness around pleasure and emotional feelings',
+      'root': 'Ability to trust life decisions, take actions to create stability & security in life',
+      'earthStar': 'Grounding ancestral wisdom and healing generational patterns for earth connection'
+    };
+    return karmicLessons[chakraKey] || 'Continue spiritual development and energy balance work';
+  };
+
+  // Chakra healing recommendations helper function
+  const getChakraHealingRecommendations = (chakraKey: string, score: number): string => {
+    const baseRecommendations: Record<string, string> = {
+      'soulStar': 'Meditation on divine purpose, spiritual study, connection with higher guidance',
+      'crown': 'Crown chakra meditation, prayer, spiritual connection practices, violet light visualization',
+      'thirdEye': 'Third eye activation, intuitive development, meditation, indigo light visualization',
+      'throat': 'Voice work, truth expression, blue light visualization, authentic communication practices',
+      'heart': 'Heart-opening meditation, love practices, green light visualization, compassion work',
+      'solarPlexus': 'Confidence building, personal power work, yellow light visualization, boundary setting',
+      'sacral': 'Creative expression, emotional healing, orange light visualization, pleasure acceptance',
+      'root': 'Grounding exercises, earth connection, red light visualization, stability practices',
+      'earthStar': 'Earth connection rituals, ancestral healing, grounding in nature, stability work'
+    };
+    
+    const urgencyLevel = score <= 3 ? 'PRIORITY: ' :
+                        score <= 6 ? 'FOCUS: ' :
+                        score >= 9 ? 'BALANCE: ' :
+                        'CONTINUE: ';
+    
+    return urgencyLevel + (baseRecommendations[chakraKey] || 'Balanced energy practices');
+  };
+
   const generateComprehensivePDF = async (reading: any) => {
     setIsGeneratingPDF(true);
     
@@ -908,6 +946,18 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         'earthStar': 'Earth Star Chakra'
       };
       
+      const chakraDescriptions = {
+        'soulStar': 'Higher spiritual purpose, divine connection, soul mission and connection to your highest spiritual calling',
+        'crown': 'Spiritual connection, divine wisdom, universal consciousness and connection to Source energy',
+        'thirdEye': 'Intuition, inner wisdom, psychic abilities and capacity to see beyond the physical realm',
+        'throat': 'Communication, truth, self-expression and ability to voice your authentic self',
+        'heart': 'Love, compassion, emotional healing and your capacity to give and receive love',
+        'solarPlexus': 'Personal power, confidence, willpower and your ability to assert yourself in the world',
+        'sacral': 'Creativity, sexuality, emotional flow and your connection to pleasure and creative expression',
+        'root': 'Grounding, survival, physical vitality and your connection to safety and security',
+        'earthStar': 'Earth connection, grounding, ancestral wisdom and your relationship with the material world'
+      };
+      
       // Draw comprehensive chakra table
       yPos += 10;
       pdf.setFillColor(212, 175, 55);
@@ -929,7 +979,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         
         const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
         const percentage = score * 10;
-        const status = score >= 8 ? 'Excellent' : score >= 6 ? 'Good' : score >= 4 ? 'Balanced' : 'Needs Attention';
+        const chakraStatus = getChakraStatus(score);
         
         pdf.setFontSize(9);
         pdf.setTextColor(30, 41, 59);
@@ -937,12 +987,85 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(`${score}/10`, 85, yPos + 8);
         pdf.text(`${percentage}%`, 135, yPos + 8);
         
-        // Color-code status
-        const statusColor = score >= 8 ? [34, 197, 94] : score >= 6 ? [59, 130, 246] : score >= 4 ? [156, 163, 175] : [239, 68, 68];
+        // Color-code status with proper chakra status
+        const statusColor = score >= 9 ? [59, 130, 246] : // Blue for balanced
+                           score >= 7 ? [34, 197, 94] : // Green for developing balance  
+                           score >= 4 ? [251, 146, 60] : // Orange for imbalanced
+                           score >= 1 ? [239, 68, 68] : // Red for blocked
+                           [156, 163, 175]; // Gray for unknown
+        
         pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
-        pdf.text(status, 165, yPos + 8);
+        pdf.text(chakraStatus.status, 165, yPos + 8);
         
         yPos += 12;
+      });
+      
+      // Add comprehensive detailed chakra analysis section after the table
+      yPos += 15;
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Detailed Chakra Analysis with Karmic Insights', 20, yPos);
+      yPos += 15;
+      
+      // Enhanced chakra analysis with meanings, karmic lessons, and healing
+      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
+        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
+        const description = chakraDescriptions[chakraKey as keyof typeof chakraDescriptions];
+        const chakraStatus = getChakraStatus(score);
+        const percentage = score * 10;
+        
+        // Check if we need a new page
+        if (yPos > 220) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('DETAILED CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        // Chakra header with name and score
+        pdf.setFontSize(13);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`${chakraName}: ${score}/10 (${percentage}%) - ${chakraStatus.status}`, 20, yPos);
+        yPos += 12;
+        
+        // Chakra meaning and function
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text('Meaning & Function:', 25, yPos);
+        yPos += 5;
+        const meaningLines = pdf.splitTextToSize(description, pageWidth - 50);
+        pdf.text(meaningLines, 30, yPos);
+        yPos += meaningLines.length * 4 + 5;
+        
+        // Karmic lessons for each chakra
+        const karmicLessons = getChakraKarmicLesson(chakraKey);
+        if (karmicLessons) {
+          pdf.setFontSize(9);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('Karmic Lesson:', 25, yPos);
+          yPos += 5;
+          
+          pdf.setTextColor(75, 85, 99);
+          const karmicLines = pdf.splitTextToSize(karmicLessons, pageWidth - 50);
+          pdf.text(karmicLines, 30, yPos);
+          yPos += karmicLines.length * 4 + 5;
+        }
+        
+        // Healing recommendations for this chakra
+        const healingRecommendations = getChakraHealingRecommendations(chakraKey, score);
+        if (healingRecommendations) {
+          pdf.setFontSize(9);
+          pdf.setTextColor(34, 197, 94);
+          pdf.text('Healing Focus:', 25, yPos);
+          yPos += 5;
+          
+          const healingLines = pdf.splitTextToSize(healingRecommendations, pageWidth - 50);
+          pdf.text(healingLines, 30, yPos);
+          yPos += healingLines.length * 4 + 8;
+        }
+        
+        yPos += 8; // Space between chakras
       });
       
       // PAGE 6: ENHANCED AURA VISUALIZATION AND ANALYSIS
