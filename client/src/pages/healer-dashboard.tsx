@@ -412,6 +412,195 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
     return dayMap[color] || 'Sunday';
   };
 
+  // Enhanced personality analysis helper functions
+  const getPersonalityTrait = (color: string): string => {
+    const traits: Record<string, string> = {
+      'Red': 'passionate, determined, leadership-oriented',
+      'Orange': 'creative, enthusiastic, socially vibrant',
+      'Yellow': 'intelligent, optimistic, mentally focused',
+      'Green': 'healing-oriented, balanced, compassionate',
+      'Blue': 'communicative, peaceful, spiritually aware',
+      'Indigo': 'intuitive, wise, psychically sensitive',
+      'Violet': 'spiritually advanced, transformative, mystical',
+      'White': 'pure, protective, divinely connected',
+      'Black': 'protective, transformative, mystery-oriented',
+      'Pink': 'loving, nurturing, emotionally healing',
+      'Gold': 'wise, abundant, spiritually accomplished',
+      'Silver': 'intuitive, receptive, lunar-aligned'
+    };
+    return traits[color] || 'unique spiritual';
+  };
+
+  const getEnergyLevelTrait = (level: number): string => {
+    if (level >= 9) return 'exceptionally high vibration and dynamic';
+    if (level >= 7) return 'strong, confident, and energetically powerful';
+    if (level >= 5) return 'balanced, steady, and harmoniously grounded';
+    if (level >= 3) return 'gentle, contemplative, and introspectively focused';
+    return 'deeply reflective and spiritually transitional';
+  };
+
+  const getColorInfluence = (color: string): string => {
+    const influences: Record<string, string> = {
+      'Red': 'courage, passion, and dynamic action energy',
+      'Orange': 'creativity, joy, and social magnetism',
+      'Yellow': 'wisdom, clarity, and intellectual brilliance',
+      'Green': 'healing abilities, balance, and heart-centered compassion',
+      'Blue': 'peaceful communication and spiritual truth expression',
+      'Indigo': 'deep intuition and psychic awareness',
+      'Violet': 'spiritual mastery and transformative wisdom',
+      'White': 'divine protection and pure spiritual light',
+      'Black': 'protective boundaries and transformative power',
+      'Pink': 'unconditional love and emotional healing gifts',
+      'Gold': 'divine wisdom and spiritual abundance',
+      'Silver': 'intuitive sensitivity and lunar wisdom'
+    };
+    return influences[color] || 'unique spiritual gifts and abilities';
+  };
+
+  const getStrongestChakra = (chakraData: any): string => {
+    const entries = Object.entries(chakraData);
+    const strongest = entries.reduce((max, current) => 
+      (current[1] as number) > (max[1] as number) ? current : max
+    );
+    
+    const chakraNames: Record<string, string> = {
+      'soulStar': 'Soul Star (divine purpose)',
+      'crown': 'Crown (spiritual connection)',
+      'thirdEye': 'Third Eye (intuition)',
+      'throat': 'Throat (communication)',
+      'heart': 'Heart (love and healing)',
+      'solarPlexus': 'Solar Plexus (personal power)',
+      'sacral': 'Sacral (creativity)',
+      'root': 'Root (grounding)',
+      'earthStar': 'Earth Star (earth connection)'
+    };
+    
+    return chakraNames[strongest[0] as string] || 'balanced energy';
+  };
+
+  const getIntuitiveNature = (thirdEye: number, crown: number): string => {
+    const combined = (thirdEye + crown) / 2;
+    if (combined >= 8) return 'Highly intuitive with strong psychic abilities and clear spiritual insight';
+    if (combined >= 6) return 'Well-developed intuition with growing spiritual awareness and inner wisdom';
+    if (combined >= 4) return 'Developing intuitive abilities with potential for spiritual growth';
+    return 'Emerging intuitive gifts that need nurturing and development';
+  };
+
+  const getHealingAbilities = (heart: number, color: string): string => {
+    const healingColors = ['Green', 'Pink', 'White', 'Gold', 'Blue'];
+    const isHealingColor = healingColors.includes(color);
+    
+    if (heart >= 8 && isHealingColor) return 'Strong natural healing abilities with heart-centered wisdom and compassionate energy';
+    if (heart >= 8) return 'Powerful healing presence through personal strength and empathetic connection';
+    if (heart >= 6 && isHealingColor) return 'Good healing potential with developing heart chakra energy and natural compassion';
+    if (heart >= 6) return 'Growing healing abilities through emotional balance and supportive energy';
+    return 'Emerging healing gifts that develop through heart chakra work and self-compassion practices';
+  };
+
+  const getPsychicSensitivity = (thirdEye: number, soulStar: number): string => {
+    const combined = (thirdEye + soulStar) / 2;
+    if (combined >= 8) return 'High psychic sensitivity with clear spiritual perception and divine connection';
+    if (combined >= 6) return 'Good psychic awareness with developing spiritual abilities and higher consciousness';
+    if (combined >= 4) return 'Moderate psychic sensitivity that grows with spiritual practice and meditation';
+    return 'Latent psychic abilities that awaken through dedicated spiritual development';
+  };
+
+  const getSpiritualLeadership = (throat: number, crown: number): string => {
+    const combined = (throat + crown) / 2;
+    if (combined >= 8) return 'Strong spiritual leadership abilities with clear divine communication and wisdom sharing';
+    if (combined >= 6) return 'Developing leadership qualities with growing spiritual authority and teaching potential';
+    if (combined >= 4) return 'Emerging leadership skills through authentic self-expression and spiritual growth';
+    return 'Potential spiritual leadership that develops through personal growth and truth expression';
+  };
+
+  const getGrowthAreas = (chakraData: any): string => {
+    const entries = Object.entries(chakraData);
+    const weakest = entries.reduce((min, current) => 
+      (current[1] as number) < (min[1] as number) ? current : min
+    );
+    
+    const growthAreas: Record<string, string> = {
+      'soulStar': 'Develop deeper connection to divine purpose and soul mission through spiritual study',
+      'crown': 'Strengthen spiritual connection through meditation, prayer, and consciousness expansion',
+      'thirdEye': 'Enhance intuitive abilities through meditation, dreamwork, and psychic development',
+      'throat': 'Improve authentic self-expression and truth communication through voice work',
+      'heart': 'Develop emotional healing and compassion through heart-opening practices',
+      'solarPlexus': 'Build personal power and confidence through empowerment and boundary work',
+      'sacral': 'Enhance creativity and emotional flow through artistic expression and emotional healing',
+      'root': 'Strengthen grounding and security through earth connection and stability practices',
+      'earthStar': 'Deepen earth connection through nature work and ancestral healing'
+    };
+    
+    return growthAreas[weakest[0] as string] || 'Continue balanced spiritual development across all energy centers';
+  };
+
+  const getRecommendedPractices = (color: string, chakraData: any): string => {
+    const colorPractices: Record<string, string> = {
+      'Red': 'Grounding meditation, physical exercise, earth connection, courage-building practices',
+      'Orange': 'Creative expression, emotional release work, social connection, joy cultivation',
+      'Yellow': 'Mental clarity meditation, study, teaching, confidence-building practices',
+      'Green': 'Heart-opening meditation, healing work, nature connection, compassion practices',
+      'Blue': 'Truth expression, communication work, peaceful meditation, spiritual study',
+      'Indigo': 'Third eye meditation, intuitive development, dreamwork, wisdom practices',
+      'Violet': 'Crown chakra meditation, spiritual study, divine connection, transformation work',
+      'White': 'Light meditation, purification practices, spiritual protection, angelic connection',
+      'Black': 'Shadow work, protection practices, transformation meditation, boundary setting',
+      'Pink': 'Love meditation, emotional healing, nurturing practices, heart chakra work',
+      'Gold': 'Wisdom practices, abundance work, spiritual mastery, divine connection',
+      'Silver': 'Lunar meditation, intuitive development, feminine energy work, psychic protection'
+    };
+    
+    return colorPractices[color] || 'Balanced spiritual practices including meditation, energy work, and conscious living';
+  };
+
+  const getEnergyWorkFocus = (chakraData: any): string => {
+    const entries = Object.entries(chakraData);
+    const sorted = entries.sort((a, b) => (a[1] as number) - (b[1] as number));
+    const weakest = sorted.slice(0, 2);
+    
+    const focusAreas = weakest.map(([chakra]) => {
+      const focuses: Record<string, string> = {
+        'soulStar': 'soul purpose alignment and divine connection',
+        'crown': 'spiritual consciousness and divine wisdom',
+        'thirdEye': 'intuitive development and inner sight',
+        'throat': 'authentic expression and truth communication',
+        'heart': 'love cultivation and emotional healing',
+        'solarPlexus': 'personal power and confidence building',
+        'sacral': 'creative expression and emotional flow',
+        'root': 'grounding and security strengthening',
+        'earthStar': 'earth connection and ancestral healing'
+      };
+      return focuses[chakra] || 'balanced energy development';
+    });
+    
+    return `Primary focus areas: ${focusAreas.join(' and ')}`;
+  };
+
+  const getLifePathGuidance = (color: string, energyLevel: number): string => {
+    const pathGuidance: Record<string, string> = {
+      'Red': 'Your path involves leadership, taking action, and pioneering new directions with courage and determination',
+      'Orange': 'Your journey centers on creative expression, bringing joy to others, and building meaningful social connections',
+      'Yellow': 'Your purpose involves teaching, sharing wisdom, and illuminating truth through intellectual and spiritual insights',
+      'Green': 'Your path is one of healing - bringing balance, growth, and compassion to yourself and others',
+      'Blue': 'Your journey involves authentic communication, bringing peace, and expressing spiritual truth',
+      'Indigo': 'Your path centers on intuitive development, sharing wisdom, and bridging spiritual and physical realms',
+      'Violet': 'Your purpose involves spiritual transformation, mystical understanding, and guiding others toward enlightenment',
+      'White': 'Your path is one of purity, protection, and serving as a beacon of divine light for others',
+      'Black': 'Your journey involves transformation, protection work, and helping others through shadow integration',
+      'Pink': 'Your purpose centers on unconditional love, emotional healing, and nurturing spiritual growth in others',
+      'Gold': 'Your path involves wisdom sharing, spiritual mastery, and creating abundance through divine connection',
+      'Silver': 'Your journey centers on intuitive guidance, lunar wisdom, and psychic service to others'
+    };
+    
+    const levelGuidance = energyLevel >= 7 ? 
+      ' Your high energy levels indicate you are ready to take on significant spiritual responsibilities and leadership roles.' :
+      energyLevel >= 5 ?
+      ' Your balanced energy suggests steady progress through consistent spiritual practice and gradual expansion.' :
+      ' Your gentle energy indicates this is a time for inner development, healing, and building a strong spiritual foundation.';
+    
+    return (pathGuidance[color] || 'Your unique spiritual path involves discovering and expressing your authentic gifts') + levelGuidance;
+  };
+
   const generateComprehensivePDF = async (reading: any) => {
     setIsGeneratingPDF(true);
     
@@ -842,11 +1031,85 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.addPage();
       yPos = drawTitleWithLine('Detailed Spiritual Analysis', 30);
       
-      // Complete Detailed Analysis Text
-      if (detailedAnalysis && detailedAnalysis !== 'Advanced spiritual development with balanced energy flow.') {
-        pdf.setFontSize(16);
+      // Complete Detailed Analysis Text with Enhanced Personality & Spiritual Insights
+      pdf.setFontSize(16);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Comprehensive Personality & Spiritual Analysis', 20, yPos);
+      yPos += 15;
+      
+      // Enhanced personality traits based on aura colors and energy patterns
+      const personalityTraits = {
+        'Core Personality Traits': {
+          'Primary Energy': `Your ${reading.personalityColor} aura reveals strong ${getPersonalityTrait(reading.personalityColor)} characteristics`,
+          'Energy Expression': `With an energy level of ${reading.energyLevel}/10, you demonstrate ${getEnergyLevelTrait(reading.energyLevel)} spiritual presence`,
+          'Color Influence': `${reading.personalityColor} energy brings ${getColorInfluence(reading.personalityColor)} to your personality`,
+          'Chakra Dominance': `Your chakra profile shows strength in ${getStrongestChakra(allChakraData)} energy center`
+        },
+        'Spiritual Characteristics': {
+          'Intuitive Nature': getIntuitiveNature(allChakraData.thirdEye, allChakraData.crown),
+          'Healing Abilities': getHealingAbilities(allChakraData.heart, reading.personalityColor),
+          'Psychic Sensitivity': getPsychicSensitivity(allChakraData.thirdEye, allChakraData.soulStar),
+          'Spiritual Leadership': getSpiritualLeadership(allChakraData.throat, allChakraData.crown)
+        },
+        'Growth Opportunities': {
+          'Areas for Development': getGrowthAreas(allChakraData),
+          'Spiritual Practices': getRecommendedPractices(reading.personalityColor, allChakraData),
+          'Energy Work Focus': getEnergyWorkFocus(allChakraData),
+          'Life Path Guidance': getLifePathGuidance(reading.personalityColor, reading.energyLevel)
+        }
+      };
+      
+      Object.entries(personalityTraits).forEach(([category, traits]) => {
+        if (yPos > 240) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('PERSONALITY ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(category, 20, yPos);
+        yPos += 12;
+        
+        Object.entries(traits).forEach(([trait, description]) => {
+          if (yPos > 250) {
+            pdf.addPage();
+            pdf.setFontSize(18);
+            pdf.setTextColor(147, 51, 234);
+            pdf.text('PERSONALITY ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+            yPos = 40;
+          }
+          
+          pdf.setFontSize(11);
+          pdf.setTextColor(55, 65, 81);
+          pdf.text(`• ${trait}:`, 25, yPos);
+          yPos += 8;
+          
+          pdf.setFontSize(9);
+          pdf.setTextColor(75, 85, 99);
+          const descLines = pdf.splitTextToSize(description, pageWidth - 45);
+          pdf.text(descLines, 30, yPos);
+          yPos += descLines.length * 4 + 8;
+        });
+        
+        yPos += 10;
+      });
+      
+      // Original detailed analysis if available
+      if (detailedAnalysis && detailedAnalysis !== 'Advanced spiritual development with balanced energy flow.' && detailedAnalysis.length > 50) {
+        if (yPos > 200) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('PROFESSIONAL ANALYSIS', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        pdf.setFontSize(14);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('Complete Detailed Analysis', 20, yPos);
+        pdf.text('Professional Healer Analysis', 20, yPos);
         yPos += 15;
         
         pdf.setFontSize(10);
@@ -1095,29 +1358,117 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         }
       });
       
-      // Life Score Analysis (if available)
-      if (yPos < 200) {
+      // Enhanced Life Score Analysis with Comprehensive Assessment
+      if (yPos < 150) {
         pdf.setFontSize(16);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('Life Area Assessment', 20, yPos);
+        pdf.text('Complete Life Assessment & Spiritual Development', 20, yPos);
         yPos += 15;
         
-        // Calculate life scores based on chakra activity
-        const lifeScores = {
-          'Love & Relationships': Math.round((allChakraData.heart + allChakraData.sacral) / 2),
-          'Career & Purpose': Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
-          'Spiritual Growth': Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
-          'Physical Energy': Math.round((allChakraData.root + allChakraData.earthStar) / 2),
-          'Emotional Balance': Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
-          'Intuition & Wisdom': Math.round((allChakraData.thirdEye + allChakraData.crown) / 2)
+        // Calculate comprehensive life scores based on chakra activity and aura analysis
+        const comprehensiveLifeScores = {
+          'Love & Relationships': {
+            score: Math.round((allChakraData.heart + allChakraData.sacral) / 2),
+            description: 'Capacity for love, intimacy, emotional connection',
+            guidance: 'Heart chakra healing, emotional expression, relationship work'
+          },
+          'Career & Life Purpose': {
+            score: Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
+            description: 'Professional fulfillment and authentic self-expression',
+            guidance: 'Personal power development, authentic communication'
+          },
+          'Spiritual Development': {
+            score: Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
+            description: 'Connection to higher consciousness and spiritual growth',
+            guidance: 'Meditation practice, divine connection, spiritual study'
+          },
+          'Physical Vitality': {
+            score: Math.round((allChakraData.root + allChakraData.earthStar) / 2),
+            description: 'Physical health, energy levels, material world grounding',
+            guidance: 'Grounding exercises, physical activity, earth connection'
+          },
+          'Mental Clarity': {
+            score: Math.round((allChakraData.thirdEye + allChakraData.throat) / 2),
+            description: 'Intuitive wisdom, clear thinking, truth perception',
+            guidance: 'Third eye activation, meditation, wisdom practices'
+          },
+          'Emotional Balance': {
+            score: Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
+            description: 'Emotional stability, healing capacity, inner strength',
+            guidance: 'Emotional healing work, self-compassion practices'
+          },
+          'Creative Expression': {
+            score: Math.round((allChakraData.sacral + allChakraData.throat) / 2),
+            description: 'Artistic abilities, creative flow, self-expression',
+            guidance: 'Creative pursuits, sacral chakra work, artistic expression'
+          },
+          'Leadership & Influence': {
+            score: Math.round((allChakraData.solarPlexus + allChakraData.crown) / 2),
+            description: 'Personal power, influence, spiritual leadership',
+            guidance: 'Confidence building, spiritual leadership development'
+          }
         };
         
-        Object.entries(lifeScores).forEach(([area, score]) => {
+        Object.entries(comprehensiveLifeScores).forEach(([area, details]) => {
+          if (yPos > 240) {
+            pdf.addPage();
+            pdf.setFontSize(18);
+            pdf.setTextColor(147, 51, 234);
+            pdf.text('LIFE ASSESSMENT (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
+            yPos = 40;
+          }
+          
+          const percentage = details.score * 10;
           pdf.setFontSize(12);
-          pdf.setTextColor(55, 65, 81);
-          pdf.text(`${area}: ${score}/10`, 25, yPos);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text(`${area}: ${details.score}/10 (${percentage}%)`, 25, yPos);
           yPos += 8;
+          
+          pdf.setFontSize(9);
+          pdf.setTextColor(55, 65, 81);
+          const descLines = pdf.splitTextToSize(details.description, pageWidth - 50);
+          pdf.text(descLines, 30, yPos);
+          yPos += descLines.length * 4 + 2;
+          
+          pdf.setFontSize(8);
+          pdf.setTextColor(34, 197, 94);
+          const guidanceLines = pdf.splitTextToSize(`Focus: ${details.guidance}`, pageWidth - 50);
+          pdf.text(guidanceLines, 30, yPos);
+          yPos += guidanceLines.length * 3 + 8;
         });
+        
+        // Overall Assessment
+        const totalScore = Object.values(comprehensiveLifeScores).reduce((sum, item) => sum + item.score, 0);
+        const averageScore = Math.round(totalScore / Object.keys(comprehensiveLifeScores).length);
+        
+        if (yPos > 240) {
+          pdf.addPage();
+          pdf.setFontSize(18);
+          pdf.setTextColor(147, 51, 234);
+          pdf.text('OVERALL ASSESSMENT', pageWidth / 2, 25, { align: 'center' });
+          yPos = 40;
+        }
+        
+        yPos += 10;
+        pdf.setFillColor(245, 245, 245);
+        pdf.rect(15, yPos - 5, pageWidth - 30, 30, 'F');
+        pdf.setDrawColor(147, 51, 234);
+        pdf.setLineWidth(1);
+        pdf.rect(15, yPos - 5, pageWidth - 30, 30, 'S');
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        pdf.text(`Overall Life Balance: ${averageScore}/10 (${averageScore * 10}%)`, 20, yPos + 8);
+        
+        const overallStatus = averageScore >= 8 ? 'Excellent - Thriving in most life areas' : 
+                             averageScore >= 6 ? 'Good - Strong foundation with room for growth' : 
+                             averageScore >= 4 ? 'Developing - Building balance across life areas' : 
+                             'Growth Phase - Focus on foundational healing';
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        pdf.text(`Assessment: ${overallStatus}`, 20, yPos + 18);
+        yPos += 35;
       }
       
       pdf.setFontSize(8);
