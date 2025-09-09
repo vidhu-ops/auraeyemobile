@@ -2086,41 +2086,17 @@ export default function AuraAnalysis() {
                   sectionFinalWidth = sectionFinalHeight / sectionAspectRatio;
                 }
                 
-                // Calculate maximum allowable dimensions for PDF page
-                let pageMaxWidth = pageWidth - 40; // 20mm margins on each side
-                let pageMaxHeight = pageHeight - 100; // Reserve space for headers/footers
-                
-                // Allow guidance tab to use more of the page area
-                if (tabId === 'guidance') {
-                  pageMaxWidth = pageWidth - 20; // Smaller margins for guidance tab - use more width
-                  pageMaxHeight = pageHeight - 60; // Smaller margins for guidance tab - use more height
-                }
-                
-                // Special size enhancement for tabs with proper bounds checking
-                let scaleFactor = 1.0;
+                // Special size enhancement for all tabs to make screenshots more legible
                 if (tabId === 'chakras') {
-                  scaleFactor = 3.0; // Triple the size for better visibility
+                  sectionFinalWidth = sectionFinalWidth * 3.0; // Triple the size for better visibility
+                  sectionFinalHeight = sectionFinalHeight * 3.0; // Triple the size for better visibility
                 } else if (tabId === 'guidance') {
-                  scaleFactor = 3.6; // Much larger for better visibility - covers more of the page
+                  sectionFinalWidth = sectionFinalWidth * 1.2; // Double the size for better visibility  
+                  sectionFinalHeight = sectionFinalHeight * 1.2; // Double the size for better visibility
                 } else {
-                  scaleFactor = 1.5; // 50% larger for better legibility
-                }
-                
-                // Apply scale factor
-                sectionFinalWidth = sectionFinalWidth * scaleFactor;
-                sectionFinalHeight = sectionFinalHeight * scaleFactor;
-                
-                // Critical: Ensure scaled dimensions don't exceed PDF page boundaries
-                if (sectionFinalWidth > pageMaxWidth) {
-                  const widthRatio = pageMaxWidth / sectionFinalWidth;
-                  sectionFinalWidth = pageMaxWidth;
-                  sectionFinalHeight = sectionFinalHeight * widthRatio;
-                }
-                
-                if (sectionFinalHeight > pageMaxHeight) {
-                  const heightRatio = pageMaxHeight / sectionFinalHeight;
-                  sectionFinalHeight = pageMaxHeight;
-                  sectionFinalWidth = sectionFinalWidth * heightRatio;
+                  // Increase all other tabs by 1.5x for better legibility
+                  sectionFinalWidth = sectionFinalWidth * 1.5; // 50% larger for better legibility
+                  sectionFinalHeight = sectionFinalHeight * 1.5; // 50% larger for better legibility
                 }
                 
                 // Section titles removed for continuous image flow as requested
@@ -2156,39 +2132,14 @@ export default function AuraAnalysis() {
                 finalWidth = finalHeight / trueAspectRatio;
               }
               
-              // Calculate maximum allowable dimensions for PDF page  
-              let pageMaxWidthSingle = pageWidth - 40; // 20mm margins on each side
-              let pageMaxHeightSingle = pageHeight - 100; // Reserve space for headers/footers
-              
-              // Allow guidance tab to use more of the page area
+              // Special size enhancement for all tabs single screenshots for better legibility
               if (tabId === 'guidance') {
-                pageMaxWidthSingle = pageWidth - 20; // Smaller margins for guidance tab - use more width
-                pageMaxHeightSingle = pageHeight - 60; // Smaller margins for guidance tab - use more height
-              }
-              
-              // Special size enhancement with proper bounds checking
-              let singleScaleFactor = 1.0;
-              if (tabId === 'guidance') {
-                singleScaleFactor = 5.4; // Much larger for better visibility - covers more of the page
+                finalWidth = finalWidth * 2.0; // Double the size for better visibility
+                finalHeight = finalHeight * 2.0; // Double the size for better visibility
               } else {
-                singleScaleFactor = 1.5; // 50% larger for better legibility
-              }
-              
-              // Apply scale factor
-              finalWidth = finalWidth * singleScaleFactor;
-              finalHeight = finalHeight * singleScaleFactor;
-              
-              // Critical: Ensure scaled dimensions don't exceed PDF page boundaries
-              if (finalWidth > pageMaxWidthSingle) {
-                const widthRatio = pageMaxWidthSingle / finalWidth;
-                finalWidth = pageMaxWidthSingle;
-                finalHeight = finalHeight * widthRatio;
-              }
-              
-              if (finalHeight > pageMaxHeightSingle) {
-                const heightRatio = pageMaxHeightSingle / finalHeight;
-                finalHeight = pageMaxHeightSingle;
-                finalWidth = finalWidth * heightRatio;
+                // Increase all other tabs by 1.5x for better legibility
+                finalWidth = finalWidth * 1.5; // 50% larger for better legibility
+                finalHeight = finalHeight * 1.5; // 50% larger for better legibility
               }
               
               console.log(`Screenshot ${tabId}: original ${originalWidth}x${originalHeight}, PDF ${finalWidth.toFixed(1)}x${finalHeight.toFixed(1)}, ratio: ${trueAspectRatio.toFixed(3)}`);
