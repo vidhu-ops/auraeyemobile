@@ -650,35 +650,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      
-      // Import paper texture for background using @assets
-      let paperTextureDataUrl = '';
-      try {
-        const response = await fetch('/attached_assets/white-paper-texture-with-flecks_1757451226299.jpg');
-        const blob = await response.blob();
-        paperTextureDataUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
-      } catch (error) {
-        console.log('Paper texture not loaded, using white background');
-      }
-      
-      // Helper function to add paper texture background to each page
-      const addPaperBackground = () => {
-        if (paperTextureDataUrl) {
-          try {
-            // Add paper texture as background covering the entire page
-            pdf.addImage(paperTextureDataUrl, 'JPEG', 0, 0, pageWidth, pageHeight);
-          } catch (error) {
-            console.log('Error adding paper texture:', error);
-          }
-        }
-      };
-      
-      // Add background to first page
-      addPaperBackground();
       const healerName = user?.username || 'Professional Healer';
       
       // Helper function to parse JSON fields safely
@@ -756,8 +727,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Helper function to draw info box (like in screenshots)
       const drawInfoBox = (title: string, info: any, startY: number) => {
-        pdf.setFillColor(255, 255, 255); // Light yellow background
-        pdf.setDrawColor(255, 255, 255); // Golden border
+        pdf.setFillColor(254, 248, 220); // Light yellow background
+        pdf.setDrawColor(212, 175, 55); // Golden border
         pdf.rect(30, startY, pageWidth - 60, 45, 'FD');
         
         pdf.setFontSize(12);
@@ -819,11 +790,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       yPos = drawTraitBubbles(positiveTraits, yPos, 'Positive Traits', true);
       
       // Negative Traits Section  
-      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'More Traits', false);
+      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'Negative Traits', false);
       
       // PAGE 2: ASCENDANT REPORT DETAILS
       pdf.addPage();
-      addPaperBackground();
       yPos = drawTitleWithLine('Ascendant Report', 30);
       
       // Add decorative image area (similar to screenshot 2)
@@ -850,11 +820,11 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // Ascendant Details Box (similar to screenshot 2)
       const ascendantInfo = {
-        'Major Color': reading.personalityColor,
-        'Secondary': `${reading.thinkingColor} Energy`,
-        'Dynamic Colors': `${reading.givingColor}, ${reading.receivingColor}`,
+        'Lord': reading.personalityColor,
+        'Symbol': `${reading.thinkingColor} Energy`,
+        'Characteristics': `${reading.givingColor}, ${reading.receivingColor}, Spiritual`,
         'Lucky Gems': getGemstoneForColor(reading.personalityColor),
-        
+        'Day Of Fast': getDayForColor(reading.personalityColor)
       };
       
       yPos = drawInfoBox('Ascendant Report Details', ascendantInfo, yPos + 100);
@@ -868,15 +838,14 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 3: ENERGY POSITIONS (similar to Planetary Positions from screenshot 3)
       pdf.addPage();
-      addPaperBackground();
       yPos = drawTitleWithLine('Energy Positions', 30);
       
       // Create a table similar to the planetary positions table in screenshot 3
       const energyPositions = [
-        { position: 'Thinking', energy: reading.personalityColor, degree: `Above head`, sign: 'Primary', nakshatra: 'Core' },
-        { position: 'Giving', energy: reading.receivingColor, degree: `Right`, sign: 'Expression', nakshatra: 'Outward' },
-        { position: 'Receiving', energy: reading.givingColor, degree: `Left`, sign: 'Absorption', nakshatra: 'Inward' },
-        { position: 'Personality', energy: reading.thinkingColor, degree: `overall`, sign: 'Essence', nakshatra: 'Identity' }
+        { position: 'Thinking', energy: reading.personalityColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Primary', nakshatra: 'Core', house: '1st' },
+        { position: 'Giving', energy: reading.receivingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Expression', nakshatra: 'Outward', house: '7th' },
+        { position: 'Receiving', energy: reading.givingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Absorption', nakshatra: 'Inward', house: '4th' },
+        { position: 'Personality', energy: reading.thinkingColor, degree: `${Math.floor(Math.random() * 30) + 1}°`, sign: 'Essence', nakshatra: 'Identity', house: '10th' }
       ];
       
       // Draw table header
@@ -887,10 +856,10 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       pdf.setTextColor(255, 255, 255);
       pdf.text('Position', 25, yPos + 8);
       pdf.text('Energy', 55, yPos + 8);
-      pdf.text('Position', 85, yPos + 8);
-      pdf.text('Nature', 115, yPos + 8);
-      pdf.text('Movement', 145, yPos + 8);
-     
+      pdf.text('Degree', 85, yPos + 8);
+      pdf.text('Sign/Nature', 115, yPos + 8);
+      pdf.text('Nakshatra', 145, yPos + 8);
+      pdf.text('House', 175, yPos + 8);
       
       yPos += 12;
       
@@ -907,8 +876,8 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(row.energy, 55, yPos + 7);
         pdf.text(row.degree, 85, yPos + 7);
         pdf.text(row.sign, 115, yPos + 7);
-        pdf.text(row.nakshatra, 145, yPos + 7)
-        
+        pdf.text(row.nakshatra, 145, yPos + 7);
+        pdf.text(row.house, 175, yPos + 7);
         
         yPos += 10;
       });
@@ -950,7 +919,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 5: COMPREHENSIVE CHAKRA ANALYSIS WITH ENHANCED DATA
       pdf.addPage();
-      addPaperBackground();
       yPos = drawTitleWithLine('Comprehensive Chakra Analysis', 30);
       
       // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
@@ -1049,7 +1017,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         // Check if we need a new page
         if (yPos > 220) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('DETAILED CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1105,7 +1072,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
           pdf.addPage();
-          addPaperBackground();
           
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
@@ -1522,54 +1488,53 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text('Complete Life Assessment & Spiritual Development', 20, yPos);
         yPos += 15;
         
-        // Calculate comprehensive life scores using exact formulas from aura analysis
+        // Calculate comprehensive life scores based on chakra activity and aura analysis
         const comprehensiveLifeScores = {
           'Love & Relationships': {
-            score: ((0.4 * allChakraData.heart) + (0.3 * allChakraData.sacral) + (0.3 * allChakraData.throat)).toFixed(1),
-            description: 'Emotional openness & authentic expression, capacity for love, intimacy, emotional connection',
-            guidance: 'Heart chakra healing, emotional expression, relationship work, authentic communication'
+            score: Math.round((allChakraData.heart + allChakraData.sacral) / 2),
+            description: 'Capacity for love, intimacy, emotional connection',
+            guidance: 'Heart chakra healing, emotional expression, relationship work'
           },
-          'Emotional Stability': {
-            score: ((0.4 * allChakraData.sacral) + (0.3 * allChakraData.heart) + (0.3 * allChakraData.root)).toFixed(1),
-            description: 'Emotional maturity & self-soothing ability, resilience under stress and emotional regulation',
-            guidance: 'Emotional healing, self-care practices, grounding work, stress management techniques'
+          'Career & Life Purpose': {
+            score: Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
+            description: 'Professional fulfillment and authentic self-expression',
+            guidance: 'Personal power development, authentic communication'
           },
-          'Protection Score': {
-            score: ((0.4 * allChakraData.root) + (0.3 * allChakraData.soulStar) + (0.2 * allChakraData.solarPlexus) + (0.1 * allChakraData.thirdEye)).toFixed(1),
-            description: 'Spiritual boundary & auric shield strength, energetic protection and boundary maintenance',
-            guidance: 'Boundary setting, protection rituals, energy shielding practices, spiritual cleansing'
-          },
-          'Money & Abundance': {
-            score: ((0.3 * allChakraData.root) + (0.3 * allChakraData.solarPlexus) + (0.4 * allChakraData.earthStar)).toFixed(1),
-            description: 'Groundedness & wealth mindset, financial flow and material manifestation ability',
-            guidance: 'Abundance mindset work, financial healing, earth connection, material grounding practices'
-          },
-          'Career & Purpose': {
-            score: ((0.4 * allChakraData.solarPlexus) + (0.3 * allChakraData.thirdEye) + (0.3 * allChakraData.crown)).toFixed(1),
-            description: 'Vision, action & divine guidance alignment, professional fulfillment and life direction',
-            guidance: 'Personal power development, vision clarity work, spiritual guidance connection'
-          },
-          'Spiritual Growth': {
-            score: ((0.4 * allChakraData.crown) + (0.3 * allChakraData.thirdEye) + (0.3 * allChakraData.soulStar)).toFixed(1),
-            description: 'Higher wisdom & divine intuition, connection to higher consciousness and spiritual expansion',
-            guidance: 'Meditation practice, divine connection, spiritual study, crown chakra activation'
+          'Spiritual Development': {
+            score: Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
+            description: 'Connection to higher consciousness and spiritual growth',
+            guidance: 'Meditation practice, divine connection, spiritual study'
           },
           'Physical Vitality': {
-            score: ((0.4 * allChakraData.root) + (0.3 * allChakraData.solarPlexus) + (0.3 * allChakraData.sacral)).toFixed(1),
-            description: 'Physical health, energy levels, material world grounding and bodily vitality',
-            guidance: 'Grounding exercises, physical activity, earth connection, energetic vitality work'
+            score: Math.round((allChakraData.root + allChakraData.earthStar) / 2),
+            description: 'Physical health, energy levels, material world grounding',
+            guidance: 'Grounding exercises, physical activity, earth connection'
           },
-          'Manifestation Power': {
-            score: ((0.4 * allChakraData.solarPlexus) + (0.3 * allChakraData.root) + (0.2 * allChakraData.thirdEye) + (0.1 * allChakraData.sacral)).toFixed(1),
-            description: 'Converting visions into tangible results, creative manifestation and reality creation ability',
-            guidance: 'Vision work, action taking skills, creative practices, manifestation techniques'
+          'Mental Clarity': {
+            score: Math.round((allChakraData.thirdEye + allChakraData.throat) / 2),
+            description: 'Intuitive wisdom, clear thinking, truth perception',
+            guidance: 'Third eye activation, meditation, wisdom practices'
+          },
+          'Emotional Balance': {
+            score: Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
+            description: 'Emotional stability, healing capacity, inner strength',
+            guidance: 'Emotional healing work, self-compassion practices'
+          },
+          'Creative Expression': {
+            score: Math.round((allChakraData.sacral + allChakraData.throat) / 2),
+            description: 'Artistic abilities, creative flow, self-expression',
+            guidance: 'Creative pursuits, sacral chakra work, artistic expression'
+          },
+          'Leadership & Influence': {
+            score: Math.round((allChakraData.solarPlexus + allChakraData.crown) / 2),
+            description: 'Personal power, influence, spiritual leadership',
+            guidance: 'Confidence building, spiritual leadership development'
           }
         };
         
         Object.entries(comprehensiveLifeScores).forEach(([area, details]) => {
           if (yPos > 240) {
             pdf.addPage();
-            addPaperBackground();
             pdf.setFontSize(18);
             pdf.setTextColor(147, 51, 234);
             pdf.text('LIFE ASSESSMENT (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1601,7 +1566,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         
         if (yPos > 240) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('OVERALL ASSESSMENT', pageWidth / 2, 25, { align: 'center' });
@@ -1635,7 +1599,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 6: DETAILED ANALYSIS FROM ANALYSIS TABS
       pdf.addPage();
-      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('DETAILED AURA ANALYSIS', pageWidth / 2, 25, { align: 'center' });
@@ -1662,7 +1625,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         // Check if we need a new page
         if (yPos > 220) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('DETAILED ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1691,7 +1653,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       if (personalityTraits && personalityTraits.length > 0) {
         if (yPos > 200) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('PERSONALITY TRAITS', pageWidth / 2, 25, { align: 'center' });
@@ -1719,7 +1680,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const auraSpectrumData = parseJsonField(reading.auraColorSpectrum);
       if (auraSpectrumData && Array.isArray(auraSpectrumData) && auraSpectrumData.length > 0) {
         pdf.addPage();
-        addPaperBackground();
         pdf.setFontSize(18);
         pdf.setTextColor(147, 51, 234);
         pdf.text('COMPLETE AURA COLOR SPECTRUM', pageWidth / 2, 25, { align: 'center' });
@@ -1766,7 +1726,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         auraSpectrumData.forEach((color: string, index: number) => {
           if (yPos > 240) {
             pdf.addPage();
-            addPaperBackground();
             pdf.setFontSize(18);
             pdf.setTextColor(147, 51, 234);
             pdf.text('COLOR SPECTRUM (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1834,7 +1793,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 8: HEALING RECOMMENDATIONS & REMEDIES
       pdf.addPage();
-      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('HEALING RECOMMENDATIONS', pageWidth / 2, 25, { align: 'center' });
@@ -1874,7 +1832,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       healingRecommendations.forEach((rec) => {
         if (yPos > 220) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('HEALING GUIDANCE (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
@@ -1896,7 +1853,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       // General healing practices
       if (yPos > 180) {
         pdf.addPage();
-        addPaperBackground();
         pdf.setFontSize(18);
         pdf.setTextColor(147, 51, 234);
         pdf.text('GENERAL HEALING PRACTICES', pageWidth / 2, 25, { align: 'center' });
@@ -1929,7 +1885,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       
       // PAGE 7: CHAKRA REMEDIES & HEALING GUIDANCE
       pdf.addPage();
-      addPaperBackground();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
       pdf.text('CHAKRA REMEDIES & HEALING GUIDANCE', pageWidth / 2, 25, { align: 'center' });
@@ -2024,7 +1979,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       Object.entries(chakraRemedies).forEach(([chakraName, remedies]) => {
         if (yPos > 220) {
           pdf.addPage();
-          addPaperBackground();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
           pdf.text('CHAKRA REMEDIES (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
