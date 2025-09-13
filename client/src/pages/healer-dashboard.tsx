@@ -391,259 +391,53 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
     return colorMap[color] || 'from-gray-400 to-gray-600';
   };
 
-  // Helper functions for astrological-style mappings
-  const getGemstoneForColor = (color: string): string => {
-    const gemstoneMap: Record<string, string> = {
-      'Red': 'Ruby', 'Orange': 'Carnelian', 'Yellow': 'Citrine', 'Green': 'Emerald',
-      'Blue': 'Sapphire', 'Indigo': 'Lapis Lazuli', 'Violet': 'Amethyst', 
-      'Purple': 'Amethyst', 'Pink': 'Rose Quartz', 'White': 'Diamond',
-      'Black': 'Onyx', 'Brown': 'Tiger Eye', 'Gold': 'Topaz', 'Silver': 'Moonstone'
-    };
-    return gemstoneMap[color] || 'Quartz';
-  };
 
-  const getDayForColor = (color: string): string => {
-    const dayMap: Record<string, string> = {
-      'Red': 'Tuesday', 'Orange': 'Sunday', 'Yellow': 'Wednesday', 'Green': 'Friday',
-      'Blue': 'Thursday', 'Indigo': 'Saturday', 'Violet': 'Saturday', 
-      'Purple': 'Saturday', 'Pink': 'Friday', 'White': 'Monday',
-      'Black': 'Saturday', 'Brown': 'Tuesday', 'Gold': 'Sunday', 'Silver': 'Monday'
-    };
-    return dayMap[color] || 'Sunday';
-  };
 
-  // Enhanced personality analysis helper functions
-  const getPersonalityTrait = (color: string): string => {
-    const traits: Record<string, string> = {
-      'Red': 'passionate, determined, leadership-oriented',
-      'Orange': 'creative, enthusiastic, socially vibrant',
-      'Yellow': 'intelligent, optimistic, mentally focused',
-      'Green': 'healing-oriented, balanced, compassionate',
-      'Blue': 'communicative, peaceful, spiritually aware',
-      'Indigo': 'intuitive, wise, psychically sensitive',
-      'Violet': 'spiritually advanced, transformative, mystical',
-      'White': 'pure, protective, divinely connected',
-      'Black': 'protective, transformative, mystery-oriented',
-      'Pink': 'loving, nurturing, emotionally healing',
-      'Gold': 'wise, abundant, spiritually accomplished',
-      'Silver': 'intuitive, receptive, lunar-aligned'
-    };
-    return traits[color] || 'unique spiritual';
-  };
 
-  const getEnergyLevelTrait = (level: number): string => {
-    if (level >= 9) return 'exceptionally high vibration and dynamic';
-    if (level >= 7) return 'strong, confident, and energetically powerful';
-    if (level >= 5) return 'balanced, steady, and harmoniously grounded';
-    if (level >= 3) return 'gentle, contemplative, and introspectively focused';
-    return 'deeply reflective and spiritually transitional';
-  };
-
-  const getColorInfluence = (color: string): string => {
-    const influences: Record<string, string> = {
-      'Red': 'courage, passion, and dynamic action energy',
-      'Orange': 'creativity, joy, and social magnetism',
-      'Yellow': 'wisdom, clarity, and intellectual brilliance',
-      'Green': 'healing abilities, balance, and heart-centered compassion',
-      'Blue': 'peaceful communication and spiritual truth expression',
-      'Indigo': 'deep intuition and psychic awareness',
-      'Violet': 'spiritual mastery and transformative wisdom',
-      'White': 'divine protection and pure spiritual light',
-      'Black': 'protective boundaries and transformative power',
-      'Pink': 'unconditional love and emotional healing gifts',
-      'Gold': 'divine wisdom and spiritual abundance',
-      'Silver': 'intuitive sensitivity and lunar wisdom'
-    };
-    return influences[color] || 'unique spiritual gifts and abilities';
-  };
-
-  const getStrongestChakra = (chakraData: any): string => {
-    const entries = Object.entries(chakraData);
-    const strongest = entries.reduce((max, current) => 
-      (current[1] as number) > (max[1] as number) ? current : max
-    );
-    
-    const chakraNames: Record<string, string> = {
-      'soulStar': 'Soul Star (divine purpose)',
-      'crown': 'Crown (spiritual connection)',
-      'thirdEye': 'Third Eye (intuition)',
-      'throat': 'Throat (communication)',
-      'heart': 'Heart (love and healing)',
-      'solarPlexus': 'Solar Plexus (personal power)',
-      'sacral': 'Sacral (creativity)',
-      'root': 'Root (grounding)',
-      'earthStar': 'Earth Star (earth connection)'
-    };
-    
-    return chakraNames[strongest[0] as string] || 'balanced energy';
-  };
-
-  const getIntuitiveNature = (thirdEye: number, crown: number): string => {
-    const combined = (thirdEye + crown) / 2;
-    if (combined >= 8) return 'Highly intuitive with strong psychic abilities and clear spiritual insight';
-    if (combined >= 6) return 'Well-developed intuition with growing spiritual awareness and inner wisdom';
-    if (combined >= 4) return 'Developing intuitive abilities with potential for spiritual growth';
-    return 'Emerging intuitive gifts that need nurturing and development';
-  };
-
-  const getHealingAbilities = (heart: number, color: string): string => {
-    const healingColors = ['Green', 'Pink', 'White', 'Gold', 'Blue'];
-    const isHealingColor = healingColors.includes(color);
-    
-    if (heart >= 8 && isHealingColor) return 'Strong natural healing abilities with heart-centered wisdom and compassionate energy';
-    if (heart >= 8) return 'Powerful healing presence through personal strength and empathetic connection';
-    if (heart >= 6 && isHealingColor) return 'Good healing potential with developing heart chakra energy and natural compassion';
-    if (heart >= 6) return 'Growing healing abilities through emotional balance and supportive energy';
-    return 'Emerging healing gifts that develop through heart chakra work and self-compassion practices';
-  };
-
-  const getPsychicSensitivity = (thirdEye: number, soulStar: number): string => {
-    const combined = (thirdEye + soulStar) / 2;
-    if (combined >= 8) return 'High psychic sensitivity with clear spiritual perception and divine connection';
-    if (combined >= 6) return 'Good psychic awareness with developing spiritual abilities and higher consciousness';
-    if (combined >= 4) return 'Moderate psychic sensitivity that grows with spiritual practice and meditation';
-    return 'Latent psychic abilities that awaken through dedicated spiritual development';
-  };
-
-  const getSpiritualLeadership = (throat: number, crown: number): string => {
-    const combined = (throat + crown) / 2;
-    if (combined >= 8) return 'Strong spiritual leadership abilities with clear divine communication and wisdom sharing';
-    if (combined >= 6) return 'Developing leadership qualities with growing spiritual authority and teaching potential';
-    if (combined >= 4) return 'Emerging leadership skills through authentic self-expression and spiritual growth';
-    return 'Potential spiritual leadership that develops through personal growth and truth expression';
-  };
-
-  const getGrowthAreas = (chakraData: any): string => {
-    const entries = Object.entries(chakraData);
-    const weakest = entries.reduce((min, current) => 
-      (current[1] as number) < (min[1] as number) ? current : min
-    );
-    
-    const growthAreas: Record<string, string> = {
-      'soulStar': 'Develop deeper connection to divine purpose and soul mission through spiritual study',
-      'crown': 'Strengthen spiritual connection through meditation, prayer, and consciousness expansion',
-      'thirdEye': 'Enhance intuitive abilities through meditation, dreamwork, and psychic development',
-      'throat': 'Improve authentic self-expression and truth communication through voice work',
-      'heart': 'Develop emotional healing and compassion through heart-opening practices',
-      'solarPlexus': 'Build personal power and confidence through empowerment and boundary work',
-      'sacral': 'Enhance creativity and emotional flow through artistic expression and emotional healing',
-      'root': 'Strengthen grounding and security through earth connection and stability practices',
-      'earthStar': 'Deepen earth connection through nature work and ancestral healing'
-    };
-    
-    return growthAreas[weakest[0] as string] || 'Continue balanced spiritual development across all energy centers';
-  };
-
-  const getRecommendedPractices = (color: string, chakraData: any): string => {
-    const colorPractices: Record<string, string> = {
-      'Red': 'Grounding meditation, physical exercise, earth connection, courage-building practices',
-      'Orange': 'Creative expression, emotional release work, social connection, joy cultivation',
-      'Yellow': 'Mental clarity meditation, study, teaching, confidence-building practices',
-      'Green': 'Heart-opening meditation, healing work, nature connection, compassion practices',
-      'Blue': 'Truth expression, communication work, peaceful meditation, spiritual study',
-      'Indigo': 'Third eye meditation, intuitive development, dreamwork, wisdom practices',
-      'Violet': 'Crown chakra meditation, spiritual study, divine connection, transformation work',
-      'White': 'Light meditation, purification practices, spiritual protection, angelic connection',
-      'Black': 'Shadow work, protection practices, transformation meditation, boundary setting',
-      'Pink': 'Love meditation, emotional healing, nurturing practices, heart chakra work',
-      'Gold': 'Wisdom practices, abundance work, spiritual mastery, divine connection',
-      'Silver': 'Lunar meditation, intuitive development, feminine energy work, psychic protection'
-    };
-    
-    return colorPractices[color] || 'Balanced spiritual practices including meditation, energy work, and conscious living';
-  };
-
-  const getEnergyWorkFocus = (chakraData: any): string => {
-    const entries = Object.entries(chakraData);
-    const sorted = entries.sort((a, b) => (a[1] as number) - (b[1] as number));
-    const weakest = sorted.slice(0, 2);
-    
-    const focusAreas = weakest.map(([chakra]) => {
-      const focuses: Record<string, string> = {
-        'soulStar': 'soul purpose alignment and divine connection',
-        'crown': 'spiritual consciousness and divine wisdom',
-        'thirdEye': 'intuitive development and inner sight',
-        'throat': 'authentic expression and truth communication',
-        'heart': 'love cultivation and emotional healing',
-        'solarPlexus': 'personal power and confidence building',
-        'sacral': 'creative expression and emotional flow',
-        'root': 'grounding and security strengthening',
-        'earthStar': 'earth connection and ancestral healing'
-      };
-      return focuses[chakra] || 'balanced energy development';
-    });
-    
-    return `Primary focus areas: ${focusAreas.join(' and ')}`;
-  };
-
-  const getLifePathGuidance = (color: string, energyLevel: number): string => {
-    const pathGuidance: Record<string, string> = {
-      'Red': 'Your path involves leadership, taking action, and pioneering new directions with courage and determination',
-      'Orange': 'Your journey centers on creative expression, bringing joy to others, and building meaningful social connections',
-      'Yellow': 'Your purpose involves teaching, sharing wisdom, and illuminating truth through intellectual and spiritual insights',
-      'Green': 'Your path is one of healing - bringing balance, growth, and compassion to yourself and others',
-      'Blue': 'Your journey involves authentic communication, bringing peace, and expressing spiritual truth',
-      'Indigo': 'Your path centers on intuitive development, sharing wisdom, and bridging spiritual and physical realms',
-      'Violet': 'Your purpose involves spiritual transformation, mystical understanding, and guiding others toward enlightenment',
-      'White': 'Your path is one of purity, protection, and serving as a beacon of divine light for others',
-      'Black': 'Your journey involves transformation, protection work, and helping others through shadow integration',
-      'Pink': 'Your purpose centers on unconditional love, emotional healing, and nurturing spiritual growth in others',
-      'Gold': 'Your path involves wisdom sharing, spiritual mastery, and creating abundance through divine connection',
-      'Silver': 'Your journey centers on intuitive guidance, lunar wisdom, and psychic service to others'
-    };
-    
-    const levelGuidance = energyLevel >= 7 ? 
-      ' Your high energy levels indicate you are ready to take on significant spiritual responsibilities and leadership roles.' :
-      energyLevel >= 5 ?
-      ' Your balanced energy suggests steady progress through consistent spiritual practice and gradual expansion.' :
-      ' Your gentle energy indicates this is a time for inner development, healing, and building a strong spiritual foundation.';
-    
-    return (pathGuidance[color] || 'Your unique spiritual path involves discovering and expressing your authentic gifts') + levelGuidance;
-  };
-
-  // Chakra karmic lessons helper function
-  const getChakraKarmicLesson = (chakraKey: string): string => {
-    const karmicLessons: Record<string, string> = {
-      'soulStar': 'Remembering your soul purpose & connection with your soul mission and divine calling',
-      'crown': 'Reconnecting with Source beyond and trusting the divine timing of your spiritual journey',
-      'thirdEye': 'Breaking illusions and mental control to trust intuition and remove self doubt',
-      'throat': 'Healing silenced expression from past lifetimes and speaking your truth and sharing what you feel',
-      'heart': 'Releasing fear of vulnerability and being able to give and receive with balanced boundaries',
-      'solarPlexus': 'Stepping into your personal power & confidence by letting go of the self-sacrificial nature',
-      'sacral': 'Reclaiming emotional freedom and self-worth by letting go of guilt, shame, unworthiness around pleasure and emotional feelings',
-      'root': 'Ability to trust life decisions, take actions to create stability & security in life',
-      'earthStar': 'Grounding ancestral wisdom and healing generational patterns for earth connection'
-    };
-    return karmicLessons[chakraKey] || 'Continue spiritual development and energy balance work';
-  };
-
-  // Chakra healing recommendations helper function
-  const getChakraHealingRecommendations = (chakraKey: string, score: number): string => {
-    const baseRecommendations: Record<string, string> = {
-      'soulStar': 'Meditation on divine purpose, spiritual study, connection with higher guidance',
-      'crown': 'Crown chakra meditation, prayer, spiritual connection practices, violet light visualization',
-      'thirdEye': 'Third eye activation, intuitive development, meditation, indigo light visualization',
-      'throat': 'Voice work, truth expression, blue light visualization, authentic communication practices',
-      'heart': 'Heart-opening meditation, love practices, green light visualization, compassion work',
-      'solarPlexus': 'Confidence building, personal power work, yellow light visualization, boundary setting',
-      'sacral': 'Creative expression, emotional healing, orange light visualization, pleasure acceptance',
-      'root': 'Grounding exercises, earth connection, red light visualization, stability practices',
-      'earthStar': 'Earth connection rituals, ancestral healing, grounding in nature, stability work'
-    };
-    
-    const urgencyLevel = score <= 3 ? 'PRIORITY: ' :
-                        score <= 6 ? 'FOCUS: ' :
-                        score >= 9 ? 'BALANCE: ' :
-                        'CONTINUE: ';
-    
-    return urgencyLevel + (baseRecommendations[chakraKey] || 'Balanced energy practices');
-  };
-
+  
   const generateComprehensivePDF = async (reading: any) => {
     setIsGeneratingPDF(true);
     
     try {
-      // Generate a new PDF with enhanced layout
+      // First, try to retrieve the stored PDF if it exists
+      try {
+        const response = await fetch(`/api/pdf-storage/aura/${reading.id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const storedPdf = await response.json();
+          // Decode the base64 PDF data and trigger download
+          const byteCharacters = atob(storedPdf.pdfData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
+          
+          const url = URL.createObjectURL(pdfBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = storedPdf.fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "PDF Downloaded",
+            description: "Original PDF report retrieved and downloaded successfully.",
+          });
+          setIsGeneratingPDF(false);
+          return;
+        }
+      } catch (error) {
+        console.log('No stored PDF found, generating new one:', error);
+      }
+      
+      // If no stored PDF exists, generate a new one
       const { jsPDF } = await import('jspdf');
       const { format } = await import('date-fns');
       
@@ -652,21 +446,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
       const pageHeight = pdf.internal.pageSize.getHeight();
       const healerName = user?.username || 'Professional Healer';
       
-      // PAGE 1: Cover page with provided image
-      try {
-        const coverImageModule = await import('@assets/WhatsApp Image 2025-08-18 at 3.25.14 AM_1757452900484.jpeg');
-        const coverImagePath = coverImageModule.default;
-        
-        // Add cover image to fill the entire first page
-        pdf.addImage(coverImagePath, 'JPEG', 0, 0, pageWidth, pageHeight);
-        
-        // Add a new page for the actual content
-        pdf.addPage();
-      } catch (error) {
-        console.error('Error loading cover image:', error);
-        // Continue without cover image if there's an error
-      }
-      
       // Helper function to parse JSON fields safely
       const parseJsonField = (field: string) => {
         try {
@@ -674,91 +453,6 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         } catch {
           return {};
         }
-      };
-      
-      // Helper function to draw decorative title line (like in screenshots)
-      const drawTitleWithLine = (title: string, y: number, fontSize: number = 18) => {
-        pdf.setFontSize(fontSize);
-        pdf.setTextColor(30, 41, 59);
-        const textWidth = pdf.getTextWidth(title);
-        const startX = (pageWidth - textWidth) / 2;
-        
-        // Draw horizontal lines on both sides
-        pdf.setDrawColor(212, 175, 55); // Golden color
-        pdf.setLineWidth(1);
-        const lineY = y - 2;
-        pdf.line(20, lineY, startX - 10, lineY);
-        pdf.line(startX + textWidth + 10, lineY, pageWidth - 20, lineY);
-        
-        // Draw the title
-        pdf.text(title, pageWidth / 2, y, { align: 'center' });
-        
-        return y + 15;
-      };
-      
-      // Helper function to draw trait bubbles (like in screenshots)
-      const drawTraitBubbles = (traits: string[], startY: number, title: string, isPositive: boolean = true) => {
-        if (!traits || traits.length === 0) return startY;
-        
-        pdf.setFontSize(14);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text(title, pageWidth / 2, startY, { align: 'center' });
-        
-        let currentY = startY + 15;
-        let currentX = 30;
-        const bubbleWidth = 35;
-        const bubbleHeight = 12;
-        const spacing = 5;
-        
-        traits.forEach((trait, index) => {
-          if (currentX + bubbleWidth > pageWidth - 30) {
-            currentX = 30;
-            currentY += bubbleHeight + spacing + 5;
-          }
-          
-          // Set bubble colors based on positive/negative
-          if (isPositive) {
-            pdf.setFillColor(147, 51, 234); // Purple for positive
-            pdf.setTextColor(255, 255, 255);
-          } else {
-            pdf.setFillColor(239, 68, 68); // Red for negative
-            pdf.setTextColor(255, 255, 255);
-          }
-          
-          // Draw rounded rectangle bubble
-          pdf.roundedRect(currentX, currentY - bubbleHeight + 2, bubbleWidth, bubbleHeight, 3, 3, 'F');
-          
-          // Add text
-          pdf.setFontSize(8);
-          const textWidth = pdf.getTextWidth(trait);
-          const textX = currentX + (bubbleWidth - textWidth) / 2;
-          pdf.text(trait, textX, currentY - 2);
-          
-          currentX += bubbleWidth + spacing;
-        });
-        
-        return currentY + 20;
-      };
-      
-      // Helper function to draw info box (like in screenshots)
-      const drawInfoBox = (title: string, info: any, startY: number) => {
-        pdf.setFillColor(255, 255, 255); // Light yellow background
-        pdf.setDrawColor(255, 255, 255); // Golden border
-        pdf.rect(30, startY, pageWidth - 60, 45, 'FD');
-        
-        pdf.setFontSize(12);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text(title, 35, startY + 10);
-        
-        let yOffset = 20;
-        Object.entries(info).forEach(([key, value]) => {
-          pdf.setFontSize(10);
-          pdf.setTextColor(55, 65, 81);
-          pdf.text(`${key}: ${value}`, 35, startY + yOffset);
-          yOffset += 8;
-        });
-        
-        return startY + 55;
       };
       
       // Parse all data fields with error handling
@@ -772,6 +466,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         chakraActivity = parseJsonField(reading.chakraActivity) || {};
       } catch (parseError) {
         console.error('Error parsing reading data:', parseError);
+        // Use default values if parsing fails
         spiritualGuidance = 'Your aura reveals unique energy patterns representing spiritual growth and development.';
         detailedAnalysis = 'Advanced spiritual development with balanced energy flow.';
         colorMeanings = {};
@@ -779,311 +474,84 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         chakraActivity = {};
       }
       
-      // PAGE 1: COVER PAGE WITH ASCENDANT REPORT STYLE
-      let yPos = drawTitleWithLine('Ascendant Report', 40, 24);
+      // PAGE 1: COVER PAGE & OVERVIEW
+      pdf.setFontSize(24);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('AURA & CHAKRA ALIGNMENT REPORT', pageWidth / 2, 40, { align: 'center' });
       
-      // Subtitle
       pdf.setFontSize(16);
       pdf.setTextColor(75, 85, 99);
-      pdf.text('Spiritual Advice', pageWidth / 2, yPos, { align: 'center' });
-      yPos += 20;
+      pdf.text(`Client: ${reading.name}`, pageWidth / 2, 60, { align: 'center' });
+      pdf.text(`Professional Healer: ${healerName}`, pageWidth / 2, 75, { align: 'center' });
+      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth / 2, 90, { align: 'center' });
       
-      // Spiritual guidance in center
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-      const guidanceLines = pdf.splitTextToSize(spiritualGuidance, pageWidth - 80);
-      const guidanceHeight = guidanceLines.length * 5;
-      const guidanceY = yPos + 10;
-      pdf.text(guidanceLines, pageWidth / 2, guidanceY, { align: 'center' });
-      yPos = guidanceY + guidanceHeight + 20;
+     
       
-      // Extract positive and negative traits from personality traits and analysis
-      const positiveTraits = personalityTraits.slice(0, Math.ceil(personalityTraits.length / 2)) || ['Intuitive', 'Motivated', 'Emotionally Stable', 'Imaginative'];
-      const negativeTraits = personalityTraits.slice(Math.ceil(personalityTraits.length / 2)) || ['Impatient', 'Anxious', 'Disconnected', 'Restless'];
       
-      // Positive Traits Section
-      yPos = drawTraitBubbles(positiveTraits, yPos, 'Positive Traits', true);
+      // Aura Color Analysis - moved higher up for better visibility
+      pdf.setFontSize(18);
+      pdf.setTextColor(30, 41, 59);
+      pdf.text('Complete Aura Color Analysis', 20, 120);
       
-      // Negative Traits Section  
-      yPos = drawTraitBubbles(negativeTraits, yPos + 10, 'More Traits', false);
-      
-      // PAGE 2: ASCENDANT REPORT DETAILS
-      pdf.addPage();
-      yPos = drawTitleWithLine('Ascendant Report', 30);
-      
-      // Add decorative image area (similar to screenshot 2)
-      if (reading.processedAuraImage || reading.imageUrl) {
-        try {
-          const imgWidth = 60;
-          const imgHeight = 80;
-          const imgX = 30;
-          const imgY = yPos + 10;
-          
-          let finalImageSrc = '';
-          if (reading.processedAuraImage) {
-            if (!reading.processedAuraImage.startsWith('data:')) {
-              finalImageSrc = `data:image/jpeg;base64,${reading.processedAuraImage}`;
-            } else {
-              finalImageSrc = reading.processedAuraImage;
-            }
-            pdf.addImage(finalImageSrc, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-          }
-        } catch (error) {
-          console.error('Error adding aura image to PDF:', error);
-        }
-      }
-      
-      // Ascendant Details Box (similar to screenshot 2)
-      const ascendantInfo = {
-        'Personality': reading.personalityColor,
-        'Thinking': `${reading.thinkingColor} Energy`,
-        'Dynamic Colors': `${reading.givingColor}, ${reading.receivingColor}, Spiritual`,
-        'Lucky Gems': getGemstoneForColor(reading.personalityColor),
-        'Day Of Fast': getDayForColor(reading.personalityColor)
-      };
-      
-      yPos = drawInfoBox('Ascendant Report Details', ascendantInfo, yPos + 100);
-      
-      // Add detailed analysis text
+      let yPos = 135;
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Thinking Color: ${reading.personalityColor}`, 25, yPos);
+      yPos += 6;
       pdf.setFontSize(10);
       pdf.setTextColor(55, 65, 81);
-      const analysisText = detailedAnalysis || 'Your aura reveals unique spiritual characteristics that guide your life path and energy expression.';
-      const analysisLines = pdf.splitTextToSize(analysisText, pageWidth - 60);
-      pdf.text(analysisLines, 30, yPos + 10);
-      
-      // PAGE 3: ENERGY POSITIONS (similar to Planetary Positions from screenshot 3)
-      pdf.addPage();
-      yPos = drawTitleWithLine('Energy Positions', 30);
-      
-      // Create a table similar to the planetary positions table in screenshot 3
-      const energyPositions = [
-        { position: 'Thinking', energy: reading.personalityColor, degree: `Above Head`, sign: 'Primary', nakshatra: 'Core' },
-        { position: 'Giving', energy: reading.receivingColor, degree: `Right`, sign: 'Expression', nakshatra: 'Outward' },
-        { position: 'Receiving', energy: reading.givingColor, degree: `Left`, sign: 'Absorption', nakshatra: 'Inward' },
-        { position: 'Personality', energy: reading.thinkingColor, degree: `Overall`, sign: 'Essence', nakshatra: 'Identity' }
-      ];
-      
-      // Draw table header
-      yPos += 10;
-      pdf.setFillColor(212, 175, 55); // Golden header
-      pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
-      pdf.setFontSize(10);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('Position', 25, yPos + 8);
-      pdf.text('Energy', 55, yPos + 8);
-      pdf.text('Placement', 85, yPos + 8);
-      pdf.text('Nature', 115, yPos + 8);
-      pdf.text('Movement', 145, yPos + 8);
-      
-      
-      yPos += 12;
-      
-      // Draw table rows
-      energyPositions.forEach((row, index) => {
-        if (index % 2 === 0) {
-          pdf.setFillColor(248, 248, 248); // Alternate row color
-          pdf.rect(20, yPos, pageWidth - 40, 10, 'F');
-        }
-        
-        pdf.setFontSize(9);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text(row.position, 25, yPos + 7);
-        pdf.text(row.energy, 55, yPos + 7);
-        pdf.text(row.degree, 85, yPos + 7);
-        pdf.text(row.sign, 115, yPos + 7);
-        pdf.text(row.nakshatra, 145, yPos + 7);
-        
-        
-        yPos += 10;
-      });
-      
-      // Add energy status indicators (similar to planet status in screenshot 3)
-      yPos += 20;
-      const energyStatuses = [
-        { energy: reading.personalityColor, status: 'Highly Active', type: 'benefic' },
-        { energy: reading.receivingColor, status: 'Moderately Active', type: 'neutral' },
-        { energy: reading.givingColor, status: 'Balanced', type: 'benefic' },
-        { energy: reading.thinkingColor, status: 'Stable', type: 'neutral' }
-      ];
-      
-      let statusX = 30;
-      let statusY = yPos;
-      energyStatuses.forEach((status, index) => {
-        if (index % 3 === 0 && index > 0) {
-          statusY += 35;
-          statusX = 30;
-        }
-        
-        // Draw status box
-        const boxColor = status.type === 'benefic' ? [34, 197, 94] : status.type === 'malefic' ? [239, 68, 68] : [156, 163, 175];
-        pdf.setFillColor(254, 248, 220);
-        pdf.setDrawColor(boxColor[0], boxColor[1], boxColor[2]);
-        pdf.rect(statusX, statusY, 45, 25, 'FD');
-        
-        pdf.setFontSize(8);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text(status.energy, statusX + 2, statusY + 8);
-        pdf.text(status.status, statusX + 2, statusY + 15);
-        pdf.setTextColor(boxColor[0], boxColor[1], boxColor[2]);
-        pdf.text(status.type.toUpperCase(), statusX + 2, statusY + 22);
-        
-        statusX += 50;
-      });
-      
-      // Basic Astrological Details page removed as requested by user
-      
-      // PAGE 5: COMPREHENSIVE CHAKRA ANALYSIS WITH ENHANCED DATA
-      pdf.addPage();
-      yPos = drawTitleWithLine('Comprehensive Chakra Analysis', 30);
-      
-      // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
-      const allChakraData = {
-        'soulStar': Math.round(calculateSoulStarChakra(reading) / 10),
-        'crown': chakraActivity.crown || 6,
-        'thirdEye': chakraActivity.thirdEye || 7,
-        'throat': chakraActivity.throat || 6,
-        'heart': chakraActivity.heart || 8,
-        'solarPlexus': chakraActivity.solarPlexus || 7,
-        'sacral': chakraActivity.sacral || 6,
-        'root': chakraActivity.root || 8,
-        'earthStar': Math.round(calculateEarthStarChakra(reading) / 10)
-      };
-      
-      const chakraDisplayNames = {
-        'soulStar': 'Soul Star Chakra',
-        'crown': 'Crown Chakra',
-        'thirdEye': 'Third Eye Chakra',
-        'throat': 'Throat Chakra',
-        'heart': 'Heart Chakra',
-        'solarPlexus': 'Solar Plexus Chakra',
-        'sacral': 'Sacral Chakra',
-        'root': 'Root Chakra',
-        'earthStar': 'Earth Star Chakra'
-      };
-      
-      const chakraDescriptions = {
-        'soulStar': 'Higher spiritual purpose, divine connection, soul mission and connection to your highest spiritual calling',
-        'crown': 'Spiritual connection, divine wisdom, universal consciousness and connection to Source energy',
-        'thirdEye': 'Intuition, inner wisdom, psychic abilities and capacity to see beyond the physical realm',
-        'throat': 'Communication, truth, self-expression and ability to voice your authentic self',
-        'heart': 'Love, compassion, emotional healing and your capacity to give and receive love',
-        'solarPlexus': 'Personal power, confidence, willpower and your ability to assert yourself in the world',
-        'sacral': 'Creativity, sexuality, emotional flow and your connection to pleasure and creative expression',
-        'root': 'Grounding, survival, physical vitality and your connection to safety and security',
-        'earthStar': 'Earth connection, grounding, ancestral wisdom and your relationship with the material world'
-      };
-      
-      // Draw comprehensive chakra table
-      yPos += 10;
-      pdf.setFillColor(212, 175, 55);
-      pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
-      pdf.setFontSize(10);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('Chakra', 25, yPos + 8);
-      pdf.text('Activity Level', 80, yPos + 8);
-      pdf.text('Percentage', 130, yPos + 8);
-      pdf.text('Status', 160, yPos + 8);
-      
-      yPos += 12;
-      
-      Object.entries(allChakraData).forEach(([chakraKey, score], index) => {
-        if (index % 2 === 0) {
-          pdf.setFillColor(248, 248, 248);
-          pdf.rect(20, yPos, pageWidth - 40, 12, 'F');
-        }
-        
-        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
-        const percentage = score * 10;
-        const chakraStatus = getChakraStatus(score);
-        
-        pdf.setFontSize(9);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text(chakraName, 25, yPos + 8);
-        pdf.text(`${score}/10`, 85, yPos + 8);
-        pdf.text(`${percentage}%`, 135, yPos + 8);
-        
-        // Color-code status with proper chakra status
-        const statusColor = score >= 9 ? [59, 130, 246] : // Blue for balanced
-                           score >= 7 ? [34, 197, 94] : // Green for developing balance  
-                           score >= 4 ? [251, 146, 60] : // Orange for imbalanced
-                           score >= 1 ? [239, 68, 68] : // Red for blocked
-                           [156, 163, 175]; // Gray for unknown
-        
-        pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
-        pdf.text(chakraStatus.status, 165, yPos + 8);
-        
-        yPos += 12;
-      });
-      
-      // Add comprehensive detailed chakra analysis section after the table
+      pdf.text('Your thinking essence and nature', 30, yPos);
       yPos += 15;
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Giving Color: ${reading.receivingColor}`, 25, yPos);
+      yPos += 6;
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('How you give energy to others', 30, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Receiving Color: ${reading.givingColor}`, 25, yPos);
+      yPos += 6;
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('How you receive energy from environment', 30, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Personality Color: ${reading.thinkingColor}`, 25, yPos);
+      yPos += 6;
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('Your core essence', 30, yPos);
+      yPos += 20;
+      
+      // Energy Level Assessment
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Detailed Chakra Analysis with Karmic Insights', 20, yPos);
+      pdf.text('Energy Assessment', 20, yPos);
       yPos += 15;
       
-      // Enhanced chakra analysis with meanings, karmic lessons, and healing
-      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
-        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
-        const description = chakraDescriptions[chakraKey as keyof typeof chakraDescriptions];
-        const chakraStatus = getChakraStatus(score);
-        const percentage = score * 10;
-        
-        // Check if we need a new page
-        if (yPos > 220) {
-          pdf.addPage();
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('DETAILED CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
-          yPos = 40;
-        }
-        
-        // Chakra header with name and score
-        pdf.setFontSize(13);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`${chakraName}: ${score}/10 (${percentage}%) - ${chakraStatus.status}`, 20, yPos);
-        yPos += 12;
-        
-        // Chakra meaning and function
-        pdf.setFontSize(9);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text('Meaning & Function:', 25, yPos);
-        yPos += 5;
-        const meaningLines = pdf.splitTextToSize(description, pageWidth - 50);
-        pdf.text(meaningLines, 30, yPos);
-        yPos += meaningLines.length * 4 + 5;
-        
-        // Karmic lessons for each chakra
-        const karmicLessons = getChakraKarmicLesson(chakraKey);
-        if (karmicLessons) {
-          pdf.setFontSize(9);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('Karmic Lesson:', 25, yPos);
-          yPos += 5;
-          
-          pdf.setTextColor(75, 85, 99);
-          const karmicLines = pdf.splitTextToSize(karmicLessons, pageWidth - 50);
-          pdf.text(karmicLines, 30, yPos);
-          yPos += karmicLines.length * 4 + 5;
-        }
-        
-        // Healing recommendations for this chakra
-        const healingRecommendations = getChakraHealingRecommendations(chakraKey, score);
-        if (healingRecommendations) {
-          pdf.setFontSize(9);
-          pdf.setTextColor(34, 197, 94);
-          pdf.text('Healing Focus:', 25, yPos);
-          yPos += 5;
-          
-          const healingLines = pdf.splitTextToSize(healingRecommendations, pageWidth - 50);
-          pdf.text(healingLines, 30, yPos);
-          yPos += healingLines.length * 4 + 8;
-        }
-        
-        yPos += 8; // Space between chakras
-      });
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text(`Overall Energy Level: ${reading.energyLevel}/10`, 25, yPos);
+      yPos += 8;
+      pdf.setFontSize(10);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text('Spiritual vibration and life force energy', 30, yPos);
       
-      // PAGE 6: ENHANCED AURA VISUALIZATION AND ANALYSIS
+      
+      
+      // PAGE 2: AURA VISUALIZATION - Before and After Comparison
+      console.log('Starting PDF generation with result:', reading);
+      console.log('Processed aura image available:', !!reading.processedAuraImage);
+      console.log('Image URL:', reading.imageUrl);
+      console.log('Name:', reading.name);
+      
       if (reading.processedAuraImage || reading.imageUrl) {
         try {
           pdf.addPage();
@@ -1165,179 +633,89 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         console.log('No processed aura image found in reading data');
       }
       
-      // PAGE 7: DETAILED SPIRITUAL ANALYSIS AND HEALING RECOMMENDATIONS
+      // PAGE 3: COMPREHENSIVE CHAKRA ANALYSIS
       pdf.addPage();
-      yPos = drawTitleWithLine('Detailed Spiritual Analysis', 30);
+      pdf.setFontSize(18);
+      pdf.setTextColor(147, 51, 234);
+      pdf.text('COMPREHENSIVE CHAKRA ANALYSIS', pageWidth / 2, 25, { align: 'center' });
       
-      // Complete Detailed Analysis Text with Enhanced Personality & Spiritual Insights
+      pdf.setDrawColor(147, 51, 234);
+      pdf.setLineWidth(0.5);
+      pdf.line(30, 35, pageWidth - 30, 35);
+      
+      yPos = 50;
+      
+      // Complete Chakra Activity from actual data
       pdf.setFontSize(16);
       pdf.setTextColor(30, 41, 59);
-      pdf.text('Comprehensive Personality & Spiritual Analysis', 20, yPos);
+      pdf.text('9-Chakra Energy System Activity', 20, yPos);
       yPos += 15;
       
-      // Enhanced personality traits based on aura colors and energy patterns
-      const enhancedPersonalityTraits = {
-        'Core Personality Traits': {
-          'Primary Energy': `Your ${reading.personalityColor} aura reveals strong ${getPersonalityTrait(reading.personalityColor)} characteristics`,
-          'Energy Expression': `With an energy level of ${reading.energyLevel}/10, you demonstrate ${getEnergyLevelTrait(reading.energyLevel)} spiritual presence`,
-          'Color Influence': `${reading.personalityColor} energy brings ${getColorInfluence(reading.personalityColor)} to your personality`,
-          'Chakra Dominance': `Your chakra profile shows strength in ${getStrongestChakra(allChakraData)} energy center`
-        },
-        'Spiritual Characteristics': {
-          'Intuitive Nature': getIntuitiveNature(allChakraData.thirdEye, allChakraData.crown),
-          'Healing Abilities': getHealingAbilities(allChakraData.heart, reading.personalityColor),
-          'Psychic Sensitivity': getPsychicSensitivity(allChakraData.thirdEye, allChakraData.soulStar),
-          'Spiritual Leadership': getSpiritualLeadership(allChakraData.throat, allChakraData.crown)
-        },
-        'Growth Opportunities': {
-          'Areas for Development': getGrowthAreas(allChakraData),
-          'Spiritual Practices': getRecommendedPractices(reading.personalityColor, allChakraData),
-          'Energy Work Focus': getEnergyWorkFocus(allChakraData),
-          'Life Path Guidance': getLifePathGuidance(reading.personalityColor, reading.energyLevel)
-        }
+      // Extract ALL chakra data from the reading - using calculated values for Soul Star and Earth Star
+      const allChakraData = {
+        'soulStar': Math.round(calculateSoulStarChakra(reading) / 10),
+        'crown': chakraActivity.crown || 6,
+        'thirdEye': chakraActivity.thirdEye || 7,
+        'throat': chakraActivity.throat || 6,
+        'heart': chakraActivity.heart || 8,
+        'solarPlexus': chakraActivity.solarPlexus || 7,
+        'sacral': chakraActivity.sacral || 6,
+        'root': chakraActivity.root || 8,
+        'earthStar': Math.round(calculateEarthStarChakra(reading) / 10)
       };
       
-      Object.entries(enhancedPersonalityTraits).forEach(([category, traits]) => {
-        if (yPos > 240) {
-          pdf.addPage();
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('PERSONALITY ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
-          yPos = 40;
-        }
+      const chakraDisplayNames = {
+        'soulStar': 'Soul Star Chakra',
+        'crown': 'Crown Chakra',
+        'thirdEye': 'Third Eye Chakra',
+        'throat': 'Throat Chakra',
+        'heart': 'Heart Chakra',
+        'solarPlexus': 'Solar Plexus Chakra',
+        'sacral': 'Sacral Chakra',
+        'root': 'Root Chakra',
+        'earthStar': 'Earth Star Chakra'
+      };
+      
+      const chakraDescriptions = {
+        'soulStar': 'Higher spiritual purpose, divine connection, soul mission',
+        'crown': 'Spiritual connection, divine wisdom, universal consciousness',
+        'thirdEye': 'Intuition, inner wisdom, psychic abilities',
+        'throat': 'Communication, truth, self-expression',
+        'heart': 'Love, compassion, emotional healing',
+        'solarPlexus': 'Personal power, confidence, willpower',
+        'sacral': 'Creativity, sexuality, emotional flow',
+        'root': 'Grounding, survival, physical vitality',
+        'earthStar': 'Earth connection, grounding, ancestral wisdom'
+      };
+      
+      Object.entries(allChakraData).forEach(([chakraKey, score]) => {
+        const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
+        const description = chakraDescriptions[chakraKey as keyof typeof chakraDescriptions];
         
-        pdf.setFontSize(14);
+        pdf.setFontSize(12);
         pdf.setTextColor(147, 51, 234);
-        pdf.text(category, 20, yPos);
-        yPos += 12;
+        pdf.text(`${chakraName}: ${score}/10 (${score * 10}%)`, 20, yPos);
+        yPos += 8;
         
-        Object.entries(traits as Record<string, string>).forEach(([trait, description]) => {
-          if (yPos > 250) {
-            pdf.addPage();
-            pdf.setFontSize(18);
-            pdf.setTextColor(147, 51, 234);
-            pdf.text('PERSONALITY ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
-            yPos = 40;
-          }
-          
-          pdf.setFontSize(11);
-          pdf.setTextColor(55, 65, 81);
-          pdf.text(`• ${trait}:`, 25, yPos);
-          yPos += 8;
-          
-          pdf.setFontSize(9);
-          pdf.setTextColor(75, 85, 99);
-          const descLines = pdf.splitTextToSize(description, pageWidth - 45);
-          pdf.text(descLines, 30, yPos);
-          yPos += descLines.length * 4 + 8;
-        });
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 65, 81);
+        const descLines = pdf.splitTextToSize(description, pageWidth - 45);
+        pdf.text(descLines, 25, yPos);
+        yPos += descLines.length * 4 + 8;
         
-        yPos += 10;
-      });
-      
-      // Original detailed analysis if available
-      if (detailedAnalysis && detailedAnalysis !== 'Advanced spiritual development with balanced energy flow.' && detailedAnalysis.length > 50) {
-        if (yPos > 200) {
+        if (yPos > 250) {
           pdf.addPage();
           pdf.setFontSize(18);
           pdf.setTextColor(147, 51, 234);
-          pdf.text('PROFESSIONAL ANALYSIS', pageWidth / 2, 25, { align: 'center' });
+          pdf.text('CHAKRA ANALYSIS (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
           yPos = 40;
         }
-        
-        pdf.setFontSize(14);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text('Professional Healer Analysis', 20, yPos);
-        yPos += 15;
-        
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        const analysisLines = pdf.splitTextToSize(detailedAnalysis, pageWidth - 40);
-        pdf.text(analysisLines, 25, yPos);
-        yPos += analysisLines.length * 4 + 20;
-      }
-      
-      // Healing Recommendations
-      yPos = drawInfoBox('Professional Healing Recommendations', {
-        'Color Therapy': `Use ${reading.personalityColor.toLowerCase()} in meditation and surroundings`,
-        'Gemstone Healing': `Carry ${getGemstoneForColor(reading.personalityColor)} for energy balance`,
-        'Chakra Work': 'Focus on balancing your most active energy centers',
-        'Daily Practice': `Meditate on ${getDayForColor(reading.personalityColor)} for optimal results`,
-        'Energy Protection': 'Use white light visualization for spiritual protection'
-      }, yPos);
-      
-      // Professional Healer Notes
-      if (reading.healerNotes || editedNotes) {
-        yPos += 20;
-        pdf.setFontSize(16);
-        pdf.setTextColor(30, 41, 59);
-        pdf.text('Professional Healer Notes', 20, yPos);
-        yPos += 15;
-        
-        // Add notes in a styled box
-        pdf.setFillColor(254, 252, 232);
-        pdf.rect(15, yPos - 5, pageWidth - 30, 40, 'F');
-        pdf.setDrawColor(251, 191, 36);
-        pdf.setLineWidth(1);
-        pdf.rect(15, yPos - 5, pageWidth - 30, 40, 'S');
-        
-        pdf.setFontSize(11);
-        pdf.setTextColor(55, 65, 81);
-        const notes = editedNotes || reading.healerNotes || "Professional insights and recommendations will be added here.";
-        const notesLines = pdf.splitTextToSize(notes, pageWidth - 40);
-        pdf.text(notesLines, 20, yPos + 5);
-      }
-      
-      // Footer
-      pdf.setFontSize(8);
-      pdf.setTextColor(107, 114, 128);
-      pdf.text(`Generated by AuraEye - Professional Report for ${reading.name}`, 20, pageHeight - 10);
-      pdf.text(`Analysis Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, pageWidth - 80, pageHeight - 10);
-      
-      // Save the PDF and store it for future retrieval
-      const timestamp = format(new Date(), 'yyyy-MM-dd');
-      const fileName = `ascendant-aura-report-${reading.name}-${timestamp}.pdf`;
-      
-      // Get PDF as base64 string for storage
-      let pdfData;
-      try {
-        pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
-        console.log('PDF generated successfully, size:', pdfData.length, 'characters');
-      } catch (pdfError: any) {
-        console.error('Error converting PDF to base64:', pdfError);
-        throw new Error('Failed to convert PDF to base64: ' + String(pdfError?.message || pdfError));
-      }
-      
-      // Store the PDF in database for exact retrieval later
-      try {
-        await fetch('/api/pdf-storage', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            auraReadingId: reading.id,
-            fileName: fileName,
-            pdfData: pdfData,
-            clientName: reading.name
-          }),
-        });
-        console.log('PDF stored successfully for future retrieval');
-      } catch (error) {
-        console.error('Error storing PDF:', error);
-        // Continue with download even if storage fails
-      }
-      
-      // Download the PDF
-      pdf.save(fileName);
-      
-      toast({
-        title: "PDF Generated",
-        description: `Enhanced Ascendant Report downloaded successfully`,
       });
       
-      // PAGE 4: OLD DETAILED CHAKRA ANALYSIS (keeping this for compatibility)
+      pdf.setFontSize(8);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform', 20, pageHeight - 10);
+      
+      // PAGE 4: DETAILED CHAKRA ANALYSIS
       pdf.addPage();
       pdf.setFontSize(18);
       pdf.setTextColor(147, 51, 234);
@@ -1496,144 +874,29 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         }
       });
       
-      // Enhanced Life Score Analysis with Comprehensive Assessment
-      if (yPos < 150) {
+      // Life Score Analysis (if available)
+      if (yPos < 200) {
         pdf.setFontSize(16);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('Complete Life Assessment & Spiritual Development', 20, yPos);
+        pdf.text('Life Area Assessment', 20, yPos);
         yPos += 15;
         
-        // Calculate detailed life scores exactly as shown in the aura analysis UI
-        const soulStarScore = calculateSoulStarChakra(reading) / 10;
-        const comprehensiveLifeScores = {
-          'Career & Purpose': {
-            score: parseFloat(((0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * (chakraActivity.crown || 5))).toFixed(1)),
-            description: 'Vision, action & divine guidance alignment',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * (chakraActivity.crown || 5));
-              if (score <= 4) return "Feels lost or stuck, lacks clarity of life direction - Focus on exploring passions and seeking guidance";
-              if (score <= 6) return "Developing purpose clarity, some direction uncertainty - Continue exploring and trust the process";
-              if (score <= 8) return "Good career alignment, clear life direction - Build on current clarity and take action";
-              return "Excellent purpose clarity and career fulfillment - Share your gifts and inspire others";
-            })()
-          },
-          'Emotional Stability': {
-            score: parseFloat(((0.4 * (chakraActivity.sacral || 5)) + (0.3 * (chakraActivity.heart || 5)) + (0.3 * (chakraActivity.root || 5))).toFixed(1)),
-            description: 'Emotional maturity & self-soothing ability',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.sacral || 5)) + (0.3 * (chakraActivity.heart || 5)) + (0.3 * (chakraActivity.root || 5));
-              if (score <= 4) return "Emotionally reactive, overwhelmed easily - Practice grounding and emotional regulation techniques";
-              if (score <= 6) return "Moderate emotional stability, occasional overwhelm - Develop stronger emotional awareness";
-              if (score <= 8) return "Good emotional balance, handles stress well - Continue healthy emotional practices";
-              return "Excellent emotional stability and resilience - Support others in their emotional journey";
-            })()
-          },
-          'Spiritual Growth': {
-            score: parseFloat(((0.4 * (chakraActivity.crown || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * soulStarScore)).toFixed(1)),
-            description: 'Higher wisdom & divine intuition',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.crown || 5)) + (0.3 * (chakraActivity.thirdEye || 5)) + (0.3 * soulStarScore);
-              if (score <= 4) return "Spiritually disconnected or resisting inner voice - Begin with simple meditation and trust exercises";
-              if (score <= 6) return "Developing spiritual awareness, some resistance - Continue practice and remain open";
-              if (score <= 8) return "Good spiritual connection, regular inner guidance - Deepen your practice and trust";
-              return "Excellent spiritual openness and divine connection - Guide others on their spiritual path";
-            })()
-          },
-          'Physical Energy': {
-            score: parseFloat(((0.4 * (chakraActivity.root || 5)) + (0.3 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.sacral || 5))).toFixed(1)),
-            description: 'Stamina, vitality & body-mind connection',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.root || 5)) + (0.3 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.sacral || 5));
-              if (score <= 4) return "Low vitality, potential health or energy blocks - Focus on grounding, nutrition and energy healing";
-              if (score <= 6) return "Moderate energy levels, some vitality blocks - Improve physical practices and rest";
-              if (score <= 8) return "Good physical energy, healthy vitality - Maintain current healthy practices";
-              return "Excellent physical energy and vibrant health - Inspire others toward wellness";
-            })()
-          },
-          'Manifestation': {
-            score: parseFloat(((0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.root || 5)) + (0.2 * (chakraActivity.thirdEye || 5)) + (0.1 * (chakraActivity.sacral || 5))).toFixed(1)),
-            description: 'Converting visions into tangible results',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.solarPlexus || 5)) + (0.3 * (chakraActivity.root || 5)) + (0.2 * (chakraActivity.thirdEye || 5)) + (0.1 * (chakraActivity.sacral || 5));
-              if (score <= 4) return "Energies are scattered or sabotaged - Clear energy blocks and focus intentions";
-              if (score <= 6) return "Moderate manifestation ability, some blocks - Strengthen willpower and clear vision";
-              if (score <= 8) return "Good manifestation skills, visions becoming reality - Trust the process and take action";
-              return "Excellent manifestation power, dreams easily realized - Teach others manifestation principles";
-            })()
-          },
-          'Protection': {
-            score: parseFloat(((0.4 * (chakraActivity.root || 5)) + (0.3 * soulStarScore) + (0.2 * (chakraActivity.solarPlexus || 5)) + (0.1 * (chakraActivity.thirdEye || 5))).toFixed(1)),
-            description: 'Spiritual boundary & auric shield strength',
-            guidance: (() => {
-              const score = (0.4 * (chakraActivity.root || 5)) + (0.3 * soulStarScore) + (0.2 * (chakraActivity.solarPlexus || 5)) + (0.1 * (chakraActivity.thirdEye || 5));
-              if (score <= 4) return "Highly vulnerable to others' energies - Practice energy protection and boundary setting";
-              if (score <= 6) return "Moderate protection, some energetic vulnerability - Strengthen auric boundaries";
-              if (score <= 8) return "Good energetic boundaries, stable protection - Maintain current protection practices";
-              return "Excellent auric shield, strong energetic protection - Help others strengthen their boundaries";
-            })()
-          }
+        // Calculate life scores based on chakra activity
+        const lifeScores = {
+          'Love & Relationships': Math.round((allChakraData.heart + allChakraData.sacral) / 2),
+          'Career & Purpose': Math.round((allChakraData.solarPlexus + allChakraData.throat) / 2),
+          'Spiritual Growth': Math.round((allChakraData.crown + allChakraData.soulStar) / 2),
+          'Physical Energy': Math.round((allChakraData.root + allChakraData.earthStar) / 2),
+          'Emotional Balance': Math.round((allChakraData.heart + allChakraData.solarPlexus) / 2),
+          'Intuition & Wisdom': Math.round((allChakraData.thirdEye + allChakraData.crown) / 2)
         };
         
-        Object.entries(comprehensiveLifeScores).forEach(([area, details]) => {
-          if (yPos > 240) {
-            pdf.addPage();
-            pdf.setFontSize(18);
-            pdf.setTextColor(147, 51, 234);
-            pdf.text('LIFE ASSESSMENT (CONTINUED)', pageWidth / 2, 25, { align: 'center' });
-            yPos = 40;
-          }
-          
-          const percentage = details.score * 10;
+        Object.entries(lifeScores).forEach(([area, score]) => {
           pdf.setFontSize(12);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text(`${area}: ${details.score}/10 (${percentage}%)`, 25, yPos);
-          yPos += 8;
-          
-          pdf.setFontSize(9);
           pdf.setTextColor(55, 65, 81);
-          const descLines = pdf.splitTextToSize(details.description, pageWidth - 50);
-          pdf.text(descLines, 30, yPos);
-          yPos += descLines.length * 4 + 2;
-          
-          pdf.setFontSize(8);
-          pdf.setTextColor(34, 197, 94);
-          const guidanceLines = pdf.splitTextToSize(`Focus: ${details.guidance}`, pageWidth - 50);
-          pdf.text(guidanceLines, 30, yPos);
-          yPos += guidanceLines.length * 3 + 8;
+          pdf.text(`${area}: ${score}/10`, 25, yPos);
+          yPos += 8;
         });
-        
-        // Overall Assessment
-        const totalScore = Object.values(comprehensiveLifeScores).reduce((sum, item) => sum + item.score, 0);
-        const averageScore = Math.round(totalScore / Object.keys(comprehensiveLifeScores).length);
-        
-        if (yPos > 240) {
-          pdf.addPage();
-          pdf.setFontSize(18);
-          pdf.setTextColor(147, 51, 234);
-          pdf.text('OVERALL ASSESSMENT', pageWidth / 2, 25, { align: 'center' });
-          yPos = 40;
-        }
-        
-        yPos += 10;
-        pdf.setFillColor(245, 245, 245);
-        pdf.rect(15, yPos - 5, pageWidth - 30, 30, 'F');
-        pdf.setDrawColor(147, 51, 234);
-        pdf.setLineWidth(1);
-        pdf.rect(15, yPos - 5, pageWidth - 30, 30, 'S');
-        
-        pdf.setFontSize(14);
-        pdf.setTextColor(147, 51, 234);
-        pdf.text(`Overall Life Balance: ${averageScore}/10 (${averageScore * 10}%)`, 20, yPos + 8);
-        
-        const overallStatus = averageScore >= 8 ? 'Excellent - Thriving in most life areas' : 
-                             averageScore >= 6 ? 'Good - Strong foundation with room for growth' : 
-                             averageScore >= 4 ? 'Developing - Building balance across life areas' : 
-                             'Growth Phase - Focus on foundational healing';
-        
-        pdf.setFontSize(10);
-        pdf.setTextColor(55, 65, 81);
-        pdf.text(`Assessment: ${overallStatus}`, 20, yPos + 18);
-        yPos += 35;
       }
       
       pdf.setFontSize(8);
@@ -2074,7 +1337,51 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         pdf.text(notesLines, 20, yPos + 5);
       }
       
-      // This duplicate section removed - PDF completion handled above
+      pdf.setFontSize(8);
+      pdf.text('Generated by AuraEye - Your Spiritual Wellness Platform   Page 8 of 8', 20, pageHeight - 10);
+      
+      // Save the PDF and store it for future retrieval
+      const timestamp = format(new Date(), 'yyyy-MM-dd');
+      const fileName = `aura-chakra-alignment-report-${reading.name}-${timestamp}.pdf`;
+      
+      // Get PDF as base64 string for storage
+      let pdfData;
+      try {
+        pdfData = pdf.output('datauristring').split(',')[1]; // Remove data:application/pdf;base64, prefix
+        console.log('PDF generated successfully, size:', pdfData.length, 'characters');
+      } catch (pdfError: any) {
+        console.error('Error converting PDF to base64:', pdfError);
+        throw new Error('Failed to convert PDF to base64: ' + String(pdfError?.message || pdfError));
+      }
+      
+      // Store the PDF in database for exact retrieval later
+      try {
+        await fetch('/api/pdf-storage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            auraReadingId: reading.id,
+            fileName: fileName,
+            pdfData: pdfData,
+            clientName: reading.name
+          }),
+        });
+        console.log('PDF stored successfully for future retrieval');
+      } catch (error) {
+        console.error('Error storing PDF:', error);
+        // Continue with download even if storage fails
+      }
+      
+      // Download the PDF
+      pdf.save(fileName);
+      
+      toast({
+        title: "PDF Generated",
+        description: `Report downloaded successfully`,
+      });
       
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -2196,29 +1503,25 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
               </div>
             </div>
 
-            {/* Spiritual Guidance Section */}
+            {/* Spiritual Guidance */}
             {reading.spiritualGuidance && (
-              <div className="bg-white border border-slate-300 rounded-lg p-4">
-                <div className="border-b border-slate-200 pb-2 mb-4">
-                  <h3 className="text-lg font-bold text-slate-800">SPIRITUAL GUIDANCE</h3>
-                </div>
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200">
-                  <p className="text-sm text-slate-700 leading-relaxed font-medium">{reading.spiritualGuidance}</p>
+              <div>
+                <h4 className="font-semibold text-lg mb-3">Spiritual Guidance</h4>
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg border border-purple-200">
+                  <p className="text-sm text-gray-700 leading-relaxed">{reading.spiritualGuidance}</p>
                 </div>
               </div>
             )}
 
-            {/* Personality Traits Section */}
+            {/* Personality Traits */}
             {Array.isArray(personalityTraits) && personalityTraits.length > 0 && (
-              <div className="bg-white border border-slate-300 rounded-lg p-4">
-                <div className="border-b border-slate-200 pb-2 mb-4">
-                  <h3 className="text-lg font-bold text-slate-800">PERSONALITY TRAITS</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div>
+                <h4 className="font-semibold text-lg mb-3">Personality Traits</h4>
+                <div className="flex flex-wrap gap-2">
                   {personalityTraits.map((trait, index) => (
-                    <div key={index} className="bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-lg px-3 py-2 text-center">
-                      <span className="text-sm font-semibold text-purple-800">{trait}</span>
-                    </div>
+                    <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
+                      {trait}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -2407,138 +1710,66 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   };
 
   return (
-    <Card className="border-2 border-slate-200 shadow-lg">
-      {/* Professional Numerology Report Header */}
-      <div className="bg-gradient-to-r from-slate-50 to-gray-100 border-b-2 border-slate-200">
-        <div className="px-6 py-4">
-          <div className="text-center mb-4">
-            <h2 className="text-2xl font-bold text-slate-800 mb-1">NUMEROLOGY READING REPORT</h2>
-            <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto w-36"></div>
+    <Card className="border-2 border-blue-100">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-blue-800">{reading.name}</CardTitle>
+            <CardDescription className="text-blue-600">
+              {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+            </CardDescription>
           </div>
-          
-          {/* Report Info Table */}
-          <div className="bg-white rounded-lg border border-slate-300 p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Client Name:</span>
-                  <span className="text-slate-900 font-bold">{reading.name}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Birth Date:</span>
-                  <span className="text-slate-900">{reading.birthDate}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Reading Date:</span>
-                  <span className="text-slate-900">{format(new Date(reading.createdAt), "MMMM d, yyyy")}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="font-semibold text-slate-700">Reading Time:</span>
-                  <span className="text-slate-900">{format(new Date(reading.createdAt), "h:mm a")}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-3 mt-4">
+          <div className="flex gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={downloadPDF}
-              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+              title="Download PDF"
             >
-              <Download className="h-4 w-4 mr-2" />
-              Download Report
+              <Download className="h-4 w-4" />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsEditing(!isEditing)}
-              className="border-slate-300 text-slate-700 hover:bg-slate-50"
+              title={isEditing ? "Cancel Edit" : "Edit Notes"}
             >
-              {isEditing ? <X className="h-4 w-4 mr-2" /> : <Edit3 className="h-4 w-4 mr-2" />}
-              {isEditing ? 'Cancel Edit' : 'Edit Notes'}
+              {isEditing ? <X className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
             </Button>
           </div>
         </div>
-      </div>
+      </CardHeader>
       
       <CardContent className="p-6 space-y-6">
-        {/* Core Numbers Section */}
-        <div className="bg-white border border-slate-300 rounded-lg p-4">
-          <div className="border-b border-slate-200 pb-2 mb-4">
-            <h3 className="text-lg font-bold text-slate-800">CORE NUMEROLOGY NUMBERS</h3>
+        {/* Core Numbers */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.lifePathNumber}</div>
+            <p className="text-sm font-medium">Life Path</p>
           </div>
-          <div className="overflow-hidden">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-slate-50">
-                  <th className="border border-slate-300 px-4 py-3 text-left font-semibold text-slate-700">Number Type</th>
-                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold text-slate-700">Value</th>
-                  <th className="border border-slate-300 px-4 py-3 text-left font-semibold text-slate-700">Significance</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Life Path Number</td>
-                  <td className="border border-slate-300 px-4 py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-800 font-bold text-xl rounded-full">
-                      {reading.lifePathNumber}
-                    </div>
-                  </td>
-                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your soul's journey and life purpose</td>
-                </tr>
-                <tr className="bg-slate-25">
-                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Destiny Number</td>
-                  <td className="border border-slate-300 px-4 py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 text-green-800 font-bold text-xl rounded-full">
-                      {reading.destinyNumber}
-                    </div>
-                  </td>
-                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your life mission and ultimate goal</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Soul Urge Number</td>
-                  <td className="border border-slate-300 px-4 py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 text-purple-800 font-bold text-xl rounded-full">
-                      {reading.soulUrgeNumber}
-                    </div>
-                  </td>
-                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">Your heart's deepest desires and motivations</td>
-                </tr>
-                <tr className="bg-slate-25">
-                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-700">Personality Number</td>
-                  <td className="border border-slate-300 px-4 py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 text-orange-800 font-bold text-xl rounded-full">
-                      {reading.personalityNumber}
-                    </div>
-                  </td>
-                  <td className="border border-slate-300 px-4 py-3 text-sm text-slate-600">How others perceive you externally</td>
-                </tr>
-                <tr className="bg-gradient-to-r from-emerald-25 to-green-25">
-                  <td className="border border-slate-300 px-4 py-3 font-medium text-emerald-700">Personal Year 2025</td>
-                  <td className="border border-slate-300 px-4 py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 font-bold text-xl rounded-full border-2 border-emerald-300">
-                      {reading.personalYearNumber}
-                    </div>
-                  </td>
-                  <td className="border border-slate-300 px-4 py-3 text-sm text-emerald-700 font-medium">Your current year's energy and opportunities</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.destinyNumber}</div>
+            <p className="text-sm font-medium">Destiny</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.soulUrgeNumber}</div>
+            <p className="text-sm font-medium">Soul Urge</p>
+          </div>
+          <div className="text-center p-3 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{reading.personalityNumber}</div>
+            <p className="text-sm font-medium">Personality</p>
+          </div>
+          <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+            <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
+            <p className="text-sm font-medium text-emerald-700">Personal Year 2025</p>
           </div>
         </div>
 
-        {/* Complete Interpretation Section */}
-        <div className="bg-white border border-slate-300 rounded-lg p-4">
-          <div className="border-b border-slate-200 pb-2 mb-4">
-            <h3 className="text-lg font-bold text-slate-800">COMPLETE NUMEROLOGY INTERPRETATION</h3>
-          </div>
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg border border-blue-200 max-h-96 overflow-y-auto">
-            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">{reading.interpretation}</p>
+        {/* Full Interpretation */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3">Complete Interpretation</h4>
+          <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{reading.interpretation}</p>
           </div>
         </div>
 
