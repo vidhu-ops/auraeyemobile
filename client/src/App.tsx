@@ -37,7 +37,6 @@ function Router() {
       <ProtectedRoute path="/dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
       <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
-      <ProtectedRoute path="/aura" component={AuraAnalysis} />
       <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
       <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
       <ProtectedRoute path="/personalized-horoscope" component={PersonalizedHoroscope} />

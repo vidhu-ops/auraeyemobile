@@ -14,8 +14,7 @@ import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
-import { sendHealerBookingNotification, sendPasswordResetEmail, sendPDFReport } from "./email-service";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
@@ -3846,90 +3845,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error storing PDF:", error);
       res.status(500).json({ message: "Failed to store PDF" });
-    }
-  });
-
-  // Public object serving endpoint for cloud storage files
-  app.get("/public-objects/:filePath(*)", async (req, res) => {
-    const filePath = req.params.filePath;
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const file = await objectStorageService.searchPublicObject(filePath);
-      if (!file) {
-        return res.status(404).json({ error: "File not found" });
-      }
-      objectStorageService.downloadObject(file, res);
-    } catch (error) {
-      console.error("Error searching for public object:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // Email PDF Report endpoint
-  app.post('/api/email-pdf-report', isAuthenticated, async (req, res) => {
-    try {
-      const { analysisId, pdfBase64, fileName, screenshots } = req.body;
-      const sessionUser = req.user;
-
-      if (!sessionUser) {
-        return res.status(401).json({ error: 'User not authenticated' });
-      }
-
-      // Fetch fresh user data from database to ensure we have current email
-      const freshUser = await storage.getUser(sessionUser.id);
-      if (!freshUser) {
-        return res.status(401).json({ error: 'User not found' });
-      }
-
-      if (!freshUser.email) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'No email address found for your account. Please update your profile with an email address.' 
-        });
-      }
-
-      if (!pdfBase64 || !fileName) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'PDF data and filename are required' 
-        });
-      }
-
-      console.log(`\n📧 Emailing PDF report to: ${freshUser.email}`);
-      console.log(`📄 File name: ${fileName}`);
-      console.log(`👤 User: ${freshUser.username} (${freshUser.userType})`);
-      console.log(`📷 Screenshots included: ${screenshots ? screenshots.length : 0}`);
-
-      // Send email with PDF attachment using existing email service
-      // Use sheeyameela@gmail.com as the sender email
-      const emailSuccess = await sendPDFReport(
-        freshUser.email,
-        freshUser.username,
-        pdfBase64,
-        fileName,
-        screenshots
-      );
-
-      if (emailSuccess) {
-        console.log(`✅ PDF report emailed successfully to: ${freshUser.email}`);
-        res.json({ 
-          success: true, 
-          message: `PDF report has been sent to ${freshUser.email}` 
-        });
-      } else {
-        console.error(`❌ Failed to email PDF report to: ${freshUser.email}`);
-        res.status(500).json({ 
-          success: false, 
-          message: 'Failed to send email. Please try again or contact support.' 
-        });
-      }
-
-    } catch (error) {
-      console.error('Email PDF Report error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Internal server error. Please try again.' 
-      });
     }
   });
 
