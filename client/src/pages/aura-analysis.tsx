@@ -120,11 +120,11 @@ function getColorMeditationFocus(color: string): string {
 
 // Helper function to get chakra status message based on score
 const getChakraStatus = (score: number): string => {
-  if (score >= 1 && score <= 3) return "blocked";
+  if (score >= 1 && score <= 3) return "underworking";
   if (score >= 4 && score <= 6) return "imbalanced patterns";
   if (score >= 7 && score <= 8) return "developing balance";
   if (score === 10) return "overworking";
-  if (score === 9) return "working";
+  if (score === 9) return "balanced";
   return "balanced";
 };
 
@@ -6481,7 +6481,7 @@ export default function AuraAnalysis() {
                               <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
                                 <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
                                   <span className="mr-3">📊</span>
-                                  Chakra Score Interpretation Guide
+                                  Karmic Score Interpretation Guide
                                 </h4>
                                 <p className="text-sm text-gray-600 mb-6">
                                   Understanding your chakra scores and their karmic significance for spiritual development and healing.
@@ -6490,7 +6490,7 @@ export default function AuraAnalysis() {
                                 <div className="space-y-4">
                                   {/* Chakra Score Ranges Guide */}
                                   <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Chakra Score Interpretation Guide</h5>
+                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Karma & Chakra Score Interpretation Guide</h5>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                       
                                       {/* Karmically Aligned (9-10) */}
@@ -6499,9 +6499,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-purple-600">10</div>
                                           <div className="text-sm font-medium text-purple-700">Karmic Overdrive</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-purple-800">Meaning:</p>
                                           <p>Your soul is too attached for the manifestation of this lesson</p>
+                                          <div className="text-sm font-medium text-purple-700">Over Working Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-purple-100 rounded-full">
@@ -6515,9 +6516,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-emerald-600">9</div>
                                           <div className="text-sm font-medium text-emerald-700">Karmically Aligned</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-emerald-800">Meaning:</p>
-                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson or not this lesson is fully mastered</p>
+                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson</p>
+                                          <div className="text-sm font-medium text-emerald-700">Working Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-emerald-100 rounded-full">
@@ -6532,9 +6534,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-blue-600">7-8</div>
                                           <div className="text-sm font-medium text-blue-700">Currently Learning</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-blue-800">Meaning:</p>
                                           <p>You are actively working on healing and understanding this area</p>
+                                          <div className="text-sm font-medium text-blue-700">Developing balance in this Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-blue-100 rounded-full">
@@ -6549,9 +6552,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-amber-600">4-6</div>
                                           <div className="text-sm font-medium text-amber-700">Karmic Test</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-amber-800">Meaning:</p>
                                           <p>You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern</p>
+                                          <div className="text-sm font-medium text-amber-700">Imbalanced patterns in this chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-amber-100 rounded-full">
@@ -6566,9 +6570,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-red-600">1-3</div>
                                           <div className="text-sm font-medium text-red-700">Karmic Block</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-red-800">Meaning:</p>
                                           <p>Deep-rooted block or ancestral karma making you feel stuck; urgent healing required</p>
+                                          <div className="text-sm font-medium text-red-700">Underworking Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-red-100 rounded-full">
@@ -8526,7 +8531,7 @@ export default function AuraAnalysis() {
                                 <div className="space-y-4">
                                   {/* Chakra Score Ranges Guide */}
                                   <div className="bg-white rounded-lg p-5 border border-violet-200">
-                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Chakra Score Interpretation Guide</h5>
+                                    <h5 className="font-semibold text-lg mb-4 text-violet-800">Karma & Chakra Score Interpretation Guide</h5>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                       
                                       {/* Karmically Aligned (9-10) */}
@@ -8535,10 +8540,11 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-purple-600">10</div>
                                           <div className="text-sm font-medium text-purple-700">Karmic Overdrive</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-purple-800">Meaning:</p>
                                           <p>Your soul is too attached for the manifestation of this lesson</p>
                                         </div>
+                                        <div className=" text-center text-sm font-medium text-red-700">Over working Chakra</div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-purple-100 rounded-full">
                                             <span className="text-xs font-medium text-purple-700">! Overdrive</span>
@@ -8551,9 +8557,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-emerald-600">9</div>
                                           <div className="text-sm font-medium text-emerald-700">Karmically Aligned</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-xs text-center text-gray-600 space-y-1">
                                           <p className="font-medium text-emerald-800">Meaning:</p>
-                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson or not this lesson is fully mastered</p>
+                                          <p>Your soul is highly aligned with this lesson and you have almost learnt this lesson</p>
+                                          <div className="text-sm font-medium text-green-500">Working Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-emerald-100 rounded-full">
@@ -8568,9 +8575,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-blue-600">7-8</div>
                                           <div className="text-sm font-medium text-blue-700">Currently Learning</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
-                                          <p className="font-medium text-blue-800">Meaning:</p>
+                                        <div className="text-xs text-gray-600 text-center space-y-1">
+                                          <p className="font-medium text-blue-800 text-center">Meaning:</p>
                                           <p>You are actively working on healing and understanding this area</p>
+                                          <div className="text-sm font-medium text-blue-700">Developing Balance in this Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-blue-100 rounded-full">
@@ -8585,9 +8593,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-amber-600">4-6</div>
                                           <div className="text-sm font-medium text-amber-700">Karmic Test</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-amber-800">Meaning:</p>
                                           <p>You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern</p>
+                                          <div className="text-sm font-medium text-orange-500">Imbalances In Chakras</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-amber-100 rounded-full">
@@ -8602,9 +8611,10 @@ export default function AuraAnalysis() {
                                           <div className="text-2xl font-bold text-red-600">1-3</div>
                                           <div className="text-sm font-medium text-red-700">Karmic Block</div>
                                         </div>
-                                        <div className="text-xs text-gray-600 space-y-1">
+                                        <div className=" text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-red-800">Meaning:</p>
                                           <p>Deep-rooted block or ancestral karma making you feel stuck; urgent healing required</p>
+                                          <div className="text-sm font-medium text-red-700">Underworking Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-red-100 rounded-full">
