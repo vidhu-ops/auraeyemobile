@@ -1668,23 +1668,22 @@ export default function AuraAnalysis() {
       }));
 
       // Send to backend for email delivery
-      const response = await apiRequest('/api/email-pdf-report', {
-        method: 'POST',
-        body: {
-          analysisId: result.id || window.currentAnalysisIdForScreenshot,
-          pdfBase64,
-          fileName,
-          screenshots: screenshots.length > 0 ? screenshots : undefined
-        }
+      const response = await apiRequest('POST', '/api/email-pdf-report', {
+        analysisId: result.id || window.currentAnalysisIdForScreenshot,
+        pdfBase64,
+        fileName,
+        screenshots: screenshots.length > 0 ? screenshots : undefined
       });
 
-      if (response.success) {
+      const result_data = await response.json();
+
+      if (result_data.success) {
         toast({
           title: "PDF Report Emailed Successfully!",
           description: `Your aura analysis report has been sent to your email address.`,
         });
       } else {
-        throw new Error(response.message || 'Failed to send email');
+        throw new Error(result_data.message || 'Failed to send email');
       }
 
     } catch (error) {
