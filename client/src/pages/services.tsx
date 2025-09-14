@@ -118,7 +118,13 @@ export default function Services() {
                           ))}
                         </div>
                         <Button asChild variant="outline" className="w-full">
-                          <Link href={service.id === "numerology" && !user ? "/auth" : service.path}>
+                          <Link href={
+                            service.id === "numerology" && !user 
+                              ? "/auth" 
+                              : service.id === "numerology" && user?.userType === "healer"
+                                ? "/healer-dashboard?tab=tools"
+                                : service.path
+                          }>
                             Try {service.title}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>

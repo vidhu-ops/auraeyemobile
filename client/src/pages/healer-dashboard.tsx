@@ -40,7 +40,7 @@ import {
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { CHAKRA_KEYS, CHAKRA_DISPLAY_NAMES, getChakraStatus, calculateChakraGroupPercentages, ChakraActivity, type ChakraKey } from "../../../shared/chakra";
-import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, memo, useMemo, lazy, Suspense } from "react";
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, useEffect, memo, useMemo, lazy, Suspense } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
@@ -1822,6 +1822,15 @@ export default function HealerDashboard() {
   const { credits } = useCredits();
   const [activeTab, setActiveTab] = useState("overview");
   const [bookingTab, setBookingTab] = useState("pending");
+  
+  // Handle URL parameters for tab navigation
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['overview', 'bookings', 'analytics', 'readings', 'tools'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, []);
   const [selectedBooking, setSelectedBooking] = useState<HealerBooking | null>(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
