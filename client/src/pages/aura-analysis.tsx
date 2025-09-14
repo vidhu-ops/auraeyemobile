@@ -6220,7 +6220,7 @@ export default function AuraAnalysis() {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-6">
-                <h2 className="font-heading font-semibold text-2xl mb-2">Image Manipulation Tool</h2>
+                <h2 className="font-heading font-semibold text-2xl mb-2">Image Flipping Tool</h2>
                 <p className="text-gray-600 text-sm">Upload and flip your images horizontally before analysis</p>
               </div>
               <div className="flex justify-center">
@@ -7072,14 +7072,14 @@ export default function AuraAnalysis() {
                                   Dominant Aura Color: {result.dominantColor}
                                 </h4>
                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                     <div>
                                       <h5 className="font-medium text-sm mb-2">Spiritual Meaning</h5>
                                       <p className="text-sm text-gray-700">{getColorMeaningForEnergyTab(result.dominantColor)}</p>
                                     </div>
                                     <div>
-                                      <h5 className="font-medium text-sm mb-2">Energy Frequency</h5>
-                                      <p className="text-sm text-gray-700">{getColorFrequency(result.dominantColor)}</p>
+                                      
+                                      
                                     </div>
                                   </div>
                                   
@@ -7368,22 +7368,8 @@ export default function AuraAnalysis() {
                                         </div>
                                       </div>
                                       <div>
-                                        <p className="text-sm font-medium text-gray-700 mb-3">Energy Distribution:</p>
-                                        <div className="space-y-2">
-                                          {(() => {
-                                            const detectedColors = extractAllAuraColors(result);
-                                            return [
-                                              { zone: 'Crown/Thinking', percentage: 30 },
-                                              { zone: 'Receiving Energy', percentage: 25 },
-                                              { zone: 'Giving Energy', percentage: 25 }
-                                            ].map((item, index) => (
-                                              <div key={index} className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">{item.zone}</span>
-                                                <span className="text-sm font-bold text-amber-700">{item.percentage}%</span>
-                                              </div>
-                                            ));
-                                          })()}
-                                        </div>
+                                        
+                                        
                                       </div>
                                     </div>
                                   </div>
@@ -9452,7 +9438,7 @@ export default function AuraAnalysis() {
                                       ></div>
                                       <div>
                                         <h5 className="font-medium">{result.secondaryColor}</h5>
-                                        <p className="text-xs text-gray-600">Location: Right side of lower abdomen, 2 inches below navel</p>
+                                        <p className="text-xs text-gray-600">Location: near lower abdomen</p>
                                       </div>
                                     </div>
                                     <p className="text-sm text-gray-700">
@@ -9711,7 +9697,7 @@ export default function AuraAnalysis() {
                                                 uniqueColors.add(color);
                                                 colorTiles.push({
                                                   color: color,
-                                                  label: 'Complementary'
+                                                  label: 'Secondary'
                                                 });
                                               }
                                             });
