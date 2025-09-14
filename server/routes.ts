@@ -15,6 +15,7 @@ import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHorosco
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail, sendPDFReport } from "./email-service";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
@@ -3845,6 +3846,22 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error storing PDF:", error);
       res.status(500).json({ message: "Failed to store PDF" });
+    }
+  });
+
+  // Public object serving endpoint for cloud storage files
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   });
 
