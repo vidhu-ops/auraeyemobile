@@ -1812,6 +1812,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       }
       
       let numerologyProfile: NumerologyResult;
+      let savedReading: any = null;
       
       try {
         // Try using the API-based calculation
@@ -1820,7 +1821,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.log('Returning healer numerology profile:', numerologyProfile);
         
         // Save the numerology reading for the healer
-        await storage.saveNumerologyReading({
+        savedReading = await storage.saveNumerologyReading({
           userId: req.user.id,
           performedBy: req.user.userType === 'healer' ? req.user.id : null,
           name,
@@ -1921,7 +1922,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         };
         
         // Save the fallback numerology reading for the healer
-        await storage.saveNumerologyReading({
+        savedReading = await storage.saveNumerologyReading({
           userId: req.user.id,
           performedBy: req.user.userType === 'healer' ? req.user.id : null,
           name,
@@ -1940,6 +1941,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       
       // Create comprehensive response structure for healer dashboard
       const comprehensiveResponse = {
+        // Reading ID for notes functionality
+        id: savedReading?.id,
         // Basic info
         name,
         birthDate,
