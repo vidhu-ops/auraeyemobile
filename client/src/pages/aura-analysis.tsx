@@ -6199,7 +6199,7 @@ export default function AuraAnalysis() {
       
       <main className="flex-grow">
         {/* Header section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
+        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-10">
           <AuraGlow 
             colors={[
               { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
@@ -6217,10 +6217,10 @@ export default function AuraAnalysis() {
         
         {/* Image Manipulation Tool */}
         <section className="bg-gray-50 py-8">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-10">
             <div className="max-w-4xl mx-auto">
               {/* Example Image Guide */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-16">
                 <h2 className="font-heading font-semibold text-2xl mb-4">Image Upload Guidelines</h2>
                 <div className="max-w-sm mx-auto mb-4">
                   <img 
@@ -6229,7 +6229,7 @@ export default function AuraAnalysis() {
                     className="w-full rounded-lg shadow-md"
                   />
                 </div>
-                <p className="text-gray-700 text-sm mb-2">
+                <p className="text-gray-700 text-sm mb-8">
                   The image uploaded for aura analysis should look like that and have the right hand raised on the right side of the image
                 </p>
               </div>
