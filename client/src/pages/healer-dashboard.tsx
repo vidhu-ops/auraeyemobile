@@ -2448,7 +2448,44 @@ export default function HealerDashboard() {
                                     
                                     pdf.setFontSize(10);
                                     const splitText = pdf.splitTextToSize(reading.interpretation, 170);
-                                    pdf.text(splitText, 20, 165);
+                                    let currentY = 165;
+                                    
+                                    splitText.forEach((line: string) => {
+                                      if (currentY > 280) {
+                                        pdf.addPage();
+                                        currentY = 20;
+                                      }
+                                      pdf.text(line, 20, currentY);
+                                      currentY += 6;
+                                    });
+                                    
+                                    // Add healer notes if they exist
+                                    if (reading.healerNotes) {
+                                      currentY += 10;
+                                      
+                                      if (currentY > 250) {
+                                        pdf.addPage();
+                                        currentY = 20;
+                                      }
+                                      
+                                      pdf.setFontSize(14);
+                                      pdf.setTextColor(255, 140, 0); // Orange color for healer notes
+                                      pdf.text("Professional Healer Notes", 20, currentY);
+                                      currentY += 10;
+                                      
+                                      pdf.setFontSize(10);
+                                      pdf.setTextColor(0, 0, 0);
+                                      const healerNotesText = pdf.splitTextToSize(reading.healerNotes, 170);
+                                      
+                                      healerNotesText.forEach((line: string) => {
+                                        if (currentY > 280) {
+                                          pdf.addPage();
+                                          currentY = 20;
+                                        }
+                                        pdf.text(line, 20, currentY);
+                                        currentY += 6;
+                                      });
+                                    }
                                     
                                     // Save the PDF
                                     pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
@@ -2485,6 +2522,17 @@ export default function HealerDashboard() {
                             <div className="p-3 bg-white rounded-lg border">
                                 <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
                             </div>
+
+                            {/* Healer Notes Section */}
+                            {reading.healerNotes && (
+                              <div className="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <h4 className="font-medium text-orange-800 mb-2 flex items-center gap-2">
+                                  <FileText className="h-4 w-4" />
+                                  Professional Notes
+                                </h4>
+                                <p className="text-sm text-gray-700">{reading.healerNotes}</p>
+                              </div>
+                            )}
                         </div>
                     ))}
                   </div>
