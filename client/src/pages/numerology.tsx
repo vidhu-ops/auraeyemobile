@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,12 +16,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, Calculator, Sparkles } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Calculator, Sparkles, Save, Download, FileText } from "lucide-react";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import jsPDF from "jspdf";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -96,6 +98,9 @@ export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
+  const [healerNotes, setHealerNotes] = useState("");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
 
   // Check for healer-provided numerology data from URL parameters
   const [healerData, setHealerData] = useState<any>(null);
@@ -138,6 +143,144 @@ export default function NumerologyPage() {
     queryFn: () => calculateNumerology(targetName, targetBirthDate),
     enabled: !!(targetBirthDate && targetName),
   });
+
+  // Store reading ID when numerology is calculated
+  const [currentReadingId, setCurrentReadingId] = useState<number | null>(null);
+
+  // Save healer notes mutation
+  const saveNotesMutation = useMutation({
+    mutationFn: async (notes: string) => {
+      // For now, we'll create a new reading and update it with notes
+      // This is a temporary solution until we modify the API to return reading ID
+      const response = await fetch('/api/healer-numerology', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          name: targetName, 
+          birthDate: targetBirthDate,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create numerology reading');
+      }
+      
+      const readingData = await response.json();
+      setCurrentReadingId(readingData.id);
+      
+      // Now update with notes
+      const notesResponse = await fetch(`/api/numerology-readings/${readingData.id}/notes`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ healerNotes: notes }),
+      });
+      
+      if (!notesResponse.ok) {
+        throw new Error('Failed to save notes');
+      }
+      
+      return notesResponse.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notes Saved",
+        description: "Your healer notes have been saved successfully.",
+      });
+      setIsSavingNotes(false);
+    },
+    onError: (error) => {
+      console.error("Error saving notes:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save notes. Please try again.",
+        variant: "destructive",
+      });
+      setIsSavingNotes(false);
+    },
+  });
+
+  // Generate PDF with numerology results and healer notes
+  const generatePDF = () => {
+    if (!numerology) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      const pdf = new jsPDF();
+      const pageWidth = 210;
+      const margin = 20;
+      const lineHeight = 6;
+      let currentY = margin;
+
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize: number = 12, isBold: boolean = false) => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont("helvetica", isBold ? "bold" : "normal");
+        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+        
+        lines.forEach((line: string) => {
+          if (currentY > 280) {
+            pdf.addPage();
+            currentY = margin;
+          }
+          pdf.text(line, margin, currentY);
+          currentY += lineHeight;
+        });
+        currentY += 2; // Extra spacing
+      };
+
+      // Title
+      addText("Numerology Analysis Report", 18, true);
+      addText(`Generated for: ${targetName}`, 14, true);
+      addText(`Birth Date: ${targetBirthDate}`, 12);
+      addText(`Report Date: ${new Date().toLocaleDateString()}`, 12);
+      currentY += 5;
+
+      // Core Numbers
+      addText("Core Numbers", 16, true);
+      addText(`Life Path Number: ${numerology.lifePathNumber}`, 12, true);
+      addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true);
+      addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true);
+      addText(`Personality Number: ${numerology.personalityNumber}`, 12, true);
+      addText(`Personal Year Number: ${numerology.personalYearNumber}`, 12, true);
+      currentY += 5;
+
+      // Interpretation
+      addText("Interpretation", 16, true);
+      addText(numerology.interpretation, 10);
+      currentY += 5;
+
+      // Healer Notes (if any)
+      if (healerNotes.trim()) {
+        addText("Professional Healer Notes", 16, true);
+        addText(healerNotes, 10);
+      }
+
+      pdf.save(`numerology-analysis-${targetName.replace(/\s+/g, '-')}-${new Date().getTime()}.pdf`);
+      
+      toast({
+        title: "PDF Downloaded",
+        description: "Your numerology analysis PDF has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const saveNotes = () => {
+    setIsSavingNotes(true);
+    saveNotesMutation.mutate(healerNotes);
+  };
 
   const onSubmit = async (data: NumerologyFormData) => {
     // Check if user is authenticated
@@ -1392,6 +1535,65 @@ export default function NumerologyPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 leading-relaxed">{numerology.guidance}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Healer Notes Section - Only for Healers */}
+            {numerology && user?.userType === "healer" && (
+              <Card className="border-yellow-200 bg-yellow-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                    <FileText className="h-5 w-5" />
+                    Professional Healer Notes
+                  </CardTitle>
+                  <CardDescription className="text-orange-600">
+                    Add your professional insights and recommendations for this numerology analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Textarea
+                    placeholder="Enter your professional notes, insights, and recommendations here..."
+                    value={healerNotes}
+                    onChange={(e) => setHealerNotes(e.target.value)}
+                    rows={6}
+                    className="min-h-[120px] border-orange-200 focus:border-orange-400"
+                  />
+                  
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={saveNotes}
+                      disabled={isSavingNotes || !healerNotes.trim()}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      {isSavingNotes ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      Save Notes
+                    </Button>
+                    
+                    <Button
+                      onClick={generatePDF}
+                      disabled={isGeneratingPDF}
+                      variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                    >
+                      {isGeneratingPDF ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-2" />
+                      )}
+                      Download PDF
+                    </Button>
+                  </div>
+                  
+                  {healerNotes.trim() && (
+                    <div className="text-sm text-orange-600 mt-2">
+                      💡 Tip: Save your notes before downloading the PDF to include them in the report
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
