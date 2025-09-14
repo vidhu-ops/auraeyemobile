@@ -211,6 +211,7 @@ export async function sendPDFReport(
 
   return await sendEmail({
     to: userEmail,
+    from: 'sheeyameela@gmail.com', // Specified sender email
     subject: `Your AuraEye Aura Analysis Report - ${fileName}`,
     text,
     html,
