@@ -6224,7 +6224,7 @@ export default function AuraAnalysis() {
                 <h2 className="font-heading font-semibold text-2xl mb-4">Image Upload Guidelines</h2>
                 <div className="max-w-sm mx-auto mb-4">
                   <img 
-                    src="/attached_assets/WhatsApp Image 2025-09-09 at 6.30.32 PM_1757860899540.jpeg"
+                    src="/attached_assets/WhatsApp Image 2025-09-09 at 6.30.32 PM_1757861882088.jpeg"
                     alt="Example pose for aura analysis"
                     className="w-full rounded-lg shadow-md"
                   />
