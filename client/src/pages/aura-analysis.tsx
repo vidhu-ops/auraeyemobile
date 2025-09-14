@@ -6219,6 +6219,21 @@ export default function AuraAnalysis() {
         <section className="bg-gray-50 py-8">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
+              {/* Example Image Guide */}
+              <div className="text-center mb-8">
+                <h2 className="font-heading font-semibold text-2xl mb-4">Image Upload Guidelines</h2>
+                <div className="max-w-sm mx-auto mb-4">
+                  <img 
+                    src="/attached_assets/WhatsApp Image 2025-09-09 at 6.30.32 PM_1757860899540.jpeg"
+                    alt="Example pose for aura analysis"
+                    className="w-full rounded-lg shadow-md"
+                  />
+                </div>
+                <p className="text-gray-700 text-sm mb-2">
+                  The image uploaded for aura analysis should look like that and have the right hand raised on the right side of the image
+                </p>
+              </div>
+              
               <div className="text-center mb-6">
                 <h2 className="font-heading font-semibold text-2xl mb-2">Image Flipping Tool</h2>
                 <p className="text-gray-600 text-sm">Upload and flip your images horizontally before analysis</p>
@@ -7929,15 +7944,7 @@ export default function AuraAnalysis() {
                                       >
                                         New Analysis
                                       </Button>
-                                      <Button 
-                                        variant="default" 
-                                        size="sm"
-                                        onClick={() => {
-                                          window.location.href = '/services#numerology';
-                                        }}
-                                      >
-                                        Know More
-                                      </Button>
+                                     
                                     </div>
                                   </div>
                                 </div>
@@ -8995,7 +9002,7 @@ export default function AuraAnalysis() {
                                           <li>• Physical: Digestive issues, stomach problems, diabetes</li>
                                           <li>• Emotional: Low self-worth, lack of confidence</li>
                                           <li>• Mental: Poor decision-making, lack of willpower</li>
-                                          <li>• Spiritual: Confidance Imbalance</li>
+                                          <li>• Spiritual: Confidence Imbalance</li>
                                         </ul>
                                       </div>
                                       <div>
