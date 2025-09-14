@@ -145,7 +145,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
       <CardHeader className="text-center">
         <CardTitle className="flex items-center justify-center gap-2">
           <Upload className="h-5 w-5" />
-          Image Manipulation Tool
+          Image Flipping Tool
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
