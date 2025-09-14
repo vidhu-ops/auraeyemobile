@@ -95,13 +95,48 @@ export function calculateChakraGroupPercentages(chakraActivity: Partial<ChakraAc
     return {
       higherPercent: "33.3",
       middlePercent: "33.3", 
-      lowerPercent: "33.3"
+      lowerPercent: "33.4"
     };
   }
   
+  // Calculate raw percentages
+  const higherRaw = (higherAvg / total) * 100;
+  const middleRaw = (middleAvg / total) * 100;
+  const lowerRaw = (lowerAvg / total) * 100;
+  
+  // Round each to 1 decimal place
+  let higherRounded = Math.round(higherRaw * 10) / 10;
+  let middleRounded = Math.round(middleRaw * 10) / 10;
+  let lowerRounded = Math.round(lowerRaw * 10) / 10;
+  
+  // Calculate the sum and adjust to ensure exactly 100%
+  const currentSum = higherRounded + middleRounded + lowerRounded;
+  const difference = 100.0 - currentSum;
+  
+  // If there's a difference, adjust the largest value by the difference
+  if (Math.abs(difference) >= 0.1) {
+    const values = [
+      { value: higherRounded, index: 0 },
+      { value: middleRounded, index: 1 },
+      { value: lowerRounded, index: 2 }
+    ];
+    
+    // Sort by value to find the largest
+    values.sort((a, b) => b.value - a.value);
+    
+    // Adjust the largest value
+    if (values[0].index === 0) {
+      higherRounded += difference;
+    } else if (values[0].index === 1) {
+      middleRounded += difference;
+    } else {
+      lowerRounded += difference;
+    }
+  }
+  
   return {
-    higherPercent: ((higherAvg / total) * 100).toFixed(1),
-    middlePercent: ((middleAvg / total) * 100).toFixed(1),
-    lowerPercent: ((lowerAvg / total) * 100).toFixed(1)
+    higherPercent: higherRounded.toFixed(1),
+    middlePercent: middleRounded.toFixed(1),
+    lowerPercent: lowerRounded.toFixed(1)
   };
 }
