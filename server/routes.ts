@@ -3852,13 +3852,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
   app.post('/api/email-pdf-report', isAuthenticated, async (req, res) => {
     try {
       const { analysisId, pdfBase64, fileName, screenshots } = req.body;
-      const user = req.user;
+      const sessionUser = req.user;
 
-      if (!user) {
+      if (!sessionUser) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (!user.email) {
+      // Fetch fresh user data from database to ensure we have current email
+      const freshUser = await storage.getUser(sessionUser.id);
+      if (!freshUser) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      if (!freshUser.email) {
         return res.status(400).json({ 
           success: false, 
           message: 'No email address found for your account. Please update your profile with an email address.' 
@@ -3872,29 +3878,29 @@ function calculateDominantSoulChakra(birthDate: string): number {
         });
       }
 
-      console.log(`\n📧 Emailing PDF report to: ${user.email}`);
+      console.log(`\n📧 Emailing PDF report to: ${freshUser.email}`);
       console.log(`📄 File name: ${fileName}`);
-      console.log(`👤 User: ${user.username} (${user.userType})`);
+      console.log(`👤 User: ${freshUser.username} (${freshUser.userType})`);
       console.log(`📷 Screenshots included: ${screenshots ? screenshots.length : 0}`);
 
       // Send email with PDF attachment using existing email service
       // Use sheeyameela@gmail.com as the sender email
       const emailSuccess = await sendPDFReport(
-        user.email,
-        user.username,
+        freshUser.email,
+        freshUser.username,
         pdfBase64,
         fileName,
         screenshots
       );
 
       if (emailSuccess) {
-        console.log(`✅ PDF report emailed successfully to: ${user.email}`);
+        console.log(`✅ PDF report emailed successfully to: ${freshUser.email}`);
         res.json({ 
           success: true, 
-          message: `PDF report has been sent to ${user.email}` 
+          message: `PDF report has been sent to ${freshUser.email}` 
         });
       } else {
-        console.error(`❌ Failed to email PDF report to: ${user.email}`);
+        console.error(`❌ Failed to email PDF report to: ${freshUser.email}`);
         res.status(500).json({ 
           success: false, 
           message: 'Failed to send email. Please try again or contact support.' 
