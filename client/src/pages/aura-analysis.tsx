@@ -6494,13 +6494,8 @@ export default function AuraAnalysis() {
                               </div>
                               {/* Chakra Score Interpretation Guide */}
                               <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
-                                <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
-                                  <span className="mr-3">📊</span>
-                                  Karmic Score Interpretation Guide
-                                </h4>
-                                <p className="text-sm text-gray-600 mb-6">
-                                  Understanding your chakra scores and their karmic significance for spiritual development and healing.
-                                </p>
+                              
+                               
 
                                 <div className="space-y-4">
                                   {/* Chakra Score Ranges Guide */}
@@ -7478,16 +7473,17 @@ export default function AuraAnalysis() {
                                         <p className="text-sm font-medium text-gray-700 mb-3">Color Dominance:</p>
                                         <div className="space-y-2">
                                           <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Dominant Color</span>
-                                            <span className="text-sm font-bold text-amber-700">{result.dominantColor} (35%)</span>
+                                            <span className="text-sm text-gray-600">Thinking Color</span>
+                                            <span className="text-sm font-bold text-amber-700">{result.dominantColor} (25%)</span>
                                           </div>
                                           <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Secondary Color</span>
-                                            <span className="text-sm font-bold text-amber-700">{result.secondaryColor} (25%)</span>
+                                            <span className="text-sm text-gray-600">Receiving & Giving Color</span>
+                                            <span className="text-sm font-bold text-amber-700">(35%)</span>
                                           </div>
+                                          
                                           <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Supporting Colors</span>
-                                            <span className="text-sm font-bold text-amber-700">{(result.auraColorSpectrum?.length || 2) - 2} colors (40%)</span>
+                                            <span className="text-sm text-gray-600">Dominant Color (personality)</span>
+                                            <span className="text-sm font-bold text-amber-700">(40%)</span>
                                           </div>
                                         </div>
                                       </div>
@@ -8517,13 +8513,8 @@ export default function AuraAnalysis() {
                             <div className="space-y-6">
                               {/* Detailed Chakra Scoring Analysis Section */}
                               <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg p-6 border border-violet-200 mb-6">
-                                <h4 className="font-medium text-xl mb-4 text-violet-800 flex items-center">
-                                  <span className="mr-3">📊</span>
-                                  Detailed Chakra Scoring Analysis
-                                </h4>
-                                <p className="text-sm text-gray-600 mb-6">
-                                  Understanding your chakra scores and their karmic significance for spiritual development and healing.
-                                </p>
+                                
+                                
 
                                 <div className="space-y-4">
                                   {/* Chakra Score Ranges Guide */}
