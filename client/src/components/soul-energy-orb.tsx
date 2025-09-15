@@ -41,8 +41,7 @@ export function SoulEnergyOrb({ size = "medium", showLabel = true, className = "
         >
           {/* Inner Glow */}
           <div 
-            className="absolute inset-2 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent animate-pulse"
-            style={{ animationDuration: `${2 + (1 - intensity)}s` }}
+            className="absolute inset-2 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent"
           />
           
           {/* Energy Sparkles */}
@@ -50,31 +49,26 @@ export function SoulEnergyOrb({ size = "medium", showLabel = true, className = "
             {soulEnergy > 0 && (
               <>
                 <div 
-                  className="absolute w-1 h-1 bg-white rounded-full animate-ping"
+                  className="absolute w-1 h-1 bg-white rounded-full"
                   style={{ 
                     top: '20%', 
                     left: '30%',
-                    animationDuration: '1.5s',
                     opacity: intensity
                   }}
                 />
                 <div 
-                  className="absolute w-0.5 h-0.5 bg-yellow-200 rounded-full animate-ping"
+                  className="absolute w-0.5 h-0.5 bg-yellow-200 rounded-full"
                   style={{ 
                     top: '60%', 
                     right: '25%',
-                    animationDuration: '2s',
-                    animationDelay: '0.5s',
                     opacity: intensity * 0.8
                   }}
                 />
                 <div 
-                  className="absolute w-0.5 h-0.5 bg-orange-200 rounded-full animate-ping"
+                  className="absolute w-0.5 h-0.5 bg-orange-200 rounded-full"
                   style={{ 
                     bottom: '30%', 
                     left: '70%',
-                    animationDuration: '1.8s',
-                    animationDelay: '1s',
                     opacity: intensity * 0.6
                   }}
                 />
@@ -97,10 +91,9 @@ export function SoulEnergyOrb({ size = "medium", showLabel = true, className = "
         {/* Outer Glow Ring */}
         {soulEnergy > 0 && (
           <div 
-            className={`absolute ${sizeClasses[size]} rounded-full border-2 border-orange-300/30 animate-pulse`}
+            className={`absolute ${sizeClasses[size]} rounded-full border-2 border-orange-300/30`}
             style={{ 
               transform: 'scale(1.2)',
-              animationDuration: '3s',
               opacity: intensity * 0.5
             }}
           />

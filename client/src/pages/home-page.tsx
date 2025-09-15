@@ -532,18 +532,9 @@ export default function HomePage() {
             {user && (
               <div className="mb-8 animate-fade-in-down">
                 <div className="flex flex-col items-center gap-3 p-6 bg-gradient-to-r from-amber-50/80 to-yellow-50/80 backdrop-blur-sm rounded-2xl border border-amber-200/50 shadow-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <SoulEnergyOrb soulEnergy={soulEnergy} size={40} />
-                      <div className="absolute inset-0 animate-ping">
-                        <SoulEnergyOrb soulEnergy={soulEnergy} size={40} className="opacity-30" />
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">
-                        {soulEnergyLoading ? '...' : soulEnergy}
-                      </div>
-                      <div className="text-sm font-medium text-amber-700">Soul Energy</div>
+                  <div className="flex items-center justify-center">
+                    <div className="relative" style={{filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.4))'}}>
+                      <SoulEnergyOrb size="large" showLabel={true} />
                     </div>
                   </div>
                   <div className="text-xs text-amber-600">✨ Gain +2 energy with each vibe scan!</div>
