@@ -188,7 +188,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               size="sm"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Flip Left
+              Flip Image
             </Button>
             
             <Button 
@@ -198,7 +198,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               size="sm"
             >
               <RotateCw className="h-4 w-4 mr-2" />
-              Flip Right
+              Flip Again
             </Button>
             
             {processedImageUrl && (

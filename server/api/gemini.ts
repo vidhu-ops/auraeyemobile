@@ -474,7 +474,7 @@ function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
 function getColorRGB(colorName: string): { r: number, g: number, b: number } {
   const colorMap: { [key: string]: { r: number, g: number, b: number } } = {
     'Red': { r: 255, g: 100, b: 100 },
-    'Orange': { r: 255, g: 165, b: 0 },
+    'Orange': { r: 255, g: 102, b: 0 },
     'Yellow': { r: 255, g: 255, b: 100 },
     'Green': { r: 100, g: 255, b: 100 },
     'Blue': { r: 100, g: 150, b: 255 },
