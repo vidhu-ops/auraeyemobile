@@ -504,7 +504,7 @@ export default function HomePage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section id="home" className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-900 text-white">
+      <section id="home" className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-orange-100 via-pink-50 to-amber-50 text-gray-800">
         {/* Animated background elements */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmZmZmYyMCIgLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiIC8+PC9zdmc+')]"></div>
         
@@ -525,26 +525,26 @@ export default function HomePage() {
         <div className="container mx-auto px-8 py-16 relative z-15">
           <div className="flex flex-col items-center text-center">
             <div className="mb-10 animate-fade-in-down">
-              <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-white bg-clip-text bg-gradient-to-r from-white to-violet-200">
-                Your Energy, Made <span className="text-white">Visible</span> <br />
-                <span className="text-orange-300">Scan .  </span>
-                <span className="text-blue-300">Heal . </span> <span className="text-green-300">Transform</span>
+              <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-gray-800">
+                Your Energy, Made <span className="text-gray-900">Visible</span> <br />
+                <span className="text-orange-500">Scan .  </span>
+                <span className="text-pink-500">Heal . </span> <span className="text-amber-500">Transform</span>
               </h1>
             </div>
             
             <div className="max-w-2xl mx-auto mb-10 animate-fade-in">
-              <p className="text-white/90 text-xl md:text-2xl">
+              <p className="text-gray-600 text-xl md:text-2xl">
                 Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
-              <Button asChild size="lg" className="bg-blue-600 hover:pink border-0 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" className="bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 border-0 text-white px-8 py-6 rounded-full shadow-lg">
                 <Link href="/aura-analysis">
                   <Camera className="mr-2 h-5 w-5" /> Human Aura & Chakra Analysis
                 </Link>
               </Button>
-              <Button asChild size="lg" className="bg-pink-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 border-0 text-white px-8 py-6 rounded-full">
+              <Button asChild size="lg" className="bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 border-0 text-white px-8 py-6 rounded-full shadow-lg">
                 <Link href="/object-analysis">
                   <Box className="mr-2 h-5 w-5" /> Object & Space Aura Analysis
                 </Link>
@@ -552,7 +552,7 @@ export default function HomePage() {
               <Button 
                 onClick={() => document.getElementById('vibe-check-section')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg" 
-                className="bg-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 border-0 text-white px-8 py-6 rounded-full"
+                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 border-0 text-white px-8 py-6 rounded-full shadow-lg"
               >
                 <Sparkles className="mr-2 h-5 w-5" /> What's My Vibe?
               </Button>
