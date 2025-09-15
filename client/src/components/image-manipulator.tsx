@@ -12,6 +12,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
   const [originalImage, setOriginalImage] = useState<HTMLImageElement | null>(null);
   const [processedImageUrl, setProcessedImageUrl] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -90,10 +91,7 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const processSelectedFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Invalid file type",
@@ -109,6 +107,34 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
       processImage(img, false); // Process without flipping initially
     };
     img.src = URL.createObjectURL(file);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    processSelectedFile(file);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      processSelectedFile(file);
+    }
   };
 
   const handleFlipLeft = () => {
@@ -149,24 +175,42 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* File Upload */}
-        <div className="flex justify-center items-center gap-4">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            ref={fileInputRef}
-            className="hidden"
-          />
-          <Button 
+        {/* File Upload with Drag & Drop */}
+        {!originalImage ? (
+          <div
+            className={`border-2 border-dashed ${
+              dragActive 
+                ? 'border-purple-500 bg-purple-50' 
+                : 'border-gray-300'
+            } rounded-xl p-6 flex flex-col items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer h-32`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
-            <Upload className="h-4 w-4 mr-2" />
-            Select Image
-          </Button>
-          
-          {originalImage && (
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              ref={fileInputRef}
+              className="hidden"
+            />
+            <Upload className={`h-8 w-8 ${dragActive ? 'text-purple-500' : 'text-gray-400'} mb-2`} />
+            <p className={`text-sm ${dragActive ? 'text-purple-600' : 'text-gray-600'} text-center`}>
+              {dragActive ? 'Drop your image here' : 'Drag & drop an image here or click to select'}
+            </p>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center gap-4">
+            <Button 
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Select New Image
+            </Button>
+            
             <Button 
               onClick={handleClear}
               variant="outline"
@@ -175,8 +219,16 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
               <X className="h-4 w-4 mr-2" />
               Clear
             </Button>
-          )}
-        </div>
+            
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              ref={fileInputRef}
+              className="hidden"
+            />
+          </div>
+        )}
 
         {/* Control Buttons */}
         {originalImage && (
