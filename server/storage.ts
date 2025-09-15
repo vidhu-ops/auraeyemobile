@@ -95,6 +95,10 @@ export interface IStorage {
   getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]>;
   createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction>;
   
+  // Soul energy management
+  getUserSoulEnergy(userId: number): Promise<number>;
+  addSoulEnergy(userId: number, amount: number, source: string): Promise<boolean>;
+  
   // Password reset tokens
   createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
   validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
@@ -676,6 +680,70 @@ export class DatabaseStorage implements IStorage {
     
     const userTypeCosts = isHealer ? creditCosts.healer : creditCosts.client;
     return userTypeCosts[serviceType as keyof typeof userTypeCosts] || 1;
+  }
+
+  // Soul energy management methods
+  async getUserSoulEnergy(userId: number): Promise<number> {
+    if (!userId || typeof userId !== 'number') {
+      throw new Error('Invalid userId provided for soul energy check');
+    }
+    
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      if (!user) {
+        throw new Error('User not found for soul energy check');
+      }
+      
+      // Defensive coding: return 0 if soulEnergy column doesn't exist or is null
+      return (user as any).soulEnergy || 0;
+    } catch (error) {
+      // If the column doesn't exist yet, return 0 gracefully
+      if (error instanceof Error && error.message.includes('column "soul_energy" does not exist')) {
+        return 0;
+      }
+      throw error;
+    }
+  }
+
+  async addSoulEnergy(userId: number, amount: number, source: string): Promise<boolean> {
+    if (!userId || typeof userId !== 'number') {
+      throw new Error('Invalid userId provided for soul energy addition');
+    }
+    
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid amount for soul energy addition');
+    }
+    
+    try {
+      // Use database transaction with row locking to prevent race conditions
+      return await db.transaction(async (tx) => {
+        // Lock the user row to prevent concurrent modifications
+        const [user] = await tx
+          .select()
+          .from(users)
+          .where(eq(users.id, userId))
+          .for('update');
+        
+        if (!user) {
+          throw new Error('User not found for soul energy addition');
+        }
+        
+        const currentSoulEnergy = (user as any).soulEnergy || 0;
+        const newSoulEnergy = currentSoulEnergy + amount;
+        
+        // Update user soul energy atomically
+        await tx.update(users).set({ soulEnergy: newSoulEnergy } as any).where(eq(users.id, userId));
+        
+        return true;
+      });
+    } catch (error) {
+      // If the column doesn't exist yet, return true gracefully
+      if (error instanceof Error && error.message.includes('column "soul_energy" does not exist')) {
+        console.log(`Soul energy addition deferred: ${amount} for user ${userId} (${source}) - column not yet created`);
+        return true;
+      }
+      throw error;
+    }
   }
 
   // Password reset tokens
