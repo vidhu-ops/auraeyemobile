@@ -8,6 +8,7 @@ import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { SoulEnergyOrb } from "@/components/soul-energy-orb";
 import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -295,6 +296,7 @@ export default function HomePage() {
       }
       // Invalidate caches to update the display immediately
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/soul-energy'] });
       queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
       toast({
         title: "Vibe Analysis Complete!",
@@ -677,9 +679,14 @@ export default function HomePage() {
                               Click analyze to reveal your dominant aura color and its spiritual meaning.
                             </p>
                             {user && (
-                              <div className="flex items-center justify-center text-sm text-gray-600 mb-4">
-                                <CreditCard className="h-4 w-4 mr-1" />
-                                <span>Cost: 1 credit | Your balance: {credits} credits</span>
+                              <div className="space-y-4 mb-4">
+                                <div className="flex justify-center">
+                                  <SoulEnergyOrb size="medium" data-testid="home-soul-energy-orb" />
+                                </div>
+                                <div className="flex items-center justify-center text-sm text-gray-600">
+                                  <CreditCard className="h-4 w-4 mr-1" />
+                                  <span>Cost: 1 credit | Your balance: {credits} credits</span>
+                                </div>
                               </div>
                             )}
                             {!user && (

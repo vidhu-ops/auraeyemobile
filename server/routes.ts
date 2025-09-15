@@ -3001,6 +3001,24 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user's soul energy
+  app.get("/api/soul-energy", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Validate user ID
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const soulEnergy = await storage.getUserSoulEnergy(userId);
+      res.json({ soulEnergy });
+    } catch (error) {
+      console.error("Error retrieving user soul energy:", error);
+      res.status(500).json({ message: "Failed to retrieve soul energy" });
+    }
+  });
+
   // Get user's credit transaction history
   app.get("/api/credit-transactions", isAuthenticated, async (req, res) => {
     try {
