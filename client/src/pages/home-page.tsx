@@ -8,6 +8,7 @@ import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { SoulEnergyOrb } from "@/components/soul-energy-orb";
 import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
 import { useState, useRef } from "react";
@@ -36,6 +37,7 @@ interface QuickVibeResult {
 export default function HomePage() {
   const { user } = useAuth();
   const { credits, isLoading: creditsLoading } = useCredits();
+  const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -526,6 +528,29 @@ export default function HomePage() {
         
         <div className="container mx-auto px-8 py-16 relative z-15">
           <div className="flex flex-col items-center text-center">
+            {/* PROMINENT SOUL ENERGY DISPLAY AT TOP */}
+            {user && (
+              <div className="mb-8 animate-fade-in-down">
+                <div className="flex flex-col items-center gap-3 p-6 bg-gradient-to-r from-amber-50/80 to-yellow-50/80 backdrop-blur-sm rounded-2xl border border-amber-200/50 shadow-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <SoulEnergyOrb soulEnergy={soulEnergy} size={40} />
+                      <div className="absolute inset-0 animate-ping">
+                        <SoulEnergyOrb soulEnergy={soulEnergy} size={40} className="opacity-30" />
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">
+                        {soulEnergyLoading ? '...' : soulEnergy}
+                      </div>
+                      <div className="text-sm font-medium text-amber-700">Soul Energy</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-amber-600">✨ Gain +2 energy with each vibe scan!</div>
+                </div>
+              </div>
+            )}
+            
             <div className="mb-10 animate-fade-in-down">
               <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-gray-800">
                 Your Energy, Made <span className="text-gray-900">Visible</span> <br />
