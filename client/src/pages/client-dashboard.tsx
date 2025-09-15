@@ -7,7 +7,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
-import { SoulEnergyOrb } from "@/components/soul-energy-orb";
+import { SoulEnergyOrb } from "@/components/SoulEnergyOrb";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

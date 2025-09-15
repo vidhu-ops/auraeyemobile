@@ -9,7 +9,7 @@ import TestimonialCard from "@/components/ui/testimonial-card";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
-import { SoulEnergyOrb } from "@/components/soul-energy-orb";
+import { SoulEnergyOrb } from "@/components/SoulEnergyOrb";
 import { ArrowRight, Camera, BookOpen, Upload, Star, HandHelping, Book, Calculator, Clover, Box, Loader2, Sparkles, Heart, AlertTriangle, CreditCard } from "lucide-react";
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
