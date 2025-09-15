@@ -213,13 +213,13 @@ export default function AuraAnalysis() {
   // If user is a client (not a healer), show locked state
   if (!isHealer) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br from-orange-900 via-pink-900 to-orange-800">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-white mb-4">
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
                   Aura Analysis
                 </span>
               </h1>
@@ -281,7 +281,7 @@ export default function AuraAnalysis() {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link href="/healers">
-                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-3">
+                      <Button className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white border-0 px-8 py-3">
                         <Users className="w-5 h-5 mr-2" />
                         Connect with a Healer
                       </Button>
@@ -10088,7 +10088,7 @@ export default function AuraAnalysis() {
                   ) : (
                     <Card className="h-96 flex items-center justify-center bg-gray border-dashed border-2">
                       <div className="text-center p-6">
-                        <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 opacity-30`}></div>
+                        <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 opacity-30`}></div>
                         <p className="text-gray-600">Upload your photo to see your aura analysis</p>
                         <p className="text-gray-500 text-sm mt-2">Your reading will be private and secure</p>
                       </div>
@@ -10264,7 +10264,7 @@ export default function AuraAnalysis() {
                 <div className="grid md:grid-cols-3 gap-6">
                   {/* Healer 1 */}
                   <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
-                    <div className="h-40 bg-gradient-to-br from-purple-200 to-indigo-100 relative">
+                    <div className="h-40 bg-gradient-to-br from-orange-200 to-pink-100 relative">
                       <div className="absolute inset-0 bg-center bg-cover opacity-90" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=776&q=80')" }}></div>
                       <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
                         <span className="font-medium">Specializes in:</span> Energy Balancing
@@ -10291,7 +10291,7 @@ export default function AuraAnalysis() {
                   
                   {/* Healer 2 */}
                   <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
-                    <div className="h-40 bg-gradient-to-br from-blue-200 to-indigo-100 relative">
+                    <div className="h-40 bg-gradient-to-br from-pink-200 to-orange-100 relative">
                       <div className="absolute inset-0 bg-center bg-cover opacity-90" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541576980233-97577392db9a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80')" }}></div>
                       <div className="absolute bottom-3 left-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
                         <span className="font-medium">Specializes in:</span> Chakra Alignment

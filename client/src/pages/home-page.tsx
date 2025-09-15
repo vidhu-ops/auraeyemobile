@@ -581,15 +581,15 @@ export default function HomePage() {
       </section>
       
       {/* What's My Vibe? Section */}
-      <section id="vibe-check-section" className="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
+      <section id="vibe-check-section" className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
         <div className="container mx-auto px-7">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <Sparkles className="h-8 w-8 text-violet-500 mr-3" />
+              <Sparkles className="h-8 w-8 text-orange-500 mr-3" />
               <h2 className="font-heading font-bold text-4xl md:text-5xl text-gray-900">
                 What's My Vibe?
               </h2>
-              <Sparkles className="h-8 w-8 text-violet-500 ml-3" />
+              <Sparkles className="h-8 w-8 text-orange-500 ml-3" />
             </div>
             <p className="text-gray-600 text-xl max-w-3xl mx-auto">
               Get an instant glimpse into your spiritual energy! Upload your photo for a quick aura color reading.
@@ -605,8 +605,8 @@ export default function HomePage() {
                     <div 
                       className={`border-2 border-dashed rounded-xl p-12 transition-all cursor-pointer ${
                         isDragging 
-                          ? 'border-violet-500 bg-violet-100/80 scale-105' 
-                          : 'border-violet-300 bg-violet-50/50 hover:bg-violet-50'
+                          ? 'border-orange-500 bg-orange-100/80 scale-105' 
+                          : 'border-orange-300 bg-orange-50/50 hover:bg-orange-50'
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
@@ -614,7 +614,7 @@ export default function HomePage() {
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex flex-col items-center">
-                        <div className={`w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mb-4 transition-transform ${
+                        <div className={`w-20 h-20 bg-gradient-to-br from-orange-500 to-pink-600 rounded-full flex items-center justify-center mb-4 transition-transform ${
                           isDragging ? 'scale-110' : ''
                         }`}>
                           <Camera className="h-10 w-10 text-white" />
@@ -638,7 +638,7 @@ export default function HomePage() {
                         {!isDragging && (
                           <Button
                             size="lg"
-                            className="bg-secondary hover:from-violet-600 hover:to-indigo-700"
+                            className="bg-secondary hover:from-orange-600 hover:to-pink-700"
                           >
                             <Upload className="mr-2 h-5 w-5" />
                             Choose Photo
@@ -699,7 +699,7 @@ export default function HomePage() {
                                 onClick={analyzeVibe}
                                 disabled={quickVibeMutation.isPending}
                                 size="lg"
-                                className="w-full bg-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+                                className="w-full bg-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700"
                               >
                                 {quickVibeMutation.isPending ? (
                                   <>
@@ -728,7 +728,7 @@ export default function HomePage() {
                             {/* Header with scan count and upgrade info */}
                             <div className="flex justify-between items-center mb-6">
                               <h3 className="text-2xl font-bold text-gray-900">
-                                Your Vibe: <span className="text-violet-600">{vibeResult.dominantColor}</span>
+                                Your Vibe: <span className="text-orange-600">{vibeResult.dominantColor}</span>
                               </h3>
                               <div className="text-right">
                                 <div className="text-sm text-gray-600">Today's Scan: 1/1</div>
@@ -738,7 +738,7 @@ export default function HomePage() {
                             </div>
 
                             <div className="text-center mb-4">
-                              <p className="text-lg text-violet-600 font-medium">
+                              <p className="text-lg text-orange-600 font-medium">
                                 {vibeResult.message}
                               </p>
                             </div>
@@ -797,7 +797,7 @@ export default function HomePage() {
                                         <Button
                                           onClick={() => setShowPremiumVideoModal(true)}
                                           size="sm"
-                                          className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-xs"
+                                          className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-xs"
                                         >
                                           Watch Now
                                         </Button>
@@ -883,7 +883,7 @@ export default function HomePage() {
                                     <Button
                                       onClick={() => setShowVideoModal(true)}
                                       size="sm"
-                                      className="bg-violet-500 hover:bg-violet-600 text-white"
+                                      className="bg-orange-500 hover:bg-orange-600 text-white"
                                     >
                                       <Sparkles className="mr-2 h-4 w-4" />
                                       Watch Spiritual Guidance Video
@@ -896,7 +896,7 @@ export default function HomePage() {
                             {/* Action Buttons Row */}
                                                   <div className="flex gap-3 mt-6">
                                                     <Link to="/aura-analysis" className="flex-1">
-                                                      <Button className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700">
+                                                      <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700">
                                                         Get Full Analysis
                                                       </Button>
                                                     </Link>

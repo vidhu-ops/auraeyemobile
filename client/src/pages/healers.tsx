@@ -103,7 +103,7 @@ export default function HealersPage() {
       <Navbar />
       
       <main className="flex-grow">
-        <div className="bg-gradient-to-r from-purple-100 to-blue-100 py-12">
+        <div className="bg-gradient-to-r from-orange-100 to-pink-100 py-12">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl font-heading font-bold mb-4">Our Healing Practitioners</h1>
             <p className="text-lg text-gray-600 max-w-2xl">
@@ -116,7 +116,7 @@ export default function HealersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {healers.map((healer) => (
               <Card key={healer.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-purple-200 to-blue-200 relative">
+                <div className="h-48 bg-gradient-to-br from-orange-200 to-pink-200 relative">
                   <img 
                     src={healer.imageUrl} 
                     alt={healer.name}
