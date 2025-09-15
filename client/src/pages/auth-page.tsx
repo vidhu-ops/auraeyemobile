@@ -53,7 +53,7 @@ export default function AuthPage() {
           <CardHeader>
             <div className="flex items-center space-x-2 mb-2">
               <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
-              <span className="font-heading font-bold text-2xl text-primary">AuraEye™</span>
+              <span className="font-heading font-bold text-purple text-2xl">AuraEye™</span>
             </div>
             <CardTitle className="text-2xl">Welcome to AuraEye</CardTitle>
             <CardDescription>Access your spiritual wellness journey</CardDescription>
