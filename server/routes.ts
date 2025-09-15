@@ -2851,6 +2851,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         
         // Deduct credits for successful analysis
         await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
+        
+        // Add soul energy +2 for completing vibe scan
+        await storage.addSoulEnergy(req.user.id, 2, 'vibe_scan', 'What\'s My Vibe scan completed');
+        console.log(`⚡ Added +2 soul energy to user ${req.user.id} for vibe scan completion`);
       }
 
       res.json({
