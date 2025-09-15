@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
@@ -299,6 +300,7 @@ export default function AuraAnalysis() {
           </div>
         </div>
         <Footer />
+        <MobileNavigation />
       </div>
     );
   }
@@ -10401,6 +10403,7 @@ export default function AuraAnalysis() {
           </div>
         </DialogContent>
       </Dialog>
+      <MobileNavigation />
     </div>
   );
 }
