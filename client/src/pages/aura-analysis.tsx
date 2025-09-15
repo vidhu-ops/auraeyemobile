@@ -7933,17 +7933,7 @@ export default function AuraAnalysis() {
                                       Based on: {numerologyName}, {new Date(numerologyBirthDate).toLocaleDateString()}
                                     </p>
                                     <div className="flex space-x-2">
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        onClick={() => {
-                                          setNumerologyResult(null);
-                                          setNumerologyName("");
-                                          setNumerologyBirthDate("");
-                                        }}
-                                      >
-                                        New Numerology Analysis
-                                      </Button>
+                                      
                                      
                                     </div>
                                   </div>
