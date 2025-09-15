@@ -54,8 +54,8 @@ const getAccurateColorCode = (colorName: string): string => {
     'gold': '#FFD700',
     'Yellow': '#FFE600',    // Bright yellow
     'yellow': '#FFE600',
-    'Orange': '#FF8C00',    // Dark orange
-    'orange': '#FF8C00',
+    'Orange': '#FF6600',    // Proper orange to match energy map
+    'orange': '#FF6600',
     'Purple': '#8A2BE2',    // Blue violet
     'purple': '#8A2BE2',
     'Silver': '#C0C0C0',    // Silver
@@ -3433,10 +3433,10 @@ export default function AuraAnalysis() {
     // Start with available spectrum colors
     const spectrum = auraData.auraColorSpectrum || [auraData.dominantColor, auraData.secondaryColor];
     
-    // Define restricted 12-color palette only
+    // Define restricted 12-color palette only - Orange prioritized for receiving energy
     const colorPalette = [
       '#8A2BE2', '#4B0082', '#0000FF', '#008000', // Violet, Indigo, Blue, Green
-      '#FFFF00', '#FFA500', '#FF0000', '#FFFFFF', '#ffc0cb', // Yellow, Orange, Red, White, pink
+      '#FF6600', '#FFE600', '#FF0000', '#FFFFFF', '#FFC0CB', // Orange, Yellow, Red, White, pink
       '#000000', '#FFD700', '#C0C0C0', '#8B4513', '#808080',  // Black, Gold, Silver, Brown, gray
     ];
     
@@ -3490,7 +3490,7 @@ export default function AuraAnalysis() {
       '#32CD32': 'Green',
       '#FFD700': 'Gold',
       '#FF6600': 'Orange',
-      '#FFFF00': 'Yellow',
+      '#FFE600': 'Yellow',
       '#0000FF': 'Blue',
       '#800080': 'Purple',
       '#FFC0CB': 'Pink',
@@ -7942,7 +7942,7 @@ export default function AuraAnalysis() {
                                           setNumerologyBirthDate("");
                                         }}
                                       >
-                                        New Analysis
+                                        New Numerology Analysis
                                       </Button>
                                      
                                     </div>
@@ -8603,7 +8603,7 @@ export default function AuraAnalysis() {
                                         <div className="text-center text-xs text-gray-600 space-y-1">
                                           <p className="font-medium text-amber-800">Meaning:</p>
                                           <p>You are undergoing challenges in this aspect of life and you will notice repetitive patterns in this area until you break the pattern</p>
-                                          <div className="text-sm font-medium text-orange-500">Imbalances In Chakras</div>
+                                          <div className="text-sm font-medium text-orange-500">Imbalanced patterns in this Chakra</div>
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-amber-100 rounded-full">
@@ -9075,7 +9075,7 @@ export default function AuraAnalysis() {
                                           <li>• <strong>Colors:</strong> Blue, turquoise communication colors</li>
                                           <li>• <strong>Crystals:</strong> Blue Lace Agate, Sodalite</li>
                                           <li>• <strong>Essential Oils:</strong> Eucalyptus, Tea Tree, Chamomile</li>
-                                          <li>• <strong>Rudraksha:</strong> 5 Mukhi for communication</li>
+                                          <li>• <strong>Rudraksha:</strong> 4 Mukhi for communication</li>
                                         </ul>
                                       </div>
                                     </div>
@@ -9807,7 +9807,7 @@ export default function AuraAnalysis() {
                                             uniqueColors.add(result.secondaryColor);
                                             colorTiles.push({
                                               color: result.secondaryColor,
-                                              label: 'Overall'
+                                              label: 'Secondary'
                                             });
                                           }
                                           

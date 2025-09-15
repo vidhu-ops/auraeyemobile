@@ -104,9 +104,7 @@ export default function AuthPage() {
                     </>
                   ) : "Login"}
                 </Button>
-                <Link href="/forgot-password" className="text-sm text-center text-primary hover:text-primary-dark">
-                  Forgot your password?
-                </Link>
+                
               </CardFooter>
             </form>
           </Form>
