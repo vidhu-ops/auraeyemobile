@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ServiceCard from "@/components/ui/service-card";
 import TestimonialCard from "@/components/ui/testimonial-card";
@@ -499,7 +500,7 @@ export default function HomePage() {
     }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       
       {/* Hero Section */}
@@ -1115,6 +1116,7 @@ export default function HomePage() {
       </section>
       
       <Footer />
+      <MobileNavigation />
 
       {/* Spiritual Guidance Video Modal */}
       <SpiritualGuidanceVideoModal 
