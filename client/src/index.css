@@ -260,6 +260,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Safe area support for mobile devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobile-nav-height {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0));
+}
+
 /* Hide scrollbar but allow scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

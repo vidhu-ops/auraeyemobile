@@ -21,6 +21,9 @@ import Contact from "@/pages/contact";
 import Services from "@/pages/services";
 import PricingPage from "@/pages/pricing";
 import ForgotPassword from "@/pages/forgot-password";
+import MeditationsPage from "@/pages/meditations";
+import HelpPage from "@/pages/help";
+import ColorMeaningsPage from "@/pages/color-meanings";
 import { AuthProvider } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -47,6 +50,9 @@ function Router() {
       <Route path="/pricing" component={PricingPage} />
       <Route path="/healers" component={HealersPage} />
       <Route path="/healer-crm" component={HealerCRM} />
+      <ProtectedRoute path="/meditations" component={MeditationsPage} />
+      <ProtectedRoute path="/help" component={HelpPage} />
+      <ProtectedRoute path="/color-meanings" component={ColorMeaningsPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
