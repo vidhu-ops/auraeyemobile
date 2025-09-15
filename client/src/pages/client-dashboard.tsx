@@ -101,8 +101,8 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
       'Yellow': 'from-yellow-400 to-yellow-600',
       'Green': 'from-green-400 to-green-600',
       'Blue': 'from-blue-400 to-blue-600',
-      'Indigo': 'from-indigo-400 to-indigo-600',
-      'Violet': 'from-violet-400 to-violet-600',
+      'Indigo': 'from-orange-400 to-orange-600',
+      'Violet': 'from-pink-400 to-pink-600',
       'White': 'from-gray-100 to-gray-300',
       'Black': 'from-gray-800 to-gray-900',
       'Gold': 'from-yellow-300 to-yellow-500',
@@ -343,12 +343,12 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
   };
 
   return (
-    <Card className="border-2 border-purple-100">
-      <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+    <Card className="border-2 border-orange-100">
+      <CardHeader className="bg-gradient-to-r from-orange-50 to-pink-50">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg font-bold text-purple-800">{reading.name}</CardTitle>
-            <CardDescription className="text-purple-600">
+            <CardTitle className="text-lg font-bold text-orange-800">{reading.name}</CardTitle>
+            <CardDescription className="text-orange-600">
               {format(new Date(reading.createdAt), "MMMM d, yyyy 'at' h:mm a")}
             </CardDescription>
           </div>
@@ -598,9 +598,9 @@ export default function ClientDashboard() {
                     </Link>
                   </Button>
                   
-                  <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2 border-violet-300 bg-gradient-to-br from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100">
+                  <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2 border-orange-300 bg-gradient-to-br from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100">
                     <Link href="/#vibe-check-section">
-                      <Sparkles className="h-6 w-6 text-violet-500" />
+                      <Sparkles className="h-6 w-6 text-orange-500" />
                       <span className="text-xs text-center">What's My Vibe?</span>
                       <span className="text-xs text-orange-600">1 credit</span>
                     </Link>
@@ -608,7 +608,7 @@ export default function ClientDashboard() {
                   
                   <Button asChild variant="outline" className="h-24 flex flex-col items-center justify-center gap-2">
                     <Link href="/object-analysis">
-                      <span className="text-purple-500">
+                      <span className="text-orange-500">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                         </svg>
@@ -659,8 +659,8 @@ export default function ClientDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
-                        <Heart className="h-6 w-6 text-purple-600" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
+                        <Heart className="h-6 w-6 text-orange-600" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Browse Healers</h3>
@@ -696,7 +696,7 @@ export default function ClientDashboard() {
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Compass className="h-5 w-5 text-violet-500" />
+                  <Compass className="h-5 w-5 text-orange-500" />
                   Your Spiritual Journey
                 </CardTitle>
                 <CardDescription>Insights from your aura readings and journal reflections (last 30 days)</CardDescription>
@@ -741,13 +741,13 @@ export default function ClientDashboard() {
                     <div className="space-y-6">
                       {/* Energy Overview */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center p-4 bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg border border-violet-200">
-                          <div className="text-2xl font-bold text-violet-600">{journeyData.totalReadings}</div>
-                          <div className="text-sm text-violet-500">Aura Readings</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-pink-50 rounded-lg border border-orange-200">
+                          <div className="text-2xl font-bold text-orange-600">{journeyData.totalReadings}</div>
+                          <div className="text-sm text-orange-500">Aura Readings</div>
                         </div>
-                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                          <div className="text-2xl font-bold text-blue-600">{journeyData.totalJournalEntries}</div>
-                          <div className="text-sm text-blue-500">Journal Entries</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg border border-pink-200">
+                          <div className="text-2xl font-bold text-pink-600">{journeyData.totalJournalEntries}</div>
+                          <div className="text-sm text-pink-500">Journal Entries</div>
                         </div>
                         <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
                           <div className="text-2xl font-bold text-green-600">{journeyData.avgAuraEnergy || journeyData.avgJournalEnergy || 'N/A'}</div>
@@ -791,16 +791,16 @@ export default function ClientDashboard() {
 
                       {/* Personalized Insights */}
                       {journeyData.insights.length > 0 && (
-                        <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-4 border border-violet-200">
+                        <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg p-4 border border-orange-200">
                           <div className="flex items-center gap-2 mb-3">
-                            <Lightbulb className="h-5 w-5 text-violet-500" />
-                            <h4 className="font-medium text-violet-700">Your Spiritual Insights</h4>
+                            <Lightbulb className="h-5 w-5 text-orange-500" />
+                            <h4 className="font-medium text-orange-700">Your Spiritual Insights</h4>
                           </div>
                           <div className="space-y-2">
                             {journeyData.insights.map((insight, index) => (
                               <div key={index} className="flex items-start gap-2">
-                                <Zap className="h-4 w-4 text-violet-500 mt-0.5 flex-shrink-0" />
-                                <p className="text-sm text-violet-600">{insight}</p>
+                                <Zap className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm text-orange-600">{insight}</p>
                               </div>
                             ))}
                           </div>
