@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface Healer {
   id: number;
@@ -79,6 +80,7 @@ export default function HealersPage() {
           </div>
         </main>
         <Footer />
+        <MobileNavigation />
       </div>
     );
   }
@@ -94,6 +96,7 @@ export default function HealersPage() {
           </div>
         </main>
         <Footer />
+        <MobileNavigation />
       </div>
     );
   }
@@ -243,6 +246,7 @@ export default function HealersPage() {
       </main>
       
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }

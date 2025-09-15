@@ -5,6 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useSoulEnergy } from "@/hooks/use-soul-energy";
+import { SoulEnergyOrb } from "@/components/soul-energy-orb";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -417,6 +420,7 @@ function AuraReadingCard({ reading }: { reading: AuraReading }) {
 export default function ClientDashboard() {
   const { user } = useAuth();
   const [credits, setCredits] = useState<number>(0);
+  const { soulEnergy, isLoading: isSoulEnergyLoading } = useSoulEnergy();
 
   // Fetch user bookings
   const { data: userBookings = [], isLoading: isLoadingBookings } = useQuery({
@@ -740,7 +744,7 @@ export default function ClientDashboard() {
                   return (
                     <div className="space-y-6">
                       {/* Energy Overview */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-pink-50 rounded-lg border border-orange-200">
                           <div className="text-2xl font-bold text-orange-600">{journeyData.totalReadings}</div>
                           <div className="text-sm text-orange-500">Aura Readings</div>
@@ -756,6 +760,15 @@ export default function ClientDashboard() {
                         <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200">
                           <div className="text-2xl font-bold text-orange-600">{journeyData.consistency}%</div>
                           <div className="text-sm text-orange-500">Consistency</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                          <div className="flex flex-col items-center">
+                            <div className="mb-2">
+                              <SoulEnergyOrb soulEnergy={soulEnergy} size={24} />
+                            </div>
+                            <div className="text-2xl font-bold text-amber-600">{isSoulEnergyLoading ? '...' : soulEnergy}</div>
+                            <div className="text-sm text-amber-500">Soul Energy</div>
+                          </div>
                         </div>
                       </div>
 
@@ -926,6 +939,7 @@ export default function ClientDashboard() {
       </main>
       
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }
