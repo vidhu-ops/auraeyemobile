@@ -414,3 +414,56 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Mystical decorative elements animations */
+@keyframes mystical-sparkle {
+  0%, 100% { 
+    opacity: 0; 
+    transform: scale(0.5) rotate(0deg); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1) rotate(180deg); 
+  }
+}
+
+@keyframes cosmic-orbit {
+  0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}
+
+@keyframes ethereal-drift {
+  0%, 100% { transform: translateX(0px) translateY(0px); }
+  25% { transform: translateX(20px) translateY(-15px); }
+  50% { transform: translateX(10px) translateY(-30px); }
+  75% { transform: translateX(-10px) translateY(-15px); }
+}
+
+/* Mystical decorative element classes */
+.mystical-sparkle {
+  animation: mystical-sparkle 3s ease-in-out infinite;
+}
+
+.cosmic-orbit {
+  animation: cosmic-orbit 20s linear infinite;
+}
+
+.ethereal-drift {
+  animation: ethereal-drift 8s ease-in-out infinite;
+}
+
+.mystical-symbol {
+  color: rgba(147, 51, 234, 0.6);
+  font-size: 1.5rem;
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.cosmic-particle {
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+}
