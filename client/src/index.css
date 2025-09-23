@@ -1,6 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Cinzel:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Mystical Color Palette */
+  --background: 245 247 255; /* Soft lavender white */
+  --foreground: 30 27 75; /* Deep mystical navy */
+  --card: 255 255 255;
+  --card-foreground: 30 27 75;
+  --popover: 255 255 255;
+  --popover-foreground: 30 27 75;
+  --primary: 139 69 193; /* Royal purple */
+  --primary-foreground: 255 255 255;
+  --secondary: 236 216 255; /* Soft lavender */
+  --secondary-foreground: 30 27 75;
+  --muted: 248 244 255; /* Very light purple */
+  --muted-foreground: 107 114 142;
+  --accent: 196 165 255; /* Medium purple */
+  --accent-foreground: 30 27 75;
+  --destructive: 220 38 127; /* Mystical pink */
+  --destructive-foreground: 255 255 255;
+  --border: 220 208 255; /* Light purple border */
+  --input: 220 208 255;
+  --ring: 139 69 193;
+  --radius: 0.75rem;
+  
+  /* Mystical Gradients */
+  --gradient-mystical: linear-gradient(135deg, #8B45C1 0%, #E879F9 25%, #A855F7 50%, #6366F1 75%, #3B82F6 100%);
+  --gradient-ethereal: linear-gradient(45deg, #F3E8FF 0%, #E0E7FF 25%, #FDF4FF 50%, #F0F9FF 75%, #ECFDF5 100%);
+  --gradient-cosmic: radial-gradient(circle, #1E1B4B 0%, #312E81 25%, #4C1D95 50%, #7C3AED 75%, #A855F7 100%);
+  --gradient-aurora: linear-gradient(90deg, #EC4899 0%, #A855F7 25%, #6366F1 50%, #06B6D4 75%, #10B981 100%);
+}
+
+.dark {
+  --background: 15 13 35; /* Deep cosmic purple */
+  --foreground: 248 244 255;
+  --card: 20 17 43;
+  --card-foreground: 248 244 255;
+  --popover: 20 17 43;
+  --popover-foreground: 248 244 255;
+  --primary: 196 165 255;
+  --primary-foreground: 15 13 35;
+  --secondary: 30 27 75;
+  --secondary-foreground: 248 244 255;
+  --muted: 25 22 50;
+  --muted-foreground: 156 163 175;
+  --accent: 139 69 193;
+  --accent-foreground: 248 244 255;
+  --destructive: 220 38 127;
+  --destructive-foreground: 248 244 255;
+  --border: 46 43 95;
+  --input: 46 43 95;
+  --ring: 196 165 255;
+}
 
 @keyframes fade-in {
   from {
@@ -55,9 +109,91 @@
     animation-delay: 2s;
   }
   
-  /* Custom gradient utilities */
+  /* Mystical gradient utilities */
   .bg-gradient-radial {
     background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-mystical {
+    background: var(--gradient-mystical);
+  }
+  
+  .bg-gradient-ethereal {
+    background: var(--gradient-ethereal);
+  }
+  
+  .bg-gradient-cosmic {
+    background: var(--gradient-cosmic);
+  }
+  
+  .bg-gradient-aurora {
+    background: var(--gradient-aurora);
+  }
+  
+  /* Mystical glow effects */
+  .glow-mystical {
+    box-shadow: 0 0 20px rgba(139, 69, 193, 0.3), 0 0 40px rgba(139, 69, 193, 0.1);
+  }
+  
+  .glow-ethereal {
+    box-shadow: 0 0 15px rgba(196, 165, 255, 0.4), 0 0 30px rgba(196, 165, 255, 0.2);
+  }
+  
+  .glow-cosmic {
+    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5), 0 0 50px rgba(124, 58, 237, 0.2);
+  }
+  
+  /* Glass morphism effects */
+  .glass-mystical {
+    background: rgba(196, 165, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(196, 165, 255, 0.2);
+  }
+  
+  .glass-ethereal {
+    background: rgba(248, 244, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(220, 208, 255, 0.3);
+  }
+  
+  /* Typography families */
+  .font-mystical {
+    font-family: 'Cinzel', serif;
+  }
+  
+  .font-ethereal {
+    font-family: 'Dancing Script', cursive;
+  }
+  
+  .font-cosmic {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Floating animation for mystical elements */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-delay {
+    animation: float 6s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  /* Sparkle effects */
+  .sparkle::before {
+    content: '✨';
+    position: absolute;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
   }
 }
 
