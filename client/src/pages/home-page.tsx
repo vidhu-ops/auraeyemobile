@@ -465,23 +465,23 @@ export default function HomePage() {
     feedbackMutation.mutate(feedbackData);
   };
 
-  // Color gradients for aura display - only 12 approved colors
+  // Color gradients for aura display - mystical themed colors
   const getColorGradient = (color: string) => {
     const gradients = {
       'Red': 'from-red-800/30 to-red-800/80',
-      'Orange': 'from-orange-800 to-orange-100',
+      'Orange': 'from-orange-800/30 to-orange-800/80',
       'Yellow': 'from-yellow-500/30 to-yellow-500/70',
       'Green': 'from-green-800/30 to-green-900/80',
       'Blue': 'from-blue-800/30 to-blue-900/80',
-      'Violet': 'from-violet-900/100 to-violet-900/10',
-      'Indigo': 'from-indigo-800 to-indigo-70',
-      'White': 'from-white to-gray-300/10',
+      'Violet': 'from-violet-800/30 to-violet-900/80',
+      'Indigo': 'from-indigo-800/30 to-indigo-700/80',
+      'White': 'from-white/30 to-gray-300/80',
       'Brown': 'from-amber-800/30 to-amber-900/80',
       'Gold': 'from-yellow-800/30 to-yellow-900/80',
       'Silver': 'from-gray-400/30 to-gray-900/80',
       'Black': 'from-gray-800/30 to-gray-900/80',
     };
-    return gradients[color as keyof typeof gradients] || 'getColorGradient';
+    return gradients[color as keyof typeof gradients] || 'from-purple-500/30 to-purple-700/80';
   };
 
   // Color borders for result display
@@ -508,69 +508,73 @@ export default function HomePage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section id="home" className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-orange-100 via-pink-50 to-amber-50 text-gray-800">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmZmZmYyMCIgLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiIC8+PC9zdmc+')]"></div>
+      <section id="home" className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-cosmic text-white">
+        {/* Mystical animated background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent animate-pulse"></div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-aurora opacity-20 motion-safe:animate-pulse"></div>
         
         <AuraGlow 
           colors={[
-            { color: "bg-pink-500/30", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
-            { color: "bg-cyan-500/30", bottom: "bottom-1/3", right: "right-10", size: "w-80 h-80", delay: "1.5s" },
-            { color: "bg-amber-400/30", bottom: "bottom-10", left: "left-1/4", size: "w-72 h-72", delay: "3s" },
-            { color: "bg-emerald-400/20", top: "top-10", right: "right-1/4", size: "w-64 h-64", delay: "4.5s" }
+            { color: "bg-purple-500/40", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
+            { color: "bg-blue-600/40", bottom: "bottom-1/3", right: "right-10", size: "w-80 h-80", delay: "1.5s" },
+            { color: "bg-purple-600/40", bottom: "bottom-10", left: "left-1/4", size: "w-72 h-72", delay: "3s" },
+            { color: "bg-indigo-500/30", top: "top-10", right: "right-1/4", size: "w-64 h-64", delay: "4.5s" }
           ]} 
         />
         
-        {/* Floating elements with animation */}
-        <div className="absolute top-1/3 right-10 w-12 h-12 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-16 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-300 to-emerald-500 opacity-40 animate-pulse animation-delay-1000"></div>
-        <div className="absolute top-1/4 left-1/3 w-6 h-6 rounded-full bg-gradient-to-r from-cyan-300 to-cyan-500 opacity-50 animate-pulse animation-delay-2000"></div>
+        {/* Mystical floating elements with cosmic energy */}
+        <div className="absolute top-1/3 right-10 w-12 h-12 rounded-full bg-gradient-mystical opacity-80 glow-mystical motion-safe:animate-pulse"></div>
+        <div className="absolute bottom-1/4 left-16 w-8 h-8 rounded-full bg-gradient-aurora opacity-60 glow-ethereal motion-safe:animate-pulse animation-delay-1000"></div>
+        <div className="absolute top-1/4 left-1/3 w-6 h-6 rounded-full bg-gradient-cosmic opacity-70 glow-cosmic motion-safe:animate-pulse animation-delay-2000"></div>
         
-        <div className="container mx-auto px-8 py-16 relative z-15">
+        <div className="container mx-auto px-8 py-16 relative z-20">
           <div className="flex flex-col items-center text-center">
             {/* PROMINENT SOUL ENERGY DISPLAY AT TOP */}
             {user && (
               <div className="mb-8 animate-fade-in-down">
-                <div className="flex flex-col items-center gap-3 p-6 bg-gradient-to-r from-amber-50/80 to-yellow-50/80 backdrop-blur-sm rounded-2xl border border-amber-200/50 shadow-lg">
+                <div className="flex flex-col items-center gap-3 p-6 glass-ethereal rounded-2xl border border-purple-200/50 glow-ethereal">
                   <div className="flex items-center justify-center">
                     <div className="relative" style={{filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.4))'}}>
                       <SoulEnergyOrb size="large" showLabel={true} />
                     </div>
                   </div>
-                  <div className="text-xs text-amber-600">✨ Gain +2 energy with each vibe scan!</div>
+                  <div className="text-xs text-purple-200 font-ethereal">✨ Gain +2 energy with each vibe scan!</div>
                 </div>
               </div>
             )}
             
             <div className="mb-10 animate-fade-in-down">
-              <h1 className="font-large font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-gray-800">
-                Your Energy, Made <span className="text-gray-900">Visible</span> <br />
-                <span className="text-orange-500">Scan .  </span>
-                <span className="text-pink-500">Heal . </span> <span className="text-amber-500">Transform</span>
+              <h1 className="font-mystical font-bold text-3xl md:text-5xl lg:text-7xl mb-8 leading-tight text-white text-center">
+                Your Energy, Made <span className="bg-gradient-mystical bg-clip-text text-transparent">Visible</span> <br />
+                <span className="bg-gradient-cosmic bg-clip-text text-transparent">Scan .  </span>
+                <span className="bg-gradient-aurora bg-clip-text text-transparent">Heal . </span> <span className="bg-gradient-mystical bg-clip-text text-transparent">Transform</span>
               </h1>
             </div>
             
             <div className="max-w-2xl mx-auto mb-10 animate-fade-in">
-              <p className="text-gray-600 text-xl md:text-2xl">
+              <p className="text-purple-100 text-xl md:text-2xl font-cosmic text-center">
                 Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center animate-fade-in">
-              <Button asChild size="lg" className="bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 border-0 text-white px-8 py-6 rounded-full shadow-lg">
+              <Button asChild variant="mystical" size="lg" className="px-8 py-6 rounded-2xl font-cosmic">
                 <Link href="/aura-analysis">
                   <Camera className="mr-2 h-5 w-5" /> Human Aura & Chakra Analysis
                 </Link>
               </Button>
-              <Button asChild size="lg" className="bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 border-0 text-white px-8 py-6 rounded-full shadow-lg">
+              <Button asChild variant="cosmic" size="lg" className="px-8 py-6 rounded-2xl font-cosmic">
                 <Link href="/object-analysis">
                   <Box className="mr-2 h-5 w-5" /> Object & Space Aura Analysis
                 </Link>
               </Button>
               <Button 
                 onClick={() => document.getElementById('vibe-check-section')?.scrollIntoView({ behavior: 'smooth' })}
+                variant="aurora"
                 size="lg" 
-                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 border-0 text-white px-8 py-6 rounded-full shadow-lg"
+                className="px-8 py-6 rounded-2xl font-cosmic"
               >
                 <Sparkles className="mr-2 h-5 w-5" /> What's My Vibe?
               </Button>
@@ -579,9 +583,9 @@ export default function HomePage() {
             {/* Visual element replacing the image */}
             <div className="mt-16 flex justify-center animate-fade-in">
               <div className="relative w-72 h-72 md:w-80 md:h-80">
-                <div className="absolute inset-0 rounded-full bg--pink-500/60 to-violet-500/60 blur-lg animate-pulse"></div>
-                <div className="absolute inset-4 rounded-full bg-gradient-to-bl from-cyan-500/60 to-blue-500/60 blur-md animate-pulse animation-delay-1000"></div>
-                <div className="absolute rounded-full bg-gradient-to-r from-amber-400/60 to-orange-500/60 blur-sm animate-pulse animation-delay-2000"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-bl from-pink-500/60 to-violet-500/60 blur-lg motion-safe:animate-pulse"></div>
+                <div className="absolute inset-4 rounded-full bg-gradient-to-bl from-cyan-500/60 to-blue-500/60 blur-md motion-safe:animate-pulse animation-delay-1000"></div>
+                <div className="absolute inset-8 rounded-full bg-gradient-to-r from-amber-400/60 to-orange-500/60 blur-sm motion-safe:animate-pulse animation-delay-2000"></div>
                 <div className="absolute inset-20 rounded-full bg-purple-600 opacity-60 backdrop-blur-sm"></div>
               </div>
             </div>
@@ -597,23 +601,23 @@ export default function HomePage() {
       </section>
       
       {/* What's My Vibe? Section */}
-      <section id="vibe-check-section" className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
+      <section id="vibe-check-section" className="py-20 bg-gradient-ethereal relative overflow-hidden">
         <div className="container mx-auto px-7">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <Sparkles className="h-8 w-8 text-orange-500 mr-3" />
-              <h2 className="font-heading font-bold text-4xl md:text-5xl text-gray-900">
+              <Sparkles className="h-8 w-8 text-purple-300 mr-3 glow-mystical" />
+              <h2 className="font-mystical font-bold text-4xl md:text-5xl bg-gradient-mystical bg-clip-text text-transparent">
                 What's My Vibe?
               </h2>
-              <Sparkles className="h-8 w-8 text-orange-500 ml-3" />
+              <Sparkles className="h-8 w-8 text-purple-300 ml-3 glow-mystical" />
             </div>
-            <p className="text-gray-600 text-xl max-w-3xl mx-auto">
+            <p className="text-purple-100 text-xl max-w-3xl mx-auto font-cosmic">
               Get an instant glimpse into your spiritual energy! Upload your photo for a quick aura color reading.
             </p>
           </div>
 
-          <div className="max-w-8xl border-white p-19 mx-auto">
-            <Card className="bg-white backdrop-blur-sm">
+          <div className="max-w-8xl p-19 mx-auto">
+            <Card className="glass-ethereal border border-purple-200/30">
               <CardContent className="p-1">
                 {!imagePreview ? (
                   /* Upload Section with Drag & Drop */
@@ -621,8 +625,8 @@ export default function HomePage() {
                     <div 
                       className={`border-2 border-dashed rounded-xl p-12 transition-all cursor-pointer ${
                         isDragging 
-                          ? 'border-orange-500 bg-orange-100/80 scale-105' 
-                          : 'border-orange-300 bg-orange-50/50 hover:bg-orange-50'
+                          ? 'border-purple-400 glass-ethereal scale-105 glow-mystical' 
+                          : 'border-purple-300/50 glass-ethereal hover:glow-ethereal'
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
@@ -630,15 +634,15 @@ export default function HomePage() {
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex flex-col items-center">
-                        <div className={`w-20 h-20 bg-gradient-to-br from-orange-500 to-pink-600 rounded-full flex items-center justify-center mb-4 transition-transform ${
+                        <div className={`w-20 h-20 bg-gradient-mystical rounded-full flex items-center justify-center mb-4 transition-transform glow-mystical ${
                           isDragging ? 'scale-110' : ''
                         }`}>
                           <Camera className="h-10 w-10 text-white" />
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        <h3 className="text-xl font-mystical font-semibold text-white mb-2">
                           {isDragging ? 'Drop Your Photo Here' : 'Upload Your Photo'}
                         </h3>
-                        <p className="text-gray-600 mb-6 max-w-md">
+                        <p className="text-purple-200 mb-6 max-w-md font-cosmic">
                           {isDragging 
                             ? 'Release to upload your photo for aura analysis'
                             : 'Drag & drop your photo here, or click to browse. Choose a clear photo of yourself to discover your dominant aura color and energy signature.'
@@ -653,14 +657,15 @@ export default function HomePage() {
                         />
                         {!isDragging && (
                           <Button
+                            variant="ethereal"
                             size="lg"
-                            className="bg-secondary hover:from-orange-600 hover:to-pink-700"
+                            className="font-cosmic"
                           >
                             <Upload className="mr-2 h-5 w-5" />
                             Choose Photo
                           </Button>
                         )}
-                        <div className="mt-4 text-sm text-gray-500">
+                        <div className="mt-4 text-sm text-purple-300 font-ethereal">
                           Supports JPG, PNG • Max 10MB
                         </div>
                       </div>
@@ -688,10 +693,10 @@ export default function HomePage() {
                       <div className="flex-1 space-y-6">
                         {!vibeResult ? (
                           <div className="text-center">
-                            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                            <h3 className="text-2xl font-mystical font-semibold text-white mb-4">
                               Ready to discover your vibe?
                             </h3>
-                            <p className="text-gray-600 mb-2">
+                            <p className="text-purple-200 mb-2 font-cosmic">
                               Click analyze to reveal your dominant aura color and its spiritual meaning.
                             </p>
                             {user && (
@@ -699,7 +704,7 @@ export default function HomePage() {
                                 <div className="flex justify-center">
                                   <SoulEnergyOrb size="medium" data-testid="home-soul-energy-orb" />
                                 </div>
-                                <div className="flex items-center justify-center text-sm text-gray-600">
+                                <div className="flex items-center justify-center text-sm text-purple-300 font-cosmic">
                                   <CreditCard className="h-4 w-4 mr-1" />
                                   <span>Cost: 1 credit | Your balance: {credits} credits</span>
                                 </div>
@@ -715,7 +720,8 @@ export default function HomePage() {
                                 onClick={analyzeVibe}
                                 disabled={quickVibeMutation.isPending}
                                 size="lg"
-                                className="w-full bg-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700"
+                                variant="cosmic"
+                                className="w-full font-cosmic"
                               >
                                 {quickVibeMutation.isPending ? (
                                   <>
@@ -898,8 +904,9 @@ export default function HomePage() {
                                     <p className="text-sm text-green-700 mb-3">Your input helps us improve our spiritual analysis accuracy.</p>
                                     <Button
                                       onClick={() => setShowVideoModal(true)}
+                                      variant="mystical"
                                       size="sm"
-                                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                                      className="font-cosmic"
                                     >
                                       <Sparkles className="mr-2 h-4 w-4" />
                                       Watch Spiritual Guidance Video
@@ -912,13 +919,13 @@ export default function HomePage() {
                             {/* Action Buttons Row */}
                                                   <div className="flex gap-3 mt-6">
                                                     <Link to="/aura-analysis" className="flex-1">
-                                                      <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700">
+                                                      <Button variant="mystical" className="w-full font-cosmic">
                                                         Get Full Analysis
                                                       </Button>
                                                     </Link>
 
                                                     <Link to="/journal" className="flex-1">
-                                                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+                                                      <Button variant="cosmic" className="w-full font-cosmic">
                                                         Journal with us
                                                       </Button>
                                                     </Link>
@@ -1089,11 +1096,11 @@ export default function HomePage() {
       </section>
       
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 bg-dark text-white">
+      <section id="testimonials" className="py-16 bg-gradient-cosmic text-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4">What Our Community Says</h2>
-            <p className="text-black/80 max-w-5xl mx-auto">Hear from members who have experienced transformation through our spiritual services.</p>
+            <h2 className="font-mystical font-bold text-3xl md:text-4xl mb-4 glow-mystical">What Our Community Says</h2>
+            <p className="text-purple-100 max-w-5xl mx-auto font-cosmic">Hear from members who have experienced transformation through our spiritual services.</p>
           </div>
 
           <div className="max-w-6xl mx-auto">
