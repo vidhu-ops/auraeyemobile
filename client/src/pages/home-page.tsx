@@ -23,6 +23,7 @@ import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal"
 import blueAuraImage from "@assets/WhatsApp Image 2025-08-18 at 3.56.39 AM_1755539933519.jpeg";
 import greenAuraImage from "@assets/WhatsApp Image 2025-08-18 at 3.52.42 AM_1755540002448.jpeg";
 import purpleAuraImage from "@assets/WhatsApp Image 2025-08-18 at 4.01.06 AM_1755540002447.jpeg";
+import { DesignReference } from "@/temp-design-reference";
 
 interface QuickVibeResult {
   dominantColor: string;
@@ -505,6 +506,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col pb-20">
+      <DesignReference />
       <Navbar />
       
       {/* Hero Section */}
