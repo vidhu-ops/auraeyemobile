@@ -72,34 +72,34 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="min-h-screen bg-gradient-cosmic relative overflow-hidden">
           <div className="container mx-auto px-4 py-12">
             {/* Header */}
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-mystical font-bold text-white mb-4 glow-mystical">
                 Choose Your Spiritual Journey
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-purple-100 max-w-2xl mx-auto font-cosmic">
                 Unlock the power of spiritual insights with our comprehensive analysis packages
               </p>
             </div>
 
             {/* Credit Value Guide */}
             <div className="mb-12">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+              <h2 className="text-2xl font-mystical font-semibold text-white mb-6 text-center glow-ethereal">
                 Credit Value Guide
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {creditValues.map((item) => (
-                  <Card key={item.service} className="bg-white backdrop-blur-sm">
+                  <Card key={item.service} className="glass-ethereal hover:glow-mystical transition-all duration-300">
                     <CardContent className="p-2">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900">{item.service}</h3>
+                        <h3 className="font-mystical font-semibold text-purple-700">{item.service}</h3>
                         <Badge variant={item.credits === 0 ? "secondary" : "default"}>
                           {item.credits === 0 ? "FREE" : `${item.credits} Credit`}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600">{item.description}</p>
+                      <p className="text-sm text-purple-600 font-cosmic">{item.description}</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -113,10 +113,10 @@ export default function PricingPage() {
                 return (
                   <Card
                     key={plan.id}
-                    className={`relative transition-all duration-200 hover:shadow-lg ${
+                    className={`relative glass-ethereal hover:glow-mystical transition-all duration-300 ${
                       plan.popular
-                        ? "border-purple-500 bg-gradient-to-b from-purple-50 to-white"
-                        : "bg-white backdrop-blur-sm"
+                        ? "border-purple-400/70 glow-cosmic"
+                        : ""
                     }`}
                   >
                     {plan.popular && (
@@ -138,32 +138,29 @@ export default function PricingPage() {
                           }`} />
                         </div>
                       </div>
-                      <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                      <CardDescription className="text-gray-600">
+                      <CardTitle className="text-2xl font-mystical font-bold text-purple-700">{plan.name}</CardTitle>
+                      <CardDescription className="text-purple-600 font-cosmic">
                         {plan.credits} Credits Included
                       </CardDescription>
                       <div className="mt-1">
-                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                        <span className="text-gray-500 ml-2">/month</span>
+                        <span className="text-4xl font-bold text-purple-800">{plan.price}</span>
+                        <span className="text-purple-500 ml-2 font-cosmic">/month</span>
                       </div>
                     </CardHeader>
                     
                     <CardContent className="space-y-6">
                       <ul className="space-y-3">
                         {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-center text-sm text-gray-600">
-                            <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
+                          <li key={index} className="flex items-center text-sm text-purple-600 font-cosmic">
+                            <Check className="h-4 w-4 text-purple-500 mr-3 flex-shrink-0" />
                             {feature}
                           </li>
                         ))}
                       </ul>
                       
                       <Button 
-                        className={`w-full ${
-                          plan.popular 
-                            ? "bg-purple-600 hover:bg-purple-700" 
-                            : "bg-gray-900 hover:bg-gray-800"
-                        }`}
+                        variant={plan.popular ? "mystical" : "cosmic"}
+                        className="w-full font-cosmic"
                       >
                         Get Started
                       </Button>

@@ -26,7 +26,7 @@ const services = [
     tags: ["Energy", "Artifacts", "Intuitive"]
   },
   {
-    id: "object-analysis",
+    id: "vibe-check",
     title: "What's My Vibe",
     description: "Discover your dominant aura and get a comprehensive understanding.",
     icon: <Box className="h-6 w-6 text-purple-500" />,
@@ -68,22 +68,22 @@ export default function Services() {
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <section className="py-16 bg-gradient-cosmic relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Our Spiritual Services</h1>
-              <p className="text-xl text-gray-600 mb-8">
+              <h1 className="text-4xl md:text-5xl font-mystical font-bold mb-4 text-white glow-mystical">Our Spiritual Services</h1>
+              <p className="text-xl text-purple-100 mb-8 font-cosmic">
                 Discover a range of tools to enhance your spiritual journey and deepen your connection to the universe.
               </p>
               {!user && (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button asChild size="lg">
+                  <Button asChild variant="mystical" size="lg" className="font-cosmic">
                     <Link href="/auth">
                       Get Started
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg">
+                  <Button asChild variant="ethereal" size="lg" className="font-cosmic">
                     <Link href="/about">
                       Learn More
                     </Link>
@@ -95,21 +95,21 @@ export default function Services() {
         </section>
         
         {/* Services Grid */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-gradient-ethereal relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-heading font-bold mb-12 text-center">Explore Our Services</h2>
+              <h2 className="text-3xl font-mystical font-bold mb-12 text-center bg-gradient-mystical bg-clip-text text-transparent glow-ethereal">Explore Our Services</h2>
               
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {services.map((service) => (
-                  <Card key={service.id} id={service.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <Card key={service.id} id={service.id} className="overflow-hidden glass-ethereal hover:glow-mystical transition-all duration-300 hover:scale-105">
                     <CardContent className="p-0">
                       <div className="p-6">
-                        <div className="mb-4 bg-gray-50 w-12 h-12 rounded-full flex items-center justify-center">
+                        <div className="mb-4 glass-mystical w-12 h-12 rounded-full flex items-center justify-center glow-ethereal">
                           {service.icon}
                         </div>
-                        <h3 className="text-xl font-medium mb-2">{service.title}</h3>
-                        <p className="text-gray-600 mb-4">{service.description}</p>
+                        <h3 className="text-xl font-mystical font-semibold mb-2 text-purple-700">{service.title}</h3>
+                        <p className="text-purple-600 mb-4 font-cosmic">{service.description}</p>
                         <div className="flex flex-wrap gap-2 mb-4">
                           {service.tags.map((tag) => (
                             <Badge key={tag} variant="secondary" className="font-normal">
@@ -117,7 +117,7 @@ export default function Services() {
                             </Badge>
                           ))}
                         </div>
-                        <Button asChild variant="outline" className="w-full">
+                        <Button asChild variant="cosmic" className="w-full font-cosmic">
                           <Link href={
                             service.id === "numerology" && !user 
                               ? "/auth" 
@@ -139,14 +139,14 @@ export default function Services() {
         </section>
         
         {/* Premium Banner */}
-        <section className="py-16 bg-gradient-to-r from-secondary to-primary text-white">
+        <section className="py-16 bg-gradient-aurora text-white relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-heading font-bold mb-4">Unlock Premium Features</h2>
-              <p className="text-xl mb-8 opacity-90">
+              <h2 className="text-3xl font-mystical font-bold mb-4 glow-cosmic">Unlock Premium Features</h2>
+              <p className="text-xl mb-8 text-purple-100 font-cosmic">
                 Enhance your spiritual journey with detailed readings, advanced insights, and personalized guidance.
               </p>
-              <Button asChild size="lg" variant="secondary">
+              <Button asChild size="lg" variant="ethereal" className="font-cosmic">
                 <Link href={user ? "/client-dashboard" : "/auth"}>
                   Discover Premium
                 </Link>
