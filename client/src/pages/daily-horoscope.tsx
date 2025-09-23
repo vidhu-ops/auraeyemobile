@@ -101,7 +101,7 @@ export default function DailyHoroscope() {
       
       <main className="flex-grow">
         {/* Header section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-dark to-primary-dark text-white py-16">
+        <section className="relative overflow-hidden bg-gradient-cosmic text-white py-16">
           <AuraGlow 
             colors={[
               { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
@@ -110,18 +110,18 @@ export default function DailyHoroscope() {
           />
           
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4 text-center">Daily Astrological Guidance</h1>
-            <p className="text-white/80 max-w-2xl mx-auto text-center">
+            <h1 className="font-mystical font-bold text-3xl md:text-4xl mb-4 text-center glow-mystical">Daily Astrological Guidance</h1>
+            <p className="text-purple-100 max-w-2xl mx-auto text-center font-cosmic">
               Select your zodiac sign to receive personalized daily horoscope readings and cosmic insights.
             </p>
           </div>
         </section>
         
         {/* Zodiac sign selector */}
-        <section className="py-12 bg-light">
+        <section className="py-12 bg-gradient-ethereal">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h2 className="font-heading font-semibold text-xl mb-6 text-center">Select Your Zodiac Sign</h2>
+              <h2 className="font-mystical font-semibold text-xl mb-6 text-center bg-gradient-mystical bg-clip-text text-transparent">Select Your Zodiac Sign</h2>
               
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 mb-10">
                 {zodiacSigns.map((sign) => (
@@ -137,7 +137,7 @@ export default function DailyHoroscope() {
 
               {/* Cosmic energy overview */}
               <div className="mb-8">
-                <h3 className="font-heading font-semibold text-xl mb-4">Today's Cosmic Energy</h3>
+                <h3 className="font-mystical font-semibold text-xl mb-4 bg-gradient-mystical bg-clip-text text-transparent">Today's Cosmic Energy</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  
                   
@@ -148,7 +148,7 @@ export default function DailyHoroscope() {
               </div>
 
               {/* Horoscope display card */}
-              <Card className="rounded-2xl shadow-xl overflow-hidden">
+              <Card className="glass-ethereal hover:glow-mystical transition-all duration-300 rounded-2xl overflow-hidden">
                 {isLoading ? (
                   <div className="h-80 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -156,9 +156,9 @@ export default function DailyHoroscope() {
                 ) : error ? (
                   <div className="h-80 flex items-center justify-center p-6">
                     <div className="text-center">
-                      <h3 className="text-xl font-medium text-red-500 mb-2">Unable to load horoscope</h3>
-                      <p className="text-gray-600">Please try again or select a different sign.</p>
-                      <Button onClick={() => refetch()} className="mt-4">
+                      <h3 className="text-xl font-mystical text-red-400 mb-2">Unable to load horoscope</h3>
+                      <p className="text-purple-600 font-cosmic">Please try again or select a different sign.</p>
+                      <Button onClick={() => refetch()} variant="cosmic" className="mt-4 font-cosmic">
                         Try Again
                       </Button>
                     </div>
@@ -171,7 +171,7 @@ export default function DailyHoroscope() {
                           {zodiacSigns.find(z => z.name.toLowerCase() === horoscope.sign.toLowerCase())?.icon || '★'}
                         </div>
                         <div>
-                          <h3 className="font-heading font-bold text-xl capitalize">{horoscope.sign}</h3>
+                          <h3 className="font-mystical font-bold text-xl capitalize">{horoscope.sign}</h3>
                           <p className="text-sm opacity-90">
                             {zodiacSigns.find(z => z.name.toLowerCase() === horoscope.sign.toLowerCase())?.date}
                           </p>
@@ -215,25 +215,25 @@ export default function DailyHoroscope() {
                       </div>
                       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="text-center">
-                          <p className="text-xs text-gray-500 mb-1">Love</p>
+                          <p className="text-xs text-purple-500 mb-1 font-cosmic">Love</p>
                           <div className="flex justify-center">
                             {renderStarRating(horoscope.love)}
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className="text-xs text-gray-500 mb-1">Career</p>
+                          <p className="text-xs text-purple-500 mb-1 font-cosmic">Career</p>
                           <div className="flex justify-center">
                             {renderStarRating(horoscope.career)}
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className="text-xs text-gray-500 mb-1">Health</p>
+                          <p className="text-xs text-purple-500 mb-1 font-cosmic">Health</p>
                           <div className="flex justify-center">
                             {renderStarRating(horoscope.health)}
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className="text-xs text-gray-500 mb-1">Spirituality</p>
+                          <p className="text-xs text-purple-500 mb-1 font-cosmic">Spirituality</p>
                           <div className="flex justify-center">
                             {renderStarRating(horoscope.spirituality)}
                           </div>
