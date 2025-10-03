@@ -63,7 +63,7 @@ export default function Navbar() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-mystical font-bold text-2xl bg-gradient-mystical bg-clip-text text-transparent">AuraEye™</span>
+              <span className="font-helvetica font-bold text-2xl text-purple-500">AuraEye™</span>
               <span className="font-ethereal text-sm text-purple-600/70">Spiritual Awakening</span>
             </div>
           </Link>
