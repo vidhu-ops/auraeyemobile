@@ -369,6 +369,29 @@
   animation: pulse-slow 8s infinite ease-in-out;
 }
 
+/* Mobile app enhancements */
+.mobile-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced switch styling for mobile */
+[role="switch"] {
+  transition: all 0.3s ease;
+}
+
+/* Better gradient backgrounds */
+.bg-gradient-mobile {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #be185d 100%);
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
