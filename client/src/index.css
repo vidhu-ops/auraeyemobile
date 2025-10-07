@@ -392,6 +392,26 @@
   background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #be185d 100%);
 }
 
+/* Mobile app color palette */
+:root {
+  --mobile-bg-light: hsl(240, 20%, 97%);
+  --mobile-bg-dark: hsl(237, 30%, 15%);
+  --mobile-card: hsl(0, 0%, 100%);
+  --mobile-accent-cyan: hsl(189, 94%, 43%);
+  --mobile-accent-purple: hsl(271, 91%, 65%);
+  --mobile-accent-pink: hsl(330, 81%, 60%);
+}
+
+/* Scrollbar hide utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
