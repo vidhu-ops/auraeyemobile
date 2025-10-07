@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu } from "lucide-react";
@@ -9,6 +10,15 @@ import logoImage from "@assets/new-logo.jpeg";
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
+  
+  // Calculate tree growth: 5% per 10 soul energy points
+  const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
+  const baseGrowth = 50; // Starting growth percentage
+  const totalTreeGrowth = Math.min(100, baseGrowth + treeGrowthFromSoulEnergy);
+  
+  // Calculate number of green circles based on growth level
+  const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 relative overflow-hidden">
@@ -51,18 +61,48 @@ export default function HomePage() {
               <h2 className="text-green-800 font-semibold">Light Tree of Wisdom</h2>
             </div>
             
+            {/* Soul Energy Display */}
+            <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                  <span className="text-slate-700 font-semibold">Soul Energy</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
+              </div>
+              <div className="text-xs text-slate-600">
+                {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
+              </div>
+              <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
+            </div>
+            
             <div className="flex flex-col items-center py-6">
               {/* Tree visualization */}
               <div className="relative mb-4">
                 <div className="w-24 h-32 relative flex items-end justify-center">
                   {/* Tree trunk */}
                   <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
-                  {/* Tree foliage - overlapping circles */}
+                  {/* Tree foliage - dynamic circles based on growth */}
                   <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
                     <div className="relative w-20 h-20">
+                      {/* Base circles */}
                       <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
                       <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
                       <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
+                      
+                      {/* Additional circles based on growth */}
+                      {numberOfCircles >= 4 && (
+                        <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 5 && (
+                        <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 6 && (
+                        <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 7 && (
+                        <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
+                      )}
                     </div>
                   </div>
                   {/* Sparkles */}
@@ -73,7 +113,7 @@ export default function HomePage() {
               </div>
 
               <h3 className="text-slate-700 font-semibold mb-2">Tree Growth</h3>
-              <div className="text-green-600 text-sm font-medium mb-3">68% Complete</div>
+              <div className="text-green-600 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
               
               <div className="flex items-center gap-1 text-green-700 text-sm">
                 <Sparkles className="h-4 w-4" />
