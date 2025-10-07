@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
+interface SoulEnergyResponse {
+  soulEnergy: number;
+}
+
 export function useSoulEnergy() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<SoulEnergyResponse>({
     queryKey: ["/api/soul-energy"],
     retry: false,
   });
