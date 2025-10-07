@@ -65,14 +65,20 @@ export default function JournalPage() {
   // Add entry mutation
   const addEntryMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("/api/journal", {
+      const response = await fetch("/api/journal", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({
           energyLevel,
           reflections,
           gratitude
         }),
       });
+      if (!response.ok) throw new Error("Failed to add entry");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
