@@ -1,21 +1,17 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Plus, BookOpen, Calendar, TrendingUp, Heart, Brain, BarChart3, Sparkles, Target, Activity } from "lucide-react";
+import { BookOpen, Plus, Search, Zap, Bell, Wifi, Menu, Calendar, TrendingUp, Sparkles } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
+import logoImage from "@assets/new-logo.jpeg";
 
 interface JournalEntry {
   id: number;
@@ -26,16 +22,23 @@ interface JournalEntry {
   createdAt: string;
 }
 
+const moodFilters = [
+  { id: "all", name: "All Moods", emoji: "😊", color: "from-cyan-400 to-blue-500" },
+  { id: "joyful", name: "Joyful", emoji: "😊", color: "from-yellow-400 to-amber-500" },
+  { id: "peaceful", name: "Peaceful", emoji: "🌸", color: "from-pink-400 to-rose-500" },
+  { id: "energized", name: "Energized", emoji: "⚡", color: "from-orange-400 to-red-500" }
+];
+
 export default function JournalPage() {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const { toast } = useToast();
+  const [selectedMood, setSelectedMood] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isAddingEntry, setIsAddingEntry] = useState(false);
-  const [energyLevel, setEnergyLevel] = useState([7]);
+  const [energyLevel, setEnergyLevel] = useState(7);
   const [reflections, setReflections] = useState("");
-  const [gratitude1, setGratitude1] = useState("");
-  const [gratitude2, setGratitude2] = useState("");
-  const [gratitude3, setGratitude3] = useState("");
+  const [gratitude, setGratitude] = useState("");
 
   // Fetch journal entries
   const { data: journalEntries = [], isLoading } = useQuery({
@@ -43,499 +46,270 @@ export default function JournalPage() {
     enabled: isAuthenticated,
   });
 
-  // Calculate mood patterns and personality insights
-  const personalityInsights = useMemo(() => {
+  // Calculate stats
+  const stats = useMemo(() => {
     if (!Array.isArray(journalEntries) || journalEntries.length === 0) {
-      return null;
+      return { entries: 0, dayStreak: 0, avgEnergy: 0 };
     }
 
     const entries = journalEntries as JournalEntry[];
-    const totalEntries = entries.length;
-    const averageEnergy = entries.reduce((sum, entry) => sum + entry.energyLevel, 0) / totalEntries;
+    const avgEnergy = entries.reduce((sum, entry) => sum + entry.energyLevel, 0) / entries.length;
     
-    // Analyze energy trends (last 7 entries vs previous)
-    const recentEntries = entries.slice(-7);
-    const previousEntries = entries.slice(-14, -7);
-    const recentAvg = recentEntries.reduce((sum, entry) => sum + entry.energyLevel, 0) / recentEntries.length;
-    const previousAvg = previousEntries.length > 0 
-      ? previousEntries.reduce((sum, entry) => sum + entry.energyLevel, 0) / previousEntries.length 
-      : recentAvg;
-    
-    const energyTrend = recentAvg - previousAvg;
-    
-    // Analyze reflection patterns
-    const reflectionWords = entries.flatMap(entry => 
-      entry.reflections.toLowerCase().split(/\s+/).filter(word => word.length > 3)
-    );
-    const wordFreq = reflectionWords.reduce((acc, word) => {
-      acc[word] = (acc[word] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
-    const topWords = Object.entries(wordFreq)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 5)
-      .map(([word]) => word);
-
-    // Calculate consistency
-    const energyVariance = entries.reduce((sum, entry) => 
-      Math.pow(entry.energyLevel - averageEnergy, 2), 0
-    ) / totalEntries;
-    const consistency = Math.max(0, 100 - (energyVariance * 10));
-
-    // Determine personality traits based on patterns
-    const traits = [];
-    if (averageEnergy >= 8) traits.push("High Energy");
-    if (averageEnergy >= 6) traits.push("Optimistic");
-    if (consistency >= 70) traits.push("Stable");
-    if (energyTrend > 1) traits.push("Growing");
-    if (topWords.some(word => ['grateful', 'thankful', 'blessed'].includes(word))) traits.push("Grateful");
-    if (topWords.some(word => ['creative', 'art', 'music', 'write'].includes(word))) traits.push("Creative");
-    if (topWords.some(word => ['learn', 'study', 'read', 'knowledge'].includes(word))) traits.push("Curious");
-
     return {
-      averageEnergy: Math.round(averageEnergy * 10) / 10,
-      energyTrend,
-      consistency: Math.round(consistency),
-      topWords,
-      traits,
-      totalEntries,
-      recentAvg: Math.round(recentAvg * 10) / 10
+      entries: entries.length,
+      dayStreak: 7, // You can calculate this based on consecutive days
+      avgEnergy: avgEnergy.toFixed(1)
     };
   }, [journalEntries]);
 
-  // Create journal entry mutation
-  const createEntryMutation = useMutation({
-    mutationFn: async (entryData: any) => {
-      const response = await fetch("/api/journal", {
+  // Add entry mutation
+  const addEntryMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("/api/journal", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(entryData),
-        credentials: "include",
+        body: JSON.stringify({
+          energyLevel,
+          reflections,
+          gratitude
+        }),
       });
-      
-      if (!response.ok) {
-        throw new Error("Failed to save journal entry");
-      }
-      
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
-      setIsAddingEntry(false);
+      toast({
+        title: "Entry Added",
+        description: "Your journal entry has been saved successfully.",
+      });
       setReflections("");
-      setGratitude1("");
-      setGratitude2("");
-      setGratitude3("");
-      setEnergyLevel([7]);
-      toast({
-        title: "Journal Entry Saved",
-        description: "Your spiritual journey has been recorded.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to save journal entry. Please try again.",
-        variant: "destructive",
-      });
+      setGratitude("");
+      setEnergyLevel(7);
+      setIsAddingEntry(false);
     },
   });
 
-  const handleSubmitEntry = () => {
-    if (!reflections.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please share your reflections before saving.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const gratitudeEntries = [gratitude1, gratitude2, gratitude3].filter(Boolean);
-    
-    createEntryMutation.mutate({
-      energyLevel: energyLevel[0],
-      reflections: reflections.trim(),
-      gratitude: gratitudeEntries
-    });
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to access your spiritual journal.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  const filteredEntries = (journalEntries as JournalEntry[]).filter(entry => {
+    const matchesSearch = entry.reflections.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          entry.gratitude.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-teal-50">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Spiritual Journal
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Document your spiritual journey, track your energy levels, and cultivate gratitude through daily reflection.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-900 to-indigo-900 relative overflow-hidden">
+      {/* Header */}
+      <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
+            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
+          </div>
+          <div>
+            <h1 className="text-white font-bold text-sm">AuraEye™</h1>
+            <p className="text-cyan-300 text-xs">Ethereal Wellness</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-dark-mode">
+            <Zap className="h-4 w-4 text-cyan-400" />
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center relative" data-testid="button-notifications">
+            <Bell className="h-4 w-4 text-white" />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
+            <Wifi className="h-4 w-4 text-green-400" />
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
+            <Menu className="h-4 w-4 text-white" />
+          </button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 pb-32 px-4 pt-6">
+        {/* Title with icon */}
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
+            <BookOpen className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Spiritual Journal</h1>
+          <p className="text-purple-200">Capture your inner journey</p>
         </div>
 
-        {/* Main Content with Tabs */}
-        <Tabs defaultValue="journal" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="journal">Journal Entries</TabsTrigger>
-            <TabsTrigger value="insights">Personality Insights</TabsTrigger>
-            <TabsTrigger value="analytics">Mood Analytics</TabsTrigger>
-          </TabsList>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <Card className="bg-slate-700/50 backdrop-blur-sm border-slate-600">
+            <CardContent className="p-3 text-center">
+              <div className="text-2xl font-bold text-cyan-400">{stats.entries}</div>
+              <div className="text-xs text-slate-300">Entries</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-700/50 backdrop-blur-sm border-slate-600">
+            <CardContent className="p-3 text-center">
+              <div className="text-2xl font-bold text-purple-400">{stats.dayStreak}</div>
+              <div className="text-xs text-slate-300">Day Streak</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-700/50 backdrop-blur-sm border-slate-600">
+            <CardContent className="p-3 text-center">
+              <div className="text-2xl font-bold text-pink-400">{stats.avgEnergy}</div>
+              <div className="text-xs text-slate-300">Avg Energy</div>
+            </CardContent>
+          </Card>
+        </div>
 
-          <TabsContent value="journal" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Add New Entry */}
-              <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-purple-600" />
-            New Journal Entry
-          </CardTitle>
-          <CardDescription>Reflect on your spiritual growth and daily experiences</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!isAddingEntry ? (
-            <Button onClick={() => setIsAddingEntry(true)} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Entry
-            </Button>
-          ) : (
-            <div className="space-y-6">
-              {/* Energy Level Slider */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Energy Level: {energyLevel[0]}/10</Label>
-                <Slider
+        {/* Search and New Entry */}
+        <div className="flex gap-3 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              type="text"
+              placeholder="Search entries..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+              data-testid="input-search"
+            />
+          </div>
+          <Button 
+            onClick={() => setIsAddingEntry(!isAddingEntry)}
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 shadow-lg"
+            data-testid="button-new-entry"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New
+          </Button>
+        </div>
+
+        {/* Add Entry Form */}
+        {isAddingEntry && (
+          <Card className="bg-slate-700/50 backdrop-blur-sm border-slate-600 mb-6">
+            <CardContent className="p-4 space-y-4">
+              <div>
+                <label className="text-white text-sm mb-2 block">Energy Level: {energyLevel}/10</label>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
                   value={energyLevel}
-                  onValueChange={setEnergyLevel}
-                  max={10}
-                  min={1}
-                  step={1}
+                  onChange={(e) => setEnergyLevel(Number(e.target.value))}
                   className="w-full"
+                  data-testid="slider-energy"
                 />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>Low Energy</span>
-                  <span>High Energy</span>
-                </div>
               </div>
-
-              {/* Reflections */}
-              <div className="space-y-2">
-                <Label htmlFor="reflections">How do you feel about your self and your aura today?</Label>
+              <div>
+                <label className="text-white text-sm mb-2 block">Reflections</label>
                 <Textarea
-                  id="reflections"
-                  placeholder="Share your thoughts, insights, and spiritual experiences from today..."
                   value={reflections}
                   onChange={(e) => setReflections(e.target.value)}
-                  rows={4}
+                  placeholder="What happened today..."
+                  className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400"
+                  data-testid="textarea-reflections"
                 />
               </div>
-
-              {/* Gratitude */}
-              <div className="space-y-3">
-                <Label>Three Things I'm Grateful For</Label>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="1. What brought you joy today?"
-                    value={gratitude1}
-                    onChange={(e) => setGratitude1(e.target.value)}
-                  />
-                  <Input
-                    placeholder="2. What are you thankful for?"
-                    value={gratitude2}
-                    onChange={(e) => setGratitude2(e.target.value)}
-                  />
-                  <Input
-                    placeholder="3. What made you smile?"
-                    value={gratitude3}
-                    onChange={(e) => setGratitude3(e.target.value)}
-                  />
-                </div>
+              <div>
+                <label className="text-white text-sm mb-2 block">Gratitude</label>
+                <Textarea
+                  value={gratitude}
+                  onChange={(e) => setGratitude(e.target.value)}
+                  placeholder="What I'm grateful for..."
+                  className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400"
+                  data-testid="textarea-gratitude"
+                />
               </div>
-
-              {/* Action Buttons */}
               <div className="flex gap-3">
                 <Button
-                  onClick={handleSubmitEntry}
-                  disabled={createEntryMutation.isPending}
-                  className="flex-1"
+                  onClick={() => addEntryMutation.mutate()}
+                  disabled={addEntryMutation.isPending}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600"
+                  data-testid="button-save-entry"
                 >
-                  {createEntryMutation.isPending ? "Saving..." : "Save Entry"}
+                  {addEntryMutation.isPending ? "Saving..." : "Save Entry"}
                 </Button>
                 <Button
+                  onClick={() => setIsAddingEntry(false)}
                   variant="outline"
-                  onClick={() => {
-                    setIsAddingEntry(false);
-                    setReflections("");
-                    setGratitude1("");
-                    setGratitude2("");
-                    setGratitude3("");
-                    setEnergyLevel([7]);
-                  }}
+                  className="border-slate-600 text-white"
+                  data-testid="button-cancel"
                 >
                   Cancel
                 </Button>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Journal Entries History */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-purple-600" />
-          <h2 className="text-2xl font-semibold">Your Journal Entries</h2>
+        {/* Mood Filters */}
+        <div className="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
+          {moodFilters.map((mood) => (
+            <Button
+              key={mood.id}
+              variant={selectedMood === mood.id ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedMood(mood.id)}
+              className={`whitespace-nowrap rounded-full min-w-fit flex items-center gap-2 ${
+                selectedMood === mood.id 
+                  ? `bg-gradient-to-r ${mood.color} text-white border-0 shadow-md` 
+                  : "bg-white/10 text-white border-white/20"
+              }`}
+              data-testid={`filter-mood-${mood.id}`}
+            >
+              <span>{mood.emoji}</span>
+              {mood.name}
+            </Button>
+          ))}
         </div>
 
-        {isLoading ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-              <p className="text-gray-600 mt-4">Loading your journal entries...</p>
-            </CardContent>
-          </Card>
-        ) : journalEntries.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Journal Entries Yet</h3>
-              <p className="text-gray-600 mb-4">Start your spiritual journey by creating your first journal entry.</p>
-              <Button onClick={() => setIsAddingEntry(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create First Entry
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {journalEntries.map((entry: JournalEntry) => (
-              <Card key={entry.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-purple-600" />
-                      <CardTitle className="text-lg">
-                        {format(new Date(entry.createdAt), "EEEE, MMMM d, yyyy")}
-                      </CardTitle>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-600">
-                        Energy: {entry.energyLevel}/10
-                      </span>
-                    </div>
+        {/* Journal Entries */}
+        <div className="space-y-4">
+          {filteredEntries.map((entry) => (
+            <Card 
+              key={entry.id}
+              className="bg-slate-700/50 backdrop-blur-sm border-slate-600 hover:bg-slate-700/70 transition-all cursor-pointer"
+              data-testid={`entry-${entry.id}`}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-white font-semibold text-lg">Daily Reflection</h3>
+                  <Badge className="bg-amber-500/20 text-amber-300 border-0 flex items-center gap-1">
+                    ⚡ {entry.energyLevel}/10
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-3 text-slate-400 text-xs mb-3">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    <span>{format(new Date(entry.createdAt), "MMM d, yyyy")}</span>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Reflections</h4>
-                    <p className="text-gray-700 leading-relaxed">{entry.reflections}</p>
+                  <div className="flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3" />
+                    <span>{format(new Date(entry.createdAt), "h:mm a")}</span>
                   </div>
-                  
-                  {entry.gratitude && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Heart className="h-4 w-4 text-red-500" />
-                        <h4 className="font-medium text-gray-900">Gratitude</h4>
-                      </div>
-                      <div className="text-gray-700">
-                        {entry.gratitude.split(';').map((item, index) => (
-                          <p key={index} className="mb-1">• {item.trim()}</p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+
+                <p className="text-slate-300 text-sm mb-3">{entry.reflections.substring(0, 150)}...</p>
+
+                {entry.gratitude && (
+                  <div className="mt-3 pt-3 border-t border-slate-600">
+                    <p className="text-slate-400 text-xs mb-1">Gratitude:</p>
+                    <p className="text-slate-300 text-sm">{entry.gratitude}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Empty state */}
+        {filteredEntries.length === 0 && !isLoading && (
+          <div className="text-center py-12">
+            <Sparkles className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-400">No entries found. Start journaling your spiritual journey!</p>
           </div>
         )}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Personality Insights Tab */}
-          <TabsContent value="insights" className="space-y-6">
-            {personalityInsights ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Core Personality Traits */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-5 w-5 text-purple-600" />
-                      Personality Traits
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {personalityInsights.traits.map((trait, index) => (
-                        <Badge key={index} variant="secondary" className="mr-2 mb-2">
-                          {trait}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Energy Patterns */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-green-600" />
-                      Energy Patterns
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Average Energy</span>
-                          <span>{personalityInsights.averageEnergy}/10</span>
-                        </div>
-                        <Progress value={personalityInsights.averageEnergy * 10} className="h-2" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Consistency</span>
-                          <span>{personalityInsights.consistency}%</span>
-                        </div>
-                        <Progress value={personalityInsights.consistency} className="h-2" />
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <span className={`font-medium ${personalityInsights.energyTrend > 0 ? 'text-green-600' : personalityInsights.energyTrend < 0 ? 'text-red-600' : 'text-gray-600'}`}>
-                          {personalityInsights.energyTrend > 0 ? '↗' : personalityInsights.energyTrend < 0 ? '↘' : '→'} 
-                          {personalityInsights.energyTrend > 0 ? ' Growing' : personalityInsights.energyTrend < 0 ? ' Declining' : ' Stable'} trend
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Common Themes */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-yellow-600" />
-                      Common Themes
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {personalityInsights.topWords.map((word, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                          <span className="text-sm capitalize">{word}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <Card>
-                <CardContent className="text-center py-8">
-                  <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">Insights Coming Soon</h3>
-                  <p className="text-gray-500">Write a few journal entries to unlock personality insights and patterns.</p>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Mood Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            {personalityInsights ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Energy Trend Chart */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5 text-blue-600" />
-                      Energy Trends
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{personalityInsights.recentAvg}</div>
-                          <div className="text-sm text-green-500">Recent Average</div>
-                        </div>
-                        <div className="text-center p-4 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">{personalityInsights.averageEnergy}</div>
-                          <div className="text-sm text-blue-500">Overall Average</div>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Based on {personalityInsights.totalEntries} journal entries
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Growth Recommendations */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5 text-purple-600" />
-                      Growth Recommendations
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {personalityInsights.energyTrend > 1 && (
-                        <div className="p-3 bg-green-50 rounded-lg">
-                          <p className="text-sm text-green-700">Your energy is growing! Continue with your current practices.</p>
-                        </div>
-                      )}
-                      {personalityInsights.consistency < 50 && (
-                        <div className="p-3 bg-yellow-50 rounded-lg">
-                          <p className="text-sm text-yellow-700">Consider establishing more consistent daily routines to stabilize your energy.</p>
-                        </div>
-                      )}
-                      {personalityInsights.averageEnergy < 5 && (
-                        <div className="p-3 bg-blue-50 rounded-lg">
-                          <p className="text-sm text-blue-700">Focus on activities that naturally boost your energy and mood.</p>
-                        </div>
-                      )}
-                      <div className="p-3 bg-purple-50 rounded-lg">
-                        <p className="text-sm text-purple-700">Your reflections show growth in mindfulness and self-awareness.</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <Card>
-                <CardContent className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">Analytics Coming Soon</h3>
-                  <p className="text-gray-500">Write journal entries over time to see detailed mood analytics and trends.</p>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-        </Tabs>
       </div>
-      
-      <Footer />
+
+      {/* Mobile Navigation */}
+      <MobileNavigation />
     </div>
   );
 }

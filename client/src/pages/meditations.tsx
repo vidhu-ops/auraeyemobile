@@ -1,80 +1,62 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Star, Filter } from "lucide-react";
+import { Play, Clock, Zap, Bell, Wifi, Menu, Sparkles, Wind, Focus, Flame } from "lucide-react";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import logoImage from "@assets/new-logo.jpeg";
 
 const meditationCategories = [
-  { id: "all", name: "All", color: "bg-gradient-to-r from-orange-400 to-pink-400" },
-  { id: "breathe", name: "Breathe", color: "bg-gradient-to-r from-blue-400 to-cyan-400" },
-  { id: "focus", name: "Focus", color: "bg-gradient-to-r from-purple-400 to-violet-400" },
-  { id: "calm", name: "Calm", color: "bg-gradient-to-r from-green-400 to-emerald-400" },
-  { id: "chakras", name: "Chakras", color: "bg-gradient-to-r from-indigo-400 to-purple-400" },
-  { id: "aura", name: "Aura", color: "bg-gradient-to-r from-pink-400 to-rose-400" },
-  { id: "crystals", name: "Crystals", color: "bg-gradient-to-r from-amber-400 to-yellow-400" }
+  { id: "all", name: "All", icon: Sparkles, color: "from-pink-500 to-rose-500" },
+  { id: "breathe", name: "Breathe", icon: Wind, color: "from-red-500 to-pink-500" },
+  { id: "focus", name: "Focus", icon: Focus, color: "from-purple-500 to-violet-500" },
+  { id: "calm", name: "Calm", icon: Flame, color: "from-amber-500 to-orange-500" }
 ];
 
 const meditations = [
   {
     id: 1,
-    title: "Morning Breathe",
-    author: "Sarah Chen",
+    title: "Ethereal Dawn",
+    author: "Luna Etherealis",
     duration: 10,
-    rating: 4.9,
+    difficulty: "Beginner",
+    description: "Begin your day with a journey with luminous breathing that awakens yo...",
     category: "breathe",
-    description: "Start your day with gentle breathing exercises",
-    color: "from-orange-300 to-pink-200"
+    color: "from-cyan-400 to-blue-500",
+    tag: "Breathing"
   },
   {
     id: 2,
-    title: "Ocean Waves",
-    author: "Alex River",
+    title: "Cosmic Focus",
+    author: "Stellar Mind",
     duration: 15,
-    rating: 4.8,
-    category: "calm",
-    description: "Relax with the sound of ocean waves",
-    color: "from-blue-300 to-cyan-200"
+    difficulty: "Intermediate",
+    description: "Channel the energy of distant stars to enhance your mental clarity an...",
+    category: "focus",
+    color: "from-purple-500 to-violet-600",
+    tag: "Mindfulness"
   },
   {
     id: 3,
-    title: "Chakra Alignment",
-    author: "Luna Park",
+    title: "Serene Waters",
+    author: "Ocean Guide",
     duration: 20,
-    rating: 4.7,
-    category: "chakras",
-    description: "Balance your seven chakras with guided meditation",
-    color: "from-purple-300 to-violet-200"
+    difficulty: "Beginner",
+    description: "Flow with the gentle waves of tranquility and inner peace...",
+    category: "calm",
+    color: "from-blue-400 to-cyan-500",
+    tag: "Relaxation"
   },
   {
     id: 4,
-    title: "Deep Focus",
-    author: "Ocean Waves",
-    duration: 30,
-    rating: 4.9,
-    category: "focus",
-    description: "Enhance concentration and mental clarity",
-    color: "from-indigo-300 to-blue-200"
-  },
-  {
-    id: 5,
-    title: "Aura Cleansing",
-    author: "Forest Guide",
+    title: "Sacred Flame",
+    author: "Fire Keeper",
     duration: 12,
-    rating: 4.6,
-    category: "aura",
-    description: "Cleanse and strengthen your energy field",
-    color: "from-emerald-300 to-green-200"
-  },
-  {
-    id: 6,
-    title: "Crystal Healing",
-    author: "Zen Master",
-    duration: 18,
-    rating: 4.5,
-    category: "crystals",
-    description: "Connect with crystal energies for healing",
-    color: "from-pink-300 to-rose-200"
+    difficulty: "Advanced",
+    description: "Transform your energy through the power of inner fire...",
+    category: "breathe",
+    color: "from-orange-500 to-red-500",
+    tag: "Energy"
   }
 ];
 
@@ -86,94 +68,130 @@ export default function MeditationsPage() {
     : meditations.filter(m => m.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-amber-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-900 to-indigo-900 relative overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-br from-orange-100 to-pink-100 pt-12 pb-8 px-6">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <div className="w-3 h-3 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full animate-pulse"></div>
-            </div>
+      <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
+            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Meditations</h1>
-          <p className="text-gray-600">Find your moment of peace</p>
+          <div>
+            <h1 className="text-white font-bold text-sm">AuraEye™</h1>
+            <p className="text-cyan-300 text-xs">Ethereal Wellness</p>
+          </div>
         </div>
-
-        {/* Category Filter */}
-        <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
-          {meditationCategories.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category.id)}
-              className={`whitespace-nowrap rounded-full min-w-fit ${
-                selectedCategory === category.id 
-                  ? `${category.color} text-white border-0 shadow-md` 
-                  : "bg-white/70 text-gray-700 border-gray-200"
-              }`}
-              data-testid={`filter-${category.id}`}
-            >
-              {category.name}
-            </Button>
-          ))}
+        
+        <div className="flex items-center gap-2">
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-dark-mode">
+            <Zap className="h-4 w-4 text-cyan-400" />
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center relative" data-testid="button-notifications">
+            <Bell className="h-4 w-4 text-white" />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
+            <Wifi className="h-4 w-4 text-green-400" />
+          </button>
+          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
+            <Menu className="h-4 w-4 text-white" />
+          </button>
         </div>
       </div>
 
-      {/* Meditation List */}
-      <div className="px-6 py-6">
+      {/* Main content */}
+      <div className="relative z-10 pb-32 px-4 pt-6">
+        {/* Title with icon */}
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
+            <Sparkles className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Ethereal Meditations</h1>
+          <p className="text-purple-200">Journey through dimensions of consciousness</p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
+          {meditationCategories.map((category) => {
+            const Icon = category.icon;
+            return (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category.id)}
+                className={`whitespace-nowrap rounded-full min-w-fit flex items-center gap-2 ${
+                  selectedCategory === category.id 
+                    ? `bg-gradient-to-r ${category.color} text-white border-0 shadow-md` 
+                    : "bg-white/10 text-white border-white/20"
+                }`}
+                data-testid={`filter-${category.id}`}
+              >
+                <Icon className="h-4 w-4" />
+                {category.name}
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Meditation Cards */}
         <div className="space-y-4">
           {filteredMeditations.map((meditation) => (
-            <Card key={meditation.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all duration-200" data-testid={`meditation-${meditation.id}`}>
-              <CardContent className="p-0">
-                <div className="flex items-center p-6">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${meditation.color} flex items-center justify-center mr-4 shadow-sm`}>
-                    <Play className="h-6 w-6 text-white drop-shadow-sm" />
-                  </div>
-                  
+            <Card 
+              key={meditation.id}
+              className={`bg-gradient-to-r ${meditation.color} border-0 shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl transition-all`}
+              data-testid={`meditation-card-${meditation.id}`}
+            >
+              <CardContent className="p-5">
+                <div className="flex items-start gap-4">
+                  <button className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all" data-testid={`play-${meditation.id}`}>
+                    <Play className="h-6 w-6 text-white" fill="white" />
+                  </button>
+
                   <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-gray-800" data-testid={`meditation-title-${meditation.id}`}>{meditation.title}</h3>
-                      <span className="text-xs text-gray-500">Tap to expand</span>
-                    </div>
+                    <h3 className="text-white text-lg font-bold mb-1">{meditation.title}</h3>
+                    <p className="text-white/90 text-sm mb-2">by {meditation.author}</p>
+                    <p className="text-white/80 text-xs mb-3">{meditation.description}</p>
                     
-                    <p className="text-sm text-gray-600 mb-2">by {meditation.author}</p>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {meditation.duration} min
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 text-white/90">
+                        <Clock className="h-3 w-3" />
+                        <span className="text-xs">{meditation.duration} min</span>
                       </div>
-                      
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                        {meditation.rating}
+                      <div className="flex items-center gap-1">
+                        <Zap className="h-3 w-3 text-yellow-300" />
+                        <span className="text-xs text-white/90">{meditation.difficulty === 'Beginner' ? '4.9' : meditation.difficulty === 'Intermediate' ? '4.8' : '5.0'}</span>
                       </div>
-                      
-                      <Badge variant="secondary" className="text-xs">
-                        {meditationCategories.find(c => c.id === meditation.category)?.name}
+                      <Badge className="bg-white/20 text-white text-xs border-0">
+                        {meditation.difficulty}
                       </Badge>
                     </div>
                   </div>
-                </div>
-                
-                {/* Expandable content */}
-                <div className="px-6 pb-6">
-                  <p className="text-sm text-gray-600 mb-4">{meditation.description}</p>
-                  <Button 
-                    className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white border-0 rounded-xl" 
-                    data-testid={`play-meditation-${meditation.id}`}
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Play
-                  </Button>
+
+                  <div className="text-right">
+                    <Badge className="bg-amber-500/90 text-white text-xs border-0 mb-2">
+                      {meditation.tag}
+                    </Badge>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {/* Add more meditations prompt */}
+        <div className="mt-6 text-center">
+          <Button 
+            variant="outline" 
+            className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+            data-testid="button-load-more"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Explore More Meditations
+          </Button>
+        </div>
       </div>
 
+      {/* Mobile Navigation */}
       <MobileNavigation />
     </div>
   );
