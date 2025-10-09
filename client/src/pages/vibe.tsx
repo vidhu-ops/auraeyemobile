@@ -54,6 +54,12 @@ export default function VibePage() {
       formData.append('analysisType', 'quick-vibe');
 
       const response = await apiRequest('POST', '/api/quick-vibe', formData);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to analyze your vibe');
+      }
+      
       const data = await response.json();
       
       setVibeResult({
@@ -69,6 +75,9 @@ export default function VibePage() {
         description: `Your dominant vibe is ${data.dominantColor}`,
       });
     } catch (error: any) {
+      // Reset image preview on error so user can try again
+      setImagePreview(null);
+      
       toast({
         title: "Analysis failed",
         description: error.message || "Failed to analyze your vibe",
