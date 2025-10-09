@@ -98,7 +98,7 @@ export default function Services() {
         <section className="py-16 bg-gradient-ethereal relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-mystical font-bold mb-12 text-center bg-gradient-mystical bg-clip-text text-transparent glow-ethereal">Explore Our Services</h2>
+              <h2 className="text-3xl font-mystical font-bold mb-12 text-center text-black glow-ethereal">Explore Our Services</h2>
               
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {services.map((service) => (

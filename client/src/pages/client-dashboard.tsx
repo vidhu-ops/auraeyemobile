@@ -82,41 +82,30 @@ export default function ClientDashboard() {
               <div className="flex-1 pb-2">
                 <div className="flex items-center gap-2 mb-1">
                   <h2 className="text-white text-xl font-bold">{user?.username || 'vidhu.gupta'}</h2>
-                  <Badge className="bg-purple-300/30 text-purple-100 border-purple-300/50 text-xs">
-                    Enlightened Soul
-                  </Badge>
+                  
                 </div>
-                <p className="text-purple-100 text-sm">{user?.email || 'vidhu.gupta@example.com'}</p>
+                <p className="text-black-600 text-sm">{user?.email || 'vidhu.gupta@gmail.com'}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 mb-4 text-purple-100 text-xs">
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                <span>San Francisco, CA</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span>Joined March 2023</span>
-              </div>
-            </div>
+           
 
-            <p className="text-purple-100 text-sm italic mb-4">
+            <p className="text-purple-600 text-sm italic mb-4">
               "On a journey of spiritual awakening and inner healing. Passionate about meditation, energy work, and connecting with like-minded souls."
             </p>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">0</div>
-                <div className="text-xs text-purple-200">Credits</div>
+                <div className="text-2xl font-bold text-pink">0</div>
+                <div className="text-xs text-purple-600">Credits</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">87%</div>
-                <div className="text-xs text-purple-200">Wellness Score</div>
+                <div className="text-2xl font-bold text-pink">87%</div>
+                <div className="text-xs text-purple-600">Wellness Score</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">12</div>
-                <div className="text-xs text-purple-200">Day Streak</div>
+                <div className="text-2xl font-bold text-pink">12</div>
+                <div className="text-xs text-purple-600">Day Streak</div>
               </div>
             </div>
           </CardContent>
@@ -181,9 +170,9 @@ export default function ClientDashboard() {
           <Link href="/aura-analysis" data-testid="link-aura-scan">
             <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Camera className="h-8 w-8 text-white mx-auto mb-2" />
-                <div className="text-white font-semibold mb-1">Aura Scan</div>
-                <div className="text-purple-100 text-xs">Start reading</div>
+                <Camera className="h-8 w-8 text-black mx-auto mb-2" />
+                <div className="text-black font-semibold mb-1">Aura Scan</div>
+                <div className="text-purple-600 text-xs">Start reading</div>
               </CardContent>
             </Card>
           </Link>
@@ -191,9 +180,9 @@ export default function ClientDashboard() {
           <Link href="/meditations" data-testid="link-meditation">
             <Card className="bg-gradient-to-br from-pink-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Heart className="h-8 w-8 text-white mx-auto mb-2" />
-                <div className="text-white font-semibold mb-1">Meditation</div>
-                <div className="text-pink-100 text-xs">5 min session</div>
+                <Heart className="h-8 w-8 text-black mx-auto mb-2" />
+                <div className="text-black font-semibold mb-1">Meditation</div>
+                <div className="text-pink-600 text-xs">5 min session</div>
               </CardContent>
             </Card>
           </Link>
@@ -201,9 +190,9 @@ export default function ClientDashboard() {
           <Link href="/healers" data-testid="link-healers">
             <Card className="bg-gradient-to-br from-cyan-500 to-blue-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Users className="h-8 w-8 text-white mx-auto mb-2" />
-                <div className="text-white font-semibold mb-1">Healers</div>
-                <div className="text-cyan-100 text-xs">Connect now</div>
+                <Users className="h-8 w-8 text-black mx-auto mb-2" />
+                <div className="text-black font-semibold mb-1">Healers</div>
+                <div className="text-cyan-600 text-xs">Connect now</div>
               </CardContent>
             </Card>
           </Link>
@@ -211,9 +200,9 @@ export default function ClientDashboard() {
           <Link href="/journal" data-testid="link-journal">
             <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Activity className="h-8 w-8 text-white mx-auto mb-2" />
-                <div className="text-white font-semibold mb-1">Journal</div>
-                <div className="text-amber-100 text-xs">Track progress</div>
+                <Activity className="h-8 w-8 text-black mx-auto mb-2" />
+                <div className="text-black font-semibold mb-1">Journal</div>
+                <div className="text-amber-600 text-xs">Track progress</div>
               </CardContent>
             </Card>
           </Link>
