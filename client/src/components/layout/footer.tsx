@@ -52,11 +52,11 @@ export default function Footer() {
           </div>
           
           <div>
-            <h4 className="font-heading font-semibold mb-4">Subscribe</h4>
+            <h4 className="font-primary font-semibold mb-4">Subscribe</h4>
             <p className="text-black/70 mb-3">Stay updated with our latest spiritual insights and offerings.</p>
-            <form className="flex flex-col space-y-3">
-              <Input type="email" placeholder="Your email address" className="px-3 py-2 rounded-lg bg-dark-light border border-dark-light focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" />
-              <Button className="bg-primary hover:bg-primary-dark text-white font-medium">
+            <form className="flex flex-col font-primary space-y-3">
+              <Input type="email" placeholder="Your email address" className="px-3 py-2 rounded-lg bg-dark-light border border-dark-light focus:outline-none focus:ring-2 focus:ring-primary/50 font-primary focus:border-primary" />
+              <Button className="bg-primary hover:bg-primary-dark text-black font-medium">
                 Subscribe
               </Button>
             </form>

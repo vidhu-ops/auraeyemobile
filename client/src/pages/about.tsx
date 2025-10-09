@@ -40,7 +40,7 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
-                <h2 className="font-mystical font-bold text-3xl mb-6 bg-gradient-mystical bg-clip-text text-transparent">Our Story</h2>
+                <h2 className="font-mystical font-bold text-3xl mb-6 text-purple">Our Story</h2>
                 <p className="text-gray-600 mb-4">
                   Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
 
