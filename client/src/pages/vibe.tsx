@@ -3,17 +3,32 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, Sparkles, Zap, ArrowLeft } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen, Upload, RotateCcw } from "lucide-react";
 import ImageUpload from "@/components/forms/image-upload";
 import { apiRequest } from "@/lib/queryClient";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
+import logoImage from "@assets/new-logo.jpeg";
+
+interface VibeResult {
+  dominantColor: string;
+  colorMeaning: {
+    positive: string;
+    negative: string;
+  };
+  energyLevel: number;
+  message: string;
+  readingId: number | null;
+}
 
 export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [vibeResult, setVibeResult] = useState<{ color: string; description: string } | null>(null);
+  const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [userFeedback, setUserFeedback] = useState<'positive' | 'negative' | null>(null);
 
   const handleImageSelect = async (file: File) => {
     if (!user) {
@@ -42,8 +57,11 @@ export default function VibePage() {
       const data = await response.json();
       
       setVibeResult({
-        color: data.dominantColor,
-        description: data.description
+        dominantColor: data.dominantColor,
+        colorMeaning: data.colorMeaning,
+        energyLevel: data.energyLevel,
+        message: data.message,
+        readingId: data.readingId
       });
       
       toast({
@@ -64,6 +82,7 @@ export default function VibePage() {
   const resetAnalysis = () => {
     setVibeResult(null);
     setImagePreview(null);
+    setUserFeedback(null);
   };
 
   if (!user) {
@@ -83,116 +102,312 @@ export default function VibePage() {
     );
   }
 
+  if (!vibeResult) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        
+        {/* Hero Section */}
+        <div className="flex-grow bg-gradient-to-br from-purple-800 via-indigo-800 to-purple-900 relative overflow-hidden">
+          {/* Decorative circles */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-40 right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+          
+          <div className="container mx-auto px-4 py-16 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                Your Energy, Made Visible
+              </h1>
+              <h2 className="text-3xl md:text-5xl font-bold mb-8">
+                <span className="text-yellow-400">Scan</span>
+                <span className="text-white"> . </span>
+                <span className="text-cyan-400">Heal</span>
+                <span className="text-white"> . </span>
+                <span className="text-green-400">Transform</span>
+              </h2>
+              <p className="text-lg md:text-xl text-purple-100 mb-12 max-w-2xl mx-auto">
+                Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
+              </p>
+
+              {/* Service Buttons */}
+              <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-12">
+                <Link href="/aura-analysis">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 rounded-full text-lg shadow-lg">
+                    <Camera className="mr-2 h-5 w-5" />
+                    Human Aura & Chakra Analysis
+                  </Button>
+                </Link>
+                
+                <Link href="/object-analysis">
+                  <Button className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-6 rounded-full text-lg shadow-lg">
+                    <Eye className="mr-2 h-5 w-5" />
+                    Object & Space Aura Analysis
+                  </Button>
+                </Link>
+                
+                <Button 
+                  onClick={() => document.getElementById('vibe-upload')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-6 rounded-full text-lg shadow-lg"
+                >
+                  <Zap className="mr-2 h-5 w-5" />
+                  What's My Vibe!
+                </Button>
+              </div>
+
+              {/* Upload Section */}
+              <div id="vibe-upload" className="mt-16">
+                <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+                  <CardContent className="p-8">
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                      <Sparkles className="h-8 w-8 text-yellow-400" />
+                      <h3 className="text-2xl font-bold text-white">Quick Vibe Check</h3>
+                    </div>
+                    
+                    <p className="text-purple-100 mb-6">
+                      Upload your photo to discover your dominant energy color
+                    </p>
+
+                    <div className="max-w-md mx-auto">
+                      <ImageUpload
+                        onImageSelect={handleImageSelect}
+                        isLoading={isAnalyzing}
+                      />
+                    </div>
+
+                    {isAnalyzing && (
+                      <div className="text-center py-8 mt-4">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                        <p className="mt-4 text-white">Analyzing your vibe...</p>
+                      </div>
+                    )}
+
+                    <div className="mt-6 bg-yellow-400/20 border border-yellow-400/30 rounded-lg p-4">
+                      <p className="text-sm text-yellow-100">
+                        <strong>Quick Check:</strong> 1 credit • For comprehensive analysis with detailed chakra insights, try Human Aura Analysis (15 credits)
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    );
+  }
+
+  // Result view
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
-        <div className="container mx-auto flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
-              <ArrowLeft className="h-5 w-5" />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      
+      <div className="flex-grow bg-gradient-to-br from-slate-50 to-purple-50 py-12">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              Your Vibe: <span style={{ color: vibeResult.dominantColor.toLowerCase() }}>{vibeResult.dominantColor}</span>
+            </h1>
+            <p className="text-lg text-purple-600 font-medium">{vibeResult.message}</p>
+            <div className="mt-4 text-sm text-slate-600">
+              <p>Today's Scan: 1/1</p>
+              <p>Next free scan in 30 days</p>
+              <p className="text-purple-600">Upgrade for daily scans</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Image */}
+            <div className="flex justify-center items-start">
+              {imagePreview && (
+                <div className="relative">
+                  <img 
+                    src={imagePreview} 
+                    alt="Your vibe" 
+                    className="max-w-sm rounded-lg shadow-lg"
+                  />
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded">
+                    <img src={logoImage} alt="AuraEye" className="w-24 h-auto opacity-50" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Analysis */}
+            <div className="space-y-4">
+              {/* Positive Section */}
+              <Card className="border-green-200 bg-green-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <h3 className="font-semibold text-green-900">Positive</h3>
+                  </div>
+                  <h4 className="font-semibold text-green-800 mb-2">What's bright right now</h4>
+                  <p className="text-green-700 text-sm">{vibeResult.colorMeaning.positive}</p>
+                </CardContent>
+              </Card>
+
+              {/* Negative/Balance Section */}
+              <Card className="border-orange-200 bg-orange-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    <h3 className="font-semibold text-orange-900">Area to Balance</h3>
+                  </div>
+                  <h4 className="font-semibold text-orange-800 mb-2">What needs grounding</h4>
+                  <p className="text-orange-700 text-sm">{vibeResult.colorMeaning.negative}</p>
+                </CardContent>
+              </Card>
+
+              {/* Premium Content */}
+              <Card className="border-slate-300 bg-slate-100">
+                <CardContent className="p-6 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Zap className="h-5 w-5 text-purple-600" />
+                    <h3 className="font-semibold text-slate-900">Premium Content</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Upgrade to unlock detailed insights
+                  </p>
+                  <p className="text-xs text-slate-500 mb-4">
+                    Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report
+                  </p>
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Play className="mr-2 h-4 w-4" />
+                    Watch Now
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Feedback Section */}
+          <Card className="mb-8 border-blue-200 bg-blue-50">
+            <CardContent className="p-6 text-center">
+              <h3 className="font-semibold text-blue-900 mb-2">Which do you relate to more?</h3>
+              <p className="text-sm text-blue-700 mb-4">Your feedback helps us improve our spiritual analysis accuracy.</p>
+              <div className="flex gap-4 justify-center">
+                <Button 
+                  onClick={() => setUserFeedback('positive')}
+                  variant={userFeedback === 'positive' ? 'default' : 'outline'}
+                  className={userFeedback === 'positive' ? 'bg-green-600 hover:bg-green-700' : 'border-green-600 text-green-600'}
+                >
+                  Positive
+                </Button>
+                <Button 
+                  onClick={() => setUserFeedback('negative')}
+                  variant={userFeedback === 'negative' ? 'default' : 'outline'}
+                  className={userFeedback === 'negative' ? 'bg-red-600 hover:bg-red-700' : 'border-red-600 text-red-600'}
+                >
+                  Negative
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <Link href="/aura-analysis" className="block">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6">
+                Get Full Analysis
+              </Button>
+            </Link>
+            
+            <Link href="/journal" className="block">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Journal with us
+              </Button>
+            </Link>
+            
+            <Button onClick={resetAnalysis} variant="outline" className="w-full py-6">
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Try Another Photo
             </Button>
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold">What's My Vibe?</h1>
-            <p className="text-sm text-purple-100">Quick aura color reading - 1 credit</p>
+          </div>
+
+          {/* Upgrade Cards */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* Connect to Healer */}
+            <Card className="border-cyan-300 bg-gradient-to-br from-cyan-50 to-teal-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-cyan-900 mb-2">Connect to a Healer</h3>
+                <p className="text-sm text-cyan-700 mb-4">
+                  Unlock live full report via a certified healer • Costs 1 credit
+                </p>
+                <Link href="/healers">
+                  <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white">
+                    Book Now
+                  </Button>
+                </Link>
+                <p className="text-xs text-cyan-600 mt-3 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Watermark on all reports (anti-abuse)
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Professional Healer Dashboard */}
+            <Card className="border-purple-300 bg-gradient-to-br from-purple-50 to-indigo-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-purple-900 mb-2">Upgrade to Professional Healer Dashboard</h3>
+                <p className="text-sm text-purple-700 mb-4">
+                  Full Aura + Chakra Numerology + Weekly Plan + Daily Scans + talent management
+                </p>
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white mb-3">
+                  Upgrade Now
+                </Button>
+                <p className="text-xs text-purple-600 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  One-tap connection or upgrade
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Elite Healer Dashboard */}
+            <Card className="border-pink-300 bg-gradient-to-br from-pink-50 to-rose-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-pink-900 mb-2">Upgrade to Elite Healer Dashboard</h3>
+                <p className="text-sm text-pink-700 mb-4">
+                  Everything in Pro + Object 1st Scans + Professional listing + Recommended against in our list of healers
+                </p>
+                <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white mb-3">
+                  Upgrade Elite
+                </Button>
+                <p className="text-xs text-pink-600 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Bonus: 3 object scans on first upgrade
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Footer Info */}
+          <div className="grid md:grid-cols-4 gap-4 text-center text-sm text-slate-600">
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-yellow-500" />
+              <p>Watermark on all reports</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-purple-500" />
+              <p>One-tap connection or upgrade</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-orange-500" />
+              <p>Bonus: 3 object scans on first upgrade</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-slate-500" />
+              <p>Priority support for paid plans</p>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {!vibeResult ? (
-          <Card className="bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-6 w-6 text-purple-600" />
-                Discover Your Dominant Energy
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6">
-                <h3 className="font-semibold text-purple-900 mb-2">How it works:</h3>
-                <ul className="space-y-2 text-slate-700">
-                  <li className="flex items-start gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-500 mt-0.5" />
-                    <span>Upload a clear photo of yourself</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-500 mt-0.5" />
-                    <span>Our AI analyzes your energy patterns</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-500 mt-0.5" />
-                    <span>Get instant insight into your dominant aura color</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <ImageUpload
-                  onImageSelect={handleImageSelect}
-                  isLoading={isAnalyzing}
-                />
-                
-                {isAnalyzing && (
-                  <div className="text-center py-8">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-                    <p className="mt-4 text-slate-600">Analyzing your vibe...</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
-                  <strong>Note:</strong> This is a quick analysis for 1 credit. For a comprehensive aura reading with detailed chakra analysis, try our full Aura Analysis (15 credits).
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-purple-600" />
-                Your Vibe Result
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {imagePreview && (
-                <div className="flex justify-center">
-                  <img 
-                    src={imagePreview} 
-                    alt="Your photo" 
-                    className="max-w-xs rounded-lg shadow-md"
-                  />
-                </div>
-              )}
-
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 text-center">
-                <h3 className="text-2xl font-bold text-purple-900 mb-2">
-                  Your Dominant Vibe: <span className="text-3xl">{vibeResult.color}</span>
-                </h3>
-                <p className="text-slate-700 mt-4">{vibeResult.description}</p>
-              </div>
-
-              <div className="flex gap-3">
-                <Button 
-                  onClick={resetAnalysis}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Analyze Again
-                </Button>
-                <Link href="/aura-analysis" className="flex-1">
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600">
-                    Get Full Analysis
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      
+      <Footer />
     </div>
   );
 }
