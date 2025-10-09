@@ -168,8 +168,8 @@ export function ImageManipulator({ onImageProcessed }: ImageManipulatorProps) {
 
   return (
     <Card className="w-full max-w-xl mx-auto">
-      <CardHeader className="text-center">
-        <CardTitle className="flex items-center justify-center gap-2">
+      <CardHeader className="text-center text-black">
+        <CardTitle className="flex text-xs text-black bg-white font-primary items-center justify-center gap-2">
           <Upload className="h-5 w-5" />
           Image Flipping Tool
         </CardTitle>

@@ -93,6 +93,20 @@ export default function HomePage() {
                   </div>
                 </Link>
                 
+                <Link href="/services" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-services">
+                    <Sparkles className="h-5 w-5 text-indigo-400" />
+                    <span>Services</span>
+                  </div>
+                </Link>
+                
+                <Link href="/vibe" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-vibe">
+                    <Zap className="h-5 w-5 text-purple-400" />
+                    <span>What's My Vibe</span>
+                  </div>
+                </Link>
+                
                 <Link href="/aura-analysis" onClick={() => setMenuOpen(false)}>
                   <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-aura">
                     <Camera className="h-5 w-5 text-purple-400" />
@@ -125,6 +139,20 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-healers">
                     <Users className="h-5 w-5 text-pink-400" />
                     <span>Find Healers</span>
+                  </div>
+                </Link>
+                
+                <Link href="/about" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-about">
+                    <Book className="h-5 w-5 text-blue-400" />
+                    <span>About</span>
+                  </div>
+                </Link>
+                
+                <Link href="/contact" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-contact">
+                    <Bell className="h-5 w-5 text-teal-400" />
+                    <span>Contact</span>
                   </div>
                 </Link>
                 
