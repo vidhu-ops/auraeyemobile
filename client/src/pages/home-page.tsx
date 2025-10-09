@@ -398,25 +398,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* What's My Vibe - Quick Scan */}
-        <Card className="bg-gradient-to-br from-purple-100 to-pink-100 border-purple-200 mb-4 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-6 w-6 text-purple-600" />
-              <h2 className="text-purple-900 font-bold text-lg">What's My Vibe?</h2>
-            </div>
-            <p className="text-purple-700 text-sm mb-4">
-              Quick aura color reading for just 1 credit! Upload your photo to discover your dominant energy.
-            </p>
-            <Link href="/aura-analysis">
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700" data-testid="button-vibe-check">
-                <Camera className="h-4 w-4 mr-2" />
-                Start Vibe Check (1 credit)
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
         {/* Energy Milestones */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3 bg-amber-50 px-3 py-2 rounded-lg">

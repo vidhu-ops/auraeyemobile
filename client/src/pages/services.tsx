@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, Camera, Book, Star, Box } from "lucide-react";
+import { ArrowRight, Camera, Book, Star, Box, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,10 +28,10 @@ const services = [
   {
     id: "vibe-check",
     title: "What's My Vibe",
-    description: "Discover your dominant aura and get a comprehensive understanding.",
-    icon: <Box className="h-6 w-6 text-purple-500" />,
-    path: "/#vibe-check-section",
-    tags: ["vibe", "aura", "energy"]
+    description: "Quick aura color reading - discover your dominant energy in seconds.",
+    icon: <Star className="h-6 w-6 text-purple-500" />,
+    path: "/vibe",
+    tags: ["vibe", "aura", "energy", "quick"]
   },
   {
     id: "daily-horoscope",
@@ -56,6 +56,14 @@ const services = [
     icon: <Book className="h-6 w-6 text-accent" />,
     path: "/journal",
     tags: ["Reflection", "Growth", "Tracking"]
+  },
+  {
+    id: "find-healers",
+    title: "Find Healers",
+    description: "Connect with professional spiritual healers and book personalized consultation sessions.",
+    icon: <Users className="h-6 w-6 text-pink-500" />,
+    path: "/healers",
+    tags: ["Healers", "Consultation", "Guidance"]
   }
 ];
 

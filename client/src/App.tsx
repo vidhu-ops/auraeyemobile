@@ -24,6 +24,7 @@ import ForgotPassword from "@/pages/forgot-password";
 import MeditationsPage from "@/pages/meditations";
 import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
+import VibePage from "@/pages/vibe";
 import { AuthProvider } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/login" component={AuthPage} />
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/services" component={Services} />
+      <ProtectedRoute path="/vibe" component={VibePage} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
