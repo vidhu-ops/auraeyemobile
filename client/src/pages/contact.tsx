@@ -1,5 +1,4 @@
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ContactForm from "@/components/forms/contact-form";
 import { Card } from "@/components/ui/card";
@@ -21,15 +20,15 @@ export default function Contact() {
           />
           
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4 text-center">Connect With Us</h1>
-            <p className="text-white/80 max-w-2xl mx-auto text-center">
+            <h1 className="font-heading font-bold text-3xl md:text-4xl text-black mb-4 text-center">Connect With Us</h1>
+            <p className="text-black/80 max-w-2xl mx-auto text-center">
               Have questions about our services or need spiritual guidance? Reach out to our team of experts.
             </p>
           </div>
         </section>
         
         {/* Contact section */}
-        <section className="py-12 bg-gradient-to-br from-primary to-secondary">
+        <section className="py-12 bg-gradient-to-br from-purple to-blue">
           <div className="container mx-auto px-2">
             <div className="max-w-5xl mx-auto">
               <Card className="rounded-2xl shadow-xl overflow-hidden">
@@ -130,7 +129,7 @@ export default function Contact() {
         </section>
       </main>
       
-      <Footer />
+      
     </div>
   );
 }
