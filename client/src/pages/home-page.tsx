@@ -3,14 +3,19 @@ import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
+import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu, Camera, Star, Book, Calculator, Users, Home, LogOut, Settings } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
+import { useState } from "react";
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
+  const { credits, isLoading: creditsLoading } = useCredits();
+  const [menuOpen, setMenuOpen] = useState(false);
   
   // Calculate tree growth: 5% per 10 soul energy points
   const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
@@ -45,9 +50,109 @@ export default function HomePage() {
           <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
             <Wifi className="h-4 w-4 text-green-400" />
           </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
-            <Menu className="h-4 w-4 text-white" />
-          </button>
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
+                <Menu className="h-4 w-4 text-white" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-slate-900 text-white border-l-slate-700">
+              <SheetHeader>
+                <SheetTitle className="text-white flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
+                    <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                  <span>AuraEye™</span>
+                </SheetTitle>
+              </SheetHeader>
+              
+              <div className="mt-6 space-y-4">
+                {/* User Info */}
+                {user && (
+                  <div className="bg-slate-800 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-slate-400">Signed in as</p>
+                    <p className="font-semibold text-white">{user.username}</p>
+                    <div className="mt-2 flex gap-4">
+                      <div>
+                        <p className="text-xs text-slate-400">Credits</p>
+                        <p className="text-lg font-bold text-cyan-400">{credits}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400">Soul Energy</p>
+                        <p className="text-lg font-bold text-purple-400">{soulEnergy}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Menu Items */}
+                <Link href="/" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-home">
+                    <Home className="h-5 w-5 text-cyan-400" />
+                    <span>Home</span>
+                  </div>
+                </Link>
+                
+                <Link href="/aura-analysis" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-aura">
+                    <Camera className="h-5 w-5 text-purple-400" />
+                    <span>Aura Analysis</span>
+                  </div>
+                </Link>
+                
+                <Link href="/daily-horoscope" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-horoscope">
+                    <Star className="h-5 w-5 text-yellow-400" />
+                    <span>Horoscope</span>
+                  </div>
+                </Link>
+                
+                <Link href="/numerology" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-numerology">
+                    <Calculator className="h-5 w-5 text-indigo-400" />
+                    <span>Numerology</span>
+                  </div>
+                </Link>
+                
+                <Link href="/journal" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-journal">
+                    <Book className="h-5 w-5 text-green-400" />
+                    <span>Spiritual Journal</span>
+                  </div>
+                </Link>
+                
+                <Link href="/healers" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-healers">
+                    <Users className="h-5 w-5 text-pink-400" />
+                    <span>Find Healers</span>
+                  </div>
+                </Link>
+                
+                <div className="border-t border-slate-700 my-4"></div>
+                
+                <Link href="/client-dashboard" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-dashboard">
+                    <Settings className="h-5 w-5 text-slate-400" />
+                    <span>Dashboard</span>
+                  </div>
+                </Link>
+                
+                {user && (
+                  <button
+                    onClick={() => {
+                      logout?.();
+                      setMenuOpen(false);
+                    }}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer w-full text-left"
+                    data-testid="menu-logout"
+                  >
+                    <LogOut className="h-5 w-5 text-red-400" />
+                    <span>Logout</span>
+                  </button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
@@ -206,6 +311,83 @@ export default function HomePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Services */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-5 w-5 text-indigo-600" />
+            <h2 className="text-slate-800 font-semibold">Quick Services</h2>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Link href="/aura-analysis">
+              <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200 hover:shadow-md transition-all cursor-pointer" data-testid="service-aura">
+                <CardContent className="p-4 text-center">
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
+                    <Camera className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-slate-800">Aura Analysis</h3>
+                  <p className="text-xs text-slate-600 mt-1">15 credits</p>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link href="/daily-horoscope">
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200 hover:shadow-md transition-all cursor-pointer" data-testid="service-horoscope">
+                <CardContent className="p-4 text-center">
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center">
+                    <Star className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-slate-800">Horoscope</h3>
+                  <p className="text-xs text-slate-600 mt-1">Free</p>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link href="/numerology">
+              <Card className="bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200 hover:shadow-md transition-all cursor-pointer" data-testid="service-numerology">
+                <CardContent className="p-4 text-center">
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
+                    <Calculator className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-slate-800">Numerology</h3>
+                  <p className="text-xs text-slate-600 mt-1">5 credits</p>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link href="/healers">
+              <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200 hover:shadow-md transition-all cursor-pointer" data-testid="service-healers">
+                <CardContent className="p-4 text-center">
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-slate-800">Find Healers</h3>
+                  <p className="text-xs text-slate-600 mt-1">3 credits</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
+        {/* What's My Vibe - Quick Scan */}
+        <Card className="bg-gradient-to-br from-purple-100 to-pink-100 border-purple-200 mb-4 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-6 w-6 text-purple-600" />
+              <h2 className="text-purple-900 font-bold text-lg">What's My Vibe?</h2>
+            </div>
+            <p className="text-purple-700 text-sm mb-4">
+              Quick aura color reading for just 1 credit! Upload your photo to discover your dominant energy.
+            </p>
+            <Link href="/aura-analysis">
+              <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700" data-testid="button-vibe-check">
+                <Camera className="h-4 w-4 mr-2" />
+                Start Vibe Check (1 credit)
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         {/* Energy Milestones */}
         <div className="mb-4">
