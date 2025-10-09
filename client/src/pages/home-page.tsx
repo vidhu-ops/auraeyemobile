@@ -12,7 +12,7 @@ import logoImage from "@assets/new-logo.jpeg";
 import { useState } from "react";
 
 export default function HomePage() {
-  const { user, logout } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -140,7 +140,7 @@ export default function HomePage() {
                 {user && (
                   <button
                     onClick={() => {
-                      logout?.();
+                      logoutMutation.mutate();
                       setMenuOpen(false);
                     }}
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer w-full text-left"
