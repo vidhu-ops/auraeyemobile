@@ -9,6 +9,7 @@ import ImageUpload from "@/components/forms/image-upload";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
 import logoImage from "@assets/new-logo.jpeg";
 
 interface VibeResult {
@@ -29,6 +30,7 @@ export default function VibePage() {
   const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<'positive' | 'negative' | null>(null);
+  const [showPremiumVideo, setShowPremiumVideo] = useState(false);
 
   const handleImageSelect = async (file: File) => {
     if (!user) {
@@ -284,7 +286,10 @@ export default function VibePage() {
                   <p className="text-xs text-slate-500 mb-4">
                     Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report
                   </p>
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button 
+                    onClick={() => setShowPremiumVideo(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
                     <Play className="mr-2 h-4 w-4" />
                     Watch Now
                   </Button>
@@ -366,9 +371,11 @@ export default function VibePage() {
                 <p className="text-sm text-purple-700 mb-4">
                   Full Aura + Chakra Numerology + Weekly Plan + Daily Scans + talent management
                 </p>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white mb-3">
-                  Upgrade Now
-                </Button>
+                <Link href="/pricing">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white mb-3">
+                    Upgrade Now
+                  </Button>
+                </Link>
                 <p className="text-xs text-purple-600 flex items-center gap-1">
                   <Zap className="h-3 w-3" />
                   One-tap connection or upgrade
@@ -383,9 +390,11 @@ export default function VibePage() {
                 <p className="text-sm text-pink-700 mb-4">
                   Everything in Pro + Object 1st Scans + Professional listing + Recommended against in our list of healers
                 </p>
-                <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white mb-3">
-                  Upgrade Elite
-                </Button>
+                <Link href="/pricing">
+                  <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white mb-3">
+                    Upgrade Elite
+                  </Button>
+                </Link>
                 <p className="text-xs text-pink-600 flex items-center gap-1">
                   <Zap className="h-3 w-3" />
                   Bonus: 3 object scans on first upgrade
@@ -417,6 +426,12 @@ export default function VibePage() {
       </div>
       
       <Footer />
+      
+      {/* Premium Video Modal */}
+      <PremiumContentVideoModal 
+        isOpen={showPremiumVideo} 
+        onClose={() => setShowPremiumVideo(false)} 
+      />
     </div>
   );
 }
