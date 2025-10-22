@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -25,9 +25,11 @@ import MeditationsPage from "@/pages/meditations";
 import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
+import { LightsProvider, useLights } from "@/hooks/use-lights";
 import { ProtectedRoute } from "./lib/protected-route";
+import LightsActivation from "@/components/lights-activation";
 
 function Router() {
   return (
@@ -60,18 +62,37 @@ function Router() {
   );
 }
 
+function AppContent() {
+  const { user, isLoading } = useAuth();
+  const { lightsOn } = useLights();
+  const [location] = useLocation();
+
+  // Public routes that don't require lights activation
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm'];
+  const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
+
+  // Show lights activation only if user is logged in, not on a public route, and lights are off
+  if (user && !isPublicRoute && !lightsOn && !isLoading) {
+    return <LightsActivation />;
+  }
+
+  return <Router />;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <PremiumProvider>
-          <TooltipProvider>
-            <Toaster />
-            <div className="min-h-screen flex flex-col">
-              <Router />
-            </div>
-          </TooltipProvider>
-        </PremiumProvider>
+        <LightsProvider>
+          <PremiumProvider>
+            <TooltipProvider>
+              <Toaster />
+              <div className="min-h-screen flex flex-col">
+                <AppContent />
+              </div>
+            </TooltipProvider>
+          </PremiumProvider>
+        </LightsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
