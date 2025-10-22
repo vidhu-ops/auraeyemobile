@@ -69,7 +69,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your username" {...field} />
+                        <Input placeholder="" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -83,7 +83,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter your password" {...field} />
+                        <Input type="password" placeholder="" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
