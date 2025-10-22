@@ -13,6 +13,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { 
   Calendar, 
   CheckCircle, 
@@ -35,7 +36,12 @@ import {
   X,
   Plus,
   FileText,
-  Key
+  Key,
+  Sparkles,
+  Zap,
+  Heart,
+  Camera,
+  Circle
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
@@ -1820,7 +1826,16 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
 export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
+  const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Calculate tree growth: 5% per 10 soul energy points
+  const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
+  const baseGrowth = 50; // Starting growth percentage
+  const totalTreeGrowth = Math.min(100, baseGrowth + treeGrowthFromSoulEnergy);
+  
+  // Calculate number of green circles based on growth level
+  const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
   const [bookingTab, setBookingTab] = useState("pending");
   
   // Handle URL parameters for tab navigation
@@ -2098,8 +2113,9 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
@@ -2167,6 +2183,80 @@ export default function HealerDashboard() {
             </Card>
           </div>
 
+          {/* Quick Services */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+                Quick Services
+              </CardTitle>
+              <CardDescription>Access spiritual services and tools</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <Link href="/vibe">
+                  <Card className="bg-gradient-to-br from-violet-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Circle className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">What's My Vibe</div>
+                      <div className="text-purple-200 text-xs">Quick scan</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/aura-analysis">
+                  <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Camera className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">Aura Scan</div>
+                      <div className="text-indigo-200 text-xs">Full analysis</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/numerology">
+                  <Card className="bg-gradient-to-br from-cyan-500 to-blue-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Calculator className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">Numerology</div>
+                      <div className="text-cyan-200 text-xs">Life path</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/object-analysis">
+                  <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Eye className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">Object Scan</div>
+                      <div className="text-amber-200 text-xs">Spiritual analysis</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/daily-horoscope">
+                  <Card className="bg-gradient-to-br from-pink-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Sparkles className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">Horoscope</div>
+                      <div className="text-pink-200 text-xs">Daily reading</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                <Link href="/healers">
+                  <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <Users className="h-8 w-8 text-white mx-auto mb-2" />
+                      <div className="text-white font-semibold mb-1 text-sm">Find Healers</div>
+                      <div className="text-green-200 text-xs">Network</div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Recent Activity */}
           <Card>
             <CardHeader>
@@ -2193,6 +2283,141 @@ export default function HealerDashboard() {
                   )}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Soul Energy Tab */}
+        <TabsContent value="soul-energy" className="space-y-6">
+          {/* Light Tree of Wisdom */}
+          <Card className="bg-gradient-to-br from-green-50 to-cyan-50 border-green-200 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-5 w-5 text-green-600" />
+                <h2 className="text-green-800 font-semibold">Light Tree of Wisdom</h2>
+              </div>
+              
+              {/* Soul Energy Display */}
+              <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-4 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-purple-600" />
+                    <span className="text-slate-700 font-semibold">Soul Energy</span>
+                  </div>
+                  <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
+                </div>
+                <div className="text-xs text-slate-600">
+                  {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
+                </div>
+                <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
+              </div>
+              
+              <div className="flex flex-col items-center py-6">
+                {/* Tree visualization */}
+                <div className="relative mb-4">
+                  <div className="w-24 h-32 relative flex items-end justify-center">
+                    {/* Tree trunk */}
+                    <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
+                    {/* Tree foliage - dynamic circles based on growth */}
+                    <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
+                      <div className="relative w-20 h-20">
+                        {/* Base circles */}
+                        <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
+                        <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
+                        <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
+                        
+                        {/* Additional circles based on growth */}
+                        {numberOfCircles >= 4 && (
+                          <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
+                        )}
+                        {numberOfCircles >= 5 && (
+                          <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
+                        )}
+                        {numberOfCircles >= 6 && (
+                          <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
+                        )}
+                        {numberOfCircles >= 7 && (
+                          <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
+                        )}
+                      </div>
+                    </div>
+                    {/* Sparkles */}
+                    <Sparkles className="h-4 w-4 text-yellow-400 absolute top-0 left-2 animate-pulse" />
+                    <Sparkles className="h-3 w-3 text-yellow-300 absolute top-8 right-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                    <Sparkles className="h-3 w-3 text-yellow-400 absolute bottom-16 left-0 animate-pulse" style={{ animationDelay: '1s' }} />
+                  </div>
+                </div>
+
+                <h3 className="text-slate-700 font-semibold mb-2">Tree Growth</h3>
+                <div className="text-green-600 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
+                
+                <div className="flex items-center gap-1 text-green-700 text-sm">
+                  <Sparkles className="h-4 w-4" />
+                  <span>Your tree is flourishing with spiritual energy!</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Energy Sources */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-purple-600" />
+                Energy Sources
+              </CardTitle>
+              <CardDescription>Gain soul energy through spiritual services and client interactions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                      <Camera className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-slate-800 font-semibold">Aura Analysis</h3>
+                      <p className="text-slate-600 text-xs">+5 energy per reading</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-cyan-100 to-blue-100 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                      <Circle className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-slate-800 font-semibold">Vibe Check</h3>
+                      <p className="text-slate-600 text-xs">+2 energy per scan</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <Calculator className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-slate-800 font-semibold">Numerology</h3>
+                      <p className="text-slate-600 text-xs">+3 energy per reading</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                      <Users className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-slate-800 font-semibold">Client Sessions</h3>
+                      <p className="text-slate-600 text-xs">+10 energy per booking</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
