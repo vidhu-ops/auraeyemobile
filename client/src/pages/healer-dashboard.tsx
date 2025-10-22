@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -2113,7 +2114,8 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
@@ -2121,6 +2123,376 @@ export default function HealerDashboard() {
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
         </TabsList>
+
+        {/* Profile Tab */}
+        <TabsContent value="profile" className="space-y-6">
+          {/* Profile Header Card */}
+          <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Avatar and Basic Info */}
+                <div className="flex flex-col items-center md:items-start gap-4">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg">
+                    {user?.username?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h2 className="text-2xl font-bold text-gray-900">{user?.username}</h2>
+                    <p className="text-purple-600 font-medium">Professional Healer</p>
+                    <Badge className="mt-2 bg-green-100 text-green-800 border-green-300">Active</Badge>
+                  </div>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="h-5 w-5 text-blue-600" />
+                      <span className="text-xs text-gray-600">Total Clients</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{analytics?.totalClients || 0}</div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <span className="text-xs text-gray-600">Sessions</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{analytics?.acceptedBookings || 0}</div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-5 w-5 text-purple-600" />
+                      <span className="text-xs text-gray-600">Success Rate</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{analytics?.acceptanceRate?.toFixed(0) || 0}%</div>
+                  </div>
+
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="h-5 w-5 text-yellow-600" />
+                      <span className="text-xs text-gray-600">Soul Energy</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{soulEnergy}</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Streaks and Progress */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Activity Streaks */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-orange-600" />
+                  Activity Streaks
+                </CardTitle>
+                <CardDescription>Your consistency and dedication</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Current Streak</span>
+                    <span className="text-3xl">🔥</span>
+                  </div>
+                  <div className="text-3xl font-bold text-orange-600 mb-1">
+                    {Math.floor(soulEnergy / 20)} days
+                  </div>
+                  <p className="text-xs text-gray-600">Keep your momentum going!</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Longest Streak</span>
+                    <span className="text-3xl">⭐</span>
+                  </div>
+                  <div className="text-3xl font-bold text-purple-600 mb-1">
+                    {Math.floor(soulEnergy / 15)} days
+                  </div>
+                  <p className="text-xs text-gray-600">Your personal best</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Weekly Active Days</span>
+                    <span className="text-3xl">📅</span>
+                  </div>
+                  <div className="text-3xl font-bold text-green-600 mb-1">
+                    {Math.min(7, Math.floor(soulEnergy / 30) + 5)} / 7
+                  </div>
+                  <p className="text-xs text-gray-600">This week's progress</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Progress & Achievements */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Progress & Achievements
+                </CardTitle>
+                <CardDescription>Your spiritual journey milestones</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white">
+                      <Users className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Client Master</span>
+                        <span className="text-xs font-semibold text-blue-600">{analytics?.totalClients || 0}/50</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all"
+                          style={{ width: `${Math.min(100, ((analytics?.totalClients || 0) / 50) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white">
+                      <CheckCircle className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Session Expert</span>
+                        <span className="text-xs font-semibold text-green-600">{analytics?.acceptedBookings || 0}/100</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-green-400 to-emerald-600 rounded-full transition-all"
+                          style={{ width: `${Math.min(100, ((analytics?.acceptedBookings || 0) / 100) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white">
+                      <Heart className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Spiritual Guide</span>
+                        <span className="text-xs font-semibold text-purple-600">{Math.min(100, Math.floor(analytics?.acceptanceRate || 0))}%</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all"
+                          style={{ width: `${Math.min(100, analytics?.acceptanceRate || 0)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center text-white">
+                      <Zap className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Energy Guardian</span>
+                        <span className="text-xs font-semibold text-orange-600">{soulEnergy}/500</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-yellow-400 to-orange-600 rounded-full transition-all"
+                          style={{ width: `${Math.min(100, (soulEnergy / 500) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Soul Tree & History */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Light Tree of Wisdom */}
+            <Card className="bg-gradient-to-br from-green-50 to-cyan-50 border-green-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-green-600" />
+                  Light Tree of Wisdom
+                </CardTitle>
+                <CardDescription>Your spiritual growth visualization</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center py-6">
+                  {/* Tree visualization */}
+                  <div className="relative mb-4">
+                    <div className="w-24 h-32 relative flex items-end justify-center">
+                      {/* Tree trunk */}
+                      <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
+                      {/* Tree foliage */}
+                      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
+                        <div className="relative w-20 h-20">
+                          <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
+                          <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
+                          <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
+                          {numberOfCircles >= 4 && (
+                            <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
+                          )}
+                          {numberOfCircles >= 5 && (
+                            <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
+                          )}
+                          {numberOfCircles >= 6 && (
+                            <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
+                          )}
+                          {numberOfCircles >= 7 && (
+                            <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
+                          )}
+                        </div>
+                      </div>
+                      <Sparkles className="h-4 w-4 text-yellow-400 absolute top-0 left-2 animate-pulse" />
+                      <Sparkles className="h-3 w-3 text-yellow-300 absolute top-8 right-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                      <Sparkles className="h-3 w-3 text-yellow-400 absolute bottom-16 left-0 animate-pulse" style={{ animationDelay: '1s' }} />
+                    </div>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="text-green-600 text-sm font-medium mb-2">{totalTreeGrowth}% Complete</div>
+                    <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">Soul Energy</span>
+                        <span className="text-lg font-bold text-purple-600">{soulEnergy}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity History */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-indigo-600" />
+                  Recent Activity
+                </CardTitle>
+                <CardDescription>Your latest spiritual services</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {analytics && analytics.acceptedBookings > 0 ? (
+                    <>
+                      <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Accepted Session</p>
+                          <p className="text-xs text-gray-600">Client booking accepted</p>
+                        </div>
+                        <span className="text-xs text-gray-500">Recent</span>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <Eye className="h-5 w-5 text-purple-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Aura Reading Completed</p>
+                          <p className="text-xs text-gray-600">+5 Soul Energy</p>
+                        </div>
+                        <span className="text-xs text-gray-500">Today</span>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+                        <div className="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center">
+                          <Calculator className="h-5 w-5 text-cyan-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Numerology Analysis</p>
+                          <p className="text-xs text-gray-600">+3 Soul Energy</p>
+                        </div>
+                        <span className="text-xs text-gray-500">Yesterday</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Activity className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                      <p className="text-gray-500">No recent activity</p>
+                      <p className="text-xs text-gray-400 mt-2">Start accepting bookings to see your activity</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Services Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-purple-600" />
+                Services Overview
+              </CardTitle>
+              <CardDescription>Your spiritual services breakdown</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Eye className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Aura Readings</p>
+                      <p className="text-xl font-bold text-gray-900">{healerAuraReadings?.length || 0}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center">
+                      <Calculator className="h-6 w-6 text-cyan-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Numerology</p>
+                      <p className="text-xl font-bold text-gray-900">{healerNumerologyReadings?.length || 0}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                      <Circle className="h-6 w-6 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Vibe Checks</p>
+                      <p className="text-xl font-bold text-gray-900">{healerVibeReadings?.length || 0}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                      <Users className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Total Services</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {(healerAuraReadings?.length || 0) + (healerNumerologyReadings?.length || 0) + (healerVibeReadings?.length || 0)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
@@ -2684,34 +3056,6 @@ export default function HealerDashboard() {
                                       currentY += 6;
                                     });
                                     
-                                    // Add healer notes if they exist
-                                    if (reading.healerNotes) {
-                                      currentY += 10;
-                                      
-                                      if (currentY > 250) {
-                                        pdf.addPage();
-                                        currentY = 20;
-                                      }
-                                      
-                                      pdf.setFontSize(14);
-                                      pdf.setTextColor(255, 140, 0); // Orange color for healer notes
-                                      pdf.text("Professional Healer Notes", 20, currentY);
-                                      currentY += 10;
-                                      
-                                      pdf.setFontSize(10);
-                                      pdf.setTextColor(0, 0, 0);
-                                      const healerNotesText = pdf.splitTextToSize(reading.healerNotes, 170);
-                                      
-                                      healerNotesText.forEach((line: string) => {
-                                        if (currentY > 280) {
-                                          pdf.addPage();
-                                          currentY = 20;
-                                        }
-                                        pdf.text(line, 20, currentY);
-                                        currentY += 6;
-                                      });
-                                    }
-                                    
                                     // Save the PDF
                                     pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
                                   }}
@@ -2747,17 +3091,6 @@ export default function HealerDashboard() {
                             <div className="p-3 bg-white rounded-lg border">
                                 <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
                             </div>
-
-                            {/* Healer Notes Section */}
-                            {reading.healerNotes && (
-                              <div className="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                                <h4 className="font-medium text-orange-800 mb-2 flex items-center gap-2">
-                                  <FileText className="h-4 w-4" />
-                                  Professional Notes
-                                </h4>
-                                <p className="text-sm text-gray-700">{reading.healerNotes}</p>
-                              </div>
-                            )}
                         </div>
                     ))}
                   </div>
