@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
+import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -18,17 +19,28 @@ import {
   TrendingUp,
   Heart,
   Users,
-  Activity
+  Activity,
+  Sparkles,
+  Circle
 } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
+  const { credits, isLoading: creditsLoading } = useCredits();
   
   const [activeTab, setActiveTab] = useState("overview");
 
   const tabs = ["Overview", "Soul Energy", "Bookings", "Activity", "Settings"];
+  
+  // Calculate tree growth: 5% per 10 soul energy points
+  const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
+  const baseGrowth = 50; // Starting growth percentage
+  const totalTreeGrowth = Math.min(100, baseGrowth + treeGrowthFromSoulEnergy);
+  
+  // Calculate number of green circles based on growth level
+  const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 relative overflow-hidden">
@@ -96,16 +108,16 @@ export default function ClientDashboard() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-pink">0</div>
-                <div className="text-xs text-purple-600">Credits</div>
+                <div className="text-2xl font-bold text-white">{creditsLoading ? '...' : credits}</div>
+                <div className="text-xs text-purple-100">Credits</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-pink">87%</div>
-                <div className="text-xs text-purple-600">Wellness Score</div>
+                <div className="text-2xl font-bold text-white">{soulEnergyLoading ? '...' : soulEnergy}</div>
+                <div className="text-xs text-purple-100">Soul Energy</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-pink">12</div>
-                <div className="text-xs text-purple-600">Day Streak</div>
+                <div className="text-2xl font-bold text-white">{totalTreeGrowth}%</div>
+                <div className="text-xs text-purple-100">Tree Growth</div>
               </div>
             </div>
           </CardContent>
@@ -128,6 +140,76 @@ export default function ClientDashboard() {
             </button>
           ))}
         </div>
+
+        {/* Light Tree of Wisdom */}
+        <Card className="bg-gradient-to-br from-green-50 to-cyan-50 border-green-200 mb-4 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-green-600" />
+              <h2 className="text-green-800 font-semibold">Light Tree of Wisdom</h2>
+            </div>
+            
+            {/* Soul Energy Display */}
+            <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                  <span className="text-slate-700 font-semibold">Soul Energy</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
+              </div>
+              <div className="text-xs text-slate-600">
+                {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
+              </div>
+              <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
+            </div>
+            
+            <div className="flex flex-col items-center py-6">
+              {/* Tree visualization */}
+              <div className="relative mb-4">
+                <div className="w-24 h-32 relative flex items-end justify-center">
+                  {/* Tree trunk */}
+                  <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
+                  {/* Tree foliage - dynamic circles based on growth */}
+                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
+                    <div className="relative w-20 h-20">
+                      {/* Base circles */}
+                      <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
+                      <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
+                      <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
+                      
+                      {/* Additional circles based on growth */}
+                      {numberOfCircles >= 4 && (
+                        <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 5 && (
+                        <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 6 && (
+                        <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
+                      )}
+                      {numberOfCircles >= 7 && (
+                        <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Sparkles */}
+                  <Sparkles className="h-4 w-4 text-yellow-400 absolute top-0 left-2 animate-pulse" />
+                  <Sparkles className="h-3 w-3 text-yellow-300 absolute top-8 right-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <Sparkles className="h-3 w-3 text-yellow-400 absolute bottom-16 left-0 animate-pulse" style={{ animationDelay: '1s' }} />
+                </div>
+              </div>
+
+              <h3 className="text-slate-700 font-semibold mb-2">Tree Growth</h3>
+              <div className="text-green-600 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
+              
+              <div className="flex items-center gap-1 text-green-700 text-sm">
+                <Sparkles className="h-4 w-4" />
+                <span>Your tree is flourishing with spiritual energy!</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Spiritual Journey Progress */}
         <div className="mb-4">
@@ -167,12 +249,22 @@ export default function ClientDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
+          <Link href="/vibe" data-testid="link-vibe">
+            <Card className="bg-gradient-to-br from-violet-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+              <CardContent className="p-4 text-center">
+                <Circle className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">What's My Vibe</div>
+                <div className="text-purple-200 text-xs">Quick scan</div>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href="/aura-analysis" data-testid="link-aura-scan">
             <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Camera className="h-8 w-8 text-black mx-auto mb-2" />
-                <div className="text-black font-semibold mb-1">Aura Scan</div>
-                <div className="text-purple-600 text-xs">Start reading</div>
+                <Camera className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">Aura Scan</div>
+                <div className="text-indigo-200 text-xs">Start reading</div>
               </CardContent>
             </Card>
           </Link>
@@ -180,9 +272,9 @@ export default function ClientDashboard() {
           <Link href="/meditations" data-testid="link-meditation">
             <Card className="bg-gradient-to-br from-pink-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Heart className="h-8 w-8 text-black mx-auto mb-2" />
-                <div className="text-black font-semibold mb-1">Meditation</div>
-                <div className="text-pink-600 text-xs">5 min session</div>
+                <Heart className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">Meditation</div>
+                <div className="text-pink-200 text-xs">5 min session</div>
               </CardContent>
             </Card>
           </Link>
@@ -190,9 +282,9 @@ export default function ClientDashboard() {
           <Link href="/healers" data-testid="link-healers">
             <Card className="bg-gradient-to-br from-cyan-500 to-blue-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Users className="h-8 w-8 text-black mx-auto mb-2" />
-                <div className="text-black font-semibold mb-1">Healers</div>
-                <div className="text-cyan-600 text-xs">Connect now</div>
+                <Users className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">Healers</div>
+                <div className="text-cyan-200 text-xs">Connect now</div>
               </CardContent>
             </Card>
           </Link>
@@ -200,9 +292,9 @@ export default function ClientDashboard() {
           <Link href="/journal" data-testid="link-journal">
             <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
-                <Activity className="h-8 w-8 text-black mx-auto mb-2" />
-                <div className="text-black font-semibold mb-1">Journal</div>
-                <div className="text-amber-600 text-xs">Track progress</div>
+                <Activity className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">Journal</div>
+                <div className="text-amber-200 text-xs">Track progress</div>
               </CardContent>
             </Card>
           </Link>

@@ -1,43 +1,47 @@
 import { Home, Heart, Circle, BookOpen, User } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-
-const navigationItems = [
-  {
-    name: "Home",
-    icon: Home,
-    href: "/",
-    dataTestId: "nav-home"
-  },
-  {
-    name: "Meditate", 
-    icon: Heart,
-    href: "/meditations",
-    dataTestId: "nav-meditate"
-  },
-  {
-    name: "Scan",
-    icon: Circle,
-    href: "/aura-analysis",
-    dataTestId: "nav-scan",
-    hasNotification: true
-  },
-  {
-    name: "Journal",
-    icon: BookOpen,
-    href: "/journal",
-    dataTestId: "nav-journal"
-  },
-  {
-    name: "Profile",
-    icon: User,
-    href: "/client-dashboard",
-    dataTestId: "nav-profile"
-  }
-];
+import { useAuth } from "@/hooks/use-auth";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
+  const { user } = useAuth();
+  
+  const isHealer = user?.userType === "healer";
+  
+  const navigationItems = [
+    {
+      name: "Home",
+      icon: Home,
+      href: "/",
+      dataTestId: "nav-home"
+    },
+    {
+      name: "Meditate", 
+      icon: Heart,
+      href: "/meditations",
+      dataTestId: "nav-meditate"
+    },
+    {
+      name: "Scan",
+      icon: Circle,
+      href: "/aura-analysis",
+      dataTestId: "nav-scan",
+      hasNotification: true
+    },
+    {
+      name: "Journal",
+      icon: BookOpen,
+      href: "/journal",
+      dataTestId: "nav-journal"
+    },
+    {
+      name: "Profile",
+      icon: User,
+      href: isHealer ? "/healer-dashboard" : "/client-dashboard",
+      dataTestId: "nav-profile"
+    }
+  ];
 
   return (
     <nav 
