@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useLights } from "@/hooks/use-lights";
 
 export default function LightsActivation() {
@@ -83,7 +83,38 @@ export default function LightsActivation() {
         {!isAnimating ? (
           <>
             <div className="mb-6">
-              <Lightbulb className="h-24 w-24 text-purple-400 mx-auto mb-4 opacity-50" />
+              {/* Custom Glowing Orb */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-32 h-32">
+                  {/* Outer glow layers */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-indigo-500 to-purple-600 blur-2xl opacity-50 animate-pulse"></div>
+                  <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-indigo-400 via-purple-400 to-purple-500 blur-xl opacity-60 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                  
+                  {/* Main orb */}
+                  <div 
+                    className="absolute inset-4 rounded-full transform"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.6), rgba(99, 102, 241, 0.6), rgba(147, 51, 234, 0.6))',
+                      backgroundSize: '200% 200%',
+                      animation: 'float 4s ease-in-out infinite, gradient-shift 8s ease infinite',
+                      boxShadow: `
+                        0 0 40px rgba(168, 85, 247, 0.5),
+                        0 0 60px rgba(99, 102, 241, 0.3),
+                        inset 0 0 40px rgba(255, 255, 255, 0.2),
+                        inset 10px 10px 40px rgba(255, 255, 255, 0.3)
+                      `
+                    }}
+                  >
+                    {/* Inner highlight */}
+                    <div 
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 50%)'
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
               <h1 className="text-4xl font-bold text-white mb-2">Welcome to AuraEye</h1>
               <p className="text-purple-300 text-lg">Your spiritual wellness journey awaits</p>
             </div>
@@ -102,10 +133,46 @@ export default function LightsActivation() {
           </>
         ) : (
           <div className="text-center">
-            <div className="relative">
-              <Lightbulb className="h-32 w-32 text-yellow-400 mx-auto animate-pulse" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-40 h-40 bg-yellow-400 rounded-full opacity-20 animate-ping"></div>
+            {/* Activated Glowing Orb */}
+            <div className="flex justify-center mb-6">
+              <div className="relative w-40 h-40">
+                {/* Intense outer glows */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-yellow-500 blur-3xl opacity-70 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-full bg-yellow-400 opacity-30 animate-ping"></div>
+                
+                {/* Main activated orb */}
+                <div 
+                  className="absolute inset-6 rounded-full transform animate-pulse"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.95), rgba(249, 115, 22, 0.95), rgba(234, 179, 8, 0.95))',
+                    backgroundSize: '200% 200%',
+                    animation: 'float 2s ease-in-out infinite, gradient-shift 4s ease infinite, pulse 1s ease-in-out infinite',
+                    boxShadow: `
+                      0 0 60px rgba(251, 191, 36, 0.9),
+                      0 0 100px rgba(249, 115, 22, 0.7),
+                      inset 0 0 50px rgba(255, 255, 255, 0.4),
+                      inset 15px 15px 50px rgba(255, 255, 255, 0.5)
+                    `
+                  }}
+                >
+                  {/* Bright inner highlight */}
+                  <div 
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), transparent 50%)'
+                    }}
+                  ></div>
+                </div>
+
+                {/* Energy rings */}
+                <div 
+                  className="absolute inset-8 rounded-full border-2 border-yellow-300/50"
+                  style={{ animation: 'spin 3s linear infinite' }}
+                ></div>
+                <div 
+                  className="absolute inset-10 rounded-full border-2 border-orange-400/30"
+                  style={{ animation: 'spin 2s linear infinite reverse' }}
+                ></div>
               </div>
             </div>
             <p className="text-white text-2xl font-semibold mt-6 animate-pulse">
