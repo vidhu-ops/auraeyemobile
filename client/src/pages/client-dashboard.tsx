@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
+  Sheet,
+  SheetContent,
+  SheetTrigger
+} from "@/components/ui/sheet";
+import {
   MapPin,
   Calendar,
   Camera,
@@ -21,16 +26,36 @@ import {
   Users,
   Activity,
   Sparkles,
-  Circle
+  Circle,
+  LogOut,
+  CreditCard
 } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 
 export default function ClientDashboard() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   
   const [activeTab, setActiveTab] = useState("overview");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    setMenuOpen(false);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Healers", href: "/healers" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   const tabs = ["Overview", "Soul Energy", "Bookings", "Activity", "Settings"];
   
@@ -67,9 +92,49 @@ export default function ClientDashboard() {
           <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
             <Wifi className="h-4 w-4 text-green-400" />
           </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
-            <Menu className="h-4 w-4 text-white" />
-          </button>
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
+                <Menu className="h-4 w-4 text-white" />
+              </button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="flex flex-col space-y-4 mt-8">
+                {navLinks.map((link) => (
+                  <Link 
+                    key={link.name} 
+                    href={link.href} 
+                    onClick={closeMenu}
+                    className="py-2 px-2 rounded-lg text-gray-600 hover:text-primary hover:bg-gray-50"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
+                    <CreditCard className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{credits} credits</span>
+                  </div>
+                  <Link 
+                    href="/client-dashboard" 
+                    onClick={closeMenu}
+                    className="block py-2 px-2 rounded-lg text-primary font-medium"
+                  >
+                    My Dashboard
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2 mt-2"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
