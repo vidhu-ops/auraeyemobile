@@ -263,9 +263,9 @@ export default function Mascot() {
 
   const getMascotFace = (emotion: 'happy' | 'neutral' | 'excited' = 'happy') => {
     const faces = {
-      happy: { eyes: '• ‿ •', mouth: '‿' },
-      neutral: { eyes: '• – •', mouth: '–' },
-      excited: { eyes: '• ᴗ •', mouth: 'ᴗ' }
+      happy: { eyes: '• •', mouth: '‿' },
+      neutral: { eyes: '• •', mouth: '–' },
+      excited: { eyes: '• •', mouth: 'ᴗ' }
     };
     return faces[emotion];
   };
