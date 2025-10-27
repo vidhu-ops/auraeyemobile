@@ -115,6 +115,14 @@ export default function HomePage() {
 
       {/* Main content */}
       <div className="relative z-10 pb-32 px-4 pt-4">
+        {/* Welcome Section */}
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+            Hello, Welcome to Your Spiritual Space
+          </h1>
+          <p className="text-gray-600 text-sm">Your journey to inner peace and enlightenment begins here</p>
+        </div>
+
         {/* Light Tree of Wisdom */}
         <Card className="bg-gradient-to-br from-green-50 to-cyan-50 border-green-200 mb-4 shadow-sm">
           <CardContent className="p-6">
