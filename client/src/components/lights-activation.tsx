@@ -18,7 +18,7 @@ export default function LightsActivation() {
 
   return (
     <div 
-      className={`fixed inset-0 flex items-center justify-center transition-all duration-1500 ${
+      className={`fixed inset-0 flex items-center justify-center transition-all duration-2500 ${
         isAnimating 
           ? 'bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900' 
           : 'bg-black'
@@ -32,17 +32,14 @@ export default function LightsActivation() {
           0% {
             background: #000000;
           }
-          10% {
+          20% {
             background: linear-gradient(to bottom right, #1e1b4b, #312e81, #1e3a8a);
           }
           40% {
-            background: linear-gradient(to bottom right, #451a03, #713f12, #854d0e);
-          }
-          70% {
-            background: linear-gradient(to bottom right, #a16207, #ca8a04, #eab308);
+            background: linear-gradient(to bottom right, #1e3a8a, #ca8a04, #eab308);
           }
           100% {
-            background: linear-gradient(to bottom right, #fef3c7, #fde68a, #fcd34d);
+            background: linear-gradient(to bottom right, #eab308, #fde68a, #fcd34d);
           }
           
         }
