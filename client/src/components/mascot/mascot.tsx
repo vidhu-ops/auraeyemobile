@@ -78,7 +78,7 @@ export default function Mascot() {
     if (path === "/") {
       if (scanColor) {
         return {
-          text: `Welcome back, ${username}! 💫 Your ${scanColor} aura is absolutely radiant today! Your energy signature is unique!`,
+          text: `Yay ${username}! ✨ Your beautiful ${scanColor} aura is shining so bright today! You're amazing!`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
@@ -88,14 +88,14 @@ export default function Mascot() {
       const creditThreshold = userType === 'healer' ? 30 : 20;
       if (credits < creditThreshold) {
         return {
-          text: `${username}, you're running low on energy! Only ${credits} credits left. Time to recharge! ⚡`,
+          text: `Oh no ${username}! 🥺 Only ${credits} credits left! Let's get you some more energy soon!`,
           color: "#f59e0b",
           emotion: 'neutral'
         };
       }
       
       return {
-        text: `Hey ${username}! 🌟 What spiritual adventure calls to you today? Your energy awaits!`,
+        text: `Hi ${username}! 🌸 I'm so happy to see you! What magical journey shall we take today?`,
         color: "#06b6d4",
         emotion: 'happy'
       };
@@ -105,13 +105,13 @@ export default function Mascot() {
     if (path.includes("dashboard")) {
       if (energy > 150) {
         return {
-          text: `Incredible, ${username}! Your ${energy} soul energy is blazing bright! 🔥 You're a beacon of light!`,
+          text: `WOW ${username}! 🎉 ${energy} soul energy?! You're absolutely glowing! I'm so proud of you!`,
           color: "#f59e0b",
           emotion: 'excited'
         };
       } else if (energy > 80) {
         return {
-          text: `${username}, your spiritual energy (${energy}) is flourishing! 🌱 I can feel your growth!`,
+          text: `Yay ${username}! 🌟 Your ${energy} soul energy is growing so beautifully! Keep shining!`,
           color: "#10b981",
           emotion: 'happy'
         };
@@ -120,14 +120,14 @@ export default function Mascot() {
       // Show color-based message if available
       if (scanColor) {
         return {
-          text: `${username}, your ${scanColor} aura shows you have ${energy} soul energy! Keep nurturing it! ✨`,
+          text: `${username}, your lovely ${scanColor} aura holds ${energy} soul energy! You're doing great! 💖`,
           color: getColorHex(scanColor),
           emotion: 'happy'
         };
       }
       
       return {
-        text: `${username}, your journey shows ${energy} soul energy! Every step matters! ✨`,
+        text: `${username}, I see ${energy} soul energy in you! Every moment of growth makes me happy! 🌸`,
         color: "#8b5cf6",
         emotion: 'neutral'
       };
@@ -137,8 +137,8 @@ export default function Mascot() {
     if (path.includes("aura") || path.includes("vibe")) {
       if (userType === 'healer') {
         const healerMessage = scanColor 
-          ? `${username}, your healing touch reveals ${scanColor} energy! Guide them to their truth! 💚`
-          : `${username}, use your gift to illuminate someone's soul! Your healing touch matters! 💚`;
+          ? `${username}, you revealed such a gorgeous ${scanColor} energy! You're an amazing healer! 💚✨`
+          : `${username}, your healing gift is so special! Let's help someone discover their light! 💚`;
         return {
           text: healerMessage,
           color: scanColor ? getColorHex(scanColor) : "#10b981",
@@ -149,14 +149,14 @@ export default function Mascot() {
       // Client messages with color memory
       if (scanColor) {
         return {
-          text: `${username}, your ${scanColor} aura was beautiful! Ready to see how your colors have evolved? 🎨✨`,
+          text: `Ooh ${username}! 🌈 Your ${scanColor} aura was SO pretty last time! Want to see your new colors?`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
       }
       
       return {
-        text: `${username}, let's discover your aura! Your colors hold the secrets of your soul! 🎨✨`,
+        text: `${username}, I can't wait to see your aura colors! This is going to be magical! 🎨💫`,
         color: "#ec4899",
         emotion: 'excited'
       };
@@ -228,14 +228,14 @@ export default function Mascot() {
     // Default message with color memory
     if (scanColor) {
       return {
-        text: `Hi ${username}! Your ${scanColor} aura energy (${energy}) is with you! What shall we explore? 🌟`,
+        text: `Hi ${username}! 💕 Your ${scanColor} aura is so special! With ${energy} soul energy, what adventure today?`,
         color: getColorHex(scanColor),
         emotion: 'happy'
       };
     }
     
     return {
-      text: `Hi ${username}! Your spiritual energy is at ${energy}! Ready to explore your path? 🌟`,
+      text: `Hello ${username}! 🌟 You have ${energy} soul energy! I'm here to help you shine brighter!`,
       color: "#06b6d4",
       emotion: 'happy'
     };
@@ -263,9 +263,9 @@ export default function Mascot() {
 
   const getMascotFace = (emotion: 'happy' | 'neutral' | 'excited' = 'happy') => {
     const faces = {
-      happy: { eyes: '• •', mouth: '‿' },
-      neutral: { eyes: '• •', mouth: '–' },
-      excited: { eyes: '• •', mouth: 'ᴗ' }
+      happy: { eyes: '◕ ◕', mouth: '◡' },
+      neutral: { eyes: '• •', mouth: '▽' },
+      excited: { eyes: '✧ ✧', mouth: '▿' }
     };
     return faces[emotion];
   };
@@ -336,11 +336,11 @@ export default function Mascot() {
         ></div>
 
         {/* Cute Face - DARKER FOR VISIBILITY */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-900 drop-shadow-sm">
-          <div className="text-2xl font-bold mb-1 transition-all duration-500" style={{ letterSpacing: '0.3em' }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-900 drop-shadow-sm" style={{ paddingBottom: '8px' }}>
+          <div className="text-2xl font-bold transition-all duration-500" style={{ letterSpacing: '0.4em', marginBottom: '2px' }}>
             {face.eyes}
           </div>
-          <div className="text-3xl transition-all duration-500">
+          <div className="text-2xl transition-all duration-500" style={{ marginTop: '-2px' }}>
             {face.mouth}
           </div>
         </div>
