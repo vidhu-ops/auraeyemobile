@@ -1,13 +1,18 @@
-import { Home, Heart, Circle, BookOpen, User } from "lucide-react";
+import { Home, Heart, Circle, BookOpen, User, LogOut } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   
   const isHealer = user?.userType === "healer";
+  
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
   
   const navigationItems = [
     {
@@ -61,7 +66,7 @@ export default function MobileNavigation() {
               key={item.name}
               href={item.href}
               className={cn(
-                "relative flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px]",
+                "relative flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all duration-200 min-w-[55px]",
                 isActive 
                   ? "bg-indigo-500/20" 
                   : ""
@@ -69,7 +74,7 @@ export default function MobileNavigation() {
               data-testid={item.dataTestId}
             >
               {item.hasNotification && (
-                <span className="absolute top-1 right-3 w-2 h-2 bg-pink-500 rounded-full"></span>
+                <span className="absolute top-1 right-2 w-2 h-2 bg-pink-500 rounded-full"></span>
               )}
               <Icon className={cn(
                 "h-6 w-6 mb-1 transition-colors", 
@@ -84,11 +89,23 @@ export default function MobileNavigation() {
             </Link>
           );
         })}
+        
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="relative flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all duration-200 min-w-[55px] hover:bg-red-500/20"
+          data-testid="nav-logout"
+        >
+          <LogOut className="h-6 w-6 mb-1 transition-colors text-red-400 hover:text-red-300" />
+          <span className="text-xs font-medium transition-colors text-red-400 hover:text-red-300">
+            Logout
+          </span>
+        </button>
       </div>
       
       {/* Navigation indicator dots */}
       <div className="flex justify-center gap-1 pb-2">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <div
             key={i}
             className={cn(
