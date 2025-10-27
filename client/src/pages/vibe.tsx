@@ -99,7 +99,7 @@ export default function VibePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
             <Sparkles className="h-12 w-12 mx-auto mb-4 text-purple-600" />
@@ -120,11 +120,11 @@ export default function VibePage() {
         <Navbar />
         
         {/* Hero Section */}
-        <div className="flex-grow bg-gradient-to-br from-purple-800 via-indigo-800 to-purple-900 relative overflow-hidden">
+        <div className="flex-grow bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
           {/* Decorative circles */}
           <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-40 right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-40 right-20 w-64 h-64 bg-teal-500/30 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl"></div>
           
           <div className="container mx-auto px-4 py-16 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
@@ -138,7 +138,7 @@ export default function VibePage() {
                 <span className="text-white"> . </span>
                 <span className="text-green-400">Transform</span>
               </h2>
-              <p className="text-lg md:text-xl text-purple-100 mb-12 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-cyan-100 mb-12 max-w-2xl mx-auto">
                 Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
               </p>
 
@@ -176,7 +176,7 @@ export default function VibePage() {
                       <h3 className="text-2xl font-bold text-white">Quick Vibe Check</h3>
                     </div>
                     
-                    <p className="text-purple-100 mb-6">
+                    <p className="text-cyan-100 mb-6">
                       Upload your photo to discover your dominant energy color
                     </p>
 
@@ -207,6 +207,7 @@ export default function VibePage() {
         </div>
         
         <Footer />
+        <MobileNavigation />
       </div>
     );
   }
