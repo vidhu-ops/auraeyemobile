@@ -40,28 +40,26 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950">
-      <div className="relative w-full h-full p-6 flex items-center justify-center">
-        <AuraGlow 
-          colors={[
-            { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-full h-full", delay: "0s" },
-            { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
-          ]} 
-        />
-        
-        <Card className="w-full max-w-md h-full z-10">
-          <CardHeader>
-            <div className="flex items-center space-x-2 mb-2">
-              <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
-              <span className="font-heading font-bold text-purple-600 text-2xl">AuraEye™</span>
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4 md:p-8">
+      {/* Full page on mobile, centered card on desktop */}
+      <Card className="w-full md:max-w-md lg:max-w-lg md:shadow-2xl md:border-cyan-900/50 backdrop-blur-sm bg-white/95 dark:bg-slate-900/95">
+        <CardHeader className="space-y-4 text-center">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-indigo-500 to-cyan-500 blur-xl opacity-50 animate-pulse"></div>
+              <img src={logoPath} alt="AuraEye Logo" className="relative w-16 h-16 rounded-full object-cover ring-4 ring-purple-500/30" />
             </div>
-            
-            <CardDescription>Access your spiritual wellness journey</CardDescription>
-          </CardHeader>
+            <CardTitle className="font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 text-3xl">
+              AuraEye™
+            </CardTitle>
+          </div>
+          
+          <CardDescription className="text-base">Access your spiritual wellness journey</CardDescription>
+        </CardHeader>
           
           <Form {...loginForm}>
             <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
-              <CardContent className="space-y-4 pt-6">
+              <CardContent className="space-y-5 pt-2">
                 <FormField
                   control={loginForm.control}
                   name="username"
@@ -91,28 +89,28 @@ export default function AuthPage() {
                 />
               </CardContent>
               
-              <CardFooter className="flex-col space-y-2">
+              <CardFooter className="flex-col space-y-3 pt-2">
                 <Button 
                   type="submit" 
-                  className="w-full bg-primary hover:bg-primary-dark"
+                  className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-700 hover:via-indigo-700 hover:to-cyan-700 text-white font-semibold py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   disabled={loginMutation.isPending}
+                  data-testid="button-login"
                 >
                   {loginMutation.isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" /> 
                       Logging in...
                     </>
                   ) : "Login"}
                 </Button>
                 
+                <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+                  Enter your credentials to continue your spiritual journey
+                </p>
               </CardFooter>
             </form>
           </Form>
-
         </Card>
-      </div>
-      
-      
     </div>
   );
 }
