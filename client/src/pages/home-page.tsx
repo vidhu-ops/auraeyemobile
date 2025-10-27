@@ -6,8 +6,8 @@ import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu, Camera, Star, Book, Calculator, Users, Home, LogOut, Settings } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu, Camera, Star, Book, Calculator, Users, Home, LogOut, CreditCard } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 import { useState } from "react";
 
@@ -16,6 +16,23 @@ export default function HomePage() {
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const [menuOpen, setMenuOpen] = useState(false);
+  
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    setMenuOpen(false);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Healers", href: "/healers" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
   
   // Calculate tree growth: 5% per 10 soul energy points
   const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
@@ -56,128 +73,40 @@ export default function HomePage() {
                 <Menu className="h-4 w-4 text-white" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-slate-900 text-white border-l-slate-700">
-              <SheetHeader>
-                <SheetTitle className="text-white flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
-                    <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
-                  </div>
-                  <span>AuraEye™</span>
-                </SheetTitle>
-              </SheetHeader>
-              
-              <div className="mt-6 space-y-4">
-                {/* User Info */}
-                {user && (
-                  <div className="bg-slate-800 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-slate-400">Signed in as</p>
-                    <p className="font-semibold text-white">{user.username}</p>
-                    <div className="mt-2 flex gap-4">
-                      <div>
-                        <p className="text-xs text-slate-400">Credits</p>
-                        <p className="text-lg font-bold text-cyan-400">{credits}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-400">Soul Energy</p>
-                        <p className="text-lg font-bold text-purple-400">{soulEnergy}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Menu Items */}
-                <Link href="/" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-home">
-                    <Home className="h-5 w-5 text-cyan-400" />
-                    <span>Home</span>
-                  </div>
-                </Link>
-                
-                <Link href="/services" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-services">
-                    <Sparkles className="h-5 w-5 text-indigo-400" />
-                    <span>Services</span>
-                  </div>
-                </Link>
-                
-                <Link href="/vibe" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-vibe">
-                    <Zap className="h-5 w-5 text-purple-400" />
-                    <span>What's My Vibe</span>
-                  </div>
-                </Link>
-                
-                <Link href="/aura-analysis" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-aura">
-                    <Camera className="h-5 w-5 text-purple-400" />
-                    <span>Aura Analysis</span>
-                  </div>
-                </Link>
-                
-                <Link href="/daily-horoscope" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-horoscope">
-                    <Star className="h-5 w-5 text-yellow-400" />
-                    <span>Horoscope</span>
-                  </div>
-                </Link>
-                
-                <Link href="/numerology" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-numerology">
-                    <Calculator className="h-5 w-5 text-indigo-400" />
-                    <span>Numerology</span>
-                  </div>
-                </Link>
-                
-                <Link href="/journal" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-journal">
-                    <Book className="h-5 w-5 text-green-400" />
-                    <span>Spiritual Journal</span>
-                  </div>
-                </Link>
-                
-                <Link href="/healers" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-healers">
-                    <Users className="h-5 w-5 text-pink-400" />
-                    <span>Find Healers</span>
-                  </div>
-                </Link>
-                
-                <Link href="/about" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-about">
-                    <Book className="h-5 w-5 text-blue-400" />
-                    <span>About</span>
-                  </div>
-                </Link>
-                
-                <Link href="/contact" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-contact">
-                    <Bell className="h-5 w-5 text-teal-400" />
-                    <span>Contact</span>
-                  </div>
-                </Link>
-                
-                <div className="border-t border-slate-700 my-4"></div>
-                
-                <Link href="/client-dashboard" onClick={() => setMenuOpen(false)}>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer" data-testid="menu-dashboard">
-                    <Settings className="h-5 w-5 text-slate-400" />
-                    <span>Dashboard</span>
-                  </div>
-                </Link>
-                
-                {user && (
-                  <button
-                    onClick={() => {
-                      logoutMutation.mutate();
-                      setMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer w-full text-left"
-                    data-testid="menu-logout"
+            <SheetContent>
+              <div className="flex flex-col space-y-4 mt-8">
+                {navLinks.map((link) => (
+                  <Link 
+                    key={link.name} 
+                    href={link.href} 
+                    onClick={closeMenu}
+                    className="py-2 px-2 rounded-lg text-gray-600 hover:text-primary hover:bg-gray-50"
                   >
-                    <LogOut className="h-5 w-5 text-red-400" />
-                    <span>Logout</span>
-                  </button>
-                )}
+                    {link.name}
+                  </Link>
+                ))}
+                
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
+                    <CreditCard className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{credits} credits</span>
+                  </div>
+                  <Link 
+                    href={user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"} 
+                    onClick={closeMenu}
+                    className="block py-2 px-2 rounded-lg text-primary font-medium"
+                  >
+                    My Dashboard
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2 mt-2"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
