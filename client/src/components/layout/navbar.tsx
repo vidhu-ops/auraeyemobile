@@ -64,7 +64,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="font-helvetica font-bold text-2xl text-purple-500">AuraEye™</span>
-              <span className="font-ethereal text-sm text-purple-600/70">Spiritual Awakening</span>
+              <span className="font-helvetica text-sm text-purple-600/70">Your energy made visible</span>
             </div>
           </Link>
 

@@ -52,7 +52,7 @@ export default function HomePage() {
           </div>
           <div>
             <h1 className="text-white font-bold text-sm">AuraEye™</h1>
-            <p className="text-cyan-300 text-xs">Ethereal Wellness</p>
+            <p className="text-cyan-300 text-xs">Your energy made visible</p>
           </div>
         </div>
         
@@ -114,17 +114,20 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 pb-32 px-4 pt-4">
+      <div className="relative z-10 pb-32 px-4 pt-12">
         {/* Welcome Section */}
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-            Hello, Welcome to Your Spiritual Space
+        <div className="mb-10 text-center space-y-4">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+            Hello, Welcome to Your
           </h1>
-          <p className="text-gray-300 text-sm">Your journey to inner peace and enlightenment begins here</p>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+            Spiritual Space
+          </h2>
+          <p className="text-gray-300 text-sm pt-2">Your journey to inner peace and enlightenment begins here</p>
         </div>
 
         {/* Spiritual Illustration */}
-        <div className="mb-6 flex justify-center">
+        <div className="mb-8 flex justify-center">
           <div className="relative w-48 h-48 rounded-full bg-gradient-to-br from-purple-600 via-cyan-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
             <div className="absolute inset-4 rounded-full bg-gradient-to-br from-purple-900 via-slate-900 to-cyan-900 flex items-center justify-center">
               <div className="relative">
@@ -137,80 +140,80 @@ export default function HomePage() {
         </div>
 
         {/* Service Buttons Grid */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4 text-center">Explore Our Services</h2>
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-6 text-center">Explore Our Services</h2>
           
           {/* First Row - 5 icons */}
-          <div className="grid grid-cols-5 gap-2 mb-2">
-            <Link href="/aura-analysis">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-purple-900/50 to-purple-800/50 hover:from-purple-800/60 hover:to-purple-700/60 transition-all shadow-sm border border-purple-500/30" data-testid="button-aura-analysis">
-                <Eye className="h-5 w-5 text-purple-300 mb-0.5" />
+          <div className="grid grid-cols-5 gap-3 mb-3 max-w-sm mx-auto">
+            <Link href="/aura-analysis" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-purple-900/50 to-purple-800/50 hover:from-purple-800/60 hover:to-purple-700/60 transition-all shadow-sm border border-purple-500/30" data-testid="button-aura-analysis">
+                <Eye className="h-5 w-5 text-purple-300 mb-1" />
                 <span className="text-[10px] text-purple-200 font-medium text-center leading-tight">Aura</span>
               </button>
             </Link>
             
-            <Link href="/vibe">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 hover:from-cyan-800/60 hover:to-cyan-700/60 transition-all shadow-sm border border-cyan-500/30" data-testid="button-vibe">
-                <Flame className="h-5 w-5 text-cyan-300 mb-0.5" />
+            <Link href="/vibe" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 hover:from-cyan-800/60 hover:to-cyan-700/60 transition-all shadow-sm border border-cyan-500/30" data-testid="button-vibe">
+                <Flame className="h-5 w-5 text-cyan-300 mb-1" />
                 <span className="text-[10px] text-cyan-200 font-medium text-center leading-tight">Vibe</span>
               </button>
             </Link>
             
-            <Link href="/object-analysis">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-pink-900/50 to-pink-800/50 hover:from-pink-800/60 hover:to-pink-700/60 transition-all shadow-sm border border-pink-500/30" data-testid="button-object-analysis">
-                <Scan className="h-5 w-5 text-pink-300 mb-0.5" />
+            <Link href="/object-analysis" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-pink-900/50 to-pink-800/50 hover:from-pink-800/60 hover:to-pink-700/60 transition-all shadow-sm border border-pink-500/30" data-testid="button-object-analysis">
+                <Scan className="h-5 w-5 text-pink-300 mb-1" />
                 <span className="text-[10px] text-pink-200 font-medium text-center leading-tight">Object</span>
               </button>
             </Link>
             
-            <Link href="/numerology">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-amber-900/50 to-amber-800/50 hover:from-amber-800/60 hover:to-amber-700/60 transition-all shadow-sm border border-amber-500/30" data-testid="button-numerology">
-                <Calculator className="h-5 w-5 text-amber-300 mb-0.5" />
+            <Link href="/numerology" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-amber-900/50 to-amber-800/50 hover:from-amber-800/60 hover:to-amber-700/60 transition-all shadow-sm border border-amber-500/30" data-testid="button-numerology">
+                <Calculator className="h-5 w-5 text-amber-300 mb-1" />
                 <span className="text-[10px] text-amber-200 font-medium text-center leading-tight">Numbers</span>
               </button>
             </Link>
             
-            <Link href="/daily-horoscope">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-orange-900/50 to-orange-800/50 hover:from-orange-800/60 hover:to-orange-700/60 transition-all shadow-sm border border-orange-500/30" data-testid="button-horoscope">
-                <Sunrise className="h-5 w-5 text-orange-300 mb-0.5" />
+            <Link href="/daily-horoscope" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-orange-900/50 to-orange-800/50 hover:from-orange-800/60 hover:to-orange-700/60 transition-all shadow-sm border border-orange-500/30" data-testid="button-horoscope">
+                <Sunrise className="h-5 w-5 text-orange-300 mb-1" />
                 <span className="text-[10px] text-orange-200 font-medium text-center leading-tight">Stars</span>
               </button>
             </Link>
           </div>
 
           {/* Second Row - 5 icons */}
-          <div className="grid grid-cols-5 gap-2">
-            <Link href="/journal">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-green-900/50 to-green-800/50 hover:from-green-800/60 hover:to-green-700/60 transition-all shadow-sm border border-green-500/30" data-testid="button-journal">
-                <Book className="h-5 w-5 text-green-300 mb-0.5" />
+          <div className="grid grid-cols-5 gap-3 max-w-sm mx-auto">
+            <Link href="/journal" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-green-900/50 to-green-800/50 hover:from-green-800/60 hover:to-green-700/60 transition-all shadow-sm border border-green-500/30" data-testid="button-journal">
+                <Book className="h-5 w-5 text-green-300 mb-1" />
                 <span className="text-[10px] text-green-200 font-medium text-center leading-tight">Journal</span>
               </button>
             </Link>
             
-            <Link href="/meditations">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-indigo-900/50 to-indigo-800/50 hover:from-indigo-800/60 hover:to-indigo-700/60 transition-all shadow-sm border border-indigo-500/30" data-testid="button-meditations">
-                <Brain className="h-5 w-5 text-indigo-300 mb-0.5" />
+            <Link href="/meditations" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-indigo-900/50 to-indigo-800/50 hover:from-indigo-800/60 hover:to-indigo-700/60 transition-all shadow-sm border border-indigo-500/30" data-testid="button-meditations">
+                <Brain className="h-5 w-5 text-indigo-300 mb-1" />
                 <span className="text-[10px] text-indigo-200 font-medium text-center leading-tight">Meditate</span>
               </button>
             </Link>
             
-            <Link href="/healers">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-rose-900/50 to-rose-800/50 hover:from-rose-800/60 hover:to-rose-700/60 transition-all shadow-sm border border-rose-500/30" data-testid="button-healers">
-                <Users className="h-5 w-5 text-rose-300 mb-0.5" />
+            <Link href="/healers" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-rose-900/50 to-rose-800/50 hover:from-rose-800/60 hover:to-rose-700/60 transition-all shadow-sm border border-rose-500/30" data-testid="button-healers">
+                <Users className="h-5 w-5 text-rose-300 mb-1" />
                 <span className="text-[10px] text-rose-200 font-medium text-center leading-tight">Healers</span>
               </button>
             </Link>
             
-            <Link href="/color-meanings">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-violet-900/50 to-violet-800/50 hover:from-violet-800/60 hover:to-violet-700/60 transition-all shadow-sm border border-violet-500/30" data-testid="button-colors">
-                <Palette className="h-5 w-5 text-violet-300 mb-0.5" />
+            <Link href="/color-meanings" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-900/50 to-violet-800/50 hover:from-violet-800/60 hover:to-violet-700/60 transition-all shadow-sm border border-violet-500/30" data-testid="button-colors">
+                <Palette className="h-5 w-5 text-violet-300 mb-1" />
                 <span className="text-[10px] text-violet-200 font-medium text-center leading-tight">Colors</span>
               </button>
             </Link>
             
-            <Link href="/help">
-              <button className="flex flex-col items-center justify-center p-2 rounded-xl bg-gradient-to-br from-teal-900/50 to-teal-800/50 hover:from-teal-800/60 hover:to-teal-700/60 transition-all shadow-sm border border-teal-500/30" data-testid="button-help">
-                <HelpCircle className="h-5 w-5 text-teal-300 mb-0.5" />
+            <Link href="/help" className="flex justify-center">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-teal-900/50 to-teal-800/50 hover:from-teal-800/60 hover:to-teal-700/60 transition-all shadow-sm border border-teal-500/30" data-testid="button-help">
+                <HelpCircle className="h-5 w-5 text-teal-300 mb-1" />
                 <span className="text-[10px] text-teal-200 font-medium text-center leading-tight">Help</span>
               </button>
             </Link>
