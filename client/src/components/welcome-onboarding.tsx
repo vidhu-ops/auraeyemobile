@@ -106,10 +106,10 @@ export default function WelcomeOnboarding() {
           </div>
 
           {/* Welcome Text with fade in */}
-          <h1 className="text-6xl md:text-4xl font-bold text-white mb-4 animate-fade-in-up">
+          <h1 className="text-4xl md:text-4xl font-bold text-white mb-4 animate-fade-in-up">
             Welcome to
           </h1>
-          <h2 className="text-4xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             AuraEye
           </h2>
           
@@ -181,7 +181,7 @@ export default function WelcomeOnboarding() {
             Begin Your Spiritual Journey
           </h1>
           
-          <p className="text-lg text-center text-cyan-200 mb-12 leading-relaxed">
+          <p className="text-lg text-center text-black-200 mb-12 leading-relaxed">
             AuraEye connects you with powerful spiritual tools to discover your aura, 
             analyze your energy, and embark on a path of healing and self-discovery.
           </p>
@@ -193,8 +193,8 @@ export default function WelcomeOnboarding() {
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Eye className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 text-center">Aura Analysis</h3>
-              <p className="text-cyan-200 text-sm text-center leading-relaxed">
+              <h3 className="text-xl font-bold text-purple-800 mb-3 text-center">Aura Analysis</h3>
+              <p className="text-purple-600 text-sm text-center leading-relaxed">
                 Upload photos and receive detailed analysis of your aura colors and energy patterns.
               </p>
             </div>
@@ -204,8 +204,8 @@ export default function WelcomeOnboarding() {
               <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Star className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 text-center">Daily Spiritual Guidance</h3>
-              <p className="text-cyan-200 text-sm text-center leading-relaxed">
+              <h3 className="text-xl font-bold text-blue-800 mb-3 text-center">Daily Spiritual Guidance</h3>
+              <p className="text-blue-600 text-sm text-center leading-relaxed">
                 Get personalized horoscopes, numerology insights, and energy forecasts.
               </p>
             </div>
@@ -215,8 +215,8 @@ export default function WelcomeOnboarding() {
               <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 text-center">Connect with Healers</h3>
-              <p className="text-cyan-200 text-sm text-center leading-relaxed">
+              <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect with Healers</h3>
+              <p className="text-pink-600 text-sm text-center leading-relaxed">
                 Book sessions with experienced spiritual guides and energy healers.
               </p>
             </div>

@@ -32,11 +32,20 @@ export default function LightsActivation() {
           0% {
             background: #000000;
           }
-          50% {
-            background: linear-gradient(to bottom right, #1e1b4b, #1e3a8a, #1e40af);
+          20% {
+            background: linear-gradient(to bottom right, #1e1b4b, #312e81, #1e3a8a);
+          }
+          40% {
+            background: linear-gradient(to bottom right, #451a03, #713f12, #854d0e);
+          }
+          60% {
+            background: linear-gradient(to bottom right, #a16207, #ca8a04, #eab308);
+          }
+          80% {
+            background: linear-gradient(to bottom right, #fef3c7, #fde68a, #fcd34d);
           }
           100% {
-            background: linear-gradient(to bottom right, #ffffff, #f0f9ff, #e0f2fe);
+            background: linear-gradient(to bottom right, #ffffff, #fefce8, #fef9c3);
           }
         }
         
