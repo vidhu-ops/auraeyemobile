@@ -2115,7 +2115,7 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-rows-2 gap-6 grid-cols-4">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
@@ -2497,6 +2497,99 @@ export default function HealerDashboard() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
+          {/* Soul Energy Overview & Prompts */}
+          <Card className="bg-gradient-to-br from-purple-50 via-indigo-50 to-cyan-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-6 w-6 text-purple-600" />
+                Understanding Soul Energy
+              </CardTitle>
+              <CardDescription>Your spiritual currency for growth and healing</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-purple-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Your Current Energy</h3>
+                    <p className="text-sm text-gray-600">Keep building to unlock new abilities</p>
+                  </div>
+                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                    {soulEnergy}
+                  </div>
+                </div>
+                <Progress value={(soulEnergy % 10) * 10} className="h-3" />
+                <p className="text-xs text-gray-600 mt-2">
+                  {10 - (soulEnergy % 10)} more energy until your tree grows by 5%
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-purple-600" />
+                    Ways to Grow
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      <span>Perform aura readings for clients (+5 energy)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      <span>Complete numerology analysis (+3 energy)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      <span>Conduct vibe checks (+2 energy)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      <span>Accept and complete client sessions (+10 energy)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-cyan-600" />
+                    Energy Benefits
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-600">•</span>
+                      <span>Watch your Light Tree grow more vibrant</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-600">•</span>
+                      <span>Unlock deeper spiritual insights</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-600">•</span>
+                      <span>Build your healer reputation</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-600">•</span>
+                      <span>Track your spiritual journey progress</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">💡</div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Pro Tip</h4>
+                    <p className="text-sm text-gray-700">
+                      Consistency is key! Perform spiritual services daily to maintain your energy flow. 
+                      Each service not only helps your clients but also strengthens your own spiritual connection.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
@@ -2797,6 +2890,54 @@ export default function HealerDashboard() {
 
         {/* Bookings Tab */}
         <TabsContent value="bookings" className="space-y-6">
+          {/* Booking Stats Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Pending Requests</p>
+                    <p className="text-4xl font-bold text-orange-600">{pendingBookings.length}</p>
+                    <p className="text-xs text-gray-500 mt-1">Awaiting your response</p>
+                  </div>
+                  <div className="bg-orange-100 p-3 rounded-full">
+                    <Clock className="h-8 w-8 text-orange-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Accepted Sessions</p>
+                    <p className="text-4xl font-bold text-green-600">{acceptedBookings.length}</p>
+                    <p className="text-xs text-gray-500 mt-1">Active bookings</p>
+                  </div>
+                  <div className="bg-green-100 p-3 rounded-full">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
+                    <p className="text-4xl font-bold text-blue-600">{analytics?.totalBookings || 0}</p>
+                    <p className="text-xs text-gray-500 mt-1">All time</p>
+                  </div>
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <Users className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <Card>
             <CardHeader>
               <CardTitle>Booking Management</CardTitle>
@@ -2868,6 +3009,54 @@ export default function HealerDashboard() {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
+          {/* Credits & Earnings Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
+                    <p className="text-4xl font-bold text-violet-600">{analytics?.acceptedBookings || 0}</p>
+                    <p className="text-xs text-gray-500 mt-1">Completed sessions</p>
+                  </div>
+                  <div className="bg-violet-100 p-3 rounded-full">
+                    <CheckCircle className="h-8 w-8 text-violet-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Credits Earned</p>
+                    <p className="text-4xl font-bold text-emerald-600">{(analytics?.acceptedBookings || 0) * 1}</p>
+                    <p className="text-xs text-gray-500 mt-1">From bookings (1 credit/booking)</p>
+                  </div>
+                  <div className="bg-emerald-100 p-3 rounded-full">
+                    <span className="text-3xl">💳</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Current Balance</p>
+                    <p className="text-4xl font-bold text-amber-600">{credits}</p>
+                    <p className="text-xs text-gray-500 mt-1">Total available credits</p>
+                  </div>
+                  <div className="bg-amber-100 p-3 rounded-full">
+                    <Sparkles className="h-8 w-8 text-amber-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -2881,6 +3070,10 @@ export default function HealerDashboard() {
                     <span className="font-semibold">{analytics?.totalBookings || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Accepted Bookings</span>
+                    <span className="font-semibold text-green-600">{analytics?.acceptedBookings || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Recent Bookings (30 days)</span>
                     <span className="font-semibold">{analytics?.recentBookings || 0}</span>
                   </div>
@@ -2892,7 +3085,13 @@ export default function HealerDashboard() {
                     <span className="text-sm text-gray-600">Unique Clients</span>
                     <span className="font-semibold">{analytics?.totalClients || 0}</span>
                   </div>
-
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-700">Credits from Bookings</span>
+                      <span className="font-bold text-emerald-600">{(analytics?.acceptedBookings || 0) * 1}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Each accepted booking = 1 credit earned</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -2925,6 +3124,50 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Earnings Breakdown */}
+          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-indigo-600" />
+                Revenue & Earnings Summary
+              </CardTitle>
+              <CardDescription>Track your earnings from spiritual services</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl p-4 border border-indigo-100">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Credits Earned Breakdown</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">From Bookings ({analytics?.acceptedBookings || 0} × 1)</span>
+                      <span className="text-sm font-bold text-indigo-600">{(analytics?.acceptedBookings || 0) * 1}</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                      <span className="text-xs font-semibold text-gray-700">Total Credits Earned</span>
+                      <span className="text-lg font-bold text-indigo-600">{(analytics?.acceptedBookings || 0) * 1}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border border-purple-100">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Performance Metrics</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">Avg Credits per Week</span>
+                      <span className="text-sm font-bold text-purple-600">
+                        {trends.length > 0 ? Math.round(trends.reduce((sum, t) => sum + t.accepted, 0) / trends.length) : 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">Success Rate</span>
+                      <span className="text-sm font-bold text-green-600">{analytics?.acceptanceRate?.toFixed(0) || 0}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* My Readings Tab */}
