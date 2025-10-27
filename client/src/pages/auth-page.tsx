@@ -40,7 +40,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950">
       <div className="relative w-full h-full p-6 flex items-center justify-center">
         <AuraGlow 
           colors={[

@@ -43,7 +43,7 @@ export default function HomePage() {
   const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       {/* Header */}
       <div className="bg-slate-950 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function HomePage() {
       <div className="relative z-10 pb-32 px-4 pt-4">
         {/* Welcome Section */}
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent mb-2">
             Hello, Welcome to Your Spiritual Space
           </h1>
           <p className="text-gray-300 text-sm">Your journey to inner peace and enlightenment begins here</p>
