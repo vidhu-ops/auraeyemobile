@@ -92,7 +92,7 @@ export default function MeditationsPage() {
     : meditations.filter(m => m.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       {/* Header */}
       <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -166,11 +166,11 @@ export default function MeditationsPage() {
       <div className="relative z-10 pb-32 px-4 pt-6">
         {/* Title with icon */}
         <div className="text-center mb-6">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
             <Sparkles className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Ethereal Meditations</h1>
-          <p className="text-purple-200">Journey through dimensions of consciousness</p>
+          <p className="text-cyan-200">Journey through dimensions of consciousness</p>
         </div>
 
         {/* Category Filter */}

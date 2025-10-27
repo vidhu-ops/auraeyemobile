@@ -27,7 +27,7 @@ export default function WelcomeOnboarding() {
 
   if (step === "welcome") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 flex items-center justify-center overflow-hidden relative">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center overflow-hidden relative">
         {/* Mystical Background Effects */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Floating orbs */}
@@ -66,12 +66,12 @@ export default function WelcomeOnboarding() {
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 animate-fade-in-up">
             Welcome to
           </h1>
-          <h2 className="text-7xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-7xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             AuraEye
           </h2>
           
           {/* Mystical subtitle */}
-          <p className="text-xl md:text-2xl text-purple-200 mt-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+          <p className="text-xl md:text-2xl text-cyan-200 mt-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
             ✨ Your Portal to Spiritual Awakening ✨
           </p>
 
@@ -91,7 +91,7 @@ export default function WelcomeOnboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4 overflow-hidden relative">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -113,7 +113,7 @@ export default function WelcomeOnboarding() {
             Begin Your Spiritual Journey
           </h1>
           
-          <p className="text-lg text-center text-purple-200 mb-12 leading-relaxed">
+          <p className="text-lg text-center text-cyan-200 mb-12 leading-relaxed">
             AuraEye connects you with powerful spiritual tools to discover your aura, 
             analyze your energy, and embark on a path of healing and self-discovery.
           </p>
@@ -126,7 +126,7 @@ export default function WelcomeOnboarding() {
                 <Eye className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3 text-center">Aura Analysis</h3>
-              <p className="text-purple-200 text-sm text-center leading-relaxed">
+              <p className="text-cyan-200 text-sm text-center leading-relaxed">
                 Upload photos and receive detailed analysis of your aura colors and energy patterns.
               </p>
             </div>
@@ -137,7 +137,7 @@ export default function WelcomeOnboarding() {
                 <Star className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3 text-center">Daily Spiritual Guidance</h3>
-              <p className="text-purple-200 text-sm text-center leading-relaxed">
+              <p className="text-cyan-200 text-sm text-center leading-relaxed">
                 Get personalized horoscopes, numerology insights, and energy forecasts.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function WelcomeOnboarding() {
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3 text-center">Connect with Healers</h3>
-              <p className="text-purple-200 text-sm text-center leading-relaxed">
+              <p className="text-cyan-200 text-sm text-center leading-relaxed">
                 Book sessions with experienced spiritual guides and energy healers.
               </p>
             </div>

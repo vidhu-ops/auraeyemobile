@@ -79,9 +79,9 @@ export default function HelpPage() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 pb-20">
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 pt-12 pb-8 px-6">
+      <div className="bg-gradient-to-br from-cyan-950/50 to-teal-900/50 pt-12 pb-8 px-6">
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
             <HelpCircle className="h-8 w-8 text-white" />

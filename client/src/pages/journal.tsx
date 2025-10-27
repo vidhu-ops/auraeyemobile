@@ -122,7 +122,7 @@ export default function JournalPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       {/* Header */}
       <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
