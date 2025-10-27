@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Plus, Search, Zap, Bell, Wifi, Menu, Calendar, TrendingUp, Sparkles } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { BookOpen, Plus, Search, Zap, Bell, Wifi, Menu, Calendar, TrendingUp, Sparkles, LogOut, CreditCard } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useCredits } from "@/hooks/use-credits";
+import { Link } from "wouter";
 import logoImage from "@assets/new-logo.jpeg";
 
 interface JournalEntry {
@@ -30,15 +33,34 @@ const moodFilters = [
 ];
 
 export default function JournalPage() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const isAuthenticated = !!user;
   const { toast } = useToast();
+  const { credits } = useCredits();
   const [selectedMood, setSelectedMood] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingEntry, setIsAddingEntry] = useState(false);
   const [energyLevel, setEnergyLevel] = useState(7);
   const [reflections, setReflections] = useState("");
   const [gratitude, setGratitude] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    setMenuOpen(false);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Healers", href: "/healers" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   // Fetch journal entries
   const { data: journalEntries = [], isLoading } = useQuery({
@@ -124,9 +146,49 @@ export default function JournalPage() {
           <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
             <Wifi className="h-4 w-4 text-green-400" />
           </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
-            <Menu className="h-4 w-4 text-white" />
-          </button>
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
+                <Menu className="h-4 w-4 text-white" />
+              </button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="flex flex-col space-y-4 mt-8">
+                {navLinks.map((link) => (
+                  <Link 
+                    key={link.name} 
+                    href={link.href} 
+                    onClick={closeMenu}
+                    className="py-2 px-2 rounded-lg text-gray-600 hover:text-primary hover:bg-gray-50"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
+                    <CreditCard className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{credits} credits</span>
+                  </div>
+                  <Link 
+                    href={user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"} 
+                    onClick={closeMenu}
+                    className="block py-2 px-2 rounded-lg text-primary font-medium"
+                  >
+                    My Dashboard
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2 mt-2"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
