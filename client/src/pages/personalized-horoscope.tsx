@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Star, Calendar, Heart, Briefcase, Activity, Sparkles, Clock, TrendingUp, Target } from "lucide-react";
 import { motion } from "framer-motion";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface ExtendedHoroscopeResult {
   sign: string;
@@ -92,55 +95,72 @@ export default function PersonalizedHoroscope() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
           </div>
         </div>
+        <Footer />
+        <MobileNavigation />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mt-8">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Unable to Load Personalized Horoscope</h2>
-              <p className="text-muted-foreground mb-4">
-                Please ensure you have set your birth date in your profile to receive personalized horoscope readings.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                You can update your birth date in your account settings or during the registration process.
-              </p>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
+          <div className="max-w-4xl mx-auto">
+            <Card className="mt-8">
+              <CardContent className="p-8 text-center">
+                <h2 className="text-2xl font-bold mb-4">Unable to Load Personalized Horoscope</h2>
+                <p className="text-muted-foreground mb-4">
+                  Please ensure you have set your birth date in your profile to receive personalized horoscope readings.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  You can update your birth date in your account settings or during the registration process.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
+        <Footer />
+        <MobileNavigation />
       </div>
     );
   }
 
   if (!horoscope) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mt-8">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">No Horoscope Data Available</h2>
-              <p className="text-muted-foreground">
-                Please try refreshing the page or contact support if the issue persists.
-              </p>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
+          <div className="max-w-4xl mx-auto">
+            <Card className="mt-8">
+              <CardContent className="p-8 text-center">
+                <h2 className="text-2xl font-bold mb-4">No Horoscope Data Available</h2>
+                <p className="text-muted-foreground">
+                  Please try refreshing the page or contact support if the issue persists.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
+        <Footer />
+        <MobileNavigation />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-grow bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -432,6 +452,9 @@ export default function PersonalizedHoroscope() {
           </Tabs>
         </motion.div>
       </div>
+      </div>
+      <Footer />
+      <MobileNavigation />
     </div>
   );
 }

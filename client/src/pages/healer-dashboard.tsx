@@ -52,6 +52,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface HealerBooking {
   id: number;
@@ -3427,6 +3428,7 @@ export default function HealerDashboard() {
         </div>
       </main>
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }

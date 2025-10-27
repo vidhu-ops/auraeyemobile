@@ -15,6 +15,7 @@ import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface ObjectAnalysisResult {
   id?: number;
@@ -1395,6 +1396,7 @@ export default function ObjectAnalysis() {
       </main>
       
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }

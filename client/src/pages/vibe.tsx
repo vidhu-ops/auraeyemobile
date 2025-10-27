@@ -9,6 +9,7 @@ import ImageUpload from "@/components/forms/image-upload";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
 import logoImage from "@assets/new-logo.jpeg";
 
@@ -426,6 +427,7 @@ export default function VibePage() {
       </div>
       
       <Footer />
+      <MobileNavigation />
       
       {/* Premium Video Modal */}
       <PremiumContentVideoModal 
