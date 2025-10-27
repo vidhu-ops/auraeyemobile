@@ -14,7 +14,7 @@ export default function WelcomeOnboarding() {
     if (step === "welcome") {
       const timer = setTimeout(() => {
         setStep("features");
-      }, 3000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [step]);

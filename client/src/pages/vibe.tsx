@@ -73,6 +73,9 @@ export default function VibePage() {
         readingId: data.readingId
       });
       
+      // Save last scan color for mascot
+      localStorage.setItem("lastAuraColor", data.dominantColor);
+      
       toast({
         title: "Vibe analysis complete!",
         description: `Your dominant vibe is ${data.dominantColor}`,
