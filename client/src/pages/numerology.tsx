@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { 
   Card, 
   CardContent, 
@@ -1611,6 +1612,7 @@ export default function NumerologyPage() {
       </main>
       
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }
