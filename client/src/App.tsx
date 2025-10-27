@@ -25,15 +25,18 @@ import MeditationsPage from "@/pages/meditations";
 import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
+import WelcomeOnboarding from "@/components/welcome-onboarding";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { LightsProvider, useLights } from "@/hooks/use-lights";
 import { ProtectedRoute } from "./lib/protected-route";
 import LightsActivation from "@/components/lights-activation";
+import { useEffect, useState } from "react";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/welcome" component={WelcomeOnboarding} />
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
@@ -65,7 +68,31 @@ function Router() {
 function AppContent() {
   const { user, isLoading } = useAuth();
   const { lightsOn } = useLights();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Check if user has seen onboarding on first load - do this BEFORE any routing
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    
+    // If user hasn't seen onboarding and they're not already on the welcome page
+    if (!hasSeenOnboarding && location !== '/welcome') {
+      setLocation('/welcome');
+    }
+    
+    // Mark that we've checked onboarding status
+    setOnboardingChecked(true);
+  }, []); // Only run once on mount
+
+  // Don't render anything until we've checked onboarding status
+  if (!onboardingChecked) {
+    return null;
+  }
+
+  // If on welcome page, show it directly
+  if (location === '/welcome') {
+    return <WelcomeOnboarding />;
+  }
 
   // Public routes that don't require lights activation
   const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm'];
