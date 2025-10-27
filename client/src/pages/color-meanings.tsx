@@ -116,7 +116,7 @@ export default function ColorMeaningsPage() {
     const Icon = selectedColorData.icon;
     
     return (
-      <div className={`min-h-screen bg-gradient-to-br ${selectedColorData.bgGradient} pb-20`}>
+      <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20`}>
         {/* Header */}
         <div className="pt-12 pb-8 px-6">
           <div className="flex items-center mb-6">
@@ -124,21 +124,21 @@ export default function ColorMeaningsPage() {
               variant="ghost"
               size="sm"
               onClick={() => setSelectedColor(null)}
-              className="mr-3 text-gray-600"
+              className="mr-3 text-gray-200"
               data-testid="back-to-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-gray-800">Color Details</h1>
+            <h1 className="text-2xl font-bold text-white">Color Details</h1>
           </div>
 
           <div className="text-center mb-8">
             <div className={`w-24 h-24 mx-auto mb-4 bg-gradient-to-br ${selectedColorData.gradient} rounded-full flex items-center justify-center shadow-lg`}>
               <Icon className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">{selectedColorData.name}</h2>
-            <p className="text-lg text-gray-600 mb-4">{selectedColorData.meaning}</p>
+            <h2 className="text-3xl font-bold text-white mb-2">{selectedColorData.name}</h2>
+            <p className="text-lg text-gray-200 mb-4">{selectedColorData.meaning}</p>
             <Badge className={`bg-gradient-to-r ${selectedColorData.gradient} text-white border-0`}>
               {selectedColorData.chakra} Chakra
             </Badge>
@@ -148,29 +148,29 @@ export default function ColorMeaningsPage() {
         {/* Detailed Information */}
         <div className="px-6 space-y-6">
           {/* Description */}
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-gray-800">Meaning & Significance</CardTitle>
+              <CardTitle className="text-white">Meaning & Significance</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 leading-relaxed">{selectedColorData.description}</p>
+              <p className="text-gray-200 leading-relaxed">{selectedColorData.description}</p>
             </CardContent>
           </Card>
 
           {/* Chakra Information */}
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-gray-800">{selectedColorData.chakra} Chakra</CardTitle>
+              <CardTitle className="text-white">{selectedColorData.chakra} Chakra</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 leading-relaxed">{selectedColorData.chakraDescription}</p>
+              <p className="text-gray-200 leading-relaxed">{selectedColorData.chakraDescription}</p>
             </CardContent>
           </Card>
 
           {/* Positive Traits */}
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-gray-800">Positive Traits</CardTitle>
+              <CardTitle className="text-white">Positive Traits</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -188,9 +188,9 @@ export default function ColorMeaningsPage() {
           </Card>
 
           {/* Areas to Watch */}
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-gray-800">Areas to Watch</CardTitle>
+              <CardTitle className="text-white">Areas to Watch</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -208,9 +208,9 @@ export default function ColorMeaningsPage() {
           </Card>
 
           {/* Keywords */}
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-gray-800">Key Words</CardTitle>
+              <CardTitle className="text-white">Key Words</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -233,15 +233,15 @@ export default function ColorMeaningsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-amber-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20">
       {/* Header */}
-      <div className="bg-gradient-to-br from-orange-100 to-pink-100 pt-12 pb-8 px-6">
+      <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 pt-12 pb-8 px-6">
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center shadow-lg">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Color Meanings</h1>
-          <p className="text-gray-600">Discover the spiritual significance of colors</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Color Meanings</h1>
+          <p className="text-gray-200">Discover the spiritual significance of colors</p>
         </div>
       </div>
 
@@ -254,7 +254,7 @@ export default function ColorMeaningsPage() {
             return (
               <Card 
                 key={color.id}
-                className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => setSelectedColor(color.id)}
                 data-testid={`color-${color.id}`}
               >
@@ -265,10 +265,10 @@ export default function ColorMeaningsPage() {
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-1" data-testid={`color-name-${color.id}`}>
+                      <h3 className="text-xl font-semibold text-white mb-1" data-testid={`color-name-${color.id}`}>
                         {color.name}
                       </h3>
-                      <p className="text-gray-600 mb-2">{color.meaning}</p>
+                      <p className="text-gray-200 mb-2">{color.meaning}</p>
                       <Badge variant="outline" className="text-xs">
                         {color.chakra} Chakra
                       </Badge>
@@ -286,7 +286,7 @@ export default function ColorMeaningsPage() {
 
         {/* Bottom spacing */}
         <div className="mt-8 text-center">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-300 text-sm">
             Tap any color to learn more about its spiritual meaning and chakra connection
           </p>
         </div>

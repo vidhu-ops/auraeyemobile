@@ -99,12 +99,12 @@ export default function VibePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-slate-900 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
             <Sparkles className="h-12 w-12 mx-auto mb-4 text-purple-600" />
             <h2 className="text-2xl font-bold mb-2">What's My Vibe?</h2>
-            <p className="text-slate-600 mb-4">Please log in to discover your dominant energy</p>
+            <p className="text-gray-200 mb-4">Please log in to discover your dominant energy</p>
             <Link href="/auth">
               <Button className="w-full">Log In</Button>
             </Link>

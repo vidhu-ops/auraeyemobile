@@ -79,15 +79,15 @@ export default function HelpPage() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-amber-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20">
       {/* Header */}
-      <div className="bg-gradient-to-br from-orange-100 to-pink-100 pt-12 pb-8 px-6">
+      <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 pt-12 pb-8 px-6">
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
             <HelpCircle className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Help & Resources</h1>
-          <p className="text-gray-600">Guides, techniques, and support</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Help & Resources</h1>
+          <p className="text-gray-200">Guides, techniques, and support</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export default function HelpPage() {
             return (
               <Card 
                 key={section.id} 
-                className="bg-white/80 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md hover:shadow-lg transition-all duration-200"
                 data-testid={`help-section-${section.id}`}
               >
                 <CardHeader 
@@ -114,10 +114,10 @@ export default function HelpPage() {
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg text-gray-800" data-testid={`section-title-${section.id}`}>
+                        <CardTitle className="text-lg text-white" data-testid={`section-title-${section.id}`}>
                           {section.title}
                         </CardTitle>
-                        <CardDescription className="text-gray-600">
+                        <CardDescription className="text-gray-200">
                           {section.description}
                         </CardDescription>
                       </div>
@@ -136,13 +136,13 @@ export default function HelpPage() {
                       {section.items.map((item, index) => (
                         <div 
                           key={index}
-                          className="p-4 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-100"
+                          className="p-4 bg-gradient-to-r from-slate-700/50 to-slate-800/50 rounded-xl border border-slate-600/30"
                           data-testid={`help-item-${section.id}-${index}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-800 mb-1">{item.name}</h4>
-                              <p className="text-sm text-gray-600 mb-2">
+                              <h4 className="font-medium text-white mb-1">{item.name}</h4>
+                              <p className="text-sm text-gray-200 mb-2">
                                 {'description' in item 
                                   ? item.description 
                                   : 'meaning' in item 

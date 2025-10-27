@@ -68,9 +68,9 @@ export default function ClientDashboard() {
   const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
       {/* Header */}
-      <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
+      <div className="bg-slate-950 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
             <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
