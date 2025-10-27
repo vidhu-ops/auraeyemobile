@@ -106,10 +106,10 @@ export default function WelcomeOnboarding() {
           </div>
 
           {/* Welcome Text with fade in */}
-          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 animate-fade-in-up">
+          <h1 className="text-6xl md:text-4xl font-bold text-white mb-4 animate-fade-in-up">
             Welcome to
           </h1>
-          <h2 className="text-7xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-4xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             AuraEye
           </h2>
           
