@@ -140,7 +140,7 @@ export default function HomePage() {
         </div>
 
         {/* Service Buttons Grid */}
-        <div className="mb-8">
+        <div className="mb-10">
           <h2 className="text-lg font-semibold text-white mb-6 text-center">Explore Our Services</h2>
           
           {/* First Row - 5 icons */}
@@ -153,28 +153,28 @@ export default function HomePage() {
             </Link>
             
             <Link href="/vibe" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 hover:from-cyan-800/60 hover:to-cyan-700/60 transition-all shadow-sm border border-cyan-500/30" data-testid="button-vibe">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:to-cyan-700/60 transition-all shadow-sm" data-testid="button-vibe">
                 <Flame className="h-5 w-5 text-cyan-300 mb-1" />
                 <span className="text-[10px] text-cyan-200 font-medium text-center leading-tight">Vibe</span>
               </button>
             </Link>
             
             <Link href="/object-analysis" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-pink-900/50 to-pink-800/50 hover:from-pink-800/60 hover:to-pink-700/60 transition-all shadow-sm border border-pink-500/30" data-testid="button-object-analysis">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-pink-800/60 hover:to-pink-700/60 transition-all shadow-sm" data-testid="button-object-analysis">
                 <Scan className="h-5 w-5 text-pink-300 mb-1" />
                 <span className="text-[10px] text-pink-200 font-medium text-center leading-tight">Object</span>
               </button>
             </Link>
             
             <Link href="/numerology" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-amber-900/50 to-amber-800/50 hover:from-amber-800/60 hover:to-amber-700/60 transition-all shadow-sm border border-amber-500/30" data-testid="button-numerology">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-amber-800/60 hover:to-amber-700/60 transition-all shadow-sm" data-testid="button-numerology">
                 <Calculator className="h-5 w-5 text-amber-300 mb-1" />
                 <span className="text-[10px] text-amber-200 font-medium text-center leading-tight">Numbers</span>
               </button>
             </Link>
             
             <Link href="/daily-horoscope" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-orange-900/50 to-orange-800/50 hover:from-orange-800/60 hover:to-orange-700/60 transition-all shadow-sm border border-orange-500/30" data-testid="button-horoscope">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-orange-800/60 hover:to-orange-700/60 transition-all shadow-sm" data-testid="button-horoscope">
                 <Sunrise className="h-5 w-5 text-orange-300 mb-1" />
                 <span className="text-[10px] text-orange-200 font-medium text-center leading-tight">Stars</span>
               </button>
@@ -221,23 +221,23 @@ export default function HomePage() {
         </div>
 
         {/* Light Tree of Wisdom */}
-        <Card className="bg-gradient-to-br from-green-900/30 to-cyan-900/30 border-green-500/30 mb-4 shadow-lg">
+        <Card className="bg-gradient-to-br from-green-900/70 to-cyan-900/70 border-green-500/30 mb-10">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-green-400" />
-              <h2 className="text-green-300 font-semibold">Light Tree of Wisdom</h2>
+              <h2 className="text-green-600 font-semibold">Light Tree of Wisdom</h2>
             </div>
             
             {/* Soul Energy Display */}
             <div className="bg-gradient-to-r from-purple-900/40 to-cyan-900/40 rounded-xl p-4 mb-4 border border-purple-500/30">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-purple-400" />
+                  <Zap className="h-5 w-5 text-purple-600" />
                   <span className="text-gray-200 font-semibold">Soul Energy</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-300">{soulEnergy}</div>
+                <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
               </div>
-              <div className="text-xs text-gray-300">
+              <div className="text-xs text-gray-700">
                 {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
               </div>
               <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
@@ -279,10 +279,10 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <h3 className="text-gray-200 font-semibold mb-2">Tree Growth</h3>
-              <div className="text-green-400 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
+              <h3 className="text-gray-500 font-semibold mb-2">Tree Growth</h3>
+              <div className="text-green-900 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
               
-              <div className="flex items-center gap-1 text-green-300 text-sm">
+              <div className="flex items-center gap-1 text-green-600 text-xs">
                 <Sparkles className="h-4 w-4" />
                 <span>Your tree is flourishing with spiritual energy!</span>
               </div>
@@ -291,14 +291,14 @@ export default function HomePage() {
         </Card>
 
         {/* Energy Sources */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-5">
             <Zap className="h-5 w-5 text-purple-400" />
             <h2 className="text-white font-semibold">Energy Sources</h2>
           </div>
 
           {/* Meditation Sessions Card */}
-          <Card className="bg-purple-900/30 border-purple-500/30 mb-3 shadow-lg">
+          <Card className="bg-purple-900/70 border-purple-500/30 mb-3 shadow-lg">
             <CardContent className="p-4">
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
@@ -336,7 +336,7 @@ export default function HomePage() {
           </Card>
 
           {/* Healer Consultations Card */}
-          <Card className="bg-cyan-900/30 border-cyan-500/30 mb-3 shadow-lg">
+          <Card className="bg-cyan-900/70 border-cyan-500/30 mb-3 shadow-lg">
             <CardContent className="p-4">
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
@@ -375,15 +375,15 @@ export default function HomePage() {
         </div>
 
         {/* Quick Services */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-5">
             <Sparkles className="h-5 w-5 text-indigo-400" />
             <h2 className="text-white font-semibold">Quick Services</h2>
           </div>
           
           <div className="grid grid-cols-2 gap-3">
             <Link href="/aura-analysis">
-              <Card className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 transition-all cursor-pointer" data-testid="service-aura">
+              <Card className="bg-gradient-to-br from-purple-900/70 to-indigo-900/70 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 transition-all cursor-pointer" data-testid="service-aura">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
                     <Camera className="h-6 w-6 text-white" />
@@ -395,7 +395,7 @@ export default function HomePage() {
             </Link>
             
             <Link href="/daily-horoscope">
-              <Card className="bg-gradient-to-br from-yellow-900/40 to-amber-900/40 border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/20 transition-all cursor-pointer" data-testid="service-horoscope">
+              <Card className="bg-gradient-to-br from-yellow-900/70 to-amber-900/70 border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/20 transition-all cursor-pointer" data-testid="service-horoscope">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center">
                     <Star className="h-6 w-6 text-white" />
@@ -407,7 +407,7 @@ export default function HomePage() {
             </Link>
             
             <Link href="/numerology">
-              <Card className="bg-gradient-to-br from-indigo-900/40 to-violet-900/40 border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer" data-testid="service-numerology">
+              <Card className="bg-gradient-to-br from-indigo-900/70 to-violet-900/70 border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer" data-testid="service-numerology">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
                     <Calculator className="h-6 w-6 text-white" />
@@ -419,7 +419,7 @@ export default function HomePage() {
             </Link>
             
             <Link href="/healers">
-              <Card className="bg-gradient-to-br from-pink-900/40 to-rose-900/40 border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all cursor-pointer" data-testid="service-healers">
+              <Card className="bg-gradient-to-br from-pink-900/70 to-rose-900/70 border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all cursor-pointer" data-testid="service-healers">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
                     <Users className="h-6 w-6 text-white" />
@@ -434,13 +434,13 @@ export default function HomePage() {
 
         {/* Energy Milestones */}
         <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3 bg-amber-900/30 px-3 py-2 rounded-lg border border-amber-500/30">
+          <div className="flex items-center gap-2 mb-3 bg-amber-900/70 px-3 py-2 rounded-lg border border-amber-500/30">
             <Mountain className="h-5 w-5 text-amber-400" />
             <h2 className="text-amber-300 font-semibold">Energy Milestones</h2>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-amber-900/30 to-yellow-900/30 border-amber-500/30">
+            <Card className="bg-gradient-to-br from-amber-900/70 to-yellow-900/70 border-amber-500/30">
               <CardContent className="p-3">
                 <div className="text-2xl mb-2">⚡</div>
                 <h3 className="text-white font-semibold text-sm mb-1">Energy Master</h3>
@@ -449,7 +449,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border-green-500/30">
+            <Card className="bg-gradient-to-br from-green-900/70 to-emerald-900/70 border-green-500/30">
               <CardContent className="p-3">
                 <div className="text-2xl mb-2">🌳</div>
                 <h3 className="text-white font-semibold text-sm mb-1">Tree Guardian</h3>
@@ -458,7 +458,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-500/30">
+            <Card className="bg-gradient-to-br from-purple-900/70 to-pink-900/70 border-purple-500/30">
               <CardContent className="p-3">
                 <div className="text-2xl mb-2">🧘</div>
                 <h3 className="text-white font-semibold text-sm mb-1">Soul Enlightened</h3>
@@ -467,7 +467,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-500/30">
+            <Card className="bg-gradient-to-br from-cyan-900/70 to-blue-900/70 border-cyan-500/30">
               <CardContent className="p-3">
                 <div className="text-2xl mb-2">⚖️</div>
                 <h3 className="text-white font-semibold text-sm mb-1">Energy Harmony</h3>
