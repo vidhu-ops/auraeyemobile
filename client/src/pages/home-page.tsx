@@ -120,7 +120,7 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
             Hello, Welcome to Your
           </h1>
-          <h2 className="text-xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
             Spiritual Space
           </h2>
           <p className="text-gray-300 text-sm pt-2">Your journey to inner peace and enlightenment begins here</p>
@@ -146,7 +146,7 @@ export default function HomePage() {
           {/* First Row - 5 icons */}
           <div className="grid grid-cols-5 gap-3 mb-3 max-w-sm mx-auto">
             <Link href="/aura-analysis" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-purple-900/50 to-purple-800/50 hover:from-purple-800/60 hover:to-purple-700/60 transition-all shadow-sm border border-purple-500/30" data-testid="button-aura-analysis">
+              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-purple-800/60 hover:to-purple-700/60 transition-all shadow-sm" data-testid="button-aura-analysis">
                 <Eye className="h-5 w-5 text-purple-300 mb-1" />
                 <span className="text-[10px] text-purple-200 font-medium text-center leading-tight">Aura</span>
               </button>
