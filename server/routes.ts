@@ -629,21 +629,8 @@ async function generateSimpleZoneVisualization(
   }
 }
 
-function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: string) {
-  // Create deterministic seed ONLY from image content to ensure same image = same results
-  const generateHash = (buffer: Buffer): number => {
-    const hasher = crypto.createHash('md5').update(buffer);
-    const hash = hasher.digest('hex');
-    return parseInt(hash.substring(0, 8), 16);
-  };
-  
-  let seed = generateHash(imageBuffer);
-  const seededRandom = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-
-  // Only approved aura colors - restricted to 12 colors as per requirements
+// Helper function to map hex color to nearest named aura color
+function mapHexToNearestAuraColor(hexColor: string): { name: string; hex: string } {
   const enhancedColors = [
     { name: "Violet", hex: "#8A2BE2" },
     { name: "Indigo", hex: "#4B0082" },
@@ -659,62 +646,85 @@ function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: strin
     { name: "Brown", hex: "#A52A2A" }
   ];
   
-  // Enhanced color selection with diversity - ensuring varied combinations
-  const colorCount = enhancedColors.length;
+  // Convert hex to RGB
+  const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 0, g: 0, b: 0 };
+  };
   
-  // Create more diverse color combinations by using different selection strategies
-  const diversityFactor = Math.floor(seededRandom() * 3); // 0, 1, or 2 for different approaches
+  // Calculate color distance
+  const colorDistance = (color1: { r: number; g: number; b: number }, color2: { r: number; g: number; b: number }): number => {
+    return Math.sqrt(
+      Math.pow(color1.r - color2.r, 2) +
+      Math.pow(color1.g - color2.g, 2) +
+      Math.pow(color1.b - color2.b, 2)
+    );
+  };
   
-  let auraColors = [];
+  const targetRgb = hexToRgb(hexColor);
+  let nearestColor = enhancedColors[0];
+  let minDistance = Infinity;
   
-  if (diversityFactor === 0) {
-    // Complementary colors approach - select colors that work well together
-    const primaryIndex = Math.floor(seededRandom() * colorCount);
-    const complementaryIndex = (primaryIndex + Math.floor(colorCount / 2)) % colorCount;
-    const tertiaryIndex = (primaryIndex + Math.floor(colorCount / 3)) % colorCount;
-    const quaternaryIndex = (primaryIndex + Math.floor(colorCount / 4)) % colorCount;
+  for (const color of enhancedColors) {
+    const colorRgb = hexToRgb(color.hex);
+    const distance = colorDistance(targetRgb, colorRgb);
     
-    auraColors = [
-      enhancedColors[primaryIndex], // Personality color
-      enhancedColors[complementaryIndex], // Giving color
-      enhancedColors[tertiaryIndex], // Receiving color
-      enhancedColors[quaternaryIndex], // Thinking color
-      enhancedColors[(primaryIndex + 1) % colorCount],
-      enhancedColors[(primaryIndex + 2) % colorCount]
-    ];
-  } else if (diversityFactor === 1) {
-    // Triadic colors approach - select colors at equal intervals
-    const baseIndex = Math.floor(seededRandom() * colorCount);
-    const interval = Math.floor(colorCount / 3);
-    
-    auraColors = [
-      enhancedColors[baseIndex], // Personality color
-      enhancedColors[(baseIndex + interval) % colorCount], // Giving color
-      enhancedColors[(baseIndex + interval * 2) % colorCount], // Receiving color
-      enhancedColors[(baseIndex + Math.floor(seededRandom() * 3) + 1) % colorCount], // Thinking color
-      enhancedColors[(baseIndex + 3) % colorCount],
-      enhancedColors[(baseIndex + 4) % colorCount]
-    ];
-  } else {
-    // Random diverse approach - truly random but avoid repetition
-    const usedIndices = new Set();
-    auraColors = [];
-    
-    for (let i = 0; i < 6; i++) {
-      let colorIndex;
-      let attempts = 0;
-      do {
-        colorIndex = Math.floor(seededRandom() * colorCount);
-        attempts++;
-      } while (usedIndices.has(colorIndex) && attempts < 20);
-      
-      usedIndices.add(colorIndex);
-      auraColors.push(enhancedColors[colorIndex]);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestColor = color;
     }
   }
   
+  return nearestColor;
+}
+
+async function generateDeterministicAuraAnalysis(imageBuffer: Buffer, imageUrl?: string) {
+  // Extract actual colors from the uploaded image
+  console.log("Extracting actual colors from uploaded image...");
+  const imageColorAnalysis = await analyzeImageColors(imageBuffer);
+  
+  console.log("Extracted colors from image:", {
+    dominant: imageColorAnalysis.overallDominant,
+    secondary: imageColorAnalysis.overallSecondary,
+    zones: imageColorAnalysis.zones.map(z => ({ name: z.name, color: z.dominantColor }))
+  });
+  
+  // Map extracted hex colors to nearest named aura colors
+  const dominantColorMapped = mapHexToNearestAuraColor(imageColorAnalysis.overallDominant);
+  const secondaryColorMapped = mapHexToNearestAuraColor(imageColorAnalysis.overallSecondary);
+  
+  // Map zone colors
+  const zoneColorsMapped = imageColorAnalysis.zones.map(zone => mapHexToNearestAuraColor(zone.dominantColor));
+  
+  // Build aura colors array from extracted colors
+  const auraColors = [
+    dominantColorMapped, // Personality (from overall dominant)
+    secondaryColorMapped, // Giving (from overall secondary)
+    zoneColorsMapped[0] || dominantColorMapped, // Receiving (from Crown zone)
+    zoneColorsMapped[1] || secondaryColorMapped, // Thinking (from Heart zone)
+    zoneColorsMapped[2] || dominantColorMapped, // Additional (from Solar zone)
+    zoneColorsMapped[3] || secondaryColorMapped  // Additional (from Aura zone)
+  ];
+  
+  // Create deterministic seed for consistent trait generation
+  const generateHash = (buffer: Buffer): number => {
+    const hasher = crypto.createHash('md5').update(buffer);
+    const hash = hasher.digest('hex');
+    return parseInt(hash.substring(0, 8), 16);
+  };
+  
+  let seed = generateHash(imageBuffer);
+  const seededRandom = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  
   const dominantColor = auraColors[0];
-  const secondaryColor = auraColors[1] || auraColors[0];
+  const secondaryColor = auraColors[1];
   
   // Get specific traits for each color position
   const personalityTraits = getSpecificColorTraits(auraColors[0].name, 'personality');
@@ -1492,11 +1502,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           useExistingAnalysis = true;
         } catch (parseError) {
           console.error("Error parsing existing analysis, generating new one:", parseError);
-          auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
+          auraAnalysis = await generateDeterministicAuraAnalysis(compressedBuffer);
         }
       } else {
         // Generate new deterministic analysis based ONLY on image content
-        auraAnalysis = generateDeterministicAuraAnalysis(compressedBuffer);
+        auraAnalysis = await generateDeterministicAuraAnalysis(compressedBuffer);
       }
 
       if (!useExistingAnalysis) {

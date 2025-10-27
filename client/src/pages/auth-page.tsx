@@ -40,16 +40,16 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-primary/5 to-secondary/5">
-      <div className="relative w-full md:w-1/2 p-6 md:p-12 flex items-center justify-center">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-primary to-secondary to-pink">
+      <div className="relative w-full h-full p-6 flex items-center justify-center">
         <AuraGlow 
           colors={[
-            { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
+            { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-full h-full", delay: "0s" },
             { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
           ]} 
         />
         
-        <Card className="w-full max-w-md z-10">
+        <Card className="w-full max-w-md h-full z-10">
           <CardHeader>
             <div className="flex items-center space-x-2 mb-2">
               <img src={logoPath} alt="AuraEye Logo" className="w-10 h-10 rounded-full object-cover" />
@@ -112,53 +112,7 @@ export default function AuthPage() {
         </Card>
       </div>
       
-      <div className="w-full md:w-1/2 bg-blue-100 from-light-dark to-primary text-black p-6 md:p-12 flex items-center">
-        <div className="max-w mx-auto">
-          <h1 className="font-heading font-bold text-3xl md:text-4xl mb-6">Begin Your Spiritual Journey</h1>
-          <p className="text-lg opacity-90 mb-8">
-            AuraEye connects you with powerful spiritual tools to discover your aura, analyze your energy, and embark on a path of healing and self-discovery.
-          </p>
-          
-          <div className="space-y-6">
-            <div className="flex items-start">
-              <div className="bg-white rounded-full p-2 mr-4">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-xl mb-1">Aura Analysis</h3>
-                <p className="opacity-80">Upload photos and receive detailed analysis of your aura colors and energy patterns.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="bg-white/10 rounded-full p-2 mr-4">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-xl mb-1">Daily Spiritual Guidance</h3>
-                <p className="opacity-80">Get personalized horoscopes, numerology insights, and energy forecasts.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="bg-white/10 rounded-full p-2 mr-4">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-xl mb-1">Connect with Healers</h3>
-                <p className="opacity-80">Book sessions with experienced spiritual guides and energy healers.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 }
