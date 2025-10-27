@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface LightsContextType {
   lightsOn: boolean;
@@ -8,15 +8,10 @@ interface LightsContextType {
 const LightsContext = createContext<LightsContextType | undefined>(undefined);
 
 export function LightsProvider({ children }: { children: React.ReactNode }) {
-  const [lightsOn, setLightsOn] = useState<boolean>(() => {
-    // Check if lights were previously turned on in this session
-    const stored = sessionStorage.getItem("lightsOn");
-    return stored === "true";
-  });
+  const [lightsOn, setLightsOn] = useState<boolean>(false);
 
   const turnOnLights = () => {
     setLightsOn(true);
-    sessionStorage.setItem("lightsOn", "true");
   };
 
   return (
