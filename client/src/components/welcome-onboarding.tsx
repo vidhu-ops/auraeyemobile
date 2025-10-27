@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Eye, Users, Star } from "lucide-react";
-import orbImage from "@assets/virtual-assistant-technology-circle-vector-graphic-neon-pink_53876-112211_1761595477243.jpg";
 
 export default function WelcomeOnboarding() {
   const [, setLocation] = useLocation();
@@ -52,20 +51,57 @@ export default function WelcomeOnboarding() {
 
         {/* Main Content */}
         <div className="relative z-10 text-center">
-          {/* Glowing Orb with enhanced effects */}
+          {/* Custom Glowing Orb */}
           <div className="mb-8 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 rounded-full blur-2xl opacity-90 animate-pulse"></div>
-              <div className="relative w-64 h-64 flex items-center justify-center transform animate-float">
-                <img 
-                  src={orbImage} 
-                  alt="Spiritual Orb" 
-                  className="w-full h-full object-contain drop-shadow-2xl" 
+            <div className="relative w-64 h-64">
+              {/* Outer glow layers */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-600 blur-3xl opacity-60 animate-pulse"></div>
+              <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-blue-500 via-purple-400 to-cyan-400 blur-2xl opacity-70 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              
+              {/* Main orb */}
+              <div 
+                className="absolute inset-8 rounded-full transform animate-float"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.9), rgba(59, 130, 246, 0.9))',
+                  backgroundSize: '200% 200%',
+                  animation: 'float 6s ease-in-out infinite, gradient-shift 8s ease infinite',
+                  boxShadow: `
+                    0 0 60px rgba(6, 182, 212, 0.8),
+                    0 0 100px rgba(236, 72, 153, 0.6),
+                    inset 0 0 60px rgba(255, 255, 255, 0.3),
+                    inset 20px 20px 60px rgba(255, 255, 255, 0.4),
+                    inset -20px -20px 60px rgba(59, 130, 246, 0.4)
+                  `
+                }}
+              >
+                {/* Inner highlights for depth */}
+                <div 
+                  className="absolute inset-0 rounded-full"
                   style={{
-                    filter: 'drop-shadow(0 0 40px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 80px rgba(236, 72, 153, 0.6))'
+                    background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 50%)'
                   }}
-                />
+                ></div>
+                <div 
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.4), transparent 60%)'
+                  }}
+                ></div>
               </div>
+
+              {/* Rotating ring effects */}
+              <div 
+                className="absolute inset-12 rounded-full border-2 border-cyan-400/30"
+                style={{
+                  animation: 'spin 20s linear infinite'
+                }}
+              ></div>
+              <div 
+                className="absolute inset-16 rounded-full border-2 border-pink-500/20"
+                style={{
+                  animation: 'spin 15s linear infinite reverse'
+                }}
+              ></div>
             </div>
           </div>
 
@@ -108,18 +144,35 @@ export default function WelcomeOnboarding() {
       {/* Main Content Card */}
       <Card className="relative z-10 w-full max-w-4xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl animate-fade-in-up">
         <CardContent className="p-8 md:p-12">
-          {/* Glowing Orb */}
+          {/* Custom Glowing Orb */}
           <div className="flex justify-center mb-8">
             <div className="relative w-32 h-32">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 rounded-full blur-xl opacity-75 animate-pulse"></div>
-              <img 
-                src={orbImage} 
-                alt="Spiritual Orb" 
-                className="relative w-full h-full object-contain drop-shadow-xl"
+              {/* Outer glow */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-600 blur-xl opacity-75 animate-pulse"></div>
+              
+              {/* Main orb */}
+              <div 
+                className="absolute inset-2 rounded-full"
                 style={{
-                  filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.7)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.5))'
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(168, 85, 247, 0.95), rgba(236, 72, 153, 0.95))',
+                  backgroundSize: '200% 200%',
+                  animation: 'gradient-shift 8s ease infinite',
+                  boxShadow: `
+                    0 0 30px rgba(6, 182, 212, 0.7),
+                    0 0 50px rgba(236, 72, 153, 0.5),
+                    inset 0 0 30px rgba(255, 255, 255, 0.3),
+                    inset 10px 10px 30px rgba(255, 255, 255, 0.4)
+                  `
                 }}
-              />
+              >
+                {/* Inner highlight */}
+                <div 
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 50%)'
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
 
