@@ -31,6 +31,7 @@ import { PremiumProvider } from "@/hooks/use-premium";
 import { LightsProvider, useLights } from "@/hooks/use-lights";
 import { ProtectedRoute } from "./lib/protected-route";
 import LightsActivation from "@/components/lights-activation";
+import Mascot from "@/components/mascot/mascot";
 import { useEffect, useState } from "react";
 
 function Router() {
@@ -103,7 +104,12 @@ function AppContent() {
     return <LightsActivation />;
   }
 
-  return <Router />;
+  return (
+    <>
+      <Router />
+      {user && !isPublicRoute && <Mascot />}
+    </>
+  );
 }
 
 function App() {

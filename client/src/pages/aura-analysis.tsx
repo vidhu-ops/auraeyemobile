@@ -5625,6 +5625,11 @@ export default function AuraAnalysis() {
             
             setResult(analysisResult);
             
+            // Save last scan color for mascot
+            if (analysisResult.dominantColor) {
+              localStorage.setItem("lastAuraColor", analysisResult.dominantColor);
+            }
+            
             // Load processedAuraImage from backend if available
             if (analysisResult.processedAuraImage) {
               console.log('📸 Loading processed aura image from backend');
