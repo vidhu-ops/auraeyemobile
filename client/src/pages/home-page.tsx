@@ -7,7 +7,7 @@ import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu, Camera, Star, Book, Calculator, Users, Home, LogOut, CreditCard } from "lucide-react";
+import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Menu, Camera, Star, Book, Calculator, Users, Home, LogOut, CreditCard, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 import { useState } from "react";
 
@@ -121,6 +121,100 @@ export default function HomePage() {
             Hello, Welcome to Your Spiritual Space
           </h1>
           <p className="text-gray-600 text-sm">Your journey to inner peace and enlightenment begins here</p>
+        </div>
+
+        {/* Spiritual Illustration */}
+        <div className="mb-6 flex justify-center">
+          <div className="relative w-48 h-48 rounded-full bg-gradient-to-br from-purple-200 via-cyan-200 to-pink-200 flex items-center justify-center shadow-lg">
+            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-purple-100 via-white to-cyan-100 flex items-center justify-center">
+              <div className="relative">
+                <Eye className="h-16 w-16 text-purple-600" />
+                <Sparkles className="h-6 w-6 text-yellow-400 absolute -top-2 -right-2 animate-pulse" />
+                <Sparkles className="h-4 w-4 text-cyan-400 absolute -bottom-1 -left-1 animate-pulse" style={{ animationDelay: '0.5s' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Service Buttons Grid */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4 text-center">Explore Our Services</h2>
+          
+          {/* First Row - 5 icons */}
+          <div className="grid grid-cols-5 gap-3 mb-3">
+            <Link href="/aura-analysis">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 hover:from-purple-200 hover:to-purple-300 transition-all shadow-sm" data-testid="button-aura-analysis">
+                <Eye className="h-6 w-6 text-purple-600 mb-1" />
+                <span className="text-xs text-purple-800 font-medium text-center">Aura</span>
+              </button>
+            </Link>
+            
+            <Link href="/vibe">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-cyan-100 to-cyan-200 hover:from-cyan-200 hover:to-cyan-300 transition-all shadow-sm" data-testid="button-vibe">
+                <Flame className="h-6 w-6 text-cyan-600 mb-1" />
+                <span className="text-xs text-cyan-800 font-medium text-center">Vibe</span>
+              </button>
+            </Link>
+            
+            <Link href="/object-analysis">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-all shadow-sm" data-testid="button-object-analysis">
+                <Scan className="h-6 w-6 text-pink-600 mb-1" />
+                <span className="text-xs text-pink-800 font-medium text-center">Object</span>
+              </button>
+            </Link>
+            
+            <Link href="/numerology">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 hover:from-amber-200 hover:to-amber-300 transition-all shadow-sm" data-testid="button-numerology">
+                <Calculator className="h-6 w-6 text-amber-600 mb-1" />
+                <span className="text-xs text-amber-800 font-medium text-center">Numbers</span>
+              </button>
+            </Link>
+            
+            <Link href="/daily-horoscope">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-200 hover:from-orange-200 hover:to-orange-300 transition-all shadow-sm" data-testid="button-horoscope">
+                <Sunrise className="h-6 w-6 text-orange-600 mb-1" />
+                <span className="text-xs text-orange-800 font-medium text-center">Stars</span>
+              </button>
+            </Link>
+          </div>
+
+          {/* Second Row - 5 icons */}
+          <div className="grid grid-cols-5 gap-3">
+            <Link href="/journal">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 transition-all shadow-sm" data-testid="button-journal">
+                <Book className="h-6 w-6 text-green-600 mb-1" />
+                <span className="text-xs text-green-800 font-medium text-center">Journal</span>
+              </button>
+            </Link>
+            
+            <Link href="/meditations">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-indigo-100 to-indigo-200 hover:from-indigo-200 hover:to-indigo-300 transition-all shadow-sm" data-testid="button-meditations">
+                <Brain className="h-6 w-6 text-indigo-600 mb-1" />
+                <span className="text-xs text-indigo-800 font-medium text-center">Meditate</span>
+              </button>
+            </Link>
+            
+            <Link href="/healers">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 hover:from-rose-200 hover:to-rose-300 transition-all shadow-sm" data-testid="button-healers">
+                <Users className="h-6 w-6 text-rose-600 mb-1" />
+                <span className="text-xs text-rose-800 font-medium text-center">Healers</span>
+              </button>
+            </Link>
+            
+            <Link href="/color-meanings">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-200 hover:from-violet-200 hover:to-violet-300 transition-all shadow-sm" data-testid="button-colors">
+                <Palette className="h-6 w-6 text-violet-600 mb-1" />
+                <span className="text-xs text-violet-800 font-medium text-center">Colors</span>
+              </button>
+            </Link>
+            
+            <Link href="/help">
+              <button className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 hover:from-teal-200 hover:to-teal-300 transition-all shadow-sm" data-testid="button-help">
+                <HelpCircle className="h-6 w-6 text-teal-600 mb-1" />
+                <span className="text-xs text-teal-800 font-medium text-center">Help</span>
+              </button>
+            </Link>
+          </div>
         </div>
 
         {/* Light Tree of Wisdom */}
