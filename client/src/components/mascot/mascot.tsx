@@ -78,13 +78,24 @@ export default function Mascot() {
     if (path === "/") {
       if (scanColor) {
         return {
-          text: `Welcome back, ${username}! 💫 Your ${scanColor} aura is absolutely radiant today!`,
+          text: `Welcome back, ${username}! 💫 Your ${scanColor} aura is absolutely radiant today! Your energy signature is unique!`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
       }
+      
+      // Low credits warning
+      const creditThreshold = userType === 'healer' ? 30 : 20;
+      if (credits < creditThreshold) {
+        return {
+          text: `${username}, you're running low on energy! Only ${credits} credits left. Time to recharge! ⚡`,
+          color: "#f59e0b",
+          emotion: 'neutral'
+        };
+      }
+      
       return {
-        text: `Hey ${username}! 🌟 You have ${credits} credits. Ready to discover your spiritual energy?`,
+        text: `Hey ${username}! 🌟 What spiritual adventure calls to you today? Your energy awaits!`,
         color: "#06b6d4",
         emotion: 'happy'
       };
@@ -94,19 +105,29 @@ export default function Mascot() {
     if (path.includes("dashboard")) {
       if (energy > 150) {
         return {
-          text: `Amazing, ${username}! Your soul energy is at ${energy}! 🔥 You're glowing with power!`,
+          text: `Incredible, ${username}! Your ${energy} soul energy is blazing bright! 🔥 You're a beacon of light!`,
           color: "#f59e0b",
           emotion: 'excited'
         };
       } else if (energy > 80) {
         return {
-          text: `${username}, your ${energy} soul energy is growing strong! 🌱 Keep going!`,
+          text: `${username}, your spiritual energy (${energy}) is flourishing! 🌱 I can feel your growth!`,
           color: "#10b981",
           emotion: 'happy'
         };
       }
+      
+      // Show color-based message if available
+      if (scanColor) {
+        return {
+          text: `${username}, your ${scanColor} aura shows you have ${energy} soul energy! Keep nurturing it! ✨`,
+          color: getColorHex(scanColor),
+          emotion: 'happy'
+        };
+      }
+      
       return {
-        text: `${username}, you have ${energy} soul energy and ${credits} credits! Let's build that energy! ✨`,
+        text: `${username}, your journey shows ${energy} soul energy! Every step matters! ✨`,
         color: "#8b5cf6",
         emotion: 'neutral'
       };
@@ -115,17 +136,28 @@ export default function Mascot() {
     // Aura analysis pages
     if (path.includes("aura") || path.includes("vibe")) {
       if (userType === 'healer') {
+        const healerMessage = scanColor 
+          ? `${username}, your healing touch reveals ${scanColor} energy! Guide them to their truth! 💚`
+          : `${username}, use your gift to illuminate someone's soul! Your healing touch matters! 💚`;
         return {
-          text: `${username}, your gift helps others see their true colors! 💚 ${credits} credits available.`,
-          color: scanColor ? getColorHex(scanColor) : "#ec4899",
+          text: healerMessage,
+          color: scanColor ? getColorHex(scanColor) : "#10b981",
           emotion: 'excited'
         };
       }
+      
+      // Client messages with color memory
+      if (scanColor) {
+        return {
+          text: `${username}, your ${scanColor} aura was beautiful! Ready to see how your colors have evolved? 🎨✨`,
+          color: getColorHex(scanColor),
+          emotion: 'excited'
+        };
+      }
+      
       return {
-        text: scanColor 
-          ? `${username}, ready for another scan? Your last aura was ${scanColor}! 🎨`
-          : `${username}, ready to reveal your aura? Every color tells YOUR unique story! 🎨`,
-        color: scanColor ? getColorHex(scanColor) : "#ec4899",
+        text: `${username}, let's discover your aura! Your colors hold the secrets of your soul! 🎨✨`,
+        color: "#ec4899",
         emotion: 'excited'
       };
     }
@@ -193,9 +225,17 @@ export default function Mascot() {
       };
     }
 
-    // Default message
+    // Default message with color memory
+    if (scanColor) {
+      return {
+        text: `Hi ${username}! Your ${scanColor} aura energy (${energy}) is with you! What shall we explore? 🌟`,
+        color: getColorHex(scanColor),
+        emotion: 'happy'
+      };
+    }
+    
     return {
-      text: `Hi ${username}! You have ${energy} soul energy & ${credits} credits. How can I guide you? 🌟`,
+      text: `Hi ${username}! Your spiritual energy is at ${energy}! Ready to explore your path? 🌟`,
       color: "#06b6d4",
       emotion: 'happy'
     };
@@ -276,44 +316,57 @@ export default function Mascot() {
         ></div>
       </div>
 
-      {/* Mascot - Cute Gradient Blob */}
+      {/* Mascot - Cute Gradient Blob - FULLY VISIBLE */}
       <div 
-        className="relative w-20 h-20 rounded-full cursor-pointer hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse-slow"
+        className="relative w-24 h-24 rounded-full cursor-pointer hover:scale-110 transition-all duration-300 shadow-2xl"
         style={{ 
-          background: `linear-gradient(135deg, ${message.color}CC, #ec4899DD, #06b6d4CC)`,
-          boxShadow: `0 0 40px ${message.color}99, inset 0 0 30px rgba(255,255,255,0.5)`
+          background: `linear-gradient(135deg, ${message.color}F5, #ec4899F8, #06b6d4F5)`,
+          boxShadow: `0 0 50px ${message.color}CC, inset 0 0 40px rgba(255,255,255,0.6)`,
+          animation: 'float 4s ease-in-out infinite, gradient-shift 8s ease infinite'
         }}
         onClick={() => setIsVisible(false)}
         data-testid="mascot-image"
       >
-        {/* Soft glow overlay */}
+        {/* Bright highlight overlay for 3D effect */}
         <div 
           className="absolute inset-0 rounded-full"
           style={{
-            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), transparent 60%)`
+            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), transparent 60%)`
           }}
         ></div>
 
-        {/* Cute Face */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-900">
-          <div className="text-xl font-bold mb-1" style={{ letterSpacing: '0.3em' }}>
+        {/* Cute Face - DARKER FOR VISIBILITY */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-900 drop-shadow-sm">
+          <div className="text-2xl font-bold mb-1 transition-all duration-500" style={{ letterSpacing: '0.3em' }}>
             {face.eyes}
           </div>
-          <div className="text-2xl">
+          <div className="text-3xl transition-all duration-500">
             {face.mouth}
           </div>
         </div>
         
-        {/* Glowing ring animation */}
+        {/* Rotating ring animation */}
         <div 
-          className="absolute inset-0 rounded-full animate-ping opacity-30"
+          className="absolute inset-0 rounded-full border-2 opacity-40"
+          style={{ 
+            borderColor: message.color,
+            animation: 'spin 10s linear infinite'
+          }}
+        ></div>
+
+        {/* Pulsing glow ring */}
+        <div 
+          className="absolute inset-0 rounded-full animate-ping opacity-40"
           style={{ backgroundColor: message.color }}
         ></div>
 
-        {/* Outer soft glow */}
+        {/* Strong outer glow */}
         <div 
-          className="absolute -inset-2 rounded-full blur-xl opacity-50 animate-pulse-slow"
-          style={{ backgroundColor: message.color }}
+          className="absolute -inset-3 rounded-full blur-2xl opacity-70 animate-pulse"
+          style={{ 
+            backgroundColor: message.color,
+            animation: 'pulse 3s ease-in-out infinite'
+          }}
         ></div>
       </div>
     </div>
