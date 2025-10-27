@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Eye, Users, Star } from "lucide-react";
-import logoImage from "@assets/new-logo.jpeg";
+import orbImage from "@assets/virtual-assistant-technology-circle-vector-graphic-neon-pink_53876-112211_1761595477243.jpg";
 
 export default function WelcomeOnboarding() {
   const [, setLocation] = useLocation();
@@ -52,12 +52,19 @@ export default function WelcomeOnboarding() {
 
         {/* Main Content */}
         <div className="relative z-10 text-center">
-          {/* Logo with glow effect */}
+          {/* Glowing Orb with enhanced effects */}
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-full blur-xl opacity-75 animate-pulse"></div>
-              <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 p-2 flex items-center justify-center shadow-2xl transform animate-float">
-                <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-full" />
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 rounded-full blur-2xl opacity-90 animate-pulse"></div>
+              <div className="relative w-64 h-64 flex items-center justify-center transform animate-float">
+                <img 
+                  src={orbImage} 
+                  alt="Spiritual Orb" 
+                  className="w-full h-full object-contain drop-shadow-2xl" 
+                  style={{
+                    filter: 'drop-shadow(0 0 40px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 80px rgba(236, 72, 153, 0.6))'
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -101,10 +108,18 @@ export default function WelcomeOnboarding() {
       {/* Main Content Card */}
       <Card className="relative z-10 w-full max-w-4xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl animate-fade-in-up">
         <CardContent className="p-8 md:p-12">
-          {/* Logo */}
+          {/* Glowing Orb */}
           <div className="flex justify-center mb-8">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 p-1 flex items-center justify-center shadow-xl">
-              <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-full" />
+            <div className="relative w-32 h-32">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 rounded-full blur-xl opacity-75 animate-pulse"></div>
+              <img 
+                src={orbImage} 
+                alt="Spiritual Orb" 
+                className="relative w-full h-full object-contain drop-shadow-xl"
+                style={{
+                  filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.7)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.5))'
+                }}
+              />
             </div>
           </div>
 

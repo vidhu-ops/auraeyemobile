@@ -74,10 +74,13 @@ function AppContent() {
 
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // ⚠️ FOR TESTING: Always show onboarding on refresh
+    // 🚀 FOR PRODUCTION: Uncomment the lines below to only show onboarding to first-time users
+    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // if (!hasSeenOnboarding && location !== '/welcome') {
     
-    // If user hasn't seen onboarding and they're not already on the welcome page
-    if (!hasSeenOnboarding && location !== '/welcome') {
+    // TEMPORARY: Always show onboarding for testing
+    if (location !== '/welcome') {
       setLocation('/welcome');
     }
     
