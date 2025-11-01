@@ -15,7 +15,29 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, User, LogOut, CreditCard, Sparkles, Star, Zap } from "lucide-react";
+import { 
+  Menu, 
+  User, 
+  LogOut, 
+  CreditCard, 
+  Sparkles, 
+  Star, 
+  Zap,
+  Home as HomeIcon,
+  Briefcase,
+  Users,
+  Info,
+  Mail,
+  Camera,
+  Scan,
+  Calendar,
+  Hash,
+  BookOpen,
+  Heart,
+  Flower2,
+  DollarSign,
+  LayoutDashboard
+} from "lucide-react";
 import logoPath from "@assets/new-logo.jpeg";
 
 export default function Navbar() {
@@ -42,6 +64,23 @@ export default function Navbar() {
     { name: "Healers", href: "/healers" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
+  ];
+
+  const menuItems = [
+    { name: "Home", href: "/", icon: HomeIcon },
+    { name: "Aura Scan", href: "/aura-analysis", icon: Camera },
+    { name: "Object Scan", href: "/object-scan", icon: Scan },
+    { name: "Horoscope", href: "/horoscope", icon: Calendar },
+    { name: "Numerology", href: "/numerology", icon: Hash },
+    { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
+    { name: "Journal", href: "/journal", icon: BookOpen },
+    { name: "Meditation", href: "/meditation", icon: Flower2 },
+    { name: "Healers", href: "/healers", icon: Heart },
+    { name: "Services", href: "/services", icon: Briefcase },
+    { name: "Dashboard", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: LayoutDashboard },
+    { name: "Pricing", href: "/pricing", icon: DollarSign },
+    { name: "About", href: "/about", icon: Info },
+    { name: "Contact", href: "/contact", icon: Mail },
   ];
 
   const isActive = (path: string) => {
@@ -76,65 +115,80 @@ export default function Navbar() {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
-                <div className="flex flex-col space-y-4 mt-8">
-                  {navLinks.map((link) => (
-                    <Link 
-                      key={link.name} 
-                      href={link.href} 
-                      onClick={closeSheet}
-                      className={`py-2 px-2 rounded-lg ${isActive(link.href) ? 'text-primary font-medium' : 'text-gray-600 hover:text-primary hover:bg-gray-50'}`}
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                  
-                  <div className="pt-4 border-t border-gray-200 mt-4">
-                    {user ? (
-                      <>
-                        <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
-                          <CreditCard className="h-4 w-4 text-gray-600" />
-                          <span className="text-sm font-medium text-gray-700">{credits} credits</span>
+              <SheetContent className="w-full max-w-md overflow-y-auto">
+                <div className="mt-8">
+                  {user && (
+                    <div className="mb-6 p-4 glass-ethereal rounded-xl border border-purple-200/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-10 w-10 glow-mystical">
+                            <AvatarFallback className="bg-gradient-mystical text-white font-mystical">
+                              {getInitials(user.username)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-purple-700">{user.username}</p>
+                            <p className="text-xs text-purple-600/70">{user.userType}</p>
+                          </div>
                         </div>
+                        <div className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-cyan-500 px-3 py-1.5 rounded-full">
+                          <Zap className="h-3 w-3 text-white" />
+                          <span className="text-white font-semibold text-sm">{credits}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {menuItems.map((item) => {
+                      const Icon = item.icon;
+                      const itemActive = isActive(item.href);
+                      return (
                         <Link 
-                          href={user.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"} 
+                          key={item.name} 
+                          href={item.href} 
                           onClick={closeSheet}
-                          className="block py-2 px-2 rounded-lg text-primary font-medium"
+                          data-testid={`menu-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-300 ${
+                            itemActive 
+                              ? 'bg-gradient-to-br from-purple-500 to-cyan-500 text-white shadow-lg' 
+                              : 'bg-gradient-to-br from-purple-100/50 to-cyan-100/50 text-purple-700 hover:from-purple-200/70 hover:to-cyan-200/70'
+                          }`}
                         >
-                          My Dashboard
+                          <Icon className={`h-6 w-6 mb-2 ${itemActive ? 'text-white' : 'text-purple-600'}`} />
+                          <span className={`text-xs text-center font-medium ${itemActive ? 'text-white' : 'text-purple-700'}`}>
+                            {item.name}
+                          </span>
                         </Link>
-                        <Button 
-                          variant="ghost" 
-                          className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2"
-                          onClick={() => {
-                            handleLogout();
-                            closeSheet();
-                          }}
-                        >
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Logout
-                        </Button>
-                      </>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="border-t border-purple-200/30 pt-4">
+                    {user ? (
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-center text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          handleLogout();
+                          closeSheet();
+                        }}
+                        data-testid="button-logout"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </Button>
                     ) : (
-                      <>
+                      <div className="space-y-2">
                         <Link 
                           href="/auth" 
                           onClick={closeSheet}
-                          className="block py-2 px-2 rounded-lg text-primary font-medium"
                         >
-                          Login
-                        </Link>
-                        <Link 
-                          href="/auth" 
-                          onClick={() => {
-                            closeSheet();
-                          }}
-                        >
-                          <Button className="w-full mt-2 bg-primary hover:bg-primary-dark">
-                            Register
+                          <Button className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white" data-testid="button-login">
+                            Login / Register
                           </Button>
                         </Link>
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
