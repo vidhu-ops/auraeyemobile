@@ -50,6 +50,7 @@ Preferred communication style: Simple, everyday language.
 - **Sample Aura Readings Display**: Home page features three sample aura readings using specific uploaded images for blue (WhatsApp Image 2025-08-18 at 3.56.39 AM), green (WhatsApp Image 2025-08-18 at 3.52.42 AM), and purple (WhatsApp Image 2025-08-18 at 4.01.06 AM) dominant aura demonstrations with matching gradient overlays and descriptive text.
 - **Lights Activation Feature**: Interactive feature requiring users to click "Turn On The Lights" button on every app launch, refresh, or reactivation. Dark screen with glowing button and sparkle effects transitions to full application with 1.5-second light-up animation. Triggers for authenticated users on all protected routes, excluding public pages (auth, login, about, contact, pricing, services, healers).
 - **Welcome Onboarding**: Beautiful two-step onboarding flow featuring glowing spiritual orb image with mystical effects. Currently set to show on every refresh for testing purposes (see App.tsx comments for production toggle). When launched, will only display for first-time users.
+- **PWA Support**: Full Progressive Web App implementation enabling installation on mobile devices. Includes manifest.json with app metadata and branding, service worker for offline support and caching, Apple-specific meta tags for iOS installation, and theme colors matching the app's dark blue-green aesthetic. Users can install AuraEye directly to their home screen on both Android and iOS devices for a native app-like experience.
 
 ## External Dependencies
 

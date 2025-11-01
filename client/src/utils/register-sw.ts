@@ -4,11 +4,13 @@ export function registerServiceWorker() {
       navigator.serviceWorker
         .register('/service-worker.js')
         .then((registration) => {
-          console.log('Service Worker registered successfully:', registration.scope);
+          console.log('✅ Service Worker registered successfully:', registration.scope);
         })
         .catch((error) => {
-          console.log('Service Worker registration failed:', error);
+          console.error('❌ Service Worker registration failed:', error.message, error);
         });
     });
+  } else {
+    console.log('Service Worker not supported in this browser');
   }
 }
