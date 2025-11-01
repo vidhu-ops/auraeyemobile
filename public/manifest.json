@@ -1,0 +1,71 @@
+{
+  "name": "AuraEye - Your Energy Made Visible",
+  "short_name": "AuraEye",
+  "description": "Spiritual wellness platform combining AI technology with ancient metaphysical practices. Aura analysis, numerology, horoscope services, and spiritual guidance.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#164e63",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/new-logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "health"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Scan Aura",
+      "short_name": "Scan",
+      "description": "Analyze your aura energy",
+      "url": "/vibe",
+      "icons": [
+        {
+          "src": "/new-logo.jpeg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Numerology",
+      "short_name": "Numbers",
+      "description": "Get numerology insights",
+      "url": "/numerology",
+      "icons": [
+        {
+          "src": "/new-logo.jpeg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Meditate",
+      "short_name": "Meditate",
+      "description": "Access meditation library",
+      "url": "/meditations",
+      "icons": [
+        {
+          "src": "/new-logo.jpeg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Journal",
+      "short_name": "Journal",
+      "description": "Spiritual journaling",
+      "url": "/journal",
+      "icons": [
+        {
+          "src": "/new-logo.jpeg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
