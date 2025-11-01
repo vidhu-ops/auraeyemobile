@@ -52,9 +52,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="glass-ethereal sticky top-0 z-50 w-full border-b border-purple-200/30">
+    <nav className="bg-white/80 sticky top-0 z-30 w-full border-b border-purple-200/30">
       <div className="container mx-auto px-4 md:px-6 relative">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-2">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img src={logoPath} alt="AuraEye Logo" className="w-12 h-12 rounded-full object-cover glow-mystical transition-all duration-300 group-hover:scale-110" />
@@ -63,8 +63,8 @@ export default function Navbar() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-helvetica font-bold text-2xl text-purple-500">AuraEye™</span>
-              <span className="font-helvetica text-sm text-purple-600/70">Your energy made visible</span>
+              <span className="font-helvetica font-bold text-xl text-purple-500">AuraEye™</span>
+              <span className="font-helvetica text-xs text-purple-800/70">Your energy made visible</span>
             </div>
           </Link>
 

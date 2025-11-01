@@ -124,28 +124,21 @@ export default function JournalPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       {/* Header */}
-      <div className="bg-slate-800 px-4 py-3 flex items-center justify-between">
+      <div className="bg-slate-950 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
-            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-full" />
           </div>
           <div>
-            <h1 className="text-white font-bold text-sm">AuraEye™</h1>
-            <p className="text-cyan-300 text-xs">Ethereal Wellness</p>
+            <h1 className="text-white font-bold text-xl">AuraEye™</h1>
+            <p className="text-purple-300 text-xs">Your energy made visible</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-dark-mode">
-            <Zap className="h-4 w-4 text-cyan-400" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center relative" data-testid="button-notifications">
-            <Bell className="h-4 w-4 text-white" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
-            <Wifi className="h-4 w-4 text-green-400" />
-          </button>
+          
+          
+          
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">

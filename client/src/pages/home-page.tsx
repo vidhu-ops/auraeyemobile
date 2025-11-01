@@ -47,26 +47,19 @@ export default function HomePage() {
       {/* Header */}
       <div className="bg-slate-950 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
-            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-full" />
           </div>
           <div>
-            <h1 className="text-white font-bold text-sm">AuraEye™</h1>
-            <p className="text-cyan-300 text-xs">Your energy made visible</p>
+            <h1 className="text-white font-bold text-xl">AuraEye™</h1>
+            <p className="text-purple-300 text-xs">Your energy made visible</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-notifications">
-            <Zap className="h-4 w-4 text-cyan-400" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center relative" data-testid="button-bell">
-            <Bell className="h-4 w-4 text-white" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
-            <Wifi className="h-4 w-4 text-green-400" />
-          </button>
+          
+         
+         
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
@@ -225,19 +218,19 @@ export default function HomePage() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-green-400" />
-              <h2 className="text-green-600 font-semibold">Light Tree of Wisdom</h2>
+              <h2 className="text-green-200 font-semibold">Light Tree of Wisdom</h2>
             </div>
             
             {/* Soul Energy Display */}
             <div className="bg-gradient-to-r from-purple-900/40 to-cyan-900/40 rounded-xl p-4 mb-4 border border-purple-500/30">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-purple-600" />
+                  <Zap className="h-5 w-5 text-purple-100" />
                   <span className="text-gray-200 font-semibold">Soul Energy</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
+                <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
               </div>
-              <div className="text-xs text-gray-700">
+              <div className="text-xs text-gray-200">
                 {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
               </div>
               <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
@@ -279,10 +272,10 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <h3 className="text-gray-500 font-semibold mb-2">Tree Growth</h3>
-              <div className="text-green-900 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
+              <h3 className="text-gray-200 font-semibold mb-2">Tree Growth</h3>
+              <div className="text-green-100 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
               
-              <div className="flex items-center gap-1 text-green-600 text-xs">
+              <div className="flex items-center gap-1 text-green-200 text-xs">
                 <Sparkles className="h-4 w-4" />
                 <span>Your tree is flourishing with spiritual energy!</span>
               </div>
@@ -383,7 +376,7 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 gap-3">
             <Link href="/aura-analysis">
-              <Card className="bg-gradient-to-br from-purple-900/70 to-indigo-900/70 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 transition-all cursor-pointer" data-testid="service-aura">
+              <Card className="transition-all cursor-pointer" data-testid="service-aura">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
                     <Camera className="h-6 w-6 text-white" />
@@ -419,7 +412,7 @@ export default function HomePage() {
             </Link>
             
             <Link href="/healers">
-              <Card className="bg-gradient-to-br from-pink-900/70 to-rose-900/70 border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/20 transition-all cursor-pointer" data-testid="service-healers">
+              <Card className="hover:shadow-lg hover:shadow-pink-500/20 transition-all cursor-pointer" data-testid="service-healers">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
                     <Users className="h-6 w-6 text-white" />

@@ -46,15 +46,15 @@ export default function AuthPage() {
         <CardHeader className="space-y-4 text-center">
           <div className="flex flex-col items-center space-y-3">
             <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-indigo-500 to-cyan-500 blur-xl opacity-50 animate-pulse"></div>
-              <img src={logoPath} alt="AuraEye Logo" className="relative w-16 h-16 rounded-full object-cover ring-4 ring-purple-500/30" />
+              <div className="absolute inset-0 rounded-full blur-xl opacity-50 animate-pulse"></div>
+              <img src={logoPath} alt="AuraEye Logo" className="relative w-18 h-16 align-center rounded-full object-cover ring-4 ring-purple-500/30" />
             </div>
-            <CardTitle className="font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 text-3xl">
+            <CardTitle className="font-heading font-bold text-white text-3xl">
               AuraEye™
             </CardTitle>
           </div>
           
-          <CardDescription className="text-base">Access your spiritual wellness journey</CardDescription>
+          <CardDescription className="text-base text-white">Access your spiritual wellness journey</CardDescription>
         </CardHeader>
           
           <Form {...loginForm}>
@@ -104,7 +104,7 @@ export default function AuthPage() {
                   ) : "Login"}
                 </Button>
                 
-                <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-center text-sm text-white-600 dark:text-slate-400">
                   Enter your credentials to continue your spiritual journey
                 </p>
               </CardFooter>
