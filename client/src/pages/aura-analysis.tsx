@@ -6215,8 +6215,8 @@ export default function AuraAnalysis() {
           />
           
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="font-heading font-bold text-black text-3xl md:text-4xl mb-4 text-center">Aura Analysis</h1>
-            <p className="text-black/80 max-w-2xl mx-auto text-center">
+            <h1 className="font-heading font-bold text-white text-3xl md:text-4xl mb-4 text-center">Aura Analysis</h1>
+            <p className="text-wite/80 max-w-2xl mx-auto text-center">
               Upload your photo and our AI will analyze your energy field, revealing your aura colors and providing personalized insights.
             </p>
           </div>
@@ -6228,7 +6228,7 @@ export default function AuraAnalysis() {
             <div className="max-w-4xl mx-auto">
               {/* Example Image Guide */}
               <div className="text-center mb-16">
-                <h2 className="font-heading font-semibold text-2xl mb-4">Image Upload Guidelines</h2>
+                <h2 className="font-heading font-semibold text-black text-2xl mb-4">Image Upload Guidelines</h2>
                 <div className="max-w-sm mx-auto mb-4">
                   <img 
                     src="/attached_assets/WhatsApp Image 2025-09-09 at 6.30.32 PM_1757861882088.jpeg"
@@ -6236,14 +6236,14 @@ export default function AuraAnalysis() {
                     className="w-full rounded-lg shadow-md"
                   />
                 </div>
-                <p className="text-gray-700 text-sm mb-8">
+                <p className="text-black text-sm mb-8">
                   The image uploaded for aura analysis should look like that and have the right hand raised on the right side of the image
                 </p>
               </div>
               
               <div className="text-center mb-6">
-                <h2 className="font-heading font-semibold text-2xl mb-2">Image Flipping Tool</h2>
-                <p className="text-gray-600 text-sm">Upload and flip your images horizontally before analysis</p>
+                <h2 className="font-heading font-semibold text-black text-2xl mb-2">Image Flipping Tool</h2>
+                <p className="text-black text-sm">Upload and flip your images horizontally before analysis</p>
               </div>
               <div className="flex justify-center">
                 <ImageManipulator onImageProcessed={(blob) => {
@@ -6256,12 +6256,12 @@ export default function AuraAnalysis() {
         </section>
         {/* Upload and Analysis section */}
         <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
-          <div className="container mx-auto px-4">
+          <div className="container bg-white mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <div className="space-y-10">
                 {/* Name input or Upload section */}
                 {!nameEntered && !result ? (
-                  <div className="flex justify-center">
+                  <div className="flex justify-center font-primary">
                     <NameInput
                       onNameSubmit={(name) => {
                         setAnalysisName(name);

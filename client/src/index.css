@@ -145,15 +145,15 @@
   
   /* Glass morphism effects */
   .glass-mystical {
-    background: rgba(196, 165, 255, 0.1);
+    background: rgb(241, 240, 245, 0.1);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(196, 165, 255, 0.2);
+    border: 1px solid rgb(236, 234, 240, 0.2);
   }
   
   .glass-ethereal {
-    background: rgba(248, 244, 255, 0.95);
+    background: rgb(255, 255, 255, 0.35);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(220, 208, 255, 0.3);
+    border: 1px solid rgb(249, 248, 252, 0.3);
   }
   
   /* Typography families */

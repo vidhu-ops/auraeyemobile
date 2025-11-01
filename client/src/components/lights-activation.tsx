@@ -18,7 +18,7 @@ export default function LightsActivation() {
 
   return (
     <div 
-      className={`fixed inset-0 flex items-center justify-center transition-all duration-2500 ${
+      className={`fixed inset-0 flex items-center justify-center transition-all duration-4500 ${
         isAnimating 
           ? 'bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900' 
           : 'bg-black'
@@ -32,21 +32,18 @@ export default function LightsActivation() {
           0% {
             background: #000000;
           }
-          20% {
-            background: linear-gradient(to bottom right, #1e1b4b, #312e81, #1e3a8a);
-          }
           40% {
-            background: linear-gradient(to bottom right, #1e3a8a, #ca8a04, #eab308);
+            background: linear-gradient(to bottom right, #1e1b4b, #1e3a8a);
           }
           100% {
-            background: linear-gradient(to bottom right, #eab308, #fde68a, #fcd34d);
+            background: linear-gradient(to bottom right, #eab308, #1e1b4b);
           }
           
         }
         
         @keyframes pulseGlow {
           0%, 100% {
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
           }
           50% {
             box-shadow: 0 0 40px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.6);
