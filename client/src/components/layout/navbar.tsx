@@ -6,7 +6,8 @@ import { useCredits } from "@/hooks/use-credits";
 import { 
   Sheet, 
   SheetContent, 
-  SheetTrigger 
+  SheetTrigger,
+  SheetClose
 } from "@/components/ui/sheet";
 import { 
   DropdownMenu, 
@@ -36,7 +37,8 @@ import {
   Heart,
   Flower2,
   DollarSign,
-  LayoutDashboard
+  LayoutDashboard,
+  X
 } from "lucide-react";
 import logoPath from "@assets/new-logo.jpeg";
 
@@ -116,7 +118,15 @@ export default function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent className="w-full max-w-md overflow-y-auto">
-                <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-purple-700">Menu</h2>
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-purple-100" data-testid="button-close-menu">
+                      <X className="h-5 w-5 text-purple-600" />
+                    </Button>
+                  </SheetClose>
+                </div>
+                <div>
                   {user && (
                     <div className="mb-6 p-4 glass-ethereal rounded-xl border border-purple-200/30">
                       <div className="flex items-center justify-between">
