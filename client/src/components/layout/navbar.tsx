@@ -93,8 +93,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white/80 sticky top-0 z-30 w-full border-b border-purple-200/30">
-      <div className="container mx-auto px-4 md:px-6 relative">
+    <nav className="bg-black sticky top-0 z-30 w-full border-purple-200/30">
+      <div className="container bg-black mx-auto px-4 md:px-6 relative">
         <div className="flex justify-between items-center py-2">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
@@ -104,8 +104,9 @@ export default function Navbar() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-helvetica font-bold text-xl text-purple-500">AuraEye™</span>
-              <span className="font-helvetica text-xs text-purple-800/70">Your energy made visible</span>
+              <span className="font-helvetica font-bold text-xl text-white">AuraEye™</span>
+              
+              <span className="font-helvetica text-xs text-white">Your energy made visible</span>
             </div>
           </Link>
 
@@ -207,12 +208,12 @@ export default function Navbar() {
           </div>
 
           {/* Mystical Desktop navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center bg-black space-x-8">
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className={`relative font-cosmic font-medium transition-all duration-300 group ${isActive(link.href) ? 'text-purple-700 font-semibold' : 'text-purple-600/80 hover:text-purple-700'}`}
+                className={`relative font-cosmic font-medium transition-all duration-300 group ${isActive(link.href) ? 'text-white-700 font-semibold' : 'text-purple-600/80 hover:text-purple-700'}`}
               >
                 <span className="relative z-10">{link.name}</span>
                 {isActive(link.href) && (
