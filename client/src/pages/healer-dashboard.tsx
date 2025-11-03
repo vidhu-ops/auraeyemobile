@@ -2097,7 +2097,7 @@ export default function HealerDashboard() {
               <h1 className="text-2xl sm:text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
               <p className="text-white-600 text-sm sm:text-base">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
             </div>
-            <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full self-start sm:self-auto">
+            <div className="items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full self-start sm:self-auto">
               <div className="text-violet-600">💳</div>
               <span className="font-medium text-violet-800">{credits} credits</span>
             </div>
