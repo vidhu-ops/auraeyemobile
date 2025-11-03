@@ -1488,7 +1488,7 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
             )}
             
             {/* Aura Colors Display */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-2 bg-gradient-to-br ${getColorClass(reading.personalityColor)}`}></div>
                 <p className="text-sm font-medium">Thinking</p>
@@ -1750,7 +1750,7 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
       
       <CardContent className="p-6 space-y-6">
         {/* Core Numbers */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
           <div className="text-center p-3 bg-blue-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">{reading.lifePathNumber}</div>
             <p className="text-sm font-medium">Life Path</p>
@@ -2091,38 +2091,40 @@ export default function HealerDashboard() {
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
-            <div className="flex items-center gap-4">
-              <p className="text-white-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsChangePasswordOpen(true)}
-                className="flex items-center gap-2 text-purple-600 border-purple-600 hover:bg-purple-50"
-              >
-                <Key className="w-4 h-4" />
-                Change Password
-              </Button>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
+              <p className="text-white-600 text-sm sm:text-base">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+            </div>
+            <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full self-start sm:self-auto">
+              <div className="text-violet-600">💳</div>
+              <span className="font-medium text-violet-800">{credits} credits</span>
             </div>
           </div>
-          <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
-            <div className="text-violet-600">💳</div>
-            <span className="font-medium text-violet-800">{credits} credits</span>
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsChangePasswordOpen(true)}
+              className="flex items-center gap-2 text-purple-600 border-purple-600 hover:bg-purple-50"
+            >
+              <Key className="w-4 h-4" />
+              Change Password
+            </Button>
           </div>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-7">
-        <TabsList className="grid h-15 w-full grid-rows-3 grid-cols-3 gap-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="readings">My Readings</TabsTrigger>
-          <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 h-auto p-2">
+          <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="soul-energy" className="text-xs sm:text-sm">Soul Energy</TabsTrigger>
+          <TabsTrigger value="bookings" className="text-xs sm:text-sm">Bookings</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
+          <TabsTrigger value="readings" className="text-xs sm:text-sm">My Readings</TabsTrigger>
+          <TabsTrigger value="tools" className="text-xs sm:text-sm">Spiritual Tools</TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}
@@ -2144,7 +2146,7 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
                     <div className="flex items-center gap-2 mb-2">
                       <Users className="h-5 w-5 text-blue-600" />
@@ -2498,7 +2500,7 @@ export default function HealerDashboard() {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -2566,7 +2568,7 @@ export default function HealerDashboard() {
               <CardDescription>Access spiritual services and tools</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <Link href="/vibe">
                   <Card className="bg-gradient-to-br from-violet-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
@@ -3066,7 +3068,7 @@ export default function HealerDashboard() {
                                 </Button>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-4">
                                 <div className="text-center p-3 bg-white rounded-lg border">
                                     <div className="text-2xl font-bold text-purple-600">{reading.lifePathNumber}</div>
                                     <div className="text-xs text-gray-500">Life Path</div>
