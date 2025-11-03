@@ -162,10 +162,10 @@ export default function HomePage() {
                   </div>
                 </Link>
                 
-                <Link href="/help">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-teal-500/30 backdrop-blur-md border border-teal-400/40 p-6 hover:bg-teal-500/40 transition-all shadow-lg" data-testid="bubble-help">
+                <Link href="/contact">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-teal-500/30 backdrop-blur-md border border-teal-400/40 p-6 hover:bg-teal-500/40 transition-all shadow-lg" data-testid="bubble-contact">
                     <HelpCircle className="h-10 w-10 text-teal-200 mb-2" />
-                    <span className="text-sm text-teal-100 font-medium text-center">Help</span>
+                    <span className="text-sm text-teal-100 font-medium text-center">Contact</span>
                   </div>
                 </Link>
               </div>
@@ -176,7 +176,7 @@ export default function HomePage() {
         {/* Bubble Overlay for HEAL */}
         {activeCategory === 'heal' && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setActiveCategory(null)}>
-            <div className="relative max-w-xs w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
               <button 
                 onClick={() => setActiveCategory(null)}
                 className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
@@ -185,7 +185,21 @@ export default function HomePage() {
                 <X className="h-5 w-5 text-white" />
               </button>
               
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
+                <Link href="/healers">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-rose-500/30 backdrop-blur-md border border-rose-400/40 p-4 hover:bg-rose-500/40 transition-all shadow-lg" data-testid="bubble-healers-heal">
+                    <Users className="h-8 w-8 text-rose-200 mb-2" />
+                    <span className="text-xs text-rose-100 font-medium text-center">Healers</span>
+                  </div>
+                </Link>
+                
+                <Link href="/meditations">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-indigo-500/30 backdrop-blur-md border border-indigo-400/40 p-4 hover:bg-indigo-500/40 transition-all shadow-lg" data-testid="bubble-meditate">
+                    <Brain className="h-8 w-8 text-indigo-200 mb-2" />
+                    <span className="text-xs text-indigo-100 font-medium text-center">Meditate</span>
+                  </div>
+                </Link>
+                
                 <Link href="/journal">
                   <div className="flex flex-col items-center justify-center rounded-2xl bg-green-500/30 backdrop-blur-md border border-green-400/40 p-4 hover:bg-green-500/40 transition-all shadow-lg" data-testid="bubble-journal">
                     <Book className="h-8 w-8 text-green-200 mb-2" />
@@ -197,13 +211,6 @@ export default function HomePage() {
                   <div className="flex flex-col items-center justify-center rounded-2xl bg-violet-500/30 backdrop-blur-md border border-violet-400/40 p-4 hover:bg-violet-500/40 transition-all shadow-lg" data-testid="bubble-colors">
                     <Palette className="h-8 w-8 text-violet-200 mb-2" />
                     <span className="text-xs text-violet-100 font-medium text-center">Colors</span>
-                  </div>
-                </Link>
-                
-                <Link href="/meditations">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-indigo-500/30 backdrop-blur-md border border-indigo-400/40 p-4 hover:bg-indigo-500/40 transition-all shadow-lg" data-testid="bubble-meditate">
-                    <Brain className="h-8 w-8 text-indigo-200 mb-2" />
-                    <span className="text-xs text-indigo-100 font-medium text-center">Meditate</span>
                   </div>
                 </Link>
               </div>
