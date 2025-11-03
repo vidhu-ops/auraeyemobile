@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
@@ -7,13 +8,14 @@ import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame } from "lucide-react";
+import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
   // Calculate tree growth: 5% per 10 soul energy points
   const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
@@ -53,86 +55,161 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Service Buttons Grid */}
+        {/* Service Category Buttons */}
         <div className="mb-10">
           <h2 className="text-lg font-semibold text-white mb-6 text-center">Explore Our Services</h2>
           
-          {/* First Row - 5 icons */}
-          <div className="grid grid-cols-5 gap-3 mb-3 max-w-sm mx-auto">
-            <Link href="/aura-analysis" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-purple-800/60 hover:to-purple-700/60 transition-all shadow-sm" data-testid="button-aura-analysis">
-                <Eye className="h-5 w-5 text-purple-300 mb-1" />
-                <span className="text-[10px] text-purple-200 font-medium text-center leading-tight">Aura</span>
-              </button>
-            </Link>
+          {/* Three main category buttons */}
+          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+            <button 
+              onClick={() => setActiveCategory('scan')}
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-purple-900/60 to-purple-700/60 hover:from-purple-800/70 hover:to-purple-600/70 transition-all shadow-lg p-6 border border-purple-500/30"
+              data-testid="button-scan-category"
+            >
+              <Scan className="h-8 w-8 text-purple-300 mb-2" />
+              <span className="text-sm text-purple-200 font-semibold">SCAN</span>
+            </button>
             
-            <Link href="/vibe" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:to-cyan-700/60 transition-all shadow-sm" data-testid="button-vibe">
-                <Flame className="h-5 w-5 text-cyan-300 mb-1" />
-                <span className="text-[10px] text-cyan-200 font-medium text-center leading-tight">Vibe</span>
-              </button>
-            </Link>
+            <button 
+              onClick={() => setActiveCategory('connect')}
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-rose-900/60 to-rose-700/60 hover:from-rose-800/70 hover:to-rose-600/70 transition-all shadow-lg p-6 border border-rose-500/30"
+              data-testid="button-connect-category"
+            >
+              <Users className="h-8 w-8 text-rose-300 mb-2" />
+              <span className="text-sm text-rose-200 font-semibold">CONNECT</span>
+            </button>
             
-            <Link href="/object-analysis" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-pink-800/60 hover:to-pink-700/60 transition-all shadow-sm" data-testid="button-object-analysis">
-                <Scan className="h-5 w-5 text-pink-300 mb-1" />
-                <span className="text-[10px] text-pink-200 font-medium text-center leading-tight">Object</span>
-              </button>
-            </Link>
-            
-            <Link href="/numerology" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-amber-800/60 hover:to-amber-700/60 transition-all shadow-sm" data-testid="button-numerology">
-                <Calculator className="h-5 w-5 text-amber-300 mb-1" />
-                <span className="text-[10px] text-amber-200 font-medium text-center leading-tight">Numbers</span>
-              </button>
-            </Link>
-            
-            <Link href="/daily-horoscope" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl hover:from-orange-800/60 hover:to-orange-700/60 transition-all shadow-sm" data-testid="button-horoscope">
-                <Sunrise className="h-5 w-5 text-orange-300 mb-1" />
-                <span className="text-[10px] text-orange-200 font-medium text-center leading-tight">Stars</span>
-              </button>
-            </Link>
-          </div>
-
-          {/* Second Row - 5 icons */}
-          <div className="grid grid-cols-5 gap-3 max-w-sm mx-auto">
-            <Link href="/journal" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-green-900/50 to-green-800/50 hover:from-green-800/60 hover:to-green-700/60 transition-all shadow-sm border border-green-500/30" data-testid="button-journal">
-                <Book className="h-5 w-5 text-green-300 mb-1" />
-                <span className="text-[10px] text-green-200 font-medium text-center leading-tight">Journal</span>
-              </button>
-            </Link>
-            
-            <Link href="/meditations" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-indigo-900/50 to-indigo-800/50 hover:from-indigo-800/60 hover:to-indigo-700/60 transition-all shadow-sm border border-indigo-500/30" data-testid="button-meditations">
-                <Brain className="h-5 w-5 text-indigo-300 mb-1" />
-                <span className="text-[10px] text-indigo-200 font-medium text-center leading-tight">Meditate</span>
-              </button>
-            </Link>
-            
-            <Link href="/healers" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-rose-900/50 to-rose-800/50 hover:from-rose-800/60 hover:to-rose-700/60 transition-all shadow-sm border border-rose-500/30" data-testid="button-healers">
-                <Users className="h-5 w-5 text-rose-300 mb-1" />
-                <span className="text-[10px] text-rose-200 font-medium text-center leading-tight">Healers</span>
-              </button>
-            </Link>
-            
-            <Link href="/color-meanings" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-900/50 to-violet-800/50 hover:from-violet-800/60 hover:to-violet-700/60 transition-all shadow-sm border border-violet-500/30" data-testid="button-colors">
-                <Palette className="h-5 w-5 text-violet-300 mb-1" />
-                <span className="text-[10px] text-violet-200 font-medium text-center leading-tight">Colors</span>
-              </button>
-            </Link>
-            
-            <Link href="/help" className="flex justify-center">
-              <button className="w-full aspect-square flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-teal-900/50 to-teal-800/50 hover:from-teal-800/60 hover:to-teal-700/60 transition-all shadow-sm border border-teal-500/30" data-testid="button-help">
-                <HelpCircle className="h-5 w-5 text-teal-300 mb-1" />
-                <span className="text-[10px] text-teal-200 font-medium text-center leading-tight">Help</span>
-              </button>
-            </Link>
+            <button 
+              onClick={() => setActiveCategory('heal')}
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green-900/60 to-green-700/60 hover:from-green-800/70 hover:to-green-600/70 transition-all shadow-lg p-6 border border-green-500/30"
+              data-testid="button-heal-category"
+            >
+              <Heart className="h-8 w-8 text-green-300 mb-2" />
+              <span className="text-sm text-green-200 font-semibold">HEAL</span>
+            </button>
           </div>
         </div>
+
+        {/* Bubble Overlay for SCAN */}
+        {activeCategory === 'scan' && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setActiveCategory(null)}>
+            <div className="relative max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => setActiveCategory(null)}
+                className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
+                data-testid="button-close-bubbles"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+              
+              <div className="grid grid-cols-5 gap-3">
+                <Link href="/aura-analysis">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-purple-500/30 backdrop-blur-md border border-purple-400/40 p-4 hover:bg-purple-500/40 transition-all shadow-lg" data-testid="bubble-aura">
+                    <Eye className="h-8 w-8 text-purple-200 mb-2" />
+                    <span className="text-xs text-purple-100 font-medium text-center">Aura</span>
+                  </div>
+                </Link>
+                
+                <Link href="/vibe">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-cyan-500/30 backdrop-blur-md border border-cyan-400/40 p-4 hover:bg-cyan-500/40 transition-all shadow-lg" data-testid="bubble-vibe">
+                    <Flame className="h-8 w-8 text-cyan-200 mb-2" />
+                    <span className="text-xs text-cyan-100 font-medium text-center">Vibe</span>
+                  </div>
+                </Link>
+                
+                <Link href="/object-analysis">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-pink-500/30 backdrop-blur-md border border-pink-400/40 p-4 hover:bg-pink-500/40 transition-all shadow-lg" data-testid="bubble-object">
+                    <Camera className="h-8 w-8 text-pink-200 mb-2" />
+                    <span className="text-xs text-pink-100 font-medium text-center">Object</span>
+                  </div>
+                </Link>
+                
+                <Link href="/numerology">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-amber-500/30 backdrop-blur-md border border-amber-400/40 p-4 hover:bg-amber-500/40 transition-all shadow-lg" data-testid="bubble-numbers">
+                    <Calculator className="h-8 w-8 text-amber-200 mb-2" />
+                    <span className="text-xs text-amber-100 font-medium text-center">Numbers</span>
+                  </div>
+                </Link>
+                
+                <Link href="/daily-horoscope">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-orange-500/30 backdrop-blur-md border border-orange-400/40 p-4 hover:bg-orange-500/40 transition-all shadow-lg" data-testid="bubble-stars">
+                    <Star className="h-8 w-8 text-orange-200 mb-2" />
+                    <span className="text-xs text-orange-100 font-medium text-center">Stars</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bubble Overlay for CONNECT */}
+        {activeCategory === 'connect' && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setActiveCategory(null)}>
+            <div className="relative max-w-xs w-full" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => setActiveCategory(null)}
+                className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
+                data-testid="button-close-bubbles"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <Link href="/healers">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-rose-500/30 backdrop-blur-md border border-rose-400/40 p-6 hover:bg-rose-500/40 transition-all shadow-lg" data-testid="bubble-healers">
+                    <Users className="h-10 w-10 text-rose-200 mb-2" />
+                    <span className="text-sm text-rose-100 font-medium text-center">Healers</span>
+                  </div>
+                </Link>
+                
+                <Link href="/help">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-teal-500/30 backdrop-blur-md border border-teal-400/40 p-6 hover:bg-teal-500/40 transition-all shadow-lg" data-testid="bubble-help">
+                    <HelpCircle className="h-10 w-10 text-teal-200 mb-2" />
+                    <span className="text-sm text-teal-100 font-medium text-center">Help</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bubble Overlay for HEAL */}
+        {activeCategory === 'heal' && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setActiveCategory(null)}>
+            <div className="relative max-w-xs w-full" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => setActiveCategory(null)}
+                className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
+                data-testid="button-close-bubbles"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+              
+              <div className="grid grid-cols-3 gap-3">
+                <Link href="/journal">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-green-500/30 backdrop-blur-md border border-green-400/40 p-4 hover:bg-green-500/40 transition-all shadow-lg" data-testid="bubble-journal">
+                    <Book className="h-8 w-8 text-green-200 mb-2" />
+                    <span className="text-xs text-green-100 font-medium text-center">Journal</span>
+                  </div>
+                </Link>
+                
+                <Link href="/color-meanings">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-violet-500/30 backdrop-blur-md border border-violet-400/40 p-4 hover:bg-violet-500/40 transition-all shadow-lg" data-testid="bubble-colors">
+                    <Palette className="h-8 w-8 text-violet-200 mb-2" />
+                    <span className="text-xs text-violet-100 font-medium text-center">Colors</span>
+                  </div>
+                </Link>
+                
+                <Link href="/meditations">
+                  <div className="flex flex-col items-center justify-center rounded-2xl bg-indigo-500/30 backdrop-blur-md border border-indigo-400/40 p-4 hover:bg-indigo-500/40 transition-all shadow-lg" data-testid="bubble-meditate">
+                    <Brain className="h-8 w-8 text-indigo-200 mb-2" />
+                    <span className="text-xs text-indigo-100 font-medium text-center">Meditate</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Light Tree of Wisdom */}
         <Card className="bg-gradient-to-br from-green-900/70 to-cyan-900/70 border-green-500/30 mb-10">
