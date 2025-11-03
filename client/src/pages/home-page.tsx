@@ -365,64 +365,6 @@ export default function HomePage() {
           </Card>
         </div>
 
-        {/* Quick Services */}
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-5">
-            <Sparkles className="h-5 w-5 text-indigo-400" />
-            <h2 className="text-white font-semibold">Quick Services</h2>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <Link href="/aura-analysis">
-              <Card className="transition-all cursor-pointer" data-testid="service-aura">
-                <CardContent className="p-4 text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
-                    <Camera className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Aura Analysis</h3>
-                  <p className="text-xs text-gray-300 mt-1">15 credits</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/daily-horoscope">
-              <Card className="bg-gradient-to-br from-yellow-900/70 to-amber-900/70 border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/20 transition-all cursor-pointer" data-testid="service-horoscope">
-                <CardContent className="p-4 text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center">
-                    <Star className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Horoscope</h3>
-                  <p className="text-xs text-gray-300 mt-1">Free</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/numerology">
-              <Card className="bg-gradient-to-br from-indigo-900/70 to-violet-900/70 border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer" data-testid="service-numerology">
-                <CardContent className="p-4 text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
-                    <Calculator className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Numerology</h3>
-                  <p className="text-xs text-gray-300 mt-1">5 credits</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/healers">
-              <Card className="hover:shadow-lg hover:shadow-pink-500/20 transition-all cursor-pointer" data-testid="service-healers">
-                <CardContent className="p-4 text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Find Healers</h3>
-                  <p className="text-xs text-gray-300 mt-1">3 credits</p>
-                </CardContent>
-              </Card>
-            </Link>
-          </div>
-        </div>
-
         {/* Energy Milestones */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3 bg-amber-900/70 px-3 py-2 rounded-lg border border-amber-500/30">
