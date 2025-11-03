@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
@@ -10365,7 +10364,6 @@ export default function AuraAnalysis() {
         )}
       </main>
       
-      <Footer />
       
       {/* Image Confirmation Dialog */}
       <Dialog open={showImageConfirmation} onOpenChange={setShowImageConfirmation}>
