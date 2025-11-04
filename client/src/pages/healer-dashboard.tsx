@@ -2091,31 +2091,32 @@ export default function HealerDashboard() {
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
-            <div className="flex items-center gap-4">
-              <p className="text-white-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsChangePasswordOpen(true)}
-                className="flex items-center gap-2 text-purple-600 border-purple-600 hover:bg-purple-50"
-              >
-                <Key className="w-4 h-4" />
-                Change Password
-              </Button>
-            </div>
+            <p className="text-white-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
           </div>
-          <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
-            <div className="text-violet-600">💳</div>
-            <span className="font-medium text-violet-800">{credits} credits</span>
+          <div className="flex flex-col gap-3 items-start">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsChangePasswordOpen(true)}
+              className="flex items-center gap-2 text-purple-600 border-purple-600 hover:bg-purple-50"
+              data-testid="button-change-password"
+            >
+              <Key className="w-4 h-4" />
+              Change Password
+            </Button>
+            <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
+              <div className="text-violet-600">💳</div>
+              <span className="font-medium text-violet-800">{credits} credits</span>
+            </div>
           </div>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-7">
-        <TabsList className="grid h-15 w-full grid-rows-3 grid-cols-3 gap-4">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
