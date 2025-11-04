@@ -2934,6 +2934,59 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Mood snapshots - Save mood check-in data
+  app.post("/api/mood-snapshots", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const { emotion, energyLevel, stressLevel, sleepQuality, socialConnection, physicalActivity, insights } = req.body;
+      
+      if (!emotion || energyLevel === undefined || stressLevel === undefined || 
+          sleepQuality === undefined || socialConnection === undefined || 
+          physicalActivity === undefined) {
+        return res.status(400).json({ message: "All mood check-in fields are required" });
+      }
+
+      const moodSnapshot = await storage.createMoodSnapshot({
+        userId: req.user.id,
+        mood: emotion,
+        intensity: energyLevel,
+        energyLevel,
+        stressLevel,
+        sleepQuality,
+        socialConnection,
+        physicalActivity,
+        insights: insights ? JSON.stringify(insights) : null,
+      });
+      
+      res.status(201).json(moodSnapshot);
+    } catch (error) {
+      console.error("Error saving mood snapshot:", error);
+      res.status(500).json({ message: "Failed to save mood snapshot" });
+    }
+  });
+
+  // Get mood snapshots for the current user
+  app.get("/api/mood-snapshots", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const moodSnapshots = limit 
+        ? await storage.getRecentMoodSnapshots(req.user.id, limit)
+        : await storage.getMoodSnapshotsByUser(req.user.id);
+      
+      res.json(moodSnapshots);
+    } catch (error) {
+      console.error("Error retrieving mood snapshots:", error);
+      res.status(500).json({ message: "Failed to retrieve mood snapshots" });
+    }
+  });
+
   // Psychology prompt endpoint - Get personalized psychological prompts
   app.get("/api/psychology/prompt", async (req, res) => {
     if (!req.isAuthenticated()) {
