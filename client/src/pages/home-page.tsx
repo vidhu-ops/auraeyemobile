@@ -57,35 +57,35 @@ export default function HomePage() {
 
         {/* Service Category Buttons */}
         <div className="mb-10">
-          <h2 className="text-lg font-semibold text-white mb-6 text-center">Explore Our Services</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Explore Our Services</h2>
           
           {/* Three main category buttons */}
-          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto px-4">
             <button 
               onClick={() => setActiveCategory('scan')}
-              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-purple-900/60 to-purple-700/60 hover:from-purple-800/70 hover:to-purple-600/70 transition-all shadow-lg p-6 border border-purple-500/30"
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-purple-900/80 to-purple-700/80 hover:from-purple-800/90 hover:to-purple-600/90 transition-all shadow-lg p-8 border-2 border-purple-400/50"
               data-testid="button-scan-category"
             >
-              <Scan className="h-8 w-8 text-purple-300 mb-2" />
-              <span className="text-sm text-purple-200 font-semibold">SCAN</span>
-            </button>
-            
-            <button 
-              onClick={() => setActiveCategory('connect')}
-              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-rose-900/60 to-rose-700/60 hover:from-rose-800/70 hover:to-rose-600/70 transition-all shadow-lg p-6 border border-rose-500/30"
-              data-testid="button-connect-category"
-            >
-              <Users className="h-8 w-8 text-rose-300 mb-2" />
-              <span className="text-sm text-rose-200 font-semibold">CONNECT</span>
+              <Scan className="h-10 w-10 text-purple-200 mb-3" />
+              <span className="text-base text-purple-100 font-bold uppercase">Scan</span>
             </button>
             
             <button 
               onClick={() => setActiveCategory('heal')}
-              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green-900/60 to-green-700/60 hover:from-green-800/70 hover:to-green-600/70 transition-all shadow-lg p-6 border border-green-500/30"
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green-900/80 to-green-700/80 hover:from-green-800/90 hover:to-green-600/90 transition-all shadow-lg p-8 border-2 border-green-400/50"
               data-testid="button-heal-category"
             >
-              <Heart className="h-8 w-8 text-green-300 mb-2" />
-              <span className="text-sm text-green-200 font-semibold">HEAL</span>
+              <Heart className="h-10 w-10 text-green-200 mb-3" />
+              <span className="text-base text-green-100 font-bold uppercase">Heal</span>
+            </button>
+            
+            <button 
+              onClick={() => setActiveCategory('connect')}
+              className="flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-rose-900/80 to-rose-700/80 hover:from-rose-800/90 hover:to-rose-600/90 transition-all shadow-lg p-8 border-2 border-rose-400/50"
+              data-testid="button-connect-category"
+            >
+              <Users className="h-10 w-10 text-rose-200 mb-3" />
+              <span className="text-base text-rose-100 font-bold uppercase">Connect</span>
             </button>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
         {/* Bubble Overlay for SCAN */}
         {activeCategory === 'scan' && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setActiveCategory(null)}>
-            <div className="relative max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
               <button 
                 onClick={() => setActiveCategory(null)}
                 className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
@@ -102,39 +102,39 @@ export default function HomePage() {
                 <X className="h-5 w-5 text-white" />
               </button>
               
-              <div className="grid grid-cols-5 gap-3">
+              <div className="space-y-3">
                 <Link href="/aura-analysis">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-purple-500/30 backdrop-blur-md border border-purple-400/40 p-4 hover:bg-purple-500/40 transition-all shadow-lg" data-testid="bubble-aura">
-                    <Eye className="h-8 w-8 text-purple-200 mb-2" />
-                    <span className="text-xs text-purple-100 font-medium text-center">Aura</span>
+                  <div className="flex items-center gap-4 rounded-2xl bg-purple-500/30 backdrop-blur-md border border-purple-400/40 p-4 hover:bg-purple-500/40 transition-all shadow-lg" data-testid="menu-aura-scanning">
+                    <Eye className="h-8 w-8 text-purple-200" />
+                    <span className="text-sm text-purple-100 font-semibold">Aura Scanning</span>
                   </div>
                 </Link>
                 
                 <Link href="/vibe">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-cyan-500/30 backdrop-blur-md border border-cyan-400/40 p-4 hover:bg-cyan-500/40 transition-all shadow-lg" data-testid="bubble-vibe">
-                    <Flame className="h-8 w-8 text-cyan-200 mb-2" />
-                    <span className="text-xs text-cyan-100 font-medium text-center">Vibe</span>
+                  <div className="flex items-center gap-4 rounded-2xl bg-cyan-500/30 backdrop-blur-md border border-cyan-400/40 p-4 hover:bg-cyan-500/40 transition-all shadow-lg" data-testid="menu-whats-my-vibe">
+                    <Flame className="h-8 w-8 text-cyan-200" />
+                    <span className="text-sm text-cyan-100 font-semibold">What's My Vibe</span>
                   </div>
                 </Link>
                 
                 <Link href="/object-analysis">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-pink-500/30 backdrop-blur-md border border-pink-400/40 p-4 hover:bg-pink-500/40 transition-all shadow-lg" data-testid="bubble-object">
-                    <Camera className="h-8 w-8 text-pink-200 mb-2" />
-                    <span className="text-xs text-pink-100 font-medium text-center">Object</span>
+                  <div className="flex items-center gap-4 rounded-2xl bg-pink-500/30 backdrop-blur-md border border-pink-400/40 p-4 hover:bg-pink-500/40 transition-all shadow-lg" data-testid="menu-object-scanning">
+                    <Camera className="h-8 w-8 text-pink-200" />
+                    <span className="text-sm text-pink-100 font-semibold">Object Scanning</span>
                   </div>
                 </Link>
                 
                 <Link href="/numerology">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-amber-500/30 backdrop-blur-md border border-amber-400/40 p-4 hover:bg-amber-500/40 transition-all shadow-lg" data-testid="bubble-numbers">
-                    <Calculator className="h-8 w-8 text-amber-200 mb-2" />
-                    <span className="text-xs text-amber-100 font-medium text-center">Numbers</span>
+                  <div className="flex items-center gap-4 rounded-2xl bg-amber-500/30 backdrop-blur-md border border-amber-400/40 p-4 hover:bg-amber-500/40 transition-all shadow-lg" data-testid="menu-numerology">
+                    <Calculator className="h-8 w-8 text-amber-200" />
+                    <span className="text-sm text-amber-100 font-semibold">Numerology</span>
                   </div>
                 </Link>
                 
                 <Link href="/daily-horoscope">
-                  <div className="flex flex-col items-center justify-center rounded-2xl bg-orange-500/30 backdrop-blur-md border border-orange-400/40 p-4 hover:bg-orange-500/40 transition-all shadow-lg" data-testid="bubble-stars">
-                    <Star className="h-8 w-8 text-orange-200 mb-2" />
-                    <span className="text-xs text-orange-100 font-medium text-center">Stars</span>
+                  <div className="flex items-center gap-4 rounded-2xl bg-orange-500/30 backdrop-blur-md border border-orange-400/40 p-4 hover:bg-orange-500/40 transition-all shadow-lg" data-testid="menu-horoscope">
+                    <Star className="h-8 w-8 text-orange-200" />
+                    <span className="text-sm text-orange-100 font-semibold">Horoscope</span>
                   </div>
                 </Link>
               </div>
