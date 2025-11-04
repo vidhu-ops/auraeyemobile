@@ -300,8 +300,14 @@ export const insertPsychologicalProfileSchema = createInsertSchema(psychological
 export const moodSnapshots = pgTable("mood_snapshots", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  mood: text("mood").notNull(), // "joyful", "peaceful", "anxious", "energized", "reflective"
-  intensity: integer("intensity").notNull(), // 1-10 scale
+  mood: text("mood").notNull(), // "joyful", "calm", "energized", "neutral", "stressed", "tired"
+  intensity: integer("intensity").notNull(), // 1-10 scale (energy level)
+  energyLevel: integer("energy_level").notNull(), // 1-10 scale
+  stressLevel: integer("stress_level").notNull(), // 1-10 scale
+  sleepQuality: integer("sleep_quality").notNull(), // 1-10 scale
+  socialConnection: integer("social_connection").notNull(), // 1-10 scale
+  physicalActivity: integer("physical_activity").notNull(), // 1-10 scale
+  insights: text("insights"), // JSON array of generated insights
   triggers: text("triggers"), // What prompted this mood
   context: text("context"), // Where/what they were doing
   colorPreference: text("color_preference"), // Color that resonates with their current state
