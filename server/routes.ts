@@ -2987,6 +2987,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Mood recommendations - Get personalized psychological recommendations
+  app.post("/api/mood-recommendations", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const { generateMoodRecommendations } = await import("./mood-recommendations");
+      const { emotion, energyLevel, stressLevel, sleepQuality, socialConnection, physicalActivity } = req.body;
+      
+      if (!emotion || energyLevel === undefined || stressLevel === undefined) {
+        return res.status(400).json({ message: "Required mood data missing" });
+      }
+
+      const recommendations = generateMoodRecommendations({
+        emotion,
+        energyLevel,
+        stressLevel,
+        sleepQuality,
+        socialConnection,
+        physicalActivity
+      });
+      
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error generating mood recommendations:", error);
+      res.status(500).json({ message: "Failed to generate recommendations" });
+    }
+  });
+
   // Psychology prompt endpoint - Get personalized psychological prompts
   app.get("/api/psychology/prompt", async (req, res) => {
     if (!req.isAuthenticated()) {
