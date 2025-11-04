@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
+import { MoodBanner } from "@/components/psychology/mood-banner";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -53,6 +54,11 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Personalized Mood Banner */}
+        <div className="mb-8 max-w-md mx-auto">
+          <MoodBanner variant="subtle" />
         </div>
 
         {/* Service Category Buttons */}

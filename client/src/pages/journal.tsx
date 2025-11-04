@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Plus, Search, Zap, Bell, Wifi, Calendar, TrendingUp, Sparkles } from "lucide-react";
+import { BookOpen, Plus, Search, Zap, Bell, Wifi, Calendar, TrendingUp, Sparkles, Smile, Brain } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import Navbar from "@/components/layout/navbar";
 import { useCredits } from "@/hooks/use-credits";
+import { MoodBanner } from "@/components/psychology/mood-banner";
+import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
 
 interface JournalEntry {
   id: number;
@@ -41,6 +43,8 @@ export default function JournalPage() {
   const [energyLevel, setEnergyLevel] = useState(7);
   const [reflections, setReflections] = useState("");
   const [gratitude, setGratitude] = useState("");
+  const [isMoodCheckInOpen, setIsMoodCheckInOpen] = useState(false);
+  const [moodInsights, setMoodInsights] = useState<string[]>([]);
 
   // Fetch journal entries
   const { data: journalEntries = [], isLoading } = useQuery({
@@ -101,6 +105,14 @@ export default function JournalPage() {
     return matchesSearch;
   });
 
+  const handleMoodCheckInComplete = (data: MoodCheckInData) => {
+    setMoodInsights(data.insights);
+    toast({
+      title: "Mood Check-In Complete",
+      description: "Your insights have been recorded.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       <Navbar />
@@ -114,6 +126,11 @@ export default function JournalPage() {
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Spiritual Journal</h1>
           <p className="text-purple-200">Capture your inner journey</p>
+        </div>
+
+        {/* Mood Banner */}
+        <div className="mb-6">
+          <MoodBanner variant="prominent" />
         </div>
 
         {/* Stats Cards */}
@@ -136,6 +153,38 @@ export default function JournalPage() {
               <div className="text-xs text-slate-300">Avg Energy</div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Mood Insights */}
+        {moodInsights.length > 0 && (
+          <Card className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 backdrop-blur-sm border-purple-500/30 mb-6">
+            <CardContent className="p-4">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-400" />
+                Psychological Insights
+              </h3>
+              <div className="space-y-2">
+                {moodInsights.map((insight, index) => (
+                  <div key={index} className="flex items-start gap-2 text-sm text-slate-200">
+                    <span className="text-cyan-400">•</span>
+                    <span>{insight}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Mood Check-In Button */}
+        <div className="mb-6">
+          <Button
+            onClick={() => setIsMoodCheckInOpen(true)}
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all"
+            data-testid="button-mood-checkin"
+          >
+            <Smile className="h-4 w-4 mr-2" />
+            How Are You Feeling?
+          </Button>
         </div>
 
         {/* Search and New Entry */}
@@ -291,6 +340,13 @@ export default function JournalPage() {
 
       {/* Mobile Navigation */}
       <MobileNavigation />
+
+      {/* Mood Check-In Modal */}
+      <MoodCheckIn
+        isOpen={isMoodCheckInOpen}
+        onClose={() => setIsMoodCheckInOpen(false)}
+        onComplete={handleMoodCheckInComplete}
+      />
     </div>
   );
 }
