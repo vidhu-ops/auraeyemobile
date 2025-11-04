@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -109,6 +109,11 @@ export interface IStorage {
   storePdf(pdfStorage: InsertPdfStorage): Promise<PdfStorage>;
   getPdfByAuraReadingId(auraReadingId: number): Promise<PdfStorage | undefined>;
   getPdfsByHealerId(healerId: number): Promise<PdfStorage[]>;
+
+  // Mood snapshots
+  createMoodSnapshot(snapshot: InsertMoodSnapshot): Promise<MoodSnapshot>;
+  getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]>;
+  getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]>;
 
   // Session store
   sessionStore: any;
@@ -815,6 +820,32 @@ export class DatabaseStorage implements IStorage {
       .from(pdfStorage)
       .where(eq(pdfStorage.healerId, healerId))
       .orderBy(desc(pdfStorage.createdAt));
+  }
+
+  // Mood snapshots
+  async createMoodSnapshot(snapshot: InsertMoodSnapshot): Promise<MoodSnapshot> {
+    const [moodSnapshot] = await db
+      .insert(moodSnapshots)
+      .values(snapshot)
+      .returning();
+    return moodSnapshot;
+  }
+
+  async getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]> {
+    return await db
+      .select()
+      .from(moodSnapshots)
+      .where(eq(moodSnapshots.userId, userId))
+      .orderBy(desc(moodSnapshots.timestamp));
+  }
+
+  async getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]> {
+    return await db
+      .select()
+      .from(moodSnapshots)
+      .where(eq(moodSnapshots.userId, userId))
+      .orderBy(desc(moodSnapshots.timestamp))
+      .limit(limit);
   }
 }
 
