@@ -13,12 +13,47 @@ interface MoodBannerProps {
 }
 
 export function MoodBanner({ variant = 'subtle', showIcon = true }: MoodBannerProps) {
-  const { data: prompt, isLoading } = usePsychologyPrompt();
+  const { data: prompt, isLoading, error } = usePsychologyPrompt();
   const timeOfDay = getTimeOfDay();
 
-  if (isLoading || !prompt) {
-    return null;
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="px-4 py-2 rounded-lg text-sm text-gray-400 bg-slate-700/50 animate-pulse" data-testid="mood-banner-loading">
+        Loading your personalized insight...
+      </div>
+    );
   }
+
+  // If there's an error or no prompt, use a default based on time of day
+  if (error || !prompt) {
+    const defaultPrompts = {
+      morning: { message: "Good morning! Start your day with positive intentions ✨", color: "#fbbf24", type: 'motivation' as const },
+      afternoon: { message: "Keep going! You're doing great today 🌟", color: "#10b981", type: 'encouragement' as const },
+      evening: { message: "Take a moment to reflect on your day's journey 🌙", color: "#a855f7", type: 'reflection' as const },
+      night: { message: "Rest well and recharge your spiritual energy 💫", color: "#06b6d4", type: 'calm' as const },
+    };
+    const defaultPrompt = defaultPrompts[timeOfDay];
+    
+    // Use default prompt
+    const fallbackPrompt = {
+      message: defaultPrompt.message,
+      color: defaultPrompt.color,
+      type: defaultPrompt.type
+    };
+    
+    return renderBanner(fallbackPrompt, variant, showIcon, timeOfDay);
+  }
+
+  return renderBanner(prompt, variant, showIcon, timeOfDay);
+}
+
+function renderBanner(
+  prompt: { message: string; color: string; type: string },
+  variant: 'subtle' | 'prominent',
+  showIcon: boolean,
+  timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'
+) {
 
   // Select icon based on prompt type
   const getIcon = () => {
