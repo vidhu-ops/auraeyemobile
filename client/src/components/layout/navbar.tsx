@@ -114,7 +114,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -213,7 +213,7 @@ export default function Navbar() {
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className={`relative font-cosmic font-medium transition-all duration-300 group ${isActive(link.href) ? 'text-white-700 font-semibold' : 'text-purple-600/80 hover:text-purple-700'}`}
+                className={`relative font-cosmic font-medium transition-all duration-300 group ${isActive(link.href) ? 'text-white font-semibold' : 'text-white/80 hover:text-white'}`}
               >
                 <span className="relative z-10">{link.name}</span>
                 {isActive(link.href) && (
@@ -230,12 +230,12 @@ export default function Navbar() {
               <div className="flex items-center space-x-4">
                 <div className="glass-mystical px-4 py-2 rounded-full text-sm font-cosmic font-medium flex items-center space-x-2 glow-ethereal">
                   <div className="w-2 h-2 bg-gradient-aurora rounded-full animate-pulse"></div>
-                  <Zap className="w-4 h-4 text-purple-600" />
-                  <span className="text-purple-700">{credits}</span>
-                  <span className="font-ethereal text-purple-600/70">cosmic credits</span>
+                  <Zap className="w-4 h-4 text-white" />
+                  <span className="text-white">{credits}</span>
+                  <span className="font-ethereal text-white/70">cosmic credits</span>
                 </div>
                 <Link href={user.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"}>
-                  <Button variant="outline" className="border-purple-300 text-purple-700 hover:bg-purple-50 font-cosmic glow-ethereal">
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 font-cosmic glow-ethereal">
                     <Star className="w-4 h-4 mr-2" />
                     Spiritual Dashboard
                   </Button>
@@ -270,12 +270,12 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/auth">
-                  <Button variant="ghost" className="font-medium text-primary hover:text-primary-dark transition-colors">
+                  <Button variant="ghost" className="font-medium text-white hover:text-white/80 transition-colors">
                     Login
                   </Button>
                 </Link>
                 <Link href="/auth">
-                  <Button className="bg-primary hover:bg-primary-dark text-white font-medium">
+                  <Button className="bg-white hover:bg-white/90 text-black font-medium">
                     Register
                   </Button>
                 </Link>
