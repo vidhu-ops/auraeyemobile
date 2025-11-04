@@ -32,6 +32,34 @@
   --gradient-ethereal: linear-gradient(45deg, #F3E8FF 0%, #E0E7FF 25%, #FDF4FF 50%, #F0F9FF 75%, #ECFDF5 100%);
   --gradient-cosmic: radial-gradient(circle, #1E1B4B 0%, #312E81 25%, #4C1D95 50%, #7C3AED 75%, #A855F7 100%);
   --gradient-aurora: linear-gradient(90deg, #EC4899 0%, #A855F7 25%, #6366F1 50%, #06B6D4 75%, #10B981 100%);
+  
+  /* Psychological Color Theory - Emotion-based colors */
+  /* Blue/Teal: Trust, Calmness, Clarity - reduces anxiety, promotes peace */
+  --psych-calm: 189 94% 43%; /* Cyan - promotes tranquility */
+  --psych-trust: 200 98% 39%; /* Deep blue - builds confidence */
+  
+  /* Purple: Spirituality, Intuition, Wisdom - enhances creativity */
+  --psych-spiritual: 271 91% 65%; /* Vibrant purple - spiritual connection */
+  --psych-intuition: 258 90% 66%; /* Indigo - inner wisdom */
+  
+  /* Green: Balance, Growth, Harmony - reduces stress, promotes healing */
+  --psych-balance: 142 76% 36%; /* Emerald - emotional stability */
+  --psych-growth: 158 64% 52%; /* Teal green - personal development */
+  
+  /* Warm tones: Energy, Motivation, Positivity - increases vitality */
+  --psych-energy: 25 95% 53%; /* Coral orange - enthusiasm */
+  --psych-joy: 43 96% 56%; /* Golden yellow - happiness */
+  
+  /* Pink: Compassion, Love, Nurturing - promotes self-care */
+  --psych-compassion: 330 81% 60%; /* Rose pink - self-love */
+  --psych-nurture: 340 82% 75%; /* Soft pink - comfort */
+  
+  /* Gradients designed for specific psychological states */
+  --gradient-calming: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%); /* Reduces anxiety */
+  --gradient-energizing: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%); /* Boosts motivation */
+  --gradient-balanced: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%); /* Emotional stability */
+  --gradient-uplifting: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #f97316 100%); /* Positive mood */
+  --gradient-healing: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%); /* Spiritual healing */
 }
 
 .dark {
@@ -141,6 +169,78 @@
   
   .glow-cosmic {
     box-shadow: 0 0 25px rgba(124, 58, 237, 0.5), 0 0 50px rgba(124, 58, 237, 0.2);
+  }
+  
+  /* Psychological Color Psychology Utilities */
+  /* Use these classes to evoke specific emotional responses */
+  
+  .bg-psych-calm {
+    background: hsl(var(--psych-calm));
+  }
+  
+  .bg-psych-trust {
+    background: hsl(var(--psych-trust));
+  }
+  
+  .bg-psych-spiritual {
+    background: hsl(var(--psych-spiritual));
+  }
+  
+  .bg-psych-balance {
+    background: hsl(var(--psych-balance));
+  }
+  
+  .bg-psych-growth {
+    background: hsl(var(--psych-growth));
+  }
+  
+  .bg-psych-energy {
+    background: hsl(var(--psych-energy));
+  }
+  
+  .bg-psych-joy {
+    background: hsl(var(--psych-joy));
+  }
+  
+  .bg-psych-compassion {
+    background: hsl(var(--psych-compassion));
+  }
+  
+  .text-psych-calm {
+    color: hsl(var(--psych-calm));
+  }
+  
+  .text-psych-spiritual {
+    color: hsl(var(--psych-spiritual));
+  }
+  
+  .text-psych-balance {
+    color: hsl(var(--psych-balance));
+  }
+  
+  .text-psych-energy {
+    color: hsl(var(--psych-energy));
+  }
+  
+  /* Psychological Gradients for Mood States */
+  .bg-gradient-calming {
+    background: var(--gradient-calming);
+  }
+  
+  .bg-gradient-energizing {
+    background: var(--gradient-energizing);
+  }
+  
+  .bg-gradient-balanced {
+    background: var(--gradient-balanced);
+  }
+  
+  .bg-gradient-uplifting {
+    background: var(--gradient-uplifting);
+  }
+  
+  .bg-gradient-healing {
+    background: var(--gradient-healing);
   }
   
   /* Glass morphism effects */

@@ -2934,6 +2934,48 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Psychology prompt endpoint - Get personalized psychological prompts
+  app.get("/api/psychology/prompt", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      const { generatePersonalizedPrompt, getTimeOfDay } = await import("./psychology-engine");
+      
+      // Get user's recent journal entries to analyze mood
+      const journalEntries = await storage.getJournalEntriesByUser(req.user.id);
+      const recentEntries = journalEntries.slice(0, 5); // Last 5 entries
+      
+      // Calculate average energy from recent entries
+      const avgEnergy = recentEntries.length > 0
+        ? recentEntries.reduce((sum: number, entry: any) => sum + (entry.energyLevel || 5), 0) / recentEntries.length
+        : 5;
+      
+      // Determine stress level based on energy patterns
+      const stressLevel = avgEnergy < 4 ? 'high' : avgEnergy < 6 ? 'medium' : 'low';
+      
+      // Generate personalized prompt
+      const prompt = generatePersonalizedPrompt({
+        energyLevel: Math.round(avgEnergy),
+        journalEntries: recentEntries.length,
+        timeOfDay: getTimeOfDay(),
+        stressLevel: stressLevel as 'low' | 'medium' | 'high'
+      });
+      
+      res.json(prompt);
+    } catch (error) {
+      console.error("Error generating psychology prompt:", error);
+      // Return a default calming prompt on error
+      res.json({
+        message: "Take a deep breath. You're doing great! 🌸",
+        color: "#06b6d4",
+        type: "calm",
+        suggestedGradient: "calming"
+      });
+    }
+  });
+
   // API endpoint to serve images for PDF generation
   app.get('/api/image/:hash', async (req, res) => {
     const imageHash = req.params.hash;
