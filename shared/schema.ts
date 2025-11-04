@@ -264,6 +264,55 @@ export const insertPdfStorageSchema = createInsertSchema(pdfStorage).omit({
   createdAt: true,
 });
 
+// Psychological Profile - tracks user emotional patterns and preferences
+export const psychologicalProfiles = pgTable("psychological_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  // Dominant emotional states (tracked from journal entries and interactions)
+  dominantMood: text("dominant_mood"), // "calm", "energized", "balanced", "seeking_growth"
+  moodHistory: text("mood_history"), // JSON array of recent moods
+  // Energy patterns
+  averageEnergyLevel: integer("average_energy_level").default(5), // 1-10 scale
+  energyTrend: text("energy_trend"), // "increasing", "decreasing", "stable"
+  // Color preferences and associations
+  preferredColors: text("preferred_colors"), // JSON array of colors user responds to
+  // Behavioral patterns
+  activeTimeOfDay: text("active_time_of_day"), // "morning", "afternoon", "evening", "night"
+  journalFrequency: integer("journal_frequency").default(0), // Entries per week
+  meditationMinutes: integer("meditation_minutes").default(0), // Total minutes
+  // Psychological insights
+  stressIndicators: text("stress_indicators"), // JSON array of stress patterns
+  growthAreas: text("growth_areas"), // JSON array of identified development areas
+  supportivePrompts: text("supportive_prompts"), // JSON array of personalized prompts
+  // Recommendations
+  recommendedActivities: text("recommended_activities"), // JSON array
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPsychologicalProfileSchema = createInsertSchema(psychologicalProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Mood tracking - detailed emotional state snapshots
+export const moodSnapshots = pgTable("mood_snapshots", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  mood: text("mood").notNull(), // "joyful", "peaceful", "anxious", "energized", "reflective"
+  intensity: integer("intensity").notNull(), // 1-10 scale
+  triggers: text("triggers"), // What prompted this mood
+  context: text("context"), // Where/what they were doing
+  colorPreference: text("color_preference"), // Color that resonates with their current state
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export const insertMoodSnapshotSchema = createInsertSchema(moodSnapshots).omit({
+  id: true,
+  timestamp: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -290,3 +339,7 @@ export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
 export type PdfStorage = typeof pdfStorage.$inferSelect;
 export type InsertPdfStorage = z.infer<typeof insertPdfStorageSchema>;
+export type PsychologicalProfile = typeof psychologicalProfiles.$inferSelect;
+export type InsertPsychologicalProfile = z.infer<typeof insertPsychologicalProfileSchema>;
+export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
+export type InsertMoodSnapshot = z.infer<typeof insertMoodSnapshotSchema>;
