@@ -8,15 +8,20 @@ import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X } from "lucide-react";
+import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X, Smile } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 import { MoodBanner } from "@/components/psychology/mood-banner";
+import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
+  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isMoodCheckInOpen, setIsMoodCheckInOpen] = useState(false);
   
   // Calculate tree growth: 5% per 10 soul energy points
   const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
@@ -25,6 +30,39 @@ export default function HomePage() {
   
   // Calculate number of green circles based on growth level
   const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
+
+  // Mood check-in mutation
+  const saveMoodSnapshotMutation = useMutation({
+    mutationFn: async (data: MoodCheckInData) => {
+      const response = await fetch("/api/mood-snapshots", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Failed to save mood snapshot");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Mood Check-In Saved",
+        description: "Your mood has been recorded to help personalize your experience.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save mood check-in. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMoodCheckInComplete = (data: MoodCheckInData) => {
+    saveMoodSnapshotMutation.mutate(data);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
@@ -59,6 +97,18 @@ export default function HomePage() {
         {/* Personalized Mood Banner */}
         <div className="mb-8 max-w-md mx-auto">
           <MoodBanner variant="subtle" />
+        </div>
+
+        {/* Mood Check-In Button */}
+        <div className="mb-8 max-w-md mx-auto px-4">
+          <Button
+            onClick={() => setIsMoodCheckInOpen(true)}
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all"
+            data-testid="button-mood-checkin"
+          >
+            <Smile className="h-4 w-4 mr-2" />
+            How Are You Feeling?
+          </Button>
         </div>
 
         {/* Service Category Buttons */}
@@ -478,6 +528,13 @@ export default function HomePage() {
 
       {/* Mobile Navigation */}
       <MobileNavigation />
+
+      {/* Mood Check-In Modal */}
+      <MoodCheckIn
+        isOpen={isMoodCheckInOpen}
+        onClose={() => setIsMoodCheckInOpen(false)}
+        onComplete={handleMoodCheckInComplete}
+      />
     </div>
   );
 }
