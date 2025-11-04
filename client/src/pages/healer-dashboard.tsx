@@ -2115,8 +2115,8 @@ export default function HealerDashboard() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-7">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
+        <TabsList className="grid w-full h-20 grid-cols-3 grid-rows-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
