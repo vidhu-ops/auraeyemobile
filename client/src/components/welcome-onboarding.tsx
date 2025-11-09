@@ -23,17 +23,8 @@ export default function WelcomeOnboarding() {
     mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
       return await apiRequest("PATCH", "/api/users/me/onboarding", data);
     },
-    onSuccess: async () => {
-      // Explicitly refetch and wait for the user query to update
-      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      toast({
-        title: "Welcome!",
-        description: "Your spiritual journey begins now...",
-      });
-      // Give the auth context a moment to update
-      setTimeout(() => {
-        setLocation("/");
-      }, 500);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     },
     onError: () => {
       toast({
@@ -53,14 +44,16 @@ export default function WelcomeOnboarding() {
     }
   }, [step]);
 
+  const handleComplete = () => {
+    localStorage.setItem("hasSeenOnboarding", "true");
+    setLocation("/login");
+  };
+
   const handleGuidanceContinue = () => {
     if (manifestIntention && energyLevel && biggestBlock) {
-      saveOnboardingMutation.mutate({ 
-        manifestIntention, 
-        energyLevel, 
-        biggestBlock 
-      });
+      saveOnboardingMutation.mutate({ manifestIntention, energyLevel, biggestBlock });
     }
+    handleComplete();
   };
 
   const getIconForIntention = (intention: string) => {

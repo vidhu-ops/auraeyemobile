@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/welcome" component={WelcomeOnboarding} />
+      <Route path="/welcome" component={WelcomeOnboarding} />
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
@@ -72,39 +72,29 @@ function AppContent() {
   const [location, setLocation] = useLocation();
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check if user needs to see onboarding - ONLY for authenticated users who haven't completed it
+  // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
-    if (isLoading) {
-      return; // Wait for auth to load
-    }
-
-    // Only show onboarding to authenticated users who haven't completed it
-    if (user) {
-      const hasCompletedOnboarding = 
-        user.manifestIntention && 
-        user.energyLevel && 
-        user.biggestBlock;
-      
-      // If user HAS completed onboarding and is on welcome page, redirect to home
-      if (hasCompletedOnboarding && location === '/welcome') {
-        setLocation('/');
-      }
-      // If user HASN'T completed onboarding and isn't already on welcome page, redirect
-      else if (!hasCompletedOnboarding && location !== '/welcome') {
-        setLocation('/welcome');
-      }
+    // ⚠️ FOR TESTING: Always show onboarding on refresh
+    // 🚀 FOR PRODUCTION: Uncomment the lines below to only show onboarding to first-time users
+    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // if (!hasSeenOnboarding && location !== '/welcome') {
+    
+    // TEMPORARY: Always show onboarding for testing
+    if (location !== '/welcome') {
+      setLocation('/welcome');
     }
     
+    // Mark that we've checked onboarding status
     setOnboardingChecked(true);
-  }, [user, isLoading, location, setLocation]);
+  }, []); // Only run once on mount
 
   // Don't render anything until we've checked onboarding status
-  if (!onboardingChecked || isLoading) {
+  if (!onboardingChecked) {
     return null;
   }
 
-  // If authenticated user needs onboarding, show it
-  if (user && location === '/welcome') {
+  // If on welcome page, show it directly
+  if (location === '/welcome') {
     return <WelcomeOnboarding />;
   }
 
