@@ -194,7 +194,8 @@ export class DatabaseStorage implements IStorage {
       .set({
         manifestIntention: onboarding.manifestIntention,
         energyLevel: onboarding.energyLevel,
-        biggestBlock: onboarding.biggestBlock
+        biggestBlock: onboarding.biggestBlock,
+        hasCompletedOnboarding: true  // Mark onboarding as completed
       })
       .where(eq(users.id, userId))
       .returning();
