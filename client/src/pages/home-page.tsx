@@ -82,7 +82,7 @@ export default function HomePage() {
         </div>
 
         {/* Spiritual Illustration */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-10 flex justify-center">
           <div className="relative w-48 h-48 rounded-full bg-gradient-to-br from-purple-600 via-cyan-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
             <div className="absolute inset-4 rounded-full bg-gradient-to-br from-purple-900 via-slate-900 to-cyan-900 flex items-center justify-center">
               <div className="relative">
@@ -95,12 +95,12 @@ export default function HomePage() {
         </div>
 
         {/* Personalized Mood Banner */}
-        <div className="mb-8 max-w-md mx-auto">
+        <div className="mb-10 max-w-md mx-auto">
           <MoodBanner variant="subtle" />
         </div>
 
         {/* Mood Check-In Button */}
-        <div className="mb-8 max-w-md mx-auto px-4">
+        <div className="mb-10 max-w-md mx-auto px-4">
           <Button
             onClick={() => setIsMoodCheckInOpen(true)}
             className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all"

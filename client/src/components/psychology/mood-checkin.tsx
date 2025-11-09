@@ -62,7 +62,7 @@ const emotions = [
   { id: 'energized', label: 'Energized', icon: Zap, color: 'bg-orange-500', description: 'Alert and motivated' },
   { id: 'neutral', label: 'Neutral', icon: Meh, color: 'bg-gray-500', description: 'Neither good nor bad' },
   { id: 'stressed', label: 'Stressed', icon: Brain, color: 'bg-red-500', description: 'Feeling overwhelmed' },
-  { id: 'tired', label: 'Tired', icon: Moon, color: 'bg-purple-500', description: 'Low energy, fatigued' },
+  { id: 'tired', label: 'Low', icon: Moon, color: 'bg-purple-500', description: 'Low energy, fatigued' },
 ];
 
 export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
@@ -398,8 +398,8 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                 {!recommendations ? (
                   // Fallback state when recommendations fail to load
                   <Card className="p-8 bg-slate-700/50 border-slate-600 text-center">
-                    <AlertCircle className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">Unable to Load Recommendations</h3>
+                    <AlertCircle className="h-12 w-12 text-black-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-black mb-2">Unable to Load Recommendations</h3>
                     <p className="text-slate-300 mb-4">
                       We couldn't generate your personalized recommendations at this time.
                     </p>
@@ -455,7 +455,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                     <h3 className="text-lg font-semibold text-white mb-3">Psychological Tips for You</h3>
                     {recommendations.psychologicalTips.map((tip, index) => (
                       <Card key={index} className="p-4 bg-slate-700/50 border-slate-600">
-                        <p className="text-slate-200">{tip}</p>
+                        <p className="text-slate-800 text-xs">{tip}</p>
                       </Card>
                     ))}
                   </TabsContent>
@@ -464,22 +464,22 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                     <h3 className="text-lg font-semibold text-white mb-3">Breathing Techniques</h3>
                     {recommendations.breathingTechniques.map((technique, index) => (
                       <Card key={index} className="p-5 bg-slate-700/50 border-slate-600">
-                        <h4 className="text-lg font-semibold text-cyan-400 mb-2">{technique.name}</h4>
-                        <p className="text-slate-300 text-sm mb-3">{technique.description}</p>
+                        <h4 className="text-lg font-semibold text-blue-600 mb-2">{technique.name}</h4>
+                        <p className="text-slate-800 text-sm mb-3">{technique.description}</p>
                         <div className="mb-3">
-                          <span className="text-xs text-slate-400">Duration: </span>
-                          <span className="text-sm text-purple-400">{technique.duration}</span>
+                          <span className="text-xs text-slate-800">Duration: </span>
+                          <span className="text-sm text-purple-800">{technique.duration}</span>
                         </div>
                         <div className="space-y-2 mb-3">
                           {technique.steps.map((step, stepIndex) => (
                             <div key={stepIndex} className="flex gap-2">
-                              <span className="text-cyan-400 font-semibold">{stepIndex + 1}.</span>
-                              <p className="text-slate-200 text-sm">{step}</p>
+                              <span className="text-cyan-800 font-semibold">{stepIndex + 1}.</span>
+                              <p className="text-slate-800 text-sm">{step}</p>
                             </div>
                           ))}
                         </div>
                         <div className="pt-3 border-t border-slate-600">
-                          <p className="text-xs text-green-400">✓ {technique.benefits}</p>
+                          <p className="text-xs text-green-800">✓ {technique.benefits}</p>
                         </div>
                       </Card>
                     ))}
@@ -489,22 +489,22 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                     <h3 className="text-lg font-semibold text-white mb-3">Somatic Exercises</h3>
                     {recommendations.somaticExercises.map((exercise, index) => (
                       <Card key={index} className="p-5 bg-slate-700/50 border-slate-600">
-                        <h4 className="text-lg font-semibold text-orange-400 mb-2">{exercise.name}</h4>
-                        <p className="text-slate-300 text-sm mb-3">{exercise.description}</p>
+                        <h4 className="text-lg font-semibold text-orange-800 mb-2">{exercise.name}</h4>
+                        <p className="text-slate-800 text-sm mb-3">{exercise.description}</p>
                         <div className="mb-3">
-                          <span className="text-xs text-slate-400">Duration: </span>
-                          <span className="text-sm text-purple-400">{exercise.duration}</span>
+                          <span className="text-xs text-slate-800">Duration: </span>
+                          <span className="text-sm text-purple-800">{exercise.duration}</span>
                         </div>
                         <div className="space-y-2 mb-3">
                           {exercise.steps.map((step, stepIndex) => (
                             <div key={stepIndex} className="flex gap-2">
-                              <span className="text-orange-400 font-semibold">{stepIndex + 1}.</span>
-                              <p className="text-slate-200 text-sm">{step}</p>
+                              <span className="text-orange-800 font-semibold">{stepIndex + 1}.</span>
+                              <p className="text-slate-800 text-sm">{step}</p>
                             </div>
                           ))}
                         </div>
                         <div className="pt-3 border-t border-slate-600">
-                          <p className="text-xs text-green-400">✓ {exercise.benefits}</p>
+                          <p className="text-xs text-green-800">✓ {exercise.benefits}</p>
                         </div>
                       </Card>
                     ))}
@@ -512,7 +512,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
 
                   <TabsContent value="affirmations" className="space-y-3 mt-4">
                     <h3 className="text-lg font-semibold text-white mb-3">Affirmations for You</h3>
-                    <p className="text-slate-300 text-sm mb-4">
+                    <p className="text-slate-800 text-sm mb-4">
                       Repeat these affirmations daily. Say them out loud or silently to yourself.
                     </p>
                     {recommendations.affirmations.map((affirmation, index) => (
@@ -520,7 +520,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                         key={index} 
                         className="p-4 bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border-purple-500/30"
                       >
-                        <p className="text-slate-100 italic text-center">"{affirmation}"</p>
+                        <p className="text-slate-800 italic text-center">"{affirmation}"</p>
                       </Card>
                     ))}
                   </TabsContent>
