@@ -169,6 +169,7 @@ export class DatabaseStorage implements IStorage {
       // Log the initial credit grant in same transaction
       await tx.insert(creditTransactions).values({
         userId: user.id,
+        username: user.username,
         amount: initialCredits,
         transactionType: "registration",
         description: `Welcome bonus - ${initialCredits} free credits (${isHealer ? 'healer' : 'client'} account)`,

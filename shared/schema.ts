@@ -209,6 +209,7 @@ export const insertVibeReadingSchema = createInsertSchema(vibeReadings).omit({
 export const creditTransactions = pgTable("credit_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  username: text("username").notNull(),
   amount: integer("amount").notNull(), // Positive for additions, negative for usage
   transactionType: text("transaction_type").notNull(), // "purchase", "aura_analysis", "object_analysis", "vibe_analysis", "bonus"
   description: text("description").notNull(),
