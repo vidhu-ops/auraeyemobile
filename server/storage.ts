@@ -603,6 +603,7 @@ export class DatabaseStorage implements IStorage {
       // Log transaction in same atomic operation
       await tx.insert(creditTransactions).values({
         userId,
+        username: user.username,
         amount: -amount,
         transactionType: type,
         description,
@@ -644,6 +645,7 @@ export class DatabaseStorage implements IStorage {
       // Log transaction in same atomic operation
       await tx.insert(creditTransactions).values({
         userId,
+        username: user.username,
         amount,
         transactionType: type,
         description,
