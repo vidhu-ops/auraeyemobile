@@ -23,8 +23,12 @@ export default function WelcomeOnboarding() {
     mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
       return await apiRequest("PATCH", "/api/users/me/onboarding", data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: async () => {
+      // Wait for user data to be refreshed before redirecting
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      // Now redirect to home page after user object is refreshed
+      setLocation("/");
     },
     onError: () => {
       toast({
@@ -44,16 +48,10 @@ export default function WelcomeOnboarding() {
     }
   }, [step]);
 
-  const handleComplete = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
-    setLocation("/login");
-  };
-
   const handleGuidanceContinue = () => {
     if (manifestIntention && energyLevel && biggestBlock) {
       saveOnboardingMutation.mutate({ manifestIntention, energyLevel, biggestBlock });
     }
-    handleComplete();
   };
 
   const getIconForIntention = (intention: string) => {
