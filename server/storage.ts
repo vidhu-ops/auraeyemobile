@@ -30,6 +30,7 @@ export interface IStorage {
   getUserByMobileNumber(mobileNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
+  updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
   
   // Credit costs based on user type
   getCreditCost(userId: number, serviceType: string): Promise<number>;
@@ -182,6 +183,19 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ password: hashedPassword })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({
+        manifestIntention: onboarding.manifestIntention,
+        energyLevel: onboarding.energyLevel,
+        biggestBlock: onboarding.biggestBlock
+      })
       .where(eq(users.id, userId))
       .returning();
     return user || undefined;

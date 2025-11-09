@@ -1079,6 +1079,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  app.patch("/api/users/me/onboarding", isAuthenticated, async (req, res) => {
+    try {
+      const { manifestIntention, energyLevel, biggestBlock } = req.body;
+      
+      // Validate onboarding responses against allowed values
+      const allowedIntentions = ["Health", "Relationships", "Abundance", "Clarity"];
+      const allowedEnergyLevels = ["Low", "Balanced", "High"];
+      const allowedBlocks = ["Health", "Money", "Relationships", "Career", "Self-Doubt", "Time", "Energy"];
+      
+      if (!manifestIntention || !energyLevel || !biggestBlock) {
+        return res.status(400).json({ 
+          error: "All onboarding responses are required" 
+        });
+      }
+      
+      if (!allowedIntentions.includes(manifestIntention)) {
+        return res.status(400).json({ 
+          error: "Invalid manifest intention value" 
+        });
+      }
+      
+      if (!allowedEnergyLevels.includes(energyLevel)) {
+        return res.status(400).json({ 
+          error: "Invalid energy level value" 
+        });
+      }
+      
+      if (!allowedBlocks.includes(biggestBlock)) {
+        return res.status(400).json({ 
+          error: "Invalid biggest block value" 
+        });
+      }
+      
+      const userId = req.user.id;
+      const updatedUser = await storage.updateUserOnboarding(userId, {
+        manifestIntention,
+        energyLevel,
+        biggestBlock
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      res.json({ 
+        success: true,
+        user: updatedUser
+      });
+      
+    } catch (error) {
+      console.error("Error saving onboarding responses:", error);
+      res.status(500).json({ 
+        error: "Failed to save onboarding responses" 
+      });
+    }
+  });
   
   // Serve attached assets
   app.use('/attached_assets', (req, res, next) => {
