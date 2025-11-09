@@ -72,24 +72,24 @@ function AppContent() {
   const [location, setLocation] = useLocation();
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check if user has seen onboarding on first load - do this BEFORE any routing
+  // Check if user needs onboarding - only for authenticated users who haven't completed it
   useEffect(() => {
-    // ⚠️ FOR TESTING: Always show onboarding on refresh
-    // 🚀 FOR PRODUCTION: Uncomment the lines below to only show onboarding to first-time users
-    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
-    // if (!hasSeenOnboarding && location !== '/welcome') {
+    // Wait for user data to load
+    if (isLoading) {
+      return;
+    }
     
-    // TEMPORARY: Always show onboarding for testing
-    if (location !== '/welcome') {
+    // If user is logged in and hasn't completed onboarding, redirect to welcome
+    if (user && !user.hasCompletedOnboarding && location !== '/welcome') {
       setLocation('/welcome');
     }
     
     // Mark that we've checked onboarding status
     setOnboardingChecked(true);
-  }, []); // Only run once on mount
+  }, [user, isLoading, location, setLocation]);
 
   // Don't render anything until we've checked onboarding status
-  if (!onboardingChecked) {
+  if (isLoading || !onboardingChecked) {
     return null;
   }
 

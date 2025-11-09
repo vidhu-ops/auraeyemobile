@@ -15,6 +15,7 @@ export const users = pgTable("users", {
   manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity
   energyLevel: text("energy_level"), // Low / Balanced / High
   biggestBlock: text("biggest_block"), // Health / Money / Relationships / Career / etc
+  hasCompletedOnboarding: boolean("has_completed_onboarding").default(false).notNull(), // Track if user has completed onboarding questions
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
