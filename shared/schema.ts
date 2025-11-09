@@ -12,6 +12,9 @@ export const users = pgTable("users", {
   mobileNumber: text("mobile_number"),
   credits: integer("credits").default(0), // Will be set programmatically based on user type
   soulEnergy: integer("soul_energy").default(0), // Spiritual energy gained from scans and activities
+  manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity
+  energyLevel: text("energy_level"), // Low / Balanced / High
+  biggestBlock: text("biggest_block"), // Health / Money / Relationships / Career / etc
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
