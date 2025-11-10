@@ -29,19 +29,45 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
     }));
   }, []);
   
-  // Memoize glowing orbs positioned on tree branches
-  const orbs = useMemo(() => {
-    const orbConfigs = [
-      { growth: 10, top: 45, left: 50, size: 16, delay: 0 },
-      { growth: 20, top: 50, left: 35, size: 14, delay: 0.5 },
-      { growth: 20, top: 50, left: 65, size: 14, delay: 1 },
-      { growth: 40, top: 55, left: 25, size: 12, delay: 1.5 },
-      { growth: 40, top: 55, left: 75, size: 12, delay: 2 },
-      { growth: 60, top: 60, left: 20, size: 10, delay: 2.5 },
-      { growth: 60, top: 60, left: 80, size: 10, delay: 3 },
-      { growth: 80, top: 65, left: 45, size: 12, delay: 3.5 },
+  // Memoize glowing circle orbs arranged in tree layers
+  const treeCircles = useMemo(() => {
+    const configs = [
+      // Top layer - smallest
+      { growth: 0, top: 8, left: 50, size: 24, delay: 0, layer: 1 },
+      
+      // Second layer - 3 circles
+      { growth: 10, top: 18, left: 40, size: 28, delay: 0.3, layer: 2 },
+      { growth: 10, top: 18, left: 50, size: 32, delay: 0.5, layer: 2 },
+      { growth: 10, top: 18, left: 60, size: 28, delay: 0.7, layer: 2 },
+      
+      // Third layer - 5 circles
+      { growth: 20, top: 30, left: 30, size: 32, delay: 0.9, layer: 3 },
+      { growth: 20, top: 30, left: 40, size: 36, delay: 1.1, layer: 3 },
+      { growth: 20, top: 30, left: 50, size: 40, delay: 1.3, layer: 3 },
+      { growth: 20, top: 30, left: 60, size: 36, delay: 1.5, layer: 3 },
+      { growth: 20, top: 30, left: 70, size: 32, delay: 1.7, layer: 3 },
+      
+      // Fourth layer - 7 circles
+      { growth: 40, top: 44, left: 25, size: 36, delay: 1.9, layer: 4 },
+      { growth: 40, top: 44, left: 33, size: 40, delay: 2.1, layer: 4 },
+      { growth: 40, top: 44, left: 42, size: 44, delay: 2.3, layer: 4 },
+      { growth: 40, top: 44, left: 50, size: 48, delay: 2.5, layer: 4 },
+      { growth: 40, top: 44, left: 58, size: 44, delay: 2.7, layer: 4 },
+      { growth: 40, top: 44, left: 67, size: 40, delay: 2.9, layer: 4 },
+      { growth: 40, top: 44, left: 75, size: 36, delay: 3.1, layer: 4 },
+      
+      // Fifth layer - 9 circles (bottom/widest)
+      { growth: 60, top: 58, left: 20, size: 40, delay: 3.3, layer: 5 },
+      { growth: 60, top: 58, left: 28, size: 44, delay: 3.5, layer: 5 },
+      { growth: 60, top: 58, left: 36, size: 48, delay: 3.7, layer: 5 },
+      { growth: 60, top: 58, left: 44, size: 52, delay: 3.9, layer: 5 },
+      { growth: 60, top: 58, left: 50, size: 56, delay: 4.1, layer: 5 },
+      { growth: 60, top: 58, left: 56, size: 52, delay: 4.3, layer: 5 },
+      { growth: 60, top: 58, left: 64, size: 48, delay: 4.5, layer: 5 },
+      { growth: 60, top: 58, left: 72, size: 44, delay: 4.7, layer: 5 },
+      { growth: 60, top: 58, left: 80, size: 40, delay: 4.9, layer: 5 },
     ];
-    return orbConfigs.filter(orb => treeGrowth >= orb.growth);
+    return configs.filter(circle => treeGrowth >= circle.growth);
   }, [treeGrowth]);
   
   // Memoize tendrils (energy strands flowing down)
@@ -98,7 +124,7 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
             transform: `rotate(${i * 45}deg)`,
             transformOrigin: 'top center',
             opacity: glowIntensity * 0.5,
-            animation: 'pulse 4s ease-in-out infinite',
+            animation: 'aura-pulse 4s ease-in-out infinite',
             animationDelay: `${i * 0.5}s`
           }}
         />
@@ -129,7 +155,7 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           style={{
             background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.7)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.7)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.7)' : 'rgba(255, 255, 255, 0.7)'} 0%, transparent 70%)`,
             transform: `scale(${1 + glowIntensity * 0.6})`,
-            animation: 'pulse 6s ease-in-out infinite'
+            animation: 'aura-pulse 6s ease-in-out infinite'
           }}
         />
         <div 
@@ -137,168 +163,53 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           style={{
             background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)'} 0%, transparent 60%)`,
             transform: `scale(${1.2 + glowIntensity * 0.4})`,
-            animation: 'pulse 4s ease-in-out infinite',
+            animation: 'aura-pulse 4s ease-in-out infinite',
             animationDelay: '1s'
           }}
         />
         
-        {/* Tree crown - mystical cascading energy */}
+        {/* Tree crown - glowing circle layers arranged in tree shape */}
         <div className="relative w-[32rem] h-[24rem] mb-4">
-          {/* Central cosmic core with rings */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
-            {/* Outer pulsing ring */}
-            <div 
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border-2"
-              style={{
-                borderColor: milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.4)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.4)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-                animation: 'expandFade 3s ease-out infinite'
-              }}
-            />
-            {/* Middle ring */}
-            <div 
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2"
-              style={{
-                borderColor: milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)',
-                animation: 'expandFade 3s ease-out infinite',
-                animationDelay: '1s'
-              }}
-            />
-            {/* Inner core glow */}
-            <div 
-              className="w-20 h-20 rounded-full relative"
-              style={{
-                background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 1)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 1)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 1)' : 'rgba(255, 255, 255, 1)'} 0%, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'} 50%, transparent 100%)`,
-                boxShadow: `
-                  0 0 ${40 * (glowIntensity + 0.3)}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'},
-                  0 0 ${20 * (glowIntensity + 0.3)}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'},
-                  inset 0 0 ${15 * (glowIntensity + 0.3)}px ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.8)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.8)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.8)' : 'rgba(255, 255, 255, 0.8)'}
-                `,
-                animation: 'pulse 3s ease-in-out infinite'
-              }}
-            />
-          </div>
-          
-          {/* Cascading willow branches based on growth */}
-          {treeGrowth >= 10 && (
-            <>
-              <div 
-                className="absolute top-12 left-1/2 w-32 h-40 -ml-16"
-                style={{
-                  background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.7)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.7)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.7)' : 'rgba(255, 255, 255, 0.7)'} 0%, transparent 100%)`,
-                  clipPath: 'polygon(40% 0, 60% 0, 70% 100%, 30% 100%)',
-                  filter: 'blur(2px)',
-                  opacity: 0.6,
-                  animation: 'sway 4s ease-in-out infinite'
-                }}
-              />
-              <div 
-                className="absolute top-16 left-1/4 w-24 h-32"
-                style={{
-                  background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'} 0%, transparent 100%)`,
-                  clipPath: 'polygon(45% 0, 55% 0, 75% 100%, 25% 100%)',
-                  filter: 'blur(2px)',
-                  opacity: 0.5,
-                  animation: 'sway 5s ease-in-out infinite',
-                  animationDelay: '0.5s'
-                }}
-              />
-              <div 
-                className="absolute top-16 right-1/4 w-24 h-32"
-                style={{
-                  background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'} 0%, transparent 100%)`,
-                  clipPath: 'polygon(45% 0, 55% 0, 75% 100%, 25% 100%)',
-                  filter: 'blur(2px)',
-                  opacity: 0.5,
-                  animation: 'sway 5s ease-in-out infinite',
-                  animationDelay: '1s'
-                }}
-              />
-            </>
-          )}
-          
-          {treeGrowth >= 30 && (
-            <>
-              <div 
-                className="absolute top-20 left-12 w-20 h-28"
-                style={{
-                  background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)'} 0%, transparent 100%)`,
-                  clipPath: 'polygon(47% 0, 53% 0, 80% 100%, 20% 100%)',
-                  filter: 'blur(3px)',
-                  opacity: 0.4,
-                  animation: 'sway 6s ease-in-out infinite',
-                  animationDelay: '1.5s'
-                }}
-              />
-              <div 
-                className="absolute top-20 right-12 w-20 h-28"
-                style={{
-                  background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)'} 0%, transparent 100%)`,
-                  clipPath: 'polygon(47% 0, 53% 0, 80% 100%, 20% 100%)',
-                  filter: 'blur(3px)',
-                  opacity: 0.4,
-                  animation: 'sway 6s ease-in-out infinite',
-                  animationDelay: '2s'
-                }}
-              />
-            </>
-          )}
-          
-          {treeGrowth >= 60 && (
-            <>
-              {[...Array(4)].map((_, i) => (
-                <div 
-                  key={i}
-                  className="absolute w-16 h-24"
-                  style={{
-                    top: `${60 + i * 5}px`,
-                    left: `${20 + i * 50}px`,
-                    background: `linear-gradient(180deg, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.4)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.4)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(255, 255, 255, 0.4)'} 0%, transparent 100%)`,
-                    clipPath: 'polygon(48% 0, 52% 0, 85% 100%, 15% 100%)',
-                    filter: 'blur(4px)',
-                    opacity: 0.3,
-                    animation: 'sway 7s ease-in-out infinite',
-                    animationDelay: `${2.5 + i * 0.3}s`
-                  }}
-                />
-              ))}
-            </>
-          )}
-          
-          {/* Sparkles around the tree */}
-          <Sparkles className="absolute top-2 left-8 w-4 h-4 text-yellow-300 animate-pulse" style={{ animationDelay: '0s' }} />
-          <Sparkles className="absolute top-8 right-12 w-3 h-3 text-cyan-300 animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <Sparkles className="absolute top-6 right-4 w-5 h-5 text-purple-300 animate-pulse" style={{ animationDelay: '1s' }} />
-          <Sparkles className="absolute top-14 left-4 w-3 h-3 text-white animate-pulse" style={{ animationDelay: '1.5s' }} />
-          
-          {/* Glowing orbs on tree branches */}
-          {orbs.map((orb, i) => (
+          {/* Tree circles arranged in layers (pyramid/tree shape) */}
+          {treeCircles.map((circle, i) => (
             <div
-              key={`orb-${i}`}
-              className="absolute rounded-full animate-orb-pulse"
+              key={`tree-circle-${i}`}
+              className="absolute rounded-full animate-circle-glow"
               style={{
-                top: `${orb.top}%`,
-                left: `${orb.left}%`,
-                width: `${orb.size}px`,
-                height: `${orb.size}px`,
-                background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 1)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 1)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 1)' : 'rgba(255, 255, 255, 1)'} 0%, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.4)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.4)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(255, 255, 255, 0.4)'} 70%, transparent 100%)`,
-                boxShadow: `0 0 ${orb.size * 2}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'}, 0 0 ${orb.size}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'}`,
-                animationDelay: `${orb.delay}s`,
-                transform: 'translate(-50%, -50%)'
+                top: `${circle.top}%`,
+                left: `${circle.left}%`,
+                width: `${circle.size}px`,
+                height: `${circle.size}px`,
+                background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.9)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.9)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.9)' : 'rgba(255, 255, 255, 0.9)'} 0%, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)'} 60%, transparent 100%)`,
+                boxShadow: `
+                  0 0 ${circle.size * 1.5}px ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.8)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.8)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.8)' : 'rgba(255, 255, 255, 0.8)'},
+                  0 0 ${circle.size * 0.8}px ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'}
+                `,
+                animationDelay: `${circle.delay}s`,
+                transform: 'translate(-50%, -50%)',
+                filter: 'blur(0.5px)'
               }}
             />
           ))}
           
-          {/* Tendrils flowing down from branches */}
+          {/* Sparkles around the tree */}
+          <Sparkles className="absolute top-2 left-1/4 w-4 h-4 text-yellow-300 animate-pulse" style={{ animationDelay: '0s' }} />
+          <Sparkles className="absolute top-8 right-1/4 w-3 h-3 text-cyan-300 animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <Sparkles className="absolute top-6 right-1/3 w-5 h-5 text-purple-300 animate-pulse" style={{ animationDelay: '1s' }} />
+          <Sparkles className="absolute top-14 left-1/3 w-3 h-3 text-white animate-pulse" style={{ animationDelay: '1.5s' }} />
+          <Sparkles className="absolute top-24 left-1/2 w-4 h-4 text-yellow-200 animate-pulse" style={{ animationDelay: '2s' }} />
+          
+          {/* Tendrils flowing down from tree */}
           {tendrils.map((tendril, i) => (
             <div
               key={`tendril-${i}`}
               className="absolute animate-tendril-flow"
               style={{
-                top: '40%',
+                top: '50%',
                 left: `${tendril.left}%`,
                 width: '2px',
-                height: '60%',
-                background: `linear-gradient(to bottom, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'} 0%, transparent 100%)`,
+                height: '50%',
+                background: `linear-gradient(to bottom, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.5)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.5)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(255, 255, 255, 0.5)'} 0%, transparent 100%)`,
                 filter: 'blur(1px)',
                 animationDelay: `${tendril.delay}s`,
                 animationDuration: `${tendril.duration}s`,
@@ -343,15 +254,20 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           50% { opacity: 1; }
         }
         
+        @keyframes aura-pulse {
+          0%, 100% { opacity: 0.8; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
         @keyframes expandFade {
           0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
           50% { opacity: 0.3; }
           100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
         
-        @keyframes orb-pulse {
-          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        @keyframes circle-glow {
+          0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
         }
         
         @keyframes tendril-flow {
