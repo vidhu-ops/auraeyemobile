@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 function Router() {
   return (
     <Switch>
-      <Route path="/welcome" component={WelcomeOnboarding} />
+      <ProtectedRoute path="/welcome" component={WelcomeOnboarding} />
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
