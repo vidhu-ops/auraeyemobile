@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import mascotLevel1 from "@assets/WhatsApp Image 2025-11-05 at 5.52.21 PM_1762780944775.jpeg";
 
 interface MascotMessage {
   text: string;
@@ -261,18 +262,27 @@ export default function Mascot() {
     return colorMap[colorName.toLowerCase()] || "#06b6d4";
   };
 
-  const getMascotFace = (emotion: 'happy' | 'neutral' | 'excited' = 'happy') => {
-    const faces = {
-      happy: { eyes: '◕ ◕', mouth: '◡' },
-      neutral: { eyes: '• •', mouth: '▽' },
-      excited: { eyes: '✧ ✧', mouth: '▿' }
-    };
-    return faces[emotion];
+  const getMascotImage = (energy: number) => {
+    // Energy level based mascot evolution
+    // Level 1: 0-50 energy
+    // Level 2: 51-100 energy (add image when available)
+    // Level 3: 101-150 energy (add image when available)
+    // Level 4: 150+ energy (add image when available)
+    
+    if (energy > 150) {
+      return mascotLevel1; // Replace with mascotLevel4 when available
+    } else if (energy > 100) {
+      return mascotLevel1; // Replace with mascotLevel3 when available
+    } else if (energy > 50) {
+      return mascotLevel1; // Replace with mascotLevel2 when available
+    } else {
+      return mascotLevel1;
+    }
   };
 
   if (!isVisible || !message) return null;
 
-  const face = getMascotFace(message.emotion);
+  const mascotImage = getMascotImage(soulEnergy);
 
   return (
     <div className="fixed bottom-24 right-4 z-50 animate-bounce-slow">
@@ -316,58 +326,23 @@ export default function Mascot() {
         ></div>
       </div>
 
-      {/* Mascot - Cute Gradient Blob - FULLY VISIBLE */}
+      {/* Mascot - Cute Blob Character */}
       <div 
-        className="relative w-24 h-24 rounded-full cursor-pointer hover:scale-110 transition-all duration-300 shadow-2xl"
-        style={{ 
-          background: `linear-gradient(135deg, ${message.color}F5, #ec4899F8, #06b6d4F5)`,
-          boxShadow: `0 0 50px ${message.color}CC, inset 0 0 40px rgba(255,255,255,0.6)`,
-          animation: 'float 4s ease-in-out infinite, gradient-shift 8s ease infinite'
-        }}
+        className="relative cursor-pointer hover:scale-110 transition-all duration-300"
         onClick={() => setIsVisible(false)}
         data-testid="mascot-image"
+        style={{
+          animation: 'float 4s ease-in-out infinite'
+        }}
       >
-        {/* Bright highlight overlay for 3D effect */}
-        <div 
-          className="absolute inset-0 rounded-full"
+        <img 
+          src={mascotImage} 
+          alt="Auri Mascot"
+          className="w-32 h-32 object-contain drop-shadow-2xl"
           style={{
-            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), transparent 60%)`
+            filter: `drop-shadow(0 0 20px ${message.color}80)`
           }}
-        ></div>
-
-        {/* Cute Face - DARKER FOR VISIBILITY */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-900 drop-shadow-sm" style={{ paddingBottom: '8px' }}>
-          <div className="text-2xl font-bold transition-all duration-500" style={{ letterSpacing: '0.4em', marginBottom: '2px' }}>
-            {face.eyes}
-          </div>
-          <div className="text-2xl transition-all duration-500" style={{ marginTop: '-2px' }}>
-            {face.mouth}
-          </div>
-        </div>
-        
-        {/* Rotating ring animation */}
-        <div 
-          className="absolute inset-0 rounded-full border-2 opacity-40"
-          style={{ 
-            borderColor: message.color,
-            animation: 'spin 10s linear infinite'
-          }}
-        ></div>
-
-        {/* Pulsing glow ring */}
-        <div 
-          className="absolute inset-0 rounded-full animate-ping opacity-40"
-          style={{ backgroundColor: message.color }}
-        ></div>
-
-        {/* Strong outer glow */}
-        <div 
-          className="absolute -inset-3 rounded-full blur-2xl opacity-70 animate-pulse"
-          style={{ 
-            backgroundColor: message.color,
-            animation: 'pulse 3s ease-in-out infinite'
-          }}
-        ></div>
+        />
       </div>
     </div>
   );
