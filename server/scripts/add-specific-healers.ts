@@ -72,7 +72,6 @@ async function addSpecificHealers() {
       // Add initial credit transaction
       await db.insert(creditTransactions).values({
         userId: newUser.id,
-        username: newUser.username,
         amount: 150,
         transactionType: "bonus",
         description: "Initial healer account credits",

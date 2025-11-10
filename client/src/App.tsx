@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/welcome" component={WelcomeOnboarding} />
+      <Route path="/welcome" component={WelcomeOnboarding} />
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
@@ -72,24 +72,24 @@ function AppContent() {
   const [location, setLocation] = useLocation();
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check if user needs onboarding - only for authenticated users who haven't completed it
+  // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
-    // Wait for user data to load
-    if (isLoading) {
-      return;
-    }
+    // ⚠️ FOR TESTING: Always show onboarding on refresh
+    // 🚀 FOR PRODUCTION: Uncomment the lines below to only show onboarding to first-time users
+    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // if (!hasSeenOnboarding && location !== '/welcome') {
     
-    // If user is logged in and hasn't completed onboarding, redirect to welcome
-    if (user && !user.hasCompletedOnboarding && location !== '/welcome') {
+    // TEMPORARY: Always show onboarding for testing
+    if (location !== '/welcome') {
       setLocation('/welcome');
     }
     
     // Mark that we've checked onboarding status
     setOnboardingChecked(true);
-  }, [user, isLoading, location, setLocation]);
+  }, []); // Only run once on mount
 
   // Don't render anything until we've checked onboarding status
-  if (isLoading || !onboardingChecked) {
+  if (!onboardingChecked) {
     return null;
   }
 

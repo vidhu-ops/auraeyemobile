@@ -15,7 +15,6 @@ export const users = pgTable("users", {
   manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity
   energyLevel: text("energy_level"), // Low / Balanced / High
   biggestBlock: text("biggest_block"), // Health / Money / Relationships / Career / etc
-  hasCompletedOnboarding: boolean("has_completed_onboarding").default(false).notNull(), // Track if user has completed onboarding questions
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -209,7 +208,6 @@ export const insertVibeReadingSchema = createInsertSchema(vibeReadings).omit({
 export const creditTransactions = pgTable("credit_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  username: text("username").notNull(),
   amount: integer("amount").notNull(), // Positive for additions, negative for usage
   transactionType: text("transaction_type").notNull(), // "purchase", "aura_analysis", "object_analysis", "vibe_analysis", "bonus"
   description: text("description").notNull(),
