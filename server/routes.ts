@@ -1720,6 +1720,16 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.log(`Credit deduction skipped: unauthenticated user or no credit cost`);
       }
 
+      // Add soul energy +100 for completing aura analysis
+      if (req.isAuthenticated() && req.user) {
+        try {
+          await storage.addSoulEnergy(req.user.id, 100, 'aura_analysis', 'Aura analysis scan completed');
+          console.log(`⚡ Added +100 soul energy to user ${req.user.id} for aura analysis completion`);
+        } catch (soulEnergyError) {
+          console.error("Error adding soul energy:", soulEnergyError);
+        }
+      }
+
       // Add the name to the response
       auraAnalysis.name = analysisName;
       
@@ -2919,9 +2929,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Deduct credits for successful analysis
         await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
         
-        // Add soul energy +2 for completing vibe scan
-        await storage.addSoulEnergy(req.user.id, 2, 'vibe_scan', 'What\'s My Vibe scan completed');
-        console.log(`⚡ Added +2 soul energy to user ${req.user.id} for vibe scan completion`);
+        // Add soul energy +100 for completing vibe scan
+        await storage.addSoulEnergy(req.user.id, 100, 'vibe_scan', 'What\'s My Vibe scan completed');
+        console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
       }
 
       res.json({
