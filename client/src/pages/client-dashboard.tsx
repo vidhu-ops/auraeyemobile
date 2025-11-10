@@ -28,9 +28,13 @@ import {
   Sparkles,
   Circle,
   LogOut,
-  CreditCard
+  CreditCard,
+  Settings,
+  BookOpen
 } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
+import AvatarSoulTree from "@/components/avatar-soul-tree";
+import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone, energyMilestones, SOUL_ENERGY_PER_SCAN } from "@/lib/soul-energy-utils";
 
 export default function ClientDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -59,13 +63,10 @@ export default function ClientDashboard() {
 
   const tabs = ["Overview", "Soul Energy", "Bookings", "Activity", "Settings"];
   
-  // Calculate tree growth: 5% per 10 soul energy points
-  const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
-  const baseGrowth = 50; // Starting growth percentage
-  const totalTreeGrowth = Math.min(100, baseGrowth + treeGrowthFromSoulEnergy);
-  
-  // Calculate number of green circles based on growth level
-  const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
+  // Use new milestone and tree growth system
+  const milestone = getSoulEnergyMilestone(soulEnergy);
+  const treeGrowth = calculateTreeGrowth(soulEnergy);
+  const milestoneProgress = getProgressToNextMilestone(soulEnergy);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
@@ -181,9 +182,16 @@ export default function ClientDashboard() {
                 <div className="text-xs text-purple-100">Soul Energy</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{totalTreeGrowth}%</div>
+                <div className="text-2xl font-bold text-white">{Math.floor(treeGrowth)}%</div>
                 <div className="text-xs text-purple-100">Tree Growth</div>
               </div>
+            </div>
+            
+            {/* Milestone Badge */}
+            <div className="mt-4 flex justify-center">
+              <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-1 text-sm font-semibold`}>
+                {milestone.level} Level
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -206,114 +214,47 @@ export default function ClientDashboard() {
           ))}
         </div>
 
-        {/* Light Tree of Wisdom */}
-        <Card className="bg-gradient-to-br from-green-50 to-cyan-50 border-green-200 mb-4 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-green-600" />
-              <h2 className="text-green-800 font-semibold">Light Tree of Wisdom</h2>
-            </div>
-            
-            {/* Soul Energy Display */}
-            <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-4 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-purple-600" />
-                  <span className="text-slate-700 font-semibold">Soul Energy</span>
-                </div>
-                <div className="text-2xl font-bold text-purple-600">{soulEnergy}</div>
+        {/* Tab Content */}
+        {activeTab === "overview" && (
+          <>
+            {/* Spiritual Journey Progress */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-5 w-5 text-purple-600" />
+                <h2 className="text-white font-semibold">Your Spiritual Journey Progress</h2>
               </div>
-              <div className="text-xs text-slate-600">
-                {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
-              </div>
-              <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
-            </div>
-            
-            <div className="flex flex-col items-center py-6">
-              {/* Tree visualization */}
-              <div className="relative mb-4">
-                <div className="w-24 h-32 relative flex items-end justify-center">
-                  {/* Tree trunk */}
-                  <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
-                  {/* Tree foliage - dynamic circles based on growth */}
-                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
-                    <div className="relative w-20 h-20">
-                      {/* Base circles */}
-                      <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
-                      <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
-                      <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
-                      
-                      {/* Additional circles based on growth */}
-                      {numberOfCircles >= 4 && (
-                        <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 5 && (
-                        <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 6 && (
-                        <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 7 && (
-                        <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
-                      )}
+
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 mb-3 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-2 gap-6 mb-4">
+                    <div>
+                      <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
+                      <div className="text-2xl font-bold text-purple-400 mb-1">120h</div>
+                      <Progress value={75} className="h-2 bg-slate-700" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
+                      <div className="text-2xl font-bold text-cyan-400 mb-1">8</div>
+                      <Progress value={50} className="h-2 bg-slate-700" />
                     </div>
                   </div>
-                  {/* Sparkles */}
-                  <Sparkles className="h-4 w-4 text-yellow-400 absolute top-0 left-2 animate-pulse" />
-                  <Sparkles className="h-3 w-3 text-yellow-300 absolute top-8 right-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  <Sparkles className="h-3 w-3 text-yellow-400 absolute bottom-16 left-0 animate-pulse" style={{ animationDelay: '1s' }} />
-                </div>
-              </div>
 
-              <h3 className="text-slate-700 font-semibold mb-2">Tree Growth</h3>
-              <div className="text-green-600 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
-              
-              <div className="flex items-center gap-1 text-green-700 text-sm">
-                <Sparkles className="h-4 w-4" />
-                <span>Your tree is flourishing with spiritual energy!</span>
-              </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <div className="text-sm text-cyan-200 mb-2">Aura Scans</div>
+                      <div className="text-2xl font-bold text-indigo-400">15</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-cyan-200 mb-2">Total Sessions</div>
+                      <div className="text-2xl font-bold text-pink-400">45</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Spiritual Journey Progress */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-5 w-5 text-purple-600" />
-            <h2 className="text-slate-800 font-semibold">Your Spiritual Journey Progress</h2>
-          </div>
-
-          <Card className="bg-white border-slate-200 mb-3 shadow-sm">
-            <CardContent className="p-4">
-              <div className="grid grid-cols-2 gap-6 mb-4">
-                <div>
-                  <div className="text-sm text-slate-600 mb-2">Meditation Hours</div>
-                  <div className="text-2xl font-bold text-purple-600 mb-1">120h</div>
-                  <Progress value={75} className="h-2 bg-slate-100" />
-                </div>
-                <div>
-                  <div className="text-sm text-slate-600 mb-2">Healers Consulted</div>
-                  <div className="text-2xl font-bold text-cyan-600 mb-1">8</div>
-                  <Progress value={50} className="h-2 bg-slate-100" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <div className="text-sm text-slate-600 mb-2">Aura Scans</div>
-                  <div className="text-2xl font-bold text-indigo-600">15</div>
-                </div>
-                <div>
-                  <div className="text-sm text-slate-600 mb-2">Total Sessions</div>
-                  <div className="text-2xl font-bold text-pink-600">45</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 gap-3">
           <Link href="/vibe" data-testid="link-vibe">
             <Card className="bg-gradient-to-br from-violet-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <CardContent className="p-4 text-center">
@@ -363,7 +304,111 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
           </Link>
-        </div>
+            </div>
+          </>
+        )}
+
+        {/* Soul Energy Tab */}
+        {activeTab === "soul energy" && (
+          <div>
+            {/* Milestone Progress */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 mb-4 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-white font-bold text-xl">Current Milestone</h2>
+                    <p className="text-cyan-300 text-sm">{milestone.level}</p>
+                  </div>
+                  <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-2`}>
+                    Level {energyMilestones.findIndex(m => m.level === milestone.level) + 1}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-cyan-200">Progress to Next Level</span>
+                    <span className="text-white font-semibold">{milestoneProgress.current} / {milestoneProgress.total}</span>
+                  </div>
+                  <Progress value={milestoneProgress.percentage} className="h-3" />
+                  <p className="text-xs text-cyan-300">
+                    {milestone.max === Infinity ? 
+                      `You've ascended! Keep growing your spiritual energy.` :
+                      `${milestone.max - soulEnergy} more energy to reach ${energyMilestones[energyMilestones.findIndex(m => m.level === milestone.level) + 1]?.level || 'max level'}`
+                    }
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Avatar Soul Tree */}
+            <Card className="bg-transparent border-0 mb-4">
+              <CardContent className="p-0">
+                <AvatarSoulTree soulEnergy={soulEnergy} />
+              </CardContent>
+            </Card>
+
+            {/* Tree Growth Details */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-white font-bold text-lg mb-2">Soul Tree Growth</h3>
+                  <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-2">
+                    {Math.floor(treeGrowth)}%
+                  </div>
+                  <p className="text-cyan-300 text-sm">
+                    {Math.floor((100 - treeGrowth) * 100)} more energy needed to reach 100%
+                  </p>
+                </div>
+                
+                <div className="bg-slate-800/50 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <div className="text-cyan-400 text-2xl font-bold">{soulEnergy}</div>
+                      <div className="text-xs text-cyan-200">Total Energy</div>
+                    </div>
+                    <div>
+                      <div className="text-purple-400 text-2xl font-bold">+{SOUL_ENERGY_PER_SCAN}</div>
+                      <div className="text-xs text-cyan-200">Per Scan</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Bookings Tab */}
+        {activeTab === "bookings" && (
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <Calendar className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
+              <h3 className="text-white font-bold text-xl mb-2">Healer Bookings</h3>
+              <p className="text-cyan-300">Your upcoming sessions with healers will appear here</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Activity Tab */}
+        {activeTab === "activity" && (
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <Activity className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <h3 className="text-white font-bold text-xl mb-2">Recent Activity</h3>
+              <p className="text-cyan-300">Your spiritual journey activities and history will appear here</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === "settings" && (
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <Settings className="w-16 h-16 mx-auto mb-4 text-indigo-400" />
+              <h3 className="text-white font-bold text-xl mb-2">Profile Settings</h3>
+              <p className="text-cyan-300">Manage your account preferences and spiritual journey settings</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Mobile Navigation */}
