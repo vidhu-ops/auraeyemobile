@@ -28,6 +28,7 @@ export async function fixHealerCreditTransactions() {
         // Create initial credit transaction record
         await db.insert(creditTransactions).values({
           userId: healer.id,
+          username: healer.username,
           amount: 150,
           transactionType: "registration",
           description: `Welcome bonus - 150 free credits (healer account)`,
