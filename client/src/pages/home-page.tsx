@@ -14,6 +14,8 @@ import { MoodBanner } from "@/components/psychology/mood-banner";
 import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import AvatarSoulTree from "@/components/avatar-soul-tree";
+import { getSoulEnergyMilestone, calculateTreeGrowth } from "@/lib/soul-energy-utils";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -23,13 +25,9 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [isMoodCheckInOpen, setIsMoodCheckInOpen] = useState(false);
   
-  // Calculate tree growth: 5% per 10 soul energy points
-  const treeGrowthFromSoulEnergy = Math.floor(soulEnergy / 10) * 5;
-  const baseGrowth = 50; // Starting growth percentage
-  const totalTreeGrowth = Math.min(100, baseGrowth + treeGrowthFromSoulEnergy);
-  
-  // Calculate number of green circles based on growth level
-  const numberOfCircles = Math.min(7, 3 + Math.floor(treeGrowthFromSoulEnergy / 10));
+  // Calculate tree growth and milestone
+  const milestone = getSoulEnergyMilestone(soulEnergy);
+  const treeGrowth = calculateTreeGrowth(soulEnergy);
 
   // Mood check-in mutation
   const saveMoodSnapshotMutation = useMutation({
@@ -284,54 +282,21 @@ export default function HomePage() {
                 </div>
                 <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
               </div>
-              <div className="text-xs text-gray-200">
-                {10 - (soulEnergy % 10)} more energy to grow your tree by 5%
+              <div className="text-xs text-gray-200 mb-2">
+                {milestone.level} Level - {Math.floor(treeGrowth)}% Tree Growth
               </div>
-              <Progress value={(soulEnergy % 10) * 10} className="h-2 mt-2" />
+              <Progress value={treeGrowth} className="h-2" />
             </div>
             
-            <div className="flex flex-col items-center py-6">
-              {/* Tree visualization */}
-              <div className="relative mb-4">
-                <div className="w-24 h-32 relative flex items-end justify-center">
-                  {/* Tree trunk */}
-                  <div className="w-8 h-16 bg-gradient-to-b from-amber-600 to-amber-700 rounded-t-lg absolute bottom-0"></div>
-                  {/* Tree foliage - dynamic circles based on growth */}
-                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
-                    <div className="relative w-20 h-20">
-                      {/* Base circles */}
-                      <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full opacity-90"></div>
-                      <div className="absolute top-2 right-0 w-14 h-14 bg-gradient-to-br from-lime-400 to-green-400 rounded-full opacity-90"></div>
-                      <div className="absolute top-4 left-3 w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-90"></div>
-                      
-                      {/* Additional circles based on growth */}
-                      {numberOfCircles >= 4 && (
-                        <div className="absolute -top-2 left-8 w-10 h-10 bg-gradient-to-br from-green-300 to-emerald-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 5 && (
-                        <div className="absolute top-6 right-2 w-9 h-9 bg-gradient-to-br from-lime-300 to-green-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 6 && (
-                        <div className="absolute top-8 left-1 w-8 h-8 bg-gradient-to-br from-emerald-300 to-green-400 rounded-full opacity-90"></div>
-                      )}
-                      {numberOfCircles >= 7 && (
-                        <div className="absolute -top-4 right-4 w-7 h-7 bg-gradient-to-br from-green-200 to-lime-300 rounded-full opacity-90"></div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Sparkles */}
-                  <Sparkles className="h-4 w-4 text-yellow-400 absolute top-0 left-2 animate-pulse" />
-                  <Sparkles className="h-3 w-3 text-yellow-300 absolute top-8 right-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  <Sparkles className="h-3 w-3 text-yellow-400 absolute bottom-16 left-0 animate-pulse" style={{ animationDelay: '1s' }} />
-                </div>
-              </div>
-
-              <h3 className="text-gray-200 font-semibold mb-2">Tree Growth</h3>
-              <div className="text-green-100 text-sm font-medium mb-3">{totalTreeGrowth}% Complete</div>
-              
-              <div className="flex items-center gap-1 text-green-200 text-xs">
+            {/* Enhanced Soul Tree Visualization */}
+            <div className="mb-4">
+              <AvatarSoulTree soulEnergy={soulEnergy} />
+            </div>
+            
+            <div className="text-center mb-4">
+              <div className="flex items-center gap-1 justify-center text-green-200 text-xs">
                 <Sparkles className="h-4 w-4" />
-                <span>Your tree is flourishing with spiritual energy!</span>
+                <span>Your soul tree grows with each spiritual practice!</span>
               </div>
             </div>
           </CardContent>
