@@ -29,8 +29,36 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
     }));
   }, []);
   
+  // Memoize glowing orbs positioned on tree branches
+  const orbs = useMemo(() => {
+    const orbConfigs = [
+      { growth: 10, top: 45, left: 50, size: 16, delay: 0 },
+      { growth: 20, top: 50, left: 35, size: 14, delay: 0.5 },
+      { growth: 20, top: 50, left: 65, size: 14, delay: 1 },
+      { growth: 40, top: 55, left: 25, size: 12, delay: 1.5 },
+      { growth: 40, top: 55, left: 75, size: 12, delay: 2 },
+      { growth: 60, top: 60, left: 20, size: 10, delay: 2.5 },
+      { growth: 60, top: 60, left: 80, size: 10, delay: 3 },
+      { growth: 80, top: 65, left: 45, size: 12, delay: 3.5 },
+    ];
+    return orbConfigs.filter(orb => treeGrowth >= orb.growth);
+  }, [treeGrowth]);
+  
+  // Memoize tendrils (energy strands flowing down)
+  const tendrils = useMemo(() => {
+    const tendrilConfigs = [
+      { growth: 15, left: 48, delay: 0, duration: 4 },
+      { growth: 25, left: 38, delay: 1, duration: 5 },
+      { growth: 25, left: 62, delay: 0.5, duration: 4.5 },
+      { growth: 45, left: 30, delay: 1.5, duration: 5.5 },
+      { growth: 45, left: 70, delay: 2, duration: 5 },
+      { growth: 70, left: 52, delay: 2.5, duration: 6 },
+    ];
+    return tendrilConfigs.filter(tendril => treeGrowth >= tendril.growth);
+  }, [treeGrowth]);
+  
   return (
-    <div className="relative w-full h-96 flex items-center justify-center overflow-hidden rounded-xl bg-black">
+    <div className="relative w-full h-[32rem] flex items-center justify-center overflow-hidden rounded-xl bg-black">
       {/* Cosmic background with nebula effect */}
       <div 
         className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-950"
@@ -115,7 +143,7 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
         />
         
         {/* Tree crown - mystical cascading energy */}
-        <div className="relative w-64 h-48 mb-4">
+        <div className="relative w-[32rem] h-[24rem] mb-4">
           {/* Central cosmic core with rings */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
             {/* Outer pulsing ring */}
@@ -241,10 +269,47 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           <Sparkles className="absolute top-8 right-12 w-3 h-3 text-cyan-300 animate-pulse" style={{ animationDelay: '0.5s' }} />
           <Sparkles className="absolute top-6 right-4 w-5 h-5 text-purple-300 animate-pulse" style={{ animationDelay: '1s' }} />
           <Sparkles className="absolute top-14 left-4 w-3 h-3 text-white animate-pulse" style={{ animationDelay: '1.5s' }} />
+          
+          {/* Glowing orbs on tree branches */}
+          {orbs.map((orb, i) => (
+            <div
+              key={`orb-${i}`}
+              className="absolute rounded-full animate-orb-pulse"
+              style={{
+                top: `${orb.top}%`,
+                left: `${orb.left}%`,
+                width: `${orb.size}px`,
+                height: `${orb.size}px`,
+                background: `radial-gradient(circle, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 1)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 1)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 1)' : 'rgba(255, 255, 255, 1)'} 0%, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.4)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.4)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(255, 255, 255, 0.4)'} 70%, transparent 100%)`,
+                boxShadow: `0 0 ${orb.size * 2}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'}, 0 0 ${orb.size}px ${milestone.color === 'cyan' ? '#22d3ee' : milestone.color === 'purple' ? '#a855f7' : milestone.color === 'yellow' ? '#fbbf24' : '#ffffff'}`,
+                animationDelay: `${orb.delay}s`,
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+          ))}
+          
+          {/* Tendrils flowing down from branches */}
+          {tendrils.map((tendril, i) => (
+            <div
+              key={`tendril-${i}`}
+              className="absolute animate-tendril-flow"
+              style={{
+                top: '40%',
+                left: `${tendril.left}%`,
+                width: '2px',
+                height: '60%',
+                background: `linear-gradient(to bottom, ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.6)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.6)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.6)' : 'rgba(255, 255, 255, 0.6)'} 0%, transparent 100%)`,
+                filter: 'blur(1px)',
+                animationDelay: `${tendril.delay}s`,
+                animationDuration: `${tendril.duration}s`,
+                transformOrigin: 'top center'
+              }}
+            />
+          ))}
         </div>
         
         {/* Tree trunk - mystical glowing pillar */}
-        <div className="relative w-16 h-32">
+        <div className="relative w-24 h-48">
           <div 
             className="absolute inset-0 bg-gradient-to-b opacity-60"
             style={{
@@ -282,6 +347,17 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
           50% { opacity: 0.3; }
           100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes orb-pulse {
+          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        @keyframes tendril-flow {
+          0% { opacity: 0; transform: translateY(-20px) scaleY(0.5); }
+          50% { opacity: 0.8; }
+          100% { opacity: 0; transform: translateY(20px) scaleY(1); }
         }
       `}</style>
     </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
@@ -9,58 +10,28 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger
-} from "@/components/ui/sheet";
-import {
   MapPin,
   Calendar,
   Camera,
-  Zap,
-  Bell,
-  Wifi,
-  Menu,
   TrendingUp,
   Heart,
   Users,
   Activity,
   Sparkles,
   Circle,
-  LogOut,
-  CreditCard,
-  Settings,
   BookOpen,
-  Eye
+  Eye,
+  Settings
 } from "lucide-react";
-import logoImage from "@assets/new-logo.jpeg";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone, energyMilestones, SOUL_ENERGY_PER_SCAN } from "@/lib/soul-energy-utils";
 
 export default function ClientDashboard() {
-  const { user, logoutMutation } = useAuth();
+  const { user } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   
   const [activeTab, setActiveTab] = useState("overview");
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-    setMenuOpen(false);
-  };
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
-
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Services", href: "/services" },
-    { name: "Healers", href: "/healers" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ];
 
   const tabs = ["Overview", "Soul Energy", "Bookings", "Activity", "Settings"];
   
@@ -71,74 +42,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
-      {/* Header */}
-      <div className="bg-slate-950 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-1 flex items-center justify-center">
-            <img src={logoImage} alt="AuraEye" className="w-full h-full object-cover rounded-lg" />
-          </div>
-          <div>
-            <h1 className="text-white font-bold text-sm">AuraEye™</h1>
-            <p className="text-cyan-300 text-xs">Ethereal Wellness</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-dark-mode">
-            <Zap className="h-4 w-4 text-cyan-400" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center relative" data-testid="button-notifications">
-            <Bell className="h-4 w-4 text-white" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
-          </button>
-          <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-wifi">
-            <Wifi className="h-4 w-4 text-green-400" />
-          </button>
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <button className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center" data-testid="button-menu">
-                <Menu className="h-4 w-4 text-white" />
-              </button>
-            </SheetTrigger>
-            <SheetContent>
-              <div className="flex flex-col space-y-4 mt-8">
-                {navLinks.map((link) => (
-                  <Link 
-                    key={link.name} 
-                    href={link.href} 
-                    onClick={closeMenu}
-                    className="py-2 px-2 rounded-lg text-gray-600 hover:text-primary hover:bg-gray-50"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-                
-                <div className="pt-4 border-t border-gray-200 mt-4">
-                  <div className="flex items-center space-x-2 px-2 py-2 bg-gray-100 rounded-lg mb-2">
-                    <CreditCard className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm font-medium text-gray-700">{credits} credits</span>
-                  </div>
-                  <Link 
-                    href="/client-dashboard" 
-                    onClick={closeMenu}
-                    className="block py-2 px-2 rounded-lg text-primary font-medium"
-                  >
-                    My Dashboard
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 px-2 mt-2"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </Button>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
+      <Navbar />
 
       {/* Main content */}
       <div className="relative z-10 pb-32 px-4 pt-4">
