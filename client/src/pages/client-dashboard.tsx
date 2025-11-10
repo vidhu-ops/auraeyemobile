@@ -30,7 +30,8 @@ import {
   LogOut,
   CreditCard,
   Settings,
-  BookOpen
+  BookOpen,
+  Eye
 } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
@@ -271,6 +272,16 @@ export default function ClientDashboard() {
                 <Camera className="h-8 w-8 text-white mx-auto mb-2" />
                 <div className="text-white font-semibold mb-1">Aura Scan</div>
                 <div className="text-indigo-200 text-xs">Start reading</div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/object-analysis" data-testid="link-object-analysis">
+            <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+              <CardContent className="p-4 text-center">
+                <Eye className="h-8 w-8 text-white mx-auto mb-2" />
+                <div className="text-white font-semibold mb-1">Object Scan</div>
+                <div className="text-amber-200 text-xs">Spiritual analysis</div>
               </CardContent>
             </Card>
           </Link>
