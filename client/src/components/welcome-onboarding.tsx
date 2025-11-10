@@ -49,10 +49,12 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
   }, [step]);
 
   const handleComplete = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
+    // Only set hasSeenOnboarding after post-registration questionnaire
     if (skipWelcome) {
+      localStorage.setItem("hasSeenOnboarding", "true");
       setLocation("/");
     } else {
+      // In initial welcome flow, just redirect to login
       setLocation("/login");
     }
   };
@@ -248,11 +250,19 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
 
             <div className="flex justify-center">
               <Button
-                onClick={() => setStep("question1")}
+                onClick={() => {
+                  if (skipWelcome) {
+                    // In post-registration flow, continue to questions
+                    setStep("question1");
+                  } else {
+                    // In initial welcome flow, redirect to login/registration page
+                    setLocation("/login");
+                  }
+                }}
                 className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-12 py-6 text-lg font-semibold rounded-full shadow-2xl transform hover:scale-105 transition-all"
                 data-testid="button-onboarding-next"
               >
-                Continue
+                {skipWelcome ? "Continue" : "Begin Your Journey"}
                 <Sparkles className="ml-2 w-5 h-5" />
               </Button>
             </div>
