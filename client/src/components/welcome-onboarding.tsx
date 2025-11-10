@@ -10,10 +10,14 @@ import { useMutation } from "@tanstack/react-query";
 
 type OnboardingStep = "welcome" | "features" | "question1" | "question2" | "question3" | "guidance";
 
-export default function WelcomeOnboarding() {
+interface WelcomeOnboardingProps {
+  skipWelcome?: boolean;
+}
+
+export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboardingProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [step, setStep] = useState<OnboardingStep>("welcome");
+  const [step, setStep] = useState<OnboardingStep>(skipWelcome ? "question1" : "welcome");
   
   const [manifestIntention, setManifestIntention] = useState<ManifestIntention | null>(null);
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
@@ -46,7 +50,11 @@ export default function WelcomeOnboarding() {
 
   const handleComplete = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
-    setLocation("/login");
+    if (skipWelcome) {
+      setLocation("/");
+    } else {
+      setLocation("/login");
+    }
   };
 
   const handleGuidanceContinue = () => {

@@ -26,6 +26,7 @@ import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
+import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { LightsProvider, useLights } from "@/hooks/use-lights";
@@ -38,6 +39,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/welcome" component={WelcomeOnboarding} />
+      <ProtectedRoute path="/onboarding" component={OnboardingPage} />
       <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/login" component={AuthPage} />
@@ -74,14 +76,15 @@ function AppContent() {
 
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
-    // ⚠️ FOR TESTING: Always show onboarding on refresh
-    // 🚀 FOR PRODUCTION: Uncomment the lines below to only show onboarding to first-time users
-    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
-    // if (!hasSeenOnboarding && location !== '/welcome') {
+    // Don't redirect to welcome if user is on login, onboarding, or other specific routes
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers'];
+    const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
-    // TEMPORARY: Always show onboarding for testing
-    if (location !== '/welcome') {
-      setLocation('/welcome');
+    if (!shouldSkip) {
+      const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+      if (!hasSeenOnboarding) {
+        setLocation('/welcome');
+      }
     }
     
     // Mark that we've checked onboarding status
@@ -99,7 +102,7 @@ function AppContent() {
   }
 
   // Public routes that don't require lights activation
-  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm'];
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
   // Show lights activation only if user is logged in, not on a public route, and lights are off
