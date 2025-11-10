@@ -169,6 +169,7 @@ export class DatabaseStorage implements IStorage {
       // Log the initial credit grant in same transaction
       await tx.insert(creditTransactions).values({
         userId: user.id,
+        username: user.username,
         amount: initialCredits,
         transactionType: "registration",
         description: `Welcome bonus - ${initialCredits} free credits (${isHealer ? 'healer' : 'client'} account)`,
@@ -601,6 +602,7 @@ export class DatabaseStorage implements IStorage {
       // Log transaction in same atomic operation
       await tx.insert(creditTransactions).values({
         userId,
+        username: user.username,
         amount: -amount,
         transactionType: type,
         description,
@@ -642,6 +644,7 @@ export class DatabaseStorage implements IStorage {
       // Log transaction in same atomic operation
       await tx.insert(creditTransactions).values({
         userId,
+        username: user.username,
         amount,
         transactionType: type,
         description,
