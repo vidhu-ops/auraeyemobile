@@ -1,6 +1,7 @@
 import { useMemo, useId } from "react";
 import { Sparkles } from "lucide-react";
 import { calculateTreeGrowth, getSoulEnergyMilestone } from "@/lib/soul-energy-utils";
+import mascotSparkImage from "@assets/WhatsApp Image 2025-11-05 at 5.52.21 PM_1762780573653.jpeg";
 
 interface AvatarSoulTreeProps {
   soulEnergy: number;
