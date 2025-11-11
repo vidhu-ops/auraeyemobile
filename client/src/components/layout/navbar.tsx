@@ -38,7 +38,8 @@ import {
   Flower2,
   DollarSign,
   LayoutDashboard,
-  X
+  X,
+  Settings
 } from "lucide-react";
 import logoPath from "@assets/new-logo.jpeg";
 
@@ -80,6 +81,7 @@ export default function Navbar() {
     { name: "Healers", href: "/healers", icon: Heart },
     { name: "Services", href: "/services", icon: Briefcase },
     { name: "Dashboard", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: LayoutDashboard },
+    { name: "Settings", href: "/settings", icon: Settings },
     { name: "Pricing", href: "/pricing", icon: DollarSign },
     { name: "About", href: "/about", icon: Info },
     { name: "Contact", href: "/contact", icon: Mail },
@@ -259,6 +261,13 @@ export default function Navbar() {
                       <User className="w-4 h-4 text-purple-600" />
                       <span className="text-purple-700">{user.username}</span>
                     </DropdownMenuItem>
+                    <Link href="/settings">
+                      <DropdownMenuItem className="flex items-center space-x-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50/50 font-cosmic cursor-pointer">
+                        <div className="w-2 h-2 bg-gradient-mystical rounded-full"></div>
+                        <Settings className="w-4 h-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem onClick={handleLogout} className="flex items-center space-x-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50/50 font-cosmic">
                       <div className="w-2 h-2 bg-gradient-aurora rounded-full"></div>
                       <LogOut className="w-4 h-4" />
