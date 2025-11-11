@@ -32,16 +32,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setPermission(Notification.permission);
     }
 
-    // Register service worker for background notifications
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('Service Worker registered successfully:', registration);
-        })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error);
-        });
-    }
+    // Note: Service worker registration removed
+    // For full mobile background notifications, would need Push API implementation
+    // with backend server, VAPID keys, and push event handlers
+    // Current implementation works when app is active/foregrounded
   }, []);
 
   // Periodic notification scheduler (every 5 hours)
