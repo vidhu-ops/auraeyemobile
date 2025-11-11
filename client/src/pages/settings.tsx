@@ -309,13 +309,15 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Test Notification Button */}
-          {isSupported && preferences?.browserEnabled && permission === "granted" && (
+          {/* Test Notification Button - Always visible for better UX */}
+          {isSupported && (
             <Card className="border-purple-200/50 shadow-lg">
               <CardHeader>
                 <CardTitle>Test Notifications</CardTitle>
                 <CardDescription>
-                  Send yourself a test notification to make sure everything is working
+                  {preferences?.browserEnabled && permission === "granted"
+                    ? "Send yourself a test notification to make sure everything is working"
+                    : "Enable notifications above to test them"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -333,12 +335,19 @@ export default function SettingsPage() {
                       });
                     }
                   }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  disabled={!preferences?.browserEnabled || permission !== "granted"}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   data-testid="button-test-notification"
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   Send Test Notification
                 </Button>
+                {(!preferences?.browserEnabled || permission !== "granted") && (
+                  <p className="text-sm text-gray-600 mt-3">
+                    {!preferences?.browserEnabled && "Please enable notifications using the toggle above."}
+                    {preferences?.browserEnabled && permission !== "granted" && "Please grant notification permission first."}
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}
