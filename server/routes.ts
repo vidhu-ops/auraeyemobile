@@ -3225,6 +3225,58 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get notification preferences
+  app.get("/api/notification-preferences", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        smsEnabled: user.smsNotificationsEnabled || false,
+        phoneNumber: user.mobileNumber || "",
+        browserEnabled: user.browserNotificationsEnabled || false,
+        emailEnabled: user.emailNotificationsEnabled !== false,
+      });
+    } catch (error) {
+      console.error("Error retrieving notification preferences:", error);
+      res.status(500).json({ message: "Failed to retrieve notification preferences" });
+    }
+  });
+
+  // Update notification preferences
+  app.post("/api/notification-preferences", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const { smsEnabled, phoneNumber, browserEnabled, emailEnabled } = req.body;
+      
+      await storage.updateNotificationPreferences(userId, {
+        smsEnabled,
+        phoneNumber,
+        browserEnabled,
+        emailEnabled,
+      });
+      
+      res.json({ success: true, message: "Notification preferences updated" });
+    } catch (error) {
+      console.error("Error updating notification preferences:", error);
+      res.status(500).json({ message: "Failed to update notification preferences" });
+    }
+  });
+
   // Get user's credit transaction history
   app.get("/api/credit-transactions", isAuthenticated, async (req, res) => {
     try {

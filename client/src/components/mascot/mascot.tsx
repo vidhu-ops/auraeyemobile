@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
+import { useMascot, type MascotPosition } from "@/hooks/use-mascot";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useLocation } from "wouter";
@@ -16,9 +17,11 @@ interface MascotMessage {
 export default function Mascot() {
   const { user } = useAuth();
   const { soulEnergy } = useSoulEnergy();
+  const { shouldGlow, position, setPosition } = useMascot();
   const [location] = useLocation();
   const [message, setMessage] = useState<MascotMessage | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [lastScanColor, setLastScanColor] = useState<string | null>(null);
   const [lastLocation, setLastLocation] = useState(location);
 
@@ -36,13 +39,60 @@ export default function Mascot() {
     }
   }, [location]);
 
-  // Reappear when page changes
+  // Reappear when page changes with position variation
   useEffect(() => {
     if (location !== lastLocation) {
-      setIsVisible(true);
-      setLastLocation(location);
+      // First hide with scale-out animation
+      if (isVisible) {
+        setIsAnimatingOut(true);
+        setTimeout(() => {
+          // Set new position based on page
+          const newPosition = getPositionForPage(location);
+          setPosition(newPosition);
+          setIsAnimatingOut(false);
+          setIsVisible(true);
+          setLastLocation(location);
+        }, 500);
+      } else {
+        // Just appear if already hidden
+        const newPosition = getPositionForPage(location);
+        setPosition(newPosition);
+        setIsVisible(true);
+        setLastLocation(location);
+      }
     }
-  }, [location, lastLocation]);
+  }, [location, lastLocation, isVisible, setPosition]);
+
+  // Initial appearance animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getPositionForPage = (path: string): MascotPosition => {
+    // Different positions for different pages to create variety
+    const positions: Record<string, MascotPosition> = {
+      "/": "bottom-right",
+      "/dashboard": "bottom-left",
+      "/client-dashboard": "bottom-left",
+      "/healer-dashboard": "bottom-left",
+      "/aura-analysis": "top-right",
+      "/vibe": "top-right",
+      "/object-analysis": "middle-right",
+      "/daily-horoscope": "middle-left",
+      "/personalized-horoscope": "middle-left",
+      "/numerology": "top-left",
+      "/journal": "bottom-right",
+      "/meditations": "middle-right",
+      "/color-meanings": "bottom-left",
+      "/healers": "middle-left",
+      "/help": "bottom-right",
+    };
+
+    return positions[path] || "bottom-right";
+  };
 
   // Generate contextual messages based on page and user state
   useEffect(() => {
@@ -280,12 +330,44 @@ export default function Mascot() {
     }
   };
 
-  if (!isVisible || !message) return null;
+  if (!message) return null;
 
   const mascotImage = getMascotImage(soulEnergy);
 
+  // Position classes based on mascot position
+  const getPositionClasses = (): string => {
+    switch (position) {
+      case "bottom-right":
+        return "bottom-20 right-4";
+      case "bottom-left":
+        return "bottom-20 left-4";
+      case "top-right":
+        return "top-20 right-4";
+      case "top-left":
+        return "top-20 left-4";
+      case "middle-right":
+        return "top-1/2 -translate-y-1/2 right-4";
+      case "middle-left":
+        return "top-1/2 -translate-y-1/2 left-4";
+      default:
+        return "bottom-20 right-4";
+    }
+  };
+
+  const handleClose = () => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      setIsAnimatingOut(false);
+    }, 500);
+  };
+
   return (
-    <div className="fixed bottom-20 right-4 z-40 animate-bounce-slow">
+    <div 
+      className={`fixed ${getPositionClasses()} z-40 transition-all duration-700 ease-in-out ${
+        isAnimatingOut ? 'animate-mascot-scale-out' : isVisible ? 'animate-mascot-scale-in' : 'opacity-0'
+      }`}
+    >
       {/* Thought Bubble */}
       <div className="relative mb-3 mr-3">
         <Card 
@@ -297,7 +379,7 @@ export default function Mascot() {
         >
           {/* Close button */}
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             className="absolute -top-2 -right-2 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center text-white"
             data-testid="button-close-mascot"
           >
@@ -328,11 +410,13 @@ export default function Mascot() {
 
       {/* Mascot - Cute Blob Character */}
       <div 
-        className="relative cursor-pointer hover:move-100"
-        onClick={() => setIsVisible(false)}
+        className={`relative cursor-pointer hover:scale-110 transition-transform duration-300 ${
+          shouldGlow ? 'animate-mascot-glow' : ''
+        }`}
+        onClick={handleClose}
         data-testid="mascot-image"
         style={{
-          animation: 'float infinite'
+          animation: 'float 6s ease-in-out infinite'
         }}
       >
         <img 
@@ -340,7 +424,9 @@ export default function Mascot() {
           alt="Auri Mascot"
           className="w-52 h-52 object-contain drop-shadow-2xl"
           style={{
-            filter: `drop-shadow(0 0 20px ${message.color}80)`
+            filter: shouldGlow 
+              ? `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
+              : `drop-shadow(0 0 20px ${message.color}80)`
           }}
         />
       </div>
