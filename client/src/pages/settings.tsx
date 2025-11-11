@@ -35,6 +35,28 @@ export default function SettingsPage() {
     mutationFn: async (data: { browserEnabled: boolean }) => {
       return apiRequest("POST", "/api/notification-preferences", data);
     },
+    onMutate: async (newPreferences) => {
+      // Cancel any outgoing refetches to prevent them from overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: ["/api/notification-preferences"] });
+
+      // Snapshot the previous value
+      const previousPreferences = queryClient.getQueryData<NotificationPreferences>(["/api/notification-preferences"]);
+
+      // Optimistically update to the new value, merging with existing data
+      queryClient.setQueryData<NotificationPreferences>(["/api/notification-preferences"], (old) => ({
+        ...old,
+        ...newPreferences,
+      }));
+
+      // Return context with the snapshotted value (or default if cache is empty)
+      return { previousPreferences: previousPreferences ?? { browserEnabled: false } };
+    },
+    onError: (err, newPreferences, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousPreferences) {
+        queryClient.setQueryData<NotificationPreferences>(["/api/notification-preferences"], context.previousPreferences);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
     },
@@ -71,10 +93,20 @@ export default function SettingsPage() {
         try {
           await updatePreferencesMutation.mutateAsync({ browserEnabled: true });
           
+          // Show success toast
           toast({
             title: "Notifications Enabled! ✨",
             description: "You'll receive spiritual reminders every 5 hours.",
           });
+
+          // Send immediate browser notification to confirm it's working
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Notifications Enabled! ✨', {
+              body: 'You will receive spiritual reminders every 5 hours to help guide your journey.',
+              icon: '/logo.png',
+              badge: '/logo.png',
+            });
+          }
         } catch (error) {
           // Rollback: unsubscribe since we can't save the preference
           const rolledBack = await unsubscribeFromPush();
@@ -205,7 +237,7 @@ export default function SettingsPage() {
                   {/* Main Toggle */}
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
                     <div className="flex items-center gap-3">
-                      {isEnabled ? (
+                      {preferences?.browserEnabled ? (
                         <Bell className="w-5 h-5 text-purple-600" />
                       ) : (
                         <BellOff className="w-5 h-5 text-gray-400" />
@@ -221,7 +253,7 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       id="notifications-toggle"
-                      checked={isEnabled}
+                      checked={preferences?.browserEnabled ?? false}
                       onCheckedChange={handleToggleNotifications}
                       disabled={isLoading || updatePreferencesMutation.isPending}
                       data-testid="switch-push-notifications"
@@ -264,7 +296,7 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  {isEnabled && permission === "granted" && (
+                  {preferences?.browserEnabled && permission === "granted" && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <p className="text-green-800 text-sm flex items-center gap-2">
                         <Check className="w-4 h-4" />
@@ -278,7 +310,7 @@ export default function SettingsPage() {
           </Card>
 
           {/* Test Notification Button */}
-          {isSupported && isEnabled && permission === "granted" && (
+          {isSupported && preferences?.browserEnabled && permission === "granted" && (
             <Card className="border-purple-200/50 shadow-lg">
               <CardHeader>
                 <CardTitle>Test Notifications</CardTitle>
