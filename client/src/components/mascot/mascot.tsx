@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import mascotLevel1 from "@assets/WhatsApp Image 2025-11-05 at 5.52.21 PM_1762780944775.jpeg";
+import mascotLevel1 from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
 
 interface MascotMessage {
   text: string;
