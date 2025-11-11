@@ -58,7 +58,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     try {
       // Get VAPID public key from server
-      const { publicKey } = await apiRequest("/api/push/vapid-public-key");
+      const response = await apiRequest("GET", "/api/push/vapid-public-key");
+      const { publicKey } = await response.json();
       
       if (!publicKey) {
         console.error('No VAPID public key available');
@@ -72,15 +73,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
 
       // Send subscription to server
-      await apiRequest("/api/push/subscribe", {
-        method: "POST",
-        body: JSON.stringify({
-          endpoint: subscription.endpoint,
-          keys: {
-            p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
-            auth: arrayBufferToBase64(subscription.getKey('auth'))
-          }
-        }),
+      await apiRequest("POST", "/api/push/subscribe", {
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
+          auth: arrayBufferToBase64(subscription.getKey('auth'))
+        }
       });
 
       console.log('✅ Successfully subscribed to push notifications');
@@ -106,11 +104,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         await subscription.unsubscribe();
         
         // Tell server to remove subscription
-        await apiRequest("/api/push/unsubscribe", {
-          method: "POST",
-          body: JSON.stringify({
-            endpoint: subscription.endpoint
-          }),
+        await apiRequest("POST", "/api/push/unsubscribe", {
+          endpoint: subscription.endpoint
         });
       }
 

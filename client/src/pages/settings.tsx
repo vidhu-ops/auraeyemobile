@@ -33,10 +33,7 @@ export default function SettingsPage() {
 
   const updatePreferencesMutation = useMutation({
     mutationFn: async (data: { browserEnabled: boolean }) => {
-      return apiRequest("/api/notification-preferences", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/notification-preferences", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
