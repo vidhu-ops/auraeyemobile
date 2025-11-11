@@ -21,6 +21,16 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  endpoint: text("endpoint").notNull().unique(),
+  keys: text("keys").notNull(), // JSON string containing p256dh and auth keys
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("push_subscriptions_user_id_idx").on(table.userId),
+}));
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -29,6 +39,11 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   mobileNumber: true,
   credits: true,
+});
+
+export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const auraReadings = pgTable("aura_readings", {
@@ -356,3 +371,5 @@ export type PsychologicalProfile = typeof psychologicalProfiles.$inferSelect;
 export type InsertPsychologicalProfile = z.infer<typeof insertPsychologicalProfileSchema>;
 export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
 export type InsertMoodSnapshot = z.infer<typeof insertMoodSnapshotSchema>;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
