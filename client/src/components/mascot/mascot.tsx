@@ -39,24 +39,22 @@ export default function Mascot() {
     }
   }, [location]);
 
-  // Reappear when page changes with position variation
+  // Reappear when page changes - keeping mascot at bottom
   useEffect(() => {
     if (location !== lastLocation) {
       // First hide with scale-out animation
       if (isVisible) {
         setIsAnimatingOut(true);
         setTimeout(() => {
-          // Set new position based on page
-          const newPosition = getPositionForPage(location);
-          setPosition(newPosition);
+          // Keep mascot at bottom-right
+          setPosition("bottom-right");
           setIsAnimatingOut(false);
           setIsVisible(true);
           setLastLocation(location);
         }, 500);
       } else {
         // Just appear if already hidden
-        const newPosition = getPositionForPage(location);
-        setPosition(newPosition);
+        setPosition("bottom-right");
         setIsVisible(true);
         setLastLocation(location);
       }
@@ -72,26 +70,8 @@ export default function Mascot() {
   }, []);
 
   const getPositionForPage = (path: string): MascotPosition => {
-    // Different positions for different pages to create variety
-    const positions: Record<string, MascotPosition> = {
-      "/": "bottom-right",
-      "/dashboard": "bottom-left",
-      "/client-dashboard": "bottom-left",
-      "/healer-dashboard": "bottom-left",
-      "/aura-analysis": "top-right",
-      "/vibe": "top-right",
-      "/object-analysis": "middle-right",
-      "/daily-horoscope": "middle-left",
-      "/personalized-horoscope": "middle-left",
-      "/numerology": "top-left",
-      "/journal": "bottom-right",
-      "/meditations": "middle-right",
-      "/color-meanings": "bottom-left",
-      "/healers": "middle-left",
-      "/help": "bottom-right",
-    };
-
-    return positions[path] || "bottom-right";
+    // Mascot is now fixed at the bottom of the screen
+    return "bottom-right";
   };
 
   // Generate contextual messages based on page and user state
