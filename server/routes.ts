@@ -3351,6 +3351,25 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Test endpoint to send push notification immediately
+  app.post("/api/push/test", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      console.log(`📨 Test notification requested for user ${userId}`);
+      await sendPushToUser(userId);
+      
+      res.json({ success: true, message: "Test notification sent!" });
+    } catch (error) {
+      console.error("Error sending test notification:", error);
+      res.status(500).json({ message: "Failed to send test notification" });
+    }
+  });
+
   // Get user's credit transaction history
   app.get("/api/credit-transactions", isAuthenticated, async (req, res) => {
     try {
