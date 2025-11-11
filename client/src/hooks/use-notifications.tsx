@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "./use-auth";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface NotificationContextType {
   isSupported: boolean;
@@ -8,6 +9,8 @@ interface NotificationContextType {
   requestPermission: () => Promise<boolean>;
   sendNotification: (title: string, options?: NotificationOptions) => void;
   isEnabled: boolean;
+  subscribeToPush: () => Promise<boolean>;
+  unsubscribeFromPush: () => Promise<boolean>;
 }
 
 interface NotificationPreferences {
@@ -20,6 +23,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   const { data: preferences } = useQuery<NotificationPreferences>({
     queryKey: ["/api/notification-preferences"],
@@ -32,107 +36,91 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setPermission(Notification.permission);
     }
 
-    // Note: Service worker registration removed
-    // For full mobile background notifications, would need Push API implementation
-    // with backend server, VAPID keys, and push event handlers
-    // Current implementation works when app is active/foregrounded
+    // Register service worker for Push API
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('✅ Service Worker registered successfully:', registration);
+          setSwRegistration(registration);
+        })
+        .catch((error) => {
+          console.error('❌ Service Worker registration failed:', error);
+        });
+    }
   }, []);
 
-  // Periodic notification scheduler (every 5 hours)
-  useEffect(() => {
-    if (!user || !preferences?.browserEnabled || permission !== "granted") {
-      return;
+  // Subscribe to push notifications
+  const subscribeToPush = async (): Promise<boolean> => {
+    if (!swRegistration || !user) {
+      console.error('Service worker not registered or user not authenticated');
+      return false;
     }
 
-    const FIVE_HOURS = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
-    // For testing: const FIVE_HOURS = 30 * 1000; // 30 seconds
-
-    const spiritualReminders = [
-      {
-        title: "Time to Breathe 🌬️",
-        body: "Take a moment to breathe deeply and reconnect with your inner peace. Your soul energy awaits."
-      },
-      {
-        title: "Meditation Reminder 🧘",
-        body: "It's been 5 hours! Take a peaceful break and meditate for a few minutes to recharge your spirit."
-      },
-      {
-        title: "Check Your Aura ✨",
-        body: "Your energy field may have shifted. Take a moment to scan your aura and see how you're doing!"
-      },
-      {
-        title: "Breathe & Center 💫",
-        body: "Pause, breathe, and center yourself. Your spiritual journey needs these mindful moments."
-      },
-      {
-        title: "Aura Check-In 🌈",
-        body: "How is your energy today? Check your aura to see what colors are shining through!"
-      },
-      {
-        title: "Mindful Moment 🕉️",
-        body: "Take a 5-minute meditation break. Your mind and spirit will thank you!"
-      }
-    ];
-
-    const sendRandomReminder = () => {
-      const reminder = spiritualReminders[Math.floor(Math.random() * spiritualReminders.length)];
+    try {
+      // Get VAPID public key from server
+      const { publicKey } = await apiRequest("/api/push/vapid-public-key");
       
-      try {
-        new Notification(reminder.title, {
-          body: reminder.body,
-          icon: "/logo.png",
-          badge: "/logo.png",
-          tag: "spiritual-reminder",
-          requireInteraction: false,
-        }).onclick = () => {
-          window.focus();
-        };
-        
-        // Store last notification time
-        localStorage.setItem("lastNotificationTime", Date.now().toString());
-      } catch (error) {
-        console.error("Error sending periodic reminder:", error);
+      if (!publicKey) {
+        console.error('No VAPID public key available');
+        return false;
       }
-    };
 
-    // Check if we need to send a notification based on last notification time
-    const lastNotificationTime = localStorage.getItem("lastNotificationTime");
-    const now = Date.now();
-    
-    let nextNotificationDelay = FIVE_HOURS;
-    
-    if (lastNotificationTime) {
-      const timeSinceLastNotification = now - parseInt(lastNotificationTime);
-      if (timeSinceLastNotification < FIVE_HOURS) {
-        // Schedule next notification for the remaining time
-        nextNotificationDelay = FIVE_HOURS - timeSinceLastNotification;
-      } else {
-        // More than 5 hours have passed, send notification soon
-        nextNotificationDelay = 1000; // 1 second
-      }
-    } else {
-      // First time, set initial notification time and wait 5 hours
-      localStorage.setItem("lastNotificationTime", now.toString());
+      // Subscribe to push notifications
+      const subscription = await swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey)
+      });
+
+      // Send subscription to server
+      await apiRequest("/api/push/subscribe", {
+        method: "POST",
+        body: JSON.stringify({
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
+            auth: arrayBufferToBase64(subscription.getKey('auth'))
+          }
+        }),
+      });
+
+      console.log('✅ Successfully subscribed to push notifications');
+      return true;
+    } catch (error) {
+      console.error('Error subscribing to push notifications:', error);
+      return false;
+    }
+  };
+
+  // Unsubscribe from push notifications
+  const unsubscribeFromPush = async (): Promise<boolean> => {
+    if (!swRegistration) {
+      console.error('Service worker not registered');
+      return false;
     }
 
-    // Single timeout that reschedules itself after firing
-    let currentTimeoutId: NodeJS.Timeout;
-    
-    const scheduleNextReminder = (delay: number) => {
-      currentTimeoutId = setTimeout(() => {
-        sendRandomReminder();
-        // Schedule the next one after another 5 hours
-        scheduleNextReminder(FIVE_HOURS);
-      }, delay);
-    };
+    try {
+      const subscription = await swRegistration.pushManager.getSubscription();
+      
+      if (subscription) {
+        // Unsubscribe from push
+        await subscription.unsubscribe();
+        
+        // Tell server to remove subscription
+        await apiRequest("/api/push/unsubscribe", {
+          method: "POST",
+          body: JSON.stringify({
+            endpoint: subscription.endpoint
+          }),
+        });
+      }
 
-    // Start the scheduling
-    scheduleNextReminder(nextNotificationDelay);
-
-    return () => {
-      clearTimeout(currentTimeoutId);
-    };
-  }, [user, preferences, permission]);
+      console.log('✅ Successfully unsubscribed from push notifications');
+      return true;
+    } catch (error) {
+      console.error('Error unsubscribing from push notifications:', error);
+      return false;
+    }
+  };
 
   const requestPermission = async (): Promise<boolean> => {
     if (!isSupported) {
@@ -191,7 +179,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         permission, 
         requestPermission, 
         sendNotification,
-        isEnabled: preferences?.browserEnabled || false
+        isEnabled: preferences?.browserEnabled || false,
+        subscribeToPush,
+        unsubscribeFromPush
       }}
     >
       {children}
@@ -205,4 +195,30 @@ export function useNotifications() {
     throw new Error("useNotifications must be used within a NotificationProvider");
   }
   return context;
+}
+
+// Helper functions for converting between formats
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
+  if (!buffer) return '';
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
 }

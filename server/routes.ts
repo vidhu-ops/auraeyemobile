@@ -17,10 +17,11 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
+import { getVapidPublicKey, sendPushToUser } from "./push-service";
 
 // Credit checking middleware with dynamic pricing
 function checkCredits(serviceType: string) {
@@ -3274,6 +3275,79 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error updating notification preferences:", error);
       res.status(500).json({ message: "Failed to update notification preferences" });
+    }
+  });
+
+  // Push notification endpoints
+  
+  // Get VAPID public key
+  app.get("/api/push/vapid-public-key", (req, res) => {
+    const vapidPublicKey = getVapidPublicKey();
+    if (!vapidPublicKey) {
+      return res.status(503).json({ message: "Push notifications not configured" });
+    }
+    res.json({ publicKey: vapidPublicKey });
+  });
+
+  // Subscribe to push notifications
+  app.post("/api/push/subscribe", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      const subscriptionData = insertPushSubscriptionSchema.parse({
+        userId,
+        endpoint: req.body.endpoint,
+        keys: JSON.stringify(req.body.keys),
+      });
+
+      const subscription = await storage.savePushSubscription(subscriptionData);
+      
+      // Send a test notification
+      await sendPushToUser(userId);
+      
+      res.json({ success: true, subscription });
+    } catch (error) {
+      console.error("Error saving push subscription:", error);
+      res.status(500).json({ message: "Failed to save push subscription" });
+    }
+  });
+
+  // Unsubscribe from push notifications
+  app.post("/api/push/unsubscribe", isAuthenticated, async (req, res) => {
+    try {
+      const { endpoint } = req.body;
+      
+      if (!endpoint) {
+        return res.status(400).json({ message: "Endpoint is required" });
+      }
+
+      const deleted = await storage.deletePushSubscription(endpoint);
+      
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Error deleting push subscription:", error);
+      res.status(500).json({ message: "Failed to delete push subscription" });
+    }
+  });
+
+  // Get user's push subscriptions
+  app.get("/api/push/subscriptions", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      const subscriptions = await storage.getPushSubscriptionsByUser(userId);
+      res.json({ subscriptions });
+    } catch (error) {
+      console.error("Error retrieving push subscriptions:", error);
+      res.status(500).json({ message: "Failed to retrieve push subscriptions" });
     }
   });
 

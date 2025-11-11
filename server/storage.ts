@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -32,6 +32,12 @@ export interface IStorage {
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
   updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined>;
+  
+  // Push notification subscriptions
+  savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
+  getPushSubscriptionsByUser(userId: number): Promise<PushSubscription[]>;
+  getAllPushSubscriptions(): Promise<PushSubscription[]>;
+  deletePushSubscription(endpoint: string): Promise<boolean>;
   
   // Credit costs based on user type
   getCreditCost(userId: number, serviceType: string): Promise<number>;
@@ -888,6 +894,41 @@ export class DatabaseStorage implements IStorage {
       .where(eq(moodSnapshots.userId, userId))
       .orderBy(desc(moodSnapshots.timestamp))
       .limit(limit);
+  }
+
+  // Push notification subscriptions
+  async savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription> {
+    const [pushSub] = await db
+      .insert(pushSubscriptions)
+      .values(subscription)
+      .onConflictDoUpdate({
+        target: pushSubscriptions.endpoint,
+        set: {
+          keys: subscription.keys,
+        }
+      })
+      .returning();
+    return pushSub;
+  }
+
+  async getPushSubscriptionsByUser(userId: number): Promise<PushSubscription[]> {
+    return await db
+      .select()
+      .from(pushSubscriptions)
+      .where(eq(pushSubscriptions.userId, userId));
+  }
+
+  async getAllPushSubscriptions(): Promise<PushSubscription[]> {
+    return await db
+      .select()
+      .from(pushSubscriptions);
+  }
+
+  async deletePushSubscription(endpoint: string): Promise<boolean> {
+    const result = await db
+      .delete(pushSubscriptions)
+      .where(eq(pushSubscriptions.endpoint, endpoint));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
 
