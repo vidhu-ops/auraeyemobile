@@ -25,6 +25,7 @@ import MeditationsPage from "@/pages/meditations";
 import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
+import SettingsPage from "@/pages/settings";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
 import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -66,6 +67,7 @@ function Router() {
       <ProtectedRoute path="/meditations" component={MeditationsPage} />
       <ProtectedRoute path="/help" component={HelpPage} />
       <ProtectedRoute path="/color-meanings" component={ColorMeaningsPage} />
+      <ProtectedRoute path="/settings" component={SettingsPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
