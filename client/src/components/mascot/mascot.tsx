@@ -285,9 +285,9 @@ export default function Mascot() {
   const mascotImage = getMascotImage(soulEnergy);
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 animate-bounce-slow">
+    <div className="fixed bottom-20 right-4 z-40 animate-bounce-slow">
       {/* Thought Bubble */}
-      <div className="relative mb-3 mr-2">
+      <div className="relative mb-3 mr-3">
         <Card 
           className="relative bg-white dark:bg-slate-800 border-2 shadow-xl max-w-xs p-4 rounded-2xl"
           style={{ 
@@ -328,17 +328,17 @@ export default function Mascot() {
 
       {/* Mascot - Cute Blob Character */}
       <div 
-        className="relative cursor-pointer hover:scale-110 transition-all duration-300"
+        className="relative cursor-pointer hover:move-100"
         onClick={() => setIsVisible(false)}
         data-testid="mascot-image"
         style={{
-          animation: 'float 4s ease-in-out infinite'
+          animation: 'float infinite'
         }}
       >
         <img 
           src={mascotImage} 
           alt="Auri Mascot"
-          className="w-32 h-32 object-contain drop-shadow-2xl"
+          className="w-52 h-52 object-contain drop-shadow-2xl"
           style={{
             filter: `drop-shadow(0 0 20px ${message.color}80)`
           }}
