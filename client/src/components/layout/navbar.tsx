@@ -81,7 +81,6 @@ export default function Navbar() {
     { name: "Healers", href: "/healers", icon: Heart },
     { name: "Services", href: "/services", icon: Briefcase },
     { name: "Dashboard", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: LayoutDashboard },
-    { name: "Settings", href: "/settings", icon: Settings },
     { name: "Pricing", href: "/pricing", icon: DollarSign },
     { name: "About", href: "/about", icon: Info },
     { name: "Contact", href: "/contact", icon: Mail },
@@ -177,20 +176,32 @@ export default function Navbar() {
                     })}
                   </div>
                   
-                  <div className="border-t border-purple-200/30 pt-4">
+                  <div className="border-t border-purple-200/30 pt-4 space-y-2">
                     {user ? (
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-center text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => {
-                          handleLogout();
-                          closeSheet();
-                        }}
-                        data-testid="button-logout"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Logout
-                      </Button>
+                      <>
+                        <Link href="/settings" onClick={closeSheet}>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-center text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                            data-testid="button-settings"
+                          >
+                            <Settings className="mr-2 h-4 w-4" />
+                            Settings
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-center text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            handleLogout();
+                            closeSheet();
+                          }}
+                          data-testid="button-logout"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Logout
+                        </Button>
+                      </>
                     ) : (
                       <div className="space-y-2">
                         <Link 
