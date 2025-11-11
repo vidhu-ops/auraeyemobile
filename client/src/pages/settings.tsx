@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Bell, BellOff, Settings as SettingsIcon, Check } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
@@ -234,30 +232,61 @@ export default function SettingsPage() {
                 </div>
               ) : (
                 <>
-                  {/* Main Toggle */}
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-                    <div className="flex items-center gap-3">
+                  {/* On/Off Buttons */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
                       {preferences?.browserEnabled ? (
-                        <Bell className="w-5 h-5 text-purple-600" />
+                        <Bell className="w-6 h-6 text-green-600" />
                       ) : (
-                        <BellOff className="w-5 h-5 text-gray-400" />
+                        <BellOff className="w-6 h-6 text-gray-400" />
                       )}
                       <div>
-                        <Label htmlFor="notifications-toggle" className="text-base font-semibold cursor-pointer">
-                          Enable Push Notifications
-                        </Label>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {preferences?.browserEnabled ? 'Notifications Active' : 'Notifications Disabled'}
+                        </h3>
                         <p className="text-sm text-gray-600">
                           Get reminders every 5 hours, even when the app is closed
                         </p>
                       </div>
                     </div>
-                    <Switch
-                      id="notifications-toggle"
-                      checked={preferences?.browserEnabled ?? false}
-                      onCheckedChange={handleToggleNotifications}
-                      disabled={isLoading || updatePreferencesMutation.isPending}
-                      data-testid="switch-push-notifications"
-                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Turn ON Button */}
+                      <Button
+                        onClick={() => handleToggleNotifications(true)}
+                        disabled={preferences?.browserEnabled || isLoading || updatePreferencesMutation.isPending}
+                        className={`h-20 flex flex-col items-center justify-center gap-2 ${
+                          preferences?.browserEnabled
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                        }`}
+                        data-testid="button-turn-on-notifications"
+                      >
+                        <Bell className="w-6 h-6" />
+                        <span className="font-semibold">Turn ON</span>
+                      </Button>
+
+                      {/* Turn OFF Button */}
+                      <Button
+                        onClick={() => handleToggleNotifications(false)}
+                        disabled={!preferences?.browserEnabled || isLoading || updatePreferencesMutation.isPending}
+                        className={`h-20 flex flex-col items-center justify-center gap-2 ${
+                          !preferences?.browserEnabled
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white'
+                        }`}
+                        data-testid="button-turn-off-notifications"
+                      >
+                        <BellOff className="w-6 h-6" />
+                        <span className="font-semibold">Turn OFF</span>
+                      </Button>
+                    </div>
+
+                    {(isLoading || updatePreferencesMutation.isPending) && (
+                      <div className="text-center text-sm text-gray-600">
+                        Processing...
+                      </div>
+                    )}
                   </div>
 
                   {/* Notification Details */}
@@ -291,7 +320,7 @@ export default function SettingsPage() {
                   {permission === "default" && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <p className="text-blue-800 text-sm">
-                        <strong>Permission Required:</strong> Enable the toggle above to request notification permission from your browser.
+                        <strong>Permission Required:</strong> Click the "Turn ON" button above to request notification permission from your browser.
                       </p>
                     </div>
                   )}
@@ -344,7 +373,7 @@ export default function SettingsPage() {
                 </Button>
                 {(!preferences?.browserEnabled || permission !== "granted") && (
                   <p className="text-sm text-gray-600 mt-3">
-                    {!preferences?.browserEnabled && "Please enable notifications using the toggle above."}
+                    {!preferences?.browserEnabled && "Please enable notifications using the 'Turn ON' button above."}
                     {preferences?.browserEnabled && permission !== "granted" && "Please grant notification permission first."}
                   </p>
                 )}
