@@ -410,13 +410,13 @@ export default function Mascot() {
 
       {/* Mascot - Cute Blob Character */}
       <div 
-        className={`relative cursor-pointer hover:scale-110 transition-transform duration-300 ${
+        className={`relative cursor-pointer hover:glow transition-transform duration-300 ${
           shouldGlow ? 'animate-mascot-glow' : ''
         }`}
         onClick={handleClose}
         data-testid="mascot-image"
         style={{
-          animation: 'float 6s ease-in-out infinite'
+          animation: 'float infinite'
         }}
       >
         <img 
