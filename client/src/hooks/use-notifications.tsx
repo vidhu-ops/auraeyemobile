@@ -51,29 +51,44 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   // Subscribe to push notifications
   const subscribeToPush = async (): Promise<boolean> => {
-    if (!swRegistration || !user) {
-      console.error('Service worker not registered or user not authenticated');
+    console.log('🔔 Starting push subscription process...');
+    
+    if (!swRegistration) {
+      console.error('❌ Service worker not registered');
+      return false;
+    }
+    
+    if (!user) {
+      console.error('❌ User not authenticated');
       return false;
     }
 
     try {
+      console.log('📡 Fetching VAPID public key...');
       // Get VAPID public key from server
       const response = await apiRequest("GET", "/api/push/vapid-public-key");
-      const { publicKey } = await response.json();
+      const data = await response.json();
+      const { publicKey } = data;
+      
+      console.log('🔑 VAPID key received:', publicKey ? 'Yes' : 'No');
       
       if (!publicKey) {
-        console.error('No VAPID public key available');
+        console.error('❌ No VAPID public key available');
         return false;
       }
 
+      console.log('🔐 Subscribing to push manager...');
       // Subscribe to push notifications
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey)
       });
 
+      console.log('📮 Subscription created:', subscription.endpoint);
+
+      console.log('💾 Saving subscription to server...');
       // Send subscription to server
-      await apiRequest("POST", "/api/push/subscribe", {
+      const saveResponse = await apiRequest("POST", "/api/push/subscribe", {
         endpoint: subscription.endpoint,
         keys: {
           p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
@@ -81,10 +96,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         }
       });
 
+      const saveData = await saveResponse.json();
+      console.log('✅ Server response:', saveData);
+
       console.log('✅ Successfully subscribed to push notifications');
       return true;
     } catch (error) {
-      console.error('Error subscribing to push notifications:', error);
+      console.error('❌ Error subscribing to push notifications:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
       return false;
     }
   };
