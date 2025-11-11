@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Bell, Smartphone, Mail } from "lucide-react";
+import { Bell, Smartphone, Mail, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -88,6 +88,27 @@ export default function NotificationSettings() {
     });
   };
 
+  const testNotificationMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("/api/push/test", {
+        method: "POST",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test Notification Sent! ✨",
+        description: "Check your device for the notification. It may take a few seconds.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Test Failed",
+        description: "Make sure browser notifications are enabled and you've granted permission.",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (!user) return null;
 
   return (
@@ -104,26 +125,48 @@ export default function NotificationSettings() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Browser Notifications */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                <Bell className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <Label htmlFor="browser-notifications" className="text-base font-medium">
+                    Browser Notifications
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Get instant updates in your browser
+                  </p>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="browser-notifications" className="text-base font-medium">
-                  Browser Notifications
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Get instant updates in your browser
+              <Switch
+                id="browser-notifications"
+                checked={preferences?.browserEnabled || false}
+                onCheckedChange={handleBrowserNotifications}
+                data-testid="switch-browser-notifications"
+              />
+            </div>
+            
+            {/* Test Notification Button */}
+            {preferences?.browserEnabled && (
+              <div className="ml-13">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => testNotificationMutation.mutate()}
+                  disabled={testNotificationMutation.isPending}
+                  className="w-full sm:w-auto"
+                  data-testid="button-test-notification"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  {testNotificationMutation.isPending ? "Sending..." : "Send Test Notification"}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Test your notification settings - you should receive a notification within seconds
                 </p>
               </div>
-            </div>
-            <Switch
-              id="browser-notifications"
-              checked={preferences?.browserEnabled || false}
-              onCheckedChange={handleBrowserNotifications}
-              data-testid="switch-browser-notifications"
-            />
+            )}
           </div>
 
           {/* SMS Notifications */}

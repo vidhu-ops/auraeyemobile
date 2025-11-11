@@ -24,6 +24,7 @@ import {
   Settings
 } from "lucide-react";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
+import NotificationSettings from "@/components/notification-settings";
 import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone, energyMilestones, SOUL_ENERGY_PER_SCAN } from "@/lib/soul-energy-utils";
 
 export default function ClientDashboard() {
@@ -316,13 +317,7 @@ export default function ClientDashboard() {
 
         {/* Settings Tab */}
         {activeTab === "settings" && (
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <Settings className="w-16 h-16 mx-auto mb-4 text-indigo-400" />
-              <h3 className="text-white font-bold text-xl mb-2">Profile Settings</h3>
-              <p className="text-cyan-300">Manage your account preferences and spiritual journey settings</p>
-            </CardContent>
-          </Card>
+          <NotificationSettings />
         )}
       </div>
 
