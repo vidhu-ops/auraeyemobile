@@ -127,6 +127,14 @@ app.use((req, res, next) => {
     } catch (error: any) {
       console.error('Failed to start horoscope cron job:', error?.message || error);
     }
+    
+    // Start notification scheduler
+    try {
+      const { startNotificationScheduler } = await import('./notification-scheduler');
+      startNotificationScheduler();
+    } catch (error: any) {
+      console.error('Failed to start notification scheduler:', error?.message || error);
+    }
   });
 
   // Add timeout handling for server startup

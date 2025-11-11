@@ -1,4 +1,6 @@
-import webPush from 'web-push';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const webPush = require('web-push');
 
 // Generate VAPID keys for web push notifications
 const vapidKeys = webPush.generateVAPIDKeys();

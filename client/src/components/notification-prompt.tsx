@@ -9,7 +9,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function NotificationPrompt() {
   const { user } = useAuth();
-  const { isSupported, permission, requestPermission, sendNotification } = useNotifications();
+  const { isSupported, permission, requestPermission, sendNotification, subscribeToPush } = useNotifications();
   const [isVisible, setIsVisible] = useState(false);
   const [hasAsked, setHasAsked] = useState(false);
 
@@ -44,8 +44,11 @@ export default function NotificationPrompt() {
       // Persist the preference to the backend
       await updatePreferencesMutation.mutateAsync({ browserEnabled: true });
       
+      // Subscribe to push notifications for background support
+      await subscribeToPush();
+      
       sendNotification("Notifications Enabled! ✨", {
-        body: "You'll now receive updates about your spiritual journey!",
+        body: "You'll now receive spiritual reminders every 5 hours, even when the app is closed!",
         tag: "welcome-notification",
       });
     }
