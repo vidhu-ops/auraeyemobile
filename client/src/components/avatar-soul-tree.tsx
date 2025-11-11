@@ -1,5 +1,4 @@
 import { calculateTreeGrowth, getSoulEnergyMilestone } from "@/lib/soul-energy-utils";
-import soulTreeGif from "@assets/77552830537bb0c408e138cf518d6b9d_1762861630726.gif";
 
 interface AvatarSoulTreeProps {
   soulEnergy: number;
@@ -11,6 +10,9 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
   
   // Calculate the intensity of the glow based on tree growth
   const glowIntensity = Math.min(1, treeGrowth / 100);
+  
+  // Direct path to the GIF asset
+  const soulTreeGif = "/attached_assets/77552830537bb0c408e138cf518d6b9d_1762861630726.gif";
   
   return (
     <div className="relative w-full h-[32rem] flex items-center justify-center overflow-hidden rounded-xl bg-black">
