@@ -31,6 +31,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
+  updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined>;
   
   // Credit costs based on user type
   getCreditCost(userId: number, serviceType: string): Promise<number>;
@@ -197,6 +198,30 @@ export class DatabaseStorage implements IStorage {
         energyLevel: onboarding.energyLevel,
         biggestBlock: onboarding.biggestBlock
       })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined> {
+    const updateData: any = {};
+    
+    if (preferences.smsEnabled !== undefined) {
+      updateData.smsNotificationsEnabled = preferences.smsEnabled;
+    }
+    if (preferences.phoneNumber !== undefined) {
+      updateData.mobileNumber = preferences.phoneNumber;
+    }
+    if (preferences.browserEnabled !== undefined) {
+      updateData.browserNotificationsEnabled = preferences.browserEnabled;
+    }
+    if (preferences.emailEnabled !== undefined) {
+      updateData.emailNotificationsEnabled = preferences.emailEnabled;
+    }
+    
+    const [user] = await db
+      .update(users)
+      .set(updateData)
       .where(eq(users.id, userId))
       .returning();
     return user || undefined;

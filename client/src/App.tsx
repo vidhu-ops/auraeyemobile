@@ -30,9 +30,12 @@ import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { PremiumProvider } from "@/hooks/use-premium";
 import { LightsProvider, useLights } from "@/hooks/use-lights";
+import { MascotProvider } from "@/hooks/use-mascot";
+import { NotificationProvider } from "@/hooks/use-notifications";
 import { ProtectedRoute } from "./lib/protected-route";
 import LightsActivation from "@/components/lights-activation";
 import Mascot from "@/components/mascot/mascot";
+import NotificationPrompt from "@/components/notification-prompt";
 import { useEffect, useState } from "react";
 
 function Router() {
@@ -114,6 +117,7 @@ function AppContent() {
     <>
       <Router />
       {user && !isPublicRoute && <Mascot />}
+      {user && !isPublicRoute && <NotificationPrompt />}
     </>
   );
 }
@@ -124,12 +128,16 @@ function App() {
       <AuthProvider>
         <LightsProvider>
           <PremiumProvider>
-            <TooltipProvider>
-              <Toaster />
-              <div className="min-h-screen flex flex-col">
-                <AppContent />
-              </div>
-            </TooltipProvider>
+            <MascotProvider>
+              <NotificationProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <div className="min-h-screen flex flex-col">
+                    <AppContent />
+                  </div>
+                </TooltipProvider>
+              </NotificationProvider>
+            </MascotProvider>
           </PremiumProvider>
         </LightsProvider>
       </AuthProvider>

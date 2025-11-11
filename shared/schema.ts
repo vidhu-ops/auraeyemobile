@@ -15,6 +15,9 @@ export const users = pgTable("users", {
   manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity
   energyLevel: text("energy_level"), // Low / Balanced / High
   biggestBlock: text("biggest_block"), // Health / Money / Relationships / Career / etc
+  smsNotificationsEnabled: boolean("sms_notifications_enabled").default(false),
+  browserNotificationsEnabled: boolean("browser_notifications_enabled").default(false),
+  emailNotificationsEnabled: boolean("email_notifications_enabled").default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

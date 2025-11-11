@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { useAuth } from "@/hooks/use-auth";
+import { useMascot } from "@/hooks/use-mascot";
 
 // Define service card data
 const services = [
@@ -69,6 +70,13 @@ const services = [
 
 export default function Services() {
   const { user } = useAuth();
+  const { triggerGlow } = useMascot();
+  
+  const handleServiceClick = () => {
+    if (user) {
+      triggerGlow();
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -125,7 +133,7 @@ export default function Services() {
                             </Badge>
                           ))}
                         </div>
-                        <Button asChild variant="cosmic" className="w-full font-cosmic">
+                        <Button asChild variant="cosmic" className="w-full font-cosmic" onClick={handleServiceClick}>
                           <Link href={
                             service.id === "numerology" && !user 
                               ? "/auth" 
