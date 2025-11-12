@@ -129,8 +129,8 @@ export default function JournalPage() {
         </div>
 
         {/* Mood Banner */}
-        <div className="bg-white mb-6">
-          <MoodBanner variant="prominent" />
+        <div className="mb-10 max-w-md mx-auto">
+          <MoodBanner variant="subtle" />
         </div>
 
         {/* Stats Cards */}
