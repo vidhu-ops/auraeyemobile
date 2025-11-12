@@ -444,47 +444,92 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Energy Milestones */}
+        {/* Soul Energy Levels */}
         <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3 bg-amber-900/70 px-3 py-2 rounded-lg border border-amber-500/30">
-            <Mountain className="h-5 w-5 text-amber-400" />
-            <h2 className="text-amber-300 font-semibold">Energy Milestones</h2>
+          <div className="flex items-center gap-2 mb-3 bg-gradient-to-r from-purple-900/70 to-cyan-900/70 px-3 py-2 rounded-lg border border-purple-500/30">
+            <Zap className="h-5 w-5 text-purple-400" />
+            <h2 className="text-purple-300 font-semibold">Soul Energy Levels</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-amber-900/70 to-yellow-900/70 border-amber-500/30">
+          <div className="grid grid-cols-1 gap-3">
+            {/* Awakening */}
+            <Card className={`${milestone.level === 'Awakening' ? 'bg-gradient-to-br from-cyan-900/90 to-blue-900/90 border-cyan-400 ring-2 ring-cyan-400/50' : 'bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-500/30'} transition-all`}>
               <CardContent className="p-3">
-                <div className="text-2xl mb-2">⚡</div>
-                <h3 className="text-white font-semibold text-sm mb-1">Energy Master</h3>
-                <p className="text-xs text-gray-300 mb-2">Reach 3000 total energy</p>
-                <div className="text-xs text-amber-400 font-semibold">2847/3000</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">🌅</div>
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Awakening</h3>
+                      <p className="text-xs text-gray-300">Beginner • 0-1000 soul energy</p>
+                    </div>
+                  </div>
+                  {milestone.level === 'Awakening' && (
+                    <div className="bg-cyan-400/20 px-2 py-1 rounded-full">
+                      <p className="text-xs text-cyan-400 font-semibold">Current</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-900/70 to-emerald-900/70 border-green-500/30">
+            {/* Balancer */}
+            <Card className={`${milestone.level === 'Balancer' ? 'bg-gradient-to-br from-purple-900/90 to-pink-900/90 border-purple-400 ring-2 ring-purple-400/50' : 'bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/30'} transition-all`}>
               <CardContent className="p-3">
-                <div className="text-2xl mb-2">🌳</div>
-                <h3 className="text-white font-semibold text-sm mb-1">Tree Guardian</h3>
-                <p className="text-xs text-gray-300 mb-2">Grow tree to 100%</p>
-                <div className="text-xs text-green-400 font-semibold">68/100%</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">⚖️</div>
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Balancer</h3>
+                      <p className="text-xs text-gray-300">Intermediate • 1001-5000 soul energy</p>
+                    </div>
+                  </div>
+                  {milestone.level === 'Balancer' && (
+                    <div className="bg-purple-400/20 px-2 py-1 rounded-full">
+                      <p className="text-xs text-purple-400 font-semibold">Current</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900/70 to-pink-900/70 border-purple-500/30">
+            {/* Radiant */}
+            <Card className={`${milestone.level === 'Radiant' ? 'bg-gradient-to-br from-yellow-900/90 to-orange-900/90 border-yellow-400 ring-2 ring-yellow-400/50' : 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-500/30'} transition-all`}>
               <CardContent className="p-3">
-                <div className="text-2xl mb-2">🧘</div>
-                <h3 className="text-white font-semibold text-sm mb-1">Soul Enlightened</h3>
-                <p className="text-xs text-gray-300 mb-2">Use all energy types</p>
-                <div className="text-xs text-purple-400 font-semibold">6/6 types</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">✨</div>
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Radiant</h3>
+                      <p className="text-xs text-gray-300">Advanced • 5001-10000 soul energy</p>
+                    </div>
+                  </div>
+                  {milestone.level === 'Radiant' && (
+                    <div className="bg-yellow-400/20 px-2 py-1 rounded-full">
+                      <p className="text-xs text-yellow-400 font-semibold">Current</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-cyan-900/70 to-blue-900/70 border-cyan-500/30">
+            {/* Ascended */}
+            <Card className={`${milestone.level === 'Ascended' ? 'bg-gradient-to-br from-white/90 to-cyan-200/90 border-white ring-2 ring-white/50' : 'bg-gradient-to-br from-slate-800/50 to-gray-900/50 border-slate-500/30'} transition-all`}>
               <CardContent className="p-3">
-                <div className="text-2xl mb-2">⚖️</div>
-                <h3 className="text-white font-semibold text-sm mb-1">Energy Harmony</h3>
-                <p className="text-xs text-gray-300 mb-2">Balance all energies</p>
-                <div className="text-xs text-cyan-400 font-semibold">In Progress</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">👑</div>
+                    <div>
+                      <h3 className={`${milestone.level === 'Ascended' ? 'text-slate-900' : 'text-white'} font-semibold text-sm`}>Ascended</h3>
+                      <p className={`text-xs ${milestone.level === 'Ascended' ? 'text-slate-700' : 'text-gray-300'}`}>10001+ soul energy</p>
+                      <p className={`text-xs ${milestone.level === 'Ascended' ? 'text-purple-700' : 'text-purple-400'} font-semibold mt-1`}>🔓 Unlock healer mentorship with Super Elite healers</p>
+                    </div>
+                  </div>
+                  {milestone.level === 'Ascended' && (
+                    <div className="bg-white/30 px-2 py-1 rounded-full">
+                      <p className="text-xs text-slate-900 font-semibold">Current</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
