@@ -20,7 +20,7 @@ interface NotificationPreferences {
 
 export default function NotificationSettings() {
   const { user } = useAuth();
-  const { permission, requestPermission } = useNotifications();
+  const { permission, requestPermission, subscribeToPush, unsubscribeFromPush } = useNotifications();
   const { toast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -43,13 +43,69 @@ export default function NotificationSettings() {
   });
 
   const handleBrowserNotifications = async (enabled: boolean) => {
-    if (enabled && permission !== "granted") {
-      const granted = await requestPermission();
-      if (granted) {
-        await updatePreferencesMutation.mutateAsync({ browserEnabled: true });
+    try {
+      if (enabled) {
+        if (permission !== "granted") {
+          const granted = await requestPermission();
+          if (!granted) {
+            toast({
+              title: "Permission Denied",
+              description: "Please allow notifications in your browser settings.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+
+        const subscribed = await subscribeToPush();
+        if (!subscribed) {
+          toast({
+            title: "Subscription Failed",
+            description: "Unable to subscribe to push notifications. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        try {
+          await updatePreferencesMutation.mutateAsync({ browserEnabled: true });
+        } catch (error) {
+          await unsubscribeFromPush();
+          toast({
+            title: "Settings Update Failed",
+            description: "Unable to save your notification preferences. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        const unsubscribed = await unsubscribeFromPush();
+        if (!unsubscribed) {
+          toast({
+            title: "Unsubscribe Failed",
+            description: "Unable to unsubscribe from push notifications. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        try {
+          await updatePreferencesMutation.mutateAsync({ browserEnabled: false });
+        } catch (error) {
+          await subscribeToPush();
+          toast({
+            title: "Settings Update Failed",
+            description: "Unable to save your notification preferences. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
-    } else {
-      await updatePreferencesMutation.mutateAsync({ browserEnabled: enabled });
+    } catch (error) {
+      console.error("Error toggling notifications:", error);
+      toast({
+        title: "Update Failed",
+        description: "An error occurred while updating your notification preferences.",
+        variant: "destructive",
+      });
     }
   };
 
