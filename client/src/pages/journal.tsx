@@ -129,7 +129,7 @@ export default function JournalPage() {
         </div>
 
         {/* Mood Banner */}
-        <div className="mb-6">
+        <div className="bg-white mb-6">
           <MoodBanner variant="prominent" />
         </div>
 
