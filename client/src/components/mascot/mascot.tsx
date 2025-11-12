@@ -24,6 +24,7 @@ export default function Mascot() {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [lastScanColor, setLastScanColor] = useState<string | null>(null);
   const [lastLocation, setLastLocation] = useState(location);
+  const [hasBeenClosedOnThisPage, setHasBeenClosedOnThisPage] = useState(false);
 
   // Get user's credits
   const { data: creditsData } = useQuery<{ credits: number }>({
@@ -42,6 +43,9 @@ export default function Mascot() {
   // Reappear when page changes - keeping mascot at bottom
   useEffect(() => {
     if (location !== lastLocation) {
+      // Reset the closed flag when navigating to a new page
+      setHasBeenClosedOnThisPage(false);
+      
       // First hide with scale-out animation
       if (isVisible) {
         setIsAnimatingOut(true);
@@ -61,13 +65,15 @@ export default function Mascot() {
     }
   }, [location, lastLocation, isVisible, setPosition]);
 
-  // Initial appearance animation
+  // Initial appearance animation - only if not closed on this page
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!hasBeenClosedOnThisPage) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [hasBeenClosedOnThisPage]);
 
   const getPositionForPage = (path: string): MascotPosition => {
     // Mascot is now fixed at the bottom of the screen
@@ -336,6 +342,7 @@ export default function Mascot() {
 
   const handleClose = () => {
     setIsAnimatingOut(true);
+    setHasBeenClosedOnThisPage(true);
     setTimeout(() => {
       setIsVisible(false);
       setIsAnimatingOut(false);
