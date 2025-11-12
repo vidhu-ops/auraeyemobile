@@ -318,6 +318,9 @@ export default function Mascot() {
 
   if (!message) return null;
 
+  // Don't render at all if mascot has been closed and is not visible
+  if (!isVisible && !isAnimatingOut) return null;
+
   const mascotImage = getMascotImage(soulEnergy);
 
   // Position classes based on mascot position
@@ -352,7 +355,7 @@ export default function Mascot() {
   return (
     <div 
       className={`fixed ${getPositionClasses()} z-40 transition-all duration-700 ease-in-out ${
-        isAnimatingOut ? 'animate-mascot-scale-out' : isVisible ? 'animate-mascot-scale-in' : 'opacity-0'
+        isAnimatingOut ? 'animate-mascot-scale-out' : 'animate-mascot-scale-in'
       }`}
     >
       {/* Thought Bubble */}
