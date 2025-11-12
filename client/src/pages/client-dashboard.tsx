@@ -272,7 +272,7 @@ export default function ClientDashboard() {
                     {Math.floor(treeGrowth)}%
                   </div>
                   <p className="text-cyan-300 text-sm">
-                    {Math.floor((100 - treeGrowth) * 100)} more energy needed to reach 100%
+                    {Math.floor((100 - treeGrowth) * 10)} more soul energy needed to reach 100%
                   </p>
                 </div>
                 
