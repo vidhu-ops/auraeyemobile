@@ -31,10 +31,7 @@ export default function NotificationSettings() {
 
   const updatePreferencesMutation = useMutation({
     mutationFn: async (data: Partial<NotificationPreferences>) => {
-      return apiRequest("/api/notification-preferences", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/notification-preferences", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
@@ -90,9 +87,7 @@ export default function NotificationSettings() {
 
   const testNotificationMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest("/api/push/test", {
-        method: "POST",
-      });
+      return apiRequest("POST", "/api/push/test");
     },
     onSuccess: () => {
       toast({
