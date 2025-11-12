@@ -111,8 +111,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Menu button - visible on all screen sizes */}
+          <div>
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
@@ -220,88 +220,6 @@ export default function Navbar() {
             </Sheet>
           </div>
 
-          {/* Mystical Desktop navigation */}
-          <div className="hidden md:flex items-center bg-black space-x-8">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href} 
-                className={`relative font-cosmic font-medium transition-all duration-300 group ${isActive(link.href) ? 'text-white font-semibold' : 'text-white/80 hover:text-white'}`}
-              >
-                <span className="relative z-10">{link.name}</span>
-                {isActive(link.href) && (
-                  <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-mystical rounded-full"></div>
-                )}
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-mystical rounded-full transition-all duration-300 group-hover:w-full"></div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Login/Register buttons (desktop) */}
-          <div className="hidden md:flex items-center space-x-3">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <div className="glass-mystical px-4 py-2 rounded-full text-sm font-cosmic font-medium flex items-center space-x-2 glow-ethereal">
-                  <div className="w-2 h-2 bg-gradient-aurora rounded-full animate-pulse"></div>
-                  <Zap className="w-4 h-4 text-white" />
-                  <span className="text-white">{credits}</span>
-                  <span className="font-ethereal text-white/70">cosmic credits</span>
-                </div>
-                <Link href={user.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard"}>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 font-cosmic glow-ethereal">
-                    <Star className="w-4 h-4 mr-2" />
-                    Spiritual Dashboard
-                  </Button>
-                </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="rounded-full h-10 w-10 p-0 group">
-                      <div className="relative">
-                        <Avatar className="h-10 w-10 glow-mystical transition-all duration-300 group-hover:scale-110">
-                          <AvatarFallback className="bg-gradient-mystical text-white font-mystical">
-                            {getInitials(user.username)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-aurora rounded-full animate-pulse"></div>
-                      </div>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 glass-ethereal border-purple-200/30" align="end">
-                    <DropdownMenuItem className="flex items-center space-x-3 font-cosmic hover:bg-purple-50/50">
-                      <div className="w-2 h-2 bg-gradient-mystical rounded-full"></div>
-                      <User className="w-4 h-4 text-purple-600" />
-                      <span className="text-purple-700">{user.username}</span>
-                    </DropdownMenuItem>
-                    <Link href="/settings">
-                      <DropdownMenuItem className="flex items-center space-x-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50/50 font-cosmic cursor-pointer">
-                        <div className="w-2 h-2 bg-gradient-mystical rounded-full"></div>
-                        <Settings className="w-4 h-4" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    <DropdownMenuItem onClick={handleLogout} className="flex items-center space-x-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50/50 font-cosmic">
-                      <div className="w-2 h-2 bg-gradient-aurora rounded-full"></div>
-                      <LogOut className="w-4 h-4" />
-                      <span>Complete Journey</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            ) : (
-              <>
-                <Link href="/auth">
-                  <Button variant="ghost" className="font-medium text-white hover:text-white/80 transition-colors">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/auth">
-                  <Button className="bg-white hover:bg-white/90 text-black font-medium">
-                    Register
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
         </div>
       </div>
     </nav>

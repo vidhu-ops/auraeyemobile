@@ -44,8 +44,8 @@ export function getSoulEnergyMilestone(soulEnergy: number): EnergyMilestone {
 }
 
 export function calculateTreeGrowth(soulEnergy: number): number {
-  // 1000 soul energies = 10% growth (proportional/linear)
-  return Math.min(100, (soulEnergy / 1000) * 10);
+  // 100 soul energies = 10% growth (proportional/linear)
+  return Math.min(100, (soulEnergy / 100) * 10);
 }
 
 export function getProgressToNextMilestone(soulEnergy: number): {

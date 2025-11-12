@@ -11,6 +11,11 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
   // Calculate the intensity of the glow based on tree growth
   const glowIntensity = Math.min(1, treeGrowth / 100);
   
+  // Calculate brightness based on 10% growth increments
+  // Each 10% growth increases brightness: 0% = 0.7, 10% = 0.8, 20% = 0.9, ..., 100% = 1.7
+  const growthStep = Math.floor(treeGrowth / 10);
+  const brightness = 0.7 + (growthStep * 0.1);
+  
   // Direct path to the GIF asset
   const soulTreeGif = "/attached_assets/77552830537bb0c408e138cf518d6b9d_1762861630726.gif";
   
@@ -35,7 +40,7 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
           style={{
             maxWidth: '500px',
             maxHeight: '500px',
-            filter: `drop-shadow(0 0 ${30 * glowIntensity}px ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.8)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.8)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.8)' : 'rgba(255, 255, 255, 0.8)'})`,
+            filter: `brightness(${brightness}) drop-shadow(0 0 ${30 * glowIntensity}px ${milestone.color === 'cyan' ? 'rgba(34, 211, 238, 0.8)' : milestone.color === 'purple' ? 'rgba(168, 85, 247, 0.8)' : milestone.color === 'yellow' ? 'rgba(251, 191, 36, 0.8)' : 'rgba(255, 255, 255, 0.8)'})`,
             animation: 'gentle-float 4s ease-in-out infinite'
           }}
         />
