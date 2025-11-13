@@ -1,4 +1,5 @@
 import { calculateTreeGrowth, getSoulEnergyMilestone } from "@/lib/soul-energy-utils";
+import { getSoulTreeImage } from "@/lib/soul-tree-images";
 import { Sparkles } from "lucide-react";
 
 interface AvatarSoulTreeProps {
@@ -9,18 +10,13 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
   const treeGrowth = calculateTreeGrowth(soulEnergy);
   const milestone = getSoulEnergyMilestone(soulEnergy);
   
-  // Calculate the intensity of the glow based on tree growth
   const glowIntensity = Math.min(1, treeGrowth / 100);
   
-  // Calculate brightness based on 10% growth increments
-  // Each 10% growth increases brightness: 0% = 0.7, 10% = 0.8, 20% = 0.9, ..., 100% = 1.7
   const growthStep = Math.floor(treeGrowth / 10);
   const brightness = 0.7 + (growthStep * 0.1);
   
-  // Direct path to the GIF asset
-  const soulTreeGif = "/attached_assets/77552830537bb0c408e138cf518d6b9d_1762861630726.gif";
+  const soulTreeImage = getSoulTreeImage(treeGrowth);
   
-  // Get color based on milestone
   const getMilestoneColor = () => {
     switch(milestone.color) {
       case 'cyan': return { rgb: '34, 211, 238', name: 'cyan' };
@@ -32,8 +28,7 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
   
   const milestoneColor = getMilestoneColor();
   
-  // Generate sparkles/bubbles based on growth level
-  const particleCount = Math.min(20, Math.floor(treeGrowth / 5)); // Max 20 particles
+  const particleCount = Math.min(20, Math.floor(treeGrowth / 5));
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     id: i,
     delay: Math.random() * 5,
@@ -46,7 +41,6 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
   
   return (
     <div className="relative w-full h-[32rem] flex items-center justify-center overflow-hidden rounded-xl bg-black">
-      {/* Mystical glowing aura background */}
       <div 
         className="absolute inset-0 blur-3xl opacity-40"
         style={{
@@ -56,7 +50,6 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
         }}
       />
       
-      {/* Floating mystical particles (sparkles and bubbles) */}
       {particles.map((particle) => (
         <div
           key={particle.id}
@@ -93,12 +86,12 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
         </div>
       ))}
       
-      {/* Animated Soul Tree GIF */}
       <div className="relative z-10">
         <img 
-          src={soulTreeGif} 
+          src={soulTreeImage} 
           alt="Soul Tree" 
           className="w-full h-full object-contain rounded-xl"
+          data-testid="img-soul-tree"
           style={{
             maxWidth: '500px',
             maxHeight: '500px',
@@ -108,7 +101,6 @@ export default function AvatarSoulTree({ soulEnergy }: AvatarSoulTreeProps) {
         />
       </div>
       
-      {/* CSS animations */}
       <style>{`
         @keyframes aura-pulse {
           0%, 100% { opacity: 0.8; transform: scale(1); }
