@@ -38,6 +38,7 @@ export default function HomePage() {
       return await response.json();
     },
     onSuccess: (data: { soulEnergy: number; added: number }) => {
+      queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
       toast({
         title: "Soul Tree Growing! 🌱",
