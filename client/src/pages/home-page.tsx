@@ -13,21 +13,45 @@ import logoImage from "@assets/new-logo.jpeg";
 import { MoodBanner } from "@/components/psychology/mood-banner";
 import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import { getSoulEnergyMilestone, calculateTreeGrowth } from "@/lib/soul-energy-utils";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [isMoodCheckInOpen, setIsMoodCheckInOpen] = useState(false);
   
   // Calculate tree growth and milestone
   const milestone = getSoulEnergyMilestone(soulEnergy);
   const treeGrowth = calculateTreeGrowth(soulEnergy);
+
+  // Grow soul energy mutation
+  const growSoulEnergyMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/soul-energy/grow");
+      return await response.json();
+    },
+    onSuccess: (data: { soulEnergy: number; added: number }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      toast({
+        title: "Soul Tree Growing! 🌱",
+        description: `+100 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to grow soul energy. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Mood check-in mutation
   const saveMoodSnapshotMutation = useMutation({
@@ -266,8 +290,8 @@ export default function HomePage() {
         )}
 
         {/* Light Tree of Wisdom */}
-        <Card className="bg-gradient-to-br from-green-900/70 to-cyan-900/70 border-green-500/30 mb-10">
-          <CardContent className="p-8">
+        <Card className="bg-gradient-to-br from-green-900/70 to-cyan-900/70 border-green-500/30 mb-8">
+          <CardContent className="p-1">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-green-400" />
               <h2 className="text-green-200 font-semibold">Light Tree of Wisdom</h2>
@@ -280,7 +304,17 @@ export default function HomePage() {
                   <Zap className="h-5 w-5 text-purple-100" />
                   <span className="text-gray-200 font-semibold">Soul Energy</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
+                  <Button
+                    onClick={() => growSoulEnergyMutation.mutate()}
+                    disabled={growSoulEnergyMutation.isPending}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-lg"
+                    data-testid="button-grow-soul-energy"
+                  >
+                    {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
+                  </Button>
+                </div>
               </div>
               <div className="text-xs text-gray-200 mb-2">
                 {milestone.level} Level - {Math.floor(treeGrowth)}% Tree Growth

@@ -3226,6 +3226,28 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Grow soul energy (add 100 soul energy)
+  app.post("/api/soul-energy/grow", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Validate user ID
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      await storage.addSoulEnergy(userId, 100, 'manual_grow');
+      const newSoulEnergy = await storage.getUserSoulEnergy(userId);
+      
+      console.log(`🌱 User ${userId} grew their soul tree by +100 energy (new total: ${newSoulEnergy})`);
+      
+      res.json({ soulEnergy: newSoulEnergy, added: 100 });
+    } catch (error) {
+      console.error("Error growing soul energy:", error);
+      res.status(500).json({ message: "Failed to grow soul energy" });
+    }
+  });
+
   // Get notification preferences
   app.get("/api/notification-preferences", isAuthenticated, async (req, res) => {
     try {
