@@ -102,10 +102,10 @@ export default function DailyHoroscope() {
       
       <main className="flex-grow">
         {/* Header section */}
-        <section className="relative overflow-hidden bg-gradient-cosmic text-white py-16">
+        <section className="relative text-white py-16">
           <AuraGlow 
             colors={[
-              { color: "bg-primary-light", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
+              { color: "bg-primary-dark", top: "top-1/4", left: "-left-20", size: "w-96 h-96", delay: "0s" },
               { color: "bg-secondary-light", bottom: "bottom-1/3", right: "right-10", size: "w-64 h-64", delay: "1s" }
             ]} 
           />
@@ -122,14 +122,14 @@ export default function DailyHoroscope() {
         <section className="py-12 bg-gradient-ethereal">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h2 className="font-mystical font-semibold text-xl mb-6 text-center bg-gradient-mystical bg-clip-text text-transparent">Select Your Zodiac Sign</h2>
+              <h2 className="font-mystical font-semibold text-xl mb-6 text-center text-black">Select Your Zodiac Sign</h2>
               
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 mb-10">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 text-balck mb-10 text-black">
                 {zodiacSigns.map((sign) => (
                   <ZodiacButton
                     key={sign.name.toLowerCase()}
                     sign={sign.name}
-                    icon={<span className="text-xl">{sign.icon}</span>}
+                    icon={<span className="text-xl text-black">{sign.icon}</span>}
                     isSelected={selectedSign === sign.name.toLowerCase()}
                     onClick={() => handleSignSelect(sign.name.toLowerCase())}
                   />
@@ -138,7 +138,7 @@ export default function DailyHoroscope() {
 
               {/* Cosmic energy overview */}
               <div className="mb-8">
-                <h3 className="font-mystical font-semibold text-xl mb-4 bg-gradient-mystical bg-clip-text text-transparent">Today's Cosmic Energy</h3>
+                <h3 className="font-mystical font-semibold text-xl mb-4 text-black">Today's Cosmic Energy</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  
                   
@@ -166,7 +166,7 @@ export default function DailyHoroscope() {
                   </div>
                 ) : horoscope ? (
                   <>
-                    <div className="bg-primary text-white p-6">
+                    <div className="bg-primary text-black p-6">
                       <div className="flex items-center">
                         <div className="text-3xl mr-4">
                           {zodiacSigns.find(z => z.name.toLowerCase() === horoscope.sign.toLowerCase())?.icon || '★'}

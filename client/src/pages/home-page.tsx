@@ -114,7 +114,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold text-white mb-6 text-center">Explore Our Services</h2>
           
           {/* Three main category buttons */}
-          <div className="grid grid-cols-3 grid-rows-2 gap-4 max-w-xs mx-2 px-2">
+          <div className="grid grid-cols-3 grid-rows-2 gap-4 items-center align-center justify-center max-w-auto mx-2 px-2">
             <button 
               onClick={() => setActiveCategory('scan')}
               className="flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-purple-700/80 to-purple-200/80 hover:from-purple-400/90 hover:to-purple-600/90 transition-all shadow-lg p-4"
