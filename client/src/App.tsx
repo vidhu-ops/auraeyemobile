@@ -82,7 +82,7 @@ function AppContent() {
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
-    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers'];
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings'];
     const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
     if (!shouldSkip) {
