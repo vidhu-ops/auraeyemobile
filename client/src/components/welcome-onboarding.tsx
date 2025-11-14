@@ -25,10 +25,18 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
 
   const saveOnboardingMutation = useMutation({
     mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
-      return await apiRequest("PATCH", "/api/users/me/onboarding", data);
+      const response = await apiRequest("PATCH", "/api/users/me/onboarding", data);
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      
+      // Show success toast with credits bonus
+      toast({
+        title: "Welcome Bonus! 🎉",
+        description: `You've received ${data.creditsAwarded || 5} free credits for completing onboarding!`,
+      });
     },
     onError: () => {
       toast({
