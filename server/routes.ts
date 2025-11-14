@@ -1280,6 +1280,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Deduct credits for successful analysis
           const creditDeducted = await storage.deductCredits(req.user.id, req.creditCost, 'object_analysis', `Object analysis for ${analysisName}`);
           console.log('Object analysis credit deduction result:', creditDeducted);
+          
+          // Add soul energy +100 for completing object analysis
+          try {
+            await storage.addSoulEnergy(req.user.id, 100, 'object_analysis', 'Object analysis scan completed');
+            console.log(`⚡ Added +100 soul energy to user ${req.user.id} for object analysis completion`);
+          } catch (soulEnergyError) {
+            console.error("Error adding soul energy:", soulEnergyError);
+          }
         } catch (saveError) {
           console.error("Error saving object analysis:", saveError);
           // Continue even if saving fails
