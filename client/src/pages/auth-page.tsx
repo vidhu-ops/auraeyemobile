@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Redirect, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Star, Sparkles, Heart, Users, TrendingUp, Lightbulb, User } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { manifestIntentions, energyLevels, blocks, type ManifestIntention, type EnergyLevel, type Block } from "@shared/onboarding-presets";
 import logoPath from "@assets/new-logo.jpeg";
 
 const loginSchema = z.object({
@@ -26,10 +30,29 @@ const registerSchema = z.object({
 type LoginData = z.infer<typeof loginSchema>;
 type RegisterData = z.infer<typeof registerSchema>;
 
+type OnboardingStep = "auth" | "question1" | "question2" | "question3";
+
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>("auth");
+  
+  // Onboarding answers
+  const [manifestIntention, setManifestIntention] = useState<ManifestIntention | null>(null);
+  const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
+  const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
+  
+  // Auto-set onboarding step when user logs in/registers but hasn't completed onboarding
+  useEffect(() => {
+    if (user && onboardingStep === "auth") {
+      const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
+      if (!hasCompletedOnboarding) {
+        setOnboardingStep("question1");
+      }
+    }
+  }, [user, onboardingStep]);
   
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -48,6 +71,33 @@ export default function AuthPage() {
     },
   });
 
+  const saveOnboardingMutation = useMutation({
+    mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
+      const response = await apiRequest("PATCH", "/api/users/me/onboarding", data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      
+      toast({
+        title: "Welcome Bonus! 🎉",
+        description: `You've received ${data.creditsAwarded || 5} free credits!`,
+      });
+      
+      // Mark onboarding as seen and redirect to home
+      localStorage.setItem("hasSeenOnboarding", "true");
+      setLocation("/");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save your preferences. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
   };
@@ -55,26 +105,177 @@ export default function AuthPage() {
   const onRegisterSubmit = (data: RegisterData) => {
     registerMutation.mutate(data, {
       onSuccess: () => {
-        // Redirect to onboarding after successful registration
-        setLocation("/onboarding");
+        // Show onboarding questions after successful registration
+        setOnboardingStep("question1");
       }
     });
   };
-
-  // Redirect if already logged in
-  if (user) {
-    // Check if user has completed onboarding (all three questions answered)
-    const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
-    
-    // If they haven't completed onboarding, redirect to onboarding page
-    if (!hasCompletedOnboarding) {
-      return <Redirect to="/onboarding" />;
+  
+  const handleFinalSubmit = (block: Block) => {
+    if (manifestIntention && energyLevel && block) {
+      saveOnboardingMutation.mutate({ manifestIntention, energyLevel, biggestBlock: block });
     }
-    
-    // Otherwise redirect to home
-    return <Redirect to="/" />;
+  };
+  
+  const getIconForIntention = (intention: string) => {
+    switch (intention) {
+      case "Health": return Heart;
+      case "Relationships": return Users;
+      case "Abundance": return TrendingUp;
+      case "Clarity": return Lightbulb;
+      default: return Star;
+    }
+  };
+
+  // Show onboarding questions FIRST (these take priority over redirect)
+  if (onboardingStep === "question1") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+          <CardContent className="p-8 md:p-12">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
+                <Star className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Question 1 of 3</h2>
+              <p className="text-xl text-cyan-200">What's your top intention to manifest right now?</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              {manifestIntentions.map((intention) => {
+                const Icon = getIconForIntention(intention);
+                return (
+                  <button
+                    key={intention}
+                    onClick={() => {
+                      setManifestIntention(intention);
+                      setOnboardingStep("question2");
+                    }}
+                    className="p-6 rounded-xl border-2 bg-white/5 border-white/10 hover:bg-white/10 transition-all transform hover:scale-105"
+                    data-testid={`button-intention-${intention.toLowerCase()}`}
+                  >
+                    <Icon className="w-12 h-12 mx-auto mb-3 text-purple-300" />
+                    <h3 className="text-xl font-bold text-white">{intention}</h3>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
+  // Show onboarding question 2
+  if (onboardingStep === "question2") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+          <CardContent className="p-8 md:p-12">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full mb-4">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Question 2 of 3</h2>
+              <p className="text-xl text-cyan-200">How do you feel energetically today?</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              {energyLevels.map((level) => (
+                <button
+                  key={level}
+                  onClick={() => {
+                    setEnergyLevel(level);
+                    setOnboardingStep("question3");
+                  }}
+                  className="p-6 rounded-xl border-2 bg-white/5 border-white/10 hover:bg-white/10 transition-all transform hover:scale-105"
+                  data-testid={`button-energy-${level.toLowerCase()}`}
+                >
+                  <div className="text-4xl mb-2">
+                    {level === "Low" && "😔"}
+                    {level === "Balanced" && "😌"}
+                    {level === "High" && "🌟"}
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{level}</h3>
+                </button>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => setOnboardingStep("question1")}
+              variant="outline"
+              className="w-full text-white border-white/20"
+              data-testid="button-back"
+            >
+              Back
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show onboarding question 3
+  if (onboardingStep === "question3") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+          <CardContent className="p-8 md:p-12">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full mb-4">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Question 3 of 3</h2>
+              <p className="text-xl text-cyan-200">What's your biggest block right now?</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+              {blocks.map((block) => (
+                <button
+                  key={block}
+                  onClick={() => {
+                    setBiggestBlock(block);
+                    handleFinalSubmit(block);
+                  }}
+                  className="p-4 rounded-xl border-2 bg-white/5 border-white/10 hover:bg-white/10 transition-all transform hover:scale-105"
+                  data-testid={`button-block-${block.toLowerCase().replace(/\s+/g, '-')}`}
+                  disabled={saveOnboardingMutation.isPending}
+                >
+                  <h3 className="text-lg font-bold text-white">{block}</h3>
+                </button>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => setOnboardingStep("question2")}
+              variant="outline"
+              className="w-full text-white border-white/20"
+              data-testid="button-back"
+              disabled={saveOnboardingMutation.isPending}
+            >
+              {saveOnboardingMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving...
+                </>
+              ) : "Back"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Redirect if already logged in AND completed onboarding
+  // Check user's onboarding fields to determine if they've completed it
+  if (user && onboardingStep === "auth") {
+    const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
+    if (hasCompletedOnboarding) {
+      return <Redirect to="/" />;
+    }
+  }
+
+  // Show auth form by default
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4 md:p-8">
       <Card className="w-full md:max-w-md lg:max-w-lg md:shadow-2xl md:border-cyan-900/50 backdrop-blur-sm bg-white/95 dark:bg-slate-900/95">
