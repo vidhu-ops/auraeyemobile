@@ -123,6 +123,9 @@ export interface IStorage {
   getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]>;
   getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]>;
 
+  // User statistics
+  getUserStats(userId: number): Promise<any>;
+
   // Session store
   sessionStore: any;
 }
@@ -929,6 +932,67 @@ export class DatabaseStorage implements IStorage {
       .delete(pushSubscriptions)
       .where(eq(pushSubscriptions.endpoint, endpoint));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // User statistics
+  async getUserStats(userId: number): Promise<any> {
+    const user = await this.getUser(userId);
+    if (!user) return null;
+
+    // Note: meditation hours currently defaults to 0 as psychologicalProfiles integration is pending
+    const meditationHours = 0;
+
+    // Get unique healers consulted (distinct healer IDs from bookings)
+    const bookings = await db.select().from(healerBookings).where(eq(healerBookings.userId, userId));
+    const uniqueHealerIds = new Set(bookings.map(b => b.healerId));
+    const healersConsulted = uniqueHealerIds.size;
+
+    // Get aura scans count
+    const auraScansData = await db.select().from(auraReadings).where(eq(auraReadings.userId, userId));
+    const auraScans = auraScansData.length;
+
+    // Get vibe scans count
+    const vibeScansData = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
+    const vibeScans = vibeScansData.length;
+
+    // Get numerology readings count
+    const numerologyData = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+    const numerologyReadingsCount = numerologyData.length;
+
+    // Get object scans count
+    const objectScansData = await db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, userId));
+    const objectScans = objectScansData.length;
+
+    // Get journal entries count
+    const journalsData = await db.select().from(journals).where(eq(journals.userId, userId));
+    const journalEntries = journalsData.length;
+
+    // Calculate total sessions
+    const totalSessions = auraScans + vibeScans + numerologyReadingsCount + objectScans;
+
+    const stats: any = {
+      meditationHours,
+      healersConsulted,
+      auraScans,
+      vibeScans,
+      numerologyReadings: numerologyReadingsCount,
+      objectScans,
+      totalSessions,
+      journalEntries,
+    };
+
+    // Add healer-specific stats if user is a healer
+    if (user.userType === 'healer') {
+      // Get clients served (unique client IDs from aura readings performed by this healer)
+      const healerReadings = await db.select().from(auraReadings).where(eq(auraReadings.performedBy, userId));
+      const uniqueClientIds = new Set(healerReadings.map(r => r.userId));
+      stats.clientsServed = uniqueClientIds.size;
+
+      // Get sessions performed (total readings performed by this healer)
+      stats.sessionsPerformed = healerReadings.length;
+    }
+
+    return stats;
   }
 }
 

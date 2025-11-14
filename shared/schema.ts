@@ -373,3 +373,20 @@ export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
 export type InsertMoodSnapshot = z.infer<typeof insertMoodSnapshotSchema>;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
+
+// User Statistics Schema
+export const userStatsSchema = z.object({
+  meditationHours: z.number().default(0),
+  healersConsulted: z.number().default(0),
+  auraScans: z.number().default(0),
+  vibeScans: z.number().default(0),
+  numerologyReadings: z.number().default(0),
+  objectScans: z.number().default(0),
+  totalSessions: z.number().default(0),
+  journalEntries: z.number().default(0),
+  // Healer-specific stats
+  clientsServed: z.number().optional(),
+  sessionsPerformed: z.number().optional(),
+});
+
+export type UserStats = z.infer<typeof userStatsSchema>;
