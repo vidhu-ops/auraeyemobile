@@ -63,6 +63,15 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (user) {
+    // Check if user has completed onboarding (all three questions answered)
+    const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
+    
+    // If they haven't completed onboarding, redirect to onboarding page
+    if (!hasCompletedOnboarding) {
+      return <Redirect to="/onboarding" />;
+    }
+    
+    // Otherwise redirect to home
     return <Redirect to="/" />;
   }
 
