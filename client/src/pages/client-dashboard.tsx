@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
+import { useUserStats } from "@/hooks/use-user-stats";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -31,6 +32,7 @@ export default function ClientDashboard() {
   const { user } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
+  const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
   
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -135,24 +137,32 @@ export default function ClientDashboard() {
                   <div className="grid grid-cols-2 gap-6 mb-4">
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
-                      <div className="text-2xl font-bold text-purple-400 mb-1">120h</div>
-                      <Progress value={75} className="h-2 bg-slate-700" />
+                      <div className="text-2xl font-bold text-purple-400 mb-1">
+                        {statsLoading ? '...' : `${stats.meditationHours}h`}
+                      </div>
+                      <Progress value={stats.meditationHours > 0 ? Math.min((stats.meditationHours / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
-                      <div className="text-2xl font-bold text-cyan-400 mb-1">8</div>
-                      <Progress value={50} className="h-2 bg-slate-700" />
+                      <div className="text-2xl font-bold text-cyan-400 mb-1">
+                        {statsLoading ? '...' : stats.healersConsulted}
+                      </div>
+                      <Progress value={stats.healersConsulted > 0 ? Math.min((stats.healersConsulted / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Aura Scans</div>
-                      <div className="text-2xl font-bold text-indigo-400">15</div>
+                      <div className="text-2xl font-bold text-indigo-400">
+                        {statsLoading ? '...' : stats.auraScans}
+                      </div>
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Total Sessions</div>
-                      <div className="text-2xl font-bold text-pink-400">45</div>
+                      <div className="text-2xl font-bold text-pink-400">
+                        {statsLoading ? '...' : stats.totalSessions}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

@@ -3265,6 +3265,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user statistics (meditation hours, healer consultations, scans, etc.)
+  app.get("/api/user-stats", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      const stats = await storage.getUserStats(userId);
+      
+      if (!stats) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Validate stats with schema before responding
+      const { userStatsSchema } = await import("../shared/schema");
+      const validatedStats = userStatsSchema.parse(stats);
+      
+      res.json(validatedStats);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        console.error("User stats validation error:", error);
+        return res.status(500).json({ message: "Invalid stats data format" });
+      }
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ message: "Failed to fetch user statistics" });
+    }
+  });
+
   // Get notification preferences
   app.get("/api/notification-preferences", isAuthenticated, async (req, res) => {
     try {
