@@ -72,10 +72,10 @@ export default function Navbar() {
   const menuItems = [
     { name: "Home", href: "/", icon: HomeIcon },
     { name: "Aura Scan", href: "/aura-analysis", icon: Camera },
-    { name: "Object Scan", href: "/object-scan", icon: Scan },
+    { name: "Object Scan", href: "/object-analysi", icon: Scan },
     { name: "Horoscope", href: "/daily-horoscope", icon: Calendar },
-    { name: "Numerology", href: "/numerology", icon: Hash },
-    { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
+    { name: "Numerology", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: Hash },
+    { name: "What's My Vibe", href: "/vibe-check", icon: Sparkles },
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Meditation", href: "/meditations", icon: Flower2 },
     { name: "Healers", href: "/healers", icon: Heart },
