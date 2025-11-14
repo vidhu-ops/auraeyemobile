@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -122,6 +122,11 @@ export interface IStorage {
   createMoodSnapshot(snapshot: InsertMoodSnapshot): Promise<MoodSnapshot>;
   getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]>;
   getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]>;
+
+  // Meditation sessions
+  createMeditationSession(session: InsertMeditationSession): Promise<MeditationSession>;
+  getUserMeditationSessions(userId: number): Promise<MeditationSession[]>;
+  getMeditationStats(userId: number): Promise<{ sessionsCount: number; totalMinutes: number; totalEnergy: number }>;
 
   // User statistics
   getUserStats(userId: number): Promise<any>;
@@ -939,8 +944,9 @@ export class DatabaseStorage implements IStorage {
     const user = await this.getUser(userId);
     if (!user) return null;
 
-    // Note: meditation hours currently defaults to 0 as psychologicalProfiles integration is pending
-    const meditationHours = 0;
+    // Get meditation hours from completed sessions
+    const meditationStats = await this.getMeditationStats(userId);
+    const meditationHours = Math.floor(meditationStats.totalMinutes / 60);
 
     // Get unique healers consulted (distinct healer IDs from bookings)
     const bookings = await db.select().from(healerBookings).where(eq(healerBookings.userId, userId));
@@ -993,6 +999,32 @@ export class DatabaseStorage implements IStorage {
     }
 
     return stats;
+  }
+
+  // Meditation sessions
+  async createMeditationSession(session: InsertMeditationSession): Promise<MeditationSession> {
+    const [result] = await db.insert(meditationSessions).values(session).returning();
+    return result;
+  }
+
+  async getUserMeditationSessions(userId: number): Promise<MeditationSession[]> {
+    return db.select().from(meditationSessions)
+      .where(eq(meditationSessions.userId, userId))
+      .orderBy(desc(meditationSessions.createdAt));
+  }
+
+  async getMeditationStats(userId: number): Promise<{ sessionsCount: number; totalMinutes: number; totalEnergy: number }> {
+    const sessions = await db.select().from(meditationSessions)
+      .where(and(
+        eq(meditationSessions.userId, userId),
+        eq(meditationSessions.completed, true)
+      ));
+    
+    const sessionsCount = sessions.length;
+    const totalMinutes = sessions.reduce((sum, session) => sum + session.durationMinutes, 0);
+    const totalEnergy = sessions.reduce((sum, session) => sum + (session.energyGained || 25), 0);
+    
+    return { sessionsCount, totalMinutes, totalEnergy };
   }
 }
 

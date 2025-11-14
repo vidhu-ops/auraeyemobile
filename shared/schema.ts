@@ -341,6 +341,27 @@ export const insertMoodSnapshotSchema = createInsertSchema(moodSnapshots).omit({
   timestamp: true,
 });
 
+// Meditation Sessions - track completed meditation sessions
+export const meditationSessions = pgTable("meditation_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  meditationId: integer("meditation_id").notNull(), // ID of the meditation from the preset list
+  meditationTitle: text("meditation_title").notNull(),
+  durationMinutes: integer("duration_minutes").notNull(), // Actual duration of the meditation
+  category: text("category").notNull(), // breathe, focus, calm, etc.
+  completed: boolean("completed").default(true), // Only insert completed sessions
+  energyGained: integer("energy_gained").default(25), // Soul energy gained (can be overridden)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  // Composite index for efficient per-user ordered lookups
+  userIdCreatedAtIdx: index("meditation_sessions_user_id_created_at_idx").on(table.userId, table.createdAt),
+}));
+
+export const insertMeditationSessionSchema = createInsertSchema(meditationSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -373,6 +394,8 @@ export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
 export type InsertMoodSnapshot = z.infer<typeof insertMoodSnapshotSchema>;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
+export type MeditationSession = typeof meditationSessions.$inferSelect;
+export type InsertMeditationSession = z.infer<typeof insertMeditationSessionSchema>;
 
 // User Statistics Schema
 export const userStatsSchema = z.object({
