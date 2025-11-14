@@ -26,7 +26,7 @@ export default function MobileNavigation() {
       name: "Scan",
       icon: Circle,
       href: "/aura-analysis",
-      dataTestId: "nav-scan",
+      dataTestId: "nav-aura-analysis",
       hasNotification: true
     },
     {
