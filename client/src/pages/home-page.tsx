@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
+import { useHomeStats } from "@/hooks/use-home-stats";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X, Smile } from "lucide-react";
@@ -22,6 +23,7 @@ export default function HomePage() {
   const { user, logoutMutation } = useAuth();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
+  const { stats: homeStats, isLoading: homeStatsLoading } = useHomeStats();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -359,15 +361,21 @@ export default function HomePage() {
 
               <div className="grid grid-cols-3 gap-4 mb-3">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">34</div>
+                  <div className="text-2xl font-bold text-white">
+                    {homeStatsLoading ? '...' : homeStats.meditation.sessions}
+                  </div>
                   <div className="text-xs text-gray-400">Sessions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">+25</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    +{homeStats.meditation.energyPerSession}
+                  </div>
                   <div className="text-xs text-gray-400">Per Session</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">850</div>
+                  <div className="text-2xl font-bold text-purple-400">
+                    {homeStatsLoading ? '...' : homeStats.meditation.totalEnergy}
+                  </div>
                   <div className="text-xs text-gray-400">Total Energy</div>
                 </div>
               </div>
@@ -375,9 +383,11 @@ export default function HomePage() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-300">Energy Progress</span>
-                  <span className="text-purple-400 font-semibold">100%</span>
+                  <span className="text-purple-400 font-semibold">
+                    {Math.round(homeStats.meditation.progressPercentage)}%
+                  </span>
                 </div>
-                <Progress value={100} className="h-2" />
+                <Progress value={homeStats.meditation.progressPercentage} className="h-2" />
               </div>
             </CardContent>
           </Card>
@@ -397,15 +407,21 @@ export default function HomePage() {
 
               <div className="grid grid-cols-3 gap-4 mb-3">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">8</div>
+                  <div className="text-2xl font-bold text-white">
+                    {homeStatsLoading ? '...' : homeStats.healerConsultations.sessions}
+                  </div>
                   <div className="text-xs text-gray-400">Sessions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">+50</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    +{homeStats.healerConsultations.energyPerSession}
+                  </div>
                   <div className="text-xs text-gray-400">Per Session</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-400">400</div>
+                  <div className="text-2xl font-bold text-cyan-400">
+                    {homeStatsLoading ? '...' : homeStats.healerConsultations.totalEnergy}
+                  </div>
                   <div className="text-xs text-gray-400">Total Energy</div>
                 </div>
               </div>
@@ -413,9 +429,11 @@ export default function HomePage() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-300">Energy Progress</span>
-                  <span className="text-cyan-400 font-semibold">80%</span>
+                  <span className="text-cyan-400 font-semibold">
+                    {Math.round(homeStats.healerConsultations.progressPercentage)}%
+                  </span>
                 </div>
-                <Progress value={80} className="h-2" />
+                <Progress value={homeStats.healerConsultations.progressPercentage} className="h-2" />
               </div>
             </CardContent>
           </Card>

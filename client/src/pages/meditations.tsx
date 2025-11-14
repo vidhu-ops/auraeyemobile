@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Zap, Bell, Wifi, Sparkles, Wind, Focus, Flame } from "lucide-react";
+import { Play, Clock, Zap, Bell, Wifi, Sparkles, Wind, Focus, Flame, Check } from "lucide-react";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import Navbar from "@/components/layout/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const meditationCategories = [
   { id: "all", name: "All", icon: Sparkles, color: "from-pink-500 to-rose-500" },
@@ -65,11 +68,57 @@ const meditations = [
 export default function MeditationsPage() {
   const { user } = useAuth();
   const { credits } = useCredits();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [completedMeditations, setCompletedMeditations] = useState<number[]>([]);
   
   const filteredMeditations = selectedCategory === "all" 
     ? meditations 
     : meditations.filter(m => m.category === selectedCategory);
+
+  // Mutation to record meditation completion
+  const completeMeditationMutation = useMutation({
+    mutationFn: async (meditation: typeof meditations[0]) => {
+      const response = await apiRequest("POST", "/api/meditation-sessions", {
+        meditationId: meditation.id,
+        meditationTitle: meditation.title,
+        durationMinutes: meditation.duration,
+        category: meditation.category,
+        energyGained: 25,
+      });
+      return await response.json();
+    },
+    onSuccess: (data, meditation) => {
+      setCompletedMeditations(prev => [...prev, meditation.id]);
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+      toast({
+        title: "Meditation Completed! 🧘",
+        description: `+25 Soul Energy earned from ${meditation.title}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to record meditation session",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePlayMeditation = (meditation: typeof meditations[0]) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to track your meditation sessions",
+        variant: "destructive",
+      });
+      return;
+    }
+    completeMeditationMutation.mutate(meditation);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
@@ -120,8 +169,21 @@ export default function MeditationsPage() {
             >
               <CardContent className="p-5">
                 <div className="flex items-start gap-4">
-                  <button className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all" data-testid={`play-${meditation.id}`}>
-                    <Play className="h-6 w-6 text-white" fill="white" />
+                  <button 
+                    onClick={() => handlePlayMeditation(meditation)}
+                    disabled={completedMeditations.includes(meditation.id) || completeMeditationMutation.isPending}
+                    className={`w-14 h-14 rounded-full backdrop-blur-sm flex items-center justify-center transition-all ${
+                      completedMeditations.includes(meditation.id)
+                        ? 'bg-green-500/50 cursor-not-allowed'
+                        : 'bg-white/20 hover:bg-white/30'
+                    }`}
+                    data-testid={`play-${meditation.id}`}
+                  >
+                    {completedMeditations.includes(meditation.id) ? (
+                      <Check className="h-6 w-6 text-white" />
+                    ) : (
+                      <Play className="h-6 w-6 text-white" fill="white" />
+                    )}
                   </button>
 
                   <div className="flex-1">
