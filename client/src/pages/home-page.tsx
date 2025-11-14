@@ -309,8 +309,8 @@ export default function HomePage() {
                   <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
                   <Button
                     onClick={() => growSoulEnergyMutation.mutate()}
-                    disabled={growSoulEnergyMutation.isPending}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-lg"
+                    disabled={growSoulEnergyMutation.isPending || !user}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     data-testid="button-grow-soul-energy"
                   >
                     {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
