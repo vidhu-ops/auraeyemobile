@@ -3295,6 +3295,81 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Record completed meditation session
+  app.post("/api/meditation-sessions", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      const { meditationId, meditationTitle, durationMinutes, category, energyGained } = req.body;
+
+      if (!meditationId || !meditationTitle || !durationMinutes || !category) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const session = await storage.createMeditationSession({
+        userId,
+        meditationId,
+        meditationTitle,
+        durationMinutes,
+        category,
+        energyGained: energyGained || 25,
+        completed: true,
+      });
+
+      // Award soul energy for completing meditation
+      await storage.updateUser(userId, { 
+        soulEnergy: req.user.soulEnergy + (energyGained || 25) 
+      });
+
+      res.json(session);
+    } catch (error) {
+      console.error("Error recording meditation session:", error);
+      res.status(500).json({ message: "Failed to record meditation session" });
+    }
+  });
+
+  // Get home page stats (meditation and healer consultations)
+  app.get("/api/home-stats", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      // Get meditation stats
+      const meditationStats = await storage.getMeditationStats(userId);
+
+      // Get healer consultation stats
+      const bookings = await storage.getBookingsByUser(userId);
+      const uniqueHealerIds = new Set(bookings.map(b => b.healerId));
+      const healerSessions = uniqueHealerIds.size;
+      const healerTotalEnergy = healerSessions * 50; // 50 energy per healer consultation
+
+      res.json({
+        meditation: {
+          sessions: meditationStats.sessionsCount,
+          energyPerSession: 25,
+          totalEnergy: meditationStats.totalEnergy,
+          progressPercentage: Math.min((meditationStats.totalEnergy / 850) * 100, 100),
+        },
+        healerConsultations: {
+          sessions: healerSessions,
+          energyPerSession: 50,
+          totalEnergy: healerTotalEnergy,
+          progressPercentage: Math.min((healerTotalEnergy / 400) * 100, 100),
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching home stats:", error);
+      res.status(500).json({ message: "Failed to fetch home statistics" });
+    }
+  });
+
   // Get notification preferences
   app.get("/api/notification-preferences", isAuthenticated, async (req, res) => {
     try {
