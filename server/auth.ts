@@ -47,6 +47,11 @@ export async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Detect if we're running on HTTPS (Replit preview or production)
+  const isHttps = process.env.NODE_ENV === "production" || 
+                  process.env.REPL_SLUG !== undefined || 
+                  process.env.REPLIT_DEPLOYMENT === "1";
+  
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "aurfy-spiritual-wellness-session-secret",
     resave: false,
@@ -54,10 +59,10 @@ export function setupAuth(app: Express) {
     store: storage.sessionStore,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isHttps,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: process.env.NODE_ENV === "production" ? undefined : undefined,
+      sameSite: isHttps ? "none" : "lax",
+      domain: undefined,
     }
   };
 
