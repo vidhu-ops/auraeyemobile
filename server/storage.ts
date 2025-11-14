@@ -156,11 +156,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    // Set credits based on user type: clients get 30, healers get 100
+    // Set credits based on user type: clients get 0 (then 5 from onboarding), healers get 100
     // SECURITY: Always ignore user-supplied credits to prevent privilege escalation
     const userType = insertUser.userType || "client";
     const isHealer = userType === 'healer';
-    const initialCredits = isHealer ? 100 : 30;
+    const initialCredits = isHealer ? 100 : 0;
     
     // Use database transaction to ensure atomicity
     return await db.transaction(async (tx) => {
