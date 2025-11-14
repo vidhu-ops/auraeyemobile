@@ -91,7 +91,8 @@ export function setupAuth(app: Express) {
               username: healer.username,
               password: healer.password,
               userType: "healer",
-              credits: 100 // Default healer credits
+              credits: 100, // Give new healers 100 initial credits
+              soulEnergy: 0 // Start at 0% tree growth
             });
           }
           
@@ -205,7 +206,8 @@ export function setupAuth(app: Express) {
         ...req.body,
         password: await hashPassword(req.body.password),
         userType: "client", // All registrations default to client type
-        credits: 10 // Give new users 10 credits
+        credits: 30, // Give new clients 30 initial credits
+        soulEnergy: 0 // Start at 0% tree growth
       });
 
       // Remove password from response
