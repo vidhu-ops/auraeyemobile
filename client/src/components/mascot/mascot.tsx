@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import mascotLevel1 from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
-import mascotVideo from "@assets/Recording 2025-11-18 002854_1763406692020.mp4";
+import mascotGif from "@assets/Recording-2025-11-18-002854-unscreen_1763407171784.gif";
 
 interface MascotMessage {
   text: string;
@@ -355,12 +355,18 @@ export default function Mascot() {
   };
 
   const handleMascotClick = () => {
-    // Show video instead of closing
+    // Show GIF instantly
     setShowVideo(true);
     
-    // Hide video after 3 seconds
+    // Hide both GIF and mascot after 3 seconds
     setTimeout(() => {
       setShowVideo(false);
+      setIsAnimatingOut(true);
+      setHasBeenClosedOnThisPage(true);
+      setTimeout(() => {
+        setIsVisible(false);
+        setIsAnimatingOut(false);
+      }, 500);
     }, 3000);
   };
 
@@ -410,7 +416,7 @@ export default function Mascot() {
         ></div>
       </div>
 
-      {/* Mascot - Cute Blob Character or Video */}
+      {/* Mascot - Cute Blob Character or GIF */}
       <div 
         className={`relative cursor-pointer hover:glow transition-transform duration-300 ${
           shouldGlow ? 'animate-mascot-glow' : ''
@@ -422,13 +428,12 @@ export default function Mascot() {
         }}
       >
         {showVideo ? (
-          <video 
-            src={mascotVideo}
-            autoPlay
-            muted
-            className="w-52 h-52 object-contain rounded-lg shadow-2xl"
+          <img 
+            src={mascotGif}
+            alt="Auri Animation"
+            className="w-52 h-52 object-contain drop-shadow-2xl"
             style={{
-              filter: `drop-shadow(0 0 30px ${message.color})`
+              filter: `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
             }}
           />
         ) : (
