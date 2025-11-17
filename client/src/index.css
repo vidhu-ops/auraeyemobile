@@ -262,7 +262,7 @@
   }
   
   .font-ethereal {
-    font-family: 'Dancing Script', cursive;
+    font-family: 'inter', cursive;
   }
   
   .font-cosmic {
@@ -616,7 +616,7 @@
 
 /* Custom font classes */
 .font-heading {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .font-body {
