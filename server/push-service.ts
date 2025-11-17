@@ -46,6 +46,34 @@ const spiritualReminders = [
   }
 ];
 
+const topicReminders: Record<string, Array<{ title: string; body: string }>> = {
+  money: [
+    { title: "Financial Abundance 💰", body: "Your money energy is flowing positively. Stay open to new opportunities!" },
+    { title: "Prosperity Check-In 💎", body: "Time to align with abundance! Check your financial intentions and manifest wealth." },
+    { title: "Money Mindset 🌟", body: "Shift your thoughts toward prosperity. Financial freedom is within reach!" }
+  ],
+  abundance: [
+    { title: "Abundance Flow ✨", body: "The universe is ready to provide. Open your heart to receive all forms of abundance!" },
+    { title: "Blessings Reminder 🌸", body: "Count your blessings! Gratitude attracts even more abundance into your life." },
+    { title: "Manifestation Moment 💫", body: "Your abundant mindset is attracting beautiful opportunities. Stay positive!" }
+  ],
+  family: [
+    { title: "Family Harmony 👨‍👩‍👧‍👦", body: "Send love to your family today. Strong bonds create beautiful energy!" },
+    { title: "Home Energy 🏡", body: "Check in with your loved ones. Family connections strengthen your spiritual foundation." },
+    { title: "Cherish Connections 💝", body: "Take a moment to appreciate your family. These bonds are precious!" }
+  ],
+  relationship: [
+    { title: "Heart Chakra Opening 💕", body: "Your relationships are flourishing! Keep your heart open to love and connection." },
+    { title: "Love Energy 💖", body: "Nurture your important relationships today. Love and connection are powerful!" },
+    { title: "Connection Reminder 🌹", body: "Reach out to someone special. Meaningful connections enrich your soul!" }
+  ],
+  lifestyle: [
+    { title: "Lifestyle Balance 🌈", body: "Check in with your daily habits. Are they serving your highest good?" },
+    { title: "Wellness Reminder 🧘‍♀️", body: "Your lifestyle choices create your reality. Choose wellness and balance!" },
+    { title: "Ideal Life Vision ✨", body: "Your dream lifestyle is taking shape. Keep making aligned choices!" }
+  ]
+};
+
 export async function sendPushNotification(
   subscription: PushSubscriptionJSON,
   title: string,
@@ -82,8 +110,17 @@ export async function sendPushToUser(userId: number) {
       return { sent: 0, failed: 0 };
     }
 
-    // Pick a random reminder
-    const reminder = spiritualReminders[Math.floor(Math.random() * spiritualReminders.length)];
+    // Get user to check for notification topic preference
+    const user = await storage.getUser(userId);
+    
+    // Select reminder based on user's topic preference
+    let reminder;
+    if (user?.notificationTopic && topicReminders[user.notificationTopic]) {
+      const topicMessages = topicReminders[user.notificationTopic];
+      reminder = topicMessages[Math.floor(Math.random() * topicMessages.length)];
+    } else {
+      reminder = spiritualReminders[Math.floor(Math.random() * spiritualReminders.length)];
+    }
     
     let sent = 0;
     let failed = 0;
@@ -123,31 +160,46 @@ export async function sendPushToAllUsers() {
       console.log('No push subscriptions found');
       return { sent: 0, failed: 0 };
     }
-
-    // Pick a random reminder
-    const reminder = spiritualReminders[Math.floor(Math.random() * spiritualReminders.length)];
     
     let sent = 0;
     let failed = 0;
 
     console.log(`📤 Sending push notification to ${subscriptions.length} subscriptions...`);
 
+    // Send personalized notifications to each subscription
     for (const sub of subscriptions) {
-      const pushSubscription: PushSubscriptionJSON = {
-        endpoint: sub.endpoint,
-        keys: JSON.parse(sub.keys)
-      };
+      try {
+        // Get user to check for notification topic preference
+        const user = await storage.getUser(sub.userId);
+        
+        // Select reminder based on user's topic preference
+        let reminder;
+        if (user?.notificationTopic && topicReminders[user.notificationTopic]) {
+          const topicMessages = topicReminders[user.notificationTopic];
+          reminder = topicMessages[Math.floor(Math.random() * topicMessages.length)];
+        } else {
+          reminder = spiritualReminders[Math.floor(Math.random() * spiritualReminders.length)];
+        }
 
-      const success = await sendPushNotification(
-        pushSubscription,
-        reminder.title,
-        reminder.body,
-        '/'
-      );
+        const pushSubscription: PushSubscriptionJSON = {
+          endpoint: sub.endpoint,
+          keys: JSON.parse(sub.keys)
+        };
 
-      if (success) {
-        sent++;
-      } else {
+        const success = await sendPushNotification(
+          pushSubscription,
+          reminder.title,
+          reminder.body,
+          '/'
+        );
+
+        if (success) {
+          sent++;
+        } else {
+          failed++;
+        }
+      } catch (error) {
+        console.error(`Error sending notification to user ${sub.userId}:`, error);
         failed++;
       }
     }

@@ -48,8 +48,8 @@ export default function SettingsPage() {
         ...newPreferences,
       }));
 
-      // Return context with the snapshotted value (or default if cache is empty)
-      return { previousPreferences: previousPreferences ?? { browserEnabled: false, notificationTopic: null } };
+      // Return context with the snapshotted value
+      return { previousPreferences };
     },
     onError: (err, newPreferences, context) => {
       // Rollback to the previous value on error
