@@ -3414,6 +3414,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         phoneNumber: user.mobileNumber || "",
         browserEnabled: user.browserNotificationsEnabled || false,
         emailEnabled: user.emailNotificationsEnabled !== false,
+        notificationTopic: user.notificationTopic || null,
       });
     } catch (error) {
       console.error("Error retrieving notification preferences:", error);
@@ -3430,13 +3431,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "Invalid user session" });
       }
       
-      const { smsEnabled, phoneNumber, browserEnabled, emailEnabled } = req.body;
+      const { smsEnabled, phoneNumber, browserEnabled, emailEnabled, notificationTopic } = req.body;
       
       await storage.updateNotificationPreferences(userId, {
         smsEnabled,
         phoneNumber,
         browserEnabled,
         emailEnabled,
+        notificationTopic,
       });
       
       res.json({ success: true, message: "Notification preferences updated" });
