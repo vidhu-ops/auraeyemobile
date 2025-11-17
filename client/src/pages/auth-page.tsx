@@ -33,7 +33,7 @@ type RegisterData = z.infer<typeof registerSchema>;
 type OnboardingStep = "auth" | "question1" | "question2" | "question3";
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, isLoading, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -260,10 +260,10 @@ export default function AuthPage() {
   }
 
   // Redirect if already logged in AND completed onboarding
-  // Check user's onboarding fields to determine if they've completed it
-  if (user && onboardingStep === "auth") {
+  // Wait for auth loading to complete before redirecting
+  if (!isLoading && user && onboardingStep === "auth") {
     const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
-    if (hasCompletedOnboarding) {
+    if (hasCompletedOnboarding && user.userType) {
       // Redirect to appropriate dashboard based on user type
       const dashboardPath = user.userType === 'healer' ? '/healer-dashboard' : '/dashboard';
       return <Redirect to={dashboardPath} />;

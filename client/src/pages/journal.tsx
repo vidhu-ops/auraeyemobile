@@ -52,7 +52,7 @@ export default function JournalPage() {
     enabled: isAuthenticated,
   });
 
-  // Calculate stats
+  // Calculate stats including real streak calculation
   const stats = useMemo(() => {
     if (!Array.isArray(journalEntries) || journalEntries.length === 0) {
       return { entries: 0, dayStreak: 0, avgEnergy: 0 };
@@ -61,9 +61,46 @@ export default function JournalPage() {
     const entries = journalEntries as JournalEntry[];
     const avgEnergy = entries.reduce((sum, entry) => sum + entry.energyLevel, 0) / entries.length;
     
+    // Get unique dates from entries (normalize to UTC midnight)
+    const uniqueDates = [...new Set(entries.map(entry => {
+      const date = new Date(entry.createdAt);
+      return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).getTime();
+    }))].sort((a, b) => b - a);
+    
+    if (uniqueDates.length === 0) {
+      return { entries: entries.length, dayStreak: 0, avgEnergy: avgEnergy.toFixed(1) };
+    }
+    
+    // Find the longest consecutive streak from the end (most recent entries)
+    let currentStreak = 0;
+    let maxStreak = 0;
+    let previousDate: number | null = null;
+    
+    for (let i = 0; i < uniqueDates.length; i++) {
+      if (previousDate === null) {
+        // First entry
+        currentStreak = 1;
+        maxStreak = 1;
+      } else {
+        const dayDiff = Math.floor((previousDate - uniqueDates[i]) / (1000 * 60 * 60 * 24));
+        
+        if (dayDiff === 1) {
+          // Consecutive day found
+          currentStreak++;
+          maxStreak = Math.max(maxStreak, currentStreak);
+        } else {
+          // Gap found - if this is still near the beginning, keep the maxStreak
+          // Otherwise we've found the recent consecutive run
+          break;
+        }
+      }
+      previousDate = uniqueDates[i];
+    }
+    
+    // Return the most recent consecutive streak
     return {
       entries: entries.length,
-      dayStreak: 7, // You can calculate this based on consecutive days
+      dayStreak: maxStreak,
       avgEnergy: avgEnergy.toFixed(1)
     };
   }, [journalEntries]);
