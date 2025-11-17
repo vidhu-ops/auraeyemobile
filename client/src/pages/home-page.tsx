@@ -505,18 +505,38 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {/* Awakening */}
-            <Card className={`${milestone.level === 'Awakening' ? 'bg-gradient-to-br from-cyan-900/90 to-blue-900/90 border-cyan-400 ring-2 ring-cyan-400/50' : 'bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-500/30'} transition-all`}>
+            {/* Explorer */}
+            <Card className={`${milestone.level === 'Explorer' ? 'bg-gradient-to-br from-green-900/90 to-emerald-900/90 border-green-400 ring-2 ring-green-400/50' : 'bg-gradient-to-br from-green-900/50 to-emerald-900/50 border-green-500/30'} transition-all`}>
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">🧭</div>
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Explorer</h3>
+                      <p className="text-xs text-gray-300">0-500 soul energy</p>
+                    </div>
+                  </div>
+                  {milestone.level === 'Explorer' && (
+                    <div className="bg-green-400/20 px-2 py-1 rounded-full">
+                      <p className="text-xs text-green-400 font-semibold">Current</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Beginner */}
+            <Card className={`${milestone.level === 'Beginner' ? 'bg-gradient-to-br from-cyan-900/90 to-blue-900/90 border-cyan-400 ring-2 ring-cyan-400/50' : 'bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-500/30'} transition-all`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">🌅</div>
                     <div>
-                      <h3 className="text-white font-semibold text-sm">Awakening</h3>
-                      <p className="text-xs text-gray-300">Beginner • 0-1000 soul energy</p>
+                      <h3 className="text-white font-semibold text-sm">Beginner</h3>
+                      <p className="text-xs text-gray-300">501-1000 soul energy</p>
                     </div>
                   </div>
-                  {milestone.level === 'Awakening' && (
+                  {milestone.level === 'Beginner' && (
                     <div className="bg-cyan-400/20 px-2 py-1 rounded-full">
                       <p className="text-xs text-cyan-400 font-semibold">Current</p>
                     </div>
@@ -525,18 +545,18 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Balancer */}
-            <Card className={`${milestone.level === 'Balancer' ? 'bg-gradient-to-br from-purple-900/90 to-pink-900/90 border-purple-400 ring-2 ring-purple-400/50' : 'bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/30'} transition-all`}>
+            {/* Intermediate */}
+            <Card className={`${milestone.level === 'Intermediate' ? 'bg-gradient-to-br from-purple-900/90 to-pink-900/90 border-purple-400 ring-2 ring-purple-400/50' : 'bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/30'} transition-all`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">⚖️</div>
                     <div>
-                      <h3 className="text-white font-semibold text-sm">Balancer</h3>
-                      <p className="text-xs text-gray-300">Intermediate • 1001-5000 soul energy</p>
+                      <h3 className="text-white font-semibold text-sm">Intermediate</h3>
+                      <p className="text-xs text-gray-300">1001-5000 soul energy</p>
                     </div>
                   </div>
-                  {milestone.level === 'Balancer' && (
+                  {milestone.level === 'Intermediate' && (
                     <div className="bg-purple-400/20 px-2 py-1 rounded-full">
                       <p className="text-xs text-purple-400 font-semibold">Current</p>
                     </div>
@@ -545,18 +565,18 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Radiant */}
-            <Card className={`${milestone.level === 'Radiant' ? 'bg-gradient-to-br from-yellow-900/90 to-orange-900/90 border-yellow-400 ring-2 ring-yellow-400/50' : 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-500/30'} transition-all`}>
+            {/* Advanced */}
+            <Card className={`${milestone.level === 'Advanced' ? 'bg-gradient-to-br from-yellow-900/90 to-orange-900/90 border-yellow-400 ring-2 ring-yellow-400/50' : 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-500/30'} transition-all`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">✨</div>
                     <div>
-                      <h3 className="text-white font-semibold text-sm">Radiant</h3>
-                      <p className="text-xs text-gray-300">Advanced • 5001-10000 soul energy</p>
+                      <h3 className="text-white font-semibold text-sm">Advanced</h3>
+                      <p className="text-xs text-gray-300">5001-10000 soul energy</p>
                     </div>
                   </div>
-                  {milestone.level === 'Radiant' && (
+                  {milestone.level === 'Advanced' && (
                     <div className="bg-yellow-400/20 px-2 py-1 rounded-full">
                       <p className="text-xs text-yellow-400 font-semibold">Current</p>
                     </div>
@@ -565,19 +585,19 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Ascended */}
-            <Card className={`${milestone.level === 'Ascended' ? 'bg-gradient-to-br from-white/90 to-cyan-200/90 border-white ring-2 ring-white/50' : 'bg-gradient-to-br from-slate-800/50 to-gray-900/50 border-slate-500/30'} transition-all`}>
+            {/* Awakened */}
+            <Card className={`${milestone.level === 'Awakened' ? 'bg-gradient-to-br from-white/90 to-cyan-200/90 border-white ring-2 ring-white/50' : 'bg-gradient-to-br from-slate-800/50 to-gray-900/50 border-slate-500/30'} transition-all`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">👑</div>
                     <div>
-                      <h3 className={`${milestone.level === 'Ascended' ? 'text-slate-900' : 'text-white'} font-semibold text-sm`}>Ascended</h3>
-                      <p className={`text-xs ${milestone.level === 'Ascended' ? 'text-slate-700' : 'text-gray-300'}`}>10001+ soul energy</p>
-                      <p className={`text-xs ${milestone.level === 'Ascended' ? 'text-purple-700' : 'text-purple-400'} font-semibold mt-1`}>🔓 Unlock healer mentorship with Super Elite healers</p>
+                      <h3 className={`${milestone.level === 'Awakened' ? 'text-slate-900' : 'text-white'} font-semibold text-sm`}>Awakened</h3>
+                      <p className={`text-xs ${milestone.level === 'Awakened' ? 'text-slate-700' : 'text-gray-300'}`}>10001+ soul energy</p>
+                      <p className={`text-xs ${milestone.level === 'Awakened' ? 'text-purple-700' : 'text-purple-400'} font-semibold mt-1`}>🔓 Unlock healer mentorship with Super Elite healers</p>
                     </div>
                   </div>
-                  {milestone.level === 'Ascended' && (
+                  {milestone.level === 'Awakened' && (
                     <div className="bg-white/30 px-2 py-1 rounded-full">
                       <p className="text-xs text-slate-900 font-semibold">Current</p>
                     </div>

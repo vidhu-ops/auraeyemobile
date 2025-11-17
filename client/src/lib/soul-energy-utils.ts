@@ -10,28 +10,35 @@ export interface EnergyMilestone {
 
 export const energyMilestones: EnergyMilestone[] = [
   {
-    level: "Awakening",
+    level: "Explorer",
     min: 0,
+    max: 500,
+    color: "green",
+    gradient: "from-green-400 to-emerald-500"
+  },
+  {
+    level: "Beginner",
+    min: 501,
     max: 1000,
     color: "cyan",
     gradient: "from-cyan-400 to-blue-500"
   },
   {
-    level: "Balancer",
+    level: "Intermediate",
     min: 1001,
     max: 5000,
     color: "purple",
     gradient: "from-purple-400 to-pink-500"
   },
   {
-    level: "Radiant",
+    level: "Advanced",
     min: 5001,
     max: 10000,
     color: "yellow",
     gradient: "from-yellow-400 to-orange-500"
   },
   {
-    level: "Ascended",
+    level: "Awakened",
     min: 10001,
     max: Infinity,
     color: "white",
@@ -58,7 +65,7 @@ export function getProgressToNextMilestone(soulEnergy: number): {
   if (milestone.max === Infinity) {
     return {
       current: soulEnergy - milestone.min,
-      total: 5000, // Show progress in 5000 increments for Ascended
+      total: 5000, // Show progress in 5000 increments for Awakened
       percentage: 100
     };
   }
