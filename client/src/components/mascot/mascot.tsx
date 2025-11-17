@@ -28,9 +28,14 @@ export default function Mascot() {
   const [hasBeenClosedOnThisPage, setHasBeenClosedOnThisPage] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
-  // Get user's credits
+  // Get user's credits and notification preferences
   const { data: creditsData } = useQuery<{ credits: number }>({
     queryKey: ["/api/credits"],
+    enabled: !!user,
+  });
+
+  const { data: notificationPreferences } = useQuery<{ notificationTopic: string | null }>({
+    queryKey: ["/api/notification-preferences"],
     enabled: !!user,
   });
 
@@ -99,10 +104,44 @@ export default function Mascot() {
       user.userType, 
       soulEnergy, 
       lastScanColor,
-      creditsData?.credits || 0
+      creditsData?.credits || 0,
+      notificationPreferences?.notificationTopic || null
     );
     setMessage(messages);
-  }, [location, user, soulEnergy, lastScanColor, creditsData]);
+  }, [location, user, soulEnergy, lastScanColor, creditsData, notificationPreferences]);
+
+  const getTopicPrompt = (topic: string): string => {
+    const topicPrompts: Record<string, string[]> = {
+      money: [
+        "💰 Financial abundance is flowing to you! Trust in your prosperity.",
+        "💎 Your money energy is aligning beautifully. Stay open to opportunities!",
+        "🌟 Financial freedom is within reach. Believe in your abundance!",
+      ],
+      abundance: [
+        "✨ Abundance surrounds you in all forms! Open your heart to receive.",
+        "🌸 Your abundant mindset is attracting beautiful blessings!",
+        "💫 The universe is ready to pour abundance into your life!",
+      ],
+      family: [
+        "👨‍👩‍👧‍👦 Your family bonds are strengthening through love and understanding.",
+        "💝 Family harmony is growing. Cherish these precious connections!",
+        "🏡 Home and family energies are beautifully aligned today!",
+      ],
+      relationship: [
+        "💕 Love and connection are flourishing in your relationships!",
+        "💖 Your heart chakra is open and ready for deep connections!",
+        "🌹 Beautiful relationship energy surrounds you today!",
+      ],
+      lifestyle: [
+        "🌈 Your lifestyle choices are aligning with your highest good!",
+        "🧘‍♀️ Balance and wellness are manifesting in your daily life!",
+        "✨ Your ideal lifestyle is taking shape. Keep nurturing it!",
+      ],
+    };
+    
+    const prompts = topicPrompts[topic] || topicPrompts.abundance;
+    return prompts[Math.floor(Math.random() * prompts.length)];
+  };
 
   const getContextualMessage = (
     path: string, 
@@ -110,11 +149,20 @@ export default function Mascot() {
     userType: string, 
     energy: number,
     scanColor: string | null,
-    credits: number
+    credits: number,
+    topic: string | null
   ): MascotMessage => {
     
     // Home page messages
     if (path === "/") {
+      // Topic-specific home message if topic is selected
+      if (topic) {
+        return {
+          text: `${username}, ${getTopicPrompt(topic)}`,
+          color: "#a855f7",
+          emotion: 'excited'
+        };
+      }
       if (scanColor) {
         return {
           text: `Yay ${username}! ✨ Your beautiful ${scanColor} aura is shining so bright today! You're amazing!`,
@@ -142,6 +190,15 @@ export default function Mascot() {
 
     // Dashboard messages
     if (path.includes("dashboard")) {
+      // Topic-specific dashboard message if topic is selected
+      if (topic) {
+        return {
+          text: `${username}, ${getTopicPrompt(topic)} (${energy} soul energy)`,
+          color: "#a855f7",
+          emotion: 'excited'
+        };
+      }
+      
       if (energy > 150) {
         return {
           text: `WOW ${username}! 🎉 ${energy} soul energy?! You're absolutely glowing! I'm so proud of you!`,
