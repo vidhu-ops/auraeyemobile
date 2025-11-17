@@ -15,6 +15,7 @@ export const users = pgTable("users", {
   manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity
   energyLevel: text("energy_level"), // Low / Balanced / High
   biggestBlock: text("biggest_block"), // Health / Money / Relationships / Career / etc
+  notificationTopic: text("notification_topic"), // money | abundance | family | relationship | lifestyle
   smsNotificationsEnabled: boolean("sms_notifications_enabled").default(false),
   browserNotificationsEnabled: boolean("browser_notifications_enabled").default(false),
   emailNotificationsEnabled: boolean("email_notifications_enabled").default(true),
@@ -413,3 +414,8 @@ export const userStatsSchema = z.object({
 });
 
 export type UserStats = z.infer<typeof userStatsSchema>;
+
+// Notification Topics
+export const notificationTopics = ['money', 'abundance', 'family', 'relationship', 'lifestyle'] as const;
+export const notificationTopicSchema = z.enum(notificationTopics);
+export type NotificationTopic = z.infer<typeof notificationTopicSchema>;

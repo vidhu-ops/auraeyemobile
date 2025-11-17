@@ -31,7 +31,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
-  updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined>;
+  updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean; notificationTopic?: string | null }): Promise<User | undefined>;
   
   // Push notification subscriptions
   savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
@@ -217,7 +217,7 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined> {
+  async updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean; notificationTopic?: string | null }): Promise<User | undefined> {
     const updateData: any = {};
     
     if (preferences.smsEnabled !== undefined) {
@@ -231,6 +231,9 @@ export class DatabaseStorage implements IStorage {
     }
     if (preferences.emailEnabled !== undefined) {
       updateData.emailNotificationsEnabled = preferences.emailEnabled;
+    }
+    if (preferences.notificationTopic !== undefined) {
+      updateData.notificationTopic = preferences.notificationTopic;
     }
     
     const [user] = await db
