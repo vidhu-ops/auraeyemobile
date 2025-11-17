@@ -376,8 +376,8 @@ export default function Mascot() {
         isAnimatingOut ? 'animate-mascot-scale-out' : 'animate-mascot-scale-in'
       }`}
     >
-      {/* Thought Bubble */}
-      <div className="relative mb-3 mr-3">
+      {/* Thought Bubble - hide when showing video */}
+      {!showVideo && <div className="relative mb-3 mr-3">
         <Card 
           className="relative bg-white dark:bg-slate-800 border-2 shadow-xl max-w-xs p-4 rounded-2xl"
           style={{ 
@@ -414,7 +414,7 @@ export default function Mascot() {
           className="absolute -bottom-2 right-6 w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-800 border"
           style={{ borderColor: message.color }}
         ></div>
-      </div>
+      </div>}
 
       {/* Mascot - Cute Blob Character or GIF */}
       <div 
