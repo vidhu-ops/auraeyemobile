@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import mascotLevel1 from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
+import mascotVideo from "@assets/Recording 2025-11-18 002854_1763406692020.mp4";
 
 interface MascotMessage {
   text: string;
@@ -25,6 +26,7 @@ export default function Mascot() {
   const [lastScanColor, setLastScanColor] = useState<string | null>(null);
   const [lastLocation, setLastLocation] = useState(location);
   const [hasBeenClosedOnThisPage, setHasBeenClosedOnThisPage] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   // Get user's credits
   const { data: creditsData } = useQuery<{ credits: number }>({
@@ -352,6 +354,16 @@ export default function Mascot() {
     }, 500);
   };
 
+  const handleMascotClick = () => {
+    // Show video instead of closing
+    setShowVideo(true);
+    
+    // Hide video after 3 seconds
+    setTimeout(() => {
+      setShowVideo(false);
+    }, 3000);
+  };
+
   return (
     <div 
       className={`fixed ${getPositionClasses()} z-40 transition-all duration-700 ease-in-out ${
@@ -398,27 +410,39 @@ export default function Mascot() {
         ></div>
       </div>
 
-      {/* Mascot - Cute Blob Character */}
+      {/* Mascot - Cute Blob Character or Video */}
       <div 
         className={`relative cursor-pointer hover:glow transition-transform duration-300 ${
           shouldGlow ? 'animate-mascot-glow' : ''
         }`}
-        onClick={handleClose}
+        onClick={handleMascotClick}
         data-testid="mascot-image"
         style={{
-          animation: 'float infinite'
+          animation: showVideo ? 'none' : 'float infinite'
         }}
       >
-        <img 
-          src={mascotImage} 
-          alt="Auri Mascot"
-          className="w-52 h-52 object-contain drop-shadow-2xl"
-          style={{
-            filter: shouldGlow 
-              ? `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
-              : `drop-shadow(0 0 20px ${message.color}80)`
-          }}
-        />
+        {showVideo ? (
+          <video 
+            src={mascotVideo}
+            autoPlay
+            muted
+            className="w-52 h-52 object-contain rounded-lg shadow-2xl"
+            style={{
+              filter: `drop-shadow(0 0 30px ${message.color})`
+            }}
+          />
+        ) : (
+          <img 
+            src={mascotImage} 
+            alt="Auri Mascot"
+            className="w-52 h-52 object-contain drop-shadow-2xl"
+            style={{
+              filter: shouldGlow 
+                ? `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
+                : `drop-shadow(0 0 20px ${message.color}80)`
+            }}
+          />
+        )}
       </div>
     </div>
   );
