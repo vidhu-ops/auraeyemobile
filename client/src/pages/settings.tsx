@@ -2,16 +2,18 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, BellOff, Settings as SettingsIcon, Check } from "lucide-react";
+import { Bell, BellOff, Settings as SettingsIcon, Check, DollarSign, Sparkles, Heart, Users, Palette } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { type NotificationTopic } from "@shared/schema";
 
 interface NotificationPreferences {
   browserEnabled: boolean;
+  notificationTopic: NotificationTopic | null;
 }
 
 export default function SettingsPage() {
@@ -30,7 +32,7 @@ export default function SettingsPage() {
   });
 
   const updatePreferencesMutation = useMutation({
-    mutationFn: async (data: { browserEnabled: boolean }) => {
+    mutationFn: async (data: { browserEnabled?: boolean; notificationTopic?: NotificationTopic | null }) => {
       return apiRequest("POST", "/api/notification-preferences", data);
     },
     onMutate: async (newPreferences) => {
@@ -47,7 +49,7 @@ export default function SettingsPage() {
       }));
 
       // Return context with the snapshotted value (or default if cache is empty)
-      return { previousPreferences: previousPreferences ?? { browserEnabled: false } };
+      return { previousPreferences: previousPreferences ?? { browserEnabled: false, notificationTopic: null } };
     },
     onError: (err, newPreferences, context) => {
       // Rollback to the previous value on error
@@ -57,6 +59,7 @@ export default function SettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     },
   });
 
@@ -184,6 +187,41 @@ export default function SettingsPage() {
         return <Badge variant="destructive">Denied</Badge>;
       default:
         return <Badge variant="secondary">Not Set</Badge>;
+    }
+  };
+
+  const handleTopicSelection = async (topic: NotificationTopic) => {
+    try {
+      await updatePreferencesMutation.mutateAsync({ notificationTopic: topic });
+      
+      toast({
+        title: "Topic Selected! ✨",
+        description: `You'll now receive guidance focused on ${topic}`,
+      });
+    } catch (error) {
+      console.error("Error selecting topic:", error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to save your topic preference. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getTopicIcon = (topic: NotificationTopic) => {
+    switch (topic) {
+      case 'money':
+        return DollarSign;
+      case 'abundance':
+        return Sparkles;
+      case 'family':
+        return Users;
+      case 'relationship':
+        return Heart;
+      case 'lifestyle':
+        return Palette;
+      default:
+        return Sparkles;
     }
   };
 
@@ -380,6 +418,71 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Notification Topics Card */}
+          <Card className="border-purple-200/50 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-6 h-6 text-purple-600" />
+                <div>
+                  <CardTitle>Personalized Guidance</CardTitle>
+                  <CardDescription>
+                    Choose a topic for targeted spiritual messages and notifications
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-700">
+                Select a focus area to receive customized prompts from Auri (our mascot) and personalized push notifications:
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {(['money', 'abundance', 'family', 'relationship', 'lifestyle'] as const).map((topic) => {
+                  const Icon = getTopicIcon(topic);
+                  const isSelected = preferences?.notificationTopic === topic;
+                  
+                  return (
+                    <Button
+                      key={topic}
+                      onClick={() => handleTopicSelection(topic)}
+                      disabled={updatePreferencesMutation.isPending}
+                      className={`h-24 flex flex-col items-center justify-center gap-2 transition-all ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-2 border-purple-600 shadow-lg scale-105'
+                          : 'bg-white hover:bg-purple-50 text-gray-700 border-2 border-gray-200 hover:border-purple-300'
+                      }`}
+                      data-testid={`button-topic-${topic}`}
+                      variant="outline"
+                    >
+                      <Icon className={`w-6 h-6 ${isSelected ? 'text-white' : 'text-purple-600'}`} />
+                      <span className={`font-semibold capitalize ${isSelected ? 'text-white' : 'text-gray-800'}`}>
+                        {topic}
+                      </span>
+                      {isSelected && <Check className="w-4 h-4 text-white absolute top-2 right-2" />}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              {preferences?.notificationTopic && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 mt-4">
+                  <p className="text-purple-800 text-sm flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    <strong>Active Topic:</strong> You're receiving {preferences.notificationTopic} guidance
+                  </p>
+                </div>
+              )}
+
+              {!preferences?.notificationTopic && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 text-sm">
+                    <strong>No Topic Selected:</strong> Choose a topic above to personalize your spiritual guidance
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
 
