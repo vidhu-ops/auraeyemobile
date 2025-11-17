@@ -264,7 +264,9 @@ export default function AuthPage() {
   if (user && onboardingStep === "auth") {
     const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
     if (hasCompletedOnboarding) {
-      return <Redirect to="/" />;
+      // Redirect to appropriate dashboard based on user type
+      const dashboardPath = user.userType === 'healer' ? '/healer-dashboard' : '/dashboard';
+      return <Redirect to={dashboardPath} />;
     }
   }
 
