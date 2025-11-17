@@ -358,11 +358,12 @@ export default function Mascot() {
     // Show GIF instantly
     setShowVideo(true);
     
-    // Hide both GIF and mascot after 3 seconds
+    // After 3 seconds, start scale-out animation then hide
     setTimeout(() => {
       setShowVideo(false);
       setIsAnimatingOut(true);
       setHasBeenClosedOnThisPage(true);
+      // Complete hiding after animation finishes
       setTimeout(() => {
         setIsVisible(false);
         setIsAnimatingOut(false);
