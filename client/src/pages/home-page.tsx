@@ -513,7 +513,7 @@ export default function HomePage() {
                     <div className="text-2xl">🧭</div>
                     <div>
                       <h3 className="text-white font-semibold text-sm">Explorer</h3>
-                      <p className="text-xs text-gray-300">0-500 soul energy</p>
+                      <p className="text-xs text-gray-300">0-2000 soul energy</p>
                     </div>
                   </div>
                   {milestone.level === 'Explorer' && (
@@ -533,7 +533,7 @@ export default function HomePage() {
                     <div className="text-2xl">🌅</div>
                     <div>
                       <h3 className="text-white font-semibold text-sm">Beginner</h3>
-                      <p className="text-xs text-gray-300">501-1000 soul energy</p>
+                      <p className="text-xs text-gray-300">2001-4000 soul energy</p>
                     </div>
                   </div>
                   {milestone.level === 'Beginner' && (
@@ -553,7 +553,7 @@ export default function HomePage() {
                     <div className="text-2xl">⚖️</div>
                     <div>
                       <h3 className="text-white font-semibold text-sm">Intermediate</h3>
-                      <p className="text-xs text-gray-300">1001-5000 soul energy</p>
+                      <p className="text-xs text-gray-300">4001-6000 soul energy</p>
                     </div>
                   </div>
                   {milestone.level === 'Intermediate' && (
@@ -573,7 +573,7 @@ export default function HomePage() {
                     <div className="text-2xl">✨</div>
                     <div>
                       <h3 className="text-white font-semibold text-sm">Advanced</h3>
-                      <p className="text-xs text-gray-300">5001-10000 soul energy</p>
+                      <p className="text-xs text-gray-300">6001-8000 soul energy</p>
                     </div>
                   </div>
                   {milestone.level === 'Advanced' && (
@@ -593,7 +593,7 @@ export default function HomePage() {
                     <div className="text-2xl">👑</div>
                     <div>
                       <h3 className={`${milestone.level === 'Awakened' ? 'text-slate-900' : 'text-white'} font-semibold text-sm`}>Awakened</h3>
-                      <p className={`text-xs ${milestone.level === 'Awakened' ? 'text-slate-700' : 'text-gray-300'}`}>10001+ soul energy</p>
+                      <p className={`text-xs ${milestone.level === 'Awakened' ? 'text-slate-700' : 'text-gray-300'}`}>8001+ soul energy</p>
                       <p className={`text-xs ${milestone.level === 'Awakened' ? 'text-purple-700' : 'text-purple-400'} font-semibold mt-1`}>🔓 Unlock healer mentorship with Super Elite healers</p>
                     </div>
                   </div>

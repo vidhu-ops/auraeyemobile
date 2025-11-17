@@ -1,4 +1,4 @@
-export const SOUL_ENERGY_PER_SCAN = 100;
+export const SOUL_ENERGY_PER_SCAN = 100; // For aura, vibe, numerology, and object scans
 
 export interface EnergyMilestone {
   level: string;
@@ -12,34 +12,34 @@ export const energyMilestones: EnergyMilestone[] = [
   {
     level: "Explorer",
     min: 0,
-    max: 500,
+    max: 2000,
     color: "green",
     gradient: "from-green-400 to-emerald-500"
   },
   {
     level: "Beginner",
-    min: 501,
-    max: 1000,
+    min: 2001,
+    max: 4000,
     color: "cyan",
     gradient: "from-cyan-400 to-blue-500"
   },
   {
     level: "Intermediate",
-    min: 1001,
-    max: 5000,
+    min: 4001,
+    max: 6000,
     color: "purple",
     gradient: "from-purple-400 to-pink-500"
   },
   {
     level: "Advanced",
-    min: 5001,
-    max: 10000,
+    min: 6001,
+    max: 8000,
     color: "yellow",
     gradient: "from-yellow-400 to-orange-500"
   },
   {
     level: "Awakened",
-    min: 10001,
+    min: 8001,
     max: Infinity,
     color: "white",
     gradient: "from-white to-cyan-200"
@@ -51,8 +51,8 @@ export function getSoulEnergyMilestone(soulEnergy: number): EnergyMilestone {
 }
 
 export function calculateTreeGrowth(soulEnergy: number): number {
-  // 100 soul energies = 10% growth (proportional/linear)
-  return Math.min(100, (soulEnergy / 100) * 10);
+  // 1000 soul energies = 10% growth (proportional/linear)
+  return Math.min(100, (soulEnergy / 1000) * 10);
 }
 
 export function getProgressToNextMilestone(soulEnergy: number): {

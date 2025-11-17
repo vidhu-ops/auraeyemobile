@@ -2108,6 +2108,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             personalYearNumber: numerologyProfile.personalYearNumber || 5,
             interpretation: numerologyProfile.interpretation
           });
+          
+          // Add soul energy +100 for completing numerology analysis
+          try {
+            await storage.addSoulEnergy(req.user.id, 100, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +100 soul energy to user ${req.user.id} for numerology analysis completion`);
+          } catch (soulEnergyError) {
+            console.error("Error adding soul energy:", soulEnergyError);
+          }
         }
       } catch (apiError) {
         console.error("Numerology API error, using fallback:", apiError);
@@ -2233,6 +2241,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             personalYearNumber: numerologyProfile.personalYearNumber || 5,
             interpretation: numerologyProfile.interpretation
           });
+          
+          // Add soul energy +100 for completing numerology analysis
+          try {
+            await storage.addSoulEnergy(req.user.id, 100, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +100 soul energy to user ${req.user.id} for numerology analysis completion`);
+          } catch (soulEnergyError) {
+            console.error("Error adding soul energy:", soulEnergyError);
+          }
         }
       } catch (apiError) {
         // Already using algorithmic calculation as fallback in the API
