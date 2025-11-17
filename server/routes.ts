@@ -2160,6 +2160,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             personalityNumber: numerologyProfile.personalityNumber,
             interpretation: numerologyProfile.interpretation
           });
+          
+          // Add soul energy +100 for completing numerology analysis (fallback path)
+          try {
+            await storage.addSoulEnergy(req.user.id, 100, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +100 soul energy to user ${req.user.id} for numerology analysis completion (fallback)`);
+          } catch (soulEnergyError) {
+            console.error("Error adding soul energy:", soulEnergyError);
+          }
         }
       }
       
