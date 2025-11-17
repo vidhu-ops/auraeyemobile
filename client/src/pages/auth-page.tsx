@@ -44,15 +44,8 @@ export default function AuthPage() {
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
   
-  // Auto-set onboarding step when user logs in/registers but hasn't completed onboarding
-  useEffect(() => {
-    if (user && onboardingStep === "auth") {
-      const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
-      if (!hasCompletedOnboarding) {
-        setOnboardingStep("question1");
-      }
-    }
-  }, [user, onboardingStep]);
+  // No auto-trigger for onboarding questions
+  // Questions will only show after registration via onRegisterSubmit
   
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
