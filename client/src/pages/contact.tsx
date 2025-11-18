@@ -22,8 +22,8 @@ export default function Contact() {
           />
           
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="font-heading font-bold text-3xl md:text-4xl text-black mb-4 text-center">Connect With Us</h1>
-            <p className="text-black/80 max-w-2xl mx-auto text-center">
+            <h1 className="font-heading font-bold text-3xl md:text-4xl text-white mb-4 text-center">Connect With Us</h1>
+            <p className="text-white/80 max-w-2xl mx-auto text-center">
               Have questions about our services or need spiritual guidance? Reach out to our team of experts.
             </p>
           </div>
