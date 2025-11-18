@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import mascotLevel1 from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
-import mascotGif from "@assets/Recording-2025-11-18-002854-unscreen_1763407171784.gif";
+import mascotGif from "@assets/Recording-2025-11-19-023915-unscreen_1763500213527.gif";
 
 interface MascotMessage {
   text: string;
