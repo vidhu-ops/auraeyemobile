@@ -57,9 +57,12 @@ export default function Mascot() {
     }
   }, [location]);
 
-  // Reappear when page changes - keeping mascot at bottom (but not if permanently clicked)
+  // Reappear when page changes - always show on home page, otherwise respect permanent click state
   useEffect(() => {
-    if (location !== lastLocation && !hasBeenClickedPermanently) {
+    const isHomePage = location === "/";
+    
+    // Show on page change if: going to home page OR not permanently clicked
+    if (location !== lastLocation && (isHomePage || !hasBeenClickedPermanently)) {
       // Reset the closed flag when navigating to a new page
       setHasBeenClosedOnThisPage(false);
       
@@ -79,18 +82,24 @@ export default function Mascot() {
         setIsVisible(true);
         setLastLocation(location);
       }
+    } else if (location !== lastLocation) {
+      // Just update the last location without showing mascot
+      setLastLocation(location);
     }
   }, [location, lastLocation, isVisible, setPosition, hasBeenClickedPermanently]);
 
-  // Initial appearance animation - only if not closed on this page and not permanently clicked
+  // Initial appearance animation - always show on home page, otherwise respect permanent click state
   useEffect(() => {
-    if (!hasBeenClosedOnThisPage && !hasBeenClickedPermanently) {
+    const isHomePage = location === "/";
+    
+    // Always show on home page, or show on other pages if not permanently clicked
+    if (!hasBeenClosedOnThisPage && (isHomePage || !hasBeenClickedPermanently)) {
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [hasBeenClosedOnThisPage, hasBeenClickedPermanently]);
+  }, [hasBeenClosedOnThisPage, hasBeenClickedPermanently, location]);
 
   const getPositionForPage = (path: string): MascotPosition => {
     // Mascot is now fixed at the bottom of the screen
