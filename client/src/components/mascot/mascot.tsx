@@ -27,6 +27,9 @@ export default function Mascot() {
   const [lastLocation, setLastLocation] = useState(location);
   const [hasBeenClosedOnThisPage, setHasBeenClosedOnThisPage] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [hasBeenClickedPermanently, setHasBeenClickedPermanently] = useState(
+    () => localStorage.getItem("mascotClicked") === "true"
+  );
 
   // Get user's credits
   const { data: creditsData } = useQuery<{ credits: number }>({
@@ -42,9 +45,9 @@ export default function Mascot() {
     }
   }, [location]);
 
-  // Reappear when page changes - keeping mascot at bottom
+  // Reappear when page changes - keeping mascot at bottom (but not if permanently clicked)
   useEffect(() => {
-    if (location !== lastLocation) {
+    if (location !== lastLocation && !hasBeenClickedPermanently) {
       // Reset the closed flag when navigating to a new page
       setHasBeenClosedOnThisPage(false);
       
@@ -65,17 +68,17 @@ export default function Mascot() {
         setLastLocation(location);
       }
     }
-  }, [location, lastLocation, isVisible, setPosition]);
+  }, [location, lastLocation, isVisible, setPosition, hasBeenClickedPermanently]);
 
-  // Initial appearance animation - only if not closed on this page
+  // Initial appearance animation - only if not closed on this page and not permanently clicked
   useEffect(() => {
-    if (!hasBeenClosedOnThisPage) {
+    if (!hasBeenClosedOnThisPage && !hasBeenClickedPermanently) {
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [hasBeenClosedOnThisPage]);
+  }, [hasBeenClosedOnThisPage, hasBeenClickedPermanently]);
 
   const getPositionForPage = (path: string): MascotPosition => {
     // Mascot is now fixed at the bottom of the screen
@@ -351,14 +354,18 @@ export default function Mascot() {
     setTimeout(() => {
       setIsVisible(false);
       setIsAnimatingOut(false);
-    }, 500);
+    }, 200);
   };
 
   const handleMascotClick = () => {
     // Show GIF instantly
     setShowVideo(true);
     
-    // After 3 seconds, start scale-out animation then hide
+    // Mark as permanently clicked in localStorage
+    localStorage.setItem("mascotClicked", "true");
+    setHasBeenClickedPermanently(true);
+    
+    // After 2 seconds (gif duration), start scale-out animation then hide permanently
     setTimeout(() => {
       setShowVideo(false);
       setIsAnimatingOut(true);
@@ -367,8 +374,8 @@ export default function Mascot() {
       setTimeout(() => {
         setIsVisible(false);
         setIsAnimatingOut(false);
-      }, 500);
-    }, 3000);
+      }, 200);
+    }, 2000);
   };
 
   return (
@@ -419,7 +426,7 @@ export default function Mascot() {
 
       {/* Mascot - Cute Blob Character or GIF */}
       <div 
-        className={`relative cursor-pointer hover:glow transition-transform duration-300 ${
+        className={`relative cursor-pointer hover:glow transition-transform duration-200 ${
           shouldGlow ? 'animate-mascot-glow' : ''
         }`}
         onClick={handleMascotClick}
@@ -441,7 +448,7 @@ export default function Mascot() {
           <img 
             src={mascotImage} 
             alt="Auri Mascot"
-            className="w-52 h-52 object-contain drop-shadow-2xl"
+            className="w-40 h-40 object-contain drop-shadow-2xl"
             style={{
               filter: shouldGlow 
                 ? `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
