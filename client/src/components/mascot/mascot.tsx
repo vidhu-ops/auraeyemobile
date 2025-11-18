@@ -6,7 +6,11 @@ import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import mascotLevel1 from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
+import mascotExplorer from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
+import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763505956956.png";
+import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763505956955.png";
+import mascotAdvanced from "@assets/WhatsApp_Image_2025-11-15_at_10.23.51_PM-removebg-preview_1763505956955.png";
+import mascotAwakened from "@assets/WhatsApp_Image_2025-11-15_at_10.15.23_PM-removebg-preview_1763505956954.png";
 import mascotGif from "@assets/Recording-2025-11-19-023915-unscreen_1763500213527.gif";
 
 interface MascotMessage {
@@ -325,20 +329,23 @@ export default function Mascot() {
   };
 
   const getMascotImage = (energy: number) => {
-    // Energy level based mascot evolution
-    // Level 1: 0-50 energy
-    // Level 2: 51-100 energy (add image when available)
-    // Level 3: 101-150 energy (add image when available)
-    // Level 4: 150+ energy (add image when available)
+    // Energy level based mascot evolution stages:
+    // Explorer (0-40): Current mascot
+    // Beginner (41-80): Open eye, no rings
+    // Intermediate (81-120): Open third eye with 1 ring
+    // Advanced (121-160): Open eye with 1 ring, glowing effect
+    // Awakened (161+): 2 rings, fully evolved
     
-    if (energy > 150) {
-      return mascotLevel1; // Replace with mascotLevel4 when available
-    } else if (energy > 100) {
-      return mascotLevel1; // Replace with mascotLevel3 when available
-    } else if (energy > 50) {
-      return mascotLevel1; // Replace with mascotLevel2 when available
+    if (energy >= 161) {
+      return mascotAwakened; // 2 rings - fully awakened
+    } else if (energy >= 121) {
+      return mascotAdvanced; // 1 ring, glowing, winking
+    } else if (energy >= 81) {
+      return mascotIntermediate; // 1 ring, open third eye
+    } else if (energy >= 41) {
+      return mascotBeginner; // Open eye, no rings
     } else {
-      return mascotLevel1;
+      return mascotExplorer; // Explorer stage - current mascot
     }
   };
 
