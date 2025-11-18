@@ -950,7 +950,7 @@ export default function ObjectAnalysis() {
                 <CardTitle className="text-2xl font-bold">
                   Professional Object Reading Required
                 </CardTitle>
-                <CardDescription className="text-white/70 text-lg">
+                <CardDescription className="text-black/70 text-lg">
                   Object analysis requires professional interpretation for accurate spiritual insights.You can run an analysis yourself but the healer can provide the same along with remedies and personalised guidance.
                 </CardDescription>
               </CardHeader>
@@ -1042,7 +1042,7 @@ export default function ObjectAnalysis() {
                   <div className="h-2 bg-gradient-to-r from-primary to-primary-dark"></div>
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-4">
-                      <p className="text-center text-muted-foreground">
+                      <p className="text-center text-black">
                         Every object carries its own unique energy signature. Upload a photo of an object 
                         to discover its aura color, energy qualities, and spiritual significance.
                       </p>
