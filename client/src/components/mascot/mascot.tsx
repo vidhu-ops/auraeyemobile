@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import mascotExplorer from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
-import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763505956956.png";
+import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763506298018.png";
 import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763505956955.png";
 import mascotAdvanced from "@assets/WhatsApp_Image_2025-11-15_at_10.23.51_PM-removebg-preview_1763505956955.png";
 import mascotAwakened from "@assets/WhatsApp_Image_2025-11-15_at_10.15.23_PM-removebg-preview_1763505956954.png";
