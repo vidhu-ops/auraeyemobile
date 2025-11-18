@@ -376,23 +376,19 @@ export default function Mascot() {
     // Mark as permanently clicked in localStorage
     localStorage.setItem("mascotClicked", "true");
     setHasBeenClickedPermanently(true);
+    setHasBeenClosedOnThisPage(true);
     
-    // After 2 seconds (gif duration), start scale-out animation then hide permanently
+    // After 2 seconds (gif duration), hide everything immediately without showing static image
     setTimeout(() => {
+      setIsVisible(false);
       setShowVideo(false);
-      setIsAnimatingOut(true);
-      setHasBeenClosedOnThisPage(true);
-      // Complete hiding after animation finishes
-      setTimeout(() => {
-        setIsVisible(false);
-        setIsAnimatingOut(false);
-      }, 200);
+      setIsAnimatingOut(false);
     }, 2000);
   };
 
   return (
     <div 
-      className={`fixed ${getPositionClasses()} z-40 transition-all duration-700 ease-in-out ${
+      className={`fixed ${getPositionClasses()} z-40 transition-all duration-300 ease-in-out ${
         isAnimatingOut ? 'animate-mascot-scale-out' : 'animate-mascot-scale-in'
       }`}
     >

@@ -160,7 +160,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
           </h2>
           
           <p className="text-xl md:text-2xl text-cyan-200 mt-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-            ✨ Your Portal to Spiritual Awakening ✨
+            ✨ Your Portal to Personal Transformation ✨
           </p>
 
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">

@@ -25,13 +25,7 @@ export default function MobileNavigation() {
       href: "/meditations",
       dataTestId: "nav-meditate"
     },
-    {
-      name: "Auri",
-      icon: null,
-      isMascot: true,
-      onClick: summonMascot,
-      dataTestId: "nav-mascot"
-    },
+    
     {
       name: "Scan",
       icon: Circle,
@@ -50,6 +44,13 @@ export default function MobileNavigation() {
       icon: User,
       href: isHealer ? "/healer-dashboard" : "/client-dashboard",
       dataTestId: "nav-profile"
+    },
+    {
+      name: "Auri",
+      icon: null,
+      isMascot: true,
+      onClick: summonMascot,
+      dataTestId: "nav-mascot"
     }
   ];
 
