@@ -2135,6 +2135,36 @@ export default function AuraAnalysis() {
       yPosition += 5;
       yPosition = addWrappedText(getPersonalityEnergyMeaning(personalityColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
+      
+      // SPIRITUAL & EMOTIONAL INSIGHTS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('Spiritual & Emotional Insights:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Current Life Phase:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getCurrentLifePhase(thinkingColorName, result.secondaryColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Spiritual Strengths:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      result.personalityTraits.slice(0, 3).forEach((trait) => {
+        yPosition = addWrappedText(`• ${trait} nature`, 30, yPosition, pageWidth - 55);
+        yPosition += 5;
+      });
+      yPosition += 5;
+      
+      yPosition = addWrappedText('Recommended Focus Areas:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      getRecommendedFocusAreas(result).forEach((area) => {
+        yPosition = addWrappedText(`• ${area}`, 30, yPosition, pageWidth - 55, 5);
+        yPosition += 5;
+      });
+      yPosition += 10;
 
       // GUIDANCE TAB CONTENT
       if (yPosition > pageHeight - 80) {
@@ -2169,6 +2199,40 @@ export default function AuraAnalysis() {
       yPosition += 5;
       yPosition = addWrappedText(getColorChakraGuidance(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
+      
+      // TRADITIONAL COLOR ANALYSIS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('Traditional Color Analysis:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`${thinkingColorName} - Primary Crown Energy:`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      
+      yPosition = addWrappedText(`Positive: ${getPositiveTraits(thinkingColorName)}`, 30, yPosition, pageWidth - 55);
+      yPosition += 5;
+      yPosition = addWrappedText(getPositiveDescription(thinkingColorName), 35, yPosition, pageWidth - 60, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Areas for Growth: ${getShadowTraits(thinkingColorName)}`, 30, yPosition, pageWidth - 55);
+      yPosition += 5;
+      yPosition = addWrappedText(getShadowDescription(thinkingColorName), 35, yPosition, pageWidth - 60, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Energy Placement: ${getPlacementDescription(thinkingColorName)}`, 30, yPosition, pageWidth - 55);
+      yPosition += 5;
+      yPosition = addWrappedText(getDetailedPlacement(thinkingColorName), 35, yPosition, pageWidth - 60, 5);
+      yPosition += 10;
+      
+      yPosition = addWrappedText('Secondary & Supporting Colors:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(`${result.secondaryColor} - Location: near lower abdomen`, 30, yPosition, pageWidth - 55);
+      yPosition += 5;
+      yPosition = addWrappedText(getSecondaryColorDescription(result.secondaryColor), 35, yPosition, pageWidth - 60, 5);
+      yPosition += 10;
 
       // DETAILED CHAKRA ANALYSIS
       if (yPosition > pageHeight - 80) {
@@ -2178,40 +2242,155 @@ export default function AuraAnalysis() {
       
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
-      yPosition = addTextWithPageBreak('CHAKRAS TAB - Detailed Chakra Information', 20, yPosition);
+      yPosition = addTextWithPageBreak('CHAKRAS TAB - Energy Scores & 9-Chakra System', 20, yPosition);
       yPosition += 8;
       
       pdf.setFontSize(10);
       pdf.setTextColor(60, 60, 60);
       
-      // Add detailed chakra information with status
-      chakrasForPDF.forEach((chakra) => {
-        if (yPosition > pageHeight - 60) {
-          pdf.addPage();
-          yPosition = 20;
-        }
-        
-        const status = getChakraStatus(chakra.score);
-        yPosition = addWrappedText(`${chakra.name}: ${chakra.score}/10 - Status: ${status}`, 20, yPosition, pageWidth - 40);
-        yPosition += 5;
-        
-        // Add chakra-specific guidance based on status
-        let chakraGuidance = '';
-        if (status === 'underworking') {
-          chakraGuidance = `This chakra needs activation and strengthening through focused energy work and meditation practices.`;
-        } else if (status === 'imbalanced patterns') {
-          chakraGuidance = `This chakra shows imbalanced energy patterns that require balancing and harmonizing work.`;
-        } else if (status === 'developing balance') {
-          chakraGuidance = `This chakra is developing healthy balance and continues to strengthen with regular practice.`;
-        } else if (status === 'balanced') {
-          chakraGuidance = `This chakra is in balanced state - maintain through regular spiritual practices.`;
-        } else if (status === 'overworking') {
-          chakraGuidance = `This chakra is overactive and needs calming, grounding energy to restore balance.`;
-        }
-        
-        yPosition = addWrappedText(chakraGuidance, 25, yPosition, pageWidth - 50, 5);
-        yPosition += 8;
-      });
+      // AURA STRENGTH, VULNERABILITY, ENERGY BALANCE
+      yPosition = addWrappedText('Energy Scores:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      const auraStrength = calculateAuraStrength(result);
+      yPosition = addWrappedText(`Aura Strength: ${auraStrength}%`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getStrengthDescription(auraStrength), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      const vulnerability = calculateVulnerability(result);
+      yPosition = addWrappedText(`Vulnerability: ${vulnerability}%`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getVulnerabilityDescription(vulnerability), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      const energyBalance = calculateEnergyBalance(result);
+      yPosition = addWrappedText(`Energy Balance: ${energyBalance}%`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getBalanceDescription(energyBalance), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Overall Energy: ${result.energyLevel}/10`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getEnergyLevelDescription(result.energyLevel), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 12;
+      
+      // 9-CHAKRA ENERGY SYSTEM ANALYSIS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('9-Chakra Energy System Analysis:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      // Soul Star Chakra
+      const pdfSoulStarScore = Math.round(calculateSoulStarChakra(result)/10);
+      const soulStarKarmic = getKarmicIndication(pdfSoulStarScore);
+      yPosition = addWrappedText('Soul Star Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Soul Star Chakra connects you to your soul\'s purpose, divine guidance, and highest spiritual potential beyond the physical realm.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${soulStarKarmic.status} - Karmic Lesson: Remembering your soul purpose & Connection with your soul`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${pdfSoulStarScore}/10 (${calculateSoulStarChakra(result)}%) - ${getChakraStatus(pdfSoulStarScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Crown Chakra
+      const crownScore = result.chakraActivity?.crown || 5;
+      const crownKarmic = getKarmicIndication(crownScore);
+      yPosition = addWrappedText('Crown Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Crown Chakra governs spiritual connection, divine wisdom, and your link to universal consciousness and higher guidance.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${crownKarmic.status} - Karmic Lesson: Reconnecting with Source beyond and trusting the divine timing`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${crownScore}/10 (${crownScore * 10}%) - ${getChakraStatus(crownScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Third Eye Chakra
+      const thirdEyeScore = result.chakraActivity?.thirdEye || 5;
+      const thirdEyeKarmic = getKarmicIndication(thirdEyeScore);
+      yPosition = addWrappedText('Third Eye Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Third Eye Chakra enhances intuition, psychic abilities, inner wisdom, and your capacity to see beyond the physical realm.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${thirdEyeKarmic.status} - Karmic Lesson: Breaking illusions and mental control to trust intuition and remove self doubt`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${thirdEyeScore}/10 (${thirdEyeScore * 10}%) - ${getChakraStatus(thirdEyeScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Throat Chakra
+      const throatScore = result.chakraActivity?.throat || 5;
+      const throatKarmic = getKarmicIndication(throatScore);
+      yPosition = addWrappedText('Throat Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Throat Chakra governs communication, self-expression, truth-speaking, and your ability to voice your authentic self.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${throatKarmic.status} - Karmic Lesson: Speaking your truth and learning authentic expression without fear`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${throatScore}/10 (${throatScore * 10}%) - ${getChakraStatus(throatScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Heart Chakra
+      const heartScore = result.chakraActivity?.heart || 5;
+      const heartKarmic = getKarmicIndication(heartScore);
+      yPosition = addWrappedText('Heart Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Heart Chakra manages love, compassion, emotional healing, and your capacity to give and receive love unconditionally.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${heartKarmic.status} - Karmic Lesson: Learning to love unconditionally including yourself`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${heartScore}/10 (${heartScore * 10}%) - ${getChakraStatus(heartScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Solar Plexus Chakra
+      const solarPlexusScore = result.chakraActivity?.solarPlexus || 5;
+      const solarPlexusKarmic = getKarmicIndication(solarPlexusScore);
+      yPosition = addWrappedText('Solar Plexus Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Solar Plexus Chakra controls personal power, confidence, will-power, and your ability to manifest your desires.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${solarPlexusKarmic.status} - Karmic Lesson: Stepping into your power and manifesting your desires`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${solarPlexusScore}/10 (${solarPlexusScore * 10}%) - ${getChakraStatus(solarPlexusScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Sacral Chakra
+      const sacralScore = result.chakraActivity?.sacral || 5;
+      const sacralKarmic = getKarmicIndication(sacralScore);
+      yPosition = addWrappedText('Sacral Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Sacral Chakra governs creativity, emotions, sexuality, pleasure, and your capacity for intimacy and emotional expression.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${sacralKarmic.status} - Karmic Lesson: Embracing emotions and creative expression`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${sacralScore}/10 (${sacralScore * 10}%) - ${getChakraStatus(sacralScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Root Chakra
+      const rootScore = result.chakraActivity?.root || 5;
+      const rootKarmic = getKarmicIndication(rootScore);
+      yPosition = addWrappedText('Root Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Root Chakra manages survival, security, grounding, physical health, and your connection to the Earth and material world.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${rootKarmic.status} - Karmic Lesson: Feeling safe and grounded in the physical world`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${rootScore}/10 (${rootScore * 10}%) - ${getChakraStatus(rootScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Earth Star Chakra
+      const pdfEarthStarScore = Math.round(calculateEarthStarChakra(result)/10);
+      const earthStarKarmic = getKarmicIndication(pdfEarthStarScore);
+      yPosition = addWrappedText('Earth Star Chakra:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText('The Earth Star Chakra anchors you to Earth energy, supports physical manifestation, grounding, and your connection to ancestral wisdom.', 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`${earthStarKarmic.status} - Karmic Lesson: Connecting with Earth energy and ancestral lineage`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(`Score: ${pdfEarthStarScore}/10 (${calculateEarthStarChakra(result)}%) - ${getChakraStatus(pdfEarthStarScore)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
 
       // LIFE PHASE AND COLOR MEANINGS
       if (yPosition > pageHeight - 80) {
