@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import mascotExplorer from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
 import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763506298018.png";
-import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763505956955.png";
+import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763506521677.png";
 import mascotAdvanced from "@assets/WhatsApp_Image_2025-11-15_at_10.23.51_PM-removebg-preview_1763505956955.png";
 import mascotAwakened from "@assets/WhatsApp_Image_2025-11-15_at_10.15.23_PM-removebg-preview_1763505956954.png";
 import mascotGif from "@assets/Recording-2025-11-19-023915-unscreen_1763500213527.gif";
@@ -330,20 +330,20 @@ export default function Mascot() {
 
   const getMascotImage = (energy: number) => {
     // Energy level based mascot evolution stages:
-    // Explorer (0-40): Current mascot
-    // Beginner (41-80): Open eye, no rings
-    // Intermediate (81-120): Open third eye with 1 ring
-    // Advanced (121-160): Open eye with 1 ring, glowing effect
-    // Awakened (161+): 2 rings, fully evolved
+    // Explorer (0-2000): Current mascot
+    // Beginner (2001-4000): Open eyes, no rings
+    // Intermediate (4001-6000): Open third eye with 1 ring
+    // Advanced (6001-8000): Open eye with 1 ring, glowing/winking
+    // Awakened (8001+): 2 rings, fully evolved
     
-    if (energy >= 161) {
+    if (energy >= 8001) {
       return mascotAwakened; // 2 rings - fully awakened
-    } else if (energy >= 121) {
+    } else if (energy >= 6001) {
       return mascotAdvanced; // 1 ring, glowing, winking
-    } else if (energy >= 81) {
+    } else if (energy >= 4001) {
       return mascotIntermediate; // 1 ring, open third eye
-    } else if (energy >= 41) {
-      return mascotBeginner; // Open eye, no rings
+    } else if (energy >= 2001) {
+      return mascotBeginner; // Open eyes, no rings
     } else {
       return mascotExplorer; // Explorer stage - current mascot
     }
