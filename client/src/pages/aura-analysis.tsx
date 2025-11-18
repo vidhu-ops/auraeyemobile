@@ -2011,7 +2011,7 @@ export default function AuraAnalysis() {
       const givingColorName = getColorNameFromHex(detectedColors.giving);
       const personalityColorName = getColorNameFromHex(detectedColors.personality);
 
-      // ANALYSIS TAB CONTENT
+      // ANALYSIS TAB CONTENT - Complete word-for-word copy
       pdf.setFontSize(14);
       pdf.setTextColor(147, 51, 234);
       yPosition = addTextWithPageBreak('ANALYSIS TAB - Aura Photo Analysis', 20, yPosition);
@@ -2020,29 +2020,86 @@ export default function AuraAnalysis() {
       pdf.setFontSize(10);
       pdf.setTextColor(60, 60, 60);
       
-      yPosition = addWrappedText(`Dominant Aura Color (Thinking): ${thinkingColorName}`, 20, yPosition, pageWidth - 40);
-      yPosition += 6;
+      // Detected Aura Colors section
+      yPosition = addWrappedText('Detected Aura Colors:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText('The colored energy field visible around you in your specialized aura photograph reveals your spiritual signature:', 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+      
+      // Dominant Aura Color with complete info
+      const dominantColorInfo = getColorCompleteInfo(thinkingColorName);
+      yPosition = addWrappedText(`Dominant Aura (Thinking Colour): ${thinkingColorName}`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(`POSITIVE ${dominantColorInfo.chakra} | Meaning: ${dominantColorInfo.number}`, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(dominantColorInfo.shadowMeaning, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+      
+      // Personality Color with complete info
+      const personalityColorInfo = getColorCompleteInfo(personalityColorName);
       yPosition = addWrappedText(`Personality Color: ${personalityColorName}`, 20, yPosition, pageWidth - 40);
-      yPosition += 6;
-      yPosition = addWrappedText(`Energy Level: ${result.energyLevel}/10 - ${getEnergyLevelDescription(result.energyLevel)}`, 20, yPosition, pageWidth - 40);
-      yPosition += 8;
-      
-      yPosition = addWrappedText(`Personality Traits: ${result.personalityTraits.join(', ')}`, 20, yPosition, pageWidth - 40);
-      yPosition += 8;
-      
-      yPosition = addWrappedText('Natural Strengths:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
-      yPosition = addWrappedText(getPersonalityStrengths(thinkingColorName, result.personalityTraits), 25, yPosition, pageWidth - 50, 5);
+      yPosition = addWrappedText(`POSITIVE ${personalityColorInfo.chakra} | Meaning: ${personalityColorInfo.number}`, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 5;
+      yPosition = addWrappedText(personalityColorInfo.shadowMeaning, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+      
+      // Aura Size
+      yPosition = addWrappedText('Aura Size:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(`Energy Level: ${result.energyLevel}/10 - ${getEnergyLevelDescription(result.energyLevel)}`, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+      
+      // Personality Traits
+      yPosition = addWrappedText('Personality Traits:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(result.personalityTraits.join(', '), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+      
+      // Personality Integration
+      yPosition = addWrappedText('Personality Integration:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText('Your aura field reveals these dominant traits that combine to form your unique spiritual signature. These characteristics are energetically embedded in your personal vibration and influence how you interact with the world.', 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
-      yPosition = addWrappedText('Growth Opportunities:', 20, yPosition, pageWidth - 40);
+      yPosition = addWrappedText(`${thinkingColorName} Energy Influence:`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
-      yPosition = addWrappedText(getPersonalityGrowthAreas({ color: thinkingColorName, traits: result.personalityTraits }), 25, yPosition, pageWidth - 50, 5);
+      yPosition = addWrappedText(`Your dominant ${thinkingColorName.toLowerCase()} aura creates a personality foundation of ${getColorPersonalityInfluence(thinkingColorName)}`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Core Personality Traits with explanations
+      yPosition = addWrappedText('Core Personality Traits:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      result.personalityTraits.forEach((trait) => {
+        yPosition = addWrappedText(`• ${trait}`, 30, yPosition, pageWidth - 55);
+        yPosition += 5;
+        yPosition = addWrappedText(getTraitExplanation({ trait, color: thinkingColorName }), 35, yPosition, pageWidth - 60, 5);
+        yPosition += 6;
+      });
       yPosition += 8;
       
-      yPosition = addWrappedText('Relationship Dynamics:', 20, yPosition, pageWidth - 40);
+      // Natural Strengths
+      yPosition = addWrappedText('Natural Strengths:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
-      yPosition = addWrappedText(getRelationshipDynamics(thinkingColorName, result.secondaryColor), 25, yPosition, pageWidth - 50, 5);
+      yPosition = addWrappedText(getPersonalityStrengths(thinkingColorName, result.personalityTraits), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Growth Opportunities
+      yPosition = addWrappedText('Growth Opportunities:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getPersonalityGrowthAreas({ color: thinkingColorName, traits: result.personalityTraits }), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Relationship Dynamics
+      yPosition = addWrappedText('Relationship Dynamics:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getRelationshipDynamics(thinkingColorName, result.secondaryColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // Career & Life Path Alignment
+      yPosition = addWrappedText('Career & Life Path Alignment:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getCareerAlignment(thinkingColorName, result.personalityTraits), 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
 
       // ENERGY MAP TAB CONTENT
