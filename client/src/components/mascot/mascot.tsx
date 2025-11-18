@@ -432,7 +432,7 @@ export default function Mascot() {
           <img 
             src={mascotGif}
             alt="Auri Animation"
-            className="w-52 h-52 object-contain drop-shadow-2xl"
+            className="w-40 h-40 object-contain drop-shadow-2xl"
             style={{
               filter: `drop-shadow(0 0 40px ${message.color}) drop-shadow(0 0 60px ${message.color})`
             }}
