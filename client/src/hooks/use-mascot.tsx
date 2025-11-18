@@ -5,6 +5,7 @@ interface MascotContextType {
   triggerGlow: () => void;
   position: MascotPosition;
   setPosition: (position: MascotPosition) => void;
+  summonMascot: () => void;
 }
 
 export type MascotPosition = 
@@ -26,8 +27,18 @@ export function MascotProvider({ children }: { children: ReactNode }) {
     setTimeout(() => setShouldGlow(false), 2000);
   };
 
+  const summonMascot = () => {
+    // Clear the permanently clicked state to allow mascot to reappear
+    localStorage.removeItem("mascotClicked");
+    // Trigger glow effect
+    setShouldGlow(true);
+    setTimeout(() => setShouldGlow(false), 2000);
+    // Force a page reload event to trigger mascot reappearance
+    window.dispatchEvent(new Event('summon-mascot'));
+  };
+
   return (
-    <MascotContext.Provider value={{ shouldGlow, triggerGlow, position, setPosition }}>
+    <MascotContext.Provider value={{ shouldGlow, triggerGlow, position, setPosition, summonMascot }}>
       {children}
     </MascotContext.Provider>
   );

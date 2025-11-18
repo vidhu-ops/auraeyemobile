@@ -31,6 +31,18 @@ export default function Mascot() {
     () => localStorage.getItem("mascotClicked") === "true"
   );
 
+  // Listen for summon event
+  useEffect(() => {
+    const handleSummon = () => {
+      setHasBeenClickedPermanently(false);
+      setHasBeenClosedOnThisPage(false);
+      setIsVisible(true);
+    };
+
+    window.addEventListener('summon-mascot', handleSummon);
+    return () => window.removeEventListener('summon-mascot', handleSummon);
+  }, []);
+
   // Get user's credits
   const { data: creditsData } = useQuery<{ credits: number }>({
     queryKey: ["/api/credits"],

@@ -2,10 +2,13 @@ import { Home, Heart, Circle, BookOpen, User } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { useMascot } from "@/hooks/use-mascot";
+import mascotImage from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { summonMascot } = useMascot();
   
   const isHealer = user?.userType === "healer";
   
@@ -21,6 +24,13 @@ export default function MobileNavigation() {
       icon: Heart,
       href: "/meditations",
       dataTestId: "nav-meditate"
+    },
+    {
+      name: "Auri",
+      icon: null,
+      isMascot: true,
+      onClick: summonMascot,
+      dataTestId: "nav-mascot"
     },
     {
       name: "Scan",
@@ -52,14 +62,35 @@ export default function MobileNavigation() {
       <div className="flex justify-around items-center py-2 px-2">
         {navigationItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location === item.href || 
+          const isActive = item.href && (location === item.href || 
             (item.href === "/" && location === "/") ||
-            (item.href !== "/" && location.startsWith(item.href));
+            (item.href !== "/" && location.startsWith(item.href)));
+          
+          // Mascot button (clickable, not a link)
+          if (item.isMascot) {
+            return (
+              <button
+                key={item.name}
+                onClick={item.onClick}
+                className="relative flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all duration-200 min-w-[55px] hover:bg-indigo-500/20"
+                data-testid={item.dataTestId}
+              >
+                <img 
+                  src={mascotImage} 
+                  alt="Auri Mascot" 
+                  className="h-8 w-8 mb-1 object-contain"
+                />
+                <span className="text-xs font-medium text-slate-400">
+                  {item.name}
+                </span>
+              </button>
+            );
+          }
           
           return (
             <Link
               key={item.name}
-              href={item.href}
+              href={item.href!}
               className={cn(
                 "relative flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all duration-200 min-w-[55px]",
                 isActive 
@@ -71,10 +102,12 @@ export default function MobileNavigation() {
               {item.hasNotification && (
                 <span className="absolute top-1 right-2 w-2 h-2 bg-pink-500 rounded-full"></span>
               )}
-              <Icon className={cn(
-                "h-6 w-6 mb-1 transition-colors", 
-                isActive ? "text-white" : "text-slate-400"
-              )} />
+              {Icon && (
+                <Icon className={cn(
+                  "h-6 w-6 mb-1 transition-colors", 
+                  isActive ? "text-white" : "text-slate-400"
+                )} />
+              )}
               <span className={cn(
                 "text-xs font-medium transition-colors",
                 isActive ? "text-white" : "text-slate-400"
@@ -88,7 +121,7 @@ export default function MobileNavigation() {
       
       {/* Navigation indicator dots */}
       <div className="flex justify-center gap-1 pb-2">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <div
             key={i}
             className={cn(
