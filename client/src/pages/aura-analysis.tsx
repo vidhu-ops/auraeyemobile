@@ -2454,6 +2454,146 @@ export default function AuraAnalysis() {
       yPosition += 5;
       yPosition = addWrappedText(getOverallEnergyInterpretation(personalityColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
+      
+      // DETAILED TAB - SPECIALIZED AURA INTERPRETATION
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('DETAILED TAB - Specialized Aura Interpretation', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      // Parse and display detailed analysis by aspects
+      const detailedAnalysisText = result.detailedAnalysis;
+      const aspects = ['Personality:', 'Giving:', 'Receiving:', 'Thinking:'];
+      
+      aspects.forEach(aspect => {
+        if (detailedAnalysisText.includes(aspect)) {
+          const aspectName = aspect.replace(':', '');
+          const parts = detailedAnalysisText.split(aspect);
+          if (parts.length > 1) {
+            const nextAspectIndex = parts[1].search(/\b(Personality|Giving|Receiving|Thinking):/);
+            const aspectContent = nextAspectIndex > -1 ? parts[1].substring(0, nextAspectIndex).trim() : parts[1].trim();
+            
+            if (yPosition > pageHeight - 60) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            
+            yPosition = addWrappedText(`${aspectName}:`, 20, yPosition, pageWidth - 40);
+            yPosition += 5;
+            yPosition = addWrappedText(aspectContent, 25, yPosition, pageWidth - 50, 5);
+            yPosition += 8;
+          }
+        }
+      });
+      
+      // If no specific aspects found, show the full text
+      if (!aspects.some(aspect => detailedAnalysisText.includes(aspect))) {
+        yPosition = addWrappedText(detailedAnalysisText, 20, yPosition, pageWidth - 40, 5);
+        yPosition += 10;
+      }
+      
+      // COMPLETE AURA COLOR PROFILE
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('Complete Aura Color Profile:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Dominant: ${result.dominantColor}`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      
+      if (result.secondaryColor && result.secondaryColor !== result.dominantColor) {
+        yPosition = addWrappedText(`Secondary: ${result.secondaryColor}`, 25, yPosition, pageWidth - 50);
+        yPosition += 5;
+      }
+      
+      if (result.auraColorSpectrum && result.auraColorSpectrum.length > 0) {
+        const uniqueSpectrumColors = result.auraColorSpectrum.filter(
+          color => color !== result.dominantColor && color !== result.secondaryColor
+        ).slice(0, 3);
+        
+        if (uniqueSpectrumColors.length > 0) {
+          yPosition = addWrappedText(`Additional Spectrum Colors: ${uniqueSpectrumColors.join(', ')}`, 25, yPosition, pageWidth - 50, 5);
+          yPosition += 5;
+        }
+      }
+      yPosition += 8;
+      
+      // AURA LAYERS INTERPRETATION
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('Aura Layers Interpretation:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Physical Layer:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getAuraLayerAnalysis("physical", result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Emotional Layer:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getAuraLayerAnalysis("emotional", result.secondaryColor || result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Mental Layer:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getAuraLayerAnalysis("mental", result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Astral Layer:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getAuraLayerAnalysis("etheric", result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Spiritual Layer:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(getAuraLayerAnalysis("spiritual", result.secondaryColor || result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
+      
+      // ENERGY FLOW ANALYSIS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      yPosition = addWrappedText('Energy Flow Analysis:', 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Energy Intensity: ${auraHelpers.getEnergyLevelText(result.energyLevel)}`, 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(auraHelpers.getEnergyAdvice(result.energyLevel, result.dominantColor), 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Energy Cycles:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      yPosition = addWrappedText(`Your aura indicates a ${auraHelpers.getEnergyCycle(result.energyLevel, result.dominantColor)} energy cycle currently. Pay attention to how your energy fluctuates throughout the day and week.`, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Integration Pattern:', 25, yPosition, pageWidth - 50);
+      yPosition += 5;
+      const integrationPattern = (() => {
+        const level = result.energyLevel;
+        if (level >= 9) return "All energy centers highly synchronized with intense circulation throughout your entire field.";
+        if (level >= 7) return "Strong integration between all four energy zones with active communication and balanced flow.";
+        if (level >= 5) return "Moderate integration with steady communication between core, mental, giving, and receiving energies.";
+        if (level >= 3) return "Gentle integration with subtle energy exchange between your four primary energy zones.";
+        return "Quiet integration phase with energy consolidating in core areas for deeper development.";
+      })();
+      yPosition = addWrappedText(integrationPattern, 30, yPosition, pageWidth - 55, 5);
+      yPosition += 10;
 
       // LIFE SCORE TAB CONTENT (SPECTRUM)
       if (yPosition > pageHeight - 80) {
