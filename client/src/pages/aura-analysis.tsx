@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
@@ -1988,6 +1989,220 @@ export default function AuraAnalysis() {
       });
       
       yPosition += 15;
+
+      // SECTION 8A: COMPREHENSIVE DETAILED ANALYSIS FROM ALL TABS (Text Content)
+      pdf.addPage();
+      yPosition = 20;
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(75, 0, 130);
+      yPosition = addTextWithPageBreak('COMPREHENSIVE DETAILED ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 10;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      yPosition = addWrappedText('Complete text information from all aura analysis sections', pageWidth/2, yPosition, pageWidth - 40, 5);
+      yPosition += 15;
+
+      // Extract all aura colors for complete analysis
+      const detectedColors = extractAllAuraColors(result);
+      const thinkingColorName = result.dominantColor;
+      const receivingColorName = getColorNameFromHex(detectedColors.receiving);
+      const givingColorName = getColorNameFromHex(detectedColors.giving);
+      const personalityColorName = getColorNameFromHex(detectedColors.personality);
+
+      // ANALYSIS TAB CONTENT
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('ANALYSIS TAB - Aura Photo Analysis', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText(`Dominant Aura Color (Thinking): ${thinkingColorName}`, 20, yPosition, pageWidth - 40);
+      yPosition += 6;
+      yPosition = addWrappedText(`Personality Color: ${personalityColorName}`, 20, yPosition, pageWidth - 40);
+      yPosition += 6;
+      yPosition = addWrappedText(`Energy Level: ${result.energyLevel}/10 - ${getEnergyLevelDescription(result.energyLevel)}`, 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Personality Traits: ${result.personalityTraits.join(', ')}`, 20, yPosition, pageWidth - 40);
+      yPosition += 10;
+
+      // ENERGY MAP TAB CONTENT
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('ENERGY MAP TAB - 4-Zone Energy Analysis', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText(`Thinking Energy (Crown Zone) - ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getThinkingEnergyMeaning(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Receiving Energy (Left Zone) - ${receivingColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getReceivingEnergyMeaning(receivingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Giving Energy (Right Zone) - ${givingColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getGivingEnergyMeaning(givingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Personality Energy (Heart Zone) - ${personalityColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getPersonalityEnergyMeaning(personalityColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+
+      // GUIDANCE TAB CONTENT
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('GUIDANCE TAB - Spiritual Guidance & Practices', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText('Spiritual Guidance:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(result.spiritualGuidance || `Your ${result.dominantColor} aura carries deep spiritual significance.`, 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Meditation Focus for ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getColorMeditationFocus(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Energy Work for ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getColorEnergyWork(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Chakra Alignment Guidance:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getColorChakraGuidance(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+
+      // DETAILED CHAKRA ANALYSIS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('CHAKRAS TAB - Detailed Chakra Information', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      // Add detailed chakra information with status
+      chakrasForPDF.forEach((chakra) => {
+        if (yPosition > pageHeight - 60) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        
+        const status = getChakraStatus(chakra.score);
+        yPosition = addWrappedText(`${chakra.name}: ${chakra.score}/10 - Status: ${status}`, 20, yPosition, pageWidth - 40);
+        yPosition += 5;
+        
+        // Add chakra-specific guidance based on status
+        let chakraGuidance = '';
+        if (status === 'underworking') {
+          chakraGuidance = `This chakra needs activation and strengthening through focused energy work and meditation practices.`;
+        } else if (status === 'imbalanced patterns') {
+          chakraGuidance = `This chakra shows imbalanced energy patterns that require balancing and harmonizing work.`;
+        } else if (status === 'developing balance') {
+          chakraGuidance = `This chakra is developing healthy balance and continues to strengthen with regular practice.`;
+        } else if (status === 'balanced') {
+          chakraGuidance = `This chakra is in balanced state - maintain through regular spiritual practices.`;
+        } else if (status === 'overworking') {
+          chakraGuidance = `This chakra is overactive and needs calming, grounding energy to restore balance.`;
+        }
+        
+        yPosition = addWrappedText(chakraGuidance, 25, yPosition, pageWidth - 50, 5);
+        yPosition += 8;
+      });
+
+      // LIFE PHASE AND COLOR MEANINGS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('DETAILED TAB - Life Phase & Color Meanings', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText('Current Life Phase:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getCurrentLifePhase(thinkingColorName, receivingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Dominant Color (${thinkingColorName}) Complete Meaning:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getColorSpiritalMeaning(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Personality Color (${personalityColorName}) Interpretation:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getPersonalityColorInterpretation(personalityColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+
+      // ENERGY INTERACTIONS
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('ENERGY INTERACTIONS - Detailed Zone Analysis', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText(`Thinking Zone (${thinkingColorName}) - Complete Analysis:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getThinkingEnergyInterpretation(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Receiving Zone (${receivingColorName}) - Complete Analysis:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getReceivingEnergyInterpretation(receivingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Giving Zone (${givingColorName}) - Complete Analysis:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getGivingEnergyInterpretation(givingColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Personality Zone (${personalityColorName}) - Complete Analysis:`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getOverallEnergyInterpretation(personalityColorName), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
       if (capturedScreenshots.size > 0) {
