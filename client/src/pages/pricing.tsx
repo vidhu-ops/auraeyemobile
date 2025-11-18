@@ -5,6 +5,7 @@ import { Star, Crown, Users, Zap, Check, Sparkles, Award, Globe, Coins } from "l
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useState } from "react";
 
 type BillingCycle = "monthly" | "quarterly" | "annually";
@@ -465,6 +466,7 @@ export default function PricingPage() {
         </div>
       </main>
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuraGlow } from "@/components/ui/aura-glow";
@@ -336,6 +337,7 @@ export default function About() {
       </main>
       
       <Footer />
+      <MobileNavigation />
     </div>
   );
 }
