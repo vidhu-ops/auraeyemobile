@@ -2028,6 +2028,21 @@ export default function AuraAnalysis() {
       yPosition += 8;
       
       yPosition = addWrappedText(`Personality Traits: ${result.personalityTraits.join(', ')}`, 20, yPosition, pageWidth - 40);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Natural Strengths:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getPersonalityStrengths(thinkingColorName, result.personalityTraits), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Growth Opportunities:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getPersonalityGrowthAreas({ color: thinkingColorName, traits: result.personalityTraits }), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText('Relationship Dynamics:', 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getRelationshipDynamics(thinkingColorName, result.secondaryColor), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
 
       // ENERGY MAP TAB CONTENT
@@ -2203,6 +2218,155 @@ export default function AuraAnalysis() {
       yPosition += 5;
       yPosition = addWrappedText(getOverallEnergyInterpretation(personalityColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
+
+      // LIFE SCORE TAB CONTENT (SPECTRUM)
+      if (yPosition > pageHeight - 80) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(147, 51, 234);
+      yPosition = addTextWithPageBreak('SPECTRUM TAB - Life Score Analysis', 20, yPosition);
+      yPosition += 8;
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      
+      yPosition = addWrappedText('Your chakra activity levels create specific life patterns. These scores reveal your current strengths and areas for growth.', 20, yPosition, pageWidth - 40, 5);
+      yPosition += 10;
+      
+      // Calculate all life scores
+      const earthStarScore = calculateEarthStarChakra(result)/10;
+      const soulStarScore = calculateSoulStarChakra(result)/10;
+      
+      const loveRelationshipsScore = (0.4 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.throat || 5));
+      const moneyAbundanceScore = (0.3 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.4 * earthStarScore);
+      const careerPurposeScore = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * (result.chakraActivity?.crown || 5));
+      const emotionalStabilityScore = (0.4 * (result.chakraActivity?.sacral || 5)) + (0.3 * (result.chakraActivity?.heart || 5)) + (0.3 * (result.chakraActivity?.root || 5));
+      const spiritualGrowthScore = (0.4 * (result.chakraActivity?.crown || 5)) + (0.3 * (result.chakraActivity?.thirdEye || 5)) + (0.3 * soulStarScore);
+      const physicalEnergyScore = (0.4 * (result.chakraActivity?.root || 5)) + (0.3 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.sacral || 5));
+      const manifestationScore = (0.4 * (result.chakraActivity?.solarPlexus || 5)) + (0.3 * (result.chakraActivity?.root || 5)) + (0.2 * (result.chakraActivity?.thirdEye || 5)) + (0.1 * (result.chakraActivity?.sacral || 5));
+      
+      // Helper to get score interpretation
+      const getScoreInterpretation = (score: number, lowMsg: string, modMsg: string, goodMsg: string, excMsg: string) => {
+        if (score <= 4) return lowMsg;
+        if (score <= 6) return modMsg;
+        if (score <= 8) return goodMsg;
+        return excMsg;
+      };
+      
+      yPosition = addWrappedText(`Love & Relationships: ${loveRelationshipsScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(loveRelationshipsScore,
+        'Emotionally blocked, finds it hard to trust or open up',
+        'Moderate emotional openness, some trust barriers',
+        'Good emotional flow, healthy relationships',
+        'Excellent emotional openness and authentic expression'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Money & Abundance: ${moneyAbundanceScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(moneyAbundanceScore,
+        'Money anxiety, scarcity mindset, karmic blocks',
+        'Developing abundance mindset, some financial blocks',
+        'Good financial flow, stable wealth mindset',
+        'Excellent abundance consciousness and financial stability'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Career & Purpose: ${careerPurposeScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(careerPurposeScore,
+        'Feels lost or stuck, lacks clarity of life direction',
+        'Developing purpose clarity, some direction uncertainty',
+        'Good career alignment, clear life direction',
+        'Excellent purpose clarity and career fulfillment'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Emotional Stability: ${emotionalStabilityScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(emotionalStabilityScore,
+        'Emotionally reactive, overwhelmed easily',
+        'Moderate emotional stability, occasional overwhelm',
+        'Good emotional balance, handles stress well',
+        'Excellent emotional stability and resilience'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Spiritual Growth: ${spiritualGrowthScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(spiritualGrowthScore,
+        'Spiritually disconnected or resisting inner voice',
+        'Developing spiritual awareness, some resistance',
+        'Good spiritual connection, regular inner guidance',
+        'Excellent spiritual openness and divine connection'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Physical Energy: ${physicalEnergyScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(physicalEnergyScore,
+        'Low vitality, potential health or energy blocks',
+        'Moderate energy levels, some vitality blocks',
+        'Good physical energy, healthy vitality',
+        'Excellent physical energy and vibrant health'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 8;
+      
+      yPosition = addWrappedText(`Manifestation: ${manifestationScore.toFixed(1)}/10`, 20, yPosition, pageWidth - 40);
+      yPosition += 5;
+      yPosition = addWrappedText(getScoreInterpretation(manifestationScore,
+        'Difficulty bringing ideas into reality, struggles with grounding visions',
+        'Developing manifestation skills, some challenges with execution',
+        'Good manifestation abilities, regular success with goals',
+        'Excellent manifestation power, easily brings visions into reality'), 25, yPosition, pageWidth - 50, 5);
+      yPosition += 10;
+
+      // REMEDIES & SPIRITUAL SUPPORT (from Combined Tab)
+      if (numerologyResult) {
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(147, 51, 234);
+        yPosition = addTextWithPageBreak('COMBINED TAB - Remedies & Spiritual Support', 20, yPosition);
+        yPosition += 8;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(60, 60, 60);
+        
+        const combinedInsights = getCombinedInsights(result, numerologyResult, numerologyBirthDate);
+        
+        yPosition = addWrappedText('Spiritual Support System:', 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText(`Archangel Guidance: ${combinedInsights.archangelGuidance}`, 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText(`Healing Crystals: ${combinedInsights.healingCrystals.join(', ')}`, 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText(`Sacred Mantra: ${combinedInsights.sacredMantra}`, 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText(`Dominant Soul Chakra: ${combinedInsights.dominantSoulChakra}`, 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText(`Planetary Influence: ${combinedInsights.planetaryInfluence}`, 20, yPosition, pageWidth - 40);
+        yPosition += 8;
+        
+        yPosition = addWrappedText('Personalized Spiritual Practices:', 20, yPosition, pageWidth - 40);
+        yPosition += 5;
+        combinedInsights.recommendedPractices.forEach((practice) => {
+          yPosition = addWrappedText(`• ${practice}`, 25, yPosition, pageWidth - 50, 5);
+          yPosition += 6;
+        });
+        yPosition += 8;
+        
+        yPosition = addWrappedText('Integrated Spiritual Guidance:', 20, yPosition, pageWidth - 40);
+        yPosition += 5;
+        yPosition = addWrappedText(combinedInsights.spiritualGuidance, 25, yPosition, pageWidth - 50, 5);
+        yPosition += 10;
+      }
 
       // SECTION 8: CAPTURED TAB SCREENSHOTS (if any exist)
       if (capturedScreenshots.size > 0) {
