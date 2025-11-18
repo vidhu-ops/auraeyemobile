@@ -98,10 +98,10 @@ export default function HomePage() {
         {/* Welcome Section */}
         <div className="mb-10 text-center space-y-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-            Hello, Welcome to Your
+            Welcome to Your
           </h1>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-            Spiritual Space
+            Personal Wellbeing Space
           </h2>
           <p className="text-gray-300 text-sm pt-2">Your journey to inner peace and enlightenment begins here</p>
         </div>
