@@ -75,7 +75,7 @@ export default function Navbar() {
     { name: "Object Scan", href: "/object-analysis", icon: Scan },
     { name: "Horoscope", href: "/daily-horoscope", icon: Calendar },
     { name: "Numerology", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: Hash },
-    { name: "What's My Vibe", href: "/vibe-check", icon: Sparkles },
+    { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Meditation", href: "/meditations", icon: Flower2 },
     { name: "Healers", href: "/healers", icon: Heart },
