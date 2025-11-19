@@ -115,8 +115,8 @@ export default function HealersPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {healers.map((healer) => (
-              <Card key={healer.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-orange-200 to-pink-200 relative">
+              <Card key={healer.id} className="overflow-hidden hover:shadow-lg transition-shadow py-10">
+                <div className="h-25 bg-gradient-to-br from-orange-200 to-pink-200 relative">
                   <img 
                     src={healer.imageUrl} 
                     alt={healer.name}
@@ -164,7 +164,7 @@ export default function HealersPage() {
                     }}>
                       <DialogTrigger asChild>
                         <Button className="flex-1">
-                          <Calendar className="h-4 w-4 mr-2" />
+                          <Calendar className="h-4 w-4 mr-2 py-10" />
                           Book Session
                         </Button>
                       </DialogTrigger>

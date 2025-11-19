@@ -246,7 +246,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                 <Button
                   onClick={() => setStep(2)}
                   disabled={!selectedEmotion}
-                  className="w-full bg-gradient-to-r from-purple-500 to-cyan-500"
+                  className="w-full bg-gradient-to-r from-purple-500 to-cyan-400"
                   data-testid="button-next-step"
                 >
                   Next
@@ -375,7 +375,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                   <Button
                     onClick={() => setStep(1)}
                     variant="outline"
-                    className="flex-1 border-slate-600 text-white hover:bg-slate-700"
+                    className="flex-1 border-slate-600 text-black hover:bg-slate-700"
                     data-testid="button-back"
                   >
                     Back

@@ -430,7 +430,7 @@ export default function VibePage() {
         </div>
       </div>
       
-      <Footer />
+      
       <MobileNavigation />
       
       {/* Premium Video Modal */}
