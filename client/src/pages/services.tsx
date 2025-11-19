@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useMascot } from "@/hooks/use-mascot";
 
@@ -172,7 +172,7 @@ export default function Services() {
         </section>
       </main>
       
-      <Footer />
+      {user && <MobileNavigation />}
     </div>
   );
 }

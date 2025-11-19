@@ -1,12 +1,14 @@
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useAuth } from "@/hooks/use-auth";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ContactForm from "@/components/forms/contact-form";
 import { Card } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube } from "lucide-react";
 
 export default function Contact() {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -131,8 +133,7 @@ export default function Contact() {
         </section>
       </main>
       
-      <Footer />
-      <MobileNavigation />
+      {user && <MobileNavigation />}
     </div>
   );
 }

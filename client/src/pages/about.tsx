@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuraGlow } from "@/components/ui/aura-glow";
@@ -12,6 +12,8 @@ import aboutHeroImage from "@assets/WhatsApp Image 2025-08-18 at 3.35.45 AM_1755
 import auraAnalysisImage from "@assets/WhatsApp Image 2025-08-18 at 3.40.10 AM_1755540718923.jpeg";
 
 export default function About() {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -336,8 +338,7 @@ export default function About() {
         </section>
       </main>
       
-      <Footer />
-      <MobileNavigation />
+      {user && <MobileNavigation />}
     </div>
   );
 }

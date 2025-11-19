@@ -4,13 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Crown, Users, Zap, Check, Sparkles, Award, Globe, Coins } from "lucide-react";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 type BillingCycle = "monthly" | "quarterly" | "annually";
 
 export default function PricingPage() {
+  const { user } = useAuth();
   const [starterBilling, setStarterBilling] = useState<BillingCycle>("monthly");
 
   const pricingPlans = [
@@ -465,8 +466,7 @@ export default function PricingPage() {
           </div>
         </div>
       </main>
-      <Footer />
-      <MobileNavigation />
+      {user && <MobileNavigation />}
     </div>
   );
 }

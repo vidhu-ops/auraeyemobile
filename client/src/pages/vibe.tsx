@@ -224,7 +224,7 @@ export default function VibePage() {
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-black">
               Your Vibe: <span style={{ color: vibeResult.dominantColor.toLowerCase() }}>{vibeResult.dominantColor}</span>
             </h1>
             <p className="text-lg text-purple-600 font-medium">{vibeResult.message}</p>
@@ -342,7 +342,7 @@ export default function VibePage() {
               </Button>
             </Link>
             
-            <Button onClick={resetAnalysis} variant="outline" className="w-full py-6">
+            <Button onClick={resetAnalysis} variant="outline" className="w-full py-6 bg-green-700">
               <RotateCcw className="mr-2 h-4 w-4" />
               Try Another Photo
             </Button>
