@@ -12,7 +12,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface Healer {
@@ -79,8 +78,7 @@ export default function HealersPage() {
             <p className="text-gray-600">Loading healers...</p>
           </div>
         </main>
-        <Footer />
-        <MobileNavigation />
+        {user && <MobileNavigation />}
       </div>
     );
   }
@@ -95,8 +93,7 @@ export default function HealersPage() {
             <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         </main>
-        <Footer />
-        <MobileNavigation />
+        {user && <MobileNavigation />}
       </div>
     );
   }
@@ -108,7 +105,7 @@ export default function HealersPage() {
       <main className="flex-grow">
         <div className="bg-gradient-to-r from-orange-100 to-pink-100 py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-heading font-bold mb-4">Our Healing Practitioners</h1>
+            <h1 className="text-4xl font-heading font-bold mb-4 text-orange-600">Our Healing Practitioners</h1>
             <p className="text-lg text-gray-600 max-w-2xl">
               Connect with our certified healers for personalized spiritual guidance and energy healing sessions.
             </p>
@@ -138,7 +135,7 @@ export default function HealersPage() {
                       <div className="flex items-center">
                         <Star className="h-5 w-5 text-yellow-400 fill-current" />
                         <span className="ml-2 font-medium">{healer.rating || 5}</span>
-                        <span className="ml-1 text-gray-500">rating</span>
+                        <span className="ml-1 text-black-500">rating</span>
                       </div>
                       {healer.experience && (
                         <span className="text-sm text-gray-500">{healer.experience}</span>
@@ -146,7 +143,7 @@ export default function HealersPage() {
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-600">{healer.description}</p>
+                      <p className="text-sm text-white">{healer.description}</p>
                     </div>
                     
                     {healer.location && (
@@ -245,8 +242,7 @@ export default function HealersPage() {
         </div>
       </main>
       
-      <Footer />
-      <MobileNavigation />
+      {user && <MobileNavigation />}
     </div>
   );
 }

@@ -2139,7 +2139,7 @@ export default function HealerDashboard() {
                   </div>
                   <div className="text-center md:text-left">
                     <h2 className="text-2xl font-bold text-white-900">{user?.username}</h2>
-                    <p className="text-purple-600 font-medium">Professional Healer</p>
+                    <p className="text-purple-200 font-medium">Professional Healer</p>
                     <Badge className="mt-2 bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                 </div>
@@ -2623,8 +2623,8 @@ export default function HealerDashboard() {
             </CardHeader>
             <CardContent>
               {pendingBookings.length === 0 ? (
-                <div className="text-center py-8">
-                  <AlertCircle className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <div className="text-center py-10">
+                  <AlertCircle className="h-12 w-12 mx-14 mb-8 text-gray-400" />
                   <p className="text-gray-500">No pending booking requests</p>
                 </div>
               ) : (
@@ -2633,7 +2633,7 @@ export default function HealerDashboard() {
                   {pendingBookings.length > 3 && (
                     <Button 
                       variant="outline" 
-                      className="w-full"
+                      className="w-18"
                       onClick={() => setActiveTab("bookings")}
                     >
                       View All {pendingBookings.length} Pending Requests
@@ -2783,12 +2783,12 @@ export default function HealerDashboard() {
             </CardHeader>
             <CardContent>
               {isLoadingBookings ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex items-center justify-center py-6">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               ) : (
                 <Tabs value={bookingTab} onValueChange={setBookingTab}>
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                  <TabsList className="grid w-full h-15 grid-rows-2 grid-cols-2 gap-3 mb-6">
                     <TabsTrigger value="pending" className="relative">
                       Pending Requests
                       {pendingBookings.length > 0 && (
@@ -2856,19 +2856,19 @@ export default function HealerDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Bookings</span>
+                    <span className="text-sm text-white">Total Bookings</span>
                     <span className="font-semibold">{analytics?.totalBookings || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Recent Bookings (30 days)</span>
+                    <span className="text-sm text-white">Recent Bookings (30 days)</span>
                     <span className="font-semibold">{analytics?.recentBookings || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Acceptance Rate</span>
+                    <span className="text-sm text-white">Acceptance Rate</span>
                     <span className="font-semibold text-green-600">{analytics?.acceptanceRate?.toFixed(1) || 0}%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Unique Clients</span>
+                    <span className="text-sm text-white">Unique Clients</span>
                     <span className="font-semibold">{analytics?.totalClients || 0}</span>
                   </div>
 
@@ -2885,7 +2885,7 @@ export default function HealerDashboard() {
                 <div className="space-y-3">
                   {trends.map((trend, index) => (
                     <div key={index} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-white">
                         {format(new Date(trend.date), "MMM d")}
                       </span>
                       <div className="flex items-center gap-2">
@@ -3216,8 +3216,8 @@ export default function HealerDashboard() {
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Palette className="h-6 w-6 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Aura Analysis</h3>
-                <p className="text-sm text-gray-600 mb-4">Analyze your own spiritual energy and aura colors(</p>
+                <h3 className="font-semibold mb-2 text-white">Aura Analysis</h3>
+                <p className="text-sm text-black-600 mb-4">Analyze your own spiritual energy and aura colors(</p>
                 <p className="text-sm text-red-600 mb-4">5 credits</p>
                 <Link to="/aura-analysis">
                   <Button className="w-full">Start Analysis</Button>
@@ -3230,8 +3230,8 @@ export default function HealerDashboard() {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Object Analysis</h3>
-                <p className="text-sm text-gray-600 mb-4">Analyze the spiritual energy of objects</p>
+                <h3 className="font-semibold mb-2 text-white">Object Analysis</h3>
+                <p className="text-sm text-black-600 mb-4">Analyze the spiritual energy of objects</p>
                 <p className="text-sm text-red-600 mb-4">1 credit</p>
                 <Link to="/object-analysis">
                   <Button className="w-full">Analyze Object</Button>
@@ -3243,8 +3243,8 @@ export default function HealerDashboard() {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold mb-2">What's My vibe</h3>
-                <p className="text-sm text-gray-600 mb-4">Analyze the spiritual energy of a person in short</p>
+                <h3 className="font-semibold mb-2 text-white">What's My vibe</h3>
+                <p className="text-sm text-black-600 mb-4">Analyze the spiritual energy of a person in short</p>
                 <p className="text-sm text-red-600 mb-4">1 credit</p>
                 <Link to="/#vibe-check-section">
                   <Button className="w-full">Analyze</Button>
@@ -3256,8 +3256,8 @@ export default function HealerDashboard() {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Journal</h3>
-                <p className="text-sm text-gray-600 mb-4">Journal and write your thoughts</p>
+                <h3 className="font-semibold mb-2 text-white">Journal</h3>
+                <p className="text-sm text-black-600 mb-4">Journal and write your thoughts</p>
                 <p className="text-sm text-green-600 mb-4">0 credit</p>
                 <Link to="/journal">
                   <Button className="w-full">Journal</Button>
@@ -3269,8 +3269,8 @@ export default function HealerDashboard() {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Horoscope</h3>
-                <p className="text-sm text-gray-600 mb-4">find horoscope</p>
+                <h3 className="font-semibold mb-2 text-white">Horoscope</h3>
+                <p className="text-sm text-black-600 mb-4">Find horoscope</p>
                 <p className="text-sm text-green-600 mb-4">0 credit</p>
                 <Link to="/daily-horoscope">
                   <Button className="w-full">Find</Button>
