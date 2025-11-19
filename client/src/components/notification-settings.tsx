@@ -201,16 +201,16 @@ export default function NotificationSettings() {
             
             {/* Test Notification Button */}
             {preferences?.browserEnabled && (
-              <div className="ml-13">
+              <div className="ml-18 py-10">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => testNotificationMutation.mutate()}
                   disabled={testNotificationMutation.isPending}
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto py-10"
                   data-testid="button-test-notification"
                 >
-                  <Send className="h-4 w-4 mr-2" />
+                  <Send className="h-4 w-4 mr-2 py-10" />
                   {testNotificationMutation.isPending ? "Sending..." : "Send Test Notification"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-1">

@@ -10932,7 +10932,7 @@ export default function AuraAnalysis() {
         
         {/* Advanced Features Section */}
         <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-15 py-10">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Complete Aura Analysis Features</h2>
@@ -11004,7 +11004,7 @@ export default function AuraAnalysis() {
         {/* Healers Connection Section */}
         {result && (
           <section className="py-16 bg-white">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-20">
               <div className="max-w-5xl mx-auto">
                 <div className="relative mb-10">
                   <div className="absolute inset-0 flex items-center">
@@ -11147,7 +11147,7 @@ export default function AuraAnalysis() {
               <Button 
                 variant="outline" 
                 onClick={handleCancelConfirmation}
-                className="px-6"
+                className="px-6 bg-black text-white"
               >
                 Cancel
               </Button>

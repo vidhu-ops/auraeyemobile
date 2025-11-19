@@ -254,7 +254,7 @@ export default function DailyHoroscope() {
             </div>
 
             {/* Newsletter subscription */}
-            <div className="mt-12 max-w-xl mx-auto bg-primary/5 rounded-xl p-6">
+            <div className="mt-12 max-w-xl mx-auto bg-primary/5 rounded-xl p-6 py-20">
               <h3 className="font-heading font-semibold text-lg mb-3">Get Daily Horoscope Updates</h3>
               <p className="text-gray-600 text-sm mb-4">Subscribe to receive your personalized horoscope in your inbox every morning.</p>
               <form className="flex flex-col sm:flex-row gap-3" onSubmit={handleSubscribe}>
@@ -289,7 +289,7 @@ export default function DailyHoroscope() {
         
       </main>
       
-      <Footer />
+      
       <MobileNavigation />
     </div>
   );

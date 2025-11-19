@@ -1022,13 +1022,13 @@ export default function ObjectAnalysis() {
       <Navbar />
       <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-heading font-bold">Object Analysis</h1>
+          <h1 className="text-3xl font-heading font-bold"></h1>
           <p className="opacity-80">Discover the energy and spiritual significance of objects</p>
         </div>
       </div>
       <main className="flex-grow">
         <section className="py-10 md:py-16">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 py-10">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4">Object Energy Analysis</h1>
@@ -1037,7 +1037,7 @@ export default function ObjectAnalysis() {
                 </p>
               </div>
               
-              <div className="mb-12">
+              <div className="mb-12 py-10">
                 <Card className="overflow-hidden border-none shadow-md">
                   <div className="h-2 bg-gradient-to-r from-primary to-primary-dark"></div>
                   <CardContent className="p-6">
@@ -1395,7 +1395,7 @@ export default function ObjectAnalysis() {
         </section>
       </main>
       
-      <Footer />
+      
       <MobileNavigation />
     </div>
   );
