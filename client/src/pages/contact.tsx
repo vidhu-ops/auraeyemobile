@@ -95,35 +95,35 @@ export default function Contact() {
             
             <div className="max-w-3xl mx-auto space-y-6">
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">How accurate is the aura reading?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How accurate is the aura reading?</h3>
                 <p className="text-gray-600">
                   Our aura analysis has been trained on thousands of readings from expert healers and has shown a high level of accuracy in detecting energy patterns. While technology continues to improve, we believe our system provides valuable insights into your energetic state.
                 </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">Is my data secure when I upload photos?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">Is my data secure when I upload photos?</h3>
                 <p className="text-gray-600">
                   Yes, we take data privacy very seriously. Your uploaded photos are processed securely and are not stored permanently unless you explicitly opt to save them in your profile. All analysis is done in a secure environment with strict access controls.
                 </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">How do I become a certified healer on the platform?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How do I become a certified healer on the platform?</h3>
                 <p className="text-gray-600">
                   We welcome experienced energy healers to join our platform. You'll need to provide proof of certification in your healing modality, references, and complete our onboarding process which includes a demonstration session. Please contact us for more information.
                 </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">Are the horoscopes personalized?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">Are the horoscopes personalized?</h3>
                 <p className="text-gray-600">
                   Yes, our daily horoscopes take into account not just your sun sign, but also current planetary positions and their specific impact. For even more personalized readings, we offer birth chart analysis that factors in your exact birth time and location.
                 </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-heading font-semibold text-lg mb-2">Can I use AuraEye for professional spiritual guidance?</h3>
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">Can I use AuraEye for professional spiritual guidance?</h3>
                 <p className="text-gray-600">
                   While AuraEye provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
                 </p>
