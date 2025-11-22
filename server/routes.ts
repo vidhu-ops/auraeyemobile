@@ -4633,6 +4633,145 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // ==================== GAMIFICATION ENDPOINTS ====================
+
+  // Get user's achievements
+  app.get("/api/achievements", isAuthenticated, async (req, res) => {
+    try {
+      const achievementsList = await db.query.achievements.findMany({
+        where: (achievements, { eq }) => eq(achievements.userId, req.user.id),
+        orderBy: (achievements, { desc }) => desc(achievements.unlockedAt),
+      });
+      res.json(achievementsList);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
+  // Check and award achievement
+  app.post("/api/check-achievement", isAuthenticated, async (req, res) => {
+    try {
+      const { achievementType } = req.body;
+      if (!achievementType) return res.status(400).json({ message: "Achievement type required" });
+
+      const existingAchievement = await db.query.achievements.findFirst({
+        where: (achievements, { and, eq }) => and(
+          eq(achievements.userId, req.user.id),
+          eq(achievements.achievementType, achievementType)
+        ),
+      });
+
+      if (existingAchievement) {
+        return res.json({ alreadyUnlocked: true });
+      }
+
+      const achievementMap: Record<string, { title: string; description: string; icon: string }> = {
+        "first_aura": { title: "First Glimpse 👀", description: "Completed your first aura analysis", icon: "🎨" },
+        "first_journal": { title: "Thoughts Flow 📖", description: "Wrote your first journal entry", icon: "📝" },
+        "7_day_streak": { title: "Weekly Warrior 🔥", description: "Logged in 7 days in a row", icon: "🔥" },
+        "50_soul_energy": { title: "Soul Ascension ⭐", description: "Reached 50 soul energy", icon: "⭐" },
+        "100_soul_energy": { title: "Spiritual Master 👑", description: "Reached 100 soul energy", icon: "👑" },
+        "500_soul_energy": { title: "Divine Essence 🔮", description: "Reached 500 soul energy", icon: "🔮" },
+        "colors_collected": { title: "Rainbow Collector 🌈", description: "Collected all 7+ aura colors", icon: "🌈" },
+        "chakra_master": { title: "Chakra Master 🧘", description: "Unlocked all 9 chakras", icon: "🧘" },
+      };
+
+      const ach = achievementMap[achievementType];
+      if (ach) {
+        const newAchievement = await db.insert(achievements).values({
+          userId: req.user.id,
+          achievementType,
+          title: ach.title,
+          description: ach.description,
+          icon: ach.icon,
+        }).returning();
+
+        res.json({ success: true, achievement: newAchievement[0] });
+      } else {
+        res.status(400).json({ message: "Invalid achievement type" });
+      }
+    } catch (error) {
+      console.error("Error checking achievement:", error);
+      res.status(500).json({ message: "Failed to check achievement" });
+    }
+  });
+
+  // Get color collector data
+  app.get("/api/color-collector", isAuthenticated, async (req, res) => {
+    try {
+      let collector = await db.query.colorCollectors.findFirst({
+        where: (cc, { eq }) => eq(cc.userId, req.user.id),
+      });
+
+      if (!collector) {
+        collector = await db.insert(colorCollectors).values({
+          userId: req.user.id,
+          collectedColors: JSON.stringify([]),
+          totalCollected: 0,
+          completionPercentage: 0,
+          masteryProgress: JSON.stringify({}),
+        }).returning();
+      }
+
+      res.json({
+        ...collector,
+        collectedColors: JSON.parse(collector[0]?.collectedColors || "[]"),
+      });
+    } catch (error) {
+      console.error("Error fetching color collector:", error);
+      res.status(500).json({ message: "Failed to fetch color collector" });
+    }
+  });
+
+  // Get chakra unlocks
+  app.get("/api/chakra-unlocks", isAuthenticated, async (req, res) => {
+    try {
+      let chakras = await db.query.chakraUnlocks.findFirst({
+        where: (cu, { eq }) => eq(cu.userId, req.user.id),
+      });
+
+      if (!chakras) {
+        chakras = await db.insert(chakraUnlocks).values({
+          userId: req.user.id,
+          unlockedChakras: JSON.stringify([1]),
+          totalUnlocked: 1,
+          masteryProgress: JSON.stringify({ 1: 0.1 }),
+        }).returning();
+      }
+
+      res.json({
+        ...(Array.isArray(chakras) ? chakras[0] : chakras),
+        unlockedChakras: JSON.parse((Array.isArray(chakras) ? chakras[0] : chakras).unlockedChakras || "[]"),
+        masteryProgress: JSON.parse((Array.isArray(chakras) ? chakras[0] : chakras).masteryProgress || "{}"),
+      });
+    } catch (error) {
+      console.error("Error fetching chakra unlocks:", error);
+      res.status(500).json({ message: "Failed to fetch chakra unlocks" });
+    }
+  });
+
+  // Healer leaderboard
+  app.get("/api/leaderboard/healers", async (req, res) => {
+    try {
+      const healers = await db.query.users.findMany({
+        where: (users, { eq }) => eq(users.userType, 'healer'),
+        orderBy: (users, { desc }) => desc(users.healerSessionCount),
+        limit: 20,
+      });
+
+      res.json(healers.map((h, idx) => ({
+        rank: idx + 1,
+        username: h.username,
+        sessionCount: h.healerSessionCount || 0,
+        badge: h.healerSessionCount >= 50 ? '👑 Master Healer' : h.healerSessionCount >= 20 ? '⭐ Senior Healer' : '✨ Healer',
+      })));
+    } catch (error) {
+      console.error("Error fetching healer leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch leaderboard" });
+    }
+  });
+
   // Create HTTP server with optimized settings for fast startup
   const httpServer = createServer(app);
   

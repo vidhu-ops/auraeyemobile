@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   smsNotificationsEnabled: boolean("sms_notifications_enabled").default(false),
   browserNotificationsEnabled: boolean("browser_notifications_enabled").default(false),
   emailNotificationsEnabled: boolean("email_notifications_enabled").default(true),
+  healerSessionCount: integer("healer_session_count").default(0), // Total sessions healed (for healers)
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -428,3 +429,68 @@ export const userStatsSchema = z.object({
 });
 
 export type UserStats = z.infer<typeof userStatsSchema>;
+
+// Achievements and Gamification Tables
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  achievementType: text("achievement_type").notNull(), // "first_aura", "first_journal", "7_day_streak", "50_soul_energy", "level_up", etc.
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon"), // Emoji or icon identifier
+  unlockedAt: timestamp("unlocked_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("achievements_user_id_idx").on(table.userId),
+  userIdAchievementIdx: index("achievements_user_id_type_idx").on(table.userId, table.achievementType),
+}));
+
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  createdAt: true,
+  unlockedAt: true,
+});
+
+// Color Collector - tracks which aura colors user has collected
+export const colorCollectors = pgTable("color_collectors", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  collectedColors: text("collected_colors").notNull(), // JSON array of color strings
+  totalCollected: integer("total_collected").default(0),
+  completionPercentage: integer("completion_percentage").default(0),
+  badgeUnlocked: boolean("badge_unlocked").default(false),
+  bonusCreditsAwarded: boolean("bonus_credits_awarded").default(false),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertColorCollectorSchema = createInsertSchema(colorCollectors).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Chakra Unlocks - tracks which chakras user has unlocked
+export const chakraUnlocks = pgTable("chakra_unlocks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  unlockedChakras: text("unlocked_chakras").notNull(), // JSON array of chakra numbers (1-9)
+  totalUnlocked: integer("total_unlocked").default(0),
+  currentFocusChakra: integer("current_focus_chakra"), // Which chakra they're working on
+  masteryProgress: text("mastery_progress").notNull(), // JSON object {1: 0.5, 2: 0.8, ...} for each chakra
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertChakraUnlockSchema = createInsertSchema(chakraUnlocks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type ColorCollector = typeof colorCollectors.$inferSelect;
+export type InsertColorCollector = z.infer<typeof insertColorCollectorSchema>;
+export type ChakraUnlock = typeof chakraUnlocks.$inferSelect;
+export type InsertChakraUnlock = z.infer<typeof insertChakraUnlockSchema>;
