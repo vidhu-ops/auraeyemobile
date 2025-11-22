@@ -4878,6 +4878,117 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get badge progress targets
+  app.get("/api/badge-progress", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Get all user data needed for badge progress
+      const auraReadings = await db.query.auraReadings.findMany({
+        where: (ar, { eq }) => eq(ar.userId, userId),
+      });
+      
+      const journals = await db.query.journals.findMany({
+        where: (j, { eq }) => eq(j.userId, userId),
+      });
+      
+      const healerBookings = await db.query.healerBookings.findMany({
+        where: (hb, { eq }) => eq(hb.userId, userId),
+      });
+      
+      // Get earned achievements
+      const earnedAchievements = await db.query.achievements.findMany({
+        where: (a, { eq }) => eq(a.userId, userId),
+      });
+      
+      const earnedTypes = new Set(earnedAchievements.map(a => a.achievementType));
+      
+      // Get login streak
+      const streakData = await storage.getLoginStreak(userId);
+      
+      // Calculate badge progress
+      const badgeProgress = {
+        // First reading badge
+        firstReading: {
+          type: 'first_aura',
+          title: 'First Glimpse 👀',
+          current: Math.min(auraReadings.length, 1),
+          target: 1,
+          earned: earnedTypes.has('first_aura'),
+          icon: '👀'
+        },
+        // 5 readings badge
+        fiveReadings: {
+          type: 'third_aura',
+          title: 'Aura Explorer 🔍',
+          current: Math.min(auraReadings.length, 5),
+          target: 5,
+          earned: earnedTypes.has('third_aura'),
+          icon: '🔍'
+        },
+        // Most replies as healer (accepted bookings)
+        mostRepliesHealer: {
+          type: 'healer_five_replies',
+          title: 'Healing Heart 💚',
+          current: healerBookings.filter(b => b.status === 'accepted').length,
+          target: 5,
+          earned: earnedTypes.has('healer_five_replies'),
+          icon: '💚'
+        },
+        // Best healer (highest rated healer)
+        bestHealer: {
+          type: 'best_healer_rating',
+          title: 'Best Healer ⭐',
+          current: 0, // Will be calculated if user is healer
+          target: 1,
+          earned: earnedTypes.has('best_healer_rating'),
+          icon: '⭐'
+        },
+        // Streak badge
+        streakBadge: {
+          type: 'seven_day_streak',
+          title: 'Week Warrior 🔥',
+          current: streakData.currentStreak,
+          target: 7,
+          earned: earnedTypes.has('seven_day_streak'),
+          icon: '🔥'
+        },
+        // Journaling time (estimate 5 minutes per entry as baseline)
+        journalingTime: {
+          type: 'journaling_one_hour',
+          title: 'Reflection Hour 📝',
+          current: Math.floor(journals.length * 5 / 60), // Estimate 5 min per entry
+          target: 1,
+          earned: earnedTypes.has('journaling_one_hour'),
+          icon: '📝'
+        },
+        // 10 hours journaling
+        journalingTenHours: {
+          type: 'journaling_ten_hours',
+          title: 'Inner Voice 🎧',
+          current: Math.floor(journals.length * 5 / 60),
+          target: 10,
+          earned: earnedTypes.has('journaling_ten_hours'),
+          icon: '🎧'
+        },
+        // Most trusted healer (most replies)
+        mostTrustedHealer: {
+          type: 'healer_most_replies',
+          title: 'Most Trusted Healer 👑',
+          current: healerBookings.filter(b => b.status === 'accepted').length,
+          target: 20,
+          earned: earnedTypes.has('healer_most_replies'),
+          icon: '👑'
+        }
+      };
+      
+      res.json(badgeProgress);
+    } catch (error) {
+      console.error("Error fetching badge progress:", error);
+      res.status(500).json({ message: "Failed to fetch badge progress" });
+    }
+  });
+
   // Healer leaderboard
   app.get("/api/leaderboard/healers", async (req, res) => {
     try {

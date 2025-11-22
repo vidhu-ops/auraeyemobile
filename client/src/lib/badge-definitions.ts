@@ -199,6 +199,70 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     level: 'platinum',
     color: 'from-cyan-300 to-blue-600'
   },
+
+  // HEALER BADGES
+  {
+    type: 'healer_five_replies',
+    title: 'Healing Heart 💚',
+    description: 'Provided 5 healing replies as a healer',
+    icon: '💚',
+    activity: 'general',
+    requirement: '5 healer replies',
+    level: 'silver',
+    color: 'from-green-500 to-emerald-600'
+  },
+  {
+    type: 'healer_most_replies',
+    title: 'Most Trusted Healer 👑',
+    description: 'Became the top healer with most replies',
+    icon: '👑',
+    activity: 'general',
+    requirement: 'Most healer replies',
+    level: 'platinum',
+    color: 'from-yellow-400 to-orange-600'
+  },
+  {
+    type: 'best_healer_rating',
+    title: 'Best Healer ⭐',
+    description: 'Achieved the highest healer rating',
+    icon: '⭐',
+    activity: 'general',
+    requirement: 'Highest rating',
+    level: 'platinum',
+    color: 'from-purple-400 to-pink-600'
+  },
+
+  // JOURNALING TIME BADGES
+  {
+    type: 'journaling_one_hour',
+    title: 'Reflection Hour 📝',
+    description: 'Spent 1 hour total journaling',
+    icon: '📝',
+    activity: 'journal',
+    requirement: '1 hour journaling',
+    level: 'bronze',
+    color: 'from-amber-500 to-orange-600'
+  },
+  {
+    type: 'journaling_ten_hours',
+    title: 'Inner Voice 🎧',
+    description: 'Spent 10 hours journaling',
+    icon: '🎧',
+    activity: 'journal',
+    requirement: '10 hours journaling',
+    level: 'gold',
+    color: 'from-yellow-400 to-yellow-600'
+  },
+  {
+    type: 'journaling_master',
+    title: 'Stream of Consciousness 🌊',
+    description: 'Spent 50+ hours journaling',
+    icon: '🌊',
+    activity: 'journal',
+    requirement: '50+ hours journaling',
+    level: 'platinum',
+    color: 'from-blue-400 to-cyan-600'
+  },
 ];
 
 export const getActivityBadges = (activity: 'aura' | 'vibe' | 'journal' | 'numerology' | 'general') => {
