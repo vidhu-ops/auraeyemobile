@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
 import { useCredits } from "@/hooks/use-credits";
 import { useUserStats } from "@/hooks/use-user-stats";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -39,13 +40,30 @@ export default function ClientDashboard() {
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [previousAchievementCount, setPreviousAchievementCount] = useState(0);
   const { data: streakData } = useQuery({ queryKey: ["/api/streaks"] });
-  const { data: achievements = [] } = useQuery({
+  const { data: achievements = [], refetch: refetchAchievements } = useQuery({
     queryKey: ["/api/achievements"],
     enabled: !!user,
+    refetchInterval: 3000, // Auto-refetch every 3 seconds
   });
   
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Notify user when new achievement is earned
+  useEffect(() => {
+    if (achievements.length > previousAchievementCount) {
+      const newAchievement = achievements[achievements.length - 1];
+      toast({
+        title: `🎉 Achievement Unlocked!`,
+        description: `${newAchievement.title}: ${newAchievement.description}`,
+        duration: 5000,
+      });
+      setPreviousAchievementCount(achievements.length);
+    }
+  }, [achievements.length, achievements, toast]);
 
   const tabs = ["Overview", "Soul Energy", "Achievements", "Bookings", "Activity", "Settings"];
   
@@ -114,9 +132,9 @@ export default function ClientDashboard() {
                 </Badge>
               </div>
               {achievements.length > 0 && (
-                <div className="flex justify-center items-center gap-2 bg-yellow-900/40 rounded-lg px-3 py-2 border border-yellow-600" data-testid="profile-badge-display">
-                  <Trophy className="h-5 w-5 text-yellow-400" />
-                  <span className="text-yellow-200 font-semibold">{achievements.length} Badges Earned</span>
+                <div className="flex justify-center items-center gap-2 bg-yellow-900/60 rounded-lg px-3 py-2 border-2 border-yellow-400 animate-pulse" data-testid="profile-badge-display">
+                  <Trophy className="h-5 w-5 text-yellow-300 animate-bounce" />
+                  <span className="text-yellow-100 font-bold text-sm">{achievements.length} Badges Earned 🏆</span>
                 </div>
               )}
             </div>
@@ -418,41 +436,41 @@ export default function ClientDashboard() {
         {activeTab === "achievements" && (
           <div className="space-y-4" data-testid="achievements-section">
             {/* Achievements Header */}
-            <Card className="bg-gradient-to-br from-yellow-500 to-orange-600 border-0 shadow-lg">
+            <Card className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 border-0 shadow-2xl animate-pulse">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
-                  <div className="text-4xl">🏆</div>
+                  <div className="text-5xl animate-bounce">🏆</div>
                   <div>
-                    <h2 className="text-white text-2xl font-bold">Achievements</h2>
-                    <p className="text-yellow-100 text-sm">Unlock badges and rewards as you progress</p>
+                    <h2 className="text-white text-3xl font-bold">Achievements</h2>
+                    <p className="text-yellow-50 text-sm font-semibold">{achievements.length} badges earned! Unlock more as you progress</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Test: Achievements Badges */}
-            <Card className="bg-gradient-to-br from-purple-900 to-indigo-900 border-purple-600 shadow-lg">
+            {/* Your Earned Badges */}
+            <Card className="bg-gradient-to-br from-purple-900 to-indigo-900 border-2 border-purple-500 shadow-lg">
               <CardContent className="p-6">
                 <h3 className="text-purple-200 text-lg font-bold mb-4 flex items-center gap-2">
-                  <span className="text-2xl">🎖️</span> Your Badges
+                  <span className="text-2xl">🎖️</span> Your Badges ({achievements.length} earned)
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="bg-indigo-800 rounded-lg p-3 text-center border border-purple-500" data-testid="badge-first-aura">
-                    <div className="text-2xl mb-1">🎨</div>
-                    <p className="text-purple-200 text-xs font-semibold">First Glimpse</p>
-                    <p className="text-purple-400 text-xs">Scan your first aura</p>
+                {achievements.length === 0 ? (
+                  <div className="text-center py-6">
+                    <p className="text-purple-300 text-sm">Complete services to earn badges!</p>
+                    <p className="text-purple-400 text-xs mt-2">Scan aura • Write journal • Check vibe • Read numerology</p>
                   </div>
-                  <div className="bg-indigo-800 rounded-lg p-3 text-center border border-purple-500 opacity-50">
-                    <div className="text-2xl mb-1">📖</div>
-                    <p className="text-purple-200 text-xs font-semibold">Thoughts Flow</p>
-                    <p className="text-purple-400 text-xs">Write first journal</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {achievements.map((ach) => (
+                      <div key={ach.id} className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg p-3 text-center border-2 border-yellow-300 shadow-lg animate-bounce" data-testid={`badge-${ach.achievementType}`}>
+                        <div className="text-3xl mb-1">{ach.icon}</div>
+                        <p className="text-white text-xs font-bold">{ach.title}</p>
+                        <p className="text-yellow-100 text-xs">{ach.description}</p>
+                        <p className="text-yellow-200 text-xs mt-1">✓ Earned</p>
+                      </div>
+                    ))}
                   </div>
-                  <div className="bg-indigo-800 rounded-lg p-3 text-center border border-purple-500 opacity-50">
-                    <div className="text-2xl mb-1">🔥</div>
-                    <p className="text-purple-200 text-xs font-semibold">Weekly Warrior</p>
-                    <p className="text-purple-400 text-xs">7-day streak</p>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
