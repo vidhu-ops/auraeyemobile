@@ -70,16 +70,24 @@ export default function ClientDashboard() {
               <div className="flex-1 pb-2">
                 <div className="flex items-center gap-2 mb-1">
                   <h2 className="text-white text-xl font-bold">{user?.username || 'vidhu.gupta'}</h2>
-                  
+                  <Badge className="bg-gradient-to-r from-green-500 to-cyan-500 text-white text-xs">
+                    {user?.userType === 'healer' ? '✨ Healer' : '🌟 Client'}
+                  </Badge>
                 </div>
-                <p className="text-black-600 text-sm">{user?.email || 'vidhu.gupta@gmail.com'}</p>
+                <p className="text-purple-100 text-xs">{user?.userType === 'healer' ? 'Spiritual Guide & Energy Reader' : 'Spiritual Seeker'}</p>
               </div>
             </div>
 
-           
+            {user?.userType === 'healer' && (
+              <p className="text-amber-300 text-xs font-semibold mb-4 bg-amber-950/30 px-3 py-2 rounded-lg border border-amber-600/50">
+                💡 {credits > 100 ? `You have plenty of credits! Consider promoting your services.` : credits > 50 ? `Keep building your client base!` : `Time to recharge your credits!`}
+              </p>
+            )}
 
-            <p className="text-purple-600 text-sm italic mb-4">
-              "On a journey of spiritual awakening and inner healing. Passionate about meditation, energy work, and connecting with like-minded souls."
+            <p className="text-purple-200 text-xs italic mb-4">
+              {user?.userType === 'healer' 
+                ? "Empowering souls through energy readings and spiritual guidance. Your clients are waiting for your wisdom."
+                : "On a journey of spiritual awakening and inner healing. Discover your true self through our services."}
             </p>
 
             <div className="grid grid-cols-3 gap-4">
@@ -105,6 +113,24 @@ export default function ClientDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Personalized Quick Actions */}
+        {user?.userType === 'healer' && (
+          <Card className="bg-gradient-to-r from-amber-900/50 to-orange-900/50 border-amber-600/50 mb-4 p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📢</span>
+                <div>
+                  <p className="text-amber-100 text-sm font-semibold">Ready to serve clients?</p>
+                  <p className="text-amber-200 text-xs">Check your bookings and respond to new inquiries</p>
+                </div>
+              </div>
+              <Link href="/healer-dashboard">
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white">Go to Practice →</Button>
+              </Link>
+            </div>
+          </Card>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">

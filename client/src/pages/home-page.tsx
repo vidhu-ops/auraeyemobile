@@ -95,15 +95,24 @@ export default function HomePage() {
 
       {/* Main content */}
       <div className="relative z-10 pb-32 px-4 pt-12">
-        {/* Welcome Section */}
+        {/* Welcome Section - Personalized */}
         <div className="mb-10 text-center space-y-4">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-            Welcome to Your
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+            Welcome back, {user?.username}! ✨
           </h1>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-            Personal Wellbeing Space
+          <h2 className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            {user?.userType === 'healer' 
+              ? `You have ${credits} credits ready to perform readings and connect with clients`
+              : `You have ${credits} credits to explore your spiritual journey`}
           </h2>
-          <p className="text-gray-300 text-sm pt-2">Your journey to inner peace and enlightenment begins here</p>
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <div className="text-sm text-cyan-300">
+              📊 Soul Energy: <span className="font-bold text-cyan-200">{soulEnergyLoading ? '...' : soulEnergy}</span>
+            </div>
+            <div className="text-sm text-purple-300">
+              🌳 Tree Growth: <span className="font-bold text-purple-200">{Math.floor(treeGrowth)}%</span>
+            </div>
+          </div>
         </div>
 
         {/* Spiritual Illustration */}
@@ -136,9 +145,13 @@ export default function HomePage() {
           </Button>
         </div>
 
-        {/* Service Category Buttons */}
+        {/* Service Category Buttons - Personalized */}
         <div className="mb-10">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Explore Our Services</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            {user?.userType === 'healer' 
+              ? `Ready to Help Others, ${user?.username?.split('.')[0]}? 🔮`
+              : `What Would You Like to Explore Today? 🌟`}
+          </h2>
           
           {/* Three main category buttons */}
           <div className="grid grid-cols-3 grid-rows-2 gap-4 items-center align-center justify-center max-w-auto mx-2 px-2">
