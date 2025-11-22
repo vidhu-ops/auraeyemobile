@@ -4989,6 +4989,37 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Upload profile picture
+  app.post("/api/profile-picture", isAuthenticated, async (req, res) => {
+    try {
+      const { pictureUrl } = req.body;
+
+      if (!pictureUrl) {
+        return res.status(400).json({ message: "Picture URL is required" });
+      }
+
+      // Check if it's a valid base64 data URL or regular URL
+      if (!pictureUrl.startsWith("data:") && !pictureUrl.startsWith("http")) {
+        return res.status(400).json({ message: "Invalid picture format" });
+      }
+
+      const updatedUser = await storage.updateProfilePicture(req.user.id, pictureUrl);
+
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update profile picture" });
+      }
+
+      res.json({
+        success: true,
+        message: "Profile picture updated successfully",
+        profilePictureUrl: updatedUser.profilePictureUrl,
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      res.status(500).json({ message: "Failed to upload profile picture" });
+    }
+  });
+
   // Get earned badges with tiers
   app.get("/api/earned-badges", isAuthenticated, async (req, res) => {
     try {

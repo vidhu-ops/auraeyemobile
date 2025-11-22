@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   birthDate: text("birth_date"),
   email: text("email"),
   mobileNumber: text("mobile_number"),
+  profilePictureUrl: text("profile_picture_url"), // Base64 encoded or URL to profile picture
   credits: integer("credits").default(0), // Will be set programmatically based on user type
   soulEnergy: integer("soul_energy").default(0), // Spiritual energy gained from scans and activities
   manifestIntention: text("manifest_intention"), // Health / Relationships / Abundance / Clarity

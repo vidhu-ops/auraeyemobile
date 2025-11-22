@@ -19,6 +19,7 @@ import { ChakraMastery } from "@/components/gamification/chakra-mastery";
 import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
 import { BadgeTargets } from "@/components/gamification/badge-targets";
 import { BadgeShowcase } from "@/components/gamification/badge-showcase";
+import { ProfilePictureUploadDialog } from "@/components/profile/profile-picture-upload";
 import {
   MapPin,
   Calendar,
@@ -69,6 +70,8 @@ export default function ClientDashboard() {
   }, [achievements.length, achievements, toast]);
 
   const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Activity", "Settings"];
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   
   // Use new milestone and tree growth system
   const milestone = getSoulEnergyMilestone(soulEnergy);
@@ -87,12 +90,25 @@ export default function ClientDashboard() {
           <CardContent className="px-6 pb-6 -mt-12 relative">
             <div className="flex items-end gap-4 mb-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-white p-1 shadow-lg">
-                  <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center text-2xl font-bold text-purple-700">
-                    {user?.username?.charAt(0).toUpperCase() || 'V'}
-                  </div>
+                <div className="w-20 h-20 rounded-full bg-white p-1 shadow-lg overflow-hidden">
+                  {profilePictureUrl ? (
+                    <img
+                      src={profilePictureUrl}
+                      alt={user?.username}
+                      className="w-full h-full rounded-full object-cover"
+                      data-testid="img-profile-picture"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center text-2xl font-bold text-purple-700">
+                      {user?.username?.charAt(0).toUpperCase() || 'V'}
+                    </div>
+                  )}
                 </div>
-                <button className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-pink-500 flex items-center justify-center shadow-md" data-testid="button-edit-photo">
+                <button
+                  onClick={() => setUploadDialogOpen(true)}
+                  className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-pink-500 flex items-center justify-center shadow-md hover:bg-pink-600 transition-colors"
+                  data-testid="button-edit-photo"
+                >
                   <Camera className="h-3 w-3 text-white" />
                 </button>
               </div>
@@ -780,6 +796,15 @@ export default function ClientDashboard() {
 
       {/* Mobile Navigation */}
       <MobileNavigation />
+
+      {/* Profile Picture Upload Dialog */}
+      <ProfilePictureUploadDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onUploadSuccess={(pictureUrl) => {
+          setProfilePictureUrl(pictureUrl);
+        }}
+      />
     </div>
   );
 }
