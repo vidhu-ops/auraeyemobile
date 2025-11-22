@@ -1718,6 +1718,32 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           auraAnalysis.id = savedReading.id;
           console.log("Aura reading saved successfully with ID:", savedReading.id);
           console.log("Analysis result now includes ID:", auraAnalysis.id);
+          
+          // Award achievement for first aura scan
+          try {
+            const auraCount = await db.query.auraReadings.findMany({
+              where: (readings, { eq }) => eq(readings.userId, req.user.id),
+            });
+            if (auraCount.length === 1) {
+              await db.insert(achievements).values({
+                userId: req.user.id,
+                achievementType: 'first_aura',
+                title: 'First Glimpse 👀',
+                description: 'Completed your first aura analysis',
+                icon: '🎨',
+              });
+            } else if (auraCount.length === 3) {
+              await db.insert(achievements).values({
+                userId: req.user.id,
+                achievementType: 'third_aura',
+                title: 'Aura Explorer 🔍',
+                description: 'Completed 3 aura analyses',
+                icon: '🔍',
+              });
+            }
+          } catch (ach) {
+            console.log("Achievement update skipped:", ach);
+          }
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
           // Don't fail the whole request if saving fails
@@ -1928,6 +1954,32 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           personalYearNumber: numerologyProfile.personalYearNumber,
           interpretation: numerologyProfile.interpretation
         });
+        
+        // Award achievement for first numerology reading
+        try {
+          const numerologyCount = await db.query.numerologyReadings.findMany({
+            where: (readings, { eq }) => eq(readings.userId, req.user.id),
+          });
+          if (numerologyCount.length === 1) {
+            const existingAch = await db.query.achievements.findFirst({
+              where: (achievements, { and, eq }) => and(
+                eq(achievements.userId, req.user.id),
+                eq(achievements.achievementType, 'first_numerology')
+              ),
+            });
+            if (!existingAch) {
+              await db.insert(achievements).values({
+                userId: req.user.id,
+                achievementType: 'first_numerology',
+                title: 'Number Seeker 🔢',
+                description: 'Completed your first numerology reading',
+                icon: '🔢',
+              });
+            }
+          }
+        } catch (ach) {
+          console.log("Achievement update skipped:", ach);
+        }
         
         // Deduct credits for successful numerology reading
         await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
@@ -2848,6 +2900,35 @@ function calculateDominantSoulChakra(birthDate: string): number {
       };
 
       const savedFeedback = await storage.saveVibeFeedback(vibeFeedbackData);
+      
+      // Award achievement for first vibe scan
+      if (req.user?.id) {
+        try {
+          const vibeCount = await db.query.vibeFeedback.findMany({
+            where: (readings, { eq }) => eq(readings.userId, req.user.id),
+          });
+          if (vibeCount.length === 1) {
+            const existingAch = await db.query.achievements.findFirst({
+              where: (achievements, { and, eq }) => and(
+                eq(achievements.userId, req.user.id),
+                eq(achievements.achievementType, 'first_vibe')
+              ),
+            });
+            if (!existingAch) {
+              await db.insert(achievements).values({
+                userId: req.user.id,
+                achievementType: 'first_vibe',
+                title: 'Vibe Check ✨',
+                description: 'Completed your first vibe scan',
+                icon: '✨',
+              });
+            }
+          }
+        } catch (ach) {
+          console.log("Achievement update skipped:", ach);
+        }
+      }
+      
       res.status(201).json(savedFeedback);
     } catch (error) {
       console.error("Error saving vibe feedback:", error);
@@ -3084,6 +3165,32 @@ function calculateDominantSoulChakra(birthDate: string): number {
         reflections,
         gratitude: gratitudeText
       });
+      
+      // Award achievement for first journal entry
+      try {
+        const journalCount = await db.query.journals.findMany({
+          where: (journals, { eq }) => eq(journals.userId, req.user.id),
+        });
+        if (journalCount.length === 1) {
+          const existingAch = await db.query.achievements.findFirst({
+            where: (achievements, { and, eq }) => and(
+              eq(achievements.userId, req.user.id),
+              eq(achievements.achievementType, 'first_journal')
+            ),
+          });
+          if (!existingAch) {
+            await db.insert(achievements).values({
+              userId: req.user.id,
+              achievementType: 'first_journal',
+              title: 'Thoughts Flow 📖',
+              description: 'Wrote your first journal entry',
+              icon: '📝',
+            });
+          }
+        }
+      } catch (ach) {
+        console.log("Achievement update skipped:", ach);
+      }
       
       res.status(201).json(journalEntry);
     } catch (error) {

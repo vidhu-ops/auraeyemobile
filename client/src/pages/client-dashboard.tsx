@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Trophy } from "lucide-react";
 import { AchievementsBadges } from "@/components/gamification/achievements-badge";
 import { ColorCollector } from "@/components/gamification/color-collector";
 import { ChakraMastery } from "@/components/gamification/chakra-mastery";
@@ -39,6 +40,10 @@ export default function ClientDashboard() {
   const { credits, isLoading: creditsLoading } = useCredits();
   const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
   const { data: streakData } = useQuery({ queryKey: ["/api/streaks"] });
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["/api/achievements"],
+    enabled: !!user,
+  });
   
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -101,11 +106,19 @@ export default function ClientDashboard() {
               </div>
             </div>
             
-            {/* Milestone Badge */}
-            <div className="mt-4 flex justify-center">
-              <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-1 text-sm font-semibold`}>
-                {milestone.level} Level
-              </Badge>
+            {/* Milestone Badge + Achievements */}
+            <div className="mt-4 flex flex-col gap-3">
+              <div className="flex justify-center">
+                <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-1 text-sm font-semibold`}>
+                  {milestone.level} Level
+                </Badge>
+              </div>
+              {achievements.length > 0 && (
+                <div className="flex justify-center items-center gap-2 bg-yellow-900/40 rounded-lg px-3 py-2 border border-yellow-600" data-testid="profile-badge-display">
+                  <Trophy className="h-5 w-5 text-yellow-400" />
+                  <span className="text-yellow-200 font-semibold">{achievements.length} Badges Earned</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Sheet, 
   SheetContent, 
@@ -39,7 +40,8 @@ import {
   DollarSign,
   LayoutDashboard,
   X,
-  Settings
+  Settings,
+  Trophy
 } from "lucide-react";
 import logoPath from "@assets/new-logo.jpeg";
 
@@ -48,6 +50,10 @@ export default function Navbar() {
   const { user, logoutMutation } = useAuth();
   const { credits } = useCredits();
   const [open, setOpen] = useState(false);
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["/api/achievements"],
+    enabled: !!user,
+  });
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -143,9 +149,17 @@ export default function Navbar() {
                             <p className="text-xs text-purple-600/70">{user.userType}</p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-cyan-500 px-3 py-1.5 rounded-full">
-                          <Zap className="h-3 w-3 text-white" />
-                          <span className="text-white font-semibold text-sm">{credits}</span>
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-cyan-500 px-3 py-1.5 rounded-full">
+                            <Zap className="h-3 w-3 text-white" />
+                            <span className="text-white font-semibold text-sm">{credits}</span>
+                          </div>
+                          {achievements.length > 0 && (
+                            <div className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-orange-500 px-3 py-1.5 rounded-full" data-testid="badge-count-navbar">
+                              <Trophy className="h-3 w-3 text-white" />
+                              <span className="text-white font-semibold text-sm">{achievements.length}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
