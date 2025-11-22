@@ -1719,27 +1719,32 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           console.log("Aura reading saved successfully with ID:", savedReading.id);
           console.log("Analysis result now includes ID:", auraAnalysis.id);
           
-          // Award achievement for first aura scan
+          // Award achievement for aura scans at different levels
           try {
             const auraCount = await db.query.auraReadings.findMany({
               where: (readings, { eq }) => eq(readings.userId, req.user.id),
             });
-            if (auraCount.length === 1) {
-              await db.insert(achievements).values({
-                userId: req.user.id,
-                achievementType: 'first_aura',
-                title: 'First Glimpse 👀',
-                description: 'Completed your first aura analysis',
-                icon: '🎨',
-              });
-            } else if (auraCount.length === 3) {
-              await db.insert(achievements).values({
-                userId: req.user.id,
-                achievementType: 'third_aura',
-                title: 'Aura Explorer 🔍',
-                description: 'Completed 3 aura analyses',
-                icon: '🔍',
-              });
+            const milestones = [
+              { count: 1, type: 'first_aura', title: 'First Glimpse 👀', desc: 'Completed your first aura analysis', icon: '🎨' },
+              { count: 3, type: 'third_aura', title: 'Aura Explorer 🔍', desc: 'Completed 3 aura analyses', icon: '🔍' },
+              { count: 10, type: 'aura_master', title: 'Aura Master 🌟', desc: 'Completed 10 aura analyses', icon: '⭐' },
+              { count: 25, type: 'aura_legend', title: 'Aura Legend 👑', desc: 'Completed 25 aura analyses', icon: '👑' }
+            ];
+            for (const milestone of milestones) {
+              if (auraCount.length === milestone.count) {
+                const existing = await db.query.achievements.findFirst({
+                  where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
+                });
+                if (!existing) {
+                  await db.insert(achievements).values({
+                    userId: req.user.id,
+                    achievementType: milestone.type,
+                    title: milestone.title,
+                    description: milestone.desc,
+                    icon: milestone.icon,
+                  });
+                }
+              }
             }
           } catch (ach) {
             console.log("Achievement update skipped:", ach);
@@ -1955,26 +1960,31 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           interpretation: numerologyProfile.interpretation
         });
         
-        // Award achievement for first numerology reading
+        // Award achievement for numerology readings at different levels
         try {
           const numerologyCount = await db.query.numerologyReadings.findMany({
             where: (readings, { eq }) => eq(readings.userId, req.user.id),
           });
-          if (numerologyCount.length === 1) {
-            const existingAch = await db.query.achievements.findFirst({
-              where: (achievements, { and, eq }) => and(
-                eq(achievements.userId, req.user.id),
-                eq(achievements.achievementType, 'first_numerology')
-              ),
-            });
-            if (!existingAch) {
-              await db.insert(achievements).values({
-                userId: req.user.id,
-                achievementType: 'first_numerology',
-                title: 'Number Seeker 🔢',
-                description: 'Completed your first numerology reading',
-                icon: '🔢',
+          const milestones = [
+            { count: 1, type: 'first_numerology', title: 'Number Seeker 🔢', desc: 'Completed your first numerology reading', icon: '🔢' },
+            { count: 5, type: 'numerology_explorer', title: 'Numerology Explorer 🧮', desc: 'Completed 5 numerology readings', icon: '🧮' },
+            { count: 15, type: 'numerology_master', title: 'Numerology Master 🎲', desc: 'Completed 15 numerology readings', icon: '🎲' },
+            { count: 30, type: 'numerology_legend', title: 'Numerology Legend 🔮', desc: 'Completed 30 numerology readings', icon: '🔮' }
+          ];
+          for (const milestone of milestones) {
+            if (numerologyCount.length === milestone.count) {
+              const existing = await db.query.achievements.findFirst({
+                where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
               });
+              if (!existing) {
+                await db.insert(achievements).values({
+                  userId: req.user.id,
+                  achievementType: milestone.type,
+                  title: milestone.title,
+                  description: milestone.desc,
+                  icon: milestone.icon,
+                });
+              }
             }
           }
         } catch (ach) {
@@ -2901,27 +2911,32 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const savedFeedback = await storage.saveVibeFeedback(vibeFeedbackData);
       
-      // Award achievement for first vibe scan
+      // Award achievement for vibe checks at different levels
       if (req.user?.id) {
         try {
           const vibeCount = await db.query.vibeFeedback.findMany({
             where: (readings, { eq }) => eq(readings.userId, req.user.id),
           });
-          if (vibeCount.length === 1) {
-            const existingAch = await db.query.achievements.findFirst({
-              where: (achievements, { and, eq }) => and(
-                eq(achievements.userId, req.user.id),
-                eq(achievements.achievementType, 'first_vibe')
-              ),
-            });
-            if (!existingAch) {
-              await db.insert(achievements).values({
-                userId: req.user.id,
-                achievementType: 'first_vibe',
-                title: 'Vibe Check ✨',
-                description: 'Completed your first vibe scan',
-                icon: '✨',
+          const milestones = [
+            { count: 1, type: 'first_vibe', title: 'Vibe Check ✨', desc: 'Completed your first vibe scan', icon: '✨' },
+            { count: 5, type: 'vibe_enthusiast', title: 'Vibe Enthusiast 💫', desc: 'Completed 5 vibe checks', icon: '💫' },
+            { count: 15, type: 'vibe_master', title: 'Vibe Master 🎯', desc: 'Completed 15 vibe checks', icon: '🎯' },
+            { count: 30, type: 'vibe_legend', title: 'Vibe Legend 🌈', desc: 'Completed 30 vibe checks', icon: '🌈' }
+          ];
+          for (const milestone of milestones) {
+            if (vibeCount.length === milestone.count) {
+              const existing = await db.query.achievements.findFirst({
+                where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
               });
+              if (!existing) {
+                await db.insert(achievements).values({
+                  userId: req.user.id,
+                  achievementType: milestone.type,
+                  title: milestone.title,
+                  description: milestone.desc,
+                  icon: milestone.icon,
+                });
+              }
             }
           }
         } catch (ach) {
@@ -3166,26 +3181,31 @@ function calculateDominantSoulChakra(birthDate: string): number {
         gratitude: gratitudeText
       });
       
-      // Award achievement for first journal entry
+      // Award achievement for journal entries at different levels
       try {
         const journalCount = await db.query.journals.findMany({
           where: (journals, { eq }) => eq(journals.userId, req.user.id),
         });
-        if (journalCount.length === 1) {
-          const existingAch = await db.query.achievements.findFirst({
-            where: (achievements, { and, eq }) => and(
-              eq(achievements.userId, req.user.id),
-              eq(achievements.achievementType, 'first_journal')
-            ),
-          });
-          if (!existingAch) {
-            await db.insert(achievements).values({
-              userId: req.user.id,
-              achievementType: 'first_journal',
-              title: 'Thoughts Flow 📖',
-              description: 'Wrote your first journal entry',
-              icon: '📝',
+        const milestones = [
+          { count: 1, type: 'first_journal', title: 'Thoughts Flow 📖', desc: 'Wrote your first journal entry', icon: '📝' },
+          { count: 5, type: 'journal_keeper', title: 'Journal Keeper 📚', desc: 'Wrote 5 journal entries', icon: '📚' },
+          { count: 20, type: 'journal_master', title: 'Journal Master 🖋️', desc: 'Wrote 20 journal entries', icon: '🖋️' },
+          { count: 50, type: 'journal_legend', title: 'Journal Legend 📜', desc: 'Wrote 50 journal entries', icon: '📜' }
+        ];
+        for (const milestone of milestones) {
+          if (journalCount.length === milestone.count) {
+            const existing = await db.query.achievements.findFirst({
+              where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
             });
+            if (!existing) {
+              await db.insert(achievements).values({
+                userId: req.user.id,
+                achievementType: milestone.type,
+                title: milestone.title,
+                description: milestone.desc,
+                icon: milestone.icon,
+              });
+            }
           }
         }
       } catch (ach) {
