@@ -1830,7 +1830,7 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
 
 export default function HealerDashboard() {
   const { user } = useAuth();
-  const { credits, isLoading: creditsLoading } = useCredits();
+  const { credits } = useCredits();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   
   // Fetch login streaks
@@ -2109,16 +2109,8 @@ export default function HealerDashboard() {
       <div className="mb-8">
         <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-              Welcome back, {user?.username}! 🔮
-            </h1>
-            <p className="text-gray-300">
-              {credits > 100 
-                ? `You're all set with ${credits} credits! Your practice is thriving - keep connecting with more clients.` 
-                : credits > 50
-                ? `Great work! You have ${credits} credits. Continue building your client base.`
-                : `You have ${credits} credits remaining. Consider your pricing or recharge to serve more clients.`}
-            </p>
+            <h1 className="text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
+            <p className="text-white-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
           </div>
           <div className="flex flex-col gap-3 items-start">
             <Button
@@ -2131,9 +2123,9 @@ export default function HealerDashboard() {
               <Key className="w-4 h-4" />
               Change Password
             </Button>
-            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${credits > 100 ? 'bg-green-100 text-green-800' : credits > 50 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
-              <div>{credits > 100 ? '✅' : credits > 50 ? '⚠️' : '🔴'}</div>
-              <span className="font-medium">{creditsLoading ? 'Loading...' : `${credits} credits`}</span>
+            <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
+              <div className="text-violet-600">💳</div>
+              <span className="font-medium text-violet-800">{credits} credits</span>
             </div>
           </div>
         </div>
@@ -2164,12 +2156,8 @@ export default function HealerDashboard() {
                   </div>
                   <div className="text-center md:text-left">
                     <h2 className="text-2xl font-bold text-white-900">{user?.username}</h2>
-                    <p className="text-purple-200 font-medium">✨ Professional Healer & Energy Reader</p>
-                    <div className="mt-3 flex gap-2 flex-wrap justify-center md:justify-start">
-                      <Badge className="bg-green-100 text-green-800 border-green-300">🟢 Active</Badge>
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-300">⚡ {soulEnergyLoading ? '...' : soulEnergy} Soul Energy</Badge>
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-300">💎 {creditsLoading ? '...' : credits} Credits</Badge>
-                    </div>
+                    <p className="text-purple-200 font-medium">Professional Healer</p>
+                    <Badge className="mt-2 bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                 </div>
 
