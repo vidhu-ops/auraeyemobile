@@ -6,42 +6,72 @@ let notificationCronJob: ReturnType<typeof cron.schedule> | null = null;
 
 const healerNotifications = [
   {
-    title: "New Client Check-Ins Available 🌟",
-    body: "Log in to review energy readings and provide spiritual guidance to your clients.",
+    title: "Clients Awaiting Your Insight 🌟",
+    body: "Healers like you transform lives! Review pending analyses and connect with clients seeking your wisdom.",
     url: "/dashboard"
   },
   {
-    title: "Time to Connect 💫",
-    body: "Your healing presence is needed. Check for new client requests and aura analyses.",
+    title: "Opportunity to Shine 💫",
+    body: "Your healing gift is needed now. Return to unlock new client connections and deepen your practice.",
     url: "/dashboard"
   },
   {
-    title: "Healer Reminder 🔮",
-    body: "Take a moment to review pending client analyses and share your spiritual insights.",
+    title: "Level Up Your Impact 🔮",
+    body: "Complete client sessions to grow your soul energy and unlock new spiritual abilities.",
+    url: "/dashboard"
+  },
+  {
+    title: "Your Healers Community 🤝",
+    body: "Connect with fellow healers, share wisdom, and strengthen the collective energy. Come back!",
+    url: "/healers"
+  },
+  {
+    title: "Unlock Healer Achievements 🏆",
+    body: "Earn soul energy milestones! Your next spiritual breakthrough is just one session away.",
     url: "/dashboard"
   }
 ];
 
 const clientNotifications = [
   {
-    title: "Breathe & Ground 🌬️",
-    body: "Take a moment to breathe deeply and check your energy levels. Your aura awaits!",
-    url: "/scan"
-  },
-  {
-    title: "Energy Check-In Time ✨",
-    body: "How is your spiritual energy today? Log your vibe and track your soul journey.",
+    title: "Your Energy is Calling 🌈",
+    body: "Discover what your aura looks like today. Scan now and see how your energy has evolved!",
     url: "/vibe"
   },
   {
-    title: "Mindful Moment 🧘",
-    body: "Pause and reconnect with your inner self. Take a meditation break now.",
-    url: "/meditate"
+    title: "What's Your Vibe? ✨",
+    body: "Quick 30-second vibe check! See your dominant color and get personalized spiritual insights.",
+    url: "/vibe"
   },
   {
-    title: "Aura Scan Reminder 🌈",
-    body: "Your energy field may have shifted. Scan your aura to see your colors today!",
-    url: "/scan"
+    title: "Reflect & Grow 📖",
+    body: "Journal about your day and boost your soul energy. Your reflections create real spiritual transformation!",
+    url: "/journal"
+  },
+  {
+    title: "Chakra Alignment Time 🔮",
+    body: "Get a numerology reading aligned with your unique chakra frequencies. Unlock your spiritual blueprint!",
+    url: "/numerology"
+  },
+  {
+    title: "Connect With a Healer 💚",
+    body: "Get personalized guidance from experienced healers. Your next breakthrough is waiting!",
+    url: "/healers"
+  },
+  {
+    title: "Advance Your Soul Tree 🌳",
+    body: "You're close to the next level! Complete a scan to grow your soul energy and evolve Auri.",
+    url: "/vibe"
+  },
+  {
+    title: "Your Spiritual Milestone Awaits 🚀",
+    body: "Explore your full aura and chakra analysis. See the complete picture of your energy field today!",
+    url: "/aura-analysis"
+  },
+  {
+    title: "Gift Yourself Peace 🧘",
+    body: "Take a mindful moment with our guided meditation. Find balance and restore your energy.",
+    url: "/meditation"
   }
 ];
 
