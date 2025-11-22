@@ -60,6 +60,9 @@ import { AchievementsBadges } from "@/components/gamification/achievements-badge
 import { ColorCollector } from "@/components/gamification/color-collector";
 import { ChakraMastery } from "@/components/gamification/chakra-mastery";
 import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
+import { BadgeTargets } from "@/components/gamification/badge-targets";
+import { BadgeShowcase } from "@/components/gamification/badge-showcase";
+import { ProfilePictureUploadDialog } from "@/components/profile/profile-picture-upload";
 
 interface HealerBooking {
   id: number;
@@ -1843,6 +1846,8 @@ export default function HealerDashboard() {
   });
   
   const [activeTab, setActiveTab] = useState("overview");
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   
   // Use new milestone and tree growth system
   const milestone = getSoulEnergyMilestone(soulEnergy);
@@ -2635,6 +2640,16 @@ export default function HealerDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Physical Badges Showcase */}
+          <div className="mb-4">
+            <BadgeShowcase />
+          </div>
+
+          {/* Achievement Targets - Badge Progress */}
+          <div className="mb-4">
+            <BadgeTargets />
+          </div>
 
           {/* Recent Activity */}
           <Card>
@@ -3528,6 +3543,16 @@ export default function HealerDashboard() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Profile Picture Upload Dialog */}
+      <ProfilePictureUploadDialog 
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onUploadSuccess={(url) => {
+          setProfilePictureUrl(url);
+          setUploadDialogOpen(false);
+        }}
+      />
         </div>
       </main>
       <Footer />
