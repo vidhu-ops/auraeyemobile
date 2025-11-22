@@ -21,7 +21,7 @@ import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otp
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
-import { getVapidPublicKey, sendPushToUser } from "./push-service";
+import { getVapidPublicKey, sendPushToUser, sendPushNotification } from "./push-service";
 
 // Credit checking middleware with dynamic pricing
 function checkCredits(serviceType: string) {
