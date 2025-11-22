@@ -34,6 +34,7 @@ import {
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import NotificationSettings from "@/components/notification-settings";
 import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone, energyMilestones, SOUL_ENERGY_PER_SCAN } from "@/lib/soul-energy-utils";
+import { BADGE_DEFINITIONS, getActivityBadges, getActivityColor, getActivityEmoji, getLevelColor } from "@/lib/badge-definitions";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -65,7 +66,7 @@ export default function ClientDashboard() {
     }
   }, [achievements.length, achievements, toast]);
 
-  const tabs = ["Overview", "Soul Energy", "Achievements", "Bookings", "Activity", "Settings"];
+  const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Activity", "Settings"];
   
   // Use new milestone and tree growth system
   const milestone = getSoulEnergyMilestone(soulEnergy);
@@ -426,6 +427,169 @@ export default function ClientDashboard() {
                   <p className="text-yellow-100 text-sm text-center">
                     <span className="font-semibold">Awakened Level:</span> You've transcended the five soul energy tiers and reached spiritual mastery. Your tree flourishes in full bloom, and Auri has evolved into their highest consciousness form. Keep growing to unlock infinite spiritual potential! 🔮
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Badge Info Tab - How to earn badges */}
+        {activeTab === "badge info" && (
+          <div className="space-y-4" data-testid="badge-info-section">
+            {/* Badge Info Header */}
+            <Card className="bg-gradient-to-br from-blue-400 via-cyan-500 to-green-600 border-0 shadow-2xl animate-pulse">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="text-5xl animate-bounce">📚</div>
+                  <div>
+                    <h2 className="text-white text-3xl font-bold">Badge Progression Guide</h2>
+                    <p className="text-blue-50 text-sm font-semibold">Earn badges by completing activities at different levels</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Aura Badges */}
+            <Card className="bg-gradient-to-br from-cyan-900 to-blue-900 border-2 border-cyan-600 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-cyan-200 text-lg font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">🎨</span> Aura Scan Badges
+                </h3>
+                <div className="space-y-3">
+                  {getActivityBadges('aura').map((badge) => (
+                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{badge.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-white font-bold">{badge.title}</p>
+                          <p className="text-white/90 text-sm">{badge.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {achievements.some(a => a.achievementType === badge.type) && (
+                          <div className="text-2xl">✅</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Vibe Check Badges */}
+            <Card className="bg-gradient-to-br from-pink-900 to-rose-900 border-2 border-pink-600 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-pink-200 text-lg font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">✨</span> Vibe Check Badges
+                </h3>
+                <div className="space-y-3">
+                  {getActivityBadges('vibe').map((badge) => (
+                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{badge.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-white font-bold">{badge.title}</p>
+                          <p className="text-white/90 text-sm">{badge.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {achievements.some(a => a.achievementType === badge.type) && (
+                          <div className="text-2xl">✅</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Journal Badges */}
+            <Card className="bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-600 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-orange-200 text-lg font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">📖</span> Journal Entry Badges
+                </h3>
+                <div className="space-y-3">
+                  {getActivityBadges('journal').map((badge) => (
+                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{badge.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-white font-bold">{badge.title}</p>
+                          <p className="text-white/90 text-sm">{badge.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {achievements.some(a => a.achievementType === badge.type) && (
+                          <div className="text-2xl">✅</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Numerology Badges */}
+            <Card className="bg-gradient-to-br from-indigo-900 to-purple-900 border-2 border-indigo-600 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-indigo-200 text-lg font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">🔢</span> Numerology Reading Badges
+                </h3>
+                <div className="space-y-3">
+                  {getActivityBadges('numerology').map((badge) => (
+                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{badge.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-white font-bold">{badge.title}</p>
+                          <p className="text-white/90 text-sm">{badge.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {achievements.some(a => a.achievementType === badge.type) && (
+                          <div className="text-2xl">✅</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* General Badges */}
+            <Card className="bg-gradient-to-br from-slate-800 to-gray-900 border-2 border-slate-600 shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-slate-200 text-lg font-bold mb-4 flex items-center gap-2">
+                  <span className="text-2xl">🏆</span> Special Badges
+                </h3>
+                <div className="space-y-3">
+                  {getActivityBadges('general').map((badge) => (
+                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{badge.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-white font-bold">{badge.title}</p>
+                          <p className="text-white/90 text-sm">{badge.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {achievements.some(a => a.achievementType === badge.type) && (
+                          <div className="text-2xl">✅</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
