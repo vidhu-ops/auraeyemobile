@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useRef } from "react";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen, Upload, RotateCcw } from "lucide-react";
+import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen, Upload, RotateCcw, X } from "lucide-react";
 import ImageUpload from "@/components/forms/image-upload";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
@@ -12,6 +12,7 @@ import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
 import logoImage from "@assets/new-logo.jpeg";
+import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4";
 
 interface VibeResult {
   dominantColor: string;
@@ -24,14 +25,40 @@ interface VibeResult {
   readingId: number | null;
 }
 
+// Color to Hex mapping
+const colorToHex: { [key: string]: string } = {
+  'Red': '#FF6B6B',
+  'Orange': '#FFA500',
+  'Yellow': '#FFD700',
+  'Green': '#6BB66B',
+  'Blue': '#4A90E2',
+  'Indigo': '#4B0082',
+  'Violet': '#EE82EE',
+  'White': '#FFFFFF',
+  'Brown': '#8B4513',
+  'Gold': '#FFD700',
+  'Silver': '#C0C0C0',
+  'Black': '#000000',
+  'Pink': '#FF69B4',
+};
+
+const getColorHex = (colorName: string): string => {
+  return colorToHex[colorName] || '#4A90E2';
+};
+
 export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<'positive' | 'negative' | null>(null);
   const [showPremiumVideo, setShowPremiumVideo] = useState(false);
+  const [showMeditationVideo, setShowMeditationVideo] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [showPostMeditationOptions, setShowPostMeditationOptions] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleImageSelect = async (file: File) => {
     if (!user) {
@@ -238,19 +265,29 @@ export default function VibePage() {
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Image */}
             <div className="flex justify-center items-start">
-              {imagePreview && (
-                <div className="relative">
-                  <div
-                    className="relative rounded-lg overflow-hidden"
-                    style={{
-                      boxShadow: `0 0 30px ${vibeResult.dominantColor.toLowerCase()}, inset 0 0 20px ${vibeResult.dominantColor.toLowerCase()}33`,
-                      border: `3px solid ${vibeResult.dominantColor.toLowerCase()}80`
-                    }}
-                  >
+              {imagePreview && vibeResult && (
+                <div className="relative inline-block">
+                  <div className="relative max-w-sm">
                     <img 
                       src={imagePreview} 
                       alt="Your vibe" 
-                      className="max-w-sm rounded-lg shadow-lg block"
+                      className="rounded-lg shadow-lg block w-full"
+                    />
+                    {/* Colored overlay based on vibe */}
+                    <div 
+                      className="absolute inset-0 rounded-lg opacity-40 pointer-events-none"
+                      style={{
+                        backgroundColor: getColorHex(vibeResult.dominantColor),
+                        mixBlendMode: 'screen'
+                      }}
+                    />
+                    {/* Glowing border effect */}
+                    <div 
+                      className="absolute inset-0 rounded-lg pointer-events-none"
+                      style={{
+                        boxShadow: `0 0 40px ${getColorHex(vibeResult.dominantColor)}, inset 0 0 20px ${getColorHex(vibeResult.dominantColor)}40`,
+                        border: `2px solid ${getColorHex(vibeResult.dominantColor)}80`
+                      }}
                     />
                   </div>
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded font-semibold text-sm tracking-wider">
@@ -318,14 +355,20 @@ export default function VibePage() {
               <p className="text-sm text-blue-700 mb-4">Your feedback helps us improve our spiritual analysis accuracy.</p>
               <div className="flex gap-4 justify-center">
                 <Button 
-                  onClick={() => setUserFeedback('positive')}
+                  onClick={() => {
+                    setUserFeedback('positive');
+                    setShowThankYou(true);
+                  }}
                   variant={userFeedback === 'positive' ? 'default' : 'outline'}
                   className={userFeedback === 'positive' ? 'bg-green-600 hover:bg-green-700' : 'border-green-600 text-green-600'}
                 >
                   Positive
                 </Button>
                 <Button 
-                  onClick={() => setUserFeedback('negative')}
+                  onClick={() => {
+                    setUserFeedback('negative');
+                    setShowMeditationVideo(true);
+                  }}
                   variant={userFeedback === 'negative' ? 'default' : 'outline'}
                   className={userFeedback === 'negative' ? 'bg-red-600 hover:bg-red-700' : 'border-red-600 text-red-600'}
                 >
@@ -446,6 +489,92 @@ export default function VibePage() {
         isOpen={showPremiumVideo} 
         onClose={() => setShowPremiumVideo(false)} 
       />
+      
+      {/* Meditation Video Modal */}
+      {showMeditationVideo && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-2xl font-bold text-black">Meditation Guide</h2>
+              <button
+                onClick={() => {
+                  setShowMeditationVideo(false);
+                  setShowPostMeditationOptions(true);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-6">
+              <video
+                ref={videoRef}
+                controls
+                autoPlay
+                className="w-full rounded-lg"
+                onEnded={() => {
+                  setShowMeditationVideo(false);
+                  setShowPostMeditationOptions(true);
+                }}
+              >
+                <source src={meditationVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Thank You Modal */}
+      {showThankYou && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+            <div className="mb-4 text-4xl">🙏</div>
+            <h2 className="text-2xl font-bold text-black mb-2">Thank You!</h2>
+            <p className="text-gray-600 mb-6">Your feedback helps us improve your spiritual journey. We appreciate you!</p>
+            <Button 
+              onClick={() => {
+                setShowThankYou(false);
+                resetAnalysis();
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              Try Another Scan
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* Post-Meditation Options Modal */}
+      {showPostMeditationOptions && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+            <h2 className="text-2xl font-bold text-black mb-4">How are you feeling?</h2>
+            <p className="text-gray-600 mb-6">Would you like to continue with another vibe scan or journal about your experience?</p>
+            <div className="flex flex-col gap-3">
+              <Button 
+                onClick={() => {
+                  setShowPostMeditationOptions(false);
+                  resetAnalysis();
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                Take Another Vibe Scan
+              </Button>
+              <Link href="/journal" className="w-full">
+                <Button 
+                  onClick={() => setShowPostMeditationOptions(false)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Journal About It
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
