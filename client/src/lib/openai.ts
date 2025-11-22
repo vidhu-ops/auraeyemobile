@@ -32,7 +32,7 @@ export interface AuraAnalysisResult {
     crown: number;
   };
   detailedAnalysis: string;
-  processedAuraImage?: string; // AI-generated aura visualization
+  processedAuraImage?: string; // Generated aura visualization
 }
 
 /**
