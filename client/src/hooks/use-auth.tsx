@@ -38,6 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      // Immediately refetch credits and other user data after login
+      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Login successful",
         description: `Welcome back, ${user.username}!`,
@@ -59,6 +63,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      // Immediately refetch credits and other user data after registration
+      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Registration successful",
         description: `Welcome to AuraEye, ${user.username}!`,
