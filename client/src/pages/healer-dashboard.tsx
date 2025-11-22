@@ -2641,16 +2641,6 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Physical Badges Showcase */}
-          <div className="mb-4">
-            <BadgeShowcase />
-          </div>
-
-          {/* Achievement Targets - Badge Progress */}
-          <div className="mb-4">
-            <BadgeTargets />
-          </div>
-
           {/* Recent Activity */}
           <Card>
             <CardHeader>
@@ -2983,6 +2973,16 @@ export default function HealerDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Physical Badges Showcase */}
+          <div>
+            <BadgeShowcase />
+          </div>
+
+          {/* Achievement Targets - Badge Progress */}
+          <div>
+            <BadgeTargets />
           </div>
         </TabsContent>
 
