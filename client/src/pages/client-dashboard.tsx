@@ -300,6 +300,50 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Your Goals - Final State Section */}
+            <Card className="bg-gradient-to-br from-amber-900/40 to-orange-900/40 border-yellow-400/30 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-white font-bold text-2xl mb-2">✨ Your Ultimate Goal ✨</h3>
+                  <p className="text-yellow-200 text-sm">This is what awaits you at 100% soul energy</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Final Soul Tree */}
+                  <div className="text-center space-y-3">
+                    <h4 className="text-cyan-300 font-semibold">Fully Evolved Soul Tree</h4>
+                    <div className="bg-black/30 rounded-lg p-4 flex justify-center">
+                      <img 
+                        src="/attached_assets/unnamed (13)_1763058572811.jpg" 
+                        alt="100% Grown Soul Tree" 
+                        className="max-h-48 object-contain rounded"
+                      />
+                    </div>
+                    <p className="text-cyan-200 text-xs">At 100% growth, your soul tree reaches its full potential 🌳</p>
+                  </div>
+
+                  {/* Final Auri State */}
+                  <div className="text-center space-y-3">
+                    <h4 className="text-purple-300 font-semibold">Auri at Awakened Level</h4>
+                    <div className="bg-black/30 rounded-lg p-4 flex justify-center">
+                      <img 
+                        src="/attached_assets/Recording-2025-11-18-002854-unscreen_1763407171784.gif" 
+                        alt="Auri Awakened Evolution" 
+                        className="max-h-48 object-contain rounded animate-pulse"
+                      />
+                    </div>
+                    <p className="text-purple-200 text-xs">Your spiritual companion reaches ultimate enlightenment 🌟</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 bg-white/5 rounded-lg p-4 border border-yellow-400/20">
+                  <p className="text-yellow-100 text-sm text-center">
+                    <span className="font-semibold">Awakened Level:</span> You've transcended the five soul energy tiers and reached spiritual mastery. Your tree flourishes in full bloom, and Auri has evolved into their highest consciousness form. Keep growing to unlock infinite spiritual potential! 🔮
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
