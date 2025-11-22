@@ -15,6 +15,16 @@ interface MoodSnapshot {
 interface JournalEntry {
   content: string;
 }
+
+interface AuraReading {
+  id: string;
+  dominantColor: string;
+  dominantColorPercentage: number;
+  secondaryColor?: string;
+  tertiaryColor?: string;
+  chakraAlignment?: string;
+  auraIntensity?: string;
+}
 import mascotExplorer from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
 import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763506298018.png";
 import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763506521677.png";
@@ -70,6 +80,12 @@ export default function Mascot() {
 
   const { data: journalData } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal"],
+    enabled: !!user,
+  });
+
+  // Get latest aura reading
+  const { data: latestAuraReading } = useQuery<AuraReading>({
+    queryKey: ["/api/aura-readings"],
     enabled: !!user,
   });
 
@@ -149,10 +165,11 @@ export default function Mascot() {
       lastScanColor,
       creditsData?.credits || 0,
       moodData,
-      journalData
+      journalData,
+      latestAuraReading
     );
     setMessage(messages);
-  }, [location, user, soulEnergy, lastScanColor, creditsData, moodData, journalData]);
+  }, [location, user, soulEnergy, lastScanColor, creditsData, moodData, journalData, latestAuraReading]);
 
   // Chakra color mapping for numerology-based prompts
   const chakraColorMap: Record<number, { color: string; hex: string; meaning: string }> = {
@@ -173,39 +190,39 @@ export default function Mascot() {
     return { number: randomChakra, ...chakra };
   };
 
-  const getMoodBasedPrompt = (mood: string | undefined, journal: JournalEntry[] | undefined): string | null => {
+  const getMoodBasedPrompt = (mood: string | undefined, journal: JournalEntry[] | undefined, chakra?: { color: string; hex: string; meaning: string }, aura?: AuraReading): string | null => {
     if (!mood && !journal) return null;
 
     const moodPrompts: Record<string, string[]> = {
       'calm': [
-        'Your peaceful energy is beautiful. Keep nurturing this serenity. 🧘',
-        'The calm within you is your greatest strength. Stay centered. 💚',
-        'Your tranquility radiates outward. What a gift you are! ✨'
+        'Your peaceful energy is beautiful. Your Heart Chakra glows with serenity. Keep nurturing this tranquility. 🧘💚',
+        'The calm within you is your greatest strength. This grounded energy aligns with Earth Chakra wisdom. Stay centered. 🌍',
+        `Your tranquility radiates outward${chakra ? ` through your ${chakra.color} ${chakra.meaning}` : ''}. What a gift! ✨`
       ],
       'energetic': [
-        'Your vibrant energy is magnetic! Channel it into your dreams! ⚡',
-        'I feel your enthusiasm! Your dynamism is inspiring! 🔥',
-        'Your energy is contagious! Keep shining brilliantly! ✨'
+        'Your vibrant energy is magnetic! Your Solar Plexus Chakra burns bright with purpose! Channel it into your dreams! ⚡🔥',
+        `I feel your enthusiasm! Your dynamism${chakra ? ` aligns with ${chakra.color}` : ''} energy! You're inspiring! 💫`,
+        'Your energy is contagious! This Root Chakra activation keeps you grounded while shining brilliantly! ✨💎'
       ],
       'reflective': [
-        'Your introspection is wisdom in motion. Honor this moment. 🔮',
-        'Deep reflection leads to profound growth. You\'re on the right path! 📖',
-        'Your thoughtful nature is your superpower. Keep pondering! 💭'
+        'Your introspection is wisdom in motion. Your Third Eye Chakra opens to deeper truth. Honor this moment. 🔮👁️',
+        `Deep reflection leads to profound growth. Your ${chakra?.meaning || 'spiritual awareness'} guides you. You're on the right path! 📖🌟`,
+        'Your thoughtful Crown Chakra connection shows spiritual maturity. Your inner wisdom is awakening! 💭✨'
       ],
       'happy': [
-        'Your joy is radiant! It lights up the spiritual realm! 😊',
-        'Happiness looks beautiful on you! Spread it everywhere! 💫',
-        'Your smile carries celestial energy! Keep beaming! ✨'
+        'Your joy is radiant! Your Heart Chakra expands with love! It lights up the spiritual realm! 😊💖',
+        `Happiness looks beautiful on you! Your ${chakra?.color || 'radiant'} aura energy spreads joy everywhere! 💫🌈`,
+        'Your smile carries celestial energy! Your entire chakra system aligns with bliss! Keep beaming! ✨👑'
       ],
       'anxious': [
-        'I sense tension. Take a deep breath and ground yourself. 🌍',
-        'Your worries are temporary. Trust the journey. 🙏',
-        'Let go of what you cannot control. Peace awaits you. 🕊️'
+        'I sense tension, dear soul. Ground yourself with Root Chakra breathing. 🌍📿 Focus on your foundation. Breathe deeply. 🕊️',
+        `Your worries are temporary. Trust the journey. Your ${chakra?.meaning || 'inner wisdom'} knows the way. 🙏✨`,
+        `Calm your Solar Plexus with love. Release what you cannot control. Your Heart Chakra holds the key to peace. 💚🕊️`
       ],
       'default': [
-        'Your journal reflections show real growth. I\'m proud of you! 📝',
-        'Your thoughts and feelings matter deeply. Keep expressing them. 💭',
-        'Your journey of self-discovery is beautiful. Continue exploring! 🌟'
+        `Your journal reflections show real growth. Your ${chakra?.color || 'spiritual'} energy evolves beautifully! 📝✨`,
+        'Your thoughts and feelings matter deeply. Your Throat Chakra helps you express truth. Keep sharing! 💭💙',
+        'Your self-discovery journey awakens all your chakras! You\'re becoming who you\'re meant to be! 🌟🔮'
       ]
     };
 
@@ -222,14 +239,15 @@ export default function Mascot() {
     scanColor: string | null,
     credits: number,
     mood: MoodSnapshot | undefined,
-    journal: JournalEntry[] | undefined
+    journal: JournalEntry[] | undefined,
+    aura?: AuraReading
   ): MascotMessage => {
     
     // Home page messages
     if (path === "/") {
-      const moodPrompt = getMoodBasedPrompt(mood?.dominantMood, journal);
+      const chakra = getChakraColor();
+      const moodPrompt = getMoodBasedPrompt(mood?.dominantMood, journal, chakra || undefined, aura);
       if (moodPrompt) {
-        const chakra = getChakraColor();
         return {
           text: `${username}, I feel your ${mood?.dominantMood || 'spiritual'} energy today. ${moodPrompt} 🌟`,
           color: chakra?.hex || "#06b6d4",
@@ -298,8 +316,8 @@ export default function Mascot() {
     if (path.includes("aura") || path.includes("vibe")) {
       if (userType === 'healer') {
         const healerMessage = scanColor 
-          ? `${username}, you revealed such a gorgeous ${scanColor} energy! You're an amazing healer! 💚✨`
-          : `${username}, your healing gift is so special! Let's help someone discover their light! 💚`;
+          ? `${username}, you revealed such a gorgeous ${scanColor} energy${aura ? ` at ${aura.dominantColorPercentage}% intensity` : ''}! Your chakra resonates powerfully as a healer! 💚✨`
+          : `${username}, your healing gift is so special! Your chakras are aligned for divine service! 💚`;
         return {
           text: healerMessage,
           color: scanColor ? getColorHex(scanColor) : "#10b981",
@@ -307,17 +325,18 @@ export default function Mascot() {
         };
       }
       
-      // Client messages with color memory
+      // Client messages with color memory and aura intensity
       if (scanColor) {
+        const intensityMsg = aura && aura.dominantColorPercentage > 60 ? "powerfully dominant" : "beautifully balanced";
         return {
-          text: `Ooh ${username}! 🌈 Your ${scanColor} aura was SO pretty last time! Want to see your new colors?`,
+          text: `Ooh ${username}! 🌈 Your magnificent ${scanColor} aura is ${intensityMsg}! ${aura?.secondaryColor ? `Blended with ${aura.secondaryColor} energy!` : ''} Let's explore deeper! ✨`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
       }
       
       return {
-        text: `${username}, I can't wait to see your aura colors! This is going to be magical! 🎨💫`,
+        text: `${username}, I can't wait to see your aura colors and discover which chakras shine brightest in you! 🎨💫`,
         color: "#ec4899",
         emotion: 'excited'
       };
@@ -334,17 +353,17 @@ export default function Mascot() {
 
     // Journal page
     if (path.includes("journal")) {
-      const moodPrompt = getMoodBasedPrompt(mood?.dominantMood, journal);
+      const chakra = getChakraColor();
+      const moodPrompt = getMoodBasedPrompt(mood?.dominantMood, journal, chakra || undefined, aura);
       if (moodPrompt) {
-        const chakra = getChakraColor();
         return {
-          text: `${username}, your journal is a sacred space. ${moodPrompt} 📖`,
+          text: `${username}, your journal is a sacred space for your Truth Chakra expression. ${moodPrompt} 📖`,
           color: chakra?.hex || "#a855f7",
           emotion: 'happy'
         };
       }
       return {
-        text: `${username}, your spiritual journey matters. Document your feelings today! 📖✨`,
+        text: `${username}, your spiritual journey matters. Let your ${energy > 100 ? 'radiant' : 'growing'} soul energy flow into these sacred pages! 📖✨`,
         color: "#a855f7",
         emotion: 'happy'
       };
@@ -352,15 +371,22 @@ export default function Mascot() {
 
     // Color meanings page
     if (path.includes("color")) {
+      if (scanColor && aura) {
+        return {
+          text: `${username}, your ${scanColor} aura (${aura.dominantColorPercentage}% dominant) reveals your deepest chakra wisdom! 🌈 Unlock your soul's secret! 💎`,
+          color: getColorHex(scanColor),
+          emotion: 'excited'
+        };
+      }
       if (scanColor) {
         return {
-          text: `${username}, learn what your ${scanColor} aura truly means! 🌈`,
+          text: `${username}, learn what your ${scanColor} aura truly means! This color reflects your unique chakra expression! 🌈`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
       }
       return {
-        text: `${username}, each color reveals YOUR soul's secrets! Discover their meanings! 🌈`,
+        text: `${username}, each color reveals YOUR soul's sacred chakra secrets! Discover your true essence! 🌈✨`,
         color: "#ec4899",
         emotion: 'excited'
       };
@@ -370,8 +396,8 @@ export default function Mascot() {
     if (path.includes("healers")) {
       return {
         text: userType === 'healer'
-          ? `${username}, connect with your fellow healers! You're part of something special! 🤝`
-          : `${username}, these gifted healers can guide YOUR unique spiritual path! 🌟`,
+          ? `${username}, your healing chakras resonate with your fellow healers! You're part of this sacred mission! 🤝💚`
+          : `${username}, these gifted healers' chakras align with YOUR spiritual path! Find your perfect guide! 🌟`,
         color: "#14b8a6",
         emotion: 'happy'
       };
@@ -380,7 +406,7 @@ export default function Mascot() {
     // Help page
     if (path.includes("help")) {
       return {
-        text: `${username}, I'm here just for you! What do you need help with today? 💡`,
+        text: `${username}, I'm here to guide your spiritual journey! My Crown Chakra connects with yours. What wisdom do you seek? 💡✨`,
         color: "#06b6d4",
         emotion: 'happy'
       };
@@ -390,7 +416,7 @@ export default function Mascot() {
     if (path.includes("numerology")) {
       const chakra = getChakraColor();
       return {
-        text: `${username}, the ${chakra?.color} chakra energy aligns with your numerological path! Discover the ${chakra?.meaning}! 🔢✨`,
+        text: `${username}, the ${chakra?.color} Chakra (${chakra?.meaning}) resonates with your numerological destiny! This number unlocks your deepest truth! 🔢✨`,
         color: chakra?.hex || "#a855f7",
         emotion: 'excited'
       };
