@@ -432,27 +432,27 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                 </Card>
 
                 <Tabs defaultValue="tips" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50">
+                  <TabsList className="grid w-full grid-cols-4 bg-slate-700/50 text-white">
                     <TabsTrigger value="tips" data-testid="tab-tips">
                       <Heart className="h-4 w-4 mr-1" />
                       Tips
                     </TabsTrigger>
                     <TabsTrigger value="breathing" data-testid="tab-breathing">
-                      <Wind className="h-4 w-4 mr-1" />
+                      <Wind className="h-4 w-4 mr-1 text-black" />
                       Breathwork
                     </TabsTrigger>
                     <TabsTrigger value="somatic" data-testid="tab-somatic">
-                      <Activity className="h-4 w-4 mr-1" />
+                      <Activity className="h-4 w-4 mr-1 text-black" />
                       Exercises
                     </TabsTrigger>
                     <TabsTrigger value="affirmations" data-testid="tab-affirmations">
-                      <Sparkles className="h-4 w-4 mr-1" />
+                      <Sparkles className="h-4 w-4 mr-1 text-black" />
                       Affirmations
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="tips" className="space-y-3 mt-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Psychological Tips for You</h3>
+                    <h3 className="text-lg font-semibold text-black mb-3">Psychological Tips for You</h3>
                     {recommendations.psychologicalTips.map((tip, index) => (
                       <Card key={index} className="p-4 bg-slate-700/50 border-slate-600">
                         <p className="text-slate-800 text-xs">{tip}</p>
@@ -461,7 +461,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                   </TabsContent>
 
                   <TabsContent value="breathing" className="space-y-4 mt-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Breathing Techniques</h3>
+                    <h3 className="text-lg font-semibold text-black mb-3">Breathing Techniques</h3>
                     {recommendations.breathingTechniques.map((technique, index) => (
                       <Card key={index} className="p-5 bg-slate-700/50 border-slate-600">
                         <h4 className="text-lg font-semibold text-blue-600 mb-2">{technique.name}</h4>

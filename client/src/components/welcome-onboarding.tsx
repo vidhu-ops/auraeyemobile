@@ -141,14 +141,8 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 ></div>
               </div>
 
-              <div 
-                className="absolute inset-12 rounded-full border-2 border-cyan-400/30"
-                style={{ animation: 'spin 20s linear infinite' }}
-              ></div>
-              <div 
-                className="absolute inset-16 rounded-full border-2 border-pink-500/20"
-                style={{ animation: 'spin 15s linear infinite reverse' }}
-              ></div>
+              
+              
             </div>
           </div>
 
