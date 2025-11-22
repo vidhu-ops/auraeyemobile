@@ -6999,7 +6999,7 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-xs sm:text-sm"
+                          className="flex items-center text-xs sm:text-sm text-black"
                           onClick={() => shareAuraImage('facebook')}
                         >
                           <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -7010,7 +7010,7 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-xs sm:text-sm"
+                          className="flex items-center text-xs sm:text-sm text-black"
                           onClick={() => shareAuraImage('instagram')}
                         >
                           <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -7021,7 +7021,7 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-xs sm:text-sm"
+                          className="flex items-center text-xs sm:text-sm text-black"
                           onClick={() => shareAuraImage('twitter')}
                         >
                           <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -7032,7 +7032,7 @@ export default function AuraAnalysis() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="flex items-center text-xs sm:text-sm"
+                          className="flex items-center text-xs sm:text-sm text-black"
                           onClick={downloadComprehensiveAuraPDF}
                         >
                           <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
