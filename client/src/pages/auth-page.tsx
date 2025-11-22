@@ -9,11 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Star, Sparkles, Heart, Users, TrendingUp, Lightbulb, User } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { manifestIntentions, energyLevels, blocks, type ManifestIntention, type EnergyLevel, type Block } from "@shared/onboarding-presets";
+import { TERMS_AND_CONDITIONS, TERMS_AND_CONDITIONS_SHORT } from "@/lib/terms-and-conditions";
 import logoPath from "@assets/new-logo.jpeg";
 
 const loginSchema = z.object({
@@ -25,6 +28,9 @@ const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  agreeToTerms: z.boolean().refine(val => val === true, {
+    message: "You must agree to the Terms & Conditions to register"
+  }),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -43,6 +49,7 @@ export default function AuthPage() {
   const [manifestIntention, setManifestIntention] = useState<ManifestIntention | null>(null);
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
+  const [showTCDialog, setShowTCDialog] = useState(false);
   
   // No auto-trigger for onboarding questions
   // Questions will only show after registration via onRegisterSubmit
@@ -61,6 +68,7 @@ export default function AuthPage() {
       username: "",
       email: "",
       password: "",
+      agreeToTerms: false,
     },
   });
 
@@ -409,6 +417,36 @@ export default function AuthPage() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="agreeToTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            data-testid="checkbox-agree-terms"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <div className="text-sm text-slate-600">
+                            I agree to the{" "}
+                            <button
+                              type="button"
+                              onClick={() => setShowTCDialog(true)}
+                              className="text-purple-600 hover:text-purple-700 underline font-semibold"
+                              data-testid="button-view-terms"
+                            >
+                              Terms & Conditions
+                            </button>
+                          </div>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
                 
                 <CardFooter className="flex-col space-y-3 pt-2">
@@ -435,6 +473,18 @@ export default function AuthPage() {
           </TabsContent>
         </Tabs>
       </Card>
+
+      {/* Terms & Conditions Dialog */}
+      <Dialog open={showTCDialog} onOpenChange={setShowTCDialog}>
+        <DialogContent className="max-w-2xl max-h-96 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Terms & Conditions and Disclaimer</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-gray-700 whitespace-pre-wrap">
+            {TERMS_AND_CONDITIONS}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

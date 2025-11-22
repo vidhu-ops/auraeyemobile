@@ -6877,7 +6877,7 @@ export default function AuraAnalysis() {
           <div className="container mx-auto px-4 relative z-10">
             <h1 className="font-heading font-bold text-white text-3xl md:text-4xl mb-4 text-center">Aura Analysis</h1>
             <p className="text-wite/80 max-w-2xl mx-auto text-center">
-              Upload your photo and our AI will analyze your energy field, revealing your aura colors and providing personalized insights.
+              Upload your photo and our advanced analysis will reveal your energy field, showing your aura colors and providing personalized insights.
             </p>
           </div>
         </section>
