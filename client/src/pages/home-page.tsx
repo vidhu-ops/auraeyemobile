@@ -44,7 +44,7 @@ export default function HomePage() {
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
       toast({
         title: "Soul Tree Growing! 🌱",
-        description: `+100 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
+        description: `+1000 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
       });
     },
     onError: () => {

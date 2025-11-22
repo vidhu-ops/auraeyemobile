@@ -3267,7 +3267,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Grow soul energy (add 100 soul energy)
+  // Grow soul energy (add 1000 soul energy)
   app.post("/api/soul-energy/grow", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
@@ -3277,12 +3277,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "Invalid user session" });
       }
       
-      await storage.addSoulEnergy(userId, 100, 'manual_grow');
+      await storage.addSoulEnergy(userId, 1000, 'manual_grow');
       const newSoulEnergy = await storage.getUserSoulEnergy(userId);
       
-      console.log(`🌱 User ${userId} grew their soul tree by +100 energy (new total: ${newSoulEnergy})`);
+      console.log(`🌱 User ${userId} grew their soul tree by +1000 energy (new total: ${newSoulEnergy})`);
       
-      res.json({ soulEnergy: newSoulEnergy, added: 100 });
+      res.json({ soulEnergy: newSoulEnergy, added: 1000 });
     } catch (error) {
       console.error("Error growing soul energy:", error);
       res.status(500).json({ message: "Failed to grow soul energy" });
