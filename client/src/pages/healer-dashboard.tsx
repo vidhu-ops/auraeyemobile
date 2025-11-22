@@ -56,6 +56,10 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import NotificationSettings from "@/components/notification-settings";
+import { AchievementsBadges } from "@/components/gamification/achievements-badge";
+import { ColorCollector } from "@/components/gamification/color-collector";
+import { ChakraMastery } from "@/components/gamification/chakra-mastery";
+import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
 
 interface HealerBooking {
   id: number;
