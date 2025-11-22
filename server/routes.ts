@@ -4989,6 +4989,73 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get earned badges with tiers
+  app.get("/api/earned-badges", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Get all earned achievements
+      const achievements = await db.query.achievements.findMany({
+        where: (a, { eq }) => eq(a.userId, userId),
+      });
+      
+      // Map achievements to earned badges with tiers
+      const badgeTierMap: Record<string, { title: string; level: "bronze" | "silver" | "gold" | "platinum"; description: string }> = {
+        // Aura badges
+        'first_aura': { title: 'First Glimpse 👀', level: 'bronze', description: 'Completed your first aura analysis' },
+        'third_aura': { title: 'Aura Explorer 🔍', level: 'silver', description: 'Completed 3 aura analyses' },
+        'aura_master': { title: 'Aura Master 🌟', level: 'gold', description: 'Completed 10 aura analyses' },
+        'aura_legend': { title: 'Aura Legend 👑', level: 'platinum', description: 'Completed 25 aura analyses' },
+        
+        // Vibe badges
+        'first_vibe': { title: 'Vibe Check ✨', level: 'bronze', description: 'Completed your first vibe scan' },
+        'vibe_enthusiast': { title: 'Vibe Enthusiast 💫', level: 'silver', description: 'Completed 5 vibe checks' },
+        'vibe_master': { title: 'Vibe Master 🎯', level: 'gold', description: 'Completed 15 vibe checks' },
+        'vibe_legend': { title: 'Vibe Legend 🌈', level: 'platinum', description: 'Completed 30 vibe checks' },
+        
+        // Journal badges
+        'first_journal': { title: 'Thoughts Flow 📖', level: 'bronze', description: 'Wrote your first journal entry' },
+        'journal_keeper': { title: 'Journal Keeper 📚', level: 'silver', description: 'Wrote 5 journal entries' },
+        'journal_master': { title: 'Journal Master 🖋️', level: 'gold', description: 'Wrote 20 journal entries' },
+        'journal_legend': { title: 'Journal Legend 📜', level: 'platinum', description: 'Wrote 50 journal entries' },
+        
+        // Streak badges
+        'seven_day_streak': { title: 'Week Warrior 🔥', level: 'bronze', description: 'Maintained a 7-day login streak' },
+        'thirty_day_streak': { title: 'Month Master 🌙', level: 'silver', description: 'Maintained a 30-day login streak' },
+        'hundred_day_streak': { title: 'Century Sage 💫', level: 'gold', description: 'Maintained a 100-day login streak' },
+        'year_streak': { title: 'Eternal Warrior ⚡', level: 'platinum', description: 'Maintained a 365-day login streak' },
+        
+        // Healer badges
+        'healer_five_replies': { title: 'Healing Heart 💚', level: 'bronze', description: 'Accepted 5 healer sessions' },
+        'healer_most_replies': { title: 'Most Trusted Healer 👑', level: 'silver', description: 'Accepted 20 healer sessions' },
+        'healer_rating_master': { title: 'Healer Master ⭐', level: 'gold', description: 'Achieved 4.8+ healer rating' },
+        'best_healer_rating': { title: 'Best Healer 🏆', level: 'platinum', description: 'Became the highest rated healer' },
+
+        // Numerology badges
+        'first_numerology': { title: 'Number Navigator 🔢', level: 'bronze', description: 'Completed your first numerology reading' },
+        'numerology_explorer': { title: 'Numerology Explorer 📊', level: 'silver', description: 'Completed 5 numerology readings' },
+        
+        // Journaling time badges
+        'journaling_one_hour': { title: 'Reflection Hour 📝', level: 'bronze', description: 'Journaled for 1 hour total' },
+        'journaling_ten_hours': { title: 'Inner Voice 🎧', level: 'silver', description: 'Journaled for 10 hours total' },
+        'journaling_fifty_hours': { title: 'Deep Writer 🌊', level: 'gold', description: 'Journaled for 50 hours total' },
+        'journaling_hundred_hours': { title: 'Stream of Consciousness 📖', level: 'platinum', description: 'Journaled for 100+ hours' },
+      };
+      
+      const earnedBadges = achievements
+        .map(ach => ({
+          type: ach.achievementType,
+          ...badgeTierMap[ach.achievementType]
+        }))
+        .filter(badge => badge.title !== undefined);
+      
+      res.json(earnedBadges);
+    } catch (error) {
+      console.error("Error fetching earned badges:", error);
+      res.status(500).json({ message: "Failed to fetch earned badges" });
+    }
+  });
+
   // Healer leaderboard
   app.get("/api/leaderboard/healers", async (req, res) => {
     try {
