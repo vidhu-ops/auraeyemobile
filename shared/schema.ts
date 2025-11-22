@@ -23,7 +23,7 @@ export const users = pgTable("users", {
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
+  userId: integer("user_id").references(() => users.id), // Allow null for anonymous subscriptions
   endpoint: text("endpoint").notNull().unique(),
   keys: text("keys").notNull(), // JSON string containing p256dh and auth keys
   createdAt: timestamp("created_at").defaultNow().notNull(),

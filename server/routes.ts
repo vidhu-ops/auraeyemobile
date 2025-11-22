@@ -3542,13 +3542,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Subscribe to push notifications
-  app.post("/api/push/subscribe", isAuthenticated, async (req, res) => {
+  app.post("/api/push/subscribe", async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id || null; // Allow null for anonymous subscriptions
       
-      if (!userId || typeof userId !== 'number') {
-        return res.status(400).json({ message: "Invalid user session" });
-      }
+      console.log(`📱 Subscription request for user: ${userId || 'anonymous'}`);
 
       const subscriptionData = insertPushSubscriptionSchema.parse({
         userId,
@@ -3557,14 +3555,18 @@ function calculateDominantSoulChakra(birthDate: string): number {
       });
 
       const subscription = await storage.savePushSubscription(subscriptionData);
+      console.log(`✅ Subscription saved successfully (user: ${userId || 'anonymous'})`);
       
-      // Send a test notification
-      await sendPushToUser(userId);
+      // Send a test notification if user is authenticated
+      if (userId) {
+        console.log(`📤 Sending test notification to user ${userId}`);
+        await sendPushToUser(userId);
+      }
       
       res.json({ success: true, subscription });
     } catch (error) {
       console.error("Error saving push subscription:", error);
-      res.status(500).json({ message: "Failed to save push subscription" });
+      res.status(500).json({ message: "Failed to save push subscription", error: (error as Error).message });
     }
   });
 
