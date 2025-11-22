@@ -318,6 +318,21 @@ export const insertPsychologicalProfileSchema = createInsertSchema(psychological
   updatedAt: true,
 });
 
+// Login sessions for tracking user activity and streaks
+export const loginSessions = pgTable("login_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  loginDate: timestamp("login_date").notNull(), // Date of login (stored as UTC date)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdLoginDateIdx: index("login_sessions_user_id_login_date_idx").on(table.userId, table.loginDate),
+}));
+
+export const insertLoginSessionSchema = createInsertSchema(loginSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Mood tracking - detailed emotional state snapshots
 export const moodSnapshots = pgTable("mood_snapshots", {
   id: serial("id").primaryKey(),

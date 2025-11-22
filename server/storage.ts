@@ -131,6 +131,10 @@ export interface IStorage {
   // User statistics
   getUserStats(userId: number): Promise<any>;
 
+  // Login streak tracking
+  recordLogin(userId: number): Promise<void>;
+  getLoginStreak(userId: number): Promise<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }>;
+
   // Session store
   sessionStore: any;
 }
@@ -1025,6 +1029,95 @@ export class DatabaseStorage implements IStorage {
     const totalEnergy = sessions.reduce((sum, session) => sum + (session.energyGained || 25), 0);
     
     return { sessionsCount, totalMinutes, totalEnergy };
+  }
+
+  // Record user login for streak tracking
+  async recordLogin(userId: number): Promise<void> {
+    const today = new Date();
+    const todayStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    
+    // Check if already logged in today
+    const { loginSessions } = await import("../shared/schema");
+    const existingToday = await db.select().from(loginSessions)
+      .where(and(
+        eq(loginSessions.userId, userId),
+        gt(loginSessions.loginDate, todayStart)
+      )).limit(1);
+    
+    // Only record if no login today
+    if (existingToday.length === 0) {
+      await db.insert(loginSessions).values({
+        userId,
+        loginDate: todayStart,
+      });
+    }
+  }
+
+  // Calculate login streaks and weekly active days
+  async getLoginStreak(userId: number): Promise<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }> {
+    const { loginSessions } = await import("../shared/schema");
+    
+    // Get all login dates sorted descending (most recent first)
+    const logins = await db.select().from(loginSessions)
+      .where(eq(loginSessions.userId, userId))
+      .orderBy(desc(loginSessions.loginDate));
+    
+    if (logins.length === 0) {
+      return { currentStreak: 0, longestStreak: 0, weeklyActiveDates: [] };
+    }
+
+    // Calculate current streak (consecutive days from today)
+    let currentStreak = 0;
+    const today = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+    let expectedDate = new Date(today);
+    
+    for (const login of logins) {
+      const loginDate = new Date(login.loginDate);
+      const dayDiff = Math.floor((expectedDate.getTime() - loginDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (dayDiff === 0) {
+        currentStreak++;
+        expectedDate.setUTCDate(expectedDate.getUTCDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Calculate longest streak
+    let maxStreak = 1;
+    let currentStreakCount = 1;
+    for (let i = 1; i < logins.length; i++) {
+      const date1 = new Date(logins[i - 1].loginDate);
+      const date2 = new Date(logins[i].loginDate);
+      const dayDiff = Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (dayDiff === 1) {
+        currentStreakCount++;
+        maxStreak = Math.max(maxStreak, currentStreakCount);
+      } else {
+        currentStreakCount = 1;
+      }
+    }
+
+    // Get weekly active dates (this week's logins)
+    const weekStart = new Date(today);
+    weekStart.setUTCDate(weekStart.getUTCDate() - weekStart.getUTCDay());
+    
+    const weeklyDates = logins
+      .filter(login => {
+        const loginDate = new Date(login.loginDate);
+        return loginDate >= weekStart;
+      })
+      .map(login => {
+        const date = new Date(login.loginDate);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+      });
+
+    return {
+      currentStreak,
+      longestStreak: maxStreak,
+      weeklyActiveDates: weeklyDates
+    };
   }
 }
 

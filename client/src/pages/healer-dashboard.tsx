@@ -1832,6 +1832,12 @@ export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
+  
+  // Fetch login streaks
+  const { data: streakData } = useQuery({
+    queryKey: ["/api/streaks"],
+  });
+  
   const [activeTab, setActiveTab] = useState("overview");
   
   // Use new milestone and tree growth system
@@ -2202,7 +2208,7 @@ export default function HealerDashboard() {
                     <span className="text-3xl">🔥</span>
                   </div>
                   <div className="text-3xl font-bold text-orange-600 mb-1">
-                    {Math.floor(soulEnergy / 20)} days
+                    {streakData?.currentStreak || 0} days
                   </div>
                   <p className="text-xs text-gray-600">Keep your momentum going!</p>
                 </div>
@@ -2213,7 +2219,7 @@ export default function HealerDashboard() {
                     <span className="text-3xl">⭐</span>
                   </div>
                   <div className="text-3xl font-bold text-purple-600 mb-1">
-                    {Math.floor(soulEnergy / 15)} days
+                    {streakData?.longestStreak || 0} days
                   </div>
                   <p className="text-xs text-gray-600">Your personal best</p>
                 </div>
@@ -2224,9 +2230,9 @@ export default function HealerDashboard() {
                     <span className="text-3xl">📅</span>
                   </div>
                   <div className="text-3xl font-bold text-green-600 mb-1">
-                    {Math.min(7, Math.floor(soulEnergy / 30) + 5)} / 7
+                    {streakData?.weeklyActiveDates?.length || 0} / 7
                   </div>
-                  <p className="text-xs text-gray-600">This week's progress</p>
+                  <p className="text-xs text-gray-600">{streakData?.weeklyActiveDates?.join(', ') || 'No activity this week'}</p>
                 </div>
               </CardContent>
             </Card>
