@@ -67,6 +67,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       console.log('📡 Fetching VAPID public key...');
       // Get VAPID public key from server
       const response = await apiRequest("GET", "/api/push/vapid-public-key");
+      
+      if (!response.ok) {
+        console.error(`❌ Failed to get VAPID key: ${response.status} ${response.statusText}`);
+        return false;
+      }
+      
       const data = await response.json();
       const { publicKey } = data;
       
@@ -78,23 +84,60 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('🔐 Subscribing to push manager...');
-      // Subscribe to push notifications
+      // Check if already subscribed on this device
+      let existingSubscription = await swRegistration.pushManager.getSubscription();
+      if (existingSubscription) {
+        console.log('📱 Device already has an active subscription');
+        // Check if we need to update it on the server (multi-device support)
+        const p256dhKey = existingSubscription.getKey('p256dh');
+        const authKey = existingSubscription.getKey('auth');
+        if (p256dhKey && authKey) {
+          try {
+            await apiRequest("POST", "/api/push/subscribe", {
+              endpoint: existingSubscription.endpoint,
+              keys: {
+                p256dh: arrayBufferToBase64(p256dhKey),
+                auth: arrayBufferToBase64(authKey)
+              }
+            });
+            console.log('✅ Existing subscription confirmed with server');
+            return true;
+          } catch (error) {
+            console.warn('⚠️ Could not confirm existing subscription:', error);
+          }
+        }
+      }
+
+      // Create new subscription
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey)
       });
 
-      console.log('📮 Subscription created:', subscription.endpoint);
+      console.log('📮 New subscription created:', subscription.endpoint.substring(0, 50) + '...');
 
       console.log('💾 Saving subscription to server...');
       // Send subscription to server
+      const p256dh = subscription.getKey('p256dh');
+      const auth = subscription.getKey('auth');
+      
+      if (!p256dh || !auth) {
+        console.error('❌ Failed to get subscription keys');
+        return false;
+      }
+
       const saveResponse = await apiRequest("POST", "/api/push/subscribe", {
         endpoint: subscription.endpoint,
         keys: {
-          p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
-          auth: arrayBufferToBase64(subscription.getKey('auth'))
+          p256dh: arrayBufferToBase64(p256dh),
+          auth: arrayBufferToBase64(auth)
         }
       });
+
+      if (!saveResponse.ok) {
+        console.error(`❌ Failed to save subscription: ${saveResponse.status}`);
+        return false;
+      }
 
       const saveData = await saveResponse.json();
       console.log('✅ Server response:', saveData);
