@@ -11,6 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { AchievementsBadges } from "@/components/gamification/achievements-badge";
+import { ColorCollector } from "@/components/gamification/color-collector";
+import { ChakraMastery } from "@/components/gamification/chakra-mastery";
+import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
 import {
   MapPin,
   Calendar,
@@ -38,7 +42,7 @@ export default function ClientDashboard() {
   
   const [activeTab, setActiveTab] = useState("overview");
 
-  const tabs = ["Overview", "Soul Energy", "Bookings", "Activity", "Settings"];
+  const tabs = ["Overview", "Soul Energy", "Achievements", "Bookings", "Activity", "Settings"];
   
   // Use new milestone and tree growth system
   const milestone = getSoulEnergyMilestone(soulEnergy);
@@ -394,6 +398,16 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Achievements Tab */}
+        {activeTab === "achievements" && (
+          <div className="space-y-4">
+            <AchievementsBadges />
+            <ColorCollector />
+            <ChakraMastery />
+            <HealerLeaderboard />
           </div>
         )}
 
