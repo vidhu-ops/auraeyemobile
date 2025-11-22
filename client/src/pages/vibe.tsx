@@ -240,13 +240,21 @@ export default function VibePage() {
             <div className="flex justify-center items-start">
               {imagePreview && (
                 <div className="relative">
-                  <img 
-                    src={imagePreview} 
-                    alt="Your vibe" 
-                    className="max-w-sm rounded-lg shadow-lg"
-                  />
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded">
-                    <img src={logoImage} alt="AuraEye" className="w-24 h-auto opacity-50" />
+                  <div
+                    className="relative rounded-lg overflow-hidden"
+                    style={{
+                      boxShadow: `0 0 30px ${vibeResult.dominantColor.toLowerCase()}, inset 0 0 20px ${vibeResult.dominantColor.toLowerCase()}33`,
+                      border: `3px solid ${vibeResult.dominantColor.toLowerCase()}80`
+                    }}
+                  >
+                    <img 
+                      src={imagePreview} 
+                      alt="Your vibe" 
+                      className="max-w-sm rounded-lg shadow-lg block"
+                    />
+                  </div>
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded font-semibold text-sm tracking-wider">
+                    AuraEye
                   </div>
                 </div>
               )}

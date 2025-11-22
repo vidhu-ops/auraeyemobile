@@ -444,22 +444,22 @@ function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
   ctx.globalCompositeOperation = 'source-over';
   
   // Set watermark text properties
-  const watermarkText = "left";
-  const fontSize = Math.floor(canvasWidth * 0.025); // Responsive font size based on canvas width
+  const watermarkText = "AuraEye";
+  const fontSize = Math.floor(canvasWidth * 0.03); // Responsive font size based on canvas width
   const x = 30; // 30px from left edge
   const y = canvasHeight - 30; // 30px from bottom edge
   
   // Configure text styling
   ctx.font = `bold ${fontSize}px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White text at 50% opacity
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; // White text at 60% opacity
   ctx.textAlign = 'left';
   ctx.textBaseline = 'bottom';
   
   // Add text shadow for better visibility
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-  ctx.shadowOffsetX = 1;
-  ctx.shadowOffsetY = 1;
-  ctx.shadowBlur = 2;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowBlur = 3;
   
   // Draw the watermark text
   ctx.fillText(watermarkText, x, y);
