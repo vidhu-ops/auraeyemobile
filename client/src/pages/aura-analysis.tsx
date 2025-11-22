@@ -10839,71 +10839,7 @@ export default function AuraAnalysis() {
         {/* Advanced Features Section */}
         <section className="py-16 bg-gradient-to-br from-primary-dark/5 to-secondary-dark/5">
           <div className="container mx-auto px-15 py-10">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-10">
-                <h2 className="font-heading font-bold text-2xl md:text-3xl mb-4">Complete Aura Analysis Features</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Explore the full range of our aura analysis capabilities.
-                </p>
-              </div>
-              
-              <div className="my-6 grid md:grid-cols-1 gap-6">
-                <Card className="relative overflow-hidden border-2 border-primary/20">
-                  <div className="absolute top-0 right-0 bg-green-100 px-3 py-1 rounded-bl-md">
-                    <span className="text-sm font-medium text-green-800">All Features Included</span>
-                  </div>
-                  <CardHeader>
-                    <CardTitle>Complete Aura Analysis</CardTitle>
-                    <CardDescription>Discover the colors and energy patterns of your aura with our comprehensive analysis</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <h3 className="font-semibold mb-2">Includes:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <ul className="space-y-2">
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Basic aura color identification</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Primary personality traits</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Energy level assessment</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Basic chakra activity visualization</span>
-                        </li>
-                      </ul>
-                      <ul className="space-y-2">
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Advanced multi-layer aura color analysis</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Detailed chakra balancing recommendations</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Personalized spiritual practice suggestions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>Temporal aura pattern tracking</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">✓</span>
-                          <span>30-day aura energy forecast</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            
           </div>
         </section>
 

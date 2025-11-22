@@ -444,7 +444,7 @@ export default function PricingPage() {
                   </div>
                   <h3 className="text-lg font-mystical font-semibold mb-2 text-purple-900">Premium Quality</h3>
                   <p className="text-purple-700 font-cosmic">
-                    Each analysis is powered by advanced AI and authentic spiritual expertise.
+                    Each analysis is powered by authentic expertise.
                   </p>
                 </div>
               </div>
