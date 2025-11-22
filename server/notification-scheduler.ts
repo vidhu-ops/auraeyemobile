@@ -29,6 +29,16 @@ const healerNotifications = [
     title: "Unlock Healer Achievements 🏆",
     body: "Earn soul energy milestones! Your next spiritual breakthrough is just one session away.",
     url: "/dashboard"
+  },
+  {
+    title: "Keep Your Healing Streak Alive 🔥",
+    body: "You've built an amazing streak of consistent service! Log in today to maintain it and grow your impact.",
+    url: "/dashboard"
+  },
+  {
+    title: "Maintain Your Momentum 🚀",
+    body: "Your streak shows your dedication. Come back today to keep the energy flowing and connect with more clients.",
+    url: "/dashboard"
   }
 ];
 
@@ -72,6 +82,16 @@ const clientNotifications = [
     title: "Gift Yourself Peace 🧘",
     body: "Take a mindful moment with our guided meditation. Find balance and restore your energy.",
     url: "/meditation"
+  },
+  {
+    title: "Your Spiritual Streak is Growing 🔥",
+    body: "Amazing! You're on a streak of consistent spiritual practice. Log in today to keep it alive and grow stronger!",
+    url: "/dashboard"
+  },
+  {
+    title: "Don't Break Your Streak! 💪",
+    body: "You've been showing up every day for your spiritual growth. Just one more day to maintain your awesome streak!",
+    url: "/dashboard"
   }
 ];
 

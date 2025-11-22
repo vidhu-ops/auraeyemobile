@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
@@ -33,6 +34,7 @@ export default function ClientDashboard() {
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
+  const { data: streakData } = useQuery({ queryKey: ["/api/streaks"] });
   
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -125,6 +127,54 @@ export default function ClientDashboard() {
         {/* Tab Content */}
         {activeTab === "overview" && (
           <>
+            {/* Activity Streaks */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Activity className="h-5 w-5 text-orange-600" />
+                <h2 className="text-white font-semibold">Activity Streaks</h2>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">Current Streak</span>
+                      <span className="text-2xl">🔥</span>
+                    </div>
+                    <div className="text-3xl font-bold text-orange-600">{streakData?.currentStreak || 0} days</div>
+                    <p className="text-xs text-gray-600 mt-1">Keep your momentum going!</p>
+                  </CardContent>
+                </Card>
+                <div className="grid grid-cols-2 gap-3">
+                  <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-gray-700">Longest Streak</span>
+                        <span className="text-xl">⭐</span>
+                      </div>
+                      <div className="text-2xl font-bold text-purple-600">{streakData?.longestStreak || 0} days</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-gray-700">This Week</span>
+                        <span className="text-xl">📅</span>
+                      </div>
+                      <div className="text-2xl font-bold text-green-600">{streakData?.weeklyActiveDates?.length || 0}/7</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                {streakData?.weeklyActiveDates && streakData.weeklyActiveDates.length > 0 && (
+                  <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-sm">
+                    <CardContent className="p-4">
+                      <p className="text-xs text-cyan-200 mb-2">Active Days:</p>
+                      <p className="text-sm text-white">{streakData.weeklyActiveDates.join(', ')}</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+
             {/* Spiritual Journey Progress */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-3">

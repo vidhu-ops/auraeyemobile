@@ -3394,6 +3394,27 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get login streaks
+  app.get("/api/streaks", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      // Record login
+      await storage.recordLogin(userId);
+      
+      // Get streak data
+      const streakData = await storage.getLoginStreak(userId);
+      res.json(streakData);
+    } catch (error) {
+      console.error("Error fetching streaks:", error);
+      res.status(500).json({ message: "Failed to fetch streaks" });
+    }
+  });
+
   // Get notification preferences
   app.get("/api/notification-preferences", isAuthenticated, async (req, res) => {
     try {
