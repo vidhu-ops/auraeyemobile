@@ -17,7 +17,7 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
@@ -2380,6 +2380,69 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     } catch (error) {
       console.error("Error saving review:", error);
       res.status(500).json({ error: "Failed to save review" });
+    }
+  });
+
+  // Save aura PDF for healer dashboard
+  app.post("/api/save-aura-pdf", isAuthenticated, async (req, res) => {
+    try {
+      const { auraReadingId, fileName, pdfData, clientName } = req.body;
+      const healerId = req.user.id;
+
+      if (!auraReadingId || !fileName || !pdfData || !clientName) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const pdfRecord = await storage.storePdf({
+        auraReadingId: parseInt(auraReadingId),
+        healerId,
+        fileName,
+        pdfData,
+        clientName
+      });
+
+      res.json(pdfRecord);
+    } catch (error) {
+      console.error("Error saving PDF:", error);
+      res.status(500).json({ error: "Failed to save PDF" });
+    }
+  });
+
+  // Get stored PDFs for healer dashboard
+  app.get("/api/healer-pdfs", isAuthenticated, async (req, res) => {
+    try {
+      const healerId = req.user.id;
+      const pdfs = await storage.getPdfsByHealerId(healerId);
+      res.json(pdfs);
+    } catch (error) {
+      console.error("Error fetching PDFs:", error);
+      res.status(500).json({ error: "Failed to fetch PDFs" });
+    }
+  });
+
+  // Download stored PDF
+  app.get("/api/pdf/:pdfId/download", isAuthenticated, async (req, res) => {
+    try {
+      const { pdfId } = req.params;
+      // Query PDF directly from database
+      const pdf = await db.query.pdfStorage.findFirst({
+        where: eq(pdfStorage.id, parseInt(pdfId))
+      }).catch(() => null);
+
+      if (!pdf) {
+        return res.status(404).json({ error: "PDF not found" });
+      }
+
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${pdf.fileName}"`);
+      
+      // Send base64 PDF data
+      const binaryData = Buffer.from(pdf.pdfData, 'base64');
+      res.send(binaryData);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      res.status(500).json({ error: "Failed to download PDF" });
     }
   });
   
