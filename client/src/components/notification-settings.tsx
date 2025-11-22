@@ -23,6 +23,9 @@ export default function NotificationSettings() {
   const { permission, requestPermission, subscribeToPush, unsubscribeFromPush } = useNotifications();
   const { toast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [browserToggling, setBrowserToggling] = useState(false);
+  const [smsToggling, setSmsToggling] = useState(false);
+  const [emailToggling, setEmailToggling] = useState(false);
 
   const { data: preferences } = useQuery<NotificationPreferences>({
     queryKey: ["/api/notification-preferences"],
@@ -33,16 +36,38 @@ export default function NotificationSettings() {
     mutationFn: async (data: Partial<NotificationPreferences>) => {
       return apiRequest("POST", "/api/notification-preferences", data);
     },
+    onMutate: async (newPreferences) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/notification-preferences"] });
+      
+      const previousPreferences = queryClient.getQueryData<NotificationPreferences>(["/api/notification-preferences"]);
+      
+      queryClient.setQueryData<NotificationPreferences>(["/api/notification-preferences"], (old) => ({
+        ...old,
+        ...newPreferences,
+        smsEnabled: newPreferences.smsEnabled ?? old?.smsEnabled ?? false,
+        phoneNumber: newPreferences.phoneNumber ?? old?.phoneNumber ?? "",
+        browserEnabled: newPreferences.browserEnabled ?? old?.browserEnabled ?? false,
+        emailEnabled: newPreferences.emailEnabled ?? old?.emailEnabled ?? false,
+      }));
+      
+      return { previousPreferences };
+    },
+    onError: (err, newPreferences, context) => {
+      queryClient.setQueryData(["/api/notification-preferences"], context?.previousPreferences);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Settings Updated",
         description: "Your notification preferences have been saved.",
       });
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
+    },
   });
 
   const handleBrowserNotifications = async (enabled: boolean) => {
+    setBrowserToggling(true);
     try {
       if (enabled) {
         if (permission !== "granted") {
@@ -53,6 +78,7 @@ export default function NotificationSettings() {
               description: "Please allow notifications in your browser settings.",
               variant: "destructive",
             });
+            setBrowserToggling(false);
             return;
           }
         }
@@ -64,6 +90,7 @@ export default function NotificationSettings() {
             description: "Unable to subscribe to push notifications. Please try again.",
             variant: "destructive",
           });
+          setBrowserToggling(false);
           return;
         }
 
@@ -85,6 +112,7 @@ export default function NotificationSettings() {
             description: "Unable to unsubscribe from push notifications. Please try again.",
             variant: "destructive",
           });
+          setBrowserToggling(false);
           return;
         }
 
@@ -106,6 +134,8 @@ export default function NotificationSettings() {
         description: "An error occurred while updating your notification preferences.",
         variant: "destructive",
       });
+    } finally {
+      setBrowserToggling(false);
     }
   };
 
@@ -119,10 +149,24 @@ export default function NotificationSettings() {
       return;
     }
 
-    await updatePreferencesMutation.mutateAsync({
-      smsEnabled: enabled,
-      phoneNumber: phoneNumber || preferences?.phoneNumber,
-    });
+    setSmsToggling(true);
+    try {
+      await updatePreferencesMutation.mutateAsync({
+        smsEnabled: enabled,
+        phoneNumber: phoneNumber || preferences?.phoneNumber,
+      });
+    } finally {
+      setSmsToggling(false);
+    }
+  };
+
+  const handleEmailToggle = async (enabled: boolean) => {
+    setEmailToggling(true);
+    try {
+      await updatePreferencesMutation.mutateAsync({ emailEnabled: enabled });
+    } finally {
+      setEmailToggling(false);
+    }
   };
 
   const handlePhoneNumberSave = async () => {
@@ -195,6 +239,7 @@ export default function NotificationSettings() {
                 id="browser-notifications"
                 checked={preferences?.browserEnabled || false}
                 onCheckedChange={handleBrowserNotifications}
+                disabled={browserToggling}
                 data-testid="switch-browser-notifications"
               />
             </div>
@@ -240,6 +285,7 @@ export default function NotificationSettings() {
                 id="sms-notifications"
                 checked={preferences?.smsEnabled || false}
                 onCheckedChange={handleSMSToggle}
+                disabled={smsToggling}
                 data-testid="switch-sms-notifications"
               />
             </div>
@@ -288,9 +334,8 @@ export default function NotificationSettings() {
             <Switch
               id="email-notifications"
               checked={preferences?.emailEnabled || false}
-              onCheckedChange={(enabled) =>
-                updatePreferencesMutation.mutate({ emailEnabled: enabled })
-              }
+              onCheckedChange={handleEmailToggle}
+              disabled={emailToggling}
               data-testid="switch-email-notifications"
             />
           </div>
