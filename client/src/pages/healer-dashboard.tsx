@@ -55,6 +55,7 @@ import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import NotificationSettings from "@/components/notification-settings";
 
 interface HealerBooking {
   id: number;
@@ -2116,7 +2117,7 @@ export default function HealerDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
-        <TabsList className="grid w-full h-20 grid-cols-3 grid-rows-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
+        <TabsList className="grid w-full h-20 grid-cols-4 grid-rows-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
@@ -2124,6 +2125,7 @@ export default function HealerDashboard() {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}
@@ -3322,6 +3324,11 @@ export default function HealerDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings">
+          <NotificationSettings />
         </TabsContent>
       </Tabs>
 
