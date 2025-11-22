@@ -328,9 +328,9 @@ export default function ClientDashboard() {
                     <h4 className="text-purple-300 font-semibold">Auri at Awakened Level</h4>
                     <div className="bg-black/30 rounded-lg p-4 flex justify-center">
                       <img 
-                        src="/attached_assets/Recording-2025-11-18-002854-unscreen_1763407171784.gif" 
+                        src="/attached_assets/WhatsApp_Image_2025-11-15_at_10.15.23_PM-removebg-preview_1763832280129.png" 
                         alt="Auri Awakened Evolution" 
-                        className="max-h-48 object-contain rounded animate-pulse"
+                        className="max-h-48 object-contain rounded"
                       />
                     </div>
                     <p className="text-purple-200 text-xs">Your spiritual companion reaches ultimate enlightenment 🌟</p>
