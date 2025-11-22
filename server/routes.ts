@@ -17,7 +17,7 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
