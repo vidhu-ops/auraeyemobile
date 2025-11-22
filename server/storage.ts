@@ -32,6 +32,7 @@ export interface IStorage {
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
   updateNotificationPreferences(userId: number, preferences: { smsEnabled?: boolean; phoneNumber?: string; browserEnabled?: boolean; emailEnabled?: boolean }): Promise<User | undefined>;
+  updateProfilePicture(userId: number, pictureUrl: string): Promise<User | undefined>;
   
   // Push notification subscriptions
   savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
@@ -240,6 +241,15 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set(updateData)
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateProfilePicture(userId: number, pictureUrl: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ profilePictureUrl: pictureUrl })
       .where(eq(users.id, userId))
       .returning();
     return user || undefined;
