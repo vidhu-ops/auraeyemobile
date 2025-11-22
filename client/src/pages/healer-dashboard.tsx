@@ -1957,6 +1957,15 @@ export default function HealerDashboard() {
     refetchOnReconnect: true, // Refetch on reconnection
   });
 
+  // Fetch stored aura PDFs
+  const { data: healerPdfs = [], isLoading: isLoadingPdfs, refetch: refetchPdfs } = useQuery({
+    queryKey: ["/api/healer-pdfs"],
+    enabled: !!user,
+    staleTime: 0,
+    gcTime: 30 * 1000,
+    refetchInterval: 10000,
+  });
+
   // State for live numerology calculator
   // Removed numerology state variables as numerology analysis was removed from Spiritual Tools tab
 
@@ -3010,6 +3019,60 @@ export default function HealerDashboard() {
                       }>
                         <DetailedAuraReadingCard reading={reading} />
                       </Suspense>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Aura PDF Downloads */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Download className="h-5 w-5 text-green-500" />
+                    Aura PDF Reports
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => refetchPdfs()}
+                    disabled={isLoadingPdfs}
+                    className="text-xs"
+                  >
+                    {isLoadingPdfs ? 'Loading...' : 'Refresh'}
+                  </Button>
+                </CardTitle>
+                <CardDescription>Client aura analysis reports</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingPdfs ? (
+                  <div className="text-center py-4 text-gray-500">Loading PDFs...</div>
+                ) : healerPdfs.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Download className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-500">No PDF reports yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {healerPdfs.map((pdf: any) => (
+                      <div key={pdf.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{pdf.clientName}</p>
+                          <p className="text-xs text-gray-500">{pdf.fileName}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            window.location.href = `/api/pdf/${pdf.id}/download`;
+                          }}
+                          className="ml-2 flex-shrink-0"
+                          data-testid="button-download-pdf"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
                   </div>
                 )}
