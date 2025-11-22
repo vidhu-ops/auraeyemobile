@@ -230,7 +230,7 @@ export default function NotificationSettings() {
                   <Label htmlFor="browser-notifications" className="text-base font-medium">
                     Browser Notifications
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white">
                     Get instant updates in your browser
                   </p>
                 </div>
@@ -258,7 +258,7 @@ export default function NotificationSettings() {
                   <Send className="h-4 w-4 mr-2" />
                   {testNotificationMutation.isPending ? "Sending..." : "Send Test Notification"}
                 </Button>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white">
                   Test your notification settings - you should receive a notification within seconds
                 </p>
               </div>
@@ -276,7 +276,7 @@ export default function NotificationSettings() {
                   <Label htmlFor="sms-notifications" className="text-base font-medium">
                     SMS Notifications
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white">
                     Receive text messages on your phone
                   </p>
                 </div>
@@ -310,7 +310,7 @@ export default function NotificationSettings() {
                   Save
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white">
                 Include country code (e.g., +1 for US)
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function NotificationSettings() {
                 <Label htmlFor="email-notifications" className="text-base font-medium">
                   Email Notifications
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Get updates via email
                 </p>
               </div>
@@ -344,7 +344,7 @@ export default function NotificationSettings() {
 
       <Card className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200 dark:border-purple-800">
         <CardContent className="pt-6">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white">
             💡 <strong>Tip:</strong> Enable notifications to stay connected with your spiritual journey.
             Get updates about your soul energy, aura insights, and special messages from your healers!
           </p>

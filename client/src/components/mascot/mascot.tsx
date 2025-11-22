@@ -134,7 +134,7 @@ export default function Mascot() {
   useEffect(() => {
     if (!user) {
       setMessage({
-        text: "Hi! I'm Auri, your spiritual companion! ✨ Sign in to start your journey!",
+        text: "Hi! I'm AURI, your spiritual companion! ✨ Sign in to start your journey!",
         color: "#06b6d4",
         emotion: 'happy'
       });

@@ -46,7 +46,7 @@ export default function MobileNavigation() {
       dataTestId: "nav-profile"
     },
     {
-      name: "Auri",
+      name: "AURI",
       icon: null,
       isMascot: true,
       onClick: summonMascot,

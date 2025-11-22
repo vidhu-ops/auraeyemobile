@@ -3613,12 +3613,75 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       console.log(`📨 Test notification requested for user ${userId}`);
-      await sendPushToUser(userId);
       
-      res.json({ success: true, message: "Test notification sent!" });
+      // Get all subscriptions for this user
+      const subscriptions = await storage.getPushSubscriptionsByUser(userId);
+      console.log(`📱 Found ${subscriptions.length} subscriptions for user ${userId}`);
+      
+      if (subscriptions.length === 0) {
+        console.warn(`⚠️ No push subscriptions found for user ${userId}`);
+        return res.status(400).json({ 
+          message: "No devices subscribed for notifications",
+          subscriptionCount: 0
+        });
+      }
+
+      let sent = 0;
+      let failed = 0;
+      const results: any[] = [];
+
+      // Send test notification to all devices
+      for (const sub of subscriptions) {
+        try {
+          console.log(`📤 Sending test notification to endpoint: ${sub.endpoint.substring(0, 50)}...`);
+          
+          const pushSubscription: PushSubscriptionJSON = {
+            endpoint: sub.endpoint,
+            keys: JSON.parse(sub.keys)
+          };
+
+          const success = await sendPushNotification(
+            pushSubscription,
+            "🔔 Test Notification from AuraEye",
+            "Your notifications are working perfectly! This is a test message.",
+            "/dashboard"
+          );
+
+          if (success) {
+            sent++;
+            results.push({ endpoint: sub.endpoint.substring(0, 50) + '...', status: 'sent' });
+            console.log(`✅ Test notification sent to ${sub.endpoint.substring(0, 50)}...`);
+          } else {
+            failed++;
+            results.push({ endpoint: sub.endpoint.substring(0, 50) + '...', status: 'failed' });
+            console.warn(`⚠️ Failed to send test notification to ${sub.endpoint.substring(0, 50)}...`);
+          }
+        } catch (subError) {
+          failed++;
+          console.error(`❌ Error sending test notification:`, subError);
+          results.push({ 
+            endpoint: sub.endpoint.substring(0, 50) + '...', 
+            status: 'error',
+            error: (subError as Error).message 
+          });
+        }
+      }
+      
+      console.log(`✅ Test notification results: ${sent} sent, ${failed} failed`);
+      res.json({ 
+        success: sent > 0, 
+        message: `Test notifications sent to ${sent}/${subscriptions.length} devices`,
+        sent,
+        failed,
+        total: subscriptions.length,
+        results
+      });
     } catch (error) {
       console.error("Error sending test notification:", error);
-      res.status(500).json({ message: "Failed to send test notification" });
+      res.status(500).json({ 
+        message: "Failed to send test notification",
+        error: (error as Error).message
+      });
     }
   });
 
