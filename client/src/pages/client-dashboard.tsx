@@ -18,6 +18,7 @@ import { ColorCollector } from "@/components/gamification/color-collector";
 import { ChakraMastery } from "@/components/gamification/chakra-mastery";
 import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
 import { BadgeTargets } from "@/components/gamification/badge-targets";
+import { BadgeShowcase } from "@/components/gamification/badge-showcase";
 import {
   MapPin,
   Calendar,
@@ -164,6 +165,11 @@ export default function ClientDashboard() {
         {/* Tab Content */}
         {activeTab === "overview" && (
           <>
+            {/* Physical Badges Showcase */}
+            <div className="mb-4">
+              <BadgeShowcase />
+            </div>
+
             {/* Achievement Targets - Badge Progress */}
             <div className="mb-4">
               <BadgeTargets />
