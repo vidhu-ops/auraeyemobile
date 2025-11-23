@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
@@ -172,6 +173,7 @@ export default function AuraAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { showPremiumModal } = usePremium();
+  const { checkBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AuraAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("analysis");
@@ -6361,6 +6363,9 @@ Team AuraEye™
               setProcessedAuraImage(backendImage);
               console.log('📸 Processed image loaded from backend, length:', backendImage?.length || 0);
             }
+            
+            // Check for new badges
+            await checkBadges();
             
             // Set analysis ID if returned from server for review functionality
             if (analysisResult.id) {

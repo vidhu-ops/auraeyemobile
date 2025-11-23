@@ -10,6 +10,7 @@ import { useCredits } from "@/hooks/use-credits";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 
 const meditationCategories = [
   { id: "all", name: "All", icon: Sparkles, color: "from-pink-500 to-rose-500" },
@@ -69,6 +70,7 @@ export default function MeditationsPage() {
   const { user } = useAuth();
   const { credits } = useCredits();
   const { toast } = useToast();
+  const { checkBadges } = useBadgeContext();
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [completedMeditations, setCompletedMeditations] = useState<number[]>([]);
@@ -89,7 +91,7 @@ export default function MeditationsPage() {
       });
       return await response.json();
     },
-    onSuccess: (data, meditation) => {
+    onSuccess: async (data, meditation) => {
       setCompletedMeditations(prev => [...prev, meditation.id]);
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
@@ -98,6 +100,9 @@ export default function MeditationsPage() {
         title: "Meditation Completed! 🧘",
         description: `+25 Soul Energy earned from ${meditation.title}`,
       });
+      
+      // Check for new badges
+      await checkBadges();
     },
     onError: () => {
       toast({
