@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { achievements, auraReadings, vibeReadings, numerologyReadings, objectAnalyses, journals, meditationSessions } from "../shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export interface BadgeReward {
   type: string;
@@ -219,26 +219,38 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     const newBadges: BadgeReward[] = [];
     
     // Count activities for this user
+    // For aura readings: count both readings received (userId) and performed (performedBy) for healers
     const [auraCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(auraReadings)
-      .where(eq(auraReadings.userId, userId));
+      .where(or(
+        eq(auraReadings.userId, userId),
+        eq(auraReadings.performedBy, userId)
+      ));
     
+    // For vibe readings: userId already represents the healer who performed it
     const [vibeCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(vibeReadings)
       .where(eq(vibeReadings.userId, userId));
     
+    // For numerology readings: count both readings received (userId) and performed (performedBy) for healers
     const [numerologyCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(numerologyReadings)
-      .where(eq(numerologyReadings.userId, userId));
+      .where(or(
+        eq(numerologyReadings.userId, userId),
+        eq(numerologyReadings.performedBy, userId)
+      ));
     
+    // Object analyses: only tracked by userId (client activity)
     const [objectCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(objectAnalyses)
       .where(eq(objectAnalyses.userId, userId));
     
+    // Journals: personal activity tracked by userId
     const [journalCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(journals)
       .where(eq(journals.userId, userId));
     
+    // Meditation sessions: personal activity tracked by userId
     const [meditationCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));

@@ -1,6 +1,6 @@
 import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession } from "../shared/schema";
 import { db } from "./db";
-import { eq, and, gt, desc } from "drizzle-orm";
+import { eq, and, gt, desc, or } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -969,16 +969,26 @@ export class DatabaseStorage implements IStorage {
     const uniqueHealerIds = new Set(bookings.map(b => b.healerId));
     const healersConsulted = uniqueHealerIds.size;
 
-    // Get aura scans count
-    const auraScansData = await db.select().from(auraReadings).where(eq(auraReadings.userId, userId));
+    // Get aura scans count (both received and performed by healers)
+    const auraScansData = await db.select().from(auraReadings).where(
+      or(
+        eq(auraReadings.userId, userId),
+        eq(auraReadings.performedBy, userId)
+      )
+    );
     const auraScans = auraScansData.length;
 
-    // Get vibe scans count
+    // Get vibe scans count (userId already represents the healer who performed it)
     const vibeScansData = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
     const vibeScans = vibeScansData.length;
 
-    // Get numerology readings count
-    const numerologyData = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+    // Get numerology readings count (both received and performed by healers)
+    const numerologyData = await db.select().from(numerologyReadings).where(
+      or(
+        eq(numerologyReadings.userId, userId),
+        eq(numerologyReadings.performedBy, userId)
+      )
+    );
     const numerologyReadingsCount = numerologyData.length;
 
     // Get object scans count

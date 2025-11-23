@@ -5016,8 +5016,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const userId = req.user.id;
       
       // Get all user data needed for badge progress
+      // Count both readings received and performed by healers
       const auraReadings = await db.query.auraReadings.findMany({
-        where: (ar, { eq }) => eq(ar.userId, userId),
+        where: (ar, { eq, or }) => or(
+          eq(ar.userId, userId),
+          eq(ar.performedBy, userId)
+        ),
       });
       
       const journals = await db.query.journals.findMany({
