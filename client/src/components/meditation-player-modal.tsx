@@ -73,6 +73,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/achievements"] });
       toast({
         title: "Meditation Completed! 🧘",
         description: `+25 Soul Energy earned from ${meditation?.title}`,
@@ -80,6 +81,8 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
       setElapsedTime(0);
       setProgress(0);
       onComplete?.();
+      // Close the modal after successful completion
+      onClose();
     },
     onError: () => {
       toast({
@@ -105,6 +108,10 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
   const handleComplete = () => {
     setIsPlaying(false);
     completeMeditationMutation.mutate(meditation!);
+    // Close the modal after completing meditation
+    setTimeout(() => {
+      onClose();
+    }, 500);
   };
 
   const formatTime = (seconds: number) => {
