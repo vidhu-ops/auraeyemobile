@@ -16,7 +16,16 @@ export function BadgeShowcase() {
     queryKey: ["/api/achievements"],
   });
 
-  const earnedBadges: EarnedBadge[] = Array.isArray(earnedBadgesData) ? earnedBadgesData : [];
+  // Ensure earned badges have all necessary fields for display
+  const earnedBadges: EarnedBadge[] = Array.isArray(earnedBadgesData) 
+    ? earnedBadgesData.map((badge: any) => ({
+        type: badge.type || badge.achievementType,
+        title: badge.title || '',
+        level: (badge.level || badge.badgeType || 'bronze') as "bronze" | "silver" | "gold" | "platinum",
+        description: badge.description || '',
+        icon: badge.icon || '⭐',
+      }))
+    : [];
 
   // Demo badges to showcase the badge system
   const demoBadges: EarnedBadge[] = [
@@ -25,7 +34,7 @@ export function BadgeShowcase() {
       title: 'First Glimpse 👀',
       level: 'bronze',
       description: 'Completed your first aura analysis',
-      icon: '👀'
+      icon: '🎨'
     },
     {
       type: 'third_aura',
@@ -39,7 +48,7 @@ export function BadgeShowcase() {
       title: 'Aura Master 🌟',
       level: 'gold',
       description: 'Completed 10 aura analyses',
-      icon: '🌟'
+      icon: '⭐'
     },
     {
       type: 'aura_legend',
@@ -73,7 +82,7 @@ export function BadgeShowcase() {
               title={badge.title}
               level={badge.level}
               description={badge.description}
-              icon={(badge as any).icon}
+              icon={badge.icon}
               isEarned={!isShowingDemo}
             />
           </div>
