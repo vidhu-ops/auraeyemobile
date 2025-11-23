@@ -8,6 +8,7 @@ export interface EarnedBadge {
   title: string;
   level: "bronze" | "silver" | "gold" | "platinum";
   description: string;
+  icon?: string;
 }
 
 export function BadgeShowcase() {
@@ -23,25 +24,29 @@ export function BadgeShowcase() {
       type: 'first_aura',
       title: 'First Glimpse 👀',
       level: 'bronze',
-      description: 'Completed your first aura analysis'
+      description: 'Completed your first aura analysis',
+      icon: '👀'
     },
     {
       type: 'third_aura',
       title: 'Aura Explorer 🔍',
       level: 'silver',
-      description: 'Completed 3 aura analyses'
+      description: 'Completed 3 aura analyses',
+      icon: '🔍'
     },
     {
       type: 'aura_master',
       title: 'Aura Master 🌟',
       level: 'gold',
-      description: 'Completed 10 aura analyses'
+      description: 'Completed 10 aura analyses',
+      icon: '🌟'
     },
     {
       type: 'aura_legend',
       title: 'Aura Legend 👑',
       level: 'platinum',
-      description: 'Completed 25 aura analyses'
+      description: 'Completed 25 aura analyses',
+      icon: '👑'
     },
   ];
 
@@ -68,6 +73,7 @@ export function BadgeShowcase() {
               title={badge.title}
               level={badge.level}
               description={badge.description}
+              icon={(badge as any).icon}
             />
           </div>
         ))}
