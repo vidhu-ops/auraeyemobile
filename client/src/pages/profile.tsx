@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X } from "lucide-react";
+import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X, Trophy } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { Link, useLocation } from "wouter";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -18,6 +19,7 @@ export default function ProfilePage() {
   const [, setLocation] = useLocation();
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [editedEmail, setEditedEmail] = useState(user?.email || "");
+  const { checkBadges } = useBadgeContext();
 
   const { data: stats } = useQuery({
     queryKey: ["/api/user-stats"],
@@ -26,6 +28,15 @@ export default function ProfilePage() {
   const { data: subscription } = useQuery({
     queryKey: ["/api/user-subscription"],
   });
+
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["/api/achievements"],
+  });
+
+  // Check for new badges on page load
+  useEffect(() => {
+    checkBadges();
+  }, [checkBadges]);
 
   const updateEmailMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -234,6 +245,57 @@ export default function ProfilePage() {
                       <p className="text-2xl font-bold text-cyan-300">{Math.floor(stats.meditationHours)}</p>
                       <p className="text-xs text-purple-300">Med. Hours</p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Badges & Achievements */}
+            {achievements && achievements.length > 0 && (
+              <Card className="border-amber-300/50 glass-ethereal">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-amber-300" />
+                    Badges & Achievements
+                  </CardTitle>
+                  <CardDescription>Your earned badges</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {achievements.map((achievement: any, idx: number) => {
+                      // Determine badge level color based on type
+                      let badgeColor = "bg-blue-500/20 text-blue-200";
+                      if (achievement.badgeType === "platinum") {
+                        badgeColor = "bg-amber-500/20 text-amber-200";
+                      } else if (achievement.badgeType === "gold") {
+                        badgeColor = "bg-yellow-500/20 text-yellow-200";
+                      } else if (achievement.badgeType === "silver") {
+                        badgeColor = "bg-gray-400/20 text-gray-200";
+                      } else if (achievement.badgeType === "bronze") {
+                        badgeColor = "bg-orange-500/20 text-orange-200";
+                      }
+
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-lg bg-white/5 border border-purple-200/20 hover:bg-white/10 transition"
+                          data-testid={`badge-achievement-${idx}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-2xl">{achievement.icon}</span>
+                            <div className="flex-1">
+                              <p className="text-white font-semibold text-sm">{achievement.title}</p>
+                              <p className="text-purple-300 text-xs mt-1">{achievement.description}</p>
+                              <div className="mt-2">
+                                <Badge className={badgeColor + " text-xs capitalize"}>
+                                  {achievement.badgeType || "achievement"}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

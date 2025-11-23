@@ -15,6 +15,7 @@ import Navbar from "@/components/layout/navbar";
 import { useCredits } from "@/hooks/use-credits";
 import { MoodBanner } from "@/components/psychology/mood-banner";
 import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 
 interface JournalEntry {
   id: number;
@@ -37,6 +38,7 @@ export default function JournalPage() {
   const isAuthenticated = !!user;
   const { toast } = useToast();
   const { credits } = useCredits();
+  const { checkBadges } = useBadgeContext();
   const [selectedMood, setSelectedMood] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingEntry, setIsAddingEntry] = useState(false);
@@ -123,7 +125,7 @@ export default function JournalPage() {
       if (!response.ok) throw new Error("Failed to add entry");
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
       toast({
         title: "Entry Added",
@@ -133,6 +135,9 @@ export default function JournalPage() {
       setGratitude("");
       setEnergyLevel(7);
       setIsAddingEntry(false);
+      
+      // Check for new badges
+      await checkBadges();
     },
   });
 
