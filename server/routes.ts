@@ -1793,18 +1793,24 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       auraAnalysis.name = analysisName;
       
       // Check and award badges for aura scans
+      let newBadges: any[] = [];
       if (req.isAuthenticated() && req.user) {
         try {
-          await checkAndAwardBadges(req.user.id);
+          newBadges = await checkAndAwardBadges(req.user.id);
         } catch (badgeError) {
           console.error("Error checking badges:", badgeError);
         }
       }
       
-      // Return guaranteed successful response
+      // Return guaranteed successful response with badges
       console.log("Aura analysis completed successfully");
       console.log("Final response includes ID:", auraAnalysis.id);
-      res.json(auraAnalysis);
+      console.log("New badges awarded:", newBadges.length > 0 ? newBadges : "none");
+      res.json({
+        ...auraAnalysis,
+        newBadges: newBadges,
+        hasNewBadges: newBadges.length > 0
+      });
     } catch (error) {
       console.error("Error analyzing aura:", error);
       
@@ -2012,6 +2018,21 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         // Deduct credits for successful numerology reading
         await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        
+        // Check and award badges
+        let newBadges: any[] = [];
+        try {
+          newBadges = await checkAndAwardBadges(req.user.id);
+        } catch (badgeError) {
+          console.error("Error checking badges:", badgeError);
+        }
+        
+        res.json({
+          ...numerologyProfile,
+          newBadges: newBadges,
+          hasNewBadges: newBadges.length > 0
+        });
+        return;
       } catch (apiError) {
         console.error("Healer numerology API error, using fallback:", apiError);
         
@@ -3201,20 +3222,31 @@ function calculateDominantSoulChakra(birthDate: string): number {
         console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
         
         // Check and award badges for vibe scans
+        let newBadges: any[] = [];
         try {
-          await checkAndAwardBadges(req.user.id);
+          newBadges = await checkAndAwardBadges(req.user.id);
         } catch (badgeError) {
           console.error("Error checking badges:", badgeError);
         }
-      }
 
-      res.json({
-        dominantColor: personalityColor,
-        colorMeaning: meaning,
-        energyLevel: fastAnalysis.energyLevel,
-        message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
-        readingId: savedVibeReading?.id || null
-      });
+        res.json({
+          dominantColor: personalityColor,
+          colorMeaning: meaning,
+          energyLevel: fastAnalysis.energyLevel,
+          message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
+          readingId: savedVibeReading?.id || null,
+          newBadges: newBadges,
+          hasNewBadges: newBadges.length > 0
+        });
+      } else {
+        res.json({
+          dominantColor: personalityColor,
+          colorMeaning: meaning,
+          energyLevel: fastAnalysis.energyLevel,
+          message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
+          readingId: null
+        });
+      }
 
     } catch (error) {
       console.error("Quick vibe analysis error:", error);
@@ -4188,14 +4220,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
       
       // Check and award badges for numerology readings
+      let newBadges: any[] = [];
       try {
-        await checkAndAwardBadges(req.user.id);
+        newBadges = await checkAndAwardBadges(req.user.id);
       } catch (badgeError) {
         console.error("Error checking badges:", badgeError);
       }
       
       console.log(`Live numerology reading generated successfully for ${name}`);
-      res.json(result);
+      res.json({
+        ...result,
+        newBadges: newBadges,
+        hasNewBadges: newBadges.length > 0
+      });
     } catch (error) {
       console.error("Error generating live numerology reading:", error);
       res.status(500).json({ message: "Failed to generate numerology reading" });
