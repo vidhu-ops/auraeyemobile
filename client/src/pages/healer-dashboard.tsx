@@ -1872,10 +1872,7 @@ export default function HealerDashboard() {
     if (tabParam && ['overview', 'bookings', 'analytics', 'readings', 'tools'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
-    
-    // Check for new badges on page load
-    checkBadges();
-  }, [checkBadges]);
+  }, []);
   const [selectedBooking, setSelectedBooking] = useState<HealerBooking | null>(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);

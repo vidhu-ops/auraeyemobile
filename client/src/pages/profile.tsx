@@ -33,10 +33,10 @@ export default function ProfilePage() {
     queryKey: ["/api/achievements"],
   });
 
-  // Check for new badges on page load
+  // Check for new badges on page load (run once)
   useEffect(() => {
     checkBadges();
-  }, [checkBadges]);
+  }, []);
 
   const updateEmailMutation = useMutation({
     mutationFn: async (email: string) => {
