@@ -7,6 +7,7 @@ import { z } from "zod";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 import { 
   Card, 
   CardContent, 
@@ -99,6 +100,7 @@ export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
+  const { checkBadges } = useBadgeContext();
   const [healerNotes, setHealerNotes] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
@@ -319,6 +321,9 @@ export default function NumerologyPage() {
         title: "Analysis Complete",
         description: "Your numerology analysis has been updated.",
       });
+      
+      // Check for new badges
+      await checkBadges();
     } catch (error) {
       toast({
         title: "Analysis Failed",

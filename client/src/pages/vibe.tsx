@@ -11,6 +11,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 import logoImage from "@assets/new-logo.jpeg";
 import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4";
 
@@ -50,6 +51,7 @@ export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { checkBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -107,6 +109,9 @@ export default function VibePage() {
         title: "Vibe analysis complete!",
         description: `Your dominant vibe is ${data.dominantColor}`,
       });
+      
+      // Check for new badges
+      await checkBadges();
     } catch (error: any) {
       // Reset image preview on error so user can try again
       setImagePreview(null);
