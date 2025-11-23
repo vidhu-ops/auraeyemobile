@@ -231,7 +231,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [birthDate, setBirthDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { checkBadges } = useBadgeContext();
+  const { checkBadges, showBadges } = useBadgeContext();
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -253,6 +253,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
       });
 
       if (response.ok) {
+        const data = await response.json();
         toast({
           title: "Numerology Reading Created",
           description: `Personal numerology reading for ${name} has been generated`,
@@ -265,8 +266,13 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         // Refresh the readings list
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
         
-        // Check for new badges
-        await checkBadges();
+        // Show badges if returned from server
+        if (data.newBadges && data.newBadges.length > 0) {
+          showBadges(data.newBadges);
+        } else {
+          // Check for new badges as fallback
+          await checkBadges();
+        }
         
         onSuccess();
       } else {

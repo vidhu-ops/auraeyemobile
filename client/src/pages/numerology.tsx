@@ -100,7 +100,7 @@ export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
-  const { checkBadges } = useBadgeContext();
+  const { checkBadges, showBadges } = useBadgeContext();
   const [healerNotes, setHealerNotes] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
@@ -322,8 +322,13 @@ export default function NumerologyPage() {
         description: "Your numerology analysis has been updated.",
       });
       
-      // Check for new badges
-      await checkBadges();
+      // Show badges if returned from server
+      if (result && result.newBadges && result.newBadges.length > 0) {
+        showBadges(result.newBadges);
+      } else {
+        // Check for new badges as fallback
+        await checkBadges();
+      }
     } catch (error) {
       toast({
         title: "Analysis Failed",
