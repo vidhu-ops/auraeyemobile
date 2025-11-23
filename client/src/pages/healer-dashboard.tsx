@@ -44,7 +44,9 @@ import {
   Zap,
   Heart,
   Camera,
-  Circle
+  Circle,
+  Trophy,
+  Target
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
@@ -2976,14 +2978,32 @@ export default function HealerDashboard() {
           </div>
 
           {/* Physical Badges Showcase */}
-          <div>
-            <BadgeShowcase />
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                Your Earned Badges
+              </CardTitle>
+              <CardDescription>Physical badges showcase your spiritual achievements</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BadgeShowcase />
+            </CardContent>
+          </Card>
 
           {/* Achievement Targets - Badge Progress */}
-          <div>
-            <BadgeTargets />
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-cyan-500" />
+                Achievement Targets
+              </CardTitle>
+              <CardDescription>Track your progress toward unlocking new badges</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BadgeTargets />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* My Readings Tab */}
