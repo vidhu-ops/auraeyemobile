@@ -74,6 +74,7 @@ export function BadgeShowcase() {
               level={badge.level}
               description={badge.description}
               icon={(badge as any).icon}
+              isEarned={!isShowingDemo}
             />
           </div>
         ))}

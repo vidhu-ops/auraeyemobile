@@ -64,8 +64,20 @@ export function BadgeNotification({
       className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
       data-testid="badge-notification"
     >
+      {/* Glow background */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div 
+          className={`w-96 h-96 bg-gradient-to-r ${colors.bg} rounded-full opacity-20 blur-3xl animate-pulse`}
+        />
+      </div>
+
       <div
         className={`pointer-events-auto relative bg-gradient-to-br ${colors.bg} border-2 ${colors.border} rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 animate-in fade-in slide-in-from-top-10 duration-300`}
+        style={{
+          boxShadow: `0 0 40px ${level === 'bronze' ? 'rgba(251, 146, 60, 0.6)' : level === 'silver' ? 'rgba(148, 163, 184, 0.6)' : level === 'gold' ? 'rgba(250, 204, 21, 0.6)' : 'rgba(34, 211, 238, 0.6)'}, 0 0 20px ${level === 'bronze' ? 'rgba(251, 146, 60, 0.4)' : level === 'silver' ? 'rgba(148, 163, 184, 0.4)' : level === 'gold' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(34, 211, 238, 0.4)'}`
+        }}
       >
         {/* Close button */}
         <button
@@ -81,8 +93,11 @@ export function BadgeNotification({
 
         {/* Badge icon and content */}
         <div className="text-center space-y-4">
-          {/* Large icon */}
-          <div className="text-6xl animate-bounce">{icon}</div>
+          {/* Large icon with glow */}
+          <div className="relative inline-block">
+            <div className="absolute inset-0 text-6xl blur-xl opacity-70 animate-pulse">{icon}</div>
+            <div className="text-6xl animate-bounce relative z-10">{icon}</div>
+          </div>
 
           {/* Achievement text */}
           <div className={colors.text}>

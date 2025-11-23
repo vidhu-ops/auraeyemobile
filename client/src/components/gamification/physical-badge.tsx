@@ -5,6 +5,7 @@ export interface PhysicalBadgeProps {
   level: "bronze" | "silver" | "gold" | "platinum";
   description: string;
   icon?: string;
+  isEarned?: boolean;
 }
 
 const levelColors = {
@@ -39,6 +40,7 @@ export function PhysicalBadge({
   level,
   description,
   icon = "⭐",
+  isEarned = false,
 }: PhysicalBadgeProps) {
   const colors = levelColors[level];
 
@@ -48,14 +50,23 @@ export function PhysicalBadge({
       data-testid={`physical-badge-${level}`}
     >
       {/* Badge Container */}
-      <div className="relative w-32 h-40 flex flex-col items-center">
+      <div className="relative w-32 h-44 flex flex-col items-center">
+        {/* Glow Effect for Earned Badges */}
+        {isEarned && (
+          <div 
+            className="absolute -inset-3 rounded-full bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-400 opacity-75 blur-lg animate-pulse -z-10"
+            style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
+          />
+        )}
+
         {/* Ribbon Image with Overlay */}
         <div
-          className={`relative w-full h-32 rounded-full shadow-lg overflow-hidden border-4 ${colors.border}`}
+          className={`relative w-full h-32 rounded-full shadow-lg overflow-hidden border-4 ${colors.border} ${isEarned ? "shadow-2xl" : ""}`}
           style={{
             backgroundImage: `url(${ribbonBadgeImg})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            boxShadow: isEarned ? "0 0 30px rgba(250, 204, 21, 0.8), 0 0 60px rgba(250, 204, 21, 0.4)" : undefined,
           }}
         >
           {/* Colored Overlay for Tier */}
@@ -65,7 +76,7 @@ export function PhysicalBadge({
 
           {/* Emoji Icon - The Main Badge Visual */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-5xl drop-shadow-lg animate-pulse">{icon}</span>
+            <span className="text-5xl drop-shadow-lg">{icon}</span>
           </div>
         </div>
 
@@ -75,6 +86,13 @@ export function PhysicalBadge({
         >
           {title}
         </h3>
+
+        {/* Achieved Status */}
+        {isEarned && (
+          <div className="mt-1 px-2 py-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full border border-green-300">
+            <span className="text-xs font-bold text-white drop-shadow-md">✓ ACHIEVED</span>
+          </div>
+        )}
       </div>
 
       {/* Tooltip on Hover */}
