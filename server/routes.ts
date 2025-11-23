@@ -1310,6 +1310,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: savedAnalysis?.id || null
       };
       
+      // Check and award badges for object analysis
+      if (req.isAuthenticated() && req.user) {
+        try {
+          await checkAndAwardBadges(req.user.id);
+        } catch (badgeError) {
+          console.error("Error checking badges:", badgeError);
+        }
+      }
+      
       res.json(responseData);
     } catch (error) {
       console.error("Error processing object analysis:", error);
@@ -1783,6 +1792,15 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Add the name to the response
       auraAnalysis.name = analysisName;
       
+      // Check and award badges for aura scans
+      if (req.isAuthenticated() && req.user) {
+        try {
+          await checkAndAwardBadges(req.user.id);
+        } catch (badgeError) {
+          console.error("Error checking badges:", badgeError);
+        }
+      }
+      
       // Return guaranteed successful response
       console.log("Aura analysis completed successfully");
       console.log("Final response includes ID:", auraAnalysis.id);
@@ -2131,6 +2149,13 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         strengths: numerologyProfile.strengths,
         challenges: numerologyProfile.challenges
       };
+      
+      // Check and award badges for numerology readings
+      try {
+        await checkAndAwardBadges(req.user.id);
+      } catch (badgeError) {
+        console.error("Error checking badges:", badgeError);
+      }
       
       res.json(comprehensiveResponse);
     } catch (error) {
@@ -3174,6 +3199,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Add soul energy +100 for completing vibe scan
         await storage.addSoulEnergy(req.user.id, 100, 'vibe_scan', 'What\'s My Vibe scan completed');
         console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
+        
+        // Check and award badges for vibe scans
+        try {
+          await checkAndAwardBadges(req.user.id);
+        } catch (badgeError) {
+          console.error("Error checking badges:", badgeError);
+        }
       }
 
       res.json({
@@ -3222,35 +3254,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
         gratitude: gratitudeText
       });
       
-      // Award achievement for journal entries at different levels
+      // Check and award badges for journal entries
       try {
-        const journalCount = await db.query.journals.findMany({
-          where: (journals, { eq }) => eq(journals.userId, req.user.id),
-        });
-        const milestones = [
-          { count: 1, type: 'first_journal', title: 'Thoughts Flow 📖', desc: 'Wrote your first journal entry', icon: '📝' },
-          { count: 5, type: 'journal_keeper', title: 'Journal Keeper 📚', desc: 'Wrote 5 journal entries', icon: '📚' },
-          { count: 20, type: 'journal_master', title: 'Journal Master 🖋️', desc: 'Wrote 20 journal entries', icon: '🖋️' },
-          { count: 50, type: 'journal_legend', title: 'Journal Legend 📜', desc: 'Wrote 50 journal entries', icon: '📜' }
-        ];
-        for (const milestone of milestones) {
-          if (journalCount.length === milestone.count) {
-            const existing = await db.query.achievements.findFirst({
-              where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
-            });
-            if (!existing) {
-              await db.insert(achievements).values({
-                userId: req.user.id,
-                achievementType: milestone.type,
-                title: milestone.title,
-                description: milestone.desc,
-                icon: milestone.icon,
-              });
-            }
-          }
-        }
-      } catch (ach) {
-        console.log("Achievement update skipped:", ach);
+        await checkAndAwardBadges(req.user.id);
+      } catch (badgeError) {
+        console.error("Error checking badges:", badgeError);
       }
       
       res.status(201).json(journalEntry);
@@ -3579,6 +3587,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
       await storage.updateUser(userId, { 
         soulEnergy: req.user.soulEnergy + (energyGained || 25) 
       });
+      
+      // Check and award badges for meditation
+      try {
+        await checkAndAwardBadges(userId);
+      } catch (badgeError) {
+        console.error("Error checking badges:", badgeError);
+      }
 
       res.json(session);
     } catch (error) {
@@ -4170,6 +4185,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       // Deduct credits for live numerology reading
       await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
+      
+      // Check and award badges for numerology readings
+      try {
+        await checkAndAwardBadges(req.user.id);
+      } catch (badgeError) {
+        console.error("Error checking badges:", badgeError);
+      }
       
       console.log(`Live numerology reading generated successfully for ${name}`);
       res.json(result);
