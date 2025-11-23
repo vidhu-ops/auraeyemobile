@@ -35,6 +35,8 @@ import { PremiumProvider } from "@/hooks/use-premium";
 import { LightsProvider, useLights } from "@/hooks/use-lights";
 import { MascotProvider } from "@/hooks/use-mascot";
 import { NotificationProvider } from "@/hooks/use-notifications";
+import { BadgeNotification } from "@/components/badge-notification";
+import { BadgeProvider, useBadgeContext } from "@/hooks/use-badge-context";
 import { ProtectedRoute } from "./lib/protected-route";
 import LightsActivation from "@/components/lights-activation";
 import Mascot from "@/components/mascot/mascot";
@@ -82,6 +84,7 @@ function AppContent() {
   const { lightsOn } = useLights();
   const [location, setLocation] = useLocation();
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const { currentBadge, closeBadge } = useBadgeContext();
 
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
@@ -123,6 +126,16 @@ function AppContent() {
     <>
       <Router />
       {user && !isPublicRoute && <Mascot />}
+      {currentBadge && (
+        <BadgeNotification
+          title={currentBadge.title}
+          description={currentBadge.description}
+          icon={currentBadge.icon}
+          level={currentBadge.level}
+          onClose={closeBadge}
+          data-testid="badge-earned"
+        />
+      )}
       {user && !isPublicRoute && <NotificationPrompt />}
     </>
   );
@@ -136,12 +149,14 @@ function App() {
           <PremiumProvider>
             <MascotProvider>
               <NotificationProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <div className="min-h-screen flex flex-col">
-                    <AppContent />
-                  </div>
-                </TooltipProvider>
+                <BadgeProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <div className="min-h-screen flex flex-col">
+                      <AppContent />
+                    </div>
+                  </TooltipProvider>
+                </BadgeProvider>
               </NotificationProvider>
             </MascotProvider>
           </PremiumProvider>

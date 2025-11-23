@@ -18,6 +18,7 @@ import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfi
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions } from "../shared/schema";
+import { checkAndAwardBadges } from "./badge-checker";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt, sql } from "drizzle-orm";
@@ -4894,6 +4895,28 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error checking achievement:", error);
       res.status(500).json({ message: "Failed to check achievement" });
+    }
+  });
+
+  // Check and award badges based on activity counts
+  app.post("/api/check-badges", isAuthenticated, async (req, res) => {
+    try {
+      const newBadges = await checkAndAwardBadges(req.user.id);
+      
+      // Also fetch all current achievements for profile update
+      const allAchievements = await db.query.achievements.findMany({
+        where: (achievements, { eq }) => eq(achievements.userId, req.user.id),
+        orderBy: (achievements, { desc }) => desc(achievements.unlockedAt),
+      });
+      
+      res.json({ 
+        newBadges,
+        allAchievements,
+        hasNewBadges: newBadges.length > 0
+      });
+    } catch (error) {
+      console.error("Error checking badges:", error);
+      res.status(500).json({ message: "Failed to check badges" });
     }
   });
 

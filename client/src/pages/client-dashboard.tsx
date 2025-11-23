@@ -124,7 +124,7 @@ export default function ClientDashboard() {
 
            
 
-            <p className="text-purple-600 text-sm italic mb-4">
+            <p className="text-white text-sm italic mb-4">
               "On a journey of spiritual awakening and inner healing. Passionate about meditation, energy work, and connecting with like-minded souls."
             </p>
 
@@ -146,7 +146,7 @@ export default function ClientDashboard() {
             {/* Milestone Badge + Achievements */}
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex justify-center">
-                <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-1 text-sm font-semibold`}>
+                <Badge className={`bg-gradient-to-r ${milestone.gradient} text-black px-4 py-1 text-sm font-semibold`}>
                   {milestone.level} Level
                 </Badge>
               </div>
@@ -359,7 +359,7 @@ export default function ClientDashboard() {
                     <h2 className="text-white font-bold text-xl">Current Milestone</h2>
                     <p className="text-cyan-300 text-sm">{milestone.level}</p>
                   </div>
-                  <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-2`}>
+                  <Badge className={`bg-gradient-to-r ${milestone.gradient} text-black px-4 py-2`}>
                     Level {energyMilestones.findIndex(m => m.level === milestone.level) + 1}
                   </Badge>
                 </div>
