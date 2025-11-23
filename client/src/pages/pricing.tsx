@@ -261,17 +261,19 @@ export default function PricingPage() {
                         ))}
                       </ul>
                       
-                      <Button 
-                        variant={plan.popular ? "mystical" : "cosmic"}
-                        className={`w-full font-cosmic text-sm py-2 ${
-                          plan.highlight ? "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white" :
-                          plan.elite ? "bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white" :
-                          ""
-                        }`}
-                        data-testid={`button-subscribe-${plan.id}`}
-                      >
-                        {plan.highlight ? "Start Free Trial" : "Get Started"}
-                      </Button>
+                      <Link href="/payment">
+                        <Button 
+                          variant={plan.popular ? "mystical" : "cosmic"}
+                          className={`w-full font-cosmic text-sm py-2 ${
+                            plan.highlight ? "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white" :
+                            plan.elite ? "bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white" :
+                            ""
+                          }`}
+                          data-testid={`button-subscribe-${plan.id}`}
+                        >
+                          {plan.highlight ? "Start Free Trial" : "Get Started"}
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 );
