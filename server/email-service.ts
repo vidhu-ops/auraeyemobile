@@ -115,6 +115,90 @@ export async function sendPasswordResetEmail(
   });
 }
 
+export async function sendPaymentConfirmationEmail(
+  email: string,
+  username: string,
+  planName: string,
+  credits: number,
+  price: number
+): Promise<boolean> {
+  const subject = "Payment Confirmation - Aurfy Credits";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #10b981;">Payment Confirmed ✨</h2>
+      <p>Hello <strong>${username}</strong>,</p>
+      <p>Thank you for your purchase! Your payment has been successfully processed.</p>
+      
+      <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+        <h3 style="color: #047857; margin-top: 0;">Order Details:</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280;">Plan:</td>
+            <td style="padding: 8px 0; color: #111827; font-weight: bold;">${planName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280;">Credits Received:</td>
+            <td style="padding: 8px 0; color: #111827; font-weight: bold;">+${credits} credits</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280;">Amount Paid:</td>
+            <td style="padding: 8px 0; color: #111827; font-weight: bold;">$${(price / 100).toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280;">Date:</td>
+            <td style="padding: 8px 0; color: #111827; font-weight: bold;">${new Date().toLocaleDateString()}</td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Your new credits are immediately available in your account. You can use them to access all premium spiritual services.</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://aurfy.com/dashboard" style="background-color: #6366f1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
+      </div>
+
+      <p style="color: #6b7280; font-size: 14px;">If you have any questions about your purchase, please contact our support team.</p>
+      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The Aurfy Team</p>
+    </div>
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject,
+    html
+  });
+}
+
+export async function sendEmailConfirmationEmail(
+  email: string,
+  username: string
+): Promise<boolean> {
+  const subject = "Email Address Updated - Aurfy";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #7c3aed;">Email Address Updated ✨</h2>
+      <p>Hello <strong>${username}</strong>,</p>
+      <p>This email confirms that your account email address has been successfully updated.</p>
+      
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="color: #6b7280;">New Email Address:</p>
+        <p style="font-size: 16px; font-weight: bold; color: #111827;">${email}</p>
+      </div>
+
+      <p>This address will be used for all future communications, payment confirmations, and account notifications.</p>
+      
+      <p style="color: #6b7280; font-size: 14px;">If you did not make this change or believe your account has been compromised, please contact our support team immediately.</p>
+      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The Aurfy Team</p>
+    </div>
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject,
+    html
+  });
+}
+
 // Helper function to strip data URL prefix
 function stripDataUrlPrefix(dataUrl: string): string {
   const base64Index = dataUrl.indexOf(',');

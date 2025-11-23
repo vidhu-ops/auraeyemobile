@@ -489,9 +489,82 @@ export const insertChakraUnlockSchema = createInsertSchema(chakraUnlocks).omit({
   updatedAt: true,
 });
 
+// Payment Plans - subscription tiers available
+export const paymentPlans = pgTable("payment_plans", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(), // "Free Trial", "Starter", "Professional", etc.
+  stripePriceId: text("stripe_price_id"), // Stripe price ID for this plan
+  price: integer("price"), // Price in cents
+  billingCycle: text("billing_cycle"), // "monthly", "quarterly", "annually", "one-time"
+  credits: integer("credits"), // Credits included in this plan
+  features: text("features").notNull(), // JSON array of features
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPaymentPlanSchema = createInsertSchema(paymentPlans).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Payment Transactions - track user purchases
+export const paymentTransactions = pgTable("payment_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  planId: integer("plan_id").notNull().references(() => paymentPlans.id),
+  amount: integer("amount").notNull(), // Amount in cents
+  status: text("status").notNull(), // "pending", "completed", "failed", "refunded"
+  billingEmail: text("billing_email"),
+  creditsBefore: integer("credits_before"),
+  creditsAfter: integer("credits_after"),
+  receiptUrl: text("receipt_url"), // Stripe receipt URL
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+}, (table) => ({
+  userIdIdx: index("payment_transactions_user_id_idx").on(table.userId),
+  userIdCreatedAtIdx: index("payment_transactions_user_id_created_at_idx").on(table.userId, table.createdAt),
+}));
+
+export const insertPaymentTransactionSchema = createInsertSchema(paymentTransactions).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
+// User Subscriptions - track active subscriptions
+export const userSubscriptions = pgTable("user_subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  planId: integer("plan_id").references(() => paymentPlans.id),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  status: text("status").notNull().default("active"), // "active", "cancelled", "paused", "expired"
+  startDate: timestamp("start_date").defaultNow(),
+  endDate: timestamp("end_date"),
+  renewalDate: timestamp("renewal_date"),
+  autoRenew: boolean("auto_renew").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("user_subscriptions_user_id_idx").on(table.userId),
+}));
+
+export const insertUserSubscriptionSchema = createInsertSchema(userSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 export type ColorCollector = typeof colorCollectors.$inferSelect;
 export type InsertColorCollector = z.infer<typeof insertColorCollectorSchema>;
 export type ChakraUnlock = typeof chakraUnlocks.$inferSelect;
 export type InsertChakraUnlock = z.infer<typeof insertChakraUnlockSchema>;
+export type PaymentPlan = typeof paymentPlans.$inferSelect;
+export type InsertPaymentPlan = z.infer<typeof insertPaymentPlanSchema>;
+export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
+export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSchema>;
+export type UserSubscription = typeof userSubscriptions.$inferSelect;
+export type InsertUserSubscription = z.infer<typeof insertUserSubscriptionSchema>;
