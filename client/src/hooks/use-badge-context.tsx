@@ -41,7 +41,13 @@ export function BadgeProvider({ children }: { children: ReactNode }) {
       const response = await checkBadgesMutation.mutateAsync();
       
       if (response.newBadges && response.newBadges.length > 0) {
-        setBadges(response.newBadges);
+        // Transform newBadges to have proper level field
+        const transformedBadges = response.newBadges.map((badge: any) => ({
+          ...badge,
+          // Ensure 'level' is set from badgeType or from the badge definition
+          level: badge.level || badge.badgeType || "bronze",
+        }));
+        setBadges(transformedBadges);
         setCurrentBadgeIndex(0);
         setIsShowing(true);
       }

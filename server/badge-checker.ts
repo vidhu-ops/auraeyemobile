@@ -276,6 +276,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
+              badgeType: badgeInfo.level,
             }).returning();
             
             newBadges.push(badgeInfo);

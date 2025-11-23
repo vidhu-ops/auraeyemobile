@@ -3679,6 +3679,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
                 title: milestone.title,
                 description: milestone.desc,
                 icon: '🔥',
+                badgeType: milestone.streak >= 365 ? 'platinum' : milestone.streak >= 100 ? 'gold' : milestone.streak >= 30 ? 'silver' : 'bronze',
               });
             }
           }
@@ -4902,12 +4903,25 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const ach = achievementMap[achievementType];
       if (ach) {
+        // Map achievement types to badge levels
+        const badgeLevelMap: Record<string, "bronze" | "silver" | "gold" | "platinum"> = {
+          "first_aura": "bronze",
+          "first_journal": "bronze",
+          "7_day_streak": "silver",
+          "50_soul_energy": "silver",
+          "100_soul_energy": "gold",
+          "500_soul_energy": "platinum",
+          "colors_collected": "gold",
+          "chakra_master": "platinum",
+        };
+        
         const newAchievement = await db.insert(achievements).values({
           userId: req.user.id,
           achievementType,
           title: ach.title,
           description: ach.description,
           icon: ach.icon,
+          badgeType: badgeLevelMap[achievementType] || "bronze",
         }).returning();
 
         res.json({ success: true, achievement: newAchievement[0] });
