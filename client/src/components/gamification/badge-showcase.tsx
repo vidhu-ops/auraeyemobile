@@ -12,7 +12,7 @@ export interface EarnedBadge {
 
 export function BadgeShowcase() {
   const { data: earnedBadgesData, isLoading } = useQuery({
-    queryKey: ["/api/earned-badges"],
+    queryKey: ["/api/achievements"],
   });
 
   const earnedBadges: EarnedBadge[] = Array.isArray(earnedBadgesData) ? earnedBadgesData : [];

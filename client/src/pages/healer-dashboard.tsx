@@ -65,6 +65,7 @@ import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard"
 import { BadgeTargets } from "@/components/gamification/badge-targets";
 import { BadgeShowcase } from "@/components/gamification/badge-showcase";
 import { ProfilePictureUploadDialog } from "@/components/profile/profile-picture-upload";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 
 interface HealerBooking {
   id: number;
@@ -230,6 +231,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [birthDate, setBirthDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { checkBadges } = useBadgeContext();
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -262,6 +264,10 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         
         // Refresh the readings list
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+        
+        // Check for new badges
+        await checkBadges();
+        
         onSuccess();
       } else {
         throw new Error("Failed to create numerology reading");
@@ -1841,6 +1847,7 @@ export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
+  const { checkBadges } = useBadgeContext();
   
   // Fetch login streaks
   const { data: streakData } = useQuery({
@@ -1865,7 +1872,10 @@ export default function HealerDashboard() {
     if (tabParam && ['overview', 'bookings', 'analytics', 'readings', 'tools'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
-  }, []);
+    
+    // Check for new badges on page load
+    checkBadges();
+  }, [checkBadges]);
   const [selectedBooking, setSelectedBooking] = useState<HealerBooking | null>(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
