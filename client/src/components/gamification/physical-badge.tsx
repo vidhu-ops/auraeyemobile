@@ -46,11 +46,11 @@ export function PhysicalBadge({
 
   return (
     <div
-      className={`relative group cursor-pointer transition-transform hover:scale-105`}
+      className={`relative group cursor-pointer transition-transform hover:scale-105 flex flex-col items-center`}
       data-testid={`physical-badge-${level}`}
     >
       {/* Badge Container */}
-      <div className="relative w-32 h-44 flex flex-col items-center">
+      <div className="relative w-32 flex flex-col items-center">
         {/* Glow Effect for Earned Badges */}
         {isEarned && (
           <div 
@@ -82,7 +82,7 @@ export function PhysicalBadge({
 
         {/* Badge Name */}
         <h3
-          className={`text-center text-xs font-bold mt-2 leading-tight ${colors.text} drop-shadow-md`}
+          className={`text-center text-xs font-bold mt-2 leading-tight ${colors.text} drop-shadow-md px-1`}
         >
           {title}
         </h3>
@@ -93,13 +93,11 @@ export function PhysicalBadge({
             <span className="text-xs font-bold text-white drop-shadow-md">✓ ACHIEVED</span>
           </div>
         )}
-      </div>
 
-      {/* Tooltip on Hover */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-        <div className={`bg-black/90 text-white text-xs rounded px-2 py-1 whitespace-nowrap`}>
+        {/* Description Below Level Badge */}
+        <p className="text-center text-xs text-purple-200 mt-2 px-2 leading-snug">
           {description}
-        </div>
+        </p>
       </div>
     </div>
   );
