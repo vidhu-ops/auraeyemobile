@@ -18,6 +18,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import { getSoulEnergyMilestone, calculateTreeGrowth } from "@/lib/soul-energy-utils";
 import { apiRequest } from "@/lib/queryClient";
+import { MeditationCarousel } from "@/components/meditation-carousel";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -438,6 +439,9 @@ export default function HomePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Meditation & Breathwork Carousel */}
+        <MeditationCarousel />
 
         {/* Quick Services */}
         <div className="mb-10">
