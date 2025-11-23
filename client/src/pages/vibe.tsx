@@ -110,8 +110,13 @@ export default function VibePage() {
         description: `Your dominant vibe is ${data.dominantColor}`,
       });
       
-      // Check for new badges
-      await checkBadges();
+      // Show badges if they came in the response, otherwise check for new badges
+      if (data.newBadges && data.newBadges.length > 0) {
+        await checkBadges();
+      } else {
+        // Check for new badges as fallback
+        await checkBadges();
+      }
     } catch (error: any) {
       // Reset image preview on error so user can try again
       setImagePreview(null);

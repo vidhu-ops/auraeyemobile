@@ -70,8 +70,9 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
     
     const result = await response.json();
     
-    // Invalidate credits cache to update the display
+    // Invalidate credits cache to update the display immediately
     queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/user'] });
     
     // Optional: Could add client-side color enhancement/visualization here
     // based on the detected dominant and secondary colors
