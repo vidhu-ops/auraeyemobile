@@ -672,6 +672,7 @@ export default function ObjectAnalysis() {
       // Invalidate queries to refresh user's reading history immediately
       queryClient.invalidateQueries({ queryKey: ['/api/object-analyses'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       
       // Reset review system for new analysis and set current analysis ID
       setReviewSubmitted(false);

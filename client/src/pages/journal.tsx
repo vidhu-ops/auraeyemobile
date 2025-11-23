@@ -127,6 +127,7 @@ export default function JournalPage() {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["/api/journal"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/achievements"] });
       toast({
         title: "Entry Added",
         description: "Your journal entry has been saved successfully.",

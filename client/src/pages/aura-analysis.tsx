@@ -6391,6 +6391,7 @@ Team AuraEye™
             // Invalidate queries to refresh user's reading history immediately
             queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
             queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
             
             // Generate aura visualization using canvas overlay
             if (base64String) {

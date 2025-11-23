@@ -316,6 +316,7 @@ export default function NumerologyPage() {
       // Invalidate queries to refresh user's reading history immediately
       queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       
       toast({
         title: "Analysis Complete",
