@@ -173,7 +173,7 @@ export default function AuraAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { showPremiumModal } = usePremium();
-  const { checkBadges } = useBadgeContext();
+  const { checkBadges, showBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AuraAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("analysis");
@@ -6364,8 +6364,13 @@ Team AuraEye™
               console.log('📸 Processed image loaded from backend, length:', backendImage?.length || 0);
             }
             
-            // Check for new badges
-            await checkBadges();
+            // Show badges if returned from server
+            if (analysisResult.newBadges && analysisResult.newBadges.length > 0) {
+              showBadges(analysisResult.newBadges);
+            } else {
+              // Check for new badges as fallback
+              await checkBadges();
+            }
             
             // Set analysis ID if returned from server for review functionality
             if (analysisResult.id) {

@@ -15,6 +15,7 @@ interface BadgeContextType {
   currentBadgeIndex: number;
   isShowing: boolean;
   checkBadges: () => Promise<any>;
+  showBadges: (newBadges: BadgeReward[]) => void;
   closeBadge: () => void;
   currentBadge: BadgeReward | null;
 }
@@ -63,6 +64,21 @@ export function BadgeProvider({ children }: { children: ReactNode }) {
     }
   }, [checkBadgesMutation]);
 
+  const showBadges = useCallback((newBadges: BadgeReward[]) => {
+    if (newBadges && newBadges.length > 0) {
+      const transformedBadges = newBadges.map((badge: any) => ({
+        ...badge,
+        level: badge.level || badge.badgeType || "bronze",
+      }));
+      setBadges(transformedBadges);
+      setCurrentBadgeIndex(0);
+      setIsShowing(true);
+      
+      // Invalidate achievements to update profile
+      queryClient.invalidateQueries({ queryKey: ["/api/achievements"] });
+    }
+  }, []);
+
   const closeBadge = useCallback(() => {
     if (currentBadgeIndex < badges.length - 1) {
       setCurrentBadgeIndex(currentBadgeIndex + 1);
@@ -80,6 +96,7 @@ export function BadgeProvider({ children }: { children: ReactNode }) {
     currentBadgeIndex,
     isShowing,
     checkBadges,
+    showBadges,
     closeBadge,
     currentBadge,
   };

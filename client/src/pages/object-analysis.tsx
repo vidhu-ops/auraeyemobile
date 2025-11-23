@@ -36,7 +36,7 @@ export default function ObjectAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { showPremiumModal } = usePremium();
-  const { checkBadges } = useBadgeContext();
+  const { checkBadges, showBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<ObjectAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("basic");
@@ -679,8 +679,13 @@ export default function ObjectAnalysis() {
       setReviewText("");
       setCurrentAnalysisId(data.id || null);
       
-      // Check for new badges
-      await checkBadges();
+      // Show badges if returned from server
+      if (data.newBadges && data.newBadges.length > 0) {
+        showBadges(data.newBadges);
+      } else {
+        // Check for new badges as fallback
+        await checkBadges();
+      }
 
       // Set processed image immediately with aura overlay effect
       setProcessedImage(imageUrl);

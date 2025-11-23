@@ -51,7 +51,7 @@ export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  const { checkBadges } = useBadgeContext();
+  const { checkBadges, showBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -112,7 +112,7 @@ export default function VibePage() {
       
       // Show badges if they came in the response, otherwise check for new badges
       if (data.newBadges && data.newBadges.length > 0) {
-        await checkBadges();
+        showBadges(data.newBadges);
       } else {
         // Check for new badges as fallback
         await checkBadges();
