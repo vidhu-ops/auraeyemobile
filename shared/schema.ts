@@ -439,6 +439,7 @@ export const achievements = pgTable("achievements", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   icon: text("icon"), // Emoji or icon identifier
+  badgeType: text("badge_type").notNull().default("bronze"), // "bronze" | "silver" | "gold" | "platinum"
   unlockedAt: timestamp("unlocked_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
@@ -450,6 +451,8 @@ export const insertAchievementSchema = createInsertSchema(achievements).omit({
   id: true,
   createdAt: true,
   unlockedAt: true,
+}).extend({
+  badgeType: z.enum(["bronze", "silver", "gold", "platinum"]).optional(),
 });
 
 // Color Collector - tracks which aura colors user has collected
