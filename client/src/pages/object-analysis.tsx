@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import { queryClient } from "@/lib/queryClient";
+import { useBadgeContext } from "@/hooks/use-badge-context";
 import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -35,6 +36,7 @@ export default function ObjectAnalysis() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { showPremiumModal } = usePremium();
+  const { checkBadges } = useBadgeContext();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<ObjectAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("basic");
@@ -676,6 +678,9 @@ export default function ObjectAnalysis() {
       setRating(0);
       setReviewText("");
       setCurrentAnalysisId(data.id || null);
+      
+      // Check for new badges
+      await checkBadges();
 
       // Set processed image immediately with aura overlay effect
       setProcessedImage(imageUrl);
