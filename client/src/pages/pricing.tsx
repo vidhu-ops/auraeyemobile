@@ -247,24 +247,24 @@ export default function PricingPage() {
                       </CardDescription>
                     </CardHeader>
                     
-                    <CardContent className="space-y-4 pt-0">
+                    <CardContent className="space-y-4 pt-2 flex flex-col">
                       <ul className="space-y-2">
                         {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start text-xs text-purple-600 font-cosmic">
+                          <li key={index} className="flex items-start text-xs text-purple-200 font-cosmic">
                             <Check className={`h-3 w-3 mr-2 flex-shrink-0 mt-0.5 ${
                               plan.highlight ? "text-yellow-500" :
                               plan.elite ? "text-amber-500" :
-                              "text-purple-500"
+                              "text-purple-200"
                             }`} />
                             <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
                       
-                      <Link href="/payment">
+                      <Link href="/" className="mt-auto pt-4">
                         <Button 
                           variant={plan.popular ? "mystical" : "cosmic"}
-                          className={`w-full font-cosmic text-sm py-2 ${
+                          className={`w-full font-cosmic text-sm space-y-2 py-2 px-2 ${
                             plan.highlight ? "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white" :
                             plan.elite ? "bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white" :
                             ""
