@@ -14,10 +14,10 @@ import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
-import { sendHealerBookingNotification, sendPasswordResetEmail } from "./email-service";
+import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt } from "drizzle-orm";
@@ -5178,6 +5178,159 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error fetching healer leaderboard:", error);
       res.status(500).json({ message: "Failed to fetch leaderboard" });
+    }
+  });
+
+  // Payment Plans - Get all available plans
+  app.get("/api/payment-plans", async (req, res) => {
+    try {
+      const plans = await db.query.paymentPlans.findMany({
+        where: (plans, { eq }) => eq(plans.isActive, true),
+      });
+      
+      res.json(plans.map(plan => ({
+        ...plan,
+        features: JSON.parse(plan.features),
+      })));
+    } catch (error) {
+      console.error("Error fetching payment plans:", error);
+      res.status(500).json({ error: "Failed to fetch payment plans" });
+    }
+  });
+
+  // Purchase Plan endpoint
+  app.post("/api/purchase-plan", isAuthenticated, async (req, res) => {
+    try {
+      const { planId } = req.body;
+      const userId = req.user.id;
+
+      if (!planId) {
+        return res.status(400).json({ error: "Plan ID is required" });
+      }
+
+      const plan = await db.query.paymentPlans.findFirst({
+        where: (plans, { eq }) => eq(plans.id, planId),
+      });
+
+      if (!plan) {
+        return res.status(404).json({ error: "Plan not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Create payment transaction
+      const transaction = await db.insert({ paymentTransactions } as any).values({
+        userId,
+        planId,
+        amount: plan.price || 0,
+        status: "pending",
+        billingEmail: user.email,
+        creditsBefore: user.credits,
+        creditsAfter: (user.credits || 0) + (plan.credits || 0),
+      }).returning();
+
+      // Update user credits
+      await storage.updateUserCredits(userId, (user.credits || 0) + (plan.credits || 0));
+
+      // Mark transaction as completed
+      await db.update({ paymentTransactions } as any)
+        .set({ status: "completed", completedAt: new Date() })
+        .where((pt) => ({ id: transaction[0].id }));
+
+      // Send confirmation email
+      if (user.email) {
+        sendPaymentConfirmationEmail(user.email, user.username, plan.name, plan.credits || 0, plan.price || 0);
+      }
+
+      res.json({
+        success: true,
+        message: `Successfully purchased ${plan.name}`,
+        credits: (user.credits || 0) + (plan.credits || 0),
+      });
+    } catch (error) {
+      console.error("Error purchasing plan:", error);
+      res.status(500).json({ error: "Failed to process payment" });
+    }
+  });
+
+  // Get user subscription
+  app.get("/api/user-subscription", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      const subscription = await db.query.userSubscriptions.findFirst({
+        where: (subs, { eq }) => eq(subs.userId, userId),
+      });
+
+      if (!subscription) {
+        return res.json({ status: "free", planName: "Free Trial" });
+      }
+
+      const plan = await db.query.paymentPlans.findFirst({
+        where: (plans, { eq }) => eq(plans.id, subscription.planId),
+      });
+
+      res.json({
+        ...subscription,
+        planName: plan?.name || "Free Trial",
+      });
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      res.status(500).json({ error: "Failed to fetch subscription" });
+    }
+  });
+
+  // Get payment transactions
+  app.get("/api/payment-transactions", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+
+      const transactions = await db.query.paymentTransactions.findMany({
+        where: (trans, { eq }) => eq(trans.userId, userId),
+        orderBy: (trans, { desc }) => desc(trans.createdAt),
+        limit: 10,
+      });
+
+      const withPlanNames = await Promise.all(transactions.map(async (trans) => {
+        const plan = await db.query.paymentPlans.findFirst({
+          where: (plans, { eq }) => eq(plans.id, trans.planId),
+        });
+        return { ...trans, planName: plan?.name || "Unknown Plan" };
+      }));
+
+      res.json(withPlanNames);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      res.status(500).json({ error: "Failed to fetch transactions" });
+    }
+  });
+
+  // Update user email
+  app.patch("/api/users/me/email", isAuthenticated, async (req, res) => {
+    try {
+      const { email } = req.body;
+      const userId = req.user.id;
+
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const updatedUser = await storage.updateUserEmail(userId, email);
+      
+      // Send confirmation email
+      sendEmailConfirmationEmail(email, req.user.username);
+
+      res.json({
+        success: true,
+        message: "Email updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error updating email:", error);
+      res.status(500).json({ error: "Failed to update email" });
     }
   });
 

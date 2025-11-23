@@ -26,6 +26,8 @@ import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
 import SettingsPage from "@/pages/settings";
+import PaymentPage from "@/pages/payment";
+import ProfilePage from "@/pages/profile";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
 import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -68,6 +70,8 @@ function Router() {
       <ProtectedRoute path="/help" component={HelpPage} />
       <ProtectedRoute path="/color-meanings" component={ColorMeaningsPage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
+      <ProtectedRoute path="/payment" component={PaymentPage} />
+      <ProtectedRoute path="/profile" component={ProfilePage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
@@ -82,7 +86,7 @@ function AppContent() {
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
-    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings'];
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment', '/profile'];
     const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
     if (!shouldSkip) {
@@ -107,7 +111,7 @@ function AppContent() {
   }
 
   // Public routes that don't require lights activation
-  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding'];
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment', '/profile'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
   // Show lights activation only if user is logged in, not on a public route, and lights are off
