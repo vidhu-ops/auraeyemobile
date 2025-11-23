@@ -88,6 +88,10 @@ export default function Navbar() {
     { name: "Services", href: "/services", icon: Briefcase },
     { name: "Dashboard", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: LayoutDashboard },
     { name: "Pricing", href: "/pricing", icon: DollarSign },
+    ...(user ? [
+      { name: "Credits", href: "/payment", icon: CreditCard },
+      { name: "Profile", href: "/profile", icon: User },
+    ] : []),
     { name: "About", href: "/about", icon: Info },
     { name: "Contact", href: "/contact", icon: Mail },
   ];
