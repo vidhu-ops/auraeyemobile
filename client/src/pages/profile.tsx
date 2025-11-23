@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X, Trophy } from "lucide-react";
+import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X, Trophy, Flame, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -12,6 +12,7 @@ import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { Link, useLocation } from "wouter";
 import { useBadgeContext } from "@/hooks/use-badge-context";
+import { useCredits } from "@/hooks/use-credits";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -20,6 +21,7 @@ export default function ProfilePage() {
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [editedEmail, setEditedEmail] = useState(user?.email || "");
   const { checkBadges } = useBadgeContext();
+  const { credits } = useCredits();
 
   const { data: stats } = useQuery({
     queryKey: ["/api/user-stats"],
@@ -29,13 +31,20 @@ export default function ProfilePage() {
     queryKey: ["/api/user-subscription"],
   });
 
-  const { data: achievements = [] } = useQuery({
+  const { data: streaks } = useQuery({
+    queryKey: ["/api/streaks"],
+  });
+
+  const { data: achievements = [], refetch: refetchAchievements } = useQuery({
     queryKey: ["/api/achievements"],
   });
 
   // Check for new badges on page load (run once)
   useEffect(() => {
-    checkBadges();
+    checkBadges().then(() => {
+      // Invalidate and refetch achievements after checking badges
+      refetchAchievements();
+    });
   }, []);
 
   const updateEmailMutation = useMutation({
@@ -212,6 +221,38 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
+            {/* Streaks Section */}
+            {streaks && (
+              <Card className="border-orange-300/50 glass-ethereal">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Flame className="h-5 w-5 text-orange-400" />
+                    Your Streaks
+                  </CardTitle>
+                  <CardDescription>Consistency is key to spiritual growth</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-400/50">
+                      <p className="text-purple-300 text-sm font-medium">Current Streak</p>
+                      <p className="text-3xl font-bold text-orange-300 mt-2">{streaks.currentStreak || 0}</p>
+                      <p className="text-xs text-purple-300 mt-1">days in a row</p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-400/50">
+                      <p className="text-purple-300 text-sm font-medium">Longest Streak</p>
+                      <p className="text-3xl font-bold text-yellow-300 mt-2">{streaks.longestStreak || 0}</p>
+                      <p className="text-xs text-purple-300 mt-1">all time record</p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-400/50">
+                      <p className="text-purple-300 text-sm font-medium">This Week</p>
+                      <p className="text-3xl font-bold text-blue-300 mt-2">{streaks.daysOutOf7 || 0}/7</p>
+                      <p className="text-xs text-purple-300 mt-1">days active</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Stats */}
             {stats && (
               <Card className="border-purple-200/50 glass-ethereal">
@@ -339,7 +380,7 @@ export default function ProfilePage() {
               <CardContent className="space-y-3">
                 <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-400/50">
                   <p className="text-purple-300 text-sm">Available Credits</p>
-                  <p className="text-2xl font-bold text-indigo-300">{user.credits || 0}</p>
+                  <p className="text-2xl font-bold text-indigo-300" data-testid="display-credits">{credits || 0}</p>
                 </div>
                 {subscription && (
                   <div className="p-3 rounded-lg bg-green-500/10 border border-green-400/50">

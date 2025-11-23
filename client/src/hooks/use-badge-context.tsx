@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export interface BadgeReward {
   type: string;
@@ -45,6 +45,10 @@ export function BadgeProvider({ children }: { children: ReactNode }) {
         setCurrentBadgeIndex(0);
         setIsShowing(true);
       }
+      
+      // Invalidate and refetch achievements data to show updated badges in profile
+      await queryClient.invalidateQueries({ queryKey: ["/api/achievements"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/achievements"] });
       
       return response;
     } catch (error) {
