@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen, Upload, RotateCcw, X } from "lucide-react";
 import ImageUpload from "@/components/forms/image-upload";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
@@ -109,6 +109,10 @@ export default function VibePage() {
         title: "Vibe analysis complete!",
         description: `Your dominant vibe is ${data.dominantColor}`,
       });
+      
+      // Invalidate queries to refresh vibe readings and achievements
+      queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       
       // Show badges if they came in the response, otherwise check for new badges
       if (data.newBadges && data.newBadges.length > 0) {

@@ -292,16 +292,16 @@ export default function ProfilePage() {
             )}
 
             {/* Badges & Achievements */}
-            {achievements && achievements.length > 0 && (
-              <Card className="border-amber-300/50 glass-ethereal">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-amber-300" />
-                    Badges & Achievements
-                  </CardTitle>
-                  <CardDescription>Your earned badges</CardDescription>
-                </CardHeader>
-                <CardContent>
+            <Card className="border-amber-300/50 glass-ethereal">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-amber-300" />
+                  Badges & Achievements
+                </CardTitle>
+                <CardDescription>{achievements?.length || 0} badges earned</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {achievements && achievements.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {achievements.map((achievement: any, idx: number) => {
                       // Determine badge level color based on type
@@ -338,9 +338,15 @@ export default function ProfilePage() {
                       );
                     })}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-purple-300 mb-2">No badges earned yet</p>
+                    <p className="text-purple-400 text-sm">Complete services to earn badges!</p>
+                    <div className="mt-4 text-3xl">🏆</div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sidebar */}
