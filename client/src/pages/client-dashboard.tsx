@@ -465,7 +465,7 @@ export default function ClientDashboard() {
         {activeTab === "badge info" && (
           <div className="space-y-4" data-testid="badge-info-section">
             {/* Badge Info Header */}
-            <Card className="bg-gradient-to-br from-blue-400 via-cyan-500 to-green-600 border-0 shadow-2xl animate-pulse">
+            <Card className="bg-gradient-to-br from-blue-400 via-cyan-500 to-green-600 border-0 shadow-2xl">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="text-5xl animate-bounce">📚</div>
@@ -628,7 +628,7 @@ export default function ClientDashboard() {
         {activeTab === "achievements" && (
           <div className="space-y-4" data-testid="achievements-section">
             {/* Achievements Header */}
-            <Card className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 border-0 shadow-2xl animate-pulse">
+            <Card className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 border-0 shadow-2xl">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="text-5xl animate-bounce">🏆</div>
