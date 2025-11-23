@@ -4,6 +4,7 @@ export interface PhysicalBadgeProps {
   title: string;
   level: "bronze" | "silver" | "gold" | "platinum";
   description: string;
+  icon?: string;
 }
 
 const levelColors = {
@@ -37,6 +38,7 @@ export function PhysicalBadge({
   title,
   level,
   description,
+  icon = "⭐",
 }: PhysicalBadgeProps) {
   const colors = levelColors[level];
 
@@ -61,13 +63,9 @@ export function PhysicalBadge({
             className={`absolute inset-0 bg-gradient-to-br ${colors.badge} opacity-60 mix-blend-multiply`}
           />
 
-          {/* Tier Label */}
+          {/* Emoji Icon - The Main Badge Visual */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span
-              className={`text-xs font-bold uppercase tracking-wider ${colors.text} drop-shadow-lg`}
-            >
-              {level}
-            </span>
+            <span className="text-5xl drop-shadow-lg animate-pulse">{icon}</span>
           </div>
         </div>
 
