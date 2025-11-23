@@ -1311,15 +1311,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Check and award badges for object analysis
+      let newBadges: any[] = [];
       if (req.isAuthenticated() && req.user) {
         try {
-          await checkAndAwardBadges(req.user.id);
+          newBadges = await checkAndAwardBadges(req.user.id);
         } catch (badgeError) {
           console.error("Error checking badges:", badgeError);
         }
       }
       
-      res.json(responseData);
+      res.json({
+        ...responseData,
+        newBadges: newBadges,
+        hasNewBadges: newBadges.length > 0
+      });
     } catch (error) {
       console.error("Error processing object analysis:", error);
       res.status(500).json({ message: "An error occurred during analysis" });
@@ -4903,7 +4908,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
         where: (achievements, { eq }) => eq(achievements.userId, req.user.id),
         orderBy: (achievements, { desc }) => desc(achievements.unlockedAt),
       });
-      res.json(achievementsList);
+      
+      // Map badgeType to level for component compatibility
+      const mappedAchievements = achievementsList.map((achievement: any) => ({
+        ...achievement,
+        level: achievement.badgeType || 'bronze',
+        type: achievement.achievementType
+      }));
+      
+      res.json(mappedAchievements);
     } catch (error) {
       console.error("Error fetching achievements:", error);
       res.status(500).json({ message: "Failed to fetch achievements" });
