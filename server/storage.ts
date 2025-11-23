@@ -1055,23 +1055,34 @@ export class DatabaseStorage implements IStorage {
 
   // Record user login for streak tracking
   async recordLogin(userId: number): Promise<void> {
-    const today = new Date();
-    const todayStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-    
-    // Check if already logged in today
-    const { loginSessions } = await import("../shared/schema");
-    const existingToday = await db.select().from(loginSessions)
-      .where(and(
-        eq(loginSessions.userId, userId),
-        gt(loginSessions.loginDate, todayStart)
-      )).limit(1);
-    
-    // Only record if no login today
-    if (existingToday.length === 0) {
-      await db.insert(loginSessions).values({
-        userId,
-        loginDate: todayStart,
-      });
+    try {
+      const today = new Date();
+      const todayStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+      const tomorrowStart = new Date(todayStart);
+      tomorrowStart.setUTCDate(tomorrowStart.getUTCDate() + 1);
+      
+      // Check if already logged in today
+      const { loginSessions } = await import("../shared/schema");
+      const existingToday = await db.select().from(loginSessions)
+        .where(and(
+          eq(loginSessions.userId, userId),
+          gte(loginSessions.loginDate, todayStart),
+          lt(loginSessions.loginDate, tomorrowStart)
+        )).limit(1);
+      
+      // Only record if no login today
+      if (existingToday.length === 0) {
+        await db.insert(loginSessions).values({
+          userId,
+          loginDate: todayStart,
+        });
+        console.log(`✅ Login recorded for user ${userId}`);
+      } else {
+        console.log(`ℹ️ User ${userId} already logged in today`);
+      }
+    } catch (error) {
+      console.error("Error recording login:", error);
+      // Don't throw - let app continue even if login recording fails
     }
   }
 

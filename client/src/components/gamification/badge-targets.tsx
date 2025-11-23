@@ -4,13 +4,37 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Target, Zap, Clock, Heart, Flame, BookOpen } from "lucide-react";
 
+interface BadgeProgress {
+  type: string;
+  title: string;
+  current: number;
+  target: number;
+  earned: boolean;
+  icon: string;
+}
+
+interface BadgeProgressResponse {
+  firstReading: BadgeProgress;
+  fiveReadings: BadgeProgress;
+  streakBadge: BadgeProgress;
+  journalingTime: BadgeProgress;
+  mostRepliesHealer: BadgeProgress;
+  journalingTenHours?: BadgeProgress;
+  mostTrustedHealer?: BadgeProgress;
+  bestHealer?: BadgeProgress;
+}
+
 export function BadgeTargets() {
-  const { data: badgeProgress, isLoading } = useQuery({
+  const { data: badgeProgress, isLoading, isError } = useQuery<BadgeProgressResponse>({
     queryKey: ["/api/badge-progress"],
   });
 
-  if (isLoading || !badgeProgress) {
+  if (isLoading) {
     return <div className="text-white text-center py-4">Loading badges...</div>;
+  }
+
+  if (isError || !badgeProgress) {
+    return <div className="text-white text-center py-4">Failed to load badges</div>;
   }
 
   const badges = [
