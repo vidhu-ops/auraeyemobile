@@ -1944,6 +1944,8 @@ export default function HealerDashboard() {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  // Login streak data is already fetched via streakData query above
+
   // Fetch healer's own aura readings with immediate updates
   const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings, refetch: refetchAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
