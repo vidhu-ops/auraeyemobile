@@ -2820,6 +2820,46 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "Failed to update booking" });
       }
 
+      // Award healer session achievements if booking was accepted
+      if (status === 'accepted') {
+        try {
+          const healerBookings = await db.query.healerBookings.findMany({
+            where: (hb, { and, eq }) => and(
+              eq(hb.healerId, booking.healerId),
+              eq(hb.status, 'accepted')
+            ),
+          });
+          const acceptedCount = healerBookings.length;
+          
+          const milestones = [
+            { count: 5, type: 'healer_five_replies', title: 'Healing Heart 💚', desc: 'Accepted 5 healer sessions' },
+            { count: 20, type: 'healer_most_replies', title: 'Most Trusted Healer 👑', desc: 'Accepted 20 healer sessions' }
+          ];
+          
+          for (const milestone of milestones) {
+            if (acceptedCount === milestone.count) {
+              const existing = await db.query.achievements.findFirst({
+                where: (ach, { and, eq }) => and(
+                  eq(ach.userId, req.user.id),
+                  eq(ach.achievementType, milestone.type)
+                )
+              });
+              if (!existing) {
+                await db.insert(achievements).values({
+                  userId: req.user.id,
+                  achievementType: milestone.type,
+                  title: milestone.title,
+                  description: milestone.desc,
+                  icon: '💚',
+                });
+              }
+            }
+          }
+        } catch (ach) {
+          console.log("Healer achievement update skipped:", ach);
+        }
+      }
+
       res.json({ 
         message: `Booking ${status} successfully`, 
         booking: updatedBooking 
@@ -3598,6 +3638,39 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       // Get streak data
       const streakData = await storage.getLoginStreak(userId);
+      
+      // Award login streak achievements
+      try {
+        const milestones = [
+          { streak: 7, type: 'seven_day_streak', title: 'Week Warrior 🔥', desc: 'Maintained a 7-day login streak' },
+          { streak: 30, type: 'thirty_day_streak', title: 'Month Master 🌙', desc: 'Maintained a 30-day login streak' },
+          { streak: 100, type: 'hundred_day_streak', title: 'Century Sage 💫', desc: 'Maintained a 100-day login streak' },
+          { streak: 365, type: 'year_streak', title: 'Eternal Warrior ⚡', desc: 'Maintained a 365-day login streak' }
+        ];
+        
+        for (const milestone of milestones) {
+          if (streakData.currentStreak >= milestone.streak) {
+            const existing = await db.query.achievements.findFirst({
+              where: (ach, { and, eq }) => and(
+                eq(ach.userId, userId),
+                eq(ach.achievementType, milestone.type)
+              )
+            });
+            if (!existing) {
+              await db.insert(achievements).values({
+                userId,
+                achievementType: milestone.type,
+                title: milestone.title,
+                description: milestone.desc,
+                icon: '🔥',
+              });
+            }
+          }
+        }
+      } catch (ach) {
+        console.log("Streak achievement update skipped:", ach);
+      }
+      
       res.json(streakData);
     } catch (error) {
       console.error("Error fetching streaks:", error);

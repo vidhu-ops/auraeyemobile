@@ -151,7 +151,7 @@ export default function ClientDashboard() {
                 </Badge>
               </div>
               {achievements.length > 0 && (
-                <div className="flex justify-center items-center gap-2 bg-yellow-900/60 rounded-lg px-3 py-2 border-2 border-yellow-400 animate-pulse" data-testid="profile-badge-display">
+                <div className="flex justify-center items-center gap-2 bg-yellow-900/60 rounded-lg px-3 py-2 border-2 border-yellow-400" data-testid="profile-badge-display">
                   <Trophy className="h-5 w-5 text-yellow-300 animate-bounce" />
                   <span className="text-yellow-100 font-bold text-sm">{achievements.length} Badges Earned 🏆</span>
                 </div>
@@ -166,7 +166,7 @@ export default function ClientDashboard() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                 activeTab === tab.toLowerCase()
                   ? 'bg-slate-800 text-white'
                   : 'bg-white text-slate-600 hover:bg-slate-100'
