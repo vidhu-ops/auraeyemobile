@@ -20,7 +20,7 @@ import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
-import { eq, and, gt } from "drizzle-orm";
+import { eq, and, gt, sql } from "drizzle-orm";
 import { getVapidPublicKey, sendPushToUser, sendPushNotification } from "./push-service";
 
 // Credit checking middleware with dynamic pricing
@@ -5184,13 +5184,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Payment Plans - Get all available plans
   app.get("/api/payment-plans", async (req, res) => {
     try {
-      const plans = await db.query.paymentPlans.findMany({
-        where: (plans, { eq }) => eq(plans.isActive, true),
-      });
+      // Use raw SQL directly to query payment plans
+      const result = await db.execute(sql`SELECT * FROM payment_plans WHERE is_active = true ORDER BY price ASC`);
+      const plans = result.rows || result;
       
-      res.json(plans.map(plan => ({
+      res.json((plans as any[]).map(plan => ({
         ...plan,
-        features: JSON.parse(plan.features),
+        features: typeof plan.features === 'string' ? JSON.parse(plan.features) : plan.features,
       })));
     } catch (error) {
       console.error("Error fetching payment plans:", error);
@@ -5208,9 +5208,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ error: "Plan ID is required" });
       }
 
-      const plan = await db.query.paymentPlans.findFirst({
-        where: (plans, { eq }) => eq(plans.id, planId),
-      });
+      // Get plan using raw SQL
+      const planResult = await db.execute(sql`SELECT * FROM payment_plans WHERE id = ${planId}`);
+      const plans = planResult.rows || planResult;
+      const plan = (plans as any[])[0];
 
       if (!plan) {
         return res.status(404).json({ error: "Plan not found" });
@@ -5221,34 +5222,25 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Create payment transaction
-      const transaction = await db.insert({ paymentTransactions } as any).values({
-        userId,
-        planId,
-        amount: plan.price || 0,
-        status: "pending",
-        billingEmail: user.email,
-        creditsBefore: user.credits,
-        creditsAfter: (user.credits || 0) + (plan.credits || 0),
-      }).returning();
+      // Create payment transaction using raw SQL
+      const newCredits = (user.credits || 0) + (plan.credits || 0);
+      await db.execute(sql`
+        INSERT INTO payment_transactions (user_id, plan_id, amount, status, billing_email, credits_before, credits_after, created_at)
+        VALUES (${userId}, ${planId}, ${plan.price || 0}, 'completed', ${user.email || ''}, ${user.credits || 0}, ${newCredits}, NOW())
+      `);
 
       // Update user credits
-      await storage.updateUserCredits(userId, (user.credits || 0) + (plan.credits || 0));
-
-      // Mark transaction as completed
-      await db.update({ paymentTransactions } as any)
-        .set({ status: "completed", completedAt: new Date() })
-        .where((pt) => ({ id: transaction[0].id }));
+      await storage.updateUserCredits(userId, newCredits);
 
       // Send confirmation email
       if (user.email) {
-        sendPaymentConfirmationEmail(user.email, user.username, plan.name, plan.credits || 0, plan.price || 0);
+        await sendPaymentConfirmationEmail(user.email, user.username, plan.name, plan.credits || 0, plan.price || 0);
       }
 
       res.json({
         success: true,
         message: `Successfully purchased ${plan.name}`,
-        credits: (user.credits || 0) + (plan.credits || 0),
+        credits: newCredits,
       });
     } catch (error) {
       console.error("Error purchasing plan:", error);
@@ -5261,17 +5253,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       const userId = req.user.id;
       
-      const subscription = await db.query.userSubscriptions.findFirst({
-        where: (subs, { eq }) => eq(subs.userId, userId),
-      });
+      const subscriptionResult = await db.execute(sql`SELECT * FROM user_subscriptions WHERE user_id = ${userId} LIMIT 1`);
+      const subscriptions = subscriptionResult.rows || subscriptionResult;
+      const subscription = (subscriptions as any[])[0];
 
       if (!subscription) {
         return res.json({ status: "free", planName: "Free Trial" });
       }
 
-      const plan = await db.query.paymentPlans.findFirst({
-        where: (plans, { eq }) => eq(plans.id, subscription.planId),
-      });
+      const planResult = await db.execute(sql`SELECT * FROM payment_plans WHERE id = ${subscription.plan_id}`);
+      const planRows = planResult.rows || planResult;
+      const plan = (planRows as any[])[0];
 
       res.json({
         ...subscription,
@@ -5288,16 +5280,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
     try {
       const userId = req.user.id;
 
-      const transactions = await db.query.paymentTransactions.findMany({
-        where: (trans, { eq }) => eq(trans.userId, userId),
-        orderBy: (trans, { desc }) => desc(trans.createdAt),
-        limit: 10,
-      });
+      const transResult = await db.execute(sql`
+        SELECT * FROM payment_transactions WHERE user_id = ${userId} 
+        ORDER BY created_at DESC LIMIT 10
+      `);
+      const transactions = transResult.rows || transResult;
 
-      const withPlanNames = await Promise.all(transactions.map(async (trans) => {
-        const plan = await db.query.paymentPlans.findFirst({
-          where: (plans, { eq }) => eq(plans.id, trans.planId),
-        });
+      // Get plan names for each transaction
+      const withPlanNames = await Promise.all((transactions as any[]).map(async (trans) => {
+        const planResult = await db.execute(sql`SELECT * FROM payment_plans WHERE id = ${trans.plan_id}`);
+        const planRows = planResult.rows || planResult;
+        const plan = (planRows as any[])[0];
         return { ...trans, planName: plan?.name || "Unknown Plan" };
       }));
 
@@ -5321,7 +5314,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const updatedUser = await storage.updateUserEmail(userId, email);
       
       // Send confirmation email
-      sendEmailConfirmationEmail(email, req.user.username);
+      if (updatedUser?.email) {
+        await sendEmailConfirmationEmail(email, req.user.username);
+      }
 
       res.json({
         success: true,
