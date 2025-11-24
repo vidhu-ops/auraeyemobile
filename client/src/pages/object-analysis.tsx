@@ -687,6 +687,7 @@ export default function ObjectAnalysis() {
       queryClient.invalidateQueries({ queryKey: ['/api/object-analyses'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       
       // Reset review system for new analysis and set current analysis ID
       setReviewSubmitted(false);

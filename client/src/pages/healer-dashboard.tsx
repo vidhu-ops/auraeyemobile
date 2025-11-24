@@ -262,8 +262,10 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         setName("");
         setBirthDate("");
         
-        // Refresh the readings list
+        // Refresh the readings list and badge-related queries
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
         
         // Show badges if returned from server
         if (data.newBadges && data.newBadges.length > 0) {
@@ -3013,14 +3015,17 @@ export default function HealerDashboard() {
             </Card>
           </div>
 
+          {/* Earned Achievements */}
+          <AchievementsBadges />
+
           {/* Physical Badges Showcase */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-500" />
-                Your Earned Badges
+                Physical Badges
               </CardTitle>
-              <CardDescription>Physical badges showcase your spiritual achievements</CardDescription>
+              <CardDescription>Spiritual achievement badges showcase</CardDescription>
             </CardHeader>
             <CardContent>
               <BadgeShowcase />
