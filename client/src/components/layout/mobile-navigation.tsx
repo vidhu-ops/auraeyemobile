@@ -1,4 +1,4 @@
-import { Home, Heart, Circle, BookOpen, User } from "lucide-react";
+import { Home, Heart, Circle, BookOpen } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,12 +38,6 @@ export default function MobileNavigation() {
       icon: BookOpen,
       href: "/journal",
       dataTestId: "nav-journal"
-    },
-    {
-      name: "Profile",
-      icon: User,
-      href: isHealer ? "/healer-dashboard" : "/client-dashboard",
-      dataTestId: "nav-profile"
     },
     {
       name: "AURI",
