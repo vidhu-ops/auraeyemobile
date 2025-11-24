@@ -3274,7 +3274,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
 
     try {
-      const { energyLevel, reflections, gratitude } = req.body;
+      const { mood, energyLevel, reflections, gratitude } = req.body;
       
       if (energyLevel === undefined || !reflections) {
         return res.status(400).json({ message: "Energy level and reflections are required" });
@@ -3294,6 +3294,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       const journalEntry = await storage.createJournalEntry({
         userId: req.user.id,
+        mood: mood || null,
         energyLevel,
         reflections,
         gratitude: gratitudeText

@@ -97,6 +97,7 @@ export const insertAuraReadingSchema = createInsertSchema(auraReadings).omit({
 export const journals = pgTable("journals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  mood: text("mood"), // joyful, calm, energized, peaceful, stressed, neutral, grateful, inspired, anxious, content
   energyLevel: integer("energy_level").notNull(),
   reflections: text("reflections").notNull(),
   gratitude: text("gratitude").notNull(),
