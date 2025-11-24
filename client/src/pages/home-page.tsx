@@ -73,6 +73,48 @@ export default function HomePage() {
     },
     onError: (error) => {
       console.error("❌ Grow mutation error:", error);
+    }
+  });
+
+  // Reset soul energy mutation
+  const resetSoulEnergyMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await apiRequest("POST", "/api/soul-energy/reset");
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error in resetSoulEnergy mutation:", error);
+        throw error;
+      }
+    },
+    onSuccess: async (data: { soulEnergy: number }) => {
+      try {
+        // Update cache immediately
+        queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
+        
+        // Refetch to ensure we have fresh data
+        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy"] });
+        
+        console.log("✅ Soul energy reset successfully:", data.soulEnergy);
+        
+        toast({
+          title: "Soul Tree Reset 🔄",
+          description: "Your soul energy has been reset to 0.",
+        });
+      } catch (error) {
+        console.error("Error updating cache after reset:", error);
+        toast({
+          title: "Warning",
+          description: "Soul energy reset but cache refresh failed. Refreshing page...",
+          variant: "destructive",
+        });
+        // Force refresh the page as fallback
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    },
+    onError: (error) => {
+      console.error("❌ Reset mutation error:", error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to grow soul energy. Please try again.",
@@ -341,6 +383,14 @@ export default function HomePage() {
                     data-testid="button-grow-soul-energy"
                   >
                     {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
+                  </Button>
+                  <Button
+                    onClick={() => resetSoulEnergyMutation.mutate()}
+                    disabled={resetSoulEnergyMutation.isPending || !user}
+                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid="button-reset-soul-energy"
+                  >
+                    {resetSoulEnergyMutation.isPending ? "Resetting..." : "Reset"}
                   </Button>
                 </div>
               </div>
