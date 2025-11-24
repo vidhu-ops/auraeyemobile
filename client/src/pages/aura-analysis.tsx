@@ -1473,110 +1473,110 @@ export default function AuraAnalysis() {
 
   // Function to draw chakra bar graph in PDF with enhanced visual design
   const drawChakraBarGraphPDF = (pdf: any, chakras: any[], startY: number, pageWidth: number, pageHeight: number): number => {
-    let yPos = startY;
-    const containerPaddingX = 18;
-    const containerWidth = pageWidth - (containerPaddingX * 2);
-    const barStartX = containerPaddingX + 50;
-    const barMaxWidth = containerWidth - 50 - 15;
-    const barHeight = 10;
-    const rowHeight = 16;
-    
-    // Draw decorative background container
-    pdf.setFillColor(248, 244, 255); // Very light purple background
-    pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28, 'F');
-    
-    // Draw subtle border
-    pdf.setDrawColor(200, 150, 220);
-    pdf.setLineWidth(0.3);
-    pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28);
-    
-    // Add decorative title
-    pdf.setFontSize(14);
-    pdf.setTextColor(120, 40, 180);
-    pdf.text('✦ CHAKRA ENERGY SYSTEM ✦', pageWidth / 2, yPos + 6, { align: 'center' });
-    
-    // Draw decorative underline
-    pdf.setDrawColor(150, 100, 200);
-    pdf.setLineWidth(0.5);
-    pdf.line(containerPaddingX + 30, yPos + 10, containerWidth - 30, yPos + 10);
-    
-    yPos += 18;
-    
-    // Draw each chakra as a professional horizontal bar
-    chakras.forEach((chakra, index) => {
-      // Check if we need a new page
-      if (yPos > pageHeight - 40) {
-        pdf.addPage();
-        yPos = 20;
-        // Redraw background for new page
-        pdf.setFillColor(248, 244, 255);
-        pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28, 'F');
-        pdf.setDrawColor(200, 150, 220);
-        pdf.setLineWidth(0.3);
-        pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28);
-      }
+    try {
+      let yPos = startY;
+      const containerPaddingX = 18;
+      const containerWidth = pageWidth - (containerPaddingX * 2);
+      const barStartX = containerPaddingX + 50;
+      const barMaxWidth = containerWidth - 50 - 15;
+      const barHeight = 10;
+      const rowHeight = 16;
       
-      // Get chakra color
-      const [r, g, b] = getChakraRGBColor(chakra.name);
+      // Draw decorative background container
+      pdf.setFillColor(248, 244, 255); // Very light purple background
+      pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28, 'F');
       
-      // Create lighter background for the bar track
-      pdf.setFillColor(240, 240, 245);
-      pdf.setDrawColor(230, 220, 240);
-      pdf.setLineWidth(0.2);
-      pdf.rect(barStartX, yPos, barMaxWidth, barHeight, 'F');
-      pdf.rect(barStartX, yPos, barMaxWidth, barHeight);
+      // Draw subtle border
+      pdf.setDrawColor(200, 150, 220);
+      pdf.setLineWidth(0.3);
+      pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28);
       
-      // Calculate bar length based on score
-      const barLength = (chakra.score / 10) * barMaxWidth;
+      // Add decorative title
+      pdf.setFontSize(14);
+      pdf.setTextColor(120, 40, 180);
+      pdf.text('✦ CHAKRA ENERGY SYSTEM ✦', pageWidth / 2, yPos + 6, { align: 'center' });
       
-      // Draw gradient effect (darker color for filled portion)
-      pdf.setFillColor(r, g, b);
-      pdf.rect(barStartX, yPos, barLength, barHeight, 'F');
+      // Draw decorative underline
+      pdf.setDrawColor(150, 100, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(containerPaddingX + 30, yPos + 10, containerWidth - 30, yPos + 10);
       
-      // Add subtle highlight on top of bar
-      pdf.setFillColor(Math.min(r + 40, 255), Math.min(g + 40, 255), Math.min(b + 40, 255));
-      pdf.rect(barStartX, yPos, barLength, barHeight * 0.4, 'F');
+      yPos += 18;
       
-      // Chakra name with emoji
-      pdf.setFontSize(11);
-      pdf.setTextColor(80, 40, 130);
-      pdf.setFont(undefined, 'bold');
-      pdf.text(chakra.name, containerPaddingX + 2, yPos + 7);
-      pdf.setFont(undefined, 'normal');
-      
-      // Add percentage text
-      const percentage = Math.round((chakra.score / 10) * 100);
-      
-      // Score display on the right
-      pdf.setFontSize(10);
-      pdf.setTextColor(60, 60, 60);
-      const scoreDisplay = `${percentage}%  •  ${chakra.score}/10`;
-      pdf.text(scoreDisplay, pageWidth - containerPaddingX - 2, yPos + 7, { align: 'right' });
-      
-      // Add subtle energy indicator dots
-      const dotsX = barStartX + barMaxWidth + 5;
-      const dotSize = 1.2;
-      for (let i = 0; i < 10; i++) {
-        if (i < chakra.score) {
-          pdf.setFillColor(r, g, b);
-        } else {
-          pdf.setFillColor(220, 220, 220);
+      // Draw each chakra as a professional horizontal bar
+      chakras.forEach((chakra) => {
+        // Check if we need a new page
+        if (yPos > pageHeight - 40) {
+          pdf.addPage();
+          yPos = 20;
         }
-        pdf.circle(dotsX + (i * 2), yPos + 5, dotSize, 'F');
-      }
+        
+        // Get chakra color
+        const [r, g, b] = getChakraRGBColor(chakra.name);
+        
+        // Create lighter background for the bar track
+        pdf.setFillColor(240, 240, 245);
+        pdf.setDrawColor(230, 220, 240);
+        pdf.setLineWidth(0.2);
+        pdf.rect(barStartX, yPos, barMaxWidth, barHeight, 'F');
+        pdf.rect(barStartX, yPos, barMaxWidth, barHeight);
+        
+        // Calculate bar length based on score
+        const barLength = (chakra.score / 10) * barMaxWidth;
+        
+        // Draw colored bar
+        pdf.setFillColor(r, g, b);
+        pdf.rect(barStartX, yPos, barLength, barHeight, 'F');
+        
+        // Add subtle highlight on top of bar
+        pdf.setFillColor(Math.min(r + 40, 255), Math.min(g + 40, 255), Math.min(b + 40, 255));
+        pdf.rect(barStartX, yPos, barLength, barHeight * 0.4, 'F');
+        
+        // Chakra name
+        pdf.setFontSize(11);
+        pdf.setTextColor(80, 40, 130);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(chakra.name, containerPaddingX + 2, yPos + 7);
+        pdf.setFont(undefined, 'normal');
+        
+        // Add percentage text
+        const percentage = Math.round((chakra.score / 10) * 100);
+        
+        // Score display on the right with energy dots as text
+        pdf.setFontSize(10);
+        pdf.setTextColor(60, 60, 60);
+        const scoreDisplay = `${percentage}%  •  ${chakra.score}/10`;
+        pdf.text(scoreDisplay, pageWidth - containerPaddingX - 2, yPos + 7, { align: 'right' });
+        
+        // Add visual energy indicator as filled blocks
+        const blockStartX = barStartX + barMaxWidth + 8;
+        const blockSize = 1.8;
+        const blockSpacing = 2.2;
+        for (let i = 0; i < 10; i++) {
+          if (i < chakra.score) {
+            pdf.setFillColor(r, g, b);
+          } else {
+            pdf.setFillColor(220, 220, 220);
+          }
+          pdf.rect(blockStartX + (i * blockSpacing), yPos + 2.5, blockSize, blockSize, 'F');
+        }
+        
+        yPos += rowHeight;
+      });
       
-      yPos += rowHeight;
-    });
-    
-    yPos += 12;
-    
-    // Add scale legend at bottom
-    pdf.setFontSize(9);
-    pdf.setTextColor(120, 120, 120);
-    pdf.text('Energy Scale: ○ = 1 point', containerPaddingX + 5, yPos);
-    pdf.text('Low Energy ←  |  → High Energy', containerPaddingX + 5, yPos + 5);
-    
-    return yPos + 12;
+      yPos += 12;
+      
+      // Add scale legend at bottom
+      pdf.setFontSize(9);
+      pdf.setTextColor(120, 120, 120);
+      pdf.text('Energy Scale: ■ = 1 point  (10 points = full energy)', containerPaddingX + 5, yPos);
+      pdf.text('◄ Low Energy  |  High Energy ►', containerPaddingX + 5, yPos + 5);
+      
+      return yPos + 12;
+    } catch (error) {
+      console.error('Error drawing chakra bar graph:', error);
+      return startY + 20; // Return with minimal offset if error occurs
+    }
   };
 
   const downloadComprehensiveAuraPDF = async () => {
