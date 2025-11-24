@@ -4,6 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import { useBadgeContext } from "@/hooks/use-badge-context";
+import { canAccessAuraAnalysis } from "@/lib/profile-access";
+import ServiceUpgrade from "@/components/service-upgrade";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
@@ -201,6 +203,19 @@ export default function AuraAnalysis() {
   const [isHealerNotesExpanded, setIsHealerNotesExpanded] = useState(false);
   const [isSavingHealerNotes, setIsSavingHealerNotes] = useState(false);
   
+  // Check if user can access aura analysis
+  const hasAccess = canAccessAuraAnalysis(user?.userType);
+  
+  // If user doesn't have access (e.g., semi-healer or client), show upgrade page
+  if (user && !hasAccess) {
+    return <ServiceUpgrade 
+      serviceName="Aura Analysis"
+      serviceDescription="Deep spiritual energy reading and chakra analysis"
+      upgradeMessage="Aura analysis is an exclusive feature for premium healers. Upgrade your account to access this powerful spiritual service."
+      icon="🔮"
+    />;
+  }
+
   // Check if user is a healer (password healer123)
   const isHealer = user?.userType === 'healer' || false;
 
