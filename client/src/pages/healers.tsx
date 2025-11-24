@@ -174,10 +174,10 @@ export default function HealersPage() {
                         </DialogHeader>
                         <div className="space-y-4">
                           <div>
-                            <p className="text-sm text-gray-600 mb-2">
+                            <p className="text-sm text-black mb-2">
                               Specialty: {healer.specialty}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-black">
                               {healer.description}
                             </p>
                           </div>

@@ -3463,10 +3463,10 @@ export default function HealerDashboard() {
           <div className="space-y-4">
             {selectedBooking && (
               <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-black mb-2">
                   <strong>Client Message:</strong>
                 </p>
-                <p className="text-sm">{selectedBooking.message || "No message provided"}</p>
+                <p className="text-sm text-black">{selectedBooking.message || "No message provided"}</p>
               </div>
             )}
             
