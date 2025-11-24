@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
+import { getDashboardRoute } from "@/lib/profile-access";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Sheet, 
@@ -75,18 +76,20 @@ export default function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
+  const dashboardRoute = getDashboardRoute(user?.userType);
+  
   const menuItems = [
     { name: "Home", href: "/", icon: HomeIcon },
     { name: "Aura Scan", href: "/aura-analysis", icon: Camera },
     { name: "Object Scan", href: "/object-analysis", icon: Scan },
     { name: "Horoscope", href: "/daily-horoscope", icon: Calendar },
-    { name: "Numerology", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: Hash },
+    { name: "Numerology", href: dashboardRoute, icon: Hash },
     { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Meditation", href: "/meditations", icon: Flower2 },
     { name: "Healers", href: "/healers", icon: Heart },
     { name: "Services", href: "/services", icon: Briefcase },
-    { name: "Dashboard", href: user?.userType === 'healer' ? "/healer-dashboard" : "/client-dashboard", icon: LayoutDashboard },
+    { name: "Dashboard", href: dashboardRoute, icon: LayoutDashboard },
     { name: "Pricing", href: "/pricing", icon: DollarSign },
     ...(user ? [
       { name: "Credits", href: "/payment", icon: CreditCard },

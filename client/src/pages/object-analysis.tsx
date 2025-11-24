@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
 import { queryClient } from "@/lib/queryClient";
 import { useBadgeContext } from "@/hooks/use-badge-context";
+import { canAccessObjectScanning } from "@/lib/profile-access";
+import ServiceUpgrade from "@/components/service-upgrade";
 import { Loader2, Upload, Crown, Image as ImageIcon, Sparkles, Star, MessageSquare, CheckCircle2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -37,6 +39,19 @@ export default function ObjectAnalysis() {
   const { toast } = useToast();
   const { showPremiumModal } = usePremium();
   const { checkBadges, showBadges } = useBadgeContext();
+  
+  // Check if user can access object scanning
+  const hasAccess = canAccessObjectScanning(user?.userType);
+  
+  // If user doesn't have access (e.g., semi-healer or client), show upgrade page
+  if (user && !hasAccess) {
+    return <ServiceUpgrade 
+      serviceName="Object Scanning"
+      serviceDescription="Spiritual energy analysis of objects and artifacts"
+      upgradeMessage="Object scanning is an exclusive feature for premium healers. Upgrade your account to access this advanced spiritual service."
+      icon="✨"
+    />;
+  }
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<ObjectAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState("basic");
