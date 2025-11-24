@@ -1629,7 +1629,6 @@ export default function NumerologyPage() {
         ) : null}
       </main>
       
-      <Footer />
       <MobileNavigation />
     </div>
   );
