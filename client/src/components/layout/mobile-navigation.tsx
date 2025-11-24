@@ -1,4 +1,4 @@
-import { Home, Heart, Circle, BookOpen } from "lucide-react";
+import { Home, Heart, Circle, BookOpen, LayoutDashboard } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -39,6 +39,12 @@ export default function MobileNavigation() {
       icon: BookOpen,
       href: "/journal",
       dataTestId: "nav-journal"
+    },
+    {
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      href: dashboardRoute,
+      dataTestId: "nav-dashboard"
     },
     {
       name: "AURI",
@@ -117,7 +123,7 @@ export default function MobileNavigation() {
       
       {/* Navigation indicator dots */}
       <div className="flex justify-center gap-1 pb-2">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(7)].map((_, i) => (
           <div
             key={i}
             className={cn(

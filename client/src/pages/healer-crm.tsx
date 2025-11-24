@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Users, MessageSquare, TrendingUp, Settings } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 
 export default function HealerCRM() {
   const [activeTab, setActiveTab] = useState("clients");

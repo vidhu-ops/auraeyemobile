@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/forms/image-upload";
 import NameInput from "@/components/forms/name-input";
-import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
@@ -951,7 +950,7 @@ export default function ObjectAnalysis() {
   const isHealer = user?.userType === 'healer' || false;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8">
         <div className="container mx-auto px-4">

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,7 +96,7 @@ export default function DailyHoroscope() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       
       <main className="flex-grow">

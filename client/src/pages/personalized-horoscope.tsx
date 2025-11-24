@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 import { Star, Calendar, Heart, Briefcase, Activity, Sparkles, Clock, TrendingUp, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface ExtendedHoroscopeResult {
@@ -95,7 +94,7 @@ export default function PersonalizedHoroscope() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20">
         <Navbar />
         <div className="flex-grow bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
           <div className="max-w-4xl mx-auto">

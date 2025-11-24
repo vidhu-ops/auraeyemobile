@@ -4,7 +4,6 @@ import { useCredits } from "@/hooks/use-credits";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { 
   Card, 
   CardContent, 

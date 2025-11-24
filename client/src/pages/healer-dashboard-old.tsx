@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { 
   Card, 
   CardContent, 

@@ -55,7 +55,6 @@ import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, 
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import NotificationSettings from "@/components/notification-settings";
 import { AchievementsBadges } from "@/components/gamification/achievements-badge";
@@ -2128,7 +2127,7 @@ export default function HealerDashboard() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
