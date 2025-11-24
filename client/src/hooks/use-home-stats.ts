@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "./use-auth";
 
 export interface HomeStats {
   meditation: {
@@ -16,8 +17,11 @@ export interface HomeStats {
 }
 
 export function useHomeStats() {
+  const { user } = useAuth();
+  
   const { data, isLoading, error } = useQuery<HomeStats>({
-    queryKey: ["/api/home-stats"],
+    queryKey: ["/api/home-stats", user?.id], // Include user ID to ensure separate cache per user
+    enabled: !!user, // Only fetch when user is authenticated
   });
 
   return {

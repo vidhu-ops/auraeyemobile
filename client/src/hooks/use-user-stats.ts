@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "./use-auth";
 import { UserStats } from "@shared/schema";
 
 const defaultStats: UserStats = {
@@ -13,8 +14,11 @@ const defaultStats: UserStats = {
 };
 
 export function useUserStats() {
+  const { user } = useAuth();
+  
   const { data, isLoading, error } = useQuery<UserStats>({
-    queryKey: ["/api/user-stats"],
+    queryKey: ["/api/user-stats", user?.id], // Include user ID to ensure separate cache per user
+    enabled: !!user, // Only fetch when user is authenticated
   });
 
   return {
