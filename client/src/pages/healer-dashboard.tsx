@@ -3589,7 +3589,6 @@ export default function HealerDashboard() {
       />
         </div>
       </main>
-      <Footer />
       <MobileNavigation />
     </div>
   );
