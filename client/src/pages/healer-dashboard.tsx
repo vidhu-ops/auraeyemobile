@@ -3022,7 +3022,7 @@ export default function HealerDashboard() {
 
         {/* My Readings Tab */}
         <TabsContent value="readings" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Aura Readings */}
             <Card>
               <CardHeader>
@@ -3068,7 +3068,7 @@ export default function HealerDashboard() {
                     </div>
                     {healerAuraReadings.map((reading) => (
                       <Suspense key={reading.id} fallback={
-                        <div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
+                        <div className="bg-gray-200 rounded-lg h-32"></div>
                       }>
                         <DetailedAuraReadingCard reading={reading} />
                       </Suspense>

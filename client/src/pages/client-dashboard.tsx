@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/layout/navbar";
@@ -41,6 +41,7 @@ import { BADGE_DEFINITIONS, getActivityBadges, getActivityColor, getActivityEmoj
 
 export default function ClientDashboard() {
   const { user } = useAuth();
+  const [location] = useLocation();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();
   const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
@@ -54,7 +55,13 @@ export default function ClientDashboard() {
     refetchInterval: 3000, // Auto-refetch every 3 seconds
   });
   
-  const [activeTab, setActiveTab] = useState("overview");
+  // Get tab from URL query parameter, default to "overview"
+  const getInitialTab = () => {
+    const params = new URLSearchParams(location.split('?')[1] || '');
+    return params.get('tab') || 'overview';
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   
   // Notify user when new achievement is earned
   useEffect(() => {
