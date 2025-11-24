@@ -1960,6 +1960,14 @@ export default function HealerDashboard() {
     refetchInterval: 3000, // Refetch every 3 seconds for very fast updates
   });
 
+  // Fetch total count of healer's aura readings
+  const { data: auraReadingsCountData } = useQuery<{ count: number }>({
+    queryKey: ["/api/healer-aura-readings-count"],
+    enabled: !!user,
+    staleTime: 30 * 1000,
+    refetchInterval: 30000,
+  });
+
   // Fetch healer's own numerology readings with real-time updates
   const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
     queryKey: ["/api/healer-numerology-readings"],
@@ -1971,6 +1979,14 @@ export default function HealerDashboard() {
     refetchOnReconnect: true, // Refetch on reconnection
   });
 
+  // Fetch total count of healer's numerology readings
+  const { data: numerologyReadingsCountData } = useQuery<{ count: number }>({
+    queryKey: ["/api/healer-numerology-readings-count"],
+    enabled: !!user,
+    staleTime: 30 * 1000,
+    refetchInterval: 30000,
+  });
+
   // Fetch healer's own vibe readings with immediate updates
   const { data: healerVibeReadings = [], isLoading: isLoadingVibeReadings, refetch: refetchVibeReadings } = useQuery<VibeReading[]>({
     queryKey: ["/api/vibe-readings"],
@@ -1980,6 +1996,14 @@ export default function HealerDashboard() {
     refetchInterval: 5000, // Refetch every 5 seconds for faster updates
     refetchOnWindowFocus: true, // Refetch when window gains focus
     refetchOnReconnect: true, // Refetch on reconnection
+  });
+
+  // Fetch total count of vibe readings
+  const { data: vibeReadingsCountData } = useQuery<{ count: number }>({
+    queryKey: ["/api/vibe-readings-count"],
+    enabled: !!user,
+    staleTime: 30 * 1000,
+    refetchInterval: 30000,
   });
 
   // Fetch stored aura PDFs
@@ -2473,7 +2497,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <p className="text-xs text-gray-600">Aura Readings</p>
-                      <p className="text-xl font-bold text-gray-900">{healerAuraReadings?.length || 0}</p>
+                      <p className="text-xl font-bold text-gray-900">{auraReadingsCountData?.count || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -2485,7 +2509,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <p className="text-xs text-gray-600">Numerology</p>
-                      <p className="text-xl font-bold text-gray-900">{healerNumerologyReadings?.length || 0}</p>
+                      <p className="text-xl font-bold text-gray-900">{numerologyReadingsCountData?.count || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -2497,7 +2521,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <p className="text-xs text-gray-600">Vibe Checks</p>
-                      <p className="text-xl font-bold text-gray-900">{healerVibeReadings?.length || 0}</p>
+                      <p className="text-xl font-bold text-gray-900">{vibeReadingsCountData?.count || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -2510,7 +2534,7 @@ export default function HealerDashboard() {
                     <div>
                       <p className="text-xs text-gray-600">Total Services</p>
                       <p className="text-xl font-bold text-gray-900">
-                        {(healerAuraReadings?.length || 0) + (healerNumerologyReadings?.length || 0) + (healerVibeReadings?.length || 0)}
+                        {(auraReadingsCountData?.count || 0) + (numerologyReadingsCountData?.count || 0) + (vibeReadingsCountData?.count || 0)}
                       </p>
                     </div>
                   </div>
