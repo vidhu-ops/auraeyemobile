@@ -77,13 +77,15 @@ export default function Navbar() {
   ];
 
   const dashboardRoute = getDashboardRoute(user?.userType);
+  const isHealer = user?.userType === 'healer' || user?.userType === 'semi_healer';
+  const numerologyHref = isHealer ? '/healer-dashboard?tab=tools' : '/numerology';
   
   const menuItems = [
     { name: "Home", href: "/", icon: HomeIcon },
     { name: "Aura Scan", href: "/aura-analysis", icon: Camera },
     { name: "Object Scan", href: "/object-analysis", icon: Scan },
     { name: "Horoscope", href: "/daily-horoscope", icon: Calendar },
-    { name: "Numerology", href: "/numerology", icon: Hash },
+    { name: "Numerology", href: numerologyHref, icon: Hash },
     { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Meditation", href: "/meditations", icon: Flower2 },

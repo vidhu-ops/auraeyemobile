@@ -230,7 +230,7 @@ export default function HomePage() {
                   </div>
                 </Link>
                 
-                <Link href="/numerology">
+                <Link href={user?.userType === 'healer' || user?.userType === 'semi_healer' ? '/healer-dashboard?tab=tools' : '/numerology'}>
                   <div className="flex items-center gap-4 rounded-2xl bg-amber-500/30 backdrop-blur-md border border-amber-400/40 p-4 hover:bg-amber-500/40 transition-all shadow-lg" data-testid="menu-numerology">
                     <Calculator className="h-8 w-8 text-amber-200" />
                     <span className="text-sm text-amber-100 font-semibold">Numerology</span>
@@ -499,7 +499,7 @@ export default function HomePage() {
               </Card>
             </Link>
             
-            <Link href="/numerology">
+            <Link href={user?.userType === 'healer' || user?.userType === 'semi_healer' ? '/healer-dashboard?tab=tools' : '/numerology'}>
               <Card className="bg-gradient-to-br from-indigo-900/70 to-violet-900/70 border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer" data-testid="service-numerology">
                 <CardContent className="p-4 text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
