@@ -1246,17 +1246,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // Check if image contains a human using Gemini vision API - object analysis should reject human images
-      const hasHuman = await detectHumanInImage(imgBuffer);
-      console.log('Object analysis - Gemini human detection result:', hasHuman);
-      if (hasHuman) {
-        return res.status(400).json({ 
-          error: "HUMAN_DETECTED",
-          message: "Human detected in image. Object analysis is for inanimate objects only. Please use the Aura Analysis section for images containing people, or upload an image of an object, item, or thing only.",
-          suggestion: "Try uploading: jewelry, crystals, artwork, furniture, electronics, tools, or any non-living object."
-        });
+      // Gracefully handle Gemini API failures (e.g., credit issues) and proceed with analysis
+      let hasHuman = false;
+      try {
+        hasHuman = await detectHumanInImage(imgBuffer);
+        console.log('Object analysis - Gemini human detection result:', hasHuman);
+        if (hasHuman) {
+          return res.status(400).json({ 
+            error: "HUMAN_DETECTED",
+            message: "Human detected in image. Object analysis is for inanimate objects only. Please use the Aura Analysis section for images containing people, or upload an image of an object, item, or thing only.",
+            suggestion: "Try uploading: jewelry, crystals, artwork, furniture, electronics, tools, or any non-living object."
+          });
+        }
+      } catch (humanDetectionError) {
+        // Gracefully handle human detection API failures (Gemini credits, timeouts, etc.)
+        console.warn('Human detection API failed, proceeding with analysis anyway:', humanDetectionError instanceof Error ? humanDetectionError.message : 'Unknown error');
+        // Continue with analysis even if human detection fails
       }
       
-      // If no human detected, proceed with object analysis
+      // If no human detected (or detection failed gracefully), proceed with object analysis
 
       // Use deterministic analysis based on image hash for consistent results
       const deterministicResult = generateDeterministicObjectAnalysis(imgBuffer);
