@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/hooks/use-premium";
@@ -8852,10 +8852,18 @@ Team AuraEye™
                                     
                                     <Button 
                                       className="w-full"
-                                      onClick={() => calculateNumerologyData(numerologyName, numerologyBirthDate)}
+                                      onClick={() => {
+                                        if (isHealer) {
+                                          // For healers and semi-healers, navigate to spiritual tools tab
+                                          window.location.href = '/healer-dashboard?tab=tools';
+                                        } else {
+                                          // For clients, calculate numerology normally
+                                          calculateNumerologyData(numerologyName, numerologyBirthDate);
+                                        }
+                                      }}
                                       disabled={isCalculatingNumerology}
                                     >
-                                      {isCalculatingNumerology ? (
+                                      {isHealer ? "Create in Spiritual Tools" : isCalculatingNumerology ? (
                                         <>
                                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                           Calculating...
