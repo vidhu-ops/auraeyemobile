@@ -1548,19 +1548,6 @@ export default function AuraAnalysis() {
         const scoreDisplay = `${percentage}% • ${chakra.score}/10`;
         pdf.text(scoreDisplay, pageWidth - containerPaddingX - 2, yPos + 4.5, { align: 'right' });
         
-        // Add visual energy indicator as filled blocks (smaller, more compact)
-        const blockStartX = barStartX + barMaxWidth + 6;
-        const blockSize = 1.2;
-        const blockSpacing = 1.5;
-        for (let i = 0; i < 10; i++) {
-          if (i < chakra.score) {
-            pdf.setFillColor(r, g, b);
-          } else {
-            pdf.setFillColor(220, 220, 220);
-          }
-          pdf.rect(blockStartX + (i * blockSpacing), yPos + 1.5, blockSize, blockSize, 'F');
-        }
-        
         yPos += rowHeight;
       });
       
