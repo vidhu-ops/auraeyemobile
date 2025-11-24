@@ -6513,6 +6513,7 @@ Team AuraEye™
             queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
             queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
             queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
             
             // Generate aura visualization using canvas overlay
             if (base64String) {

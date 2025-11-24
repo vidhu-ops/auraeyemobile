@@ -324,6 +324,7 @@ export default function NumerologyPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       
       toast({
         title: "Analysis Complete",
