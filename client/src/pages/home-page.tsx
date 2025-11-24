@@ -37,21 +37,45 @@ export default function HomePage() {
   // Grow soul energy mutation
   const growSoulEnergyMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/soul-energy/grow");
-      return await response.json();
+      try {
+        const response = await apiRequest("POST", "/api/soul-energy/grow");
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error in growSoulEnergy mutation:", error);
+        throw error;
+      }
     },
-    onSuccess: (data: { soulEnergy: number; added: number }) => {
-      queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
-      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
-      toast({
-        title: "Soul Tree Growing! 🌱",
-        description: `+1000 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
-      });
+    onSuccess: async (data: { soulEnergy: number; added: number }) => {
+      try {
+        // Update cache immediately
+        queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
+        
+        // Refetch to ensure we have fresh data
+        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy"] });
+        
+        console.log("✅ Soul energy updated successfully:", data.soulEnergy);
+        
+        toast({
+          title: "Soul Tree Growing! 🌱",
+          description: `+1000 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
+        });
+      } catch (error) {
+        console.error("Error updating cache after grow:", error);
+        toast({
+          title: "Warning",
+          description: "Soul energy updated but cache refresh failed. Refreshing page...",
+          variant: "destructive",
+        });
+        // Force refresh the page as fallback
+        setTimeout(() => window.location.reload(), 1000);
+      }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("❌ Grow mutation error:", error);
       toast({
         title: "Error",
-        description: "Failed to grow soul energy. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to grow soul energy. Please try again.",
         variant: "destructive",
       });
     },
