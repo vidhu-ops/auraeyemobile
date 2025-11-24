@@ -38,9 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
-      // Immediately refetch credits and other user data after login
-      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      // Immediately refetch credits and other user data after login with new user ID
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-stats", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home-stats", user.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Login successful",
@@ -63,9 +65,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
-      // Immediately refetch credits and other user data after registration
-      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      // Immediately refetch credits and other user data after registration with new user ID
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-stats", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home-stats", user.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Registration successful",
@@ -87,6 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
+      // Clear all user-specific caches to prevent data leakage between user accounts
+      queryClient.removeQueries({ queryKey: ["/api/credits"] });
+      queryClient.removeQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.removeQueries({ queryKey: ["/api/user-stats"] });
+      queryClient.removeQueries({ queryKey: ["/api/home-stats"] });
+      queryClient.removeQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Logged out successfully",
       });

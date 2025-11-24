@@ -5,7 +5,7 @@ export function useCredits() {
   const { user } = useAuth();
   
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["/api/credits"],
+    queryKey: ["/api/credits", user?.id], // Include user ID to ensure separate cache per user
     enabled: !!user, // Only fetch when user is authenticated
     retry: false,
     refetchInterval: 5000, // Refetch every 5 seconds to stay current
