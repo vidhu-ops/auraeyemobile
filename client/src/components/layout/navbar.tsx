@@ -83,7 +83,7 @@ export default function Navbar() {
     { name: "Aura Scan", href: "/aura-analysis", icon: Camera },
     { name: "Object Scan", href: "/object-analysis", icon: Scan },
     { name: "Horoscope", href: "/daily-horoscope", icon: Calendar },
-    { name: "Numerology", href: dashboardRoute, icon: Hash },
+    { name: "Numerology", href: "/numerology", icon: Hash },
     { name: "What's My Vibe", href: "/vibe", icon: Sparkles },
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Meditation", href: "/meditations", icon: Flower2 },
