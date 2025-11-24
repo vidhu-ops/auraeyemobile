@@ -7,7 +7,6 @@ import { useBadgeContext } from "@/hooks/use-badge-context";
 import { canAccessAuraAnalysis } from "@/lib/profile-access";
 import ServiceUpgrade from "@/components/service-upgrade";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { AuraGlow } from "@/components/ui/aura-glow";
 import ImageUpload from "@/components/forms/image-upload";
@@ -6951,7 +6950,7 @@ Team AuraEye™
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       
       <main className="flex-grow">

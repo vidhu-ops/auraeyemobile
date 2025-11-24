@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useBadgeContext } from "@/hooks/use-badge-context";
 import { 
@@ -665,7 +664,7 @@ export default function NumerologyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">

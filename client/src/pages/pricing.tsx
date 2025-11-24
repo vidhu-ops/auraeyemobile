@@ -123,7 +123,7 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
       <main className="flex-1">
         <div className="min-h-screen bg-gradient-cosmic relative overflow-hidden">

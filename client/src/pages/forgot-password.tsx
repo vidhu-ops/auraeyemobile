@@ -12,7 +12,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 const forgotPasswordSchema = z.object({
@@ -115,7 +114,7 @@ export default function ForgotPassword() {
 
   if (step === "success") {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20">
         <Navbar />
         <div className="flex-grow bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center px-4">
           <Card className="w-full max-w-md">

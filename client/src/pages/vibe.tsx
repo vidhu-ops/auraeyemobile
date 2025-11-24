@@ -8,7 +8,6 @@ import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen,
 import ImageUpload from "@/components/forms/image-upload";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
 import { useBadgeContext } from "@/hooks/use-badge-context";
@@ -160,7 +159,7 @@ export default function VibePage() {
 
   if (!vibeResult) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20">
         <Navbar />
         
         {/* Hero Section */}

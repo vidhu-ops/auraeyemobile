@@ -188,7 +188,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-cyan-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-cyan-50 pb-20">
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
