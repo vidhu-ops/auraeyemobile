@@ -2056,9 +2056,9 @@ export default function HealerDashboard() {
   const renderBookingCard = (booking: HealerBooking) => (
     <Card key={booking.id} className="border-l-4 border-l-primary">
       <CardContent className="p-4">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <User className="h-4 w-4 text-primary" />
               <span className="font-medium">Client #{booking.userId}</span>
               <Badge variant={
@@ -2095,16 +2095,14 @@ export default function HealerDashboard() {
                 </span>
               )}
             </p>
-            
-
           </div>
           
           {booking.status === 'pending' && (
-            <div className="flex gap-2 ml-4">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button 
                 size="sm" 
                 variant="outline"
-                className="text-green-600 border-green-600 hover:bg-green-50"
+                className="text-green-600 border-green-600 hover:bg-green-50 flex-1 sm:flex-none"
                 onClick={() => handleBookingResponse(booking, 'accepted')}
               >
                 <CheckCircle className="h-4 w-4 mr-1" />
@@ -2113,7 +2111,7 @@ export default function HealerDashboard() {
               <Button 
                 size="sm" 
                 variant="outline"
-                className="text-red-600 border-red-600 hover:bg-red-50"
+                className="text-red-600 border-red-600 hover:bg-red-50 flex-1 sm:flex-none"
                 onClick={() => handleBookingResponse(booking, 'rejected')}
               >
                 <XCircle className="h-4 w-4 mr-1" />
