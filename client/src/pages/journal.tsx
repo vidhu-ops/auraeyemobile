@@ -20,6 +20,7 @@ import { useBadgeContext } from "@/hooks/use-badge-context";
 interface JournalEntry {
   id: number;
   userId: number;
+  mood?: string;
   energyLevel: number;
   reflections: string;
   gratitude: string;
@@ -29,8 +30,14 @@ interface JournalEntry {
 const moodFilters = [
   { id: "all", name: "All Moods", emoji: "😊", color: "from-cyan-400 to-blue-500" },
   { id: "joyful", name: "Joyful", emoji: "😊", color: "from-yellow-400 to-amber-500" },
+  { id: "calm", name: "Calm", emoji: "😌", color: "from-blue-400 to-indigo-500" },
   { id: "peaceful", name: "Peaceful", emoji: "🌸", color: "from-pink-400 to-rose-500" },
-  { id: "energized", name: "Energized", emoji: "⚡", color: "from-orange-400 to-red-500" }
+  { id: "energized", name: "Energized", emoji: "⚡", color: "from-orange-400 to-red-500" },
+  { id: "grateful", name: "Grateful", emoji: "🙏", color: "from-purple-400 to-pink-500" },
+  { id: "inspired", name: "Inspired", emoji: "✨", color: "from-yellow-300 to-yellow-500" },
+  { id: "stressed", name: "Stressed", emoji: "😰", color: "from-red-400 to-orange-500" },
+  { id: "content", name: "Content", emoji: "😄", color: "from-green-400 to-emerald-500" },
+  { id: "anxious", name: "Anxious", emoji: "😟", color: "from-gray-400 to-slate-500" }
 ];
 
 export default function JournalPage() {
@@ -42,6 +49,7 @@ export default function JournalPage() {
   const [selectedMood, setSelectedMood] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingEntry, setIsAddingEntry] = useState(false);
+  const [selectedJournalMood, setSelectedJournalMood] = useState("");
   const [energyLevel, setEnergyLevel] = useState(7);
   const [reflections, setReflections] = useState("");
   const [gratitude, setGratitude] = useState("");
@@ -117,6 +125,7 @@ export default function JournalPage() {
         },
         credentials: "include",
         body: JSON.stringify({
+          mood: selectedJournalMood || null,
           energyLevel,
           reflections,
           gratitude
@@ -134,6 +143,7 @@ export default function JournalPage() {
       });
       setReflections("");
       setGratitude("");
+      setSelectedJournalMood("");
       setEnergyLevel(7);
       setIsAddingEntry(false);
       
@@ -258,6 +268,26 @@ export default function JournalPage() {
           <Card className="bg-slate-700/50 backdrop-blur-sm border-slate-600 mb-6">
             <CardContent className="p-4 space-y-4">
               <div>
+                <label className="text-white text-sm mb-2 block">How are you feeling?</label>
+                <div className="flex gap-2 overflow-x-auto pb-2 flex-wrap">
+                  {moodFilters.slice(1).map((mood) => (
+                    <button
+                      key={mood.id}
+                      onClick={() => setSelectedJournalMood(mood.id)}
+                      className={`px-3 py-2 rounded-full text-sm whitespace-nowrap transition-all ${
+                        selectedJournalMood === mood.id
+                          ? `bg-gradient-to-r ${mood.color} text-white shadow-md`
+                          : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
+                      }`}
+                      data-testid={`mood-button-${mood.id}`}
+                    >
+                      <span className="mr-1">{mood.emoji}</span>
+                      {mood.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
                 <label className="text-white text-sm mb-2 block">Energy Level: {energyLevel}/10</label>
                 <input
                   type="range"
@@ -343,9 +373,16 @@ export default function JournalPage() {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-white font-semibold text-lg">Daily Reflection</h3>
-                  <Badge className="bg-amber-500/20 text-amber-300 border-0 flex items-center gap-1">
-                    ⚡ {entry.energyLevel}/10
-                  </Badge>
+                  <div className="flex gap-2 flex-wrap">
+                    {entry.mood && (
+                      <Badge className="bg-blue-500/20 text-blue-300 border-0 flex items-center gap-1">
+                        {moodFilters.find(m => m.id === entry.mood)?.emoji} {moodFilters.find(m => m.id === entry.mood)?.name}
+                      </Badge>
+                    )}
+                    <Badge className="bg-amber-500/20 text-amber-300 border-0 flex items-center gap-1">
+                      ⚡ {entry.energyLevel}/10
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-3 text-slate-400 text-xs mb-3">
