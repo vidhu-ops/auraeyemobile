@@ -3574,6 +3574,36 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Reset soul energy (set to 0)
+  app.post("/api/soul-energy/reset", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Validate user ID
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+      
+      // Update user's soul energy to 0
+      const result = await db
+        .update(users)
+        .set({ soulEnergy: 0 })
+        .where(eq(users.id, userId))
+        .returning();
+      
+      if (!result || result.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`🔄 User ${userId} reset their soul energy to 0`);
+      
+      res.json({ soulEnergy: 0 });
+    } catch (error) {
+      console.error("Error resetting soul energy:", error);
+      res.status(500).json({ message: "Failed to reset soul energy" });
+    }
+  });
+
   // Get user statistics (meditation hours, healer consultations, scans, etc.)
   app.get("/api/user-stats", isAuthenticated, async (req, res) => {
     try {
