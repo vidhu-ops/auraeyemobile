@@ -1455,6 +1455,77 @@ export default function AuraAnalysis() {
     return names[tabId] || tabId;
   };
 
+  // Helper function to get chakra color in RGB format for PDF
+  const getChakraRGBColor = (chakraName: string): [number, number, number] => {
+    const chakraColors: Record<string, [number, number, number]> = {
+      'Root Chakra': [220, 20, 60],                    // Crimson Red
+      'Sacral Chakra': [255, 140, 0],                  // Dark Orange
+      'Solar Plexus Chakra': [255, 200, 0],           // Golden Yellow
+      'Heart Chakra': [34, 139, 34],                   // Forest Green
+      'Throat Chakra': [30, 144, 255],                // Dodger Blue
+      'Third Eye Chakra': [75, 0, 130],               // Indigo
+      'Crown Chakra': [186, 85, 211],                 // Medium Orchid (Violet)
+      'Soul Star Chakra': [220, 220, 220],            // Gainsboro (Silver)
+      'Earth Star Chakra': [139, 69, 19]              // Saddle Brown
+    };
+    return chakraColors[chakraName] || [128, 128, 128]; // Default gray
+  };
+
+  // Function to draw chakra bar graph in PDF
+  const drawChakraBarGraphPDF = (pdf: any, chakras: any[], startY: number, pageWidth: number, pageHeight: number): number => {
+    let yPos = startY;
+    const barWidth = pageWidth - 60; // Width of bars
+    const barHeight = 8; // Height of each bar
+    const spacing = 2; // Space between bars
+    const labelWidth = 35; // Width for chakra name labels
+    
+    // Add title
+    pdf.setFontSize(12);
+    pdf.setTextColor(75, 0, 130);
+    pdf.text('CHAKRA ENERGY LEVELS', 20, yPos);
+    yPos += 8;
+    
+    // Draw each chakra as a horizontal bar
+    chakras.forEach((chakra) => {
+      // Check if we need a new page
+      if (yPos > pageHeight - 30) {
+        pdf.addPage();
+        yPos = 20;
+      }
+      
+      // Chakra name
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      pdf.text(chakra.name, 20, yPos + barHeight);
+      
+      // Get chakra color
+      const [r, g, b] = getChakraRGBColor(chakra.name);
+      pdf.setFillColor(r, g, b);
+      
+      // Calculate bar length based on score (out of 10)
+      const maxBarLength = barWidth - labelWidth;
+      const barLength = (chakra.score / 10) * maxBarLength;
+      
+      // Draw colored bar
+      pdf.rect(20 + labelWidth, yPos, barLength, barHeight, 'F');
+      
+      // Draw background bar (light gray)
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.1);
+      pdf.rect(20 + labelWidth, yPos, maxBarLength, barHeight);
+      
+      // Add score text on the bar
+      pdf.setFontSize(9);
+      pdf.setTextColor(255, 255, 255);
+      const scoreText = `${chakra.score}/10`;
+      pdf.text(scoreText, 20 + labelWidth + barLength - 8, yPos + 6.5);
+      
+      yPos += barHeight + spacing + 3;
+    });
+    
+    return yPos + 5;
+  };
+
   const downloadComprehensiveAuraPDF = async () => {
     if (!result) {
       console.error('No aura analysis result available for PDF generation');
@@ -1948,12 +2019,8 @@ Team AuraEye™
         { name: 'Earth Star Chakra', score: Math.round(calculateEarthStarChakra(result)/10) },
       ];
 
-      chakrasForPDF.forEach((chakra) => {
-        const percentage = Math.round((chakra.score / 10) * 100);
-        yPosition = addTextWithPageBreak(`${chakra.name}: ${chakra.score}/10 (${percentage}%)`, pageWidth/2, yPosition, { align: 'center' });
-        yPosition += 6;
-      });
-      
+      // Draw chakra bar graph instead of text list
+      yPosition = drawChakraBarGraphPDF(pdf, chakrasForPDF, yPosition, pageWidth, pageHeight);
       yPosition += 15;
 
       // SECTION 8A: COMPREHENSIVE DETAILED ANALYSIS FROM ALL TABS (Text Content)
