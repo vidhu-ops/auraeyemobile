@@ -134,6 +134,14 @@ export default function NumerologyPage() {
     },
   });
 
+  // Update form when target data changes
+  useEffect(() => {
+    form.reset({
+      name: targetName,
+      birthDate: targetBirthDate,
+    });
+  }, [targetName, targetBirthDate, form]);
+
   // Get numerology analysis - use healer data if available
   const {
     data: numerology,
