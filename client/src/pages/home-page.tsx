@@ -90,17 +90,26 @@ export default function HomePage() {
     },
     onSuccess: async (data: { soulEnergy: number }) => {
       try {
+        // Clear mascot clicked state from localStorage to reset Auri
+        localStorage.removeItem("mascotClicked");
+        
+        // Reset last aura color
+        localStorage.removeItem("lastAuraColor");
+        
         // Update cache immediately
         queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
         
         // Refetch to ensure we have fresh data
         await queryClient.refetchQueries({ queryKey: ["/api/soul-energy"] });
         
+        // Emit event to summon/reset mascot
+        window.dispatchEvent(new Event("summon-mascot"));
+        
         console.log("✅ Soul energy reset successfully:", data.soulEnergy);
         
         toast({
           title: "Soul Tree Reset 🔄",
-          description: "Your soul energy has been reset to 0.",
+          description: "Your soul energy, tree, ascension level, and Auri have been reset to 0.",
         });
       } catch (error) {
         console.error("Error updating cache after reset:", error);
