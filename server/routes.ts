@@ -1480,7 +1480,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           {
             parts: [
               {
-                text: "Detect if there is any human in this image, yes or no"
+                text: "Is this image primarily/mainly of a full human being (like a portrait, selfie, or person as the main subject)? Only answer yes if the image is focused on a complete human figure as the main subject. Answer no if the image shows objects, items, artwork, or if humans are just in the background. Answer: yes or no"
               },
               {
                 inlineData: {
