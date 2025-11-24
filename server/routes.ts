@@ -4040,6 +4040,47 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get total count of healer's aura readings
+  app.get("/api/healer-aura-readings-count", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const count = await storage.getAuraReadingsCountByPerformedBy(req.user.id);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error retrieving healer aura readings count:", error);
+      res.status(500).json({ message: "Failed to retrieve aura readings count" });
+    }
+  });
+
+  // Get total count of healer's numerology readings
+  app.get("/api/healer-numerology-readings-count", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const count = await storage.getNumerologyReadingsCountByPerformedBy(req.user.id);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error retrieving healer numerology readings count:", error);
+      res.status(500).json({ message: "Failed to retrieve numerology readings count" });
+    }
+  });
+
+  // Get total count of user's vibe readings
+  app.get("/api/vibe-readings-count", isAuthenticated, async (req, res) => {
+    try {
+      const count = await storage.getVibeReadingsCountByUserId(req.user.id);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error retrieving vibe readings count:", error);
+      res.status(500).json({ message: "Failed to retrieve vibe readings count" });
+    }
+  });
+
 
   // Admin endpoint to add/subtract credits manually
   app.post("/api/admin/credits", isAuthenticated, async (req, res) => {

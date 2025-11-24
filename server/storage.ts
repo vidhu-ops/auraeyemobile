@@ -49,6 +49,8 @@ export interface IStorage {
   saveAuraReading(reading: InsertAuraReading): Promise<AuraReading>;
   findAuraReadingByImageHash(imageHash: string): Promise<AuraReading | undefined>;
   getAuraReadingsByUser(userId: number): Promise<AuraReading[]>;
+  getAuraReadingsByPerformedBy(performedBy: number, limit?: number): Promise<AuraReading[]>;
+  getAuraReadingsCountByPerformedBy(performedBy: number): Promise<number>;
   getAuraReading(id: number): Promise<AuraReading | undefined>;
   updateAuraReadingReview(id: number, rating: number, reviewText?: string): Promise<AuraReading | undefined>;
   updateAuraReadingNotes(id: number, healerNotes: string): Promise<AuraReading | undefined>;
@@ -62,6 +64,8 @@ export interface IStorage {
   // Numerology readings
   saveNumerologyReading(reading: InsertNumerologyReading): Promise<NumerologyReading>;
   getNumerologyReadingsByUser(userId: number): Promise<NumerologyReading[]>;
+  getNumerologyReadingsByPerformedBy(performedBy: number): Promise<NumerologyReading[]>;
+  getNumerologyReadingsCountByPerformedBy(performedBy: number): Promise<number>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
   updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined>;
   
@@ -97,6 +101,7 @@ export interface IStorage {
   // Vibe readings for healer dashboard
   saveVibeReading(reading: InsertVibeReading): Promise<VibeReading>;
   getVibeReadingsByUserId(userId: number): Promise<VibeReading[]>;
+  getVibeReadingsCountByUserId(userId: number): Promise<number>;
   getAllVibeReadings(): Promise<any[]>;
   
   // Credit management
@@ -290,6 +295,13 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
+  async getAuraReadingsCountByPerformedBy(performedBy: number): Promise<number> {
+    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+      .from(auraReadings)
+      .where(eq(auraReadings.performedBy, performedBy));
+    return result[0]?.count || 0;
+  }
+
   async getAuraReading(id: number): Promise<AuraReading | undefined> {
     const [reading] = await db.select().from(auraReadings).where(eq(auraReadings.id, id));
     return reading || undefined;
@@ -360,6 +372,13 @@ export class DatabaseStorage implements IStorage {
 
   async getNumerologyReadingsByPerformedBy(performedBy: number): Promise<NumerologyReading[]> {
     return await db.select().from(numerologyReadings).where(eq(numerologyReadings.performedBy, performedBy)).orderBy(desc(numerologyReadings.createdAt));
+  }
+
+  async getNumerologyReadingsCountByPerformedBy(performedBy: number): Promise<number> {
+    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+      .from(numerologyReadings)
+      .where(eq(numerologyReadings.performedBy, performedBy));
+    return result[0]?.count || 0;
   }
 
   async getNumerologyReading(id: number): Promise<NumerologyReading | undefined> {
@@ -576,6 +595,13 @@ export class DatabaseStorage implements IStorage {
       .from(vibeReadings)
       .where(eq(vibeReadings.userId, userId))
       .orderBy(desc(vibeReadings.createdAt));
+  }
+
+  async getVibeReadingsCountByUserId(userId: number): Promise<number> {
+    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+      .from(vibeReadings)
+      .where(eq(vibeReadings.userId, userId));
+    return result[0]?.count || 0;
   }
 
   // Get all vibe readings (for healer dashboard - shows all vibe readings from all users)
