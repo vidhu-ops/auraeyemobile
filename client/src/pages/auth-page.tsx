@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Star, Sparkles, Heart, Users, TrendingUp, Lightbulb, User } from "lucide-react";
+import { Loader2, Star, Sparkles, Heart, Users, TrendingUp, Lightbulb, User, Calculator } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { manifestIntentions, energyLevels, blocks, type ManifestIntention, type EnergyLevel, type Block } from "@shared/onboarding-presets";
@@ -28,6 +28,7 @@ const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  birthDate: z.string().min(1, "Birth date is required"),
   agreeToTerms: z.boolean().refine(val => val === true, {
     message: "You must agree to the Terms & Conditions to register"
   }),
@@ -36,7 +37,16 @@ const registerSchema = z.object({
 type LoginData = z.infer<typeof loginSchema>;
 type RegisterData = z.infer<typeof registerSchema>;
 
-type OnboardingStep = "auth" | "question1" | "question2" | "question3";
+type OnboardingStep = "auth" | "numerology" | "question1" | "question2" | "question3";
+
+type NumerologyResult = {
+  lifePathNumber: number;
+  destinyNumber: number;
+  soulUrgeNumber: number;
+  personalityNumber: number;
+  personalYearNumber: number;
+  interpretation: string;
+};
 
 export default function AuthPage() {
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
@@ -50,6 +60,12 @@ export default function AuthPage() {
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
   const [showTCDialog, setShowTCDialog] = useState(false);
+  
+  // Numerology state
+  const [numerology, setNumerology] = useState<NumerologyResult | null>(null);
+  const [isLoadingNumerology, setIsLoadingNumerology] = useState(false);
+  const [registeredUsername, setRegisteredUsername] = useState("");
+  const [registeredBirthDate, setRegisteredBirthDate] = useState("");
   
   // No auto-trigger for onboarding questions
   // Questions will only show after registration via onRegisterSubmit
@@ -68,6 +84,7 @@ export default function AuthPage() {
       username: "",
       email: "",
       password: "",
+      birthDate: "",
       agreeToTerms: false,
     },
   });
@@ -120,10 +137,43 @@ export default function AuthPage() {
   const onRegisterSubmit = (data: RegisterData) => {
     registerMutation.mutate(data, {
       onSuccess: () => {
-        // Show onboarding questions after successful registration
-        setOnboardingStep("question1");
+        // Store username and birth date for numerology calculation
+        setRegisteredUsername(data.username);
+        setRegisteredBirthDate(data.birthDate);
+        // Show numerology results first
+        setOnboardingStep("numerology");
+        // Calculate numerology
+        calculateNumerology(data.username, data.birthDate);
       }
     });
+  };
+
+  const calculateNumerology = async (name: string, birthDate: string) => {
+    setIsLoadingNumerology(true);
+    try {
+      const response = await fetch("/api/numerology", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, birthDate }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setNumerology(data);
+      }
+    } catch (error) {
+      console.error("Error calculating numerology:", error);
+      toast({
+        title: "Error",
+        description: "Failed to calculate numerology. Proceeding to next step.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingNumerology(false);
+    }
+  };
+  
+  const handleNumerologyComplete = () => {
+    setOnboardingStep("question1");
   };
   
   const handleFinalSubmit = (block: Block) => {
@@ -141,6 +191,66 @@ export default function AuthPage() {
       default: return Star;
     }
   };
+
+  // Show numerology results after registration
+  if (onboardingStep === "numerology") {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+          <CardContent className="p-8 md:p-12">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
+                <Calculator className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Your Numerology Blueprint</h2>
+              <p className="text-xl text-cyan-200">Based on your birth date: {new Date(registeredBirthDate).toLocaleDateString()}</p>
+            </div>
+
+            {isLoadingNumerology ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-12 w-12 animate-spin mx-auto text-purple-600 mb-4" />
+                <p className="text-white">Calculating your spiritual numbers...</p>
+              </div>
+            ) : numerology ? (
+              <div className="space-y-6 mb-8">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 rounded-lg p-4 border border-purple-300/30">
+                    <div className="text-sm text-purple-200 mb-1">Life Path</div>
+                    <div className="text-4xl font-bold text-purple-300">{numerology.lifePathNumber}</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-pink-300/30">
+                    <div className="text-sm text-pink-200 mb-1">Destiny</div>
+                    <div className="text-4xl font-bold text-pink-300">{numerology.destinyNumber}</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-blue-300/30">
+                    <div className="text-sm text-blue-200 mb-1">Soul Urge</div>
+                    <div className="text-4xl font-bold text-blue-300">{numerology.soulUrgeNumber}</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-green-300/30">
+                    <div className="text-sm text-green-200 mb-1">Personality</div>
+                    <div className="text-4xl font-bold text-green-300">{numerology.personalityNumber}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 rounded-lg p-4 border border-cyan-300/30">
+                  <div className="text-sm text-cyan-200 mb-2">Your Spiritual Interpretation</div>
+                  <p className="text-white text-sm leading-relaxed">{numerology.interpretation}</p>
+                </div>
+              </div>
+            ) : null}
+
+            <Button
+              onClick={handleNumerologyComplete}
+              className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-700 hover:via-indigo-700 hover:to-cyan-700 text-white font-semibold py-6 text-lg"
+              data-testid="button-continue-numerology"
+            >
+              Continue to Preferences
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Show onboarding questions FIRST (these take priority over redirect)
   if (onboardingStep === "question1") {
@@ -398,6 +508,20 @@ export default function AuthPage() {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input type="email" placeholder="" {...field} data-testid="input-register-email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="birthDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Birth Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} data-testid="input-register-birthdate" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
