@@ -199,7 +199,7 @@ export default function Navbar() {
                   <div className="border-t border-purple-200/30 pt-4 space-y-2">
                     {user ? (
                       <>
-                        <Link href="/settings" onClick={closeSheet}>
+                        <Link href="/dashboard?tab=settings" onClick={closeSheet}>
                           <Button 
                             variant="ghost" 
                             className="w-full justify-center text-purple-600 hover:text-purple-700 hover:bg-purple-50"
