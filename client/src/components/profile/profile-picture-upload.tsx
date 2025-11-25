@@ -132,12 +132,11 @@ export function ProfilePictureUploadDialog({
 
           <div className="flex gap-2">
             <Button
-              variant="outline"
               onClick={() => {
                 onOpenChange(false);
                 setPreview(null);
               }}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white"
               data-testid="button-cancel"
             >
               Cancel
