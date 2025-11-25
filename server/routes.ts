@@ -3644,9 +3644,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
       });
 
       // Award soul energy for completing meditation
-      await storage.updateUser(userId, { 
-        soulEnergy: req.user.soulEnergy + (energyGained || 25) 
-      });
+      const soulEnergyAmount = energyGained || 25;
+      await storage.addSoulEnergy(userId, soulEnergyAmount, 'meditation', `Completed meditation: ${meditationTitle}`);
       
       // Check and award badges for meditation
       try {
