@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Clock, Zap, Bell, Wifi, Sparkles, Wind, Focus, Flame, Check } from "lucide-react";
+import { Play, Clock, Zap, Bell, Wifi, Sparkles, Wind, Focus, Flame, Check, Heart } from "lucide-react";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import Navbar from "@/components/layout/navbar";
 import { useAuth } from "@/hooks/use-auth";
@@ -77,6 +77,7 @@ export default function MeditationsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [completedMeditations, setCompletedMeditations] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState("browse");
+  const [favoritedMeditations, setFavoritedMeditations] = useState<number[]>([]);
 
   // Fetch recently played meditations
   const { data: recentMeditations = [], isLoading: isLoadingRecent } = useQuery<any[]>({
@@ -85,10 +86,50 @@ export default function MeditationsPage() {
     staleTime: 30 * 1000,
     refetchInterval: 30000,
   });
+
+  // Fetch favorite meditations
+  const { data: favoriteMeditations = [], isLoading: isLoadingFavorites } = useQuery<any[]>({
+    queryKey: ["/api/favorite-meditations"],
+    enabled: !!user,
+    staleTime: 30 * 1000,
+  });
   
   const filteredMeditations = selectedCategory === "all" 
     ? meditations 
     : meditations.filter(m => m.category === selectedCategory);
+
+  // Mutations for managing favorites
+  const addFavoriteMutation = useMutation({
+    mutationFn: async (meditation: typeof meditations[0]) => {
+      return apiRequest("POST", "/api/favorite-meditations", {
+        meditationId: meditation.id,
+        meditationTitle: meditation.title,
+        category: meditation.category,
+        durationMinutes: meditation.duration,
+        author: meditation.author,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
+      toast({ title: "Added to favorites!", description: "Meditation bookmarked" });
+    },
+    onError: () => {
+      toast({ title: "Failed to add favorite", variant: "destructive" });
+    },
+  });
+
+  const removeFavoriteMutation = useMutation({
+    mutationFn: async (meditationId: number) => {
+      return apiRequest("DELETE", `/api/favorite-meditations/${meditationId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
+      toast({ title: "Removed from favorites", description: "Meditation unbookmarked" });
+    },
+    onError: () => {
+      toast({ title: "Failed to remove favorite", variant: "destructive" });
+    },
+  });
 
   // Mutation to record meditation completion
   const completeMeditationMutation = useMutation({
@@ -153,9 +194,10 @@ export default function MeditationsPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="bg-white/10 border-white/20 w-full">
-            <TabsTrigger value="browse" className="flex-1">Browse Meditations</TabsTrigger>
-            <TabsTrigger value="recently-played" className="flex-1">Recently Played</TabsTrigger>
+          <TabsList className="bg-white/10 border-white/20 w-full grid grid-cols-3">
+            <TabsTrigger value="browse" className="text-xs sm:text-sm">Browse</TabsTrigger>
+            <TabsTrigger value="favorites" className="text-xs sm:text-sm">Favorites</TabsTrigger>
+            <TabsTrigger value="recently-played" className="text-xs sm:text-sm">Recently Played</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -232,10 +274,31 @@ export default function MeditationsPage() {
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <Badge className="bg-amber-500/90 text-white text-xs border-0 mb-2">
+                  <div className="text-right space-y-2">
+                    <Badge className="bg-amber-500/90 text-white text-xs border-0 mb-2 block">
                       {meditation.tag}
                     </Badge>
+                    <button
+                      onClick={() => {
+                        const isFav = favoriteMeditations.some(f => f.meditationId === meditation.id);
+                        if (isFav) {
+                          removeFavoriteMutation.mutate(meditation.id);
+                        } else {
+                          addFavoriteMutation.mutate(meditation);
+                        }
+                      }}
+                      disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                      className="transition-all hover:scale-110"
+                      data-testid={`favorite-${meditation.id}`}
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${
+                          favoriteMeditations.some(f => f.meditationId === meditation.id)
+                            ? "fill-red-500 text-red-500"
+                            : "text-white/70 hover:text-red-500"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
               </CardContent>
@@ -255,6 +318,63 @@ export default function MeditationsPage() {
           </Button>
         </div>
         </>
+        )}
+
+        {/* Favorites Tab */}
+        {activeTab === "favorites" && (
+          <div>
+            {isLoadingFavorites ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-white/10 rounded-lg h-24 mb-4"></div>
+                  </div>
+                ))}
+              </div>
+            ) : favoriteMeditations.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
+                  <Heart className="h-8 w-8 text-white/50" />
+                </div>
+                <p className="text-white/70 mb-4">No favorite meditations yet</p>
+                <p className="text-white/50 text-sm mb-6">Mark meditations as favorites to save them here for quick access</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {favoriteMeditations.map((favorite) => (
+                  <Card 
+                    key={favorite.id}
+                    className="bg-gradient-to-r from-pink-500/20 to-red-500/20 border-white/20"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-white font-semibold mb-1">{favorite.meditationTitle}</h3>
+                          <p className="text-white/70 text-sm mb-2">by {favorite.author}</p>
+                          <div className="flex items-center gap-4 text-white/70 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{favorite.durationMinutes} min</span>
+                            </div>
+                            <Badge className="bg-white/20 text-white text-xs border-0 capitalize">
+                              {favorite.category}
+                            </Badge>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFavoriteMutation.mutate(favorite.meditationId)}
+                          disabled={removeFavoriteMutation.isPending}
+                          className="transition-all hover:scale-110 mt-1"
+                        >
+                          <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                        </button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Recently Played Tab */}

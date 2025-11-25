@@ -380,6 +380,25 @@ export const insertMeditationSessionSchema = createInsertSchema(meditationSessio
   createdAt: true,
 });
 
+// Favorite Meditations - bookmarks for users
+export const favoriteMeditations = pgTable("favorite_meditations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  meditationId: integer("meditation_id").notNull(), // ID of the meditation from the preset list
+  meditationTitle: text("meditation_title").notNull(),
+  category: text("category").notNull(),
+  durationMinutes: integer("duration_minutes").notNull(),
+  author: text("author"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdMeditationIdIdx: index("favorite_meditations_user_id_meditation_id_idx").on(table.userId, table.meditationId),
+}));
+
+export const insertFavoriteMeditationSchema = createInsertSchema(favoriteMeditations).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type AuraReading = typeof auraReadings.$inferSelect;
@@ -414,6 +433,8 @@ export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
 export type MeditationSession = typeof meditationSessions.$inferSelect;
 export type InsertMeditationSession = z.infer<typeof insertMeditationSessionSchema>;
+export type FavoriteMeditation = typeof favoriteMeditations.$inferSelect;
+export type InsertFavoriteMeditation = z.infer<typeof insertFavoriteMeditationSchema>;
 
 // User Statistics Schema
 export const userStatsSchema = z.object({

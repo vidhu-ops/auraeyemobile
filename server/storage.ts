@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc, or, gte, lt } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -135,6 +135,12 @@ export interface IStorage {
   createMeditationSession(session: InsertMeditationSession): Promise<MeditationSession>;
   getUserMeditationSessions(userId: number): Promise<MeditationSession[]>;
   getMeditationStats(userId: number): Promise<{ sessionsCount: number; totalMinutes: number; totalEnergy: number }>;
+
+  // Favorite meditations
+  addFavoriteMeditation(favorite: InsertFavoriteMeditation): Promise<FavoriteMeditation>;
+  removeFavoriteMeditation(userId: number, meditationId: number): Promise<boolean>;
+  getFavoriteMeditations(userId: number): Promise<FavoriteMeditation[]>;
+  isMeditationFavorite(userId: number, meditationId: number): Promise<boolean>;
 
   // User statistics
   getUserStats(userId: number): Promise<any>;
@@ -1077,6 +1083,36 @@ export class DatabaseStorage implements IStorage {
     const totalEnergy = sessions.reduce((sum, session) => sum + (session.energyGained || 25), 0);
     
     return { sessionsCount, totalMinutes, totalEnergy };
+  }
+
+  // Favorite meditations
+  async addFavoriteMeditation(favorite: InsertFavoriteMeditation): Promise<FavoriteMeditation> {
+    const [result] = await db.insert(favoriteMeditations).values(favorite).returning();
+    return result;
+  }
+
+  async removeFavoriteMeditation(userId: number, meditationId: number): Promise<boolean> {
+    const result = await db.delete(favoriteMeditations)
+      .where(and(
+        eq(favoriteMeditations.userId, userId),
+        eq(favoriteMeditations.meditationId, meditationId)
+      ));
+    return result.rowCount > 0;
+  }
+
+  async getFavoriteMeditations(userId: number): Promise<FavoriteMeditation[]> {
+    return db.select().from(favoriteMeditations)
+      .where(eq(favoriteMeditations.userId, userId))
+      .orderBy(desc(favoriteMeditations.createdAt));
+  }
+
+  async isMeditationFavorite(userId: number, meditationId: number): Promise<boolean> {
+    const [result] = await db.select().from(favoriteMeditations)
+      .where(and(
+        eq(favoriteMeditations.userId, userId),
+        eq(favoriteMeditations.meditationId, meditationId)
+      ));
+    return !!result;
   }
 
   // Record user login for streak tracking
