@@ -3678,6 +3678,89 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Add favorite meditation
+  app.post("/api/favorite-meditations", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { meditationId, meditationTitle, category, durationMinutes, author } = req.body;
+      
+      if (!meditationId || !meditationTitle || !category || !durationMinutes) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const favorite = await storage.addFavoriteMeditation({
+        userId,
+        meditationId,
+        meditationTitle,
+        category,
+        durationMinutes,
+        author: author || "Unknown",
+      });
+      res.json(favorite);
+    } catch (error) {
+      console.error("Error adding favorite meditation:", error);
+      res.status(500).json({ message: "Failed to add favorite meditation" });
+    }
+  });
+
+  // Remove favorite meditation
+  app.delete("/api/favorite-meditations/:meditationId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const meditationId = parseInt(req.params.meditationId, 10);
+      
+      if (!meditationId || isNaN(meditationId)) {
+        return res.status(400).json({ message: "Invalid meditation ID" });
+      }
+
+      const removed = await storage.removeFavoriteMeditation(userId, meditationId);
+      
+      if (!removed) {
+        return res.status(404).json({ message: "Favorite not found" });
+      }
+
+      res.json({ message: "Favorite removed successfully" });
+    } catch (error) {
+      console.error("Error removing favorite meditation:", error);
+      res.status(500).json({ message: "Failed to remove favorite meditation" });
+    }
+  });
+
+  // Get user's favorite meditations
+  app.get("/api/favorite-meditations", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      const favorites = await storage.getFavoriteMeditations(userId);
+      res.json(favorites);
+    } catch (error) {
+      console.error("Error fetching favorite meditations:", error);
+      res.status(500).json({ message: "Failed to fetch favorite meditations" });
+    }
+  });
+
+  // Check if meditation is favorite
+  app.get("/api/favorite-meditations/:meditationId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const meditationId = parseInt(req.params.meditationId, 10);
+      
+      if (!meditationId || isNaN(meditationId)) {
+        return res.status(400).json({ message: "Invalid meditation ID" });
+      }
+
+      const isFavorite = await storage.isMeditationFavorite(userId, meditationId);
+      res.json({ isFavorite });
+    } catch (error) {
+      console.error("Error checking favorite meditation:", error);
+      res.status(500).json({ message: "Failed to check favorite meditation" });
+    }
+  });
+
   // Get home page stats (meditation and healer consultations)
   app.get("/api/home-stats", isAuthenticated, async (req, res) => {
     try {
