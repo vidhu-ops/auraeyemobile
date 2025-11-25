@@ -116,8 +116,8 @@ export default function LightsActivation() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl font-bold text-white mb-2">Welcome to AuraEye</h1>
-              <p className="text-purple-300 text-lg">Your spiritual wellness journey awaits</p>
+              <h1 className="text-4xl font-bold text-white mb-2">Welcome to AuraEye™</h1>
+              <p className="text-purple-300 text-lg">Your Energy Made Visible</p>
             </div>
 
             <Button
@@ -166,18 +166,12 @@ export default function LightsActivation() {
                 </div>
 
                 {/* Energy rings */}
-                <div 
-                  className="absolute inset-8 rounded-full border-2 border-yellow-300/50"
-                  style={{ animation: 'spin 3s linear infinite' }}
-                ></div>
-                <div 
-                  className="absolute inset-10 rounded-full border-2 border-orange-400/30"
-                  style={{ animation: 'spin 2s linear infinite reverse' }}
-                ></div>
+                
+                
               </div>
             </div>
             <p className="text-white text-2xl font-semibold mt-6 animate-pulse">
-              Activating your spiritual space...
+              Activating your personal space...
             </p>
           </div>
         )}
