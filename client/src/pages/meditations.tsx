@@ -184,12 +184,9 @@ export default function MeditationsPage() {
                 );
               })}
             </div>
-          </>
-        )}
 
-        {/* Browse Tab */}
-        {activeTab === "browse" && (
-        <div className="space-y-4">
+            {/* Meditation Cards */}
+            <div className="space-y-4">
           {filteredMeditations.map((meditation) => (
             <Card 
               key={meditation.id}
