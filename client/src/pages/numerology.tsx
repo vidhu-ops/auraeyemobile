@@ -395,7 +395,7 @@ export default function NumerologyPage() {
     
     const month = parts[1]; // MM (birth month)
     const day = parts[2];   // DD (birth day)
-    const currentYear = "2025"; // Current year 2025
+    const currentYear = "2026"; // Current year 2025
     
     let sum = 0;
     
@@ -955,7 +955,7 @@ export default function NumerologyPage() {
                 <CardTitle>Your Numerological Interpretation</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">{numerology.interpretation}</p>
+                <p className="text-white leading-relaxed">{numerology.interpretation}</p>
               </CardContent>
             </Card>
 
@@ -986,7 +986,7 @@ export default function NumerologyPage() {
                         {numerology.lifePathNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Life Path Number: {numerology.lifePathNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
+                      <p className="text-black-600 mb-2">Associated Color: <span className="font-medium text-black">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
                       <div className="text-sm text-gray-500 italic mb-4">
                         {getNumberColorAssociation(numerology.lifePathNumber) === 'Green' && 
                           "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
@@ -1194,8 +1194,8 @@ export default function NumerologyPage() {
                               {personalYear}
                             </div>
                             <h3 className="text-xl font-semibold mb-2">Personal Year: {personalYear}</h3>
-                            <p className="text-gray-600 mb-2">2025 Forecast</p>
-                            <div className="text-sm text-gray-500 italic mb-4">
+                            <p className="text-black-600 mb-2">2026 Forecast</p>
+                            <div className="text-sm text-black-500 italic mb-4">
                               Based on your birth date and the current year
                             </div>
                           </div>
@@ -1205,7 +1205,7 @@ export default function NumerologyPage() {
                             <p className="text-sm text-indigo-700 mb-4">{personalYearInfo.description}</p>
                             
                             <div className="bg-white rounded-lg p-4 border border-indigo-100">
-                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for 2025</h5>
+                              <h5 className="font-medium text-indigo-800 mb-3">Focus Areas for 2026</h5>
                               <ul className="space-y-2">
                                 {personalYearInfo.focus.map((item, index) => (
                                   <li key={index} className="flex items-start text-sm text-indigo-700">
@@ -1228,7 +1228,7 @@ export default function NumerologyPage() {
                                 const birthDate = new Date(birthDateToUse);
                                 const day = birthDate.getDate();
                                 const month = birthDate.getMonth() + 1;
-                                const currentYear = 2025;
+                                const currentYear = 2026;
                                 
                                 // CORRECTED CALCULATION: Use actual month and day digits, not just numbers
                                 const dayDigits = day.toString().split('').map(d => parseInt(d));
@@ -1403,7 +1403,7 @@ export default function NumerologyPage() {
                 <div className="space-y-6">
                   {/* Color Vibrations */}
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-3">Color Vibrations</h4>
+                    <h4 className="font-semibold text-black-800 mb-3">Color Vibrations</h4>
                     <div className="flex flex-wrap gap-3">
                       <Badge className="bg-green-100 text-green-800">Life Path: {getNumberColorAssociation(numerology.lifePathNumber)}</Badge>
                       <Badge className="bg-yellow-100 text-yellow-800">Destiny: {getNumberColorAssociation(numerology.destinyNumber)}</Badge>
@@ -1416,8 +1416,8 @@ export default function NumerologyPage() {
                   {/* Key Strengths and Challenges */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-3">Key Strengths</h4>
-                      <ul className="space-y-2 text-sm text-gray-700">
+                      <h4 className="font-semibold text-black-800 mb-3">Key Strengths</h4>
+                      <ul className="space-y-2 text-sm text-black-700">
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Natural {getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities</li>
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Your {getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills</li>
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>The {getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities</li>
@@ -1425,7 +1425,7 @@ export default function NumerologyPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-3">Potential Challenges</h4>
+                      <h4 className="font-semibold text-black-800 mb-3">Potential Challenges</h4>
                       <ul className="space-y-2 text-sm text-gray-700">
                         <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
                         <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>

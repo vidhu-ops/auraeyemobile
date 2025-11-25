@@ -2026,6 +2026,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         res.json({
           ...numerologyProfile,
+          id: savedReading?.id,
           newBadges: newBadges,
           hasNewBadges: newBadges.length > 0
         });
