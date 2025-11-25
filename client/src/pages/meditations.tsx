@@ -101,32 +101,36 @@ export default function MeditationsPage() {
   // Mutations for managing favorites
   const addFavoriteMutation = useMutation({
     mutationFn: async (meditation: typeof meditations[0]) => {
-      return apiRequest("POST", "/api/favorite-meditations", {
+      const response = await apiRequest("POST", "/api/favorite-meditations", {
         meditationId: meditation.id,
         meditationTitle: meditation.title,
         category: meditation.category,
         durationMinutes: meditation.duration,
         author: meditation.author,
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
       toast({ title: "Added to favorites!", description: "Meditation bookmarked" });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Add favorite error:", error);
       toast({ title: "Failed to add favorite", variant: "destructive" });
     },
   });
 
   const removeFavoriteMutation = useMutation({
     mutationFn: async (meditationId: number) => {
-      return apiRequest("DELETE", `/api/favorite-meditations/${meditationId}`);
+      const response = await apiRequest("DELETE", `/api/favorite-meditations/${meditationId}`);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
       toast({ title: "Removed from favorites", description: "Meditation unbookmarked" });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Remove favorite error:", error);
       toast({ title: "Failed to remove favorite", variant: "destructive" });
     },
   });
