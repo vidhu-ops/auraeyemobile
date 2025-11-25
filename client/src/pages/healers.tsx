@@ -190,6 +190,7 @@ export default function HealersPage() {
                               value={bookingMessage}
                               onChange={(e) => setBookingMessage(e.target.value)}
                               rows={4}
+                              className="text-purple-900"
                             />
                           </div>
                           
@@ -208,8 +209,8 @@ export default function HealersPage() {
                               Send Booking Request
                             </Button>
                             <Button
-                              variant="outline"
                               onClick={() => setIsDialogOpen(false)}
+                              className="bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white"
                             >
                               Cancel
                             </Button>
