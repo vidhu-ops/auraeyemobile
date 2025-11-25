@@ -58,10 +58,7 @@ export function ProfilePictureUploadDialog({
 
     setIsLoading(true);
     try {
-      const response = await apiRequest("/api/profile-picture", {
-        method: "POST",
-        body: JSON.stringify({ pictureUrl: preview }),
-      });
+      const response = await apiRequest("POST", "/api/profile-picture", { pictureUrl: preview });
 
       toast({
         title: "Success!",
