@@ -2008,6 +2008,17 @@ export default function HealerDashboard() {
     refetchInterval: 30000,
   });
 
+  // Fetch healer's own object analyses with immediate updates
+  const { data: healerObjectAnalyses = [], isLoading: isLoadingObjectAnalyses, refetch: refetchObjectAnalyses } = useQuery<any[]>({
+    queryKey: ["/api/object-analyses"],
+    enabled: !!user,
+    staleTime: 0, // Always refetch to get latest data
+    gcTime: 0, // Don't cache - always fetch fresh data
+    refetchInterval: 5000, // Refetch every 5 seconds for faster updates
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    refetchOnReconnect: true, // Refetch on reconnection
+  });
+
   // Fetch stored aura PDFs
   const { data: healerPdfs = [], isLoading: isLoadingPdfs, refetch: refetchPdfs } = useQuery({
     queryKey: ["/api/healer-pdfs"],
@@ -3374,6 +3385,124 @@ export default function HealerDashboard() {
                             {fullAnalysisData?.message && (
                               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                                 <p className="text-sm text-green-700 font-medium">{fullAnalysisData.message}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Object Analysis Readings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-indigo-500" />
+                    Object Analysis History
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => refetchObjectAnalyses()}
+                    disabled={isLoadingObjectAnalyses}
+                    className="text-xs"
+                  >
+                    {isLoadingObjectAnalyses ? 'Refreshing...' : 'Refresh'}
+                  </Button>
+                </CardTitle>
+                <CardDescription>Your object energy analysis history</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingObjectAnalyses ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="bg-gray-200 rounded-lg h-32 mb-4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : healerObjectAnalyses.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Eye className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-500 mb-4">No object analyses yet</p>
+                    <Link to="/object-analysis">
+                      <Button>Analyze an Object</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[800px] overflow-y-auto">
+                    <div className="text-sm text-gray-600 mb-2">
+                      Showing latest {healerObjectAnalyses.length} object analyses
+                    </div>
+                    {healerObjectAnalyses.map((analysis) => {
+                      let energyQualities = [];
+                      try {
+                        energyQualities = JSON.parse(analysis.energyQualities || '[]');
+                      } catch (e) {
+                        energyQualities = [];
+                      }
+
+                      return (
+                        <div key={analysis.id} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              {analysis.imageUrl && (
+                                <img 
+                                  src={analysis.imageUrl} 
+                                  alt={analysis.objectName}
+                                  className="w-16 h-16 rounded-lg object-cover border"
+                                />
+                              )}
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div 
+                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                    style={{ backgroundColor: analysis.auraColor }}
+                                  />
+                                  <h3 className="font-semibold text-lg text-indigo-800">
+                                    {analysis.objectName}
+                                  </h3>
+                                </div>
+                                {analysis.name && (
+                                  <p className="text-sm text-gray-600">Label: {analysis.name}</p>
+                                )}
+                                <p className="text-sm text-gray-500">
+                                  {format(new Date(analysis.createdAt), "PPp")}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <div className="p-3 bg-white rounded-lg border">
+                              <h4 className="font-medium text-indigo-700 mb-2">Description</h4>
+                              <p className="text-sm text-gray-700">{analysis.objectDescription}</p>
+                            </div>
+                            
+                            <div className="p-3 bg-white rounded-lg border">
+                              <h4 className="font-medium text-indigo-700 mb-2">Spiritual Significance</h4>
+                              <p className="text-sm text-gray-700">{analysis.spiritualSignificance}</p>
+                            </div>
+                            
+                            {analysis.auraDescription && (
+                              <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                <h4 className="font-medium text-purple-700 mb-2">Aura Energy</h4>
+                                <p className="text-sm text-gray-700">{analysis.auraDescription}</p>
+                              </div>
+                            )}
+                            
+                            {energyQualities.length > 0 && (
+                              <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                                <h4 className="font-medium text-indigo-700 mb-2">Energy Qualities</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {energyQualities.map((quality: string, idx: number) => (
+                                    <Badge key={idx} variant="secondary">{quality}</Badge>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </div>
