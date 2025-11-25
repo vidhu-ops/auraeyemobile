@@ -3662,6 +3662,23 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user's meditation sessions (recently played)
+  app.get("/api/meditation-sessions", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!userId || typeof userId !== 'number') {
+        return res.status(400).json({ message: "Invalid user session" });
+      }
+
+      const sessions = await storage.getUserMeditationSessions(userId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching meditation sessions:", error);
+      res.status(500).json({ message: "Failed to fetch meditation sessions" });
+    }
+  });
+
   // Get home page stats (meditation and healer consultations)
   app.get("/api/home-stats", isAuthenticated, async (req, res) => {
     try {
