@@ -2,15 +2,17 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, Clock, Zap, Bell, Wifi, Sparkles, Wind, Focus, Flame, Check } from "lucide-react";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import Navbar from "@/components/layout/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits } from "@/hooks/use-credits";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useBadgeContext } from "@/hooks/use-badge-context";
+import { format } from "date-fns";
 
 const meditationCategories = [
   { id: "all", name: "All", icon: Sparkles, color: "from-pink-500 to-rose-500" },
@@ -74,6 +76,15 @@ export default function MeditationsPage() {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [completedMeditations, setCompletedMeditations] = useState<number[]>([]);
+  const [activeTab, setActiveTab] = useState("browse");
+
+  // Fetch recently played meditations
+  const { data: recentMeditations = [], isLoading: isLoadingRecent } = useQuery<any[]>({
+    queryKey: ["/api/meditation-sessions"],
+    enabled: !!user,
+    staleTime: 30 * 1000,
+    refetchInterval: 30000,
+  });
   
   const filteredMeditations = selectedCategory === "all" 
     ? meditations 
@@ -140,31 +151,44 @@ export default function MeditationsPage() {
           <p className="text-cyan-200">Journey through dimensions of consciousness</p>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
-          {meditationCategories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category.id)}
-                className={`whitespace-nowrap rounded-full min-w-fit flex items-center gap-2 ${
-                  selectedCategory === category.id 
-                    ? `bg-gradient-to-r ${category.color} text-white border-0 shadow-md` 
-                    : "bg-white/10 text-white border-white/20"
-                }`}
-                data-testid={`filter-${category.id}`}
-              >
-                <Icon className="h-4 w-4" />
-                {category.name}
-              </Button>
-            );
-          })}
-        </div>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="bg-white/10 border-white/20 w-full">
+            <TabsTrigger value="browse" className="flex-1">Browse Meditations</TabsTrigger>
+            <TabsTrigger value="recently-played" className="flex-1">Recently Played</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-        {/* Meditation Cards */}
+        {activeTab === "browse" && (
+          <>
+            {/* Category Filter */}
+            <div className="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
+              {meditationCategories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`whitespace-nowrap rounded-full min-w-fit flex items-center gap-2 ${
+                      selectedCategory === category.id 
+                        ? `bg-gradient-to-r ${category.color} text-white border-0 shadow-md` 
+                        : "bg-white/10 text-white border-white/20"
+                    }`}
+                    data-testid={`filter-${category.id}`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {category.name}
+                  </Button>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* Browse Tab */}
+        {activeTab === "browse" && (
         <div className="space-y-4">
           {filteredMeditations.map((meditation) => (
             <Card 
@@ -233,6 +257,64 @@ export default function MeditationsPage() {
             Explore More Meditations
           </Button>
         </div>
+        </>
+        )}
+
+        {/* Recently Played Tab */}
+        {activeTab === "recently-played" && (
+          <div>
+            {isLoadingRecent ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-white/10 rounded-lg h-24 mb-4"></div>
+                  </div>
+                ))}
+              </div>
+            ) : recentMeditations.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-8 w-8 text-white/50" />
+                </div>
+                <p className="text-white/70 mb-4">No meditations played yet</p>
+                <p className="text-white/50 text-sm mb-6">Start your spiritual journey by browsing and playing a meditation</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recentMeditations.map((session, idx) => (
+                  <Card 
+                    key={idx}
+                    className="bg-gradient-to-r from-cyan-500/20 to-teal-500/20 border-white/20"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-white font-semibold mb-1">{session.meditationTitle}</h3>
+                          <div className="flex items-center gap-4 text-white/70 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{session.durationMinutes} min</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Zap className="h-4 w-4 text-yellow-300" />
+                              <span>+{session.energyGained} energy</span>
+                            </div>
+                          </div>
+                          <p className="text-white/50 text-xs mt-2">
+                            {format(new Date(session.createdAt), "PPp")}
+                          </p>
+                        </div>
+                        <Badge className="bg-green-500/70 text-white border-0 ml-2">
+                          ✓ Completed
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile Navigation */}
