@@ -2211,8 +2211,26 @@ export default function HealerDashboard() {
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Avatar and Basic Info */}
                 <div className="flex flex-col items-center md:items-start gap-4">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg">
-                    {user?.username?.charAt(0).toUpperCase()}
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg overflow-hidden">
+                      {profilePictureUrl ? (
+                        <img
+                          src={profilePictureUrl}
+                          alt={user?.username}
+                          className="w-full h-full object-cover"
+                          data-testid="img-healer-profile-picture"
+                        />
+                      ) : (
+                        user?.username?.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setUploadDialogOpen(true)}
+                      className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center shadow-md hover:bg-pink-600 transition-colors"
+                      data-testid="button-healer-edit-photo"
+                    >
+                      <Camera className="h-4 w-4 text-white" />
+                    </button>
                   </div>
                   <div className="text-center md:text-left">
                     <h2 className="text-2xl font-bold text-white-900">{user?.username}</h2>
