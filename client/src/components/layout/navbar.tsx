@@ -162,7 +162,7 @@ export default function Navbar() {
                             <Zap className="h-3 w-3 text-white" />
                             <span className="text-white font-semibold text-sm">{credits}</span>
                           </div>
-                          {achievements.length > 0 && (
+                          {Array.isArray(achievements) && achievements.length > 0 && (
                             <div className="flex items-center space-x-1 bg-gradient-to-r from-yellow-500 to-orange-500 px-3 py-1.5 rounded-full" data-testid="badge-count-navbar">
                               <Trophy className="h-3 w-3 text-white" />
                               <span className="text-white font-semibold text-sm">{achievements.length}</span>
