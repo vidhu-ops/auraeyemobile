@@ -3463,9 +3463,6 @@ export default function HealerDashboard() {
                                     className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
                                     style={{ backgroundColor: analysis.auraColor }}
                                   />
-                                  <h3 className="font-semibold text-lg text-indigo-800">
-                                    {analysis.objectName}
-                                  </h3>
                                 </div>
                                 {analysis.name && (
                                   <p className="text-sm text-gray-600">Label: {analysis.name}</p>
