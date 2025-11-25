@@ -345,8 +345,32 @@ export default function NotificationSettings() {
       <Card className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200 dark:border-purple-800">
         <CardContent className="pt-6">
           <p className="text-sm text-white">
+            
+            
+            What you'll receive:
+            
+
+        
+          </p>
+          <p className="text-sm text-white">
+
+
+            Meditation prompts to recharge your spirit
+
+            Aura check-in notifications for energy awareness
+
+            Mindful moment reminders for spiritual growth
+
+            Personalized insights and tips for your journey
+
+
+          </p>
+          <p className="text-sm text-white">
             💡 <strong>Tip:</strong> Enable notifications to stay connected with your spiritual journey.
             Get updates about your soul energy, aura insights, and special messages from your healers!
+
+            
+
           </p>
         </CardContent>
       </Card>
