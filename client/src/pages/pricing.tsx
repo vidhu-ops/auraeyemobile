@@ -455,7 +455,7 @@ export default function PricingPage() {
             {/* CTA Section */}
             <div className="text-center">
               <Link href="/dashboard">
-                <Button variant="outline" className="mr-4" data-testid="button-back-dashboard">
+                <Button variant="outline" className="mr-4 bg-purple" data-testid="button-back-dashboard">
                   Back to Dashboard
                 </Button>
               </Link>

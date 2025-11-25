@@ -30,7 +30,7 @@ export default function About() {
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="font-mystical font-bold text-4xl md:text-5xl mb-6 glow-mystical">About AuraEye</h1>
+              <h1 className="font-mystical font-bold text-4xl md:text-5xl mb-6">About AuraEye</h1>
               <p className="text-xl text-purple-100 mb-8 font-cosmic">
                 We're on a mission to make spiritual wellness and energy healing accessible to everyone through the power of technology and ancient wisdom.
               </p>
@@ -43,7 +43,7 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
-                <h2 className="font-mystical font-bold text-3xl mb-6 text-purple">Our Story</h2>
+                <h2 className="font-mystical font-bold text-3xl mb-6 text-black">Our Story</h2>
                 <p className="text-gray-600 mb-4">
                   Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
 
@@ -75,10 +75,10 @@ export default function About() {
         </section>
         
         {/* Mission and values */}
-        <section className="py-16 bg-gradient-aurora relative overflow-hidden">
+        <section className="py-16 bg-gradient-mystical relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="font-mystical font-bold text-3xl mb-4 text-white glow-mystical">Our Mission & Values</h2>
+              <h2 className="font-mystical font-bold text-3xl mb-4 text-white">Our Mission & Values</h2>
               <p className="text-purple-100 font-cosmic">
                 At the heart of everything we do is a commitment to spiritual authenticity, personal transformation, and making metaphysical wellness accessible to all.
               </p>
@@ -128,7 +128,7 @@ export default function About() {
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <h2 className="font-heading font-bold text-3xl mb-4">Our Approach</h2>
+              <h2 className="font-heading font-bold text-3xl mb-4 text-black">Our Approach</h2>
               <p className="text-gray-600">
                 We combine ancient wisdom with cutting-edge technology to provide you with accurate, personalized spiritual guidance.
               </p>
@@ -275,7 +275,7 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h2 className="font-heading font-bold text-3xl mb-4">Our Team</h2>
-              <p className="text-gray-600">
+              <p className="text-white-600">
                 We're a diverse group of spiritual practitioners, technologists, and wellness experts united by a passion for making spiritual wellness accessible.
               </p>
             </div>
@@ -292,7 +292,7 @@ export default function About() {
                   </div>
                   <h3 className="font-heading font-semibold text-xl mb-1">Nishant Sharma</h3>
                   <p className="text-primary mb-3">Founder & Lead Healer</p>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-white-600 text-sm">
                     An IT Engineer with a Master’s in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer, AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.
                   </p>
                 </CardContent>
@@ -303,7 +303,7 @@ export default function About() {
              
             </div>
             
-            <div className="text-center mt-12">
+            <div className="text-center mt-12 text-black">
               <Button asChild variant="outline" size="lg">
                 <Link href="/contact">
                   Connect With Our Team
