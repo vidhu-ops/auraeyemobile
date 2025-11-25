@@ -49,8 +49,10 @@ import {
   Target
 } from "lucide-react";
 import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { format } from "date-fns";
 import { CHAKRA_KEYS, CHAKRA_DISPLAY_NAMES, getChakraStatus, calculateChakraGroupPercentages, ChakraActivity, type ChakraKey } from "../../../shared/chakra";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, useEffect, memo, useMemo, lazy, Suspense } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
@@ -720,6 +722,118 @@ const DetailedAuraReadingCard = memo(function DetailedAuraReadingCard({ reading 
         'root': 'Grounding, survival, physical vitality',
         'earthStar': 'Earth connection, grounding, ancestral wisdom'
       };
+      
+      // Create a temporary SVG-based chakra chart and capture it
+      try {
+        const chakraChartData = Object.entries(allChakraData).map(([key, score]) => ({
+          name: chakraDisplayNames[key as keyof typeof chakraDisplayNames],
+          energy: score * 10
+        }));
+        
+        // Create temporary container for chart capture
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.top = '-9999px';
+        tempContainer.style.width = '800px';
+        tempContainer.style.height = '400px';
+        tempContainer.style.backgroundColor = 'white';
+        tempContainer.style.padding = '20px';
+        tempContainer.innerHTML = `
+          <svg width="760" height="350" style="font-family: Arial, sans-serif;">
+            <!-- Title -->
+            <text x="380" y="25" font-size="18" font-weight="bold" text-anchor="middle" fill="#1f293d">Chakra Energy Levels</text>
+            
+            <!-- Grid and bars -->
+            <g transform="translate(60, 50)">
+              <!-- Y-axis -->
+              <line x1="0" y1="0" x2="0" y2="250" stroke="#ccc" stroke-width="1"/>
+              <!-- X-axis -->
+              <line x1="0" y1="250" x2="700" y2="250" stroke="#ccc" stroke-width="1"/>
+              
+              <!-- Y-axis labels -->
+              <text x="-10" y="5" font-size="10" text-anchor="end" fill="#666">100%</text>
+              <text x="-10" y="65" font-size="10" text-anchor="end" fill="#666">75%</text>
+              <text x="-10" y="125" font-size="10" text-anchor="end" fill="#666">50%</text>
+              <text x="-10" y="185" font-size="10" text-anchor="end" fill="#666">25%</text>
+              <text x="-10" y="255" font-size="10" text-anchor="end" fill="#666">0%</text>
+              
+              <!-- Horizontal grid lines -->
+              <line x1="0" y1="0" x2="700" y2="0" stroke="#e5e7eb" stroke-width="0.5"/>
+              <line x1="0" y1="62.5" x2="700" y2="62.5" stroke="#e5e7eb" stroke-width="0.5"/>
+              <line x1="0" y1="125" x2="700" y2="125" stroke="#e5e7eb" stroke-width="0.5"/>
+              <line x1="0" y1="187.5" x2="700" y2="187.5" stroke="#e5e7eb" stroke-width="0.5"/>
+            </g>
+          </svg>
+        `;
+        
+        // Alternative: Create bars dynamically
+        let barSvg = '<svg width="800" height="350" style="font-family: Arial, sans-serif;"><text x="400" y="25" font-size="18" font-weight="bold" text-anchor="middle" fill="#1f293d">Chakra Energy Levels</text>';
+        barSvg += '<g transform="translate(40, 50)">';
+        
+        // Add Y-axis
+        barSvg += '<line x1="0" y1="0" x2="0" y2="250" stroke="#999" stroke-width="1.5"/>';
+        barSvg += '<line x1="0" y1="250" x2="720" y2="250" stroke="#999" stroke-width="1.5"/>';
+        
+        // Add Y-axis labels
+        barSvg += '<text x="-8" y="5" font-size="11" text-anchor="end" fill="#374151">100</text>';
+        barSvg += '<text x="-8" y="68" font-size="11" text-anchor="end" fill="#374151">75</text>';
+        barSvg += '<text x="-8" y="130" font-size="11" text-anchor="end" fill="#374151">50</text>';
+        barSvg += '<text x="-8" y="192" font-size="11" text-anchor="end" fill="#374151">25</text>';
+        barSvg += '<text x="-8" y="255" font-size="11" text-anchor="end" fill="#374151">0</text>';
+        
+        // Add grid lines
+        barSvg += '<line x1="0" y1="0" x2="720" y2="0" stroke="#e5e7eb" stroke-width="0.5"/>';
+        barSvg += '<line x1="0" y1="62.5" x2="720" y2="62.5" stroke="#e5e7eb" stroke-width="0.5"/>';
+        barSvg += '<line x1="0" y1="125" x2="720" y2="125" stroke="#e5e7eb" stroke-width="0.5"/>';
+        barSvg += '<line x1="0" y1="187.5" x2="720" y2="187.5" stroke="#e5e7eb" stroke-width="0.5"/>';
+        
+        // Add bars for each chakra
+        const barWidth = 75;
+        const spacing = 80;
+        chakraChartData.forEach((data, index) => {
+          const x = index * spacing;
+          const height = (data.energy / 100) * 250;
+          const y = 250 - height;
+          
+          barSvg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}" fill="#9333ea" opacity="0.8" rx="4"/>`;
+          barSvg += `<text x="${x + barWidth / 2}" y="270" font-size="10" text-anchor="middle" fill="#374151">${data.name.split(' ')[0]}</text>`;
+          barSvg += `<text x="${x + barWidth / 2}" y="${y - 5}" font-size="10" font-weight="bold" text-anchor="middle" fill="#9333ea">${data.energy}%</text>`;
+        });
+        
+        barSvg += '</g></svg>';
+        
+        const chartContainer = document.createElement('div');
+        chartContainer.style.position = 'absolute';
+        chartContainer.style.top = '-9999px';
+        chartContainer.style.width = '800px';
+        chartContainer.style.height = '350px';
+        chartContainer.style.backgroundColor = 'white';
+        chartContainer.innerHTML = barSvg;
+        document.body.appendChild(chartContainer);
+        
+        // Capture the chart with html2canvas
+        const chartCanvas = await html2canvas(chartContainer, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          logging: false,
+          useCORS: true
+        });
+        
+        const chartImageData = chartCanvas.toDataURL('image/png');
+        
+        // Add chart image to PDF
+        const chartImageWidth = pageWidth - 40;
+        const chartImageHeight = (chartImageWidth * chartCanvas.height) / chartCanvas.width;
+        pdf.addImage(chartImageData, 'PNG', 20, yPos, chartImageWidth, chartImageHeight);
+        yPos += chartImageHeight + 15;
+        
+        // Clean up
+        document.body.removeChild(chartContainer);
+        
+      } catch (chartError) {
+        console.error('Error creating chakra chart:', chartError);
+        // Continue without chart if there's an error
+      }
       
       Object.entries(allChakraData).forEach(([chakraKey, score]) => {
         const chakraName = chakraDisplayNames[chakraKey as keyof typeof chakraDisplayNames];
