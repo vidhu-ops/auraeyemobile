@@ -3187,7 +3187,7 @@ export default function HealerDashboard() {
                     <p className="text-sm text-gray-400">Use the Personal Numerology Generator in Spiritual Tools to create readings</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[800px] overflow-y-auto">
                     {healerNumerologyReadings.map((reading) => (
                         <div key={reading.id} className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
                             <div className="flex justify-between items-start mb-3">
