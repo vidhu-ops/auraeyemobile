@@ -153,22 +153,22 @@ export default function About() {
                         We've combined this technology with deep knowledge of chakra systems, energy medicine, and metaphysical principles to provide you with insights that are not just accurate but spiritually meaningful and practical.
                       </p>
                       <ul className="space-y-2">
-                        <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                        <li className="flex items-start text-black">
+                          <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
                           <span>Certified AuraEye™ Readers, trained to pin point exact blocks in your aura & chakras
                             
                             
                             </span>
                         </li>
-                        <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                        <li className="flex items-start text-black">
+                          <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
                           <span>Convenient scheduling for sessions from anywhere</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Get complete clarity about your aura with digital reports and remedies</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Verified and experienced energy healers with specific expertise</span>
                         </li>
@@ -182,7 +182,7 @@ export default function About() {
                         className="rounded-xl shadow-lg w-full h-auto object-cover"
                       />
                       <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-purple-500 to-blue-500 text-white p-3 rounded-lg shadow-lg text-sm font-medium">
-                        Powered by advanced Analysis algorithms
+                        Powered by advanced analysis algorithms
                       </div>
                     </div>
                   </div>
@@ -210,15 +210,15 @@ export default function About() {
                         Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
                       </p>
                       <ul className="space-y-2">
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Verified and experienced energy healers</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Multiple healing modalities to choose from</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Convenient scheduling for sessions from anywhere</span>
                         </li>
@@ -238,15 +238,15 @@ export default function About() {
                         Our team includes not only spiritual practitioners but also data scientists, psychologists, and researchers who work together to create a holistic approach to spiritual wellness that honors tradition while embracing innovation.
                       </p>
                       <ul className="space-y-2">
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Research partnerships with leading institutes</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Ongoing validation studies of our aura analysis technology</span>
                         </li>
-                        <li className="flex items-start">
+                        <li className="flex items-start text-black">
                           <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                           <span>Integration of traditional wisdom with scientific findings</span>
                         </li>

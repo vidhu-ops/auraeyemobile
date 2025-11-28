@@ -331,7 +331,7 @@ export default function JournalPage() {
                 <Button
                   onClick={() => setIsAddingEntry(false)}
                   variant="outline"
-                  className="border-slate-600 text-white"
+                  className="border-slate-600 text-black"
                   data-testid="button-cancel"
                 >
                   Cancel
