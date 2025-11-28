@@ -417,7 +417,7 @@ export default function AuthPage() {
             </CardTitle>
           </div>
           
-          <CardDescription className="text-base text-white">Access your spiritual wellness journey</CardDescription>
+          <CardDescription className="text-base text-white">Access your personal energy</CardDescription>
         </CardHeader>
           
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")} className="w-full">

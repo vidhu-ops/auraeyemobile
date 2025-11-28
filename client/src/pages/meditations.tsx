@@ -199,9 +199,9 @@ export default function MeditationsPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="bg-white/10 border-white/20 w-full grid grid-cols-3">
-            <TabsTrigger value="browse" className="text-xs sm:text-sm">Browse</TabsTrigger>
-            <TabsTrigger value="favorites" className="text-xs sm:text-sm">Favorites</TabsTrigger>
-            <TabsTrigger value="recently-played" className="text-xs sm:text-sm">Recently Played</TabsTrigger>
+            <TabsTrigger value="browse" className="text-xs sm:text-sm text-white">Browse</TabsTrigger>
+            <TabsTrigger value="favorites" className="text-xs sm:text-sm text-white">Favorites</TabsTrigger>
+            <TabsTrigger value="recently-played" className="text-xs sm:text-sm text-white">Recently Played</TabsTrigger>
           </TabsList>
         </Tabs>
 
