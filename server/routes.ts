@@ -2042,7 +2042,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           const year = parts[0];   // YYYY (birth year)
           const month = parts[1];  // MM (birth month)
           const day = parts[2];    // DD (birth day)
-          const currentYear = "2025"; // Current year
+          const currentYear = "2026"; // Current year
           
           console.log(`Healer CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
           

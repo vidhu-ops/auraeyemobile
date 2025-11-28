@@ -674,7 +674,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
     const year = parts[0];   // YYYY (birth year - not used in personal year)
     const month = parts[1];  // MM (birth month)
     const day = parts[2];    // DD (birth day)
-    const currentYear = "2025"; // Current year 2025
+    const currentYear = "2026"; // Current year 2026
     
     console.log(`Horoscope CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
@@ -698,7 +698,7 @@ function algorithmicNumerologyCalculation(name: string, birthDate: string): Nume
       }
     }
     
-    // Sum all digits from current year (2025)
+    // Sum all digits from current year (2026)
     for (const digit of currentYear) {
       const digitValue = parseInt(digit);
       if (!isNaN(digitValue)) {
