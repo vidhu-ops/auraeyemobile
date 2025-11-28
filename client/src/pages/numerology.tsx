@@ -1518,7 +1518,7 @@ export default function NumerologyPage() {
                         {numerology.strengths.map((strength, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-700">{strength}</span>
+                            <span className="text-black-700">{strength}</span>
                           </li>
                         ))}
                       </ul>
@@ -1554,7 +1554,7 @@ export default function NumerologyPage() {
                   <CardDescription>Personalized insights for your journey</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 leading-relaxed">{numerology.guidance}</p>
+                  <p className="text-black-700 leading-relaxed">{numerology.guidance}</p>
                 </CardContent>
               </Card>
             )}
