@@ -110,11 +110,110 @@ export async function analyzeAuraImage(imageBase64: string): Promise<AuraAnalysi
  * Generates numerology reading based on name and birth date
  */
 export async function generateNumerologyReading(name: string, birthDate: string): Promise<any> {
+  // Helper function to reduce numbers to single digit
+  const reduceNumber = (num: number): number => {
+    while (num > 9 && ![11, 22, 33].includes(num)) {
+      num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    }
+    return num;
+  };
+
+  // Helper function to convert letter to number
+  const letterToNumber = (char: string): number => {
+    const charUpperCase = char.toUpperCase();
+    if (charUpperCase === 'A' || charUpperCase === 'J' || charUpperCase === 'S') return 1;
+    if (charUpperCase === 'B' || charUpperCase === 'K' || charUpperCase === 'T') return 2;
+    if (charUpperCase === 'C' || charUpperCase === 'L' || charUpperCase === 'U') return 3;
+    if (charUpperCase === 'D' || charUpperCase === 'M' || charUpperCase === 'V') return 4;
+    if (charUpperCase === 'E' || charUpperCase === 'N' || charUpperCase === 'W') return 5;
+    if (charUpperCase === 'F' || charUpperCase === 'O' || charUpperCase === 'X') return 6;
+    if (charUpperCase === 'G' || charUpperCase === 'P' || charUpperCase === 'Y') return 7;
+    if (charUpperCase === 'H' || charUpperCase === 'Q' || charUpperCase === 'Z') return 8;
+    if (charUpperCase === 'I' || charUpperCase === 'R') return 9;
+    return 0;
+  };
+
+  // Calculate Life Path Number
+  const calculateLifePath = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5;
+    
+    let sum = 0;
+    for (const digit of parts.join('')) {
+      sum += parseInt(digit);
+    }
+    return reduceNumber(sum);
+  };
+
+  // Calculate Destiny Number
+  const calculateDestiny = (fullName: string): number => {
+    let sum = 0;
+    for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
+      sum += letterToNumber(char);
+    }
+    return reduceNumber(sum);
+  };
+
+  // Calculate Soul Urge Number
+  const calculateSoulUrge = (fullName: string): number => {
+    let sum = 0;
+    for (const char of fullName.toLowerCase()) {
+      if ('aeiou'.includes(char)) {
+        sum += letterToNumber(char);
+      }
+    }
+    return reduceNumber(sum);
+  };
+
+  // Calculate Personality Number from day digits
+  const calculatePersonality = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5;
+    
+    const day = parts[2];
+    let sum = 0;
+    for (const digit of day) {
+      sum += parseInt(digit);
+    }
+    return reduceNumber(sum);
+  };
+
+  // Calculate Personal Year with 2026
+  const calculatePersonalYear = (birthDate: string): number => {
+    const parts = birthDate.split('-');
+    if (parts.length !== 3) return 5;
+    
+    const month = parts[1];
+    const day = parts[2];
+    const currentYear = "2026";
+    
+    let sum = 0;
+    for (const digit of month) {
+      sum += parseInt(digit);
+    }
+    for (const digit of day) {
+      sum += parseInt(digit);
+    }
+    for (const digit of currentYear) {
+      sum += parseInt(digit);
+    }
+    
+    return reduceNumber(sum);
+  };
+
+  // Calculate all numbers
+  const lifePathNumber = calculateLifePath(birthDate);
+  const destinyNumber = calculateDestiny(name);
+  const soulUrgeNumber = calculateSoulUrge(name);
+  const personalityNumber = calculatePersonality(birthDate);
+  const personalYearNumber = calculatePersonalYear(birthDate);
+
   return {
-    lifePathNumber: 7,
-    destinyNumber: 3,
-    soulUrgeNumber: 5,
-    personalityNumber: 2,
-    interpretation: "Your numerology profile shows a strong spiritual path with creative expression and adaptability."
+    lifePathNumber,
+    destinyNumber,
+    soulUrgeNumber,
+    personalityNumber,
+    personalYearNumber,
+    interpretation: `Your numerology profile shows a strong spiritual path. Life Path ${lifePathNumber} reveals your core nature, Destiny ${destinyNumber} shows your life purpose, Soul Urge ${soulUrgeNumber} represents your inner desires, Personality ${personalityNumber} is how you present yourself, and Personal Year ${personalYearNumber} guides your current cycle for 2026.`
   };
 }
