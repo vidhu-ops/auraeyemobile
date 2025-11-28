@@ -1,6 +1,6 @@
 import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation } from "../shared/schema";
 import { db } from "./db";
-import { eq, and, gt, desc, or, gte, lt } from "drizzle-orm";
+import { eq, and, gt, desc, or, gte, lt, sql, count } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -302,7 +302,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAuraReadingsCountByPerformedBy(performedBy: number): Promise<number> {
-    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+    const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(auraReadings)
       .where(eq(auraReadings.performedBy, performedBy));
     return result[0]?.count || 0;
@@ -381,7 +381,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNumerologyReadingsCountByPerformedBy(performedBy: number): Promise<number> {
-    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+    const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
       .where(eq(numerologyReadings.performedBy, performedBy));
     return result[0]?.count || 0;
@@ -604,7 +604,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getVibeReadingsCountByUserId(userId: number): Promise<number> {
-    const result = await db.select({ count: db.sql<number>`cast(count(*) as integer)` })
+    const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
       .where(eq(vibeReadings.userId, userId));
     return result[0]?.count || 0;

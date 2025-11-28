@@ -3775,7 +3775,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const meditationStats = await storage.getMeditationStats(userId);
 
       // Get healer consultation stats
-      const bookings = await storage.getBookingsByUser(userId);
+      const bookings = await storage.getHealerBookingsByUser(userId);
       const uniqueHealerIds = new Set(bookings.map(b => b.healerId));
       const healerSessions = uniqueHealerIds.size;
       const healerTotalEnergy = healerSessions * 50; // 50 energy per healer consultation
