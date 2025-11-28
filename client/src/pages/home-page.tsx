@@ -48,11 +48,11 @@ export default function HomePage() {
     },
     onSuccess: async (data: { soulEnergy: number; added: number }) => {
       try {
-        // Update cache immediately
-        queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
+        // Update cache immediately with correct query key that includes user ID
+        queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: data.soulEnergy });
         
         // Refetch to ensure we have fresh data
-        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy", user?.id] });
         
         console.log("✅ Soul energy updated successfully:", data.soulEnergy);
         
@@ -96,11 +96,11 @@ export default function HomePage() {
         // Reset last aura color
         localStorage.removeItem("lastAuraColor");
         
-        // Update cache immediately
-        queryClient.setQueryData(["/api/soul-energy"], { soulEnergy: data.soulEnergy });
+        // Update cache immediately with correct query key that includes user ID
+        queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: 0 });
         
         // Refetch to ensure we have fresh data
-        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy", user?.id] });
         
         // Emit event to summon/reset mascot
         window.dispatchEvent(new Event("summon-mascot"));
