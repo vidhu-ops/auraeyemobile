@@ -865,7 +865,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     return reduceNumber(sum);
   };
 
-  // Calculate Personal Year Number from birth month, day, and current year (2025) - CORRECTED
+  // Calculate Personal Year Number from birth month, day, and current year (2026) - CORRECTED
   const calculatePersonalYear = (birthDate: string): number => {
     const parts = birthDate.split('-');
     if (parts.length !== 3) return 5; // Default fallback
@@ -873,7 +873,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     const year = parts[0];   // YYYY (birth year - not used in personal year)
     const month = parts[1];  // MM (birth month)
     const day = parts[2];    // DD (birth day) 
-    const currentYear = "2025"; // Current year 2025
+    const currentYear = "2026"; // Current year 2026
     
     console.log(`OpenAI CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
     
@@ -897,7 +897,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
       }
     }
     
-    // Sum all digits from current year (2025)
+    // Sum all digits from current year (2026)
     for (const digit of currentYear) {
       const digitValue = parseInt(digit);
       if (!isNaN(digitValue)) {

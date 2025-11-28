@@ -2455,7 +2455,7 @@ export default function HealerDashboard() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-700">Client Master</span>
+                        <span className="text-sm font-medium text-black-700">Client Master</span>
                         <span className="text-xs font-semibold text-blue-600">{analytics?.totalClients || 0}/50</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -2473,7 +2473,7 @@ export default function HealerDashboard() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-700">Session Expert</span>
+                        <span className="text-sm font-medium text-black-700">Session Expert</span>
                         <span className="text-xs font-semibold text-green-600">{analytics?.acceptedBookings || 0}/100</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -2491,7 +2491,7 @@ export default function HealerDashboard() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-700">Spiritual Guide</span>
+                        <span className="text-sm font-medium text-black-700">Spiritual Guide</span>
                         <span className="text-xs font-semibold text-purple-600">{Math.min(100, Math.floor(analytics?.acceptanceRate || 0))}%</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -2509,7 +2509,7 @@ export default function HealerDashboard() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-700">Energy Guardian</span>
+                        <span className="text-sm font-medium text-black-700">Energy Guardian</span>
                         <span className="text-xs font-semibold text-orange-600">{soulEnergy}/500</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -2540,7 +2540,7 @@ export default function HealerDashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Current Level</p>
+                      <p className="text-sm text-black-600">Current Level</p>
                       <h3 className="text-xl font-bold text-gray-900">{milestone.level}</h3>
                     </div>
                     <Badge className={`bg-gradient-to-r ${milestone.gradient} text-white px-4 py-2`} data-testid="badge-milestone-level">
@@ -2550,7 +2550,7 @@ export default function HealerDashboard() {
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Progress to Next</span>
+                      <span className="text-black-600">Progress to Next</span>
                       <span className="font-semibold text-gray-900">{milestoneProgress.current} / {milestoneProgress.total}</span>
                     </div>
                     <Progress value={milestoneProgress.percentage} className="h-2" data-testid="progress-milestone" />
