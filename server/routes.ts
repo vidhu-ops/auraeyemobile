@@ -2066,7 +2066,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             }
           }
           
-          // Add all digits from current year (2025)
+          // Add all digits from current year (2026)
           for (const digit of currentYear) {
             const digitValue = parseInt(digit);
             if (!isNaN(digitValue)) {
