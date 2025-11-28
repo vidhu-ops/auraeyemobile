@@ -2377,7 +2377,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           const year = parts[0];   // YYYY (birth year - not used in personal year)  
           const month = parts[1];  // MM (birth month)
           const day = parts[2];    // DD (birth day)
-          const currentYear = "2025"; // Current year
+          const currentYear = "2026"; // Current year
           
           console.log(`Fallback CORRECTED calculatePersonalYear: birthDate=${birthDate}, month=${month}, day=${day}, currentYear=${currentYear}`);
           
@@ -2401,7 +2401,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             }
           }
           
-          // Add all digits from current year (2025)
+          // Add all digits from current year (2026)
           for (const digit of currentYear) {
             const digitValue = parseInt(digit);
             if (!isNaN(digitValue)) {
