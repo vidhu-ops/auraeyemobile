@@ -1908,7 +1908,7 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
           </div>
           <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
             <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
-            <p className="text-sm font-medium text-emerald-700">Personal Year 2025</p>
+            <p className="text-sm font-medium text-emerald-700">Personal Year 2026</p>
           </div>
         </div>
 
@@ -3355,7 +3355,7 @@ export default function HealerDashboard() {
                                     pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
                                     pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
                                     pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
-                                    pdf.text(`Personal Year 2025: ${reading.personalYearNumber}`, 20, 135);
+                                    pdf.text(`Personal Year 2026: ${reading.personalYearNumber}`, 20, 135);
                                     
                                     // Interpretation
                                     pdf.setFontSize(14);
@@ -3402,7 +3402,7 @@ export default function HealerDashboard() {
                                 </div>
                                 <div className="text-center p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
                                     <div className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{reading.personalYearNumber}</div>
-                                    <div className="text-xs text-emerald-700">Personal 2025</div>
+                                    <div className="text-xs text-emerald-700">Personal 2026</div>
                                 </div>
                             </div>
 
