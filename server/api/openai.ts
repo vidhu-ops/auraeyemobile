@@ -757,7 +757,7 @@ export async function generateNumerologyReading(name: string, birthDate: string)
           3. How these numbers interact to create a unique energy pattern
           4. Key strengths, talents, and potential challenges based on this numerological blueprint
           5. Spiritual guidance for personal growth and fulfilling one's highest potential
-          6. Any special significance of master numbers (11, 22, 33) if present
+          
 
           Make the reading personal, insightful, and spiritually meaningful with practical guidance.`
         }
@@ -820,7 +820,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
   const calculateLifePath = (date: string): number => {
     // Format should be YYYY-MM-DD
     const parts = date.split('-');
-    if (parts.length !== 3) return 5; // Default fallback
+    if (parts.length !== 3) return 6; // Default fallback
 
     const year = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit), 0);
     const month = parseInt(parts[1]);
@@ -871,7 +871,7 @@ function calculateNumerologyProfile(name: string, birthDate: string): any {
     if (parts.length !== 3) return 5; // Default fallback
     
     const year = parts[0];   // YYYY (birth year - not used in personal year)
-    const month = parts[1];  // MM (birth month)
+    const month = parts[2];  // MM (birth month)
     const day = parts[2];    // DD (birth day) 
     const currentYear = "2026"; // Current year 2026
     
@@ -947,10 +947,7 @@ function generateNumerologyInterpretation(lifePath: number, destiny: number, sou
     6: "Responsibility, harmony, and nurturing others are central to your path.",
     7: "Spiritual growth, analysis, and search for truth define your journey.",
     8: "Material achievement, power, and authority are key themes in your life.",
-    9: "Humanitarianism, compassion, and artistic expression mark your path.",
-    11: "As a master number, you have heightened intuition and spiritual insight.",
-    22: "As a master builder, you have the potential to create large-scale works that benefit humanity.",
-    33: "As a master teacher, you embody compassion and service to humanity."
+    9: "Humanitarianism, compassion, and artistic expression mark your path."
   };
 
   const destinyMeanings: Record<number, string> = {
@@ -962,10 +959,7 @@ function generateNumerologyInterpretation(lifePath: number, destiny: number, sou
     6: "Service, responsibility, and creating harmony are your destiny.",
     7: "Analysis, spiritual wisdom, and specialized knowledge define your path.",
     8: "Business acumen, executive ability, and material accomplishment are your destiny.",
-    9: "Humanitarian service, artistic expression, and compassion define your work.",
-    11: "Your destiny involves inspiring others through spiritual insight and intuition.",
-    22: "Your destiny is to build structures and systems that serve humanity on a large scale.",
-    33: "Your destiny is to serve humanity through compassionate healing and teaching."
+    9: "Humanitarian service, artistic expression, and compassion define your work."
   };
 
   return `Your Life Path number ${lifePath} indicates that ${lifePathMeanings[lifePath] || "you have a unique journey ahead"}. Your Destiny number ${destiny} suggests that ${destinyMeanings[destiny] || "your purpose involves growth and achievement"}. 
