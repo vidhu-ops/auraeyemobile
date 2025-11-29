@@ -4566,7 +4566,7 @@ Team AuraEye™
     console.log("Creating zone-specific dense smokey aura with proper energy positioning...");
     
     // Set heavy blur for natural smokey effect (slightly more blurred)
-    ctx.filter = 'blur(30px)';
+    ctx.filter = 'blur(50px)';
     
     // LEFT ZONE - RECEIVING COLOR ONLY (dense smokey effect to edges)
     ctx.save();
@@ -4580,7 +4580,7 @@ Team AuraEye™
       
       // Larger particles near edges for dense coverage
       const edgeDistance = Math.min(x, width * 0.5 - x);
-      const radius = 60 + Math.random() * 200 + (edgeDistance < 50 ? 80 : 0); // Extra large near edges
+      const radius = 80 + Math.random() * 200 + (edgeDistance < 50 ? 80 : 0); // Extra large near edges
       const opacity = 0.3 + Math.random() * 0.4; // Dense opacity
       
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
@@ -5142,7 +5142,7 @@ Team AuraEye™
             {
                 color: colors.thinkingRGB,
                 zone: 'top',
-                density: 30,
+                density: 70,
                 getCoords: () => ({
                     x: width * 0.1 + seededRandom() * (width * 0.8), // Match main zone restrictions
                     y: seededRandom() * (height * 0.35) // Limited to top 35% like main zones
@@ -5151,7 +5151,7 @@ Team AuraEye™
             {
                 color: colors.receivingRGB,
                 zone: 'left',
-                density: 40,
+                density: 90,
                 getCoords: () => ({
                     x: seededRandom() * (width * 0.45), // LEFT side - strengthened restriction to 45%
                     y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
@@ -5160,7 +5160,7 @@ Team AuraEye™
             {
                 color: colors.givingRGB,
                 zone: 'right',
-                density: 60,
+                density: 90,
                 getCoords: () => ({
                     x: width * 0.55 + seededRandom() * (width * 0.45), // RIGHT side - strengthened restriction from 55%
                     y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
@@ -5181,8 +5181,8 @@ Team AuraEye™
                 if (!inFaceArea) {
                     // Fixed consistent sizing for all images regardless of original dimensions
                     const sizeFactor = 1.0; // Fixed factor for uniform appearance
-                    const smokeSize = 120 + seededRandom() * 60; // Consistent particle size 120-180px
-                    const smokeOpacity = 0.01 + seededRandom() * 0.25; // Higher opacity 0.35-0.60 for better visibility
+                    const smokeSize = 180 + seededRandom() * 60; // Consistent particle size 120-180px
+                    const smokeOpacity = 0.01 + seededRandom() * 0.55; // Higher opacity 0.35-0.60 for better visibility
 
                     drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
                 }
@@ -5904,7 +5904,7 @@ Team AuraEye™
         const personHeight = height * 0.6;
 
         // Create smokey particle system around person outline
-        const particleCount = 700 + (energyLevel * 80);
+        const particleCount =9700 + (energyLevel * 80);
 
         for (let i = 0; i < particleCount; i++) {
             // Generate particles around person silhouette
@@ -5933,14 +5933,14 @@ Team AuraEye™
 
             // Fixed consistent particle size for uniform appearance
             const sizeFactor = 1.0; // Fixed factor for consistent visualization
-            const particleSize = 144 + seededRandom() * 144; // Consistent size 144-288px for all images
+            const particleSize = 204 + seededRandom() * 164; // Consistent size 144-288px for all images
             const baseOpacity = Math.max(0.1, 0.6 - (distance / 150));
             const opacity = baseOpacity * (0.3 + seededRandom() * 0.4);
 
             // Create smokey gradient for each particle
             const gradient = ctx.createRadialGradient(
                 particleX, particleY, 0,
-                particleX, particleY, particleSize * 8
+                particleX, particleY, particleSize * 10
             );
 
             gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
@@ -5954,7 +5954,7 @@ Team AuraEye™
 
             // Draw particle as soft circle
             ctx.beginPath();
-            ctx.arc(particleX, particleY, particleSize * 10, 0, Math.PI * 3);
+            ctx.arc(particleX, particleY, particleSize * 60, 0, Math.PI * 3);
             ctx.fill();
         }
 
