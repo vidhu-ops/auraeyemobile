@@ -13,6 +13,7 @@ import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal"
 import { useBadgeContext } from "@/hooks/use-badge-context";
 import logoImage from "@assets/new-logo.jpeg";
 import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4";
+import demoPdfReport from "@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29_1764453236630.pdf";
 
 interface VibeResult {
   dominantColor: string;
@@ -60,6 +61,7 @@ export default function VibePage() {
   const [showMeditationVideo, setShowMeditationVideo] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [showPostMeditationOptions, setShowPostMeditationOptions] = useState(false);
+  const [showPremiumPdf, setShowPremiumPdf] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleImageSelect = async (file: File) => {
@@ -375,13 +377,22 @@ export default function VibePage() {
                   <p className="text-xs text-slate-500 mb-4">
                     Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report
                   </p>
-                  <Button 
-                    onClick={() => setShowPremiumVideo(true)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <Play className="mr-2 h-4 w-4" />
-                    Watch Now
-                  </Button>
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    <Button 
+                      onClick={() => setShowPremiumVideo(true)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Watch Now
+                    </Button>
+                    <Button 
+                      onClick={() => setShowPremiumPdf(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      See Demo Premium Report
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -610,6 +621,30 @@ export default function VibePage() {
                   Journal About It
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium PDF Report Modal */}
+      {showPremiumPdf && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-2xl font-bold text-black">Premium Aura & Chakra Report</h2>
+              <button
+                onClick={() => setShowPremiumPdf(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <iframe
+                src={demoPdfReport}
+                className="w-full h-full"
+                title="Premium Aura & Chakra Analysis Report"
+              />
             </div>
           </div>
         </div>
