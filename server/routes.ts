@@ -1174,20 +1174,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Helper function to resize images to exactly 600x900 pixels and compress to 50KB maximum for consistent aura processing
+  // Helper function to resize images to exactly 700x500 pixels and compress to 30KB maximum for mobile aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {
       console.log(`Original image size: ${(inputBuffer.length / 1024).toFixed(1)}KB`);
       
-      // Start with moderate quality and progressively reduce to hit 50KB target
+      // Start with moderate quality and progressively reduce to hit 30KB target
       let quality = 85;
       let compressedBuffer: Buffer;
-      const targetSizeKB = 50;
+      const targetSizeKB = 30;
       
-      // Keep compressing until we reach 50KB or lower for consistent processing
+      // Keep compressing until we reach 30KB or lower for consistent processing
       do {
         compressedBuffer = await sharp(inputBuffer)
-          .resize(600, 900, {
+          .resize(700, 500, {
             fit: 'cover', // Crop to exact dimensions for uniform appearance
             position: 'center' // Center crop to maintain subject focus
           })
@@ -1203,15 +1203,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Compressed to ${fileSizeKB.toFixed(1)}KB with quality ${quality} (target: ${targetSizeKB}KB)`);
         
         // If still too large, reduce quality by 5 for finer control
-        if (fileSizeKB > targetSizeKB && quality > 25) {
+        if (fileSizeKB > targetSizeKB && quality > 20) {
           quality -= 5;
         } else {
           break; // Either small enough or minimum quality reached
         }
-      } while (quality >= 25);
+      } while (quality >= 20);
       
       const finalSizeKB = compressedBuffer.length / 1024;
-      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      console.log(`✅ Final standardized image: ${finalSizeKB.toFixed(1)}KB, dimensions: 700x500px`);
       
       // Verify dimensions are exactly what we expect
       const metadata = await sharp(compressedBuffer).metadata();
@@ -1221,6 +1221,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error resizing image:", error);
       // Return original buffer if resize fails
+      return inputBuffer;
+    }
+  };
+
+  // Helper function to resize images for aura visualization (maintain 600x900 for consistent aura display)
+  const resizeImageForAuraDisplay = async (inputBuffer: Buffer): Promise<Buffer> => {
+    try {
+      console.log(`Preparing image for aura visualization display...`);
+      
+      // Resize to 600x900 for standardized aura visualization display
+      let quality = 90;
+      let compressedBuffer: Buffer;
+      const targetSizeKB = 50;
+      
+      do {
+        compressedBuffer = await sharp(inputBuffer)
+          .resize(600, 900, {
+            fit: 'cover',
+            position: 'center'
+          })
+          .jpeg({ 
+            quality: quality,
+            progressive: true,
+            mozjpeg: true,
+            force: true
+          })
+          .toBuffer();
+          
+        const fileSizeKB = compressedBuffer.length / 1024;
+        console.log(`Aura display image: ${fileSizeKB.toFixed(1)}KB with quality ${quality}`);
+        
+        if (fileSizeKB > targetSizeKB && quality > 25) {
+          quality -= 5;
+        } else {
+          break;
+        }
+      } while (quality >= 25);
+      
+      const finalSizeKB = compressedBuffer.length / 1024;
+      console.log(`✅ Aura display image ready: ${finalSizeKB.toFixed(1)}KB, dimensions: 600x900px`);
+      
+      return compressedBuffer;
+    } catch (error) {
+      console.error("Error preparing aura display image:", error);
       return inputBuffer;
     }
   };
@@ -1242,7 +1286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      // Resize image to standard dimensions (1600x900px)
+      // Resize image to standard dimensions (700x500px) with 30KB compression
       imgBuffer = await resizeImageToStandard(imgBuffer);
 
       // For object analysis, skip human detection to ensure reliable processing
@@ -1539,11 +1583,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Skip strict human detection for now to guarantee analysis success
       console.log("Processing image for aura analysis (human detection relaxed for reliability)");
 
-      // Resize image to standard dimensions (600x900px) and compress to 50KB with guaranteed success
+      // Resize image to standard dimensions (700x500px) and compress to 30KB with guaranteed success
       let compressedBuffer: Buffer;
       try {
         compressedBuffer = await resizeImageToStandard(imgBuffer);
-        console.log("Image compression successful");
+        console.log("Image compression successful for analysis");
       } catch (compressionError) {
         console.error("Image compression failed:", compressionError);
         // Use original buffer if compression fails
@@ -1551,6 +1595,15 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       }
       
       imageData = compressedBuffer.toString("base64");
+      
+      // Also prepare a version for aura visualization display (600x900px)
+      let displayBuffer: Buffer;
+      try {
+        displayBuffer = await resizeImageForAuraDisplay(imgBuffer);
+      } catch (displayError) {
+        console.error("Display image preparation failed:", displayError);
+        displayBuffer = compressedBuffer;
+      }
 
       // Get the name from request body
       const analysisName = req.body.name || 'Unnamed';
@@ -1609,9 +1662,10 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             };
           }
           
-          // Use the standardized aura visualization system
+          // Use the standardized aura visualization system with display-sized image
+          const displayImageBase64 = displayBuffer.toString('base64');
           auraAnalysis.processedAuraImage = await generateAuraVisualization(
-            `data:image/jpeg;base64,${imageData}`,
+            `data:image/jpeg;base64,${displayImageBase64}`,
             auraAnalysis
           );
           console.log("Standardized aura visualization completed successfully with 600x900px dimensions");
@@ -3066,7 +3120,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "No image file provided" });
       }
 
-      const imageBuffer = req.file.buffer;
+      let imageBuffer = req.file.buffer;
+      
+      // Compress image to 700x500px and 30KB for faster processing
+      try {
+        imageBuffer = await resizeImageToStandard(imageBuffer);
+        console.log("Image compressed for vibe analysis");
+      } catch (compressionError) {
+        console.error("Image compression for vibe failed:", compressionError);
+        // Continue with original if compression fails
+      }
       
       // Detect human in image first
       const hasHuman = await detectHumanInImage(imageBuffer);
