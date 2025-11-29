@@ -378,17 +378,17 @@ export default function HomePage() {
             
             {/* Soul Energy Display */}
             <div className="bg-gradient-to-r from-purple-900/40 to-cyan-900/40 rounded-xl p-4 mb-4 border border-purple-500/30">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-purple-100" />
                   <span className="text-gray-200 font-semibold">Soul Energy</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                   <div className="text-2xl font-bold text-purple-200">{soulEnergy}</div>
                   <Button
                     onClick={() => growSoulEnergyMutation.mutate()}
                     disabled={growSoulEnergyMutation.isPending || !user}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-none min-w-fit"
                     data-testid="button-grow-soul-energy"
                   >
                     {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
@@ -396,7 +396,7 @@ export default function HomePage() {
                   <Button
                     onClick={() => resetSoulEnergyMutation.mutate()}
                     disabled={resetSoulEnergyMutation.isPending || !user}
-                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-none min-w-fit"
                     data-testid="button-reset-soul-energy"
                   >
                     {resetSoulEnergyMutation.isPending ? "Resetting..." : "Reset"}
