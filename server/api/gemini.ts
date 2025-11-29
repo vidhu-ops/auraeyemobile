@@ -78,6 +78,9 @@ export async function generateAuraVisualization(
       drawHeight
     );
     
+    // Add zone labels
+    addZoneLabels(ctx, STANDARD_WIDTH, STANDARD_HEIGHT);
+    
     // Add watermark to bottom left at 50% opacity
     addWatermark(ctx, STANDARD_WIDTH, STANDARD_HEIGHT);
     
@@ -241,9 +244,10 @@ function addStandardizedAuraEffects(
   // Add multiple layers of dense energy wisps for much more prominent smokey effect
   console.log('Adding multiple layers of dense energy wisps...');
   
-  // Multiple layers of denser wisps for better coverage
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 36, 0.25, 22);
-  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 24, 0.18, 16);
+  // Multiple layers of denser wisps for better coverage - increased particle sizes
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, dominantRGB, secondaryRGB, 48, 0.35, 32);
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, secondaryRGB, dominantRGB, 36, 0.28, 26);
+  addEnergyWisps(ctx, canvasWidth, canvasHeight, receivingRGB, givingRGB, 24, 0.22, 20);
   
   // Add dense radial smoke clouds around the person for ultra-smokey effect
   console.log('Adding dense radial smoke clouds...');
@@ -371,35 +375,41 @@ function addDenseSmokeyClouds(
   ctx.globalCompositeOperation = 'multiply';
   
   // CRITICAL FIX: Create ULTRA-DENSE smoke rings for maximum appearance
-  const cloudRings = 8; // Increased from 4 to 8 for ultra-dense effect
-  const baseRadius = Math.max(personWidth, personHeight) * 0.15; // Smaller base for tighter coverage
+  const cloudRings = 12; // Increased from 8 to 12 for maximum density
+  const baseRadius = Math.max(personWidth, personHeight) * 0.1; // Smaller base for tighter coverage
   
   for (let ring = 0; ring < cloudRings; ring++) {
-    const ringRadius = baseRadius + (ring * 35); // Tighter ring spacing
-    const numClouds = 24 + (ring * 4); // Even more clouds for ultra-dense coverage
-    const opacity = 0.65 - (ring * 0.05); // Much higher base opacity for ultra-dense effect
+    const ringRadius = baseRadius + (ring * 30); // Tighter ring spacing
+    const numClouds = 32 + (ring * 6); // Even more clouds for ultra-dense coverage
+    const opacity = 0.75 - (ring * 0.04); // Much higher base opacity for ultra-dense effect
     
     for (let cloud = 0; cloud < numClouds; cloud++) {
       const angle = (cloud / numClouds) * Math.PI * 2;
       // Use deterministic variations for consistency
-      const variationPattern = (cloud % 5) * 10 - 25; // Creates 5 consistent patterns
+      const variationPattern = (cloud % 5) * 8 - 20; // Creates 5 consistent patterns
       const radiusVariation = ringRadius + variationPattern;
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
       
-      // ULTRA-DENSE cloud sizes for maximum coverage
-      const sizePattern = (cloud % 4) * 6; // Creates 4 size patterns for better distribution
-      const cloudRadius = 45 + sizePattern; // Even larger base size for ultra-dense effect
-      const opacityPattern = (cloud % 5) * 0.04; // Creates 5 opacity patterns for variation
-      const cloudOpacity = Math.min(opacity + opacityPattern, 0.8); // Cap maximum opacity
+      // ULTRA-DENSE cloud sizes for maximum coverage - INCREASED particle sizes
+      const sizePattern = (cloud % 4) * 8; // Creates 4 size patterns for better distribution
+      const cloudRadius = 60 + sizePattern; // Increased to 60-92px for filled appearance
+      const opacityPattern = (cloud % 5) * 0.05; // Creates 5 opacity patterns for variation
+      const cloudOpacity = Math.min(opacity + opacityPattern, 0.85); // Increased cap
       
-      const color = cloud % 2 === 0 ? primaryRGB : secondaryRGB;
+      // Cycle through multiple colors for more visual depth
+      const colorIndex = cloud % 3;
+      let color;
+      if (colorIndex === 0) color = primaryRGB;
+      else if (colorIndex === 1) color = secondaryRGB;
+      else color = { r: (primaryRGB.r + secondaryRGB.r) / 2, g: (primaryRGB.g + secondaryRGB.g) / 2, b: (primaryRGB.b + secondaryRGB.b) / 2 };
       
       // Create soft, diffuse smoke clouds
       const smokeGradient = ctx.createRadialGradient(x, y, 0, x, y, cloudRadius);
       smokeGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity})`);
-      smokeGradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity * 0.8})`);
-      smokeGradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity * 0.4})`);
+      smokeGradient.addColorStop(0.2, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity * 0.9})`);
+      smokeGradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity * 0.6})`);
+      smokeGradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, ${cloudOpacity * 0.2})`);
       smokeGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
       
       ctx.fillStyle = smokeGradient;
@@ -409,27 +419,34 @@ function addDenseSmokeyClouds(
     }
   }
   
-  // Add ULTRA-DENSE inner aura for maximum protection
-  const innerClouds = 36; // Increased from 24 to 36 for ultra-dense coverage
-  const innerRadius = Math.min(personWidth, personHeight) * 0.25; // Tighter inner radius
+  // Add ULTRA-DENSE inner aura for maximum protection - INCREASED particles
+  const innerClouds = 56; // Increased from 36 to 56 for ultra-dense coverage
+  const innerRadius = Math.min(personWidth, personHeight) * 0.2; // Tighter inner radius
   
   for (let i = 0; i < innerClouds; i++) {
     const angle = (i / innerClouds) * Math.PI * 2;
     // Use consistent patterns for inner clouds
-    const distancePattern = (i % 4) * 5 - 10; // Creates 4 consistent distance patterns
+    const distancePattern = (i % 4) * 4 - 8; // Creates 4 consistent distance patterns
     const distance = innerRadius + distancePattern;
     const x = centerX + Math.cos(angle) * distance;
     const y = centerY + Math.sin(angle) * distance;
     
-    // Use larger radius patterns for denser inner coverage
-    const radiusPattern = (i % 3) * 5; // Creates 3 radius patterns with larger variation
-    const cloudRadius = 20 + radiusPattern; // Increased base radius
-    const color = i % 3 === 0 ? primaryRGB : secondaryRGB;
+    // Use larger radius patterns for denser inner coverage - INCREASED sizes
+    const radiusPattern = (i % 3) * 8; // Creates 3 radius patterns with larger variation
+    const cloudRadius = 35 + radiusPattern; // Increased base radius from 20 to 35
+    
+    // Cycle through colors for better blending
+    const colorIndex = i % 3;
+    let color;
+    if (colorIndex === 0) color = primaryRGB;
+    else if (colorIndex === 1) color = secondaryRGB;
+    else color = { r: (primaryRGB.r + secondaryRGB.r) / 2, g: (primaryRGB.g + secondaryRGB.g) / 2, b: (primaryRGB.b + secondaryRGB.b) / 2 };
     
     const innerGradient = ctx.createRadialGradient(x, y, 0, x, y, cloudRadius);
-    innerGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.55)`); // Increased opacity
-    innerGradient.addColorStop(0.4, `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)`); // Denser middle
-    innerGradient.addColorStop(0.8, `rgba(${color.r}, ${color.g}, ${color.b}, 0.15)`); // Longer fade
+    innerGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.65)`); // Increased opacity
+    innerGradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, 0.55)`); // Denser middle
+    innerGradient.addColorStop(0.6, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`); // Better transition
+    innerGradient.addColorStop(0.9, `rgba(${color.r}, ${color.g}, ${color.b}, 0.08)`); // Longer fade
     innerGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     ctx.fillStyle = innerGradient;
@@ -437,6 +454,37 @@ function addDenseSmokeyClouds(
     ctx.arc(x, y, cloudRadius, 0, Math.PI * 2);
     ctx.fill();
   }
+}
+
+function addZoneLabels(ctx: any, canvasWidth: number, canvasHeight: number) {
+  // Reset composite operation for text
+  ctx.globalCompositeOperation = 'source-over';
+  
+  // Configure text styling for zone labels
+  const fontSize = Math.floor(canvasWidth * 0.04); // Responsive font size
+  ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; // White text at 70% opacity
+  ctx.textBaseline = 'middle';
+  
+  // Add text shadow for better visibility
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+  ctx.shadowOffsetX = 1;
+  ctx.shadowOffsetY = 1;
+  ctx.shadowBlur = 2;
+  
+  // Left label (Receiving) - positioned near left edge
+  ctx.textAlign = 'left';
+  ctx.fillText('Left', 12, canvasHeight / 2);
+  
+  // Right label (Giving) - positioned near right edge
+  ctx.textAlign = 'right';
+  ctx.fillText('Right', canvasWidth - 12, canvasHeight / 2);
+  
+  // Reset shadow settings
+  ctx.shadowColor = 'transparent';
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.shadowBlur = 0;
 }
 
 function addWatermark(ctx: any, canvasWidth: number, canvasHeight: number) {
