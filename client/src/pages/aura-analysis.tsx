@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -226,6 +226,73 @@ export default function AuraAnalysis() {
   const [showImageConfirmation, setShowImageConfirmation] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  
+  // Canvas ref for image compression
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Compress image to target KB size (using canvas for client-side compression)
+  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 30): Promise<Blob> => {
+    return new Promise((resolve) => {
+      let quality = 0.9;
+      const tryCompress = () => {
+        canvas.toBlob((blob) => {
+          if (blob && blob.size <= maxSizeKB * 1024) {
+            resolve(blob);
+          } else if (quality > 0.1) {
+            quality -= 0.1;
+            tryCompress();
+          } else {
+            resolve(blob!);
+          }
+        }, 'image/jpeg', quality);
+      };
+      tryCompress();
+    });
+  };
+
+  // Compress and prepare image for analysis
+  const compressAndPrepareImage = async (imageFile: File): Promise<string> => {
+    const canvas = canvasRef.current;
+    if (!canvas) throw new Error('Canvas not available');
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas context not available');
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = async () => {
+        try {
+          // Resize to max 600px width (like image flipping tool)
+          const maxWidth = 600;
+          const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+          const newWidth = img.width * ratio;
+          const newHeight = img.height * ratio;
+
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+
+          ctx.clearRect(0, 0, newWidth, newHeight);
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+          // Compress to 30KB
+          const compressedBlob = await compressImage(canvas, 30);
+          
+          // Convert blob to base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result?.toString() || '';
+            resolve(base64String);
+          };
+          reader.onerror = () => reject(new Error('Failed to read compressed image'));
+          reader.readAsDataURL(compressedBlob);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(imageFile);
+    });
+  };
 
   // Save healer notes function
   const saveHealerNotes = async (analysisId: number, notes: string) => {
@@ -6412,12 +6479,31 @@ Team AuraEye™
         });
       }, 100); // Ultra fast interval
 
-      // Convert the image to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedImageFile);
-      reader.onloadend = async () => {
-        const base64String = reader.result?.toString();
-        const base64data = base64String?.split(",")[1];
+      // Compress image first (client-side) before analysis
+      let base64String: string;
+      try {
+        setAnalysisStage("Compressing image for faster analysis...");
+        base64String = await compressAndPrepareImage(selectedImageFile);
+        const compressedSizeKB = (base64String.length * 3/4 / 1024).toFixed(1);
+        console.log(`📦 Image compressed to ${compressedSizeKB}KB`);
+        toast({
+          title: "Image Ready",
+          description: `Compressed to ${compressedSizeKB}KB for analysis`,
+        });
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        toast({
+          title: "Compression Failed",
+          description: "Failed to prepare image. Please try again.",
+          variant: "destructive",
+        });
+        setIsAnalyzing(false);
+        setNameEntered(false);
+        setAnalysisName('');
+        return;
+      }
+
+      const base64data = base64String.split(",")[1];
         
         // Store original image
         setOriginalImage(base64String || null);
