@@ -510,7 +510,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'screen';
     ctx.globalAlpha = 0.32; // High opacity for visibility
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 210px Arial, sans-serif'; // Increased from 150px to 210px (40% larger)
+    ctx.font = 'bold 80px Arial, sans-serif'; // Increased from 150px to 210px (40% larger)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -527,7 +527,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'screen';
     ctx.globalAlpha = 0.32; // High opacity for visibility
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 63px Arial, sans-serif'; // Increased from 45px to 63px (40% larger)
+    ctx.font = 'bold 23px Arial, sans-serif'; // Increased from 45px to 63px (40% larger)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -538,10 +538,10 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetY = 0;
 
     // Draw "Left" watermark at bottom left
-    ctx.fillText('Left', canvasWidth * 0.15, canvasHeight - 60);
+    ctx.fillText('Left', canvasWidth * 0.10, canvasHeight - 60);
     
     // Draw "Right" watermark at bottom right
-    ctx.fillText('Right', canvasWidth * 0.85, canvasHeight - 60);
+    ctx.fillText('Right', canvasWidth * 0.95, canvasHeight - 60);
    
     
     ctx.restore();
