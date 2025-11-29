@@ -262,8 +262,12 @@ export default function AuraAnalysis() {
       const img = new Image();
       img.onload = async () => {
         try {
-          // Resize to max 600px width (like image flipping tool)
-          const maxWidth = 600;
+          // For very large images (3000px+), reduce more aggressively
+          let maxWidth = 600;
+          if (img.width > 3000 || img.height > 3000) {
+            maxWidth = 400; // More aggressive compression for ultra-large images
+          }
+          
           const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
           const newWidth = img.width * ratio;
           const newHeight = img.height * ratio;
