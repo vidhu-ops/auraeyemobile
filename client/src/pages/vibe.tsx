@@ -17,8 +17,9 @@ import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_175
 interface VibeResult {
   dominantColor: string;
   colorMeaning: {
-    positive: string;
-    negative: string;
+    positive: string[];
+    negative: string[];
+    remedy: string;
   };
   energyLevel: number;
   message: string;
@@ -317,10 +318,17 @@ export default function VibePage() {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
-                    <h3 className="font-semibold text-green-900">Positive</h3>
+                    <h3 className="font-semibold text-green-900">Positive Traits</h3>
                   </div>
-                  <h4 className="font-semibold text-green-800 mb-2">What's bright right now</h4>
-                  <p className="text-green-700 text-sm">{vibeResult.colorMeaning.positive}</p>
+                  <h4 className="font-semibold text-green-800 mb-3">What's bright right now</h4>
+                  <ul className="space-y-2">
+                    {vibeResult.colorMeaning.positive.map((trait, idx) => (
+                      <li key={idx} className="text-green-700 text-sm flex items-start gap-2">
+                        <span className="text-green-600 font-bold mt-0.5">•</span>
+                        <span>{trait}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
               </Card>
 
@@ -329,10 +337,28 @@ export default function VibePage() {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertTriangle className="h-5 w-5 text-orange-600" />
-                    <h3 className="font-semibold text-orange-900">Area to Balance</h3>
+                    <h3 className="font-semibold text-orange-900">Areas to Balance</h3>
                   </div>
-                  <h4 className="font-semibold text-orange-800 mb-2">What needs grounding</h4>
-                  <p className="text-orange-700 text-sm">{vibeResult.colorMeaning.negative}</p>
+                  <h4 className="font-semibold text-orange-800 mb-3">What needs grounding</h4>
+                  <ul className="space-y-2">
+                    {vibeResult.colorMeaning.negative.map((trait, idx) => (
+                      <li key={idx} className="text-orange-700 text-sm flex items-start gap-2">
+                        <span className="text-orange-600 font-bold mt-0.5">•</span>
+                        <span>{trait}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Remedy Section */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="h-5 w-5 text-blue-600" />
+                    <h3 className="font-semibold text-blue-900">Remedy & Guidance</h3>
+                  </div>
+                  <p className="text-blue-700 text-sm leading-relaxed">{vibeResult.colorMeaning.remedy}</p>
                 </CardContent>
               </Card>
 

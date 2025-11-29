@@ -3171,70 +3171,86 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Color meanings for quick vibe analysis - all specified aura colors
       const colorMeanings = {
         'Pink': {
-          positive: 'Unconditionally loving, compassionate, nurturing, and emotionally healing. You radiate divine love and tenderness.',
-          negative: 'May show codependency, emotional manipulation, or boundary issues needing attention.'
+          positive: ['Unconditionally loving and compassionate', 'Emotionally healing and nurturing'],
+          negative: ['Codependency and emotional entanglement', 'Boundary issues needing attention'],
+          remedy: 'Practice self-love affirmations and healthy boundary-setting. Engage in grounding activities like earthing or nature walks.'
         },
         'Gray': {
-          positive: 'Balanced, diplomatic, wise, and flexible. You bring neutral wisdom and peaceful resolution.',
-          negative: 'Could indicate indecision, uncertainty, or emotional detachment from situations.'
+          positive: ['Balanced and diplomatic', 'Wise and flexible in approach'],
+          negative: ['Indecision and uncertainty', 'Emotional detachment from situations'],
+          remedy: 'Seek clarity through journaling. Connect with your intuition through meditation and trust your inner voice.'
         },
         'Blue': {
-          positive: 'Calm, communicative, truthful, and peaceful. You express authenticity and spiritual clarity.',
-          negative: 'Might indicate sadness, depression, or difficulty with self-expression and emotional distance.'
+          positive: ['Calm and communicative', 'Truthful and spiritually clear'],
+          negative: ['Sadness or depressive tendencies', 'Difficulty with self-expression and emotional distance'],
+          remedy: 'Throat chakra healing through singing or chanting. Share your truth in safe spaces and practice expressive writing.'
         },
         'Green': {
-          positive: 'Balanced, healing, compassionate, and growth-oriented. You have natural healing abilities and harmony.',
-          negative: 'May show jealousy, envy, possessiveness, or feeling stuck in emotional growth patterns.'
+          positive: ['Balanced and healing-oriented', 'Compassionate with natural harmony'],
+          negative: ['Jealousy and envy patterns', 'Feeling stuck in emotional growth'],
+          remedy: 'Heart-opening yoga and loving-kindness meditation. Practice gratitude for others\' blessings daily.'
         },
         'Violet': {
-          positive: 'Spiritual, intuitive, divinely connected, and transformative. You have strong higher consciousness and mystical insight.',
-          negative: 'Could show spiritual pride, disconnection from reality, or escapism from earthly matters.'
+          positive: ['Spiritual and intuitive', 'Divinely connected and transformative'],
+          negative: ['Spiritual pride and superiority', 'Disconnection from reality or escapism'],
+          remedy: 'Ground spiritual practices with earthly action. Volunteer or serve others to anchor your gifts.'
         },
         'Indigo': {
-          positive: 'Psychically gifted, deeply wise, perceptive, and spiritually insightful. You have powerful inner knowing abilities.',
-          negative: 'Might indicate mental confusion, obsession, delusion, or disconnection from practical reality.'
+          positive: ['Psychically gifted and deeply wise', 'Powerful inner knowing abilities'],
+          negative: ['Mental confusion and obsession', 'Delusion or disconnection from practical reality'],
+          remedy: 'Third eye chakra cleansing. Balance intuition with logic through structured mindfulness practice.'
         },
         'White': {
-          positive: 'Pure, divinely protected, spiritually clear, and angelically connected. You have sacred energy and truth.',
-          negative: 'Could show spiritual bypassing, perfectionism, isolation, or detachment from human experience.'
+          positive: ['Pure and divinely protected', 'Spiritually clear and angelically connected'],
+          negative: ['Spiritual bypassing and perfectionism', 'Isolation or detachment from humanity'],
+          remedy: 'Embrace imperfection through compassionate self-acceptance. Connect deeply with community and authentic relationships.'
         },
         'Gold': {
-          positive: 'Divinely wise, enlightened, successful, and spiritually masterful. You have illuminated consciousness and abundance.',
-          negative: 'May indicate ego inflation, materialism, greed, or superiority complex needing balance.'
+          positive: ['Divinely wise and enlightened', 'Successful with spiritual mastery'],
+          negative: ['Ego inflation and materialism', 'Greed or superiority complex'],
+          remedy: 'Practice humble gratitude and generosity. Share your wisdom freely without seeking recognition.'
         },
         'Yellow': {
-          positive: 'Intelligent, optimistic, mentally clear, and joyfully expressive. You have bright personal power and learning abilities.',
-          negative: 'Could indicate over-analysis, criticism, anxiety, or intellectual arrogance needing emotional balance.'
+          positive: ['Intelligent and optimistic', 'Mentally clear with joyful expression'],
+          negative: ['Over-analysis and criticism', 'Anxiety or intellectual arrogance'],
+          remedy: 'Balance mind with heart through compassionate self-talk. Practice forgiveness and embrace intuitive knowing.'
         },
         'Orange': {
-          positive: 'Creative, enthusiastic, confident, and emotionally expressive. You radiate warmth, joy, and adventurous spirit.',
-          negative: 'Might show addiction, dependency, superficiality, or emotional instability needing grounding.'
+          positive: ['Creative and enthusiastic', 'Confident and emotionally expressive'],
+          negative: ['Addiction or dependency patterns', 'Superficiality or emotional instability'],
+          remedy: 'Ground yourself in the present moment through earthing. Channel creative energy into meaningful projects.'
         },
         'Purple': {
-          positive: 'Mystically wise, transformative, royally authoritative, and spiritually masterful. You have ancient knowledge and divine mystery.',
-          negative: 'Could show spiritual arrogance, disconnection from reality, or superiority complex needing humility.'
+          positive: ['Mystically wise and transformative', 'Spiritually masterful with ancient knowledge'],
+          negative: ['Spiritual arrogance and disconnection', 'Superiority complex needing humility'],
+          remedy: 'Practice servitude and humility. Connect sacred wisdom with practical service to humanity.'
         },
         'Silver': {
-          positive: 'Lunar wise, psychically sensitive, reflective, and emotionally intelligent. You have feminine energy and intuitive healing.',
-          negative: 'May indicate emotional volatility, psychic overwhelm, moodiness, or instability needing grounding.'
+          positive: ['Lunar wise and psychically sensitive', 'Emotionally intelligent and reflective'],
+          negative: ['Emotional volatility and mood swings', 'Psychic overwhelm or instability'],
+          remedy: 'Establish energetic boundaries through shielding practices. Balance sensitivity with grounding techniques.'
         },
         'Black': {
-          positive: 'Protective, grounding, transformative, and deeply wise. You have strong boundaries and shadow integration abilities.',
-          negative: 'Might show negativity, fear, depression, or heavy energy needing release and healing.'
+          positive: ['Protective and grounding', 'Deeply wise with strong boundaries'],
+          negative: ['Negativity and fear patterns', 'Heavy energy needing release'],
+          remedy: 'Release dense energy through shadow work and cleansing rituals. Cultivate hope through acts of kindness.'
         },
         'Red': {
-          positive: 'Passionate, vitally energetic, courageous, and leadership-oriented. You have strong life force and survival strength.',
-          negative: 'May indicate anger, aggression, impulsiveness, or stress needing calm grounding practices.'
+          positive: ['Passionate and vitally energetic', 'Courageous with leadership strength'],
+          negative: ['Anger and aggression patterns', 'Impulsiveness or stress overwhelming you'],
+          remedy: 'Channel passion through movement: dance, exercise, or martial arts. Practice calming breathwork daily.'
         },
         'Brown': {
-          positive: 'Earth-connected, practical, stable, and naturally wise. You have grounding energy and reliable strength.',
-          negative: 'Could show stubbornness, materialism, inflexibility, or resistance to change needing flow.'
+          positive: ['Earth-connected and practical', 'Stable with natural wisdom'],
+          negative: ['Stubbornness and inflexibility', 'Resistance to change and flow'],
+          remedy: 'Practice flexibility through gentle yoga. Embrace change as natural progression and growth opportunity.'
         }
       };
 
       const meaning = colorMeanings[personalityColor as keyof typeof colorMeanings] || {
-        positive: 'You have a unique and special energy signature.',
-        negative: 'Your energy may need balancing and harmonizing.'
+        positive: ['You have a unique energy signature', 'Your spirit shines brightly'],
+        negative: ['Energy needs balancing', 'Harmonizing is essential for you'],
+        remedy: 'Seek personalized spiritual guidance and practice daily self-care rituals.'
       };
 
       // Save vibe reading to database for healer dashboard tracking
