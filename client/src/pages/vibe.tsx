@@ -628,24 +628,19 @@ export default function VibePage() {
 
       {/* Premium PDF Report Modal */}
       {showPremiumPdf && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold text-black">Premium Aura & Chakra Report</h2>
-              <button
-                onClick={() => setShowPremiumPdf(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto">
-              <iframe
-                src={demoPdfReport}
-                className="w-full h-full"
-                title="Premium Aura & Chakra Analysis Report"
-              />
-            </div>
+        <div 
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowPremiumPdf(false)}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-4xl w-full h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={demoPdfReport}
+              className="w-full h-full rounded-lg"
+              title="Premium Aura & Chakra Analysis Report"
+            />
           </div>
         </div>
       )}
