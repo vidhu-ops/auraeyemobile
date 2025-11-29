@@ -11180,6 +11180,10 @@ Team AuraEye™
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Hidden canvas for image compression */}
+      <canvas ref={canvasRef} className="hidden" />
+      
       <MobileNavigation />
     </div>
   );
