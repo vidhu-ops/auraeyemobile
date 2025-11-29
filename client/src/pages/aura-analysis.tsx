@@ -231,7 +231,7 @@ export default function AuraAnalysis() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Compress image to target KB size (using canvas for client-side compression)
-  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 30): Promise<Blob> => {
+  const compressImage = async (canvas: HTMLCanvasElement, maxSizeKB: number = 40): Promise<Blob> => {
     return new Promise((resolve) => {
       let quality = 0.9;
       const tryCompress = () => {
@@ -263,9 +263,9 @@ export default function AuraAnalysis() {
       img.onload = async () => {
         try {
           // For very large images (3000px+), reduce more aggressively
-          let maxWidth = 600;
+          let maxWidth = 900;
           if (img.width > 3000 || img.height > 3000) {
-            maxWidth = 400; // More aggressive compression for ultra-large images
+            maxWidth = 800; // More aggressive compression for ultra-large images
           }
           
           const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
@@ -279,7 +279,7 @@ export default function AuraAnalysis() {
           ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
           // Compress to 30KB
-          const compressedBlob = await compressImage(canvas, 30);
+          const compressedBlob = await compressImage(canvas, 50);
           
           // Convert blob to base64
           const reader = new FileReader();
@@ -5448,8 +5448,8 @@ Team AuraEye™
   ) => {
     // Create multiple layered smoke effects for dense, mystical appearance
     const smokeLayers = [
-      { sizeMultiplier: 1.2, opacityMultiplier: 0.6, blur: 100 },     // Main dense layer
-      { sizeMultiplier: 0.8, opacityMultiplier: 0.7, blur: 100 },     // Core bright layer
+      { sizeMultiplier: 1.2, opacityMultiplier: 0.4, blur: 100 },     // Main dense layer
+      { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 100 },     // Core bright layer
       { sizeMultiplier: 1.1, opacityMultiplier: 0.7, blur: 100 }      // Outer haze layer
     ];
     
@@ -5469,7 +5469,7 @@ Team AuraEye™
       // Create dense smoke gradient
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, layerSize);
       gradient.addColorStop(0, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity})`);
-      gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.85})`);
+      gradient.addColorStop(0.3, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.65})`);
       gradient.addColorStop(0.6, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.5})`);
       gradient.addColorStop(0.9, `rgba(${smokeR}, ${smokeG}, ${smokeB}, ${layerOpacity * 0.2})`);
       gradient.addColorStop(1, `rgba(${smokeR}, ${smokeG}, ${smokeB}, 0.2)`);
@@ -5998,7 +5998,7 @@ Team AuraEye™
             // Create smokey gradient for each particle
             const gradient = ctx.createRadialGradient(
                 particleX, particleY, 0,
-                particleX, particleY, particleSize * 10
+                particleX, particleY, particleSize * 8
             );
 
             gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
@@ -6012,7 +6012,7 @@ Team AuraEye™
 
             // Draw particle as soft circle
             ctx.beginPath();
-            ctx.arc(particleX, particleY, particleSize * 60, 0, Math.PI * 3);
+            ctx.arc(particleX, particleY, particleSize * 40, 0, Math.PI * 3);
             ctx.fill();
         }
 
