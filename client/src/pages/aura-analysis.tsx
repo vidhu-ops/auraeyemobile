@@ -6504,14 +6504,13 @@ Team AuraEye™
       }
 
       const base64data = base64String.split(",")[1];
-        
-        // Store original image
-        setOriginalImage(base64String || null);
-        
-        if (base64data) {
-          try {
-            // Generate hash for image consistency
-            const imageHash = generateImageHash(base64data);
+      
+      // Store original image
+      setOriginalImage(base64String || null);
+      
+      try {
+        // Generate hash for image consistency
+        const imageHash = generateImageHash(base64data);
             
             // Check if we have a cached result for this or similar image
             const cachedResult = findSimilarImage(imageHash, base64data);
@@ -6640,28 +6639,26 @@ Team AuraEye™
               setActiveTab("analysis");
               // Keep name entered state - user must refresh for new analysis
             }, 200);
-          } catch (error) {
-            console.error("Error in aura analysis:", error);
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error("Error details:", errorMessage);
-            
-            // Show error to user
-            toast({
-              title: "Analysis Failed",
-              description: errorMessage.includes("human detected") ? 
-                "Please upload an image containing a person for aura analysis." :
-                "Unable to analyze your aura. Please try again with a different image.",
-              variant: "destructive",
-            });
-            
-            clearInterval(progressInterval);
-            setIsAnalyzing(false);
-            // Reset name input for retry
-            setNameEntered(false);
-            setAnalysisName('');
-          }
-        }
-      };
+      } catch (error) {
+        console.error("Error in aura analysis:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("Error details:", errorMessage);
+        
+        // Show error to user
+        toast({
+          title: "Analysis Failed",
+          description: errorMessage.includes("human detected") ? 
+            "Please upload an image containing a person for aura analysis." :
+            "Unable to analyze your aura. Please try again with a different image.",
+          variant: "destructive",
+        });
+        
+        clearInterval(progressInterval);
+        setIsAnalyzing(false);
+        // Reset name input for retry
+        setNameEntered(false);
+        setAnalysisName('');
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error("Error analyzing image:", errorMessage);
