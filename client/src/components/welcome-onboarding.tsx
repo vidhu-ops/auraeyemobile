@@ -150,7 +150,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
             Welcome to
           </h1>
           <h2 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-400 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            AuraEye
+            AuraEye™
           </h2>
           
           <p className="text-xl md:text-2xl text-cyan-200 mt-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>

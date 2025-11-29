@@ -510,7 +510,7 @@ export default function AuraAnalysis() {
     ctx.globalCompositeOperation = 'screen';
     ctx.globalAlpha = 0.32; // High opacity for visibility
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 60px Arial, sans-serif';
+    ctx.font = 'bold 210px Arial, sans-serif'; // Increased from 150px to 210px (40% larger)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -522,11 +522,12 @@ export default function AuraAnalysis() {
     
     // Draw watermark text as pure white overlay
     ctx.fillText('AuraEye™', centerX-2, centerY);
+    
     // Apply watermark with pure white text and no background interference
     ctx.globalCompositeOperation = 'screen';
     ctx.globalAlpha = 0.32; // High opacity for visibility
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 50px Arial, sans-serif';
+    ctx.font = 'bold 63px Arial, sans-serif'; // Increased from 45px to 63px (40% larger)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -536,25 +537,11 @@ export default function AuraAnalysis() {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
-    // Draw watermark text as pure white overlay
-    ctx.fillText('Left', centerX-190, centerY+300);
-    // Draw watermark text as pure white overlay
-    // Apply watermark with pure white text and no background interference
-    ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha = 0.32; // High opacity for visibility
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 45px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // No shadow at all to prevent any black spots
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-
-    // Draw watermark text as pure white overlay
-    ctx.fillText('Right', centerX+190, centerY+300);
+    // Draw "Left" watermark at bottom left
+    ctx.fillText('Left', canvasWidth * 0.15, canvasHeight - 60);
+    
+    // Draw "Right" watermark at bottom right
+    ctx.fillText('Right', canvasWidth * 0.85, canvasHeight - 60);
    
     
     ctx.restore();
@@ -5213,7 +5200,7 @@ Team AuraEye™
             {
                 color: colors.thinkingRGB,
                 zone: 'top',
-                density: 70,
+                density: 90,
                 getCoords: () => ({
                     x: width * 0.1 + seededRandom() * (width * 0.8), // Match main zone restrictions
                     y: seededRandom() * (height * 0.35) // Limited to top 35% like main zones
@@ -5222,7 +5209,7 @@ Team AuraEye™
             {
                 color: colors.receivingRGB,
                 zone: 'left',
-                density: 90,
+                density: 99,
                 getCoords: () => ({
                     x: seededRandom() * (width * 0.45), // LEFT side - strengthened restriction to 45%
                     y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
@@ -5231,7 +5218,7 @@ Team AuraEye™
             {
                 color: colors.givingRGB,
                 zone: 'right',
-                density: 90,
+                density: 99,
                 getCoords: () => ({
                     x: width * 0.55 + seededRandom() * (width * 0.45), // RIGHT side - strengthened restriction from 55%
                     y: height * 0.15 + seededRandom() * (height * 0.7) // Matches main zone Y range
@@ -5252,8 +5239,8 @@ Team AuraEye™
                 if (!inFaceArea) {
                     // Fixed consistent sizing for all images regardless of original dimensions
                     const sizeFactor = 1.0; // Fixed factor for uniform appearance
-                    const smokeSize = 180 + seededRandom() * 60; // Consistent particle size 120-180px
-                    const smokeOpacity = 0.01 + seededRandom() * 0.55; // Higher opacity 0.35-0.60 for better visibility
+                    const smokeSize = 280 + seededRandom() * 70; // Consistent particle size 120-180px
+                    const smokeOpacity = 0.01 + seededRandom() * 0.85; // Higher opacity 0.35-0.60 for better visibility
 
                     drawNaturalSmoke(ctx, coords.x, coords.y, smokeSize, zone.color, smokeOpacity, seededRandom() * 0.9);
                 }
@@ -5411,7 +5398,7 @@ Team AuraEye™
 
                 if (!inFaceArea) {
                     const smokeSize = 10 + seededRandom() * 45;
-                    const smokeOpacity = 0.036 + seededRandom() * 0.072; // Increased by 20% from 0.03 and 0.06
+                    const smokeOpacity = 0.026 + seededRandom() * 0.072; // Increased by 20% from 0.03 and 0.06
 
                     drawNaturalSmoke(ctx, smokeX, smokeY, smokeSize, edgeColor, smokeOpacity, seededRandom() * 0.5);
                 }
@@ -5461,9 +5448,9 @@ Team AuraEye™
   ) => {
     // Create multiple layered smoke effects for dense, mystical appearance
     const smokeLayers = [
-      { sizeMultiplier: 1.2, opacityMultiplier: 0.3, blur: 100 },     // Main dense layer
-      { sizeMultiplier: 0.8, opacityMultiplier: 0.5, blur: 100 },     // Core bright layer
-      { sizeMultiplier: 1.1, opacityMultiplier: 0.5, blur: 100 }      // Outer haze layer
+      { sizeMultiplier: 1.2, opacityMultiplier: 0.6, blur: 100 },     // Main dense layer
+      { sizeMultiplier: 0.8, opacityMultiplier: 0.7, blur: 100 },     // Core bright layer
+      { sizeMultiplier: 1.1, opacityMultiplier: 0.7, blur: 100 }      // Outer haze layer
     ];
     
     const smokeR = rgb.r;
@@ -5530,7 +5517,7 @@ Team AuraEye™
             if (index === 0) return;
 
             // Create flowing smoke particles that fade naturally
-            const smokeSize = 40 + seededRandom() * 100 * (1 - point.progress * 0.2);
+            const smokeSize = 70 + seededRandom() * 100 * (1 - point.progress * 0.2);
             const baseOpacity = 0.08 * (1 - point.progress * 0.5) * (0.6 + seededRandom() * 0.4);
 
             // Create realistic smoke with color blending from nearby colors
