@@ -2874,6 +2874,96 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const newRating = await storage.createHealerRating(ratingData);
 
+      // Automatically award badges after rating is saved
+      try {
+        await storage.deleteExpiredBadges();
+        
+        const allHealers = await storage.getAllHealers();
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+        for (const h of allHealers) {
+          const healerUser = await storage.getUserByUsername(h.username);
+          if (!healerUser) continue;
+
+          // 1. Most Rated Healer
+          const allRatings = await db.select().from(healerRatings).where(gte(healerRatings.createdAt, thirtyDaysAgo));
+          const ratingCounts = new Map<number, number>();
+          allRatings.forEach(r => {
+            ratingCounts.set(r.healerId, (ratingCounts.get(r.healerId) || 0) + 1);
+          });
+
+          const maxRatings = Math.max(...Array.from(ratingCounts.values()), 0);
+          if (maxRatings > 0 && ratingCounts.get(h.id) === maxRatings) {
+            const existingMostRated = await db.select().from(healerBadges).where(and(eq(healerBadges.healerId, h.id), eq(healerBadges.badgeType, "most_rated")));
+            if (existingMostRated.length === 0) {
+              await storage.createHealerBadge({
+                healerId: h.id,
+                badgeType: "most_rated",
+                badgeTitle: "Most Rated Healer",
+                badgeIcon: "⭐",
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              });
+            }
+          }
+
+          // 2. Most 5-Star Rated
+          const fiveStarRatings = allRatings.filter(r => r.rating === 5);
+          const fiveStarCounts = new Map<number, number>();
+          fiveStarRatings.forEach(r => {
+            fiveStarCounts.set(r.healerId, (fiveStarCounts.get(r.healerId) || 0) + 1);
+          });
+
+          const maxFiveStars = Math.max(...Array.from(fiveStarCounts.values()), 0);
+          if (maxFiveStars > 0 && fiveStarCounts.get(h.id) === maxFiveStars) {
+            const existingFiveStar = await db.select().from(healerBadges).where(and(eq(healerBadges.healerId, h.id), eq(healerBadges.badgeType, "most_5_star")));
+            if (existingFiveStar.length === 0) {
+              await storage.createHealerBadge({
+                healerId: h.id,
+                badgeType: "most_5_star",
+                badgeTitle: "Most 5-Star Rated",
+                badgeIcon: "✨",
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              });
+            }
+          }
+
+          // 3. Best Healer of the Month
+          const recentBookings = await db.select().from(healerBookings).where(and(eq(healerBookings.healerId, h.id), gte(healerBookings.createdAt, thirtyDaysAgo)));
+          const recentAuraReadings = await db.select().from(auraReadings).where(and(eq(auraReadings.performedBy, healerUser.id), gte(auraReadings.createdAt, thirtyDaysAgo)));
+
+          let isTopHealer = true;
+          for (const otherHealer of allHealers) {
+            if (otherHealer.id === h.id) continue;
+            const otherUser = await storage.getUserByUsername(otherHealer.username);
+            if (!otherUser) continue;
+
+            const otherBookings = await db.select().from(healerBookings).where(and(eq(healerBookings.healerId, otherHealer.id), gte(healerBookings.createdAt, thirtyDaysAgo)));
+            const otherAuraReadings = await db.select().from(auraReadings).where(and(eq(auraReadings.performedBy, otherUser.id), gte(auraReadings.createdAt, thirtyDaysAgo)));
+
+            if (otherBookings.length > recentBookings.length || otherAuraReadings.length > recentAuraReadings.length) {
+              isTopHealer = false;
+              break;
+            }
+          }
+
+          if (isTopHealer && (recentBookings.length > 0 || recentAuraReadings.length > 0)) {
+            const existingBest = await db.select().from(healerBadges).where(and(eq(healerBadges.healerId, h.id), eq(healerBadges.badgeType, "best_healer")));
+            if (existingBest.length === 0) {
+              await storage.createHealerBadge({
+                healerId: h.id,
+                badgeType: "best_healer",
+                badgeTitle: "Best Healer of the Month",
+                badgeIcon: "👑",
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              });
+            }
+          }
+        }
+      } catch (badgeError) {
+        console.error("Error awarding badges:", badgeError);
+        // Don't fail the rating save if badge awarding fails
+      }
+
       res.status(201).json({ 
         message: "Rating saved successfully",
         rating: newRating
@@ -3049,8 +3139,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
   app.get("/api/healer-badges/:healerId", async (req, res) => {
     try {
       const { healerId } = req.params;
+      // Clean up expired badges first
+      await storage.deleteExpiredBadges();
+      
       const badges = await storage.getHealerBadges(parseInt(healerId));
-
       res.json({ badges });
     } catch (error) {
       console.error("Error fetching badges:", error);
