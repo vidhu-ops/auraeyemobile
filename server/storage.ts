@@ -689,6 +689,53 @@ export class DatabaseStorage implements IStorage {
           tier: "GOLD"
         });
       }
+
+      // Award Vibe Check badges (1, 5, 15, 30 vibe readings)
+      const vibeReadings = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
+      
+      if (vibeReadings.length >= 1 && !achievedTypes.includes("vibe_check")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "vibe_check",
+          achievementTitle: "Vibe Check",
+          achievementIcon: "✨",
+          achievementDescription: "Completed your first vibe scan",
+          tier: "BRONZE"
+        });
+      }
+
+      if (vibeReadings.length >= 5 && !achievedTypes.includes("vibe_enthusiast")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "vibe_enthusiast",
+          achievementTitle: "Vibe Enthusiast",
+          achievementIcon: "🌙",
+          achievementDescription: "Completed 5 vibe checks",
+          tier: "SILVER"
+        });
+      }
+
+      if (vibeReadings.length >= 15 && !achievedTypes.includes("vibe_master")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "vibe_master",
+          achievementTitle: "Vibe Master",
+          achievementIcon: "🎯",
+          achievementDescription: "Completed 15 vibe checks",
+          tier: "GOLD"
+        });
+      }
+
+      if (vibeReadings.length >= 30 && !achievedTypes.includes("vibe_legend")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "vibe_legend",
+          achievementTitle: "Vibe Legend",
+          achievementIcon: "🌈",
+          achievementDescription: "Completed 30 vibe checks",
+          tier: "PLATINUM"
+        });
+      }
     } catch (error) {
       console.error("Error checking and awarding achievements:", error);
     }
