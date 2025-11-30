@@ -3860,7 +3860,7 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Numerology Reading Badges - Earned */}
+          {/* Numerology Reading Badges */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -3868,39 +3868,67 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {achievements.filter(a => a.achievementType.includes("numerology")).length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-300 mb-2">No numerology badges earned yet</p>
-                  <p className="text-slate-400 text-sm">Complete numerology readings to earn badges!</p>
+              <div className="space-y-3">
+                {/* Number Seeker */}
+                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🔢</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Number Seeker 🔢</h3>
+                      <p className="text-sm text-purple-100 mb-2">Completed your first numerology reading</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded">Read 1 numerology</span>
+                        <span className="px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {achievements
-                    .filter(a => a.achievementType.includes("numerology"))
-                    .map((achievement) => {
-                      const tierColors: { [key: string]: string } = {
-                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
-                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
-                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
-                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
-                      };
-                      const tierBgColor: { [key: string]: string } = {
-                        BRONZE: "bg-amber-600",
-                        SILVER: "bg-slate-600",
-                        GOLD: "bg-yellow-600",
-                        PLATINUM: "bg-blue-600"
-                      };
-                      return (
-                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
-                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
-                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
-                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
-                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
-                        </div>
-                      );
-                    })}
+
+                {/* Numerology Explorer */}
+                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">📚</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Numerology Explorer 📚</h3>
+                      <p className="text-sm text-slate-100 mb-2">Completed 5 numerology readings</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">Read 5 numerologies</span>
+                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
+
+                {/* Numerology Master */}
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🎲</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Numerology Master 🎲</h3>
+                      <p className="text-sm text-yellow-100 mb-2">Completed 15 numerology readings</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Read 15 numerologies</span>
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Numerology Legend */}
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🔮</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Numerology Legend 🔮</h3>
+                      <p className="text-sm text-blue-100 mb-2">Completed 30+ numerology readings</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Read 30+ numerologies</span>
+                        <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
