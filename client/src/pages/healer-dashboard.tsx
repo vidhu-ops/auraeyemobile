@@ -3757,11 +3757,12 @@ export default function HealerDashboard() {
 
         {/* Badges Tab */}
         <TabsContent value="badges" className="space-y-6">
+          {/* Healer Performance Badges */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-yellow-600" />
-                Your Earned Badges
+                Healer Performance Badges
               </CardTitle>
               <CardDescription>Recognition badges awarded based on your performance and client interactions</CardDescription>
             </CardHeader>
@@ -3803,28 +3804,118 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Badge Information */}
-          <Card>
+          {/* Special Badges */}
+          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
-              <CardTitle>How to Earn Badges</CardTitle>
-              <CardDescription>Learn about the different badges and how to unlock them</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <span className="text-2xl">🏆</span> Special Badges
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-4 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg border border-yellow-200">
-                  <div className="text-4xl mb-3">⭐</div>
-                  <h3 className="font-bold text-yellow-900 mb-2">Most Rated Healer</h3>
-                  <p className="text-sm text-yellow-800">Awarded to the healer who receives the most client reviews within 30 days. Refreshes monthly.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="text-4xl mb-2">🔥</div>
+                  <h3 className="font-bold text-white mb-2">Week Warrior</h3>
+                  <p className="text-sm text-yellow-100 mb-3">Maintained a 7-day login streak</p>
+                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-                  <div className="text-4xl mb-3">✨</div>
-                  <h3 className="font-bold text-purple-900 mb-2">Most 5-Star Rated</h3>
-                  <p className="text-sm text-purple-800">Awarded to the healer with the most perfect 5-star ratings in 30 days. Refreshes monthly.</p>
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="text-4xl mb-2">🙏</div>
+                  <h3 className="font-bold text-white mb-2">Spiritual Guardian</h3>
+                  <p className="text-sm text-blue-100 mb-3">Completed 50 total spiritual services</p>
+                  <span className="inline-block px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
-                  <div className="text-4xl mb-3">👑</div>
-                  <h3 className="font-bold text-orange-900 mb-2">Best Healer of the Month</h3>
-                  <p className="text-sm text-orange-800">Awarded for the most client requests and aura readings combined within 30 days. Refreshes monthly.</p>
+                <div className="p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg">
+                  <div className="text-4xl mb-2">💚</div>
+                  <h3 className="font-bold text-white mb-2">Healing Heart</h3>
+                  <p className="text-sm text-green-100 mb-3">Provided 5 healing replies as a healer</p>
+                  <span className="inline-block px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded">SILVER</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="text-4xl mb-2">👑</div>
+                  <h3 className="font-bold text-white mb-2">Most Trusted Healer</h3>
+                  <p className="text-sm text-yellow-100 mb-3">Become the top healer with most replies</p>
+                  <span className="inline-block px-3 py-1 bg-orange-600 text-white text-xs font-semibold rounded">PLATINUM</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg">
+                  <div className="text-4xl mb-2">⭐</div>
+                  <h3 className="font-bold text-white mb-2">Best Healer</h3>
+                  <p className="text-sm text-pink-100 mb-3">Achieved the highest healer rating</p>
+                  <span className="inline-block px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded">PLATINUM</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Numerology Reading Badges */}
+          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <span className="text-2xl">🔢</span> Numerology Reading Badges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg">
+                  <div className="text-4xl mb-2">🔢</div>
+                  <h3 className="font-bold text-white mb-2">Number Seeker</h3>
+                  <p className="text-sm text-purple-100 mb-3">Completed your first numerology reading</p>
+                  <span className="inline-block px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
+                  <div className="text-4xl mb-2">📚</div>
+                  <h3 className="font-bold text-white mb-2">Numerology Explorer</h3>
+                  <p className="text-sm text-slate-100 mb-3">Completed 5 numerology readings</p>
+                  <span className="inline-block px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="text-4xl mb-2">🎲</div>
+                  <h3 className="font-bold text-white mb-2">Numerology Master</h3>
+                  <p className="text-sm text-yellow-100 mb-3">Completed 15 numerology readings</p>
+                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="text-4xl mb-2">🔮</div>
+                  <h3 className="font-bold text-white mb-2">Numerology Legend</h3>
+                  <p className="text-sm text-blue-100 mb-3">Completed 30+ numerology readings</p>
+                  <span className="inline-block px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Journal Entry Badges */}
+          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <span className="text-2xl">📓</span> Journal Entry Badges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg">
+                  <div className="text-4xl mb-2">📝</div>
+                  <h3 className="font-bold text-white mb-2">Thoughts Flow</h3>
+                  <p className="text-sm text-orange-100 mb-3">Wrote your first journal entry</p>
+                  <span className="inline-block px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
+                  <div className="text-4xl mb-2">📚</div>
+                  <h3 className="font-bold text-white mb-2">Journal Keeper</h3>
+                  <p className="text-sm text-slate-100 mb-3">Wrote 5 journal entries</p>
+                  <span className="inline-block px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="text-4xl mb-2">✒️</div>
+                  <h3 className="font-bold text-white mb-2">Journal Master</h3>
+                  <p className="text-sm text-yellow-100 mb-3">Wrote 20 journal entries</p>
+                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="text-4xl mb-2">📖</div>
+                  <h3 className="font-bold text-white mb-2">Journal Legend</h3>
+                  <p className="text-sm text-blue-100 mb-3">Wrote 50 journal entries</p>
+                  <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
                 </div>
               </div>
             </CardContent>
