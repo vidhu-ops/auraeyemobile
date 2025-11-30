@@ -275,10 +275,13 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         setName("");
         setBirthDate("");
         
-        // Refresh the readings list and badge-related queries
+        // Refresh the readings list and badge-related queries immediately
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/user-achievements'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });
+        // Force immediate refetch
+        await queryClient.refetchQueries({ queryKey: ['/api/user-achievements'] });
+        await queryClient.refetchQueries({ queryKey: ['/api/healer-badges', user?.id] });
         
         // Show badges if returned from server
         if (data.newBadges && data.newBadges.length > 0) {
@@ -2158,7 +2161,7 @@ export default function HealerDashboard() {
     queryKey: ["/api/healer-badges", user?.id],
     enabled: !!user?.id,
     staleTime: 0,
-    refetchInterval: 30000, // Refresh every 30 seconds for real-time badge updates
+    refetchInterval: 2000, // Refresh every 2 seconds for real-time badge updates
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
@@ -2168,7 +2171,7 @@ export default function HealerDashboard() {
     queryKey: ["/api/user-achievements"],
     enabled: !!user?.id,
     staleTime: 0,
-    refetchInterval: 30000,
+    refetchInterval: 2000, // Refresh every 2 seconds for real-time achievement updates
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
