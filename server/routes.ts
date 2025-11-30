@@ -18,7 +18,6 @@ import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfi
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertHealerBadgeSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users, healerRatings, healerBadges, healerBookings } from "../shared/schema";
-import { checkAndAwardBadges } from "./badge-checker";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt, gte, lt, sql } from "drizzle-orm";
@@ -1347,13 +1346,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: savedAnalysis?.id || null
       };
       
-      // Check and award badges for object analysis
+      // Check and award achievements for object analysis
       let newBadges: any[] = [];
       if (req.isAuthenticated() && req.user) {
         try {
-          newBadges = await checkAndAwardBadges(req.user.id);
+          newBadges = await storage.checkAndAwardAchievements(req.user.id);
         } catch (badgeError) {
-          console.error("Error checking badges:", badgeError);
+          console.error("Error checking achievements:", badgeError);
         }
       }
       
@@ -1844,13 +1843,13 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Add the name to the response
       auraAnalysis.name = analysisName;
       
-      // Check and award badges for aura scans
+      // Check and award achievements for aura scans
       let newBadges: any[] = [];
       if (req.isAuthenticated() && req.user) {
         try {
-          newBadges = await checkAndAwardBadges(req.user.id);
+          newBadges = await storage.checkAndAwardAchievements(req.user.id);
         } catch (badgeError) {
-          console.error("Error checking badges:", badgeError);
+          console.error("Error checking achievements:", badgeError);
         }
       }
       
@@ -2071,12 +2070,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         // Deduct credits for successful numerology reading
         await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
         
-        // Check and award badges
+        // Check and award achievements
         let newBadges: any[] = [];
         try {
-          newBadges = await checkAndAwardBadges(req.user.id);
+          newBadges = await storage.checkAndAwardAchievements(req.user.id);
         } catch (badgeError) {
-          console.error("Error checking badges:", badgeError);
+          console.error("Error checking achievements:", badgeError);
         }
         
         res.json({
@@ -2224,11 +2223,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         challenges: numerologyProfile.challenges
       };
       
-      // Check and award badges for numerology readings
+      // Check and award achievements for numerology readings
       try {
-        await checkAndAwardBadges(req.user.id);
+        await storage.checkAndAwardAchievements(req.user.id);
       } catch (badgeError) {
-        console.error("Error checking badges:", badgeError);
+        console.error("Error checking achievements:", badgeError);
       }
       
       res.json(comprehensiveResponse);
@@ -2874,7 +2873,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const newRating = await storage.createHealerRating(ratingData);
 
-      // Automatically award badges after rating is saved
+      // Check and award achievements after rating is saved
+      try {
+        await storage.checkAndAwardAchievements(user.id);
+      } catch (achievementError) {
+        console.error("Error checking achievements:", achievementError);
+      }
+
+      // Automatically award healer performance badges after rating is saved
       try {
         await storage.deleteExpiredBadges();
         
@@ -3622,12 +3628,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         await storage.addSoulEnergy(req.user.id, 100, 'vibe_scan', 'What\'s My Vibe scan completed');
         console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
         
-        // Check and award badges for vibe scans
+        // Check and award achievements for vibe scans
         let newBadges: any[] = [];
         try {
-          newBadges = await checkAndAwardBadges(req.user.id);
+          newBadges = await storage.checkAndAwardAchievements(req.user.id);
         } catch (badgeError) {
-          console.error("Error checking badges:", badgeError);
+          console.error("Error checking achievements:", badgeError);
         }
 
         res.json({
@@ -3688,11 +3694,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
         gratitude: gratitudeText
       });
       
-      // Check and award badges for journal entries
+      // Check and award achievements for journal entries
       try {
-        await checkAndAwardBadges(req.user.id);
+        await storage.checkAndAwardAchievements(req.user.id);
       } catch (badgeError) {
-        console.error("Error checking badges:", badgeError);
+        console.error("Error checking achievements:", badgeError);
       }
       
       res.status(201).json(journalEntry);
@@ -4051,11 +4057,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const soulEnergyAmount = energyGained || 25;
       await storage.addSoulEnergy(userId, soulEnergyAmount, 'meditation', `Completed meditation: ${meditationTitle}`);
       
-      // Check and award badges for meditation
+      // Check and award achievements for meditation
       try {
-        await checkAndAwardBadges(userId);
+        await storage.checkAndAwardAchievements(userId);
       } catch (badgeError) {
-        console.error("Error checking badges:", badgeError);
+        console.error("Error checking achievements:", badgeError);
       }
 
       res.json(session);
@@ -4791,12 +4797,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Deduct credits for live numerology reading
       await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
       
-      // Check and award badges for numerology readings
+      // Check and award achievements for numerology readings
       let newBadges: any[] = [];
       try {
-        newBadges = await checkAndAwardBadges(req.user.id);
+        newBadges = await storage.checkAndAwardAchievements(req.user.id);
       } catch (badgeError) {
-        console.error("Error checking badges:", badgeError);
+        console.error("Error checking achievements:", badgeError);
       }
       
       console.log(`Live numerology reading generated successfully for ${name}`);
@@ -5551,10 +5557,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Check and award badges based on activity counts
+  // Check and award achievements based on activity counts
   app.post("/api/check-badges", isAuthenticated, async (req, res) => {
     try {
-      const newBadges = await checkAndAwardBadges(req.user.id);
+      const newBadges = await storage.checkAndAwardAchievements(req.user.id);
       
       // Also fetch all current achievements for profile update
       const allAchievements = await db.query.achievements.findMany({
