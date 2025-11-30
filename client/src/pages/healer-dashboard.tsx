@@ -3932,6 +3932,78 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
+          {/* Vibe Check Badges */}
+          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <span className="text-2xl">✨</span> Vibe Check Badges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {/* Vibe Check */}
+                <div className="p-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">✨</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Vibe Check ✨</h3>
+                      <p className="text-sm text-pink-100 mb-2">Completed your first vibe scan</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded">Check vibe 1x</span>
+                        <span className="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">BRONZE</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vibe Enthusiast */}
+                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🌙</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Vibe Enthusiast 🌙</h3>
+                      <p className="text-sm text-purple-100 mb-2">Completed 5 vibe checks</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded">Check vibe 5x</span>
+                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vibe Master */}
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🎯</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Vibe Master 🎯</h3>
+                      <p className="text-sm text-yellow-100 mb-2">Completed 15 vibe checks</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Check vibe 15x</span>
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vibe Legend */}
+                <div className="p-4 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg border-2 border-cyan-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🌈</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Vibe Legend 🌈</h3>
+                      <p className="text-sm text-cyan-100 mb-2">Completed 30 vibe checks</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Check vibe 30x</span>
+                        <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Journal Entry Badges - Earned */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
