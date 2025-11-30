@@ -576,6 +576,7 @@ export class DatabaseStorage implements IStorage {
       // Check if user has earned achievements
       const journalEntries = await db.select().from(journals).where(eq(journals.userId, userId));
       const numerologyReadings = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+      const vibeReadingsList = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
       const streakData = await this.getLoginStreak(userId);
       
       // Get existing achievements
@@ -691,9 +692,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Award Vibe Check badges (1, 5, 15, 30 vibe readings)
-      const vibeReadings = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
-      
-      if (vibeReadings.length >= 1 && !achievedTypes.includes("vibe_check")) {
+      if (vibeReadingsList.length >= 1 && !achievedTypes.includes("vibe_check")) {
         await this.createUserAchievement({
           userId,
           achievementType: "vibe_check",
@@ -704,7 +703,7 @@ export class DatabaseStorage implements IStorage {
         });
       }
 
-      if (vibeReadings.length >= 5 && !achievedTypes.includes("vibe_enthusiast")) {
+      if (vibeReadingsList.length >= 5 && !achievedTypes.includes("vibe_enthusiast")) {
         await this.createUserAchievement({
           userId,
           achievementType: "vibe_enthusiast",
@@ -715,7 +714,7 @@ export class DatabaseStorage implements IStorage {
         });
       }
 
-      if (vibeReadings.length >= 15 && !achievedTypes.includes("vibe_master")) {
+      if (vibeReadingsList.length >= 15 && !achievedTypes.includes("vibe_master")) {
         await this.createUserAchievement({
           userId,
           achievementType: "vibe_master",
@@ -726,13 +725,42 @@ export class DatabaseStorage implements IStorage {
         });
       }
 
-      if (vibeReadings.length >= 30 && !achievedTypes.includes("vibe_legend")) {
+      if (vibeReadingsList.length >= 30 && !achievedTypes.includes("vibe_legend")) {
         await this.createUserAchievement({
           userId,
           achievementType: "vibe_legend",
           achievementTitle: "Vibe Legend",
           achievementIcon: "🌈",
           achievementDescription: "Completed 30 vibe checks",
+          tier: "PLATINUM"
+        });
+      }
+
+      // Award Special Badges
+      // Week Warrior already done above
+      
+      // Healing Heart (5 healer replies/bookings)
+      const healerBookingsCount = await db.select().from(healerBookings).where(eq(healerBookings.userId, userId));
+      if (healerBookingsCount.length >= 5 && !achievedTypes.includes("healing_heart")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "healing_heart",
+          achievementTitle: "Healing Heart",
+          achievementIcon: "💚",
+          achievementDescription: "Provided 5 healing replies as a healer",
+          tier: "SILVER"
+        });
+      }
+
+      // Spiritual Guardian (50 total services)
+      const totalServices = journalEntries.length + numerologyReadings.length + vibeReadingsList.length;
+      if (totalServices >= 50 && !achievedTypes.includes("spiritual_guardian")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "spiritual_guardian",
+          achievementTitle: "Spiritual Guardian",
+          achievementIcon: "🙏",
+          achievementDescription: "Completed 50 total spiritual services",
           tier: "PLATINUM"
         });
       }
