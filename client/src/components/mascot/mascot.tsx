@@ -25,7 +25,7 @@ interface AuraReading {
   chakraAlignment?: string;
   auraIntensity?: string;
 }
-import mascotExplorer from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
+import mascotExplorer from "@assets/1000070633-removebg-preview_1764535023782.png";
 import mascotBeginner from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM-removebg-preview_1763506298018.png";
 import mascotIntermediate from "@assets/WhatsApp_Image_2025-11-15_at_10.14.47_PM__1_-removebg-preview_1763506521677.png";
 import mascotAdvanced from "@assets/WhatsApp_Image_2025-11-15_at_10.23.51_PM-removebg-preview_1763505956955.png";
