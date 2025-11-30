@@ -182,12 +182,29 @@ export const healerBookings = pgTable("healer_bookings", {
   respondedAt: timestamp("responded_at"), // When healer responded
 });
 
+export const healerRatings = pgTable("healer_ratings", {
+  id: serial("id").primaryKey(),
+  healerId: integer("healer_id").notNull().references(() => healers.id),
+  raterId: integer("rater_id").notNull().references(() => users.id),
+  raterUsername: text("rater_username").notNull(),
+  rating: integer("rating").notNull(), // 1-5 stars
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  healerIdIdx: index("healer_ratings_healer_id_idx").on(table.healerId),
+  raterIdIdx: index("healer_ratings_rater_id_idx").on(table.raterId),
+}));
+
 export const insertHealerSchema = createInsertSchema(healers).omit({
   id: true,
   createdAt: true,
 });
 
 export const insertHealerBookingSchema = createInsertSchema(healerBookings).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertHealerRatingSchema = createInsertSchema(healerRatings).omit({
   id: true,
   createdAt: true,
 });
@@ -413,6 +430,8 @@ export type Healer = typeof healers.$inferSelect;
 export type InsertHealer = z.infer<typeof insertHealerSchema>;
 export type HealerBooking = typeof healerBookings.$inferSelect;
 export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;
+export type HealerRating = typeof healerRatings.$inferSelect;
+export type InsertHealerRating = z.infer<typeof insertHealerRatingSchema>;
 export type VibeFeedback = typeof vibeFeedback.$inferSelect;
 export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;
 export type VibeReading = typeof vibeReadings.$inferSelect;
