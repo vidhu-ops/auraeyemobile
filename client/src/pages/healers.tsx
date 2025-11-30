@@ -97,7 +97,7 @@ export default function HealersPage() {
 
   // Rating mutation
   const ratingMutation = useMutation({
-    mutationFn: async (data: { healerId: number; rating: number }) => {
+    mutationFn: async (data: { healerId: number; rating: number; raterUsername: string }) => {
       return apiRequest("POST", "/api/rate-healer", data);
     },
     onSuccess: () => {
@@ -107,9 +107,9 @@ export default function HealersPage() {
       });
       setIsRatingDialogOpen(false);
       setSelectedRating(0);
-      // Invalidate healer ratings
-      if (ratingHealer) {
-        queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", ratingHealer.id] });
+      // Invalidate healer ratings to refresh
+      if (selectedHealer) {
+        queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", selectedHealer.id] });
       }
     },
     onError: (error: any) => {
@@ -366,11 +366,15 @@ export default function HealersPage() {
                       setIsRatingDialogOpen(open);
                       if (open) {
                         setRatingHealer(healer);
+                        setSelectedHealer(healer);
                         setSelectedRating(0);
+                      } else {
+                        setSelectedRating(0);
+                        setRatingHealer(null);
                       }
                     }}>
                       <DialogTrigger asChild>
-                        <Button variant="secondary" className="w-full">
+                        <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`}>
                           <Star className="h-4 w-4 mr-2" />
                           Rate Healer
                         </Button>
@@ -386,6 +390,7 @@ export default function HealersPage() {
                                 key={star}
                                 onClick={() => setSelectedRating(star)}
                                 className="focus:outline-none transition-transform hover:scale-110"
+                                data-testid={`button-star-${star}`}
                               >
                                 <Star
                                   className={`h-8 w-8 ${
@@ -400,15 +405,17 @@ export default function HealersPage() {
                           <div className="flex space-x-2">
                             <Button
                               onClick={() => {
-                                if (selectedRating > 0) {
+                                if (selectedRating > 0 && user?.username) {
                                   ratingMutation.mutate({
                                     healerId: healer.id,
-                                    rating: selectedRating
+                                    rating: selectedRating,
+                                    raterUsername: user.username
                                   });
                                 }
                               }}
                               disabled={ratingMutation.isPending || selectedRating === 0}
                               className="flex-1"
+                              data-testid="button-submit-rating"
                             >
                               {ratingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                               Submit Rating
