@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star, MessageSquare, Calendar, Loader2, ChevronDown } from "lucide-react";
+import { Star, MessageSquare, Calendar, Loader2, ChevronDown, Award } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +39,16 @@ interface HealerRating {
   raterUsername: string;
   rating: number;
   createdAt: string;
+}
+
+interface HealerBadge {
+  id: number;
+  healerId: number;
+  badgeType: string;
+  badgeTitle: string;
+  badgeIcon: string;
+  awardedAt: string;
+  expiresAt: string;
 }
 
 export default function HealersPage() {
@@ -122,6 +132,28 @@ export default function HealersPage() {
     }
   });
 
+  // Fetch all healers' badges
+  const { data: allHealersBadges = {} } = useQuery({
+    queryKey: ["/api/all-healer-badges"],
+    queryFn: async () => {
+      const badgesMap: Record<number, HealerBadge[]> = {};
+      
+      for (const healer of healers) {
+        try {
+          const res = await apiRequest("GET", `/api/healer-badges/${healer.id}`);
+          const data = await res.json();
+          badgesMap[healer.id] = data.badges || [];
+        } catch (error) {
+          badgesMap[healer.id] = [];
+        }
+      }
+      
+      return badgesMap;
+    },
+    enabled: healers.length > 0,
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col pb-20">
@@ -185,6 +217,18 @@ export default function HealersPage() {
                 
                 <CardContent>
                   <div className="space-y-4">
+                    {/* Badges Display */}
+                    {allHealersBadges[healer.id] && allHealersBadges[healer.id].length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {allHealersBadges[healer.id].map((badge: HealerBadge) => (
+                          <div key={badge.id} className="flex items-center gap-1 bg-yellow-100 px-3 py-1 rounded-full text-xs font-semibold text-yellow-800" title={badge.badgeTitle}>
+                            <span>{badge.badgeIcon}</span>
+                            <span>{badge.badgeTitle}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

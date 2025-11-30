@@ -17,11 +17,12 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertHealerBadgeSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users, healerRatings, healerBadges, healerBookings } from "../shared/schema";
 import { checkAndAwardBadges } from "./badge-checker";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
-import { eq, and, gt, sql } from "drizzle-orm";
+import { eq, and, gt, gte, lt, sql } from "drizzle-orm";
+import { auraReadings } from "../shared/schema";
 import { getVapidPublicKey, sendPushToUser, sendPushNotification } from "./push-service";
 
 // Credit checking middleware with dynamic pricing
@@ -2898,6 +2899,162 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error fetching ratings:", error);
       res.status(500).json({ message: "Failed to fetch ratings" });
+    }
+  });
+
+  // Award healer badges endpoint
+  app.post("/api/award-badges", async (req, res) => {
+    try {
+      // Clean up expired badges
+      await storage.deleteExpiredBadges();
+
+      // Get all healers
+      const allHealers = await storage.getAllHealers();
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      for (const healer of allHealers) {
+        // Get healer user ID from healer table username
+        const healerUser = await storage.getUserByUsername(healer.username);
+        if (!healerUser) continue;
+
+        // 1. Most Rated Healer - most reviews in 30 days
+        const allRatings = await db
+          .select()
+          .from(healerRatings)
+          .where(gte(healerRatings.createdAt, thirtyDaysAgo));
+
+        const ratingCounts = new Map<number, number>();
+        allRatings.forEach(r => {
+          ratingCounts.set(r.healerId, (ratingCounts.get(r.healerId) || 0) + 1);
+        });
+
+        const maxRatings = Math.max(...Array.from(ratingCounts.values()));
+        if (maxRatings > 0 && ratingCounts.get(healer.id) === maxRatings) {
+          const existingMostRated = await db
+            .select()
+            .from(healerBadges)
+            .where(
+              and(
+                eq(healerBadges.healerId, healer.id),
+                eq(healerBadges.badgeType, "most_rated")
+              )
+            );
+          
+          if (existingMostRated.length === 0) {
+            await storage.createHealerBadge({
+              healerId: healer.id,
+              badgeType: "most_rated",
+              badgeTitle: "Most Rated Healer",
+              badgeIcon: "⭐",
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            });
+          }
+        }
+
+        // 2. Most 5-Star Rated Healer - most 5-star ratings in 30 days
+        const fiveStarRatings = allRatings.filter(r => r.rating === 5);
+        const fiveStarCounts = new Map<number, number>();
+        fiveStarRatings.forEach(r => {
+          fiveStarCounts.set(r.healerId, (fiveStarCounts.get(r.healerId) || 0) + 1);
+        });
+
+        const maxFiveStars = Math.max(...Array.from(fiveStarCounts.values()), 0);
+        if (maxFiveStars > 0 && fiveStarCounts.get(healer.id) === maxFiveStars) {
+          const existingFiveStar = await db
+            .select()
+            .from(healerBadges)
+            .where(
+              and(
+                eq(healerBadges.healerId, healer.id),
+                eq(healerBadges.badgeType, "most_5_star")
+              )
+            );
+          
+          if (existingFiveStar.length === 0) {
+            await storage.createHealerBadge({
+              healerId: healer.id,
+              badgeType: "most_5_star",
+              badgeTitle: "Most 5-Star Rated",
+              badgeIcon: "✨",
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            });
+          }
+        }
+
+        // 3. Best Healer of the Month - most requests AND most aura readings
+        const recentBookings = await db
+          .select()
+          .from(healerBookings)
+          .where(and(eq(healerBookings.healerId, healer.id), gte(healerBookings.createdAt, thirtyDaysAgo)));
+
+        const recentAuraReadings = await db
+          .select()
+          .from(auraReadings)
+          .where(and(eq(auraReadings.performedBy, healerUser.id), gte(auraReadings.createdAt, thirtyDaysAgo)));
+
+        // Get all healers' stats
+        let isTopHealer = true;
+        for (const otherHealer of allHealers) {
+          if (otherHealer.id === healer.id) continue;
+          const otherUser = await storage.getUserByUsername(otherHealer.username);
+          if (!otherUser) continue;
+
+          const otherBookings = await db
+            .select()
+            .from(healerBookings)
+            .where(and(eq(healerBookings.healerId, otherHealer.id), gte(healerBookings.createdAt, thirtyDaysAgo)));
+
+          const otherAuraReadings = await db
+            .select()
+            .from(auraReadings)
+            .where(and(eq(auraReadings.performedBy, otherUser.id), gte(auraReadings.createdAt, thirtyDaysAgo)));
+
+          if (otherBookings.length > recentBookings.length || otherAuraReadings.length > recentAuraReadings.length) {
+            isTopHealer = false;
+            break;
+          }
+        }
+
+        if (isTopHealer && (recentBookings.length > 0 || recentAuraReadings.length > 0)) {
+          const existingBest = await db
+            .select()
+            .from(healerBadges)
+            .where(
+              and(
+                eq(healerBadges.healerId, healer.id),
+                eq(healerBadges.badgeType, "best_healer")
+              )
+            );
+          
+          if (existingBest.length === 0) {
+            await storage.createHealerBadge({
+              healerId: healer.id,
+              badgeType: "best_healer",
+              badgeTitle: "Best Healer of the Month",
+              badgeIcon: "👑",
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            });
+          }
+        }
+      }
+
+      res.json({ message: "Badges awarded successfully" });
+    } catch (error) {
+      console.error("Error awarding badges:", error);
+      res.status(500).json({ message: "Failed to award badges" });
+    }
+  });
+
+  // Get healer badges endpoint
+  app.get("/api/healer-badges/:healerId", async (req, res) => {
+    try {
+      const { healerId } = req.params;
+      const badges = await storage.getHealerBadges(parseInt(healerId));
+
+      res.json({ badges });
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+      res.status(500).json({ message: "Failed to fetch badges" });
     }
   });
 
