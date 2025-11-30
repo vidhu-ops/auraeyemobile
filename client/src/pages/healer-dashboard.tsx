@@ -3816,7 +3816,7 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Special Badges - Earned Achievements */}
+          {/* Special Badges */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -3824,39 +3824,82 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {achievements.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-300 mb-2">No badges earned yet</p>
-                  <p className="text-slate-400 text-sm">Complete activities to earn special badges!</p>
+              <div className="space-y-3">
+                {/* Week Warrior */}
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🔥</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Week Warrior 🔥</h3>
+                      <p className="text-sm text-yellow-100 mb-2">Maintained a 7-day login streak</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">7-day streak</span>
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {achievements
-                    .filter(a => ["week_warrior", "spiritual_guardian", "healing_heart", "most_trusted_healer", "best_healer"].includes(a.achievementType))
-                    .map((achievement) => {
-                      const tierColors: { [key: string]: string } = {
-                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
-                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
-                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
-                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
-                      };
-                      const tierBgColor: { [key: string]: string } = {
-                        BRONZE: "bg-amber-600",
-                        SILVER: "bg-slate-600",
-                        GOLD: "bg-yellow-600",
-                        PLATINUM: "bg-blue-600"
-                      };
-                      return (
-                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
-                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
-                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
-                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
-                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
-                        </div>
-                      );
-                    })}
+
+                {/* Spiritual Guardian */}
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">🙏</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Spiritual Guardian 🙏</h3>
+                      <p className="text-sm text-blue-100 mb-2">Completed 50 total spiritual services</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">50 services</span>
+                        <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
+
+                {/* Healing Heart */}
+                <div className="p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">💚</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Healing Heart 💚</h3>
+                      <p className="text-sm text-green-100 mb-2">Provided 5 healing replies as a healer</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-green-700 text-white text-xs font-semibold rounded">5 healing replies</span>
+                        <span className="px-3 py-1 bg-green-700 text-white text-xs font-semibold rounded">SILVER</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Most Trusted Healer */}
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">👑</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Most Trusted Healer 👑</h3>
+                      <p className="text-sm text-yellow-100 mb-2">Become the top healer with most replies</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">Most healer replies</span>
+                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Best Healer */}
+                <div className="p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">⭐</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Best Healer ⭐</h3>
+                      <p className="text-sm text-pink-100 mb-2">Achieved the highest healer rating</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-pink-700 text-white text-xs font-semibold rounded">Highest rating</span>
+                        <span className="px-3 py-1 bg-pink-700 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -4004,7 +4047,7 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Journal Entry Badges - Earned */}
+          {/* Journal Entry Badges */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -4012,39 +4055,67 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {achievements.filter(a => a.achievementType.includes("journal")).length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-300 mb-2">No journal badges earned yet</p>
-                  <p className="text-slate-400 text-sm">Write journal entries to earn badges!</p>
+              <div className="space-y-3">
+                {/* Thoughts Flow */}
+                <div className="p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">📝</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Thoughts Flow 📝</h3>
+                      <p className="text-sm text-orange-100 mb-2">Wrote your first journal entry</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">Write 1 entry</span>
+                        <span className="px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {achievements
-                    .filter(a => a.achievementType.includes("journal"))
-                    .map((achievement) => {
-                      const tierColors: { [key: string]: string } = {
-                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
-                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
-                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
-                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
-                      };
-                      const tierBgColor: { [key: string]: string } = {
-                        BRONZE: "bg-amber-600",
-                        SILVER: "bg-slate-600",
-                        GOLD: "bg-yellow-600",
-                        PLATINUM: "bg-blue-600"
-                      };
-                      return (
-                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
-                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
-                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
-                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
-                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
-                        </div>
-                      );
-                    })}
+
+                {/* Journal Keeper */}
+                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">📚</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Journal Keeper 📚</h3>
+                      <p className="text-sm text-slate-100 mb-2">Wrote 5 journal entries</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded">Write 5 entries</span>
+                        <span className="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded">SILVER</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
+
+                {/* Journal Master */}
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">✒️</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Journal Master ✒️</h3>
+                      <p className="text-sm text-yellow-100 mb-2">Wrote 20 journal entries</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Write 20 entries</span>
+                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Journal Legend */}
+                <div className="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl">📖</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white mb-1">Journal Legend 📖</h3>
+                      <p className="text-sm text-blue-100 mb-2">Wrote 50 journal entries</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Write 50 entries</span>
+                        <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
