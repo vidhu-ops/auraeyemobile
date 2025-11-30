@@ -56,9 +56,8 @@ export default function HealersPage() {
   const [selectedHealer, setSelectedHealer] = useState<Healer | null>(null);
   const [bookingMessage, setBookingMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [ratingHealer, setRatingHealer] = useState<Healer | null>(null);
-  const [selectedRating, setSelectedRating] = useState(0);
-  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [ratingHealerId, setRatingHealerId] = useState<number | null>(null);
+  const [ratingValue, setRatingValue] = useState(0);
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -98,21 +97,24 @@ export default function HealersPage() {
   // Rating mutation
   const ratingMutation = useMutation({
     mutationFn: async (data: { healerId: number; rating: number; raterUsername: string }) => {
-      return apiRequest("POST", "/api/rate-healer", data);
+      const response = await apiRequest("POST", "/api/rate-healer", data);
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast({
         title: "Rating Saved",
         description: "Thank you for rating this healer!",
       });
-      setIsRatingDialogOpen(false);
-      setSelectedRating(0);
+      // Invalidate badges query to refresh badge display if earned
+      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-badges"] });
       // Invalidate healer ratings to refresh
-      if (selectedHealer) {
-        queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", selectedHealer.id] });
-      }
+      queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", variables.healerId] });
+      // Reset state
+      setRatingHealerId(null);
+      setRatingValue(0);
     },
     onError: (error: any) => {
+      console.error("Rating error:", error);
       toast({
         title: "Rating Failed",
         description: error.message || "Please try again later.",
@@ -362,19 +364,18 @@ export default function HealersPage() {
                   </div>
                   
                   {user && (
-                    <Dialog open={isRatingDialogOpen && ratingHealer?.id === healer.id} onOpenChange={(open) => {
-                      setIsRatingDialogOpen(open);
-                      if (open) {
-                        setRatingHealer(healer);
-                        setSelectedHealer(healer);
-                        setSelectedRating(0);
-                      } else {
-                        setSelectedRating(0);
-                        setRatingHealer(null);
+                    <Dialog open={ratingHealerId === healer.id} onOpenChange={(open) => {
+                      if (!open) {
+                        setRatingHealerId(null);
+                        setRatingValue(0);
                       }
                     }}>
                       <DialogTrigger asChild>
-                        <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`}>
+                        <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`} onClick={() => {
+                          setRatingHealerId(healer.id);
+                          setRatingValue(0);
+                          setSelectedHealer(healer);
+                        }}>
                           <Star className="h-4 w-4 mr-2" />
                           Rate Healer
                         </Button>
@@ -388,13 +389,13 @@ export default function HealersPage() {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <button
                                 key={star}
-                                onClick={() => setSelectedRating(star)}
+                                onClick={() => setRatingValue(star)}
                                 className="focus:outline-none transition-transform hover:scale-110"
                                 data-testid={`button-star-${star}`}
                               >
                                 <Star
                                   className={`h-8 w-8 ${
-                                    star <= selectedRating
+                                    star <= ratingValue
                                       ? 'fill-yellow-400 text-yellow-400'
                                       : 'text-gray-300'
                                   }`}
@@ -405,15 +406,15 @@ export default function HealersPage() {
                           <div className="flex space-x-2">
                             <Button
                               onClick={() => {
-                                if (selectedRating > 0 && user?.username) {
+                                if (ratingValue > 0 && user?.username) {
                                   ratingMutation.mutate({
                                     healerId: healer.id,
-                                    rating: selectedRating,
+                                    rating: ratingValue,
                                     raterUsername: user.username
                                   });
                                 }
                               }}
-                              disabled={ratingMutation.isPending || selectedRating === 0}
+                              disabled={ratingMutation.isPending || ratingValue === 0}
                               className="flex-1"
                               data-testid="button-submit-rating"
                             >
@@ -421,7 +422,10 @@ export default function HealersPage() {
                               Submit Rating
                             </Button>
                             <Button
-                              onClick={() => setIsRatingDialogOpen(false)}
+                              onClick={() => {
+                                setRatingHealerId(null);
+                                setRatingValue(0);
+                              }}
                               variant="outline"
                             >
                               Cancel
