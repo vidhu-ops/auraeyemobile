@@ -100,6 +100,11 @@ export interface IStorage {
   getHealerBadges(healerId: number): Promise<HealerBadge[]>;
   deleteExpiredBadges(): Promise<void>;
   
+  // User achievements
+  createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
+  getUserAchievements(userId: number): Promise<UserAchievement[]>;
+  checkAndAwardAchievements(userId: number): Promise<void>;
+  
   // Healer analytics
   getHealerClientStats(healerId: number): Promise<any>;
   getHealerBookingTrends(healerId: number): Promise<any>;
@@ -552,6 +557,141 @@ export class DatabaseStorage implements IStorage {
   async deleteExpiredBadges(): Promise<void> {
     const now = new Date();
     await db.delete(healerBadges).where(lt(healerBadges.expiresAt, now));
+  }
+
+  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
+    const [newAchievement] = await db
+      .insert(userAchievements)
+      .values(achievement)
+      .returning();
+    return newAchievement;
+  }
+
+  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
+    return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId));
+  }
+
+  async checkAndAwardAchievements(userId: number): Promise<void> {
+    try {
+      // Check if user has earned achievements
+      const journalEntries = await db.select().from(journals).where(eq(journals.userId, userId));
+      const numerologyReadings = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+      const streakData = await this.getLoginStreak(userId);
+      
+      // Get existing achievements
+      const existing = await this.getUserAchievements(userId);
+      const achievedTypes = existing.map(a => a.achievementType);
+
+      // Award Thoughts Flow (1 journal entry)
+      if (journalEntries.length >= 1 && !achievedTypes.includes("thoughts_flow")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "thoughts_flow",
+          achievementTitle: "Thoughts Flow",
+          achievementIcon: "📝",
+          achievementDescription: "Wrote your first journal entry",
+          tier: "BRONZE"
+        });
+      }
+
+      // Award Journal Keeper (5 journal entries)
+      if (journalEntries.length >= 5 && !achievedTypes.includes("journal_keeper")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "journal_keeper",
+          achievementTitle: "Journal Keeper",
+          achievementIcon: "📚",
+          achievementDescription: "Wrote 5 journal entries",
+          tier: "SILVER"
+        });
+      }
+
+      // Award Journal Master (20 journal entries)
+      if (journalEntries.length >= 20 && !achievedTypes.includes("journal_master")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "journal_master",
+          achievementTitle: "Journal Master",
+          achievementIcon: "✒️",
+          achievementDescription: "Wrote 20 journal entries",
+          tier: "GOLD"
+        });
+      }
+
+      // Award Journal Legend (50 journal entries)
+      if (journalEntries.length >= 50 && !achievedTypes.includes("journal_legend")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "journal_legend",
+          achievementTitle: "Journal Legend",
+          achievementIcon: "📖",
+          achievementDescription: "Wrote 50 journal entries",
+          tier: "PLATINUM"
+        });
+      }
+
+      // Award Number Seeker (1 numerology reading)
+      if (numerologyReadings.length >= 1 && !achievedTypes.includes("number_seeker")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "number_seeker",
+          achievementTitle: "Number Seeker",
+          achievementIcon: "🔢",
+          achievementDescription: "Completed your first numerology reading",
+          tier: "BRONZE"
+        });
+      }
+
+      // Award Numerology Explorer (5 numerology readings)
+      if (numerologyReadings.length >= 5 && !achievedTypes.includes("numerology_explorer")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "numerology_explorer",
+          achievementTitle: "Numerology Explorer",
+          achievementIcon: "📚",
+          achievementDescription: "Completed 5 numerology readings",
+          tier: "SILVER"
+        });
+      }
+
+      // Award Numerology Master (15 numerology readings)
+      if (numerologyReadings.length >= 15 && !achievedTypes.includes("numerology_master")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "numerology_master",
+          achievementTitle: "Numerology Master",
+          achievementIcon: "🎲",
+          achievementDescription: "Completed 15 numerology readings",
+          tier: "GOLD"
+        });
+      }
+
+      // Award Numerology Legend (30+ numerology readings)
+      if (numerologyReadings.length >= 30 && !achievedTypes.includes("numerology_legend")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "numerology_legend",
+          achievementTitle: "Numerology Legend",
+          achievementIcon: "🔮",
+          achievementDescription: "Completed 30+ numerology readings",
+          tier: "PLATINUM"
+        });
+      }
+
+      // Award Week Warrior (7-day streak)
+      if (streakData.currentStreak >= 7 && !achievedTypes.includes("week_warrior")) {
+        await this.createUserAchievement({
+          userId,
+          achievementType: "week_warrior",
+          achievementTitle: "Week Warrior",
+          achievementIcon: "🔥",
+          achievementDescription: "Maintained a 7-day login streak",
+          tier: "GOLD"
+        });
+      }
+    } catch (error) {
+      console.error("Error checking and awarding achievements:", error);
+    }
   }
 
   async getHealerClientStats(healerId: number): Promise<any> {
