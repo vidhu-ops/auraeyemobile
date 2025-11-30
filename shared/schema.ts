@@ -229,6 +229,28 @@ export const insertHealerBadgeSchema = createInsertSchema(healerBadges).omit({
   awardedAt: true,
 });
 
+// User achievements/badges (permanent badges earned by healers)
+export const userAchievements = pgTable("user_achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  achievementType: text("achievement_type").notNull(), // "week_warrior", "spiritual_guardian", etc.
+  achievementTitle: text("achievement_title").notNull(),
+  achievementIcon: text("achievement_icon").notNull(),
+  achievementDescription: text("achievement_description").notNull(),
+  tier: text("tier").notNull(), // BRONZE, SILVER, GOLD, PLATINUM
+  awardedAt: timestamp("awarded_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("user_achievements_user_id_idx").on(table.userId),
+  achievementTypeIdx: index("user_achievements_achievement_type_idx").on(table.achievementType),
+}));
+
+export const insertUserAchievementSchema = createInsertSchema(userAchievements).omit({
+  id: true,
+  createdAt: true,
+  awardedAt: true,
+});
+
 export const vibeFeedback = pgTable("vibe_feedback", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
