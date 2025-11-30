@@ -2163,6 +2163,18 @@ export default function HealerDashboard() {
     refetchOnReconnect: true,
   });
 
+  // Fetch user achievements
+  const { data: achievementsData } = useQuery({
+    queryKey: ["/api/user-achievements"],
+    enabled: !!user?.id,
+    staleTime: 0,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  });
+
+  const achievements = achievementsData?.achievements || [];
+
   // State for live numerology calculator
   // Removed numerology state variables as numerology analysis was removed from Spiritual Tools tab
 
@@ -3804,7 +3816,7 @@ export default function HealerDashboard() {
             </CardContent>
           </Card>
 
-          {/* Special Badges */}
+          {/* Special Badges - Earned Achievements */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -3812,42 +3824,43 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg">
-                  <div className="text-4xl mb-2">🔥</div>
-                  <h3 className="font-bold text-white mb-2">Week Warrior</h3>
-                  <p className="text-sm text-yellow-100 mb-3">Maintained a 7-day login streak</p>
-                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
+              {achievements.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-300 mb-2">No badges earned yet</p>
+                  <p className="text-slate-400 text-sm">Complete activities to earn special badges!</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg">
-                  <div className="text-4xl mb-2">🙏</div>
-                  <h3 className="font-bold text-white mb-2">Spiritual Guardian</h3>
-                  <p className="text-sm text-blue-100 mb-3">Completed 50 total spiritual services</p>
-                  <span className="inline-block px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {achievements
+                    .filter(a => ["week_warrior", "spiritual_guardian", "healing_heart", "most_trusted_healer", "best_healer"].includes(a.achievementType))
+                    .map((achievement) => {
+                      const tierColors: { [key: string]: string } = {
+                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
+                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
+                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
+                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
+                      };
+                      const tierBgColor: { [key: string]: string } = {
+                        BRONZE: "bg-amber-600",
+                        SILVER: "bg-slate-600",
+                        GOLD: "bg-yellow-600",
+                        PLATINUM: "bg-blue-600"
+                      };
+                      return (
+                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
+                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
+                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
+                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
+                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
+                        </div>
+                      );
+                    })}
                 </div>
-                <div className="p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg">
-                  <div className="text-4xl mb-2">💚</div>
-                  <h3 className="font-bold text-white mb-2">Healing Heart</h3>
-                  <p className="text-sm text-green-100 mb-3">Provided 5 healing replies as a healer</p>
-                  <span className="inline-block px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded">SILVER</span>
-                </div>
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg">
-                  <div className="text-4xl mb-2">👑</div>
-                  <h3 className="font-bold text-white mb-2">Most Trusted Healer</h3>
-                  <p className="text-sm text-yellow-100 mb-3">Become the top healer with most replies</p>
-                  <span className="inline-block px-3 py-1 bg-orange-600 text-white text-xs font-semibold rounded">PLATINUM</span>
-                </div>
-                <div className="p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg">
-                  <div className="text-4xl mb-2">⭐</div>
-                  <h3 className="font-bold text-white mb-2">Best Healer</h3>
-                  <p className="text-sm text-pink-100 mb-3">Achieved the highest healer rating</p>
-                  <span className="inline-block px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded">PLATINUM</span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
-          {/* Numerology Reading Badges */}
+          {/* Numerology Reading Badges - Earned */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -3855,36 +3868,43 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg">
-                  <div className="text-4xl mb-2">🔢</div>
-                  <h3 className="font-bold text-white mb-2">Number Seeker</h3>
-                  <p className="text-sm text-purple-100 mb-3">Completed your first numerology reading</p>
-                  <span className="inline-block px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+              {achievements.filter(a => a.achievementType.includes("numerology")).length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-300 mb-2">No numerology badges earned yet</p>
+                  <p className="text-slate-400 text-sm">Complete numerology readings to earn badges!</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
-                  <div className="text-4xl mb-2">📚</div>
-                  <h3 className="font-bold text-white mb-2">Numerology Explorer</h3>
-                  <p className="text-sm text-slate-100 mb-3">Completed 5 numerology readings</p>
-                  <span className="inline-block px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {achievements
+                    .filter(a => a.achievementType.includes("numerology"))
+                    .map((achievement) => {
+                      const tierColors: { [key: string]: string } = {
+                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
+                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
+                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
+                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
+                      };
+                      const tierBgColor: { [key: string]: string } = {
+                        BRONZE: "bg-amber-600",
+                        SILVER: "bg-slate-600",
+                        GOLD: "bg-yellow-600",
+                        PLATINUM: "bg-blue-600"
+                      };
+                      return (
+                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
+                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
+                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
+                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
+                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
+                        </div>
+                      );
+                    })}
                 </div>
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
-                  <div className="text-4xl mb-2">🎲</div>
-                  <h3 className="font-bold text-white mb-2">Numerology Master</h3>
-                  <p className="text-sm text-yellow-100 mb-3">Completed 15 numerology readings</p>
-                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
-                </div>
-                <div className="p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg">
-                  <div className="text-4xl mb-2">🔮</div>
-                  <h3 className="font-bold text-white mb-2">Numerology Legend</h3>
-                  <p className="text-sm text-blue-100 mb-3">Completed 30+ numerology readings</p>
-                  <span className="inline-block px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
-          {/* Journal Entry Badges */}
+          {/* Journal Entry Badges - Earned */}
           <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
@@ -3892,32 +3912,39 @@ export default function HealerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg">
-                  <div className="text-4xl mb-2">📝</div>
-                  <h3 className="font-bold text-white mb-2">Thoughts Flow</h3>
-                  <p className="text-sm text-orange-100 mb-3">Wrote your first journal entry</p>
-                  <span className="inline-block px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
+              {achievements.filter(a => a.achievementType.includes("journal")).length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-300 mb-2">No journal badges earned yet</p>
+                  <p className="text-slate-400 text-sm">Write journal entries to earn badges!</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
-                  <div className="text-4xl mb-2">📚</div>
-                  <h3 className="font-bold text-white mb-2">Journal Keeper</h3>
-                  <p className="text-sm text-slate-100 mb-3">Wrote 5 journal entries</p>
-                  <span className="inline-block px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {achievements
+                    .filter(a => a.achievementType.includes("journal"))
+                    .map((achievement) => {
+                      const tierColors: { [key: string]: string } = {
+                        BRONZE: "from-amber-500 to-amber-600 border-amber-400",
+                        SILVER: "from-slate-400 to-slate-500 border-slate-300",
+                        GOLD: "from-yellow-400 to-orange-500 border-yellow-300",
+                        PLATINUM: "from-blue-400 to-indigo-600 border-blue-300"
+                      };
+                      const tierBgColor: { [key: string]: string } = {
+                        BRONZE: "bg-amber-600",
+                        SILVER: "bg-slate-600",
+                        GOLD: "bg-yellow-600",
+                        PLATINUM: "bg-blue-600"
+                      };
+                      return (
+                        <div key={achievement.id} className={`p-4 bg-gradient-to-br ${tierColors[achievement.tier] || tierColors.GOLD} rounded-lg border-2 shadow-lg`}>
+                          <div className="text-4xl mb-2">{achievement.achievementIcon}</div>
+                          <h3 className="font-bold text-white mb-2">{achievement.achievementTitle}</h3>
+                          <p className="text-sm text-white mb-3">{achievement.achievementDescription}</p>
+                          <span className={`inline-block px-3 py-1 ${tierBgColor[achievement.tier]} text-white text-xs font-semibold rounded`}>{achievement.tier}</span>
+                        </div>
+                      );
+                    })}
                 </div>
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
-                  <div className="text-4xl mb-2">✒️</div>
-                  <h3 className="font-bold text-white mb-2">Journal Master</h3>
-                  <p className="text-sm text-yellow-100 mb-3">Wrote 20 journal entries</p>
-                  <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">GOLD</span>
-                </div>
-                <div className="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg">
-                  <div className="text-4xl mb-2">📖</div>
-                  <h3 className="font-bold text-white mb-2">Journal Legend</h3>
-                  <p className="text-sm text-blue-100 mb-3">Wrote 50 journal entries</p>
-                  <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
