@@ -107,8 +107,8 @@ export default function HealersPage() {
       });
       // Invalidate badges query to refresh badge display if earned
       queryClient.invalidateQueries({ queryKey: ["/api/all-healer-badges"] });
-      // Invalidate healer ratings to refresh
-      queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", variables.healerId] });
+      // Invalidate all healer ratings to refresh immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-ratings"] });
       // Reset state
       setRatingHealerId(null);
       setRatingValue(0);
@@ -123,15 +123,26 @@ export default function HealersPage() {
     },
   });
 
-  // Fetch healer ratings
-  const { data: healerRatingsData } = useQuery({
-    queryKey: ["/api/healer-ratings", selectedHealer?.id],
-    enabled: !!selectedHealer,
+  // Fetch all healer ratings upfront
+  const { data: allHealerRatings = {} } = useQuery({
+    queryKey: ["/api/all-healer-ratings"],
     queryFn: async () => {
-      if (!selectedHealer) return null;
-      const res = await apiRequest("GET", `/api/healer-ratings/${selectedHealer.id}`);
-      return res.json();
-    }
+      const ratingsMap: Record<number, HealerRating[]> = {};
+      
+      for (const healer of healers) {
+        try {
+          const res = await apiRequest("GET", `/api/healer-ratings/${healer.id}`);
+          const data = await res.json();
+          ratingsMap[healer.id] = data.ratings || [];
+        } catch (error) {
+          ratingsMap[healer.id] = [];
+        }
+      }
+      
+      return ratingsMap;
+    },
+    enabled: healers.length > 0,
+    staleTime: 30 * 1000 // 30 seconds to refresh frequently
   });
 
   // Fetch all healers' badges
@@ -237,15 +248,15 @@ export default function HealersPage() {
                           <Button variant="ghost" size="sm" className="flex items-center gap-1 h-auto py-1 px-2">
                             <div className="flex items-center">
                               <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                              <span className="ml-2 font-medium text-sm">{healer.rating || 5}</span>
+                              <span className="ml-2 font-medium text-sm">{allHealerRatings[healer.id]?.length > 0 ? (allHealerRatings[healer.id].reduce((sum: number, r: HealerRating) => sum + r.rating, 0) / allHealerRatings[healer.id].length).toFixed(1) : '5'}</span>
                             </div>
                             <ChevronDown className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-64">
-                          {healerRatingsData?.ratings && healerRatingsData.ratings.length > 0 ? (
+                          {allHealerRatings[healer.id] && allHealerRatings[healer.id].length > 0 ? (
                             <div className="p-4 space-y-2 max-h-48 overflow-y-auto">
-                              {healerRatingsData.ratings.map((rating: HealerRating) => (
+                              {allHealerRatings[healer.id].map((rating: HealerRating) => (
                                 <div key={rating.id} className="text-sm border-b pb-2">
                                   <div className="flex items-center gap-1">
                                     {[...Array(rating.rating)].map((_, i) => (
