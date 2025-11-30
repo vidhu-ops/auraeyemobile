@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useMascot } from "@/hooks/use-mascot";
 import { getDashboardRoute } from "@/lib/profile-access";
-import mascotImage from "@assets/WhatsApp_Image_2025-11-05_at_5.52.21_PM-removebg-preview_1762855217308.png";
+import mascotImage from "@assets/1000070633-removebg-preview_1764535023782.png";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
