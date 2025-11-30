@@ -3150,6 +3150,18 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get user achievements endpoint
+  app.get("/api/user-achievements", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const achievements = await storage.getUserAchievements(user.id);
+      res.json({ achievements });
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
   // Get user's healer bookings
   app.get("/api/user-bookings", async (req, res) => {
     if (!req.isAuthenticated()) {
