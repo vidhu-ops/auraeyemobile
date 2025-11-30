@@ -209,6 +209,26 @@ export const insertHealerRatingSchema = createInsertSchema(healerRatings).omit({
   createdAt: true,
 });
 
+export const healerBadges = pgTable("healer_badges", {
+  id: serial("id").primaryKey(),
+  healerId: integer("healer_id").notNull().references(() => healers.id),
+  badgeType: text("badge_type").notNull(), // "most_rated", "most_5_star", "best_healer"
+  badgeTitle: text("badge_title").notNull(),
+  badgeIcon: text("badge_icon").notNull(), // emoji or icon code
+  awardedAt: timestamp("awarded_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(), // Expires after 30 days
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  healerIdIdx: index("healer_badges_healer_id_idx").on(table.healerId),
+  badgeTypeIdx: index("healer_badges_badge_type_idx").on(table.badgeType),
+}));
+
+export const insertHealerBadgeSchema = createInsertSchema(healerBadges).omit({
+  id: true,
+  createdAt: true,
+  awardedAt: true,
+});
+
 export const vibeFeedback = pgTable("vibe_feedback", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -432,6 +452,8 @@ export type HealerBooking = typeof healerBookings.$inferSelect;
 export type InsertHealerBooking = z.infer<typeof insertHealerBookingSchema>;
 export type HealerRating = typeof healerRatings.$inferSelect;
 export type InsertHealerRating = z.infer<typeof insertHealerRatingSchema>;
+export type HealerBadge = typeof healerBadges.$inferSelect;
+export type InsertHealerBadge = z.infer<typeof insertHealerBadgeSchema>;
 export type VibeFeedback = typeof vibeFeedback.$inferSelect;
 export type InsertVibeFeedback = z.infer<typeof insertVibeFeedbackSchema>;
 export type VibeReading = typeof vibeReadings.$inferSelect;

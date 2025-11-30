@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, healerBadges, type HealerBadge, type InsertHealerBadge, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc, or, gte, lt, sql, count } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -94,6 +94,11 @@ export interface IStorage {
   createHealerRating(rating: InsertHealerRating): Promise<HealerRating>;
   getHealerRatings(healerId: number): Promise<HealerRating[]>;
   getHealerAverageRating(healerId: number): Promise<number>;
+
+  // Healer badges
+  createHealerBadge(badge: InsertHealerBadge): Promise<HealerBadge>;
+  getHealerBadges(healerId: number): Promise<HealerBadge[]>;
+  deleteExpiredBadges(): Promise<void>;
   
   // Healer analytics
   getHealerClientStats(healerId: number): Promise<any>;
@@ -526,6 +531,27 @@ export class DatabaseStorage implements IStorage {
     if (ratings.length === 0) return 5;
     const sum = ratings.reduce((acc, r) => acc + r.rating, 0);
     return Math.round((sum / ratings.length) * 10) / 10;
+  }
+
+  async createHealerBadge(badge: InsertHealerBadge): Promise<HealerBadge> {
+    const [newBadge] = await db
+      .insert(healerBadges)
+      .values(badge)
+      .returning();
+    return newBadge;
+  }
+
+  async getHealerBadges(healerId: number): Promise<HealerBadge[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(healerBadges)
+      .where(and(eq(healerBadges.healerId, healerId), gt(healerBadges.expiresAt, now)));
+  }
+
+  async deleteExpiredBadges(): Promise<void> {
+    const now = new Date();
+    await db.delete(healerBadges).where(lt(healerBadges.expiresAt, now));
   }
 
   async getHealerClientStats(healerId: number): Promise<any> {
