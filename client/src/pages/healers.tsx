@@ -102,13 +102,15 @@ export default function HealersPage() {
     },
     onSuccess: (data, variables) => {
       toast({
-        title: "Rating Saved",
+        title: "Rating Saved ⭐",
         description: "Thank you for rating this healer!",
       });
-      // Invalidate badges query to refresh badge display if earned
-      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-badges"] });
-      // Invalidate all healer ratings to refresh immediately
+      // Immediately invalidate and refetch to show new rating on card
       queryClient.invalidateQueries({ queryKey: ["/api/all-healer-ratings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-badges"] });
+      // Force immediate refetch for instant UI update
+      queryClient.refetchQueries({ queryKey: ["/api/all-healer-ratings"] });
+      queryClient.refetchQueries({ queryKey: ["/api/all-healer-badges"] });
       // Reset state
       setRatingHealerId(null);
       setRatingValue(0);
@@ -123,7 +125,7 @@ export default function HealersPage() {
     },
   });
 
-  // Fetch all healer ratings upfront
+  // Fetch all healer ratings upfront with real-time updates
   const { data: allHealerRatings = {} } = useQuery({
     queryKey: ["/api/all-healer-ratings"],
     queryFn: async () => {
@@ -142,10 +144,13 @@ export default function HealersPage() {
       return ratingsMap;
     },
     enabled: healers.length > 0,
-    staleTime: 30 * 1000 // 30 seconds to refresh frequently
+    staleTime: 0, // No caching - always fetch fresh
+    refetchInterval: 2000, // Real-time updates every 2 seconds
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
-  // Fetch all healers' badges
+  // Fetch all healers' badges with real-time updates
   const { data: allHealersBadges = {} } = useQuery({
     queryKey: ["/api/all-healer-badges"],
     queryFn: async () => {
@@ -164,7 +169,10 @@ export default function HealersPage() {
       return badgesMap;
     },
     enabled: healers.length > 0,
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 0, // No caching - always fetch fresh
+    refetchInterval: 2000, // Real-time updates every 2 seconds
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   if (isLoading) {
