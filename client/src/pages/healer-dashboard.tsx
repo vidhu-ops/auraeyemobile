@@ -2153,6 +2153,14 @@ export default function HealerDashboard() {
     refetchInterval: 10000,
   });
 
+  // Fetch healer's earned badges
+  const { data: healerBadges = [] } = useQuery<HealerBadge[]>({
+    queryKey: ["/api/healer-badges", user?.id],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
+  });
+
   // State for live numerology calculator
   // Removed numerology state variables as numerology analysis was removed from Spiritual Tools tab
 
@@ -3756,62 +3764,40 @@ export default function HealerDashboard() {
               <CardDescription>Recognition badges awarded based on your performance and client interactions</CardDescription>
             </CardHeader>
             <CardContent>
-              {(() => {
-                const { data: healerBadges = [] } = useQuery({
-                  queryKey: ["/api/healer-badges", user?.id],
-                  enabled: !!user?.id,
-                  queryFn: async () => {
-                    if (!user?.id) return [];
-                    try {
-                      const res = await apiRequest("GET", `/api/healer-badges/${user.id}`);
-                      const data = await res.json();
-                      return data.badges || [];
-                    } catch (error) {
-                      return [];
-                    }
-                  },
-                  staleTime: 5 * 60 * 1000
-                });
-
-                return (
-                  <div>
-                    {healerBadges.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Award className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                        <p className="text-gray-500 mb-4 text-lg">No badges earned yet</p>
-                        <p className="text-gray-400 text-sm max-w-md mx-auto">
-                          Earn badges by receiving many client bookings, getting highly rated, and providing excellent service. Keep growing your practice!
+              {healerBadges.length === 0 ? (
+                <div className="text-center py-12">
+                  <Award className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-gray-500 mb-4 text-lg">No badges earned yet</p>
+                  <p className="text-gray-400 text-sm max-w-md mx-auto">
+                    Earn badges by receiving many client bookings, getting highly rated, and providing excellent service. Keep growing your practice!
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {healerBadges.map((badge: HealerBadge) => (
+                    <div key={badge.id} className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6 border-2 border-yellow-200 shadow-lg hover:shadow-xl transition-shadow text-center">
+                      <div className="text-6xl mb-3">{badge.badgeIcon}</div>
+                      <h3 className="font-bold text-lg text-yellow-900 mb-2">{badge.badgeTitle}</h3>
+                      <div className="space-y-1 mb-3">
+                        <p className="text-xs text-yellow-700">
+                          Awarded: {new Date(badge.awardedAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs text-orange-600">
+                          Expires: {new Date(badge.expiresAt).toLocaleDateString()}
                         </p>
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {healerBadges.map((badge: HealerBadge) => (
-                          <div key={badge.id} className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6 border-2 border-yellow-200 shadow-lg hover:shadow-xl transition-shadow text-center">
-                            <div className="text-6xl mb-3">{badge.badgeIcon}</div>
-                            <h3 className="font-bold text-lg text-yellow-900 mb-2">{badge.badgeTitle}</h3>
-                            <div className="space-y-1 mb-3">
-                              <p className="text-xs text-yellow-700">
-                                Awarded: {new Date(badge.awardedAt).toLocaleDateString()}
-                              </p>
-                              <p className="text-xs text-orange-600">
-                                Expires: {new Date(badge.expiresAt).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="w-full h-1 bg-yellow-200 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"
-                                style={{
-                                  width: `${Math.max(0, (new Date(badge.expiresAt).getTime() - Date.now()) / (30 * 24 * 60 * 60 * 1000)) * 100}%`
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ))}
+                      <div className="w-full h-1 bg-yellow-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"
+                          style={{
+                            width: `${Math.max(0, (new Date(badge.expiresAt).getTime() - Date.now()) / (30 * 24 * 60 * 60 * 1000)) * 100}%`
+                          }}
+                        />
                       </div>
-                    )}
-                  </div>
-                );
-              })()}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
