@@ -17,7 +17,7 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users } from "../shared/schema";
 import { checkAndAwardBadges } from "./badge-checker";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
@@ -2776,7 +2776,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Healer booking API endpoint with email notification
+  // Healer booking API endpoint with email notification - 3 credits to client, 1 to healer
   app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
       const user = req.user as any;
@@ -2788,10 +2788,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "Healer not found" });
       }
 
-      // Deduct credits for the booking
+      // Deduct 3 credits from client
       const creditDeducted = await storage.deductCredits(
         user.id,
-        req.creditCost,
+        3,
         "healer_booking",
         `Healer booking with ${healer.name}`
       );
@@ -2799,9 +2799,20 @@ function calculateDominantSoulChakra(birthDate: string): number {
       if (!creditDeducted) {
         return res.status(400).json({ 
           message: "Failed to deduct credits. Please try again.",
-          requiredCredits: req.creditCost,
+          requiredCredits: 3,
           currentCredits: await storage.getUserCredits(user.id)
         });
+      }
+
+      // Get healer user to add 1 credit
+      const healerUser = await storage.getUserByUsername(healer.username);
+      if (healerUser) {
+        await storage.addCredits(
+          healerUser.id,
+          1,
+          "healer_booking_credit",
+          `Credit from booking by ${user.username}`
+        );
       }
 
       // Create booking record
@@ -2829,12 +2840,64 @@ function calculateDominantSoulChakra(birthDate: string): number {
         message: "Booking request sent successfully",
         booking: booking,
         emailSent: emailSent,
-        creditsDeducted: req.creditCost,
+        creditsDeducted: 3,
         remainingCredits: await storage.getUserCredits(user.id)
       });
     } catch (error) {
       console.error("Error processing booking:", error);
       res.status(500).json({ message: "Failed to process booking" });
+    }
+  });
+
+  // Rate healer endpoint
+  app.post("/api/rate-healer", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const { healerId, rating } = req.body;
+
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      }
+
+      const healer = await storage.getHealer(healerId);
+      if (!healer) {
+        return res.status(404).json({ message: "Healer not found" });
+      }
+
+      const ratingData = {
+        healerId,
+        raterId: user.id,
+        raterUsername: user.username,
+        rating
+      };
+
+      const newRating = await storage.createHealerRating(ratingData);
+
+      res.status(201).json({ 
+        message: "Rating saved successfully",
+        rating: newRating
+      });
+    } catch (error) {
+      console.error("Error saving rating:", error);
+      res.status(500).json({ message: "Failed to save rating" });
+    }
+  });
+
+  // Get healer ratings endpoint
+  app.get("/api/healer-ratings/:healerId", async (req, res) => {
+    try {
+      const { healerId } = req.params;
+      const ratings = await storage.getHealerRatings(parseInt(healerId));
+      const averageRating = await storage.getHealerAverageRating(parseInt(healerId));
+
+      res.json({ 
+        ratings,
+        averageRating,
+        totalRatings: ratings.length
+      });
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+      res.status(500).json({ message: "Failed to fetch ratings" });
     }
   });
 

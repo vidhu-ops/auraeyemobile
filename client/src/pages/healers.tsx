@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star, MessageSquare, Calendar, Loader2 } from "lucide-react";
+import { Star, MessageSquare, Calendar, Loader2, ChevronDown } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Healer {
   id: number;
@@ -27,11 +32,23 @@ interface Healer {
   location?: string;
 }
 
+interface HealerRating {
+  id: number;
+  healerId: number;
+  raterId: number;
+  raterUsername: string;
+  rating: number;
+  createdAt: string;
+}
+
 export default function HealersPage() {
   const [filter, setFilter] = useState("all");
   const [selectedHealer, setSelectedHealer] = useState<Healer | null>(null);
   const [bookingMessage, setBookingMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [ratingHealer, setRatingHealer] = useState<Healer | null>(null);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -50,7 +67,7 @@ export default function HealersPage() {
     onSuccess: () => {
       toast({
         title: "Booking Request Sent",
-        description: "The healer will review your request and contact you soon. 1 credit has been deducted.",
+        description: "The healer will review your request and contact you soon. 3 credits have been deducted.",
       });
       setIsDialogOpen(false);
       setBookingMessage("");
@@ -66,6 +83,43 @@ export default function HealersPage() {
         variant: "destructive",
       });
     },
+  });
+
+  // Rating mutation
+  const ratingMutation = useMutation({
+    mutationFn: async (data: { healerId: number; rating: number }) => {
+      return apiRequest("POST", "/api/rate-healer", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Rating Saved",
+        description: "Thank you for rating this healer!",
+      });
+      setIsRatingDialogOpen(false);
+      setSelectedRating(0);
+      // Invalidate healer ratings
+      if (ratingHealer) {
+        queryClient.invalidateQueries({ queryKey: ["/api/healer-ratings", ratingHealer.id] });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Rating Failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Fetch healer ratings
+  const { data: healerRatingsData } = useQuery({
+    queryKey: ["/api/healer-ratings", selectedHealer?.id],
+    enabled: !!selectedHealer,
+    queryFn: async () => {
+      if (!selectedHealer) return null;
+      const res = await apiRequest("GET", `/api/healer-ratings/${selectedHealer.id}`);
+      return res.json();
+    }
   });
 
   if (isLoading) {
@@ -131,12 +185,36 @@ export default function HealersPage() {
                 
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                        <span className="ml-2 font-medium">{healer.rating || 5}</span>
-                        <span className="ml-1 text-black-500">rating</span>
-                      </div>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="flex items-center gap-1 h-auto py-1 px-2">
+                            <div className="flex items-center">
+                              <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                              <span className="ml-2 font-medium text-sm">{healer.rating || 5}</span>
+                            </div>
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-64">
+                          {healerRatingsData?.ratings && healerRatingsData.ratings.length > 0 ? (
+                            <div className="p-4 space-y-2 max-h-48 overflow-y-auto">
+                              {healerRatingsData.ratings.map((rating: HealerRating) => (
+                                <div key={rating.id} className="text-sm border-b pb-2">
+                                  <div className="flex items-center gap-1">
+                                    {[...Array(rating.rating)].map((_, i) => (
+                                      <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                    ))}
+                                  </div>
+                                  <p className="text-xs text-gray-600 mt-1">by {rating.raterUsername}</p>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="p-4 text-sm text-gray-600">No ratings yet</div>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       {healer.experience && (
                         <span className="text-sm text-gray-500">{healer.experience}</span>
                       )}
@@ -154,63 +232,146 @@ export default function HealersPage() {
                   </div>
                 </CardContent>
                 
-                <CardFooter className="space-x-2">
-                  {user ? (
-                    <Dialog open={isDialogOpen && selectedHealer?.id === healer.id} onOpenChange={(open) => {
-                      setIsDialogOpen(open);
+                <CardFooter className="flex flex-col gap-2">
+                  <div className="flex gap-2 w-full">
+                    {user ? (
+                      <Dialog open={isDialogOpen && selectedHealer?.id === healer.id} onOpenChange={(open) => {
+                        setIsDialogOpen(open);
+                        if (open) {
+                          setSelectedHealer(healer);
+                        }
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button className="flex-1">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            Book Session
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Book Session with {healer.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-black mb-2">
+                                Specialty: {healer.specialty}
+                              </p>
+                              <p className="text-sm text-black">
+                                {healer.description}
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor="message">Message (Optional)</Label>
+                              <Textarea
+                                id="message"
+                                placeholder="Tell the healer about your needs or questions..."
+                                value={bookingMessage}
+                                onChange={(e) => setBookingMessage(e.target.value)}
+                                rows={4}
+                                className="text-purple-900"
+                              />
+                            </div>
+                            
+                            <div className="flex space-x-2">
+                              <Button
+                                onClick={() => {
+                                  bookingMutation.mutate({
+                                    healerId: healer.id,
+                                    message: bookingMessage
+                                  });
+                                }}
+                                disabled={bookingMutation.isPending}
+                                className="flex-1"
+                              >
+                                {bookingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                                Send Booking Request
+                              </Button>
+                              <Button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    ) : (
+                      <Link to="/auth" className="flex-1">
+                        <Button className="w-full">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Login to Book
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        alert(`Contact ${healer.name}:\nEmail: ${healer.email}\nPhone: ${healer.phone}`);
+                      }}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Contact
+                    </Button>
+                  </div>
+                  
+                  {user && (
+                    <Dialog open={isRatingDialogOpen && ratingHealer?.id === healer.id} onOpenChange={(open) => {
+                      setIsRatingDialogOpen(open);
                       if (open) {
-                        setSelectedHealer(healer);
+                        setRatingHealer(healer);
+                        setSelectedRating(0);
                       }
                     }}>
                       <DialogTrigger asChild>
-                        <Button className="flex-1">
-                          <Calendar className="h-4 w-4 mr-2 py-10" />
-                          Book Session
+                        <Button variant="secondary" className="w-full">
+                          <Star className="h-4 w-4 mr-2" />
+                          Rate Healer
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Book Session with {healer.name}</DialogTitle>
+                          <DialogTitle>Rate {healer.name}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4">
-                          <div>
-                            <p className="text-sm text-black mb-2">
-                              Specialty: {healer.specialty}
-                            </p>
-                            <p className="text-sm text-black">
-                              {healer.description}
-                            </p>
+                          <div className="flex justify-center gap-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                onClick={() => setSelectedRating(star)}
+                                className="focus:outline-none transition-transform hover:scale-110"
+                              >
+                                <Star
+                                  className={`h-8 w-8 ${
+                                    star <= selectedRating
+                                      ? 'fill-yellow-400 text-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              </button>
+                            ))}
                           </div>
-                          
-                          <div>
-                            <Label htmlFor="message">Message (Optional)</Label>
-                            <Textarea
-                              id="message"
-                              placeholder="Tell the healer about your needs or questions..."
-                              value={bookingMessage}
-                              onChange={(e) => setBookingMessage(e.target.value)}
-                              rows={4}
-                              className="text-purple-900"
-                            />
-                          </div>
-                          
                           <div className="flex space-x-2">
                             <Button
                               onClick={() => {
-                                bookingMutation.mutate({
-                                  healerId: healer.id,
-                                  message: bookingMessage
-                                });
+                                if (selectedRating > 0) {
+                                  ratingMutation.mutate({
+                                    healerId: healer.id,
+                                    rating: selectedRating
+                                  });
+                                }
                               }}
-                              disabled={bookingMutation.isPending}
+                              disabled={ratingMutation.isPending || selectedRating === 0}
                               className="flex-1"
                             >
-                              {bookingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                              Send Booking Request
+                              {ratingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                              Submit Rating
                             </Button>
                             <Button
-                              onClick={() => setIsDialogOpen(false)}
-                              className="bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white"
+                              onClick={() => setIsRatingDialogOpen(false)}
+                              variant="outline"
                             >
                               Cancel
                             </Button>
@@ -218,24 +379,7 @@ export default function HealersPage() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                  ) : (
-                    <Link to="/auth" className="flex-1">
-                      <Button className="w-full">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Login to Book
-                      </Button>
-                    </Link>
                   )}
-                  
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      alert(`Contact ${healer.name}:\nEmail: ${healer.email}\nPhone: ${healer.phone}`);
-                    }}
-                  >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Contact
-                  </Button>
                 </CardFooter>
               </Card>
             ))}
