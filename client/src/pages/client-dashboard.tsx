@@ -33,7 +33,8 @@ import {
   BookOpen,
   Eye,
   Settings,
-  Calculator
+  Calculator,
+  Crown
 } from "lucide-react";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import NotificationSettings from "@/components/notification-settings";
@@ -297,7 +298,7 @@ export default function ClientDashboard() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Calculator className="h-5 w-5 text-purple-400" />
-                    <h3 className="text-white font-semibold">Your Numerology</h3>
+                    <h3 className="text-white font-semibold">Your Numerology Preview</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-purple-900/30 rounded-lg p-3 text-center border border-purple-400/30">
@@ -336,12 +337,28 @@ export default function ClientDashboard() {
                       <div className="text-xs text-indigo-200">Destiny</div>
                     </div>
                   </div>
-                  <Link href="/numerology" className="block mt-3">
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm">
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      View Full Analysis
-                    </Button>
-                  </Link>
+                  
+                  {/* Show upgrade message for clients with no previous readings */}
+                  {Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
+                    <div className="mt-3 bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-3">
+                      <p className="text-yellow-200 text-xs mb-2 text-center">
+                        🔒 Upgrade to access your complete numerology analysis
+                      </p>
+                      <Link href="/pricing" className="block">
+                        <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm">
+                          <Crown className="h-4 w-4 mr-2" />
+                          Upgrade Now
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link href="/numerology" className="block mt-3">
+                      <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        View Full Analysis
+                      </Button>
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             )}
