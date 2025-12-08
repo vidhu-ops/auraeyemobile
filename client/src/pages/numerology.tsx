@@ -245,6 +245,10 @@ export default function NumerologyPage() {
       };
 
       const addSection = (title: string) => {
+        if (currentY > 260) {
+          pdf.addPage();
+          currentY = margin;
+        }
         currentY += 3;
         addText(title, 14, true, [75, 85, 99]);
         currentY += 2;
@@ -355,6 +359,31 @@ export default function NumerologyPage() {
       personalYearInfo.focus.forEach(item => {
         addText(`• ${item}`, 9);
       });
+      currentY += 3;
+      
+      // Personal Year Calculation Explanation
+      addText("How Your Personal Year is Calculated:", 10, true, [99, 102, 241]);
+      const birthDateObj = new Date(targetBirthDate);
+      const day = birthDateObj.getDate();
+      const month = birthDateObj.getMonth() + 1;
+      const currentYear = 2026;
+      
+      const dayDigits = day.toString().split('').map(d => parseInt(d));
+      const monthDigits = month.toString().split('').map(d => parseInt(d));
+      const yearDigits = currentYear.toString().split('').map(d => parseInt(d));
+      
+      const daySum = dayDigits.reduce((a, b) => a + b, 0);
+      const monthSum = monthDigits.reduce((a, b) => a + b, 0);
+      const yearSum = yearDigits.reduce((a, b) => a + b, 0);
+      const totalSum = daySum + monthSum + yearSum;
+      
+      addText(`Birth Day digits: ${dayDigits.join(' + ')} = ${daySum}`, 9);
+      addText(`Birth Month digits: ${monthDigits.join(' + ')} = ${monthSum}`, 9);
+      addText(`Current Year digits: ${yearDigits.join(' + ')} = ${yearSum}`, 9);
+      addText(`Total: ${daySum} + ${monthSum} + ${yearSum} = ${totalSum}`, 9);
+      if (totalSum > 9) {
+        addText(`Reduced to single digit: ${totalSum.toString().split('').join(' + ')} = ${personalYear}`, 9, false, [99, 102, 241]);
+      }
       currentY += 5;
 
       // Personal Month Forecast
@@ -402,6 +431,30 @@ export default function NumerologyPage() {
       addText(`• Managing the sensitivity that comes with ${getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations`, 9);
       currentY += 5;
 
+      // Strengths and Challenges (if available)
+      if (numerology.strengths && numerology.strengths.length > 0) {
+        addSection("YOUR STRENGTHS");
+        numerology.strengths.forEach(strength => {
+          addText(`• ${strength}`, 9, false, [34, 197, 94]);
+        });
+        currentY += 3;
+      }
+      
+      if (numerology.challenges && numerology.challenges.length > 0) {
+        addSection("AREAS FOR GROWTH");
+        numerology.challenges.forEach(challenge => {
+          addText(`• ${challenge}`, 9, false, [245, 158, 11]);
+        });
+        currentY += 3;
+      }
+      
+      // Additional Guidance (if available)
+      if (numerology.guidance) {
+        addSection("ADDITIONAL SPIRITUAL GUIDANCE");
+        addText(numerology.guidance, 9);
+        currentY += 3;
+      }
+      
       // Healer Notes (if any)
       if (healerNotes.trim()) {
         addSection("PROFESSIONAL HEALER NOTES");
