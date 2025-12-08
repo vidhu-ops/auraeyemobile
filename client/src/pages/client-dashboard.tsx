@@ -32,7 +32,9 @@ import {
   Circle,
   BookOpen,
   Eye,
-  Settings
+  Settings,
+  Calculator,
+  Crown
 } from "lucide-react";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import NotificationSettings from "@/components/notification-settings";
@@ -289,6 +291,77 @@ export default function ClientDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Basic Numerology Info - Client View */}
+            {user?.birthDate && (
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Calculator className="h-5 w-5 text-purple-400" />
+                    <h3 className="text-white font-semibold">Your Numerology Preview</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-purple-900/30 rounded-lg p-3 text-center border border-purple-400/30">
+                      <div className="text-2xl font-bold text-purple-300 mb-1">
+                        {(() => {
+                          const dateStr = user.birthDate.replace(/\D/g, '');
+                          let sum = 0;
+                          for (const digit of dateStr) sum += parseInt(digit);
+                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })()}
+                      </div>
+                      <div className="text-xs text-purple-200">Life Path</div>
+                    </div>
+                    <div className="bg-indigo-900/30 rounded-lg p-3 text-center border border-indigo-400/30">
+                      <div className="text-2xl font-bold text-indigo-300 mb-1">
+                        {(() => {
+                          let sum = 0;
+                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
+                            const letterMap: Record<string, number> = {
+                              'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+                              'B': 2, 'K': 2, 'R': 2,
+                              'C': 3, 'G': 3, 'L': 3, 'S': 3,
+                              'D': 4, 'M': 4, 'T': 4,
+                              'E': 5, 'H': 5, 'N': 5, 'X': 5,
+                              'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+                              'Z': 7,
+                              'P': 8
+                            };
+                            sum += letterMap[char.toUpperCase()] || 0;
+                          }
+                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })()}
+                      </div>
+                      <div className="text-xs text-indigo-200">Destiny</div>
+                    </div>
+                  </div>
+                  
+                  {/* Show upgrade message for clients with no previous readings */}
+                  {Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
+                    <div className="mt-3 bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-3">
+                      <p className="text-yellow-200 text-xs mb-2 text-center">
+                        🔒 Upgrade to access your complete numerology analysis
+                      </p>
+                      <Link href="/pricing" className="block">
+                        <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm">
+                          <Crown className="h-4 w-4 mr-2" />
+                          Upgrade Now
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link href="/numerology" className="block mt-3">
+                      <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        View Full Analysis
+                      </Button>
+                    </Link>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-3">
