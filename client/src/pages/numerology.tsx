@@ -490,11 +490,11 @@ export default function NumerologyPage() {
       // Personality Detailed Section
       addText("PERSONALITY NUMBER ANALYSIS", 12, true, [236, 72, 153]);
       currentY += 2;
-      const personalityInfo = getNumberMeaning(numerology.personalityNumber, 'personality');
+      const personalityDetailInfo = getNumberMeaning(numerology.personalityNumber, 'personality');
       addText(`Number: ${numerology.personalityNumber}`, 11, true);
       addText(`Color: ${getNumberColorAssociation(numerology.personalityNumber)}`, 10);
-      addText(personalityInfo.title, 10, true);
-      addText(personalityInfo.description, 9);
+      addText(personalityDetailInfo.title, 10, true);
+      addText(personalityDetailInfo.description, 9);
       currentY += 2;
       addText("Vibration Qualities:", 10, true);
       getVibrationQualities(numerology.personalityNumber).forEach(quality => {
