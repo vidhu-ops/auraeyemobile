@@ -254,6 +254,30 @@ export default function NumerologyPage() {
         currentY += 2;
       };
 
+      const addBulletPoint = (text: string, fontSize: number = 9, color: [number, number, number] = [0, 0, 0]) => {
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(color[0], color[1], color[2]);
+        const bulletX = margin;
+        const textX = margin + 5;
+        
+        if (currentY > 280) {
+          pdf.addPage();
+          currentY = margin;
+        }
+        
+        pdf.text('•', bulletX, currentY);
+        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin - 5);
+        lines.forEach((line: string, index: number) => {
+          if (currentY > 280) {
+            pdf.addPage();
+            currentY = margin;
+          }
+          pdf.text(line, index === 0 ? textX : textX, currentY);
+          currentY += lineHeight;
+        });
+        pdf.setTextColor(0, 0, 0);
+      };
+
       // Title
       addText("NUMEROLOGY ANALYSIS REPORT", 20, true, [88, 28, 135]);
       currentY += 3;
@@ -415,27 +439,90 @@ export default function NumerologyPage() {
       addText(numerology.interpretation, 9);
       currentY += 5;
 
+      // Tab-Based Profile Information
+      addSection("COMPLETE NUMEROLOGY PROFILE");
+      
+      // Life Path Detailed Section
+      addText("LIFE PATH NUMBER ANALYSIS", 12, true, [147, 51, 234]);
+      currentY += 2;
+      const lifePathInfo = getNumberMeaning(numerology.lifePathNumber, 'lifePath');
+      addText(`Number: ${numerology.lifePathNumber}`, 11, true);
+      addText(`Color: ${getNumberColorAssociation(numerology.lifePathNumber)}`, 10);
+      addText(lifePathInfo.title, 10, true);
+      addText(lifePathInfo.description, 9);
+      currentY += 2;
+      addText("Vibration Qualities:", 10, true);
+      getVibrationQualities(numerology.lifePathNumber).forEach(quality => {
+        addBulletPoint(quality, 9);
+      });
+      currentY += 3;
+      
+      // Destiny Detailed Section
+      addText("DESTINY NUMBER ANALYSIS", 12, true, [59, 130, 246]);
+      currentY += 2;
+      const destinyInfo = getNumberMeaning(numerology.destinyNumber, 'destiny');
+      addText(`Number: ${numerology.destinyNumber}`, 11, true);
+      addText(`Color: ${getNumberColorAssociation(numerology.destinyNumber)}`, 10);
+      addText(destinyInfo.title, 10, true);
+      addText(destinyInfo.description, 9);
+      currentY += 2;
+      addText("Vibration Qualities:", 10, true);
+      getVibrationQualities(numerology.destinyNumber).forEach(quality => {
+        addBulletPoint(quality, 9);
+      });
+      currentY += 3;
+      
+      // Soul Urge Detailed Section
+      addText("SOUL URGE NUMBER ANALYSIS", 12, true, [139, 92, 246]);
+      currentY += 2;
+      const soulUrgeInfo = getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge');
+      addText(`Number: ${numerology.soulUrgeNumber}`, 11, true);
+      addText(`Color: ${getNumberColorAssociation(numerology.soulUrgeNumber)}`, 10);
+      addText(soulUrgeInfo.title, 10, true);
+      addText(soulUrgeInfo.description, 9);
+      currentY += 2;
+      addText("Soul Qualities:", 10, true);
+      getVibrationQualities(numerology.soulUrgeNumber).forEach(quality => {
+        addBulletPoint(quality, 9);
+      });
+      currentY += 3;
+      
+      // Personality Detailed Section
+      addText("PERSONALITY NUMBER ANALYSIS", 12, true, [236, 72, 153]);
+      currentY += 2;
+      const personalityInfo = getNumberMeaning(numerology.personalityNumber, 'personality');
+      addText(`Number: ${numerology.personalityNumber}`, 11, true);
+      addText(`Color: ${getNumberColorAssociation(numerology.personalityNumber)}`, 10);
+      addText(personalityInfo.title, 10, true);
+      addText(personalityInfo.description, 9);
+      currentY += 2;
+      addText("Vibration Qualities:", 10, true);
+      getVibrationQualities(numerology.personalityNumber).forEach(quality => {
+        addBulletPoint(quality, 9);
+      });
+      currentY += 5;
+
       // Spiritual Guidance
       addSection("SPIRITUAL GUIDANCE");
       addText(`Focus on harmonizing the ${getNumberColorAssociation(numerology.lifePathNumber)} and ${getNumberColorAssociation(numerology.destinyNumber)} energies in your numerological blueprint for optimal growth and spiritual development.`, 9);
       currentY += 3;
       addText("Key Strengths:", 10, true, [34, 197, 94]);
-      addText(`• Natural ${getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities`, 9);
-      addText(`• Your ${getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills`, 9);
-      addText(`• The ${getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities`, 9);
+      addBulletPoint(`Natural ${getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities`, 9, [34, 197, 94]);
+      addBulletPoint(`Your ${getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills`, 9, [34, 197, 94]);
+      addBulletPoint(`The ${getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities`, 9, [34, 197, 94]);
       currentY += 3;
       
       addText("Potential Challenges:", 10, true, [245, 158, 11]);
-      addText(`• Balancing ${getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions`, 9);
-      addText(`• Integrating ${getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters`, 9);
-      addText(`• Managing the sensitivity that comes with ${getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations`, 9);
+      addBulletPoint(`Balancing ${getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions`, 9, [245, 158, 11]);
+      addBulletPoint(`Integrating ${getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters`, 9, [245, 158, 11]);
+      addBulletPoint(`Managing the sensitivity that comes with ${getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations`, 9, [245, 158, 11]);
       currentY += 5;
 
       // Strengths and Challenges (if available)
       if (numerology.strengths && numerology.strengths.length > 0) {
         addSection("YOUR STRENGTHS");
         numerology.strengths.forEach(strength => {
-          addText(`• ${strength}`, 9, false, [34, 197, 94]);
+          addBulletPoint(strength, 9, [34, 197, 94]);
         });
         currentY += 3;
       }
@@ -443,7 +530,7 @@ export default function NumerologyPage() {
       if (numerology.challenges && numerology.challenges.length > 0) {
         addSection("AREAS FOR GROWTH");
         numerology.challenges.forEach(challenge => {
-          addText(`• ${challenge}`, 9, false, [245, 158, 11]);
+          addBulletPoint(challenge, 9, [245, 158, 11]);
         });
         currentY += 3;
       }
@@ -452,6 +539,24 @@ export default function NumerologyPage() {
       if (numerology.guidance) {
         addSection("ADDITIONAL SPIRITUAL GUIDANCE");
         addText(numerology.guidance, 9);
+        currentY += 3;
+      }
+      
+      // Color Associations Section
+      if (numerology.colorAssociations) {
+        addSection("ENERGY COLOR ASSOCIATIONS");
+        if (numerology.colorAssociations.lifePathColor) {
+          addText(`Life Path Color: ${numerology.colorAssociations.lifePathColor}`, 10);
+        }
+        if (numerology.colorAssociations.destinyColor) {
+          addText(`Destiny Color: ${numerology.colorAssociations.destinyColor}`, 10);
+        }
+        if (numerology.colorAssociations.soulUrgeColor) {
+          addText(`Soul Urge Color: ${numerology.colorAssociations.soulUrgeColor}`, 10);
+        }
+        if (numerology.colorAssociations.personalityColor) {
+          addText(`Personality Color: ${numerology.colorAssociations.personalityColor}`, 10);
+        }
         currentY += 3;
       }
       
