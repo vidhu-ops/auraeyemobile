@@ -103,9 +103,9 @@ export default function AuthPage() {
         description: `You've received ${data.creditsAwarded || 5} free credits!`,
       });
       
-      // Mark onboarding as seen and redirect to home
+      // Mark onboarding as seen and redirect new clients to client dashboard
       localStorage.setItem("hasSeenOnboarding", "true");
-      setLocation("/");
+      setLocation("/client-dashboard");
     },
     onError: () => {
       toast({
@@ -124,7 +124,7 @@ export default function AuthPage() {
         
         if (hasCompletedOnboarding) {
           // Redirect to appropriate dashboard based on user type
-          const dashboardPath = loggedInUser.userType === 'healer' ? '/healer-dashboard' : '/dashboard';
+          const dashboardPath = loggedInUser.userType === 'healer' ? '/healer-dashboard' : '/client-dashboard';
           setLocation(dashboardPath);
         } else {
           // Redirect to home page (will trigger onboarding if needed)
@@ -397,7 +397,7 @@ export default function AuthPage() {
     const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
     if (hasCompletedOnboarding && user.userType) {
       // Redirect to appropriate dashboard based on user type
-      const dashboardPath = user.userType === 'healer' ? '/healer-dashboard' : '/dashboard';
+      const dashboardPath = user.userType === 'healer' ? '/healer-dashboard' : '/client-dashboard';
       return <Redirect to={dashboardPath} />;
     }
   }
