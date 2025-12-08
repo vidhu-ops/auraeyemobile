@@ -56,6 +56,12 @@ export default function ClientDashboard() {
     enabled: !!user,
     refetchInterval: 3000, // Auto-refetch every 3 seconds
   });
+
+  // Fetch numerology readings for upgrade prompt check
+  const { data: numerologyReadings = [] } = useQuery({
+    queryKey: ["/api/numerology-readings"],
+    enabled: !!user && user.userType === "client",
+  });
   
   // Get tab from URL query parameter, default to "overview"
   const getInitialTab = () => {
