@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Calculator, Sparkles, Save, Download, FileText } from "lucide-react";
+import { Loader2, Calculator, Sparkles, Save, Download, FileText, Crown } from "lucide-react";
 import { calculateNumerology, NumerologyResult } from "@/lib/openai";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -103,6 +103,7 @@ export default function NumerologyPage() {
   const [healerNotes, setHealerNotes] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   // Check for healer-provided numerology data from URL parameters
   const [healerData, setHealerData] = useState<any>(null);
@@ -142,6 +143,12 @@ export default function NumerologyPage() {
     });
   }, [targetName, targetBirthDate, form]);
 
+  // Check if user has numerology readings
+  const { data: numerologyReadings = [] } = useQuery({
+    queryKey: ["/api/numerology-readings"],
+    enabled: !!user && user.userType === "client",
+  });
+
   // Get numerology analysis - use healer data if available
   const {
     data: numerology,
@@ -153,6 +160,13 @@ export default function NumerologyPage() {
     queryFn: () => calculateNumerology(targetName, targetBirthDate),
     enabled: !!(targetBirthDate && targetName),
   });
+
+  // Show upgrade prompt if user is a client with no previous readings
+  useEffect(() => {
+    if (user?.userType === "client" && Array.isArray(numerologyReadings) && numerologyReadings.length === 0 && numerology) {
+      setShowUpgradePrompt(true);
+    }
+  }, [user, numerologyReadings, numerology]);
 
   // Store reading ID when numerology is calculated
   const [currentReadingId, setCurrentReadingId] = useState<number | null>(null);
@@ -972,6 +986,65 @@ export default function NumerologyPage() {
   return (
     <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
+
+      {/* Upgrade Prompt Dialog for First-Time Users */}
+      {showUpgradePrompt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-md w-full bg-gradient-to-br from-purple-900 to-indigo-900 border-2 border-purple-500 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Sparkles className="h-6 w-6 text-yellow-400" />
+                Unlock Full Numerology Analysis
+              </CardTitle>
+              <CardDescription className="text-purple-200">
+                You're viewing a basic preview. Upgrade to access the complete analysis!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-purple-800/30 rounded-lg p-4 border border-purple-400/30">
+                <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-yellow-400" />
+                  Premium Features Include:
+                </h4>
+                <ul className="space-y-2 text-purple-100 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Detailed Life Path & Destiny analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Personal Year & Monthly forecasts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Chakra-Planet alignment insights</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-400">✓</span>
+                    <span>Downloadable PDF reports</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowUpgradePrompt(false)}
+                  className="flex-1 border-purple-400 text-purple-200 hover:bg-purple-800"
+                >
+                  View Basic
+                </Button>
+                <Link href="/pricing" className="flex-1">
+                  <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade Now
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
         <div className="container mx-auto px-4">
