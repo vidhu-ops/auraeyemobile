@@ -1226,20 +1226,35 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-                    <div className="flex-shrink-0 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
+                  <div className="w-full">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-shrink-0 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
+                      </div>
+                      <div className="flex-grow">
+                        <h3 className="font-semibold text-purple-800 text-lg">Life Path Number</h3>
+                        <p className="text-purple-600">Your life's journey and core purpose</p>
+                      </div>
                     </div>
-                    <div className="flex-grow">
-                      <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
-                      <p className="text-l text-purple-600 mb-1">Your life's journey and core purpose</p>
-                      <div className="text-xs text-purple-500 space-y-3">
-                        {parseLifePathText(getLifePathMeaning(numerology.lifePathNumber)).map((section, index) => (
-                          <div key={index} className="border-l-2 border-purple-300 pl-3">
-                            <h4 className="font-bold text-purple-700 mb-1 text-sm">{section.heading}</h4>
-                            <p className="text-purple-600 text-xs leading-relaxed">{section.content}</p>
-                          </div>
-                        ))}
+                    
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
+                      <div className="text-sm text-purple-700 space-y-4 max-h-96 overflow-y-auto">
+                        {getLifePathMeaning(numerology.lifePathNumber).split(/(?=(?:Colour|Color|COLOUR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example|Angel|Karmic|Healing|Remedies|Color Therapy|Mantra|Crystal|Aroma|Affirmations|Sacred|Bach|Prayer|Deity|Self-Healing|Rudraksha):)/i).map((section, idx) => {
+                          const colonIndex = section.indexOf(':');
+                          if (colonIndex === -1) return null;
+                          
+                          const heading = section.substring(0, colonIndex).trim();
+                          const content = section.substring(colonIndex + 1).trim();
+                          
+                          if (!heading || !content) return null;
+                          
+                          return (
+                            <div key={idx} className="border-l-4 border-purple-400 pl-4 py-2">
+                              <h4 className="font-bold text-purple-700 text-sm mb-1">{heading}</h4>
+                              <p className="text-purple-600 text-xs leading-relaxed">{content.substring(0, 200)}</p>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
