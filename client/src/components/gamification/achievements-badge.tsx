@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
-import { Trophy } from "lucide-react";
+import { Trophy, CheckCircle } from "lucide-react";
 
 interface Achievement {
   id: number;
@@ -43,9 +43,13 @@ export function AchievementsBadges() {
         {achievements.map((achievement) => (
           <div
             key={achievement.id}
-            className="flex flex-col items-center p-3 bg-indigo-800 rounded-lg border border-purple-500 hover:border-yellow-400 transition-colors text-center"
+            className="relative flex flex-col items-center p-3 bg-indigo-800 rounded-lg border border-purple-500 hover:border-yellow-400 transition-colors text-center"
             data-testid={`achievement-${achievement.achievementType}`}
           >
+            {/* Checkmark indicator for earned badge */}
+            <div className="absolute top-1 right-1 bg-green-500 rounded-full p-0.5 shadow-lg">
+              <CheckCircle className="w-4 h-4 text-white" />
+            </div>
             <div className="text-3xl mb-2">{achievement.icon}</div>
             <h4 className="font-semibold text-sm text-yellow-300">{achievement.title}</h4>
             <p className="text-xs text-purple-200 mt-1">{achievement.description}</p>
