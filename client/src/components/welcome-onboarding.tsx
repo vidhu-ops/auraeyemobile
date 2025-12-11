@@ -214,7 +214,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
             </h1>
             
             <p className="text-lg text-center text-black-200 mb-12 leading-relaxed">
-              AuraEye connects you with powerful spiritual tools to discover your aura, 
+              AuraEye™ connects you with powerful spiritual tools to discover your aura, 
               analyze your energy, and embark on a path of healing and self-discovery.
             </p>
 
@@ -419,7 +419,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
             <Button
               onClick={() => setStep("question2")}
               variant="outline"
-              className="w-full text-white border-white/20"
+              className="w-full text-black border-white/20"
               data-testid="button-back"
             >
               Back
