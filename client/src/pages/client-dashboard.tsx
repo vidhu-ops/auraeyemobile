@@ -56,6 +56,12 @@ export default function ClientDashboard() {
     enabled: !!user,
     refetchInterval: 3000, // Auto-refetch every 3 seconds
   });
+
+  // Fetch numerology readings for upgrade prompt check
+  const { data: numerologyReadings = [] } = useQuery({
+    queryKey: ["/api/numerology-readings"],
+    enabled: !!user && user.userType === "client",
+  });
   
   // Get tab from URL query parameter, default to "overview"
   const getInitialTab = () => {
@@ -352,7 +358,7 @@ export default function ClientDashboard() {
                       </Link>
                     </div>
                   ) : (
-                    <Link href="/numerology" className="block mt-3">
+                    <Link href="/pricing" className="block mt-3">
                       <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm">
                         <Sparkles className="h-4 w-4 mr-2" />
                         View Full Analysis

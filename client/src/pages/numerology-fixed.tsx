@@ -396,7 +396,7 @@ export default function NumerologyPage() {
                     <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
                   </div>
                   <div className="flex-grow">
-                    <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
+                    <h3 className="font-semibold text-xl text-purple-800 mb-1">Life Path Number</h3>
                     <p className="text-sm text-purple-600 mb-1">Your life's journey and core purpose</p>
                     <p className="text-xs text-purple-500">{getLifePathMeaning(numerology.lifePathNumber)}</p>
                   </div>
