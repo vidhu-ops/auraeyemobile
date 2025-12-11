@@ -670,6 +670,45 @@ export default function NumerologyPage() {
     soulstar: "#718096",
   };
 
+  const parseLifePathText = (text: string): Array<{heading: string; content: string}> => {
+    const sections: Array<{heading: string; content: string}> = [];
+    const headingKeywords = [
+      'Colour', 'Color', 'COLOUR', 'Chakra', 'CHAKRA', 'Planet', 'PPI', 'Concept', 'Research',
+      'How to Use', 'Example Technique', 'Angel/Archangel', 'Karmic Lesson', 'Healing Method',
+      'Remedies', 'Color Therapy', 'Mantra Chanting', 'Crystal Therapy', 'Aroma Therapy',
+      'Affirmations', 'Sacred Code', 'Bach Flower Remedies', 'Prayer', 'Deity Connection',
+      'Self-Healing Technique', 'Rudraksha Remedy', 'Positive Psychology'
+    ];
+    
+    let currentIndex = 0;
+    const regex = new RegExp(`(${headingKeywords.join('|')})\\s*:`, 'gi');
+    let match;
+    let lastIndex = 0;
+    
+    while ((match = regex.exec(text)) !== null) {
+      const heading = match[1];
+      const contentStart = match.index + match[0].length;
+      
+      let contentEnd = text.length;
+      const nextMatch = regex.exec(text);
+      if (nextMatch) {
+        contentEnd = nextMatch.index;
+        regex.lastIndex = match.index + match[0].length;
+      }
+      
+      const content = text.substring(contentStart, contentEnd).trim();
+      if (content) {
+        sections.push({
+          heading: heading.charAt(0).toUpperCase() + heading.slice(1),
+          content: content.replace(/\.+$/, '')
+        });
+      }
+      lastIndex = contentEnd;
+    }
+    
+    return sections;
+  };
+
   const getLifePathMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
       1: "Colour: Yellow, Chakra: Solar plexus. Leadership and independence. Planet: Sun Chakra: Solar Plexus Chakra (between ribs and navel) PPI: Goal Setting and Achievement Positive Psychology Interventions: PPI Concept: Goal setting fosters independence and self-confidence. Research: Locke & Latham (2002) demonstrated that specific and challenging goals significantly enhance motivation and achievement. How to Use: Set 3 short-term and 1 long-term goal weekly. Use SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound). Celebrate small wins to build momentum. Example Technique: Short-Term Goal: Complete one self-help book this week. Long-Term Goal: Start a blog on personal development. Write down steps, track progress daily, and celebrate milestones. Angel/Archangel: Archangel Michael Karmic Lesson: Personal power, confidence, and willpower. Healing Method: Overcome self-doubt and claim inner strength. Remedies: Color Therapy: Yellow. Wear or visualize yellow light. Mantra Chanting: RAM 45 times/day.Crystal Therapy: Citrine, Tiger’s Eye. Aroma Therapy: Lemon, Bergamot, Ginger. Affirmations: I am confident and powerful I take charge of my life. Sacred Code: Chant 451 45 times/day. (chant numbers individually) Four Five One Bach Flower Remedies: Larch (self-doubt), Wild Oat (direction), Mustard (low energy). How to use: In a bottle of water, add 4-5 drops of each remedy. Drink throughout the day. Prayer to Archangel Michael: Archangel Michael, give me strength and confidence to shine my light. Guide me to my highest purpose. Amen. Deity Connection:Solar Plexus Chakra (Sun): Lord Surya and Lord Rama Om Suryaya Namah. Shri Ram Jai Ram Jai Jai Ram. Radiant Lord Surya, empower my inner strength and confidence. Guide me to take charge of my destiny and fill my solar plexus chakra with your golden light. Self-Healing Technique: Rub your palms, fill your body with white light, and say: I invoke the light of God within me. I am a clear and perfect channel; light is my guide. Focus on the heart chakra as a bridge. Call Archangel Michael or Lord Surya with this prayer:Archangel Michael, fill me with strength and confidence. Lord Surya, empower me with light and power. Create a yellow energy ball in your palms, visualize code 451 in its center, and state your intention. Absorb the ball into your solar plexus chakra for confidence and willpower or send it into the universe for manifestation. Planet: Sun Rudraksha Remedy: Wear 12 Mukhi or 1 Mukhi Nepal Sawar Bead or 1 Mukhi Indonesian Premium Energized Rudraksha.",
@@ -1168,73 +1207,13 @@ export default function NumerologyPage() {
                     <div className="flex-grow">
                       <h3 className="font-semibold text-purple-800 mb-1">Life Path Number</h3>
                       <p className="text-l text-purple-600 mb-1">Your life's journey and core purpose</p>
-                      <div className="text-xs text-purple-500 space-y-2">
-                        {getLifePathMeaning(numerology.lifePathNumber).split('.').filter(sentence => sentence.trim()).map((sentence, index) => {
-                          const trimmed = sentence.trim();
-                          if (!trimmed) return null;
-                          
-                          // Format different sections
-                          if (trimmed.includes('COLOUR:') || trimmed.includes('Colour:')) {
-                            return <div key={index} className="font-medium text-black">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('CHAKRA:') || trimmed.includes('Chakra:')) {
-                            return <div key={index} className="font-large text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Planet:')) {
-                            return <div key={index} className="font-large text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('PPI:')) {
-                            return <div key={index} className="mt-2 font-large text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Angel/Archangel:')) {
-                            return <div key={index} className="mt-2 font-large text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Karmic Lesson:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Healing Method:')) {
-                            return <div key={index} className="text-purple-600 text-large">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Remedies:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Color Therapy:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Mantra Chanting:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Crystal Therapy:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Aroma Therapy:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Affirmations:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Sacred Code:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Bach Flower Remedies:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Prayer to Archangel')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Deity Connection:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Self-Healing Technique:')) {
-                            return <div key={index} className="mt-2 font-medium text-purple-700">{trimmed}.</div>;
-                          }
-                          if (trimmed.includes('Rudraksha Remedy:')) {
-                            return <div key={index} className="text-purple-600">{trimmed}.</div>;
-                          }
-                         
-                          
-                          return <div key={index} className="text-purple-500">{trimmed}.</div>;
-                        })}
+                      <div className="text-xs text-purple-500 space-y-3">
+                        {parseLifePathText(getLifePathMeaning(numerology.lifePathNumber)).map((section, index) => (
+                          <div key={index} className="border-l-2 border-purple-300 pl-3">
+                            <h4 className="font-bold text-purple-700 mb-1 text-sm">{section.heading}</h4>
+                            <p className="text-purple-600 text-xs leading-relaxed">{section.content}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
