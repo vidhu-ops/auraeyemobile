@@ -282,8 +282,8 @@ export default function ColorMeaningsPage() {
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center shadow-lg">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Color Meanings</h1>
-          <p className="text-gray-200">Discover the spiritual significance of colors</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Colours</h1>
+          <p className="text-gray-200">Visualise these colours in your aura during meditation.</p>
         </div>
       </div>
 
@@ -310,7 +310,8 @@ export default function ColorMeaningsPage() {
                       <h3 className="text-xl font-semibold text-white mb-1" data-testid={`color-name-${color.id}`}>
                         {color.name}
                       </h3>
-                      <p className="text-gray-200 mb-2">{color.meaning}</p>
+                      
+                      <p className="text-gray-200 mb-2">for {color.meaning}</p>
                       <Badge variant="outline" className="text-xs">
                         {color.chakra} Chakra
                       </Badge>

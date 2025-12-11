@@ -1978,6 +1978,58 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   );
 }
 
+function formatNumerologyInterpretation(text: string): Array<{heading?: string; content: string}> {
+  const sections: Array<{heading?: string; content: string}> = [];
+  const headingPatterns = [
+    'Colour', 'Color', 'Chakra', 'Planet', 'Research', 'How to Use', 'Example Technique',
+    'Angel/Archangel', 'Healing Method', 'Remedies', 'Mantras', 'Crystal Therapy',
+    'Aroma Therapy', 'Affirmations', 'Sacred Code', 'Bach Flower Remedies', 'Prayer',
+    'Guide', 'Deity Connection', 'Self-Healing Technique', 'Daily Connection',
+    'PPI:', 'Expressive Writing', 'Mantra Chanting', 'Focus', 'Create a', 'Absorb',
+    'Energy', 'Reiki'
+  ];
+  
+  let currentText = text;
+  let currentHeading = '';
+  let buffer = '';
+  
+  const lines = text.split('\n');
+  
+  for (const line of lines) {
+    let foundHeading = false;
+    
+    for (const pattern of headingPatterns) {
+      if (line.toLowerCase().includes(pattern.toLowerCase()) && line.includes(':')) {
+        if (buffer.trim()) {
+          sections.push({heading: currentHeading || undefined, content: buffer.trim()});
+          buffer = '';
+        }
+        const headingMatch = line.match(/([^:]+):/);
+        if (headingMatch) {
+          currentHeading = headingMatch[1].trim();
+        }
+        foundHeading = true;
+        break;
+      }
+    }
+    
+    if (!foundHeading && line.trim()) {
+      if (buffer) buffer += ' ';
+      buffer += line.trim();
+    }
+  }
+  
+  if (buffer.trim()) {
+    sections.push({heading: currentHeading || undefined, content: buffer.trim()});
+  }
+  
+  if (sections.length === 0) {
+    sections.push({content: text});
+  }
+  
+  return sections;
+}
+
 export default function HealerDashboard() {
   const { user } = useAuth();
   const { credits } = useCredits();
@@ -3443,8 +3495,15 @@ export default function HealerDashboard() {
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-white rounded-lg border">
-                                <p className="text-sm text-gray-700 line-clamp-3">{reading.interpretation}</p>
+                            <div className="p-4 bg-white rounded-lg border space-y-4">
+                                {formatNumerologyInterpretation(reading.interpretation).map((section, idx) => (
+                                  <div key={idx}>
+                                    {section.heading && (
+                                      <h4 className="font-semibold text-purple-700 text-sm mb-2">{section.heading}</h4>
+                                    )}
+                                    <p className="text-sm text-gray-700 leading-relaxed">{section.content}</p>
+                                  </div>
+                                ))}
                             </div>
                         </div>
                     ))}
