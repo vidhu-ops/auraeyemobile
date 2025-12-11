@@ -672,38 +672,64 @@ export default function NumerologyPage() {
 
   const parseLifePathText = (text: string): Array<{heading: string; content: string}> => {
     const sections: Array<{heading: string; content: string}> = [];
-    const headingKeywords = [
-      'Colour', 'Color', 'COLOUR', 'Chakra', 'CHAKRA', 'Planet', 'PPI', 'Concept', 'Research',
-      'How to Use', 'Example Technique', 'Angel/Archangel', 'Karmic Lesson', 'Healing Method',
-      'Remedies', 'Color Therapy', 'Mantra Chanting', 'Crystal Therapy', 'Aroma Therapy',
-      'Affirmations', 'Sacred Code', 'Bach Flower Remedies', 'Prayer', 'Deity Connection',
-      'Self-Healing Technique', 'Rudraksha Remedy', 'Positive Psychology'
-    ];
+    const headingPatterns = /^(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/i;
     
-    let currentIndex = 0;
-    const regex = new RegExp(`(${headingKeywords.join('|')})\\s*:`, 'gi');
-    let match;
-    let lastIndex = 0;
+    // Split by heading keywords - look for "Keyword: content"
+    let currentSection = '';
+    let currentHeading = '';
     
-    while ((match = regex.exec(text)) !== null) {
-      const heading = match[1];
-      const contentStart = match.index + match[0].length;
-      
-      let contentEnd = text.length;
-      const nextMatch = regex.exec(text);
-      if (nextMatch) {
-        contentEnd = nextMatch.index;
-        regex.lastIndex = match.index + match[0].length;
+    // Replace multiple spaces and split intelligently
+    const cleanText = text.replace(/([A-Z][a-z\s]+:)/g, '\n$1').trim();
+    const lines = cleanText.split('\n');
+    
+    for (const line of lines) {
+      const match = line.match(headingPatterns);
+      if (match) {
+        // Found a heading
+        if (currentHeading && currentSection) {
+          sections.push({
+            heading: currentHeading,
+            content: currentSection.trim().substring(0, 250)
+          });
+        }
+        currentHeading = match[1];
+        currentSection = line.substring(match[0].length).trim();
+      } else {
+        // Continue with current section
+        if (currentHeading) {
+          currentSection += ' ' + line.trim();
+        }
       }
-      
-      const content = text.substring(contentStart, contentEnd).trim();
-      if (content) {
-        sections.push({
-          heading: heading.charAt(0).toUpperCase() + heading.slice(1),
-          content: content.replace(/\.+$/, '')
-        });
+    }
+    
+    // Add final section
+    if (currentHeading && currentSection) {
+      sections.push({
+        heading: currentHeading,
+        content: currentSection.trim().substring(0, 250)
+      });
+    }
+    
+    // Fallback if no sections parsed
+    if (sections.length === 0) {
+      // Try simple split by colon
+      const colonParts = text.split(/([A-Z][^:]*):/).filter(p => p.trim());
+      for (let i = 0; i < colonParts.length; i += 2) {
+        if (colonParts[i] && colonParts[i + 1]) {
+          sections.push({
+            heading: colonParts[i].trim(),
+            content: colonParts[i + 1].trim().substring(0, 250)
+          });
+        }
       }
-      lastIndex = contentEnd;
+    }
+    
+    // Final fallback
+    if (sections.length === 0) {
+      sections.push({
+        heading: 'Life Path Information',
+        content: text.substring(0, 400)
+      });
     }
     
     return sections;
