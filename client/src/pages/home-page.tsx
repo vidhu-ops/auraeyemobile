@@ -37,96 +37,61 @@ export default function HomePage() {
   // Grow soul energy mutation
   const growSoulEnergyMutation = useMutation({
     mutationFn: async () => {
-      try {
-        const response = await apiRequest("POST", "/api/soul-energy/grow");
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error("Error in growSoulEnergy mutation:", error);
-        throw error;
-      }
+      const response = await apiRequest("POST", "/api/soul-energy/grow");
+      return await response.json();
     },
-    onSuccess: async (data: { soulEnergy: number; added: number }) => {
-      try {
-        // Update cache immediately with correct query key that includes user ID
-        queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: data.soulEnergy });
-        
-        // Refetch to ensure we have fresh data
-        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy", user?.id] });
-        
-        console.log("✅ Soul energy updated successfully:", data.soulEnergy);
-        
-        toast({
-          title: "Soul Tree Growing! 🌱",
-          description: `+1000 Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
-        });
-      } catch (error) {
-        console.error("Error updating cache after grow:", error);
-        toast({
-          title: "Warning",
-          description: "Soul energy updated but cache refresh failed. Refreshing page...",
-          variant: "destructive",
-        });
-        // Force refresh the page as fallback
-        setTimeout(() => window.location.reload(), 1000);
-      }
+    onSuccess: (data: { soulEnergy: number; added: number }) => {
+      // Invalidate and update cache
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: data.soulEnergy });
+      
+      console.log("✅ Soul energy grew successfully:", data.soulEnergy);
+      
+      toast({
+        title: "Soul Tree Growing! 🌱",
+        description: `+${data.added} Soul Energy! Your tree is now at ${Math.floor(calculateTreeGrowth(data.soulEnergy))}% growth.`,
+      });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("❌ Grow mutation error:", error);
+      toast({
+        title: "Error Growing Soul Energy",
+        description: error?.message || "Failed to grow soul energy. Please try again.",
+        variant: "destructive",
+      });
     }
   });
 
   // Reset soul energy mutation
   const resetSoulEnergyMutation = useMutation({
     mutationFn: async () => {
-      try {
-        const response = await apiRequest("POST", "/api/soul-energy/reset");
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error("Error in resetSoulEnergy mutation:", error);
-        throw error;
-      }
+      const response = await apiRequest("POST", "/api/soul-energy/reset");
+      return await response.json();
     },
-    onSuccess: async (data: { soulEnergy: number }) => {
-      try {
-        // Clear mascot clicked state from localStorage to reset Auri
-        localStorage.removeItem("mascotClicked");
-        
-        // Reset last aura color
-        localStorage.removeItem("lastAuraColor");
-        
-        // Update cache immediately with correct query key that includes user ID
-        queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: 0 });
-        
-        // Refetch to ensure we have fresh data
-        await queryClient.refetchQueries({ queryKey: ["/api/soul-energy", user?.id] });
-        
-        // Emit event to summon/reset mascot
-        window.dispatchEvent(new Event("summon-mascot"));
-        
-        console.log("✅ Soul energy reset successfully:", data.soulEnergy);
-        
-        toast({
-          title: "Soul Tree Reset 🔄",
-          description: "Your soul energy, tree, ascension level, and Auri have been reset to 0.",
-        });
-      } catch (error) {
-        console.error("Error updating cache after reset:", error);
-        toast({
-          title: "Warning",
-          description: "Soul energy reset but cache refresh failed. Refreshing page...",
-          variant: "destructive",
-        });
-        // Force refresh the page as fallback
-        setTimeout(() => window.location.reload(), 1000);
-      }
+    onSuccess: (data: { soulEnergy: number }) => {
+      // Clear mascot clicked state from localStorage to reset Auri
+      localStorage.removeItem("mascotClicked");
+      localStorage.removeItem("lastAuraColor");
+      
+      // Invalidate and update cache
+      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+      queryClient.setQueryData(["/api/soul-energy", user?.id], { soulEnergy: 0 });
+      
+      // Emit event to summon/reset mascot
+      window.dispatchEvent(new Event("summon-mascot"));
+      
+      console.log("✅ Soul energy reset successfully:", data.soulEnergy);
+      
+      toast({
+        title: "Soul Tree Reset 🔄",
+        description: "Your soul energy, tree, ascension level, and Auri have been reset to 0.",
+      });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("❌ Reset mutation error:", error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to grow soul energy. Please try again.",
+        title: "Error Resetting Soul Energy",
+        description: error?.message || "Failed to reset soul energy. Please try again.",
         variant: "destructive",
       });
     },
