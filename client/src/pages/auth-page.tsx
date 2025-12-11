@@ -117,21 +117,8 @@ export default function AuthPage() {
   });
 
   const onLoginSubmit = (data: LoginData) => {
-    loginMutation.mutate(data, {
-      onSuccess: (loggedInUser) => {
-        // Check if user has completed onboarding
-        const hasCompletedOnboarding = loggedInUser.manifestIntention && loggedInUser.energyLevel && loggedInUser.biggestBlock;
-        
-        if (hasCompletedOnboarding) {
-          // Redirect to appropriate dashboard based on user type
-          const dashboardPath = loggedInUser.userType === 'healer' ? '/healer-dashboard' : '/client-dashboard';
-          setLocation(dashboardPath);
-        } else {
-          // Redirect to home page (will trigger onboarding if needed)
-          setLocation('/');
-        }
-      }
-    });
+    loginMutation.mutate(data);
+    // Component will automatically redirect after user state updates
   };
 
   const onRegisterSubmit = (data: RegisterData) => {
