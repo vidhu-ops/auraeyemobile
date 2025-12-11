@@ -122,7 +122,7 @@ export default function Navbar() {
             <div className="flex flex-col">
               <span className="font-helvetica font-bold text-xl text-white">AuraEye™</span>
               
-              <span className="font-helvetica text-xs text-white">Your energy made visible</span>
+              <span className="font-helvetica text-xs text-white">Your Energy Made Visible</span>
             </div>
           </Link>
 
