@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Sparkles, Heart, Zap, Eye, Crown, MessageCircle, Sun } from "lucide-react";
+import { ArrowLeft, Sparkles, Heart, Zap, Eye, Crown, MessageCircle, Sun, Star, Moon, CircleDot } from "lucide-react";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
@@ -104,6 +104,48 @@ const colorMeanings = [
     negativeTraits: ["Disconnection", "Impracticality", "Superiority", "Isolation", "Fanaticism"],
     chakraDescription: "Crown Chakra - Spiritual connection",
     keywords: ["Divine", "Spiritual", "Transformation", "Enlightenment", "Unity"]
+  },
+  {
+    id: "gold",
+    name: "Gold",
+    chakra: "Solar/Crown",
+    icon: Star,
+    gradient: "from-yellow-400 to-amber-500",
+    bgGradient: "from-amber-50 to-yellow-100",
+    meaning: "Abundance, Wisdom, Success",
+    description: "Gold represents divine wisdom, abundance, and spiritual illumination. It's the color of enlightenment, success, and higher consciousness.",
+    positiveTraits: ["Abundance", "Wisdom", "Success", "Illumination", "Divine protection"],
+    negativeTraits: ["Materialism", "Arrogance", "Obsession with status", "Greed", "Ego inflation"],
+    chakraDescription: "Solar & Crown Chakra - Divine wisdom and personal power",
+    keywords: ["Abundance", "Wisdom", "Success", "Illumination", "Prosperity"]
+  },
+  {
+    id: "silver",
+    name: "Silver",
+    chakra: "Third Eye/Crown",
+    icon: Moon,
+    gradient: "from-slate-300 to-slate-400",
+    bgGradient: "from-slate-50 to-gray-100",
+    meaning: "Intuition, Reflection, Balance",
+    description: "Silver represents lunar energy, intuition, and feminine wisdom. It's the color of reflection, mystery, and psychic sensitivity.",
+    positiveTraits: ["Intuition", "Psychic abilities", "Emotional balance", "Reflection", "Feminine energy"],
+    negativeTraits: ["Indecisiveness", "Emotional instability", "Illusion", "Confusion", "Over-sensitivity"],
+    chakraDescription: "Third Eye & Crown Chakra - Intuition and spiritual reflection",
+    keywords: ["Intuition", "Moon", "Reflection", "Mystery", "Balance"]
+  },
+  {
+    id: "white",
+    name: "White",
+    chakra: "Crown/All",
+    icon: CircleDot,
+    gradient: "from-white to-slate-100",
+    bgGradient: "from-white to-gray-50",
+    meaning: "Purity, Truth, Divine Light",
+    description: "White represents purity, divine light, and spiritual wholeness. It contains all colors and symbolizes the highest spiritual attainment and protection.",
+    positiveTraits: ["Purity", "Truth", "Divine protection", "Clarity", "Spiritual wholeness"],
+    negativeTraits: ["Coldness", "Isolation", "Emptiness", "Detachment", "Sterility"],
+    chakraDescription: "Crown Chakra & All Chakras - Divine light and spiritual unity",
+    keywords: ["Purity", "Light", "Truth", "Protection", "Wholeness"]
   }
 ];
 
