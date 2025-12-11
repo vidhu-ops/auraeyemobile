@@ -21,7 +21,6 @@ export default function NotFound() {
           </CardContent>
         </Card>
       </div>
-      <Footer />
       <MobileNavigation />
     </div>
   );
