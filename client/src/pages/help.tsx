@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import BreathingGuide from "@/components/breathing-guide";
 
 const helpSections = [
   {
@@ -77,6 +78,8 @@ const helpSections = [
 
 export default function HelpPage() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [breathingOpen, setBreathingOpen] = useState(false);
+  const [selectedBreathingExercise, setSelectedBreathingExercise] = useState<{ name: string; duration: string } | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 pb-20">
@@ -176,7 +179,22 @@ export default function HelpPage() {
                               </div>
                             </div>
                             
-                            {(section.id === "breathing" || section.id === "guides") && (
+                            {section.id === "breathing" && (
+                              <Button 
+                                size="sm" 
+                                className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
+                                data-testid={`start-${section.id}-${index}`}
+                                onClick={() => {
+                                  setSelectedBreathingExercise({ name: item.name, duration: (item as any).duration });
+                                  setBreathingOpen(true);
+                                }}
+                              >
+                                <Play className="h-4 w-4 mr-1" />
+                                Start
+                              </Button>
+                            )}
+                            
+                            {section.id === "guides" && (
                               <Button 
                                 size="sm" 
                                 className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
@@ -243,6 +261,16 @@ export default function HelpPage() {
           </Link>
         </div>
       </div>
+
+      {/* Breathing Guide Modal */}
+      {selectedBreathingExercise && (
+        <BreathingGuide 
+          isOpen={breathingOpen}
+          onClose={() => setBreathingOpen(false)}
+          exerciseName={selectedBreathingExercise.name}
+          duration={selectedBreathingExercise.duration}
+        />
+      )}
 
       <MobileNavigation />
     </div>
