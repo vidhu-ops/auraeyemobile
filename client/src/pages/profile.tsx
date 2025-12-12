@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X, Trophy, Flame, Calendar } from "lucide-react";
+import { Mail, Phone, MapPin, Settings, LogOut, Edit2, Check, X, Trophy, Flame, Calendar, CheckCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -319,10 +319,14 @@ export default function ProfilePage() {
                       return (
                         <div
                           key={idx}
-                          className="p-4 rounded-lg bg-white/5 border border-purple-200/20 hover:bg-white/10 transition"
+                          className="relative p-4 rounded-lg bg-white/5 border border-purple-200/20 hover:bg-white/10 transition"
                           data-testid={`badge-achievement-${idx}`}
                         >
-                          <div className="flex items-start gap-3">
+                          {/* Checkmark indicator for earned badge */}
+                          <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-lg">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex items-start gap-3 pr-8">
                             <span className="text-2xl">{achievement.icon}</span>
                             <div className="flex-1">
                               <p className="text-white font-semibold text-sm">{achievement.title}</p>
