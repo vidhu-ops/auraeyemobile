@@ -283,19 +283,33 @@ export default function VibePage() {
             <div className="flex justify-center items-start">
               {imagePreview && vibeResult && (
                 <div className="relative inline-block">
-                  {/* Large radial glow background */}
+                  {/* Outermost misty cloud layer */}
                   <div 
-                    className="absolute -inset-12 rounded-full opacity-80 blur-3xl pointer-events-none"
+                    className="absolute -inset-16 pointer-events-none"
                     style={{
-                      background: `radial-gradient(circle, ${getColorHex(vibeResult.dominantColor)}80 0%, ${getColorHex(vibeResult.dominantColor)}40 40%, transparent 70%)`
+                      background: `radial-gradient(ellipse 150% 130% at 50% 45%, ${getColorHex(vibeResult.dominantColor)}20 0%, ${getColorHex(vibeResult.dominantColor)}10 30%, transparent 70%)`,
+                      filter: 'blur(40px)',
+                      opacity: 0.7
                     }}
                   />
                   
-                  {/* Secondary glow layer for depth */}
+                  {/* Large radial glow background */}
                   <div 
-                    className="absolute -inset-8 rounded-full opacity-60 blur-2xl pointer-events-none"
+                    className="absolute -inset-12 pointer-events-none"
                     style={{
-                      background: `radial-gradient(circle, ${getColorHex(vibeResult.dominantColor)}60 0%, transparent 60%)`
+                      background: `radial-gradient(ellipse 120% 120% at 50% 45%, ${getColorHex(vibeResult.dominantColor)}60 0%, ${getColorHex(vibeResult.dominantColor)}30 35%, transparent 65%)`,
+                      filter: 'blur(30px)',
+                      opacity: 0.8
+                    }}
+                  />
+                  
+                  {/* Secondary glow layer for depth and cloudiness */}
+                  <div 
+                    className="absolute -inset-8 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(ellipse 110% 110% at 50% 48%, ${getColorHex(vibeResult.dominantColor)}40 0%, ${getColorHex(vibeResult.dominantColor)}15 40%, transparent 70%)`,
+                      filter: 'blur(20px)',
+                      opacity: 0.7
                     }}
                   />
                   
