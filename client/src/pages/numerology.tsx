@@ -1233,7 +1233,7 @@ export default function NumerologyPage() {
                       </div>
                       <div className="flex-grow">
                         <h3 className="font-semibold text-purple-800 text-lg">Life Path Number</h3>
-                        <p className="text-purple-600">Your life's journey and core purpose</p>
+                        <p className="text-white">Your life's journey and core purpose</p>
                       </div>
                     </div>
                     
@@ -1836,11 +1836,11 @@ export default function NumerologyPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-black-800 mb-3">Potential Challenges</h4>
-                      <ul className="space-y-2 text-sm text-gray-700">
-                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
-                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
-                        <li className="flex items-start"><span className="text-amber-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
+                      <h4 className="font-semibold text-black mb-3">Potential Challenges</h4>
+                      <ul className="space-y-2 text-sm text-black-700">
+                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
+                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
+                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
                       </ul>
                     </div>
                   </div>

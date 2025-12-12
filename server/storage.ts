@@ -575,7 +575,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Check if user has earned achievements
       const journalEntries = await db.select().from(journals).where(eq(journals.userId, userId));
-      const numerologyReadings = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+      const numerologyReadingsList = await db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
       const vibeReadingsList = await db.select().from(vibeReadings).where(eq(vibeReadings.userId, userId));
       const streakData = await this.getLoginStreak(userId);
       
@@ -632,7 +632,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Award Number Seeker (1 numerology reading)
-      if (numerologyReadings.length >= 1 && !achievedTypes.includes("number_seeker")) {
+      if (numerologyReadingsList.length >= 1 && !achievedTypes.includes("number_seeker")) {
         await this.createUserAchievement({
           userId,
           achievementType: "number_seeker",
@@ -644,7 +644,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Award Numerology Explorer (5 numerology readings)
-      if (numerologyReadings.length >= 5 && !achievedTypes.includes("numerology_explorer")) {
+      if (numerologyReadingsList.length >= 5 && !achievedTypes.includes("numerology_explorer")) {
         await this.createUserAchievement({
           userId,
           achievementType: "numerology_explorer",
@@ -656,7 +656,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Award Numerology Master (15 numerology readings)
-      if (numerologyReadings.length >= 15 && !achievedTypes.includes("numerology_master")) {
+      if (numerologyReadingsList.length >= 15 && !achievedTypes.includes("numerology_master")) {
         await this.createUserAchievement({
           userId,
           achievementType: "numerology_master",
@@ -668,7 +668,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Award Numerology Legend (30+ numerology readings)
-      if (numerologyReadings.length >= 30 && !achievedTypes.includes("numerology_legend")) {
+      if (numerologyReadingsList.length >= 30 && !achievedTypes.includes("numerology_legend")) {
         await this.createUserAchievement({
           userId,
           achievementType: "numerology_legend",
@@ -753,7 +753,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Spiritual Guardian (50 total services)
-      const totalServices = journalEntries.length + numerologyReadings.length + vibeReadingsList.length;
+      const totalServices = journalEntries.length + numerologyReadingsList.length + vibeReadingsList.length;
       if (totalServices >= 50 && !achievedTypes.includes("spiritual_guardian")) {
         await this.createUserAchievement({
           userId,

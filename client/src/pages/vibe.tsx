@@ -385,22 +385,16 @@ export default function VibePage() {
                 <CardContent className="p-6 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Zap className="h-5 w-5 text-purple-600" />
-                    <h3 className="font-semibold text-slate-900">Premium Content</h3>
+                    <h3 className="text-xl font-semibold text-slate-900">Premium Content</h3>
                   </div>
                   <p className="text-sm text-slate-600 mb-4">
                     Upgrade to unlock detailed insights
                   </p>
-                  <p className="text-xs text-slate-500 mb-4">
-                    Watch the video to get a glimpse of the report. This video is just a small part of the provided detailed report
+                  <p className="text-m text-slate-500 mb-4">
+                   Get a glimpse of the report.
                   </p>
                   <div className="flex gap-3 justify-center flex-wrap">
-                    <Button 
-                      onClick={() => setShowPremiumVideo(true)}
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
-                    >
-                      <Play className="mr-2 h-4 w-4" />
-                      Watch Now
-                    </Button>
+                    
                     <Button 
                       onClick={() => setShowPremiumPdf(true)}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
