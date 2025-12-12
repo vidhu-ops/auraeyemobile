@@ -383,9 +383,8 @@ export default function AuthPage() {
   if (!isLoading && user && onboardingStep === "auth") {
     const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
     if (hasCompletedOnboarding && user.userType) {
-      // Redirect to appropriate dashboard based on user type
-      const dashboardPath = user.userType === 'healer' ? '/healer-dashboard' : '/client-dashboard';
-      return <Redirect to={dashboardPath} />;
+      // Redirect to home page, which will show lights activation if needed
+      return <Redirect to="/" />;
     }
   }
 
