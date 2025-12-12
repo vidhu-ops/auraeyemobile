@@ -38,6 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      // Refetch the user query to ensure component gets updated state
+      queryClient.refetchQueries({ queryKey: ["/api/user"] });
       // Immediately refetch credits and other user data after login with new user ID
       queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
@@ -65,6 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      // Refetch the user query to ensure component gets updated state
+      queryClient.refetchQueries({ queryKey: ["/api/user"] });
       // Immediately refetch credits and other user data after registration with new user ID
       queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
