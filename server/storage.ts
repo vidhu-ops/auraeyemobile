@@ -1037,7 +1037,7 @@ export class DatabaseStorage implements IStorage {
       // Client costs
       client: {
         'vibe_check': 1,
-        'object_analysis': 3,
+        'object_analysis': 1,
         'aura_analysis': 15,
         'healer_booking': 3,
         'numerology': 5,
