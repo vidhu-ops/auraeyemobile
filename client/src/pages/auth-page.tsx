@@ -378,14 +378,11 @@ export default function AuthPage() {
     );
   }
 
-  // Redirect if already logged in AND completed onboarding
+  // Redirect if already logged in - go to home page which will show lights activation if needed
   // Wait for auth loading to complete before redirecting
   if (!isLoading && user && onboardingStep === "auth") {
-    const hasCompletedOnboarding = user.manifestIntention && user.energyLevel && user.biggestBlock;
-    if (hasCompletedOnboarding && user.userType) {
-      // Redirect to home page, which will show lights activation if needed
-      return <Redirect to="/" />;
-    }
+    // Always redirect to home page after login - lights activation will be shown if needed
+    return <Redirect to="/" />;
   }
 
   // Show auth form by default
