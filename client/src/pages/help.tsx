@@ -107,7 +107,7 @@ const helpSections = [
     color: "from-emerald-400 to-green-400",
     items: [
       { name: "FAQ", type: "Help", description: "Common questions answered" },
-      { name: "Contact Support", type: "Email", description: "support@auraeye.com" },
+      { name: "Submit A Ticket", type: "Email", description: "support@auraeye.com" },
       { name: "Community", type: "Connect", description: "Join our healing community" }
     ]
   }
