@@ -1237,8 +1237,8 @@ export default function NumerologyPage() {
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
-                      <div className="text-sm text-purple-700 space-y-4 max-h-96 overflow-y-auto">
+                    <div className="bg-white rounded-lg p-6 border-2 border-purple-100 shadow-sm">
+                      <div className="max-h-96 overflow-y-auto space-y-5">
                         {getLifePathMeaning(numerology.lifePathNumber).split(/(?=(?:Colour|Color|COLOUR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example|Angel|Karmic|Healing|Remedies|Color Therapy|Mantra|Crystal|Aroma|Affirmations|Sacred|Bach|Prayer|Deity|Self-Healing|Rudraksha):)/i).map((section, idx) => {
                           const colonIndex = section.indexOf(':');
                           if (colonIndex === -1) return null;
@@ -1249,9 +1249,9 @@ export default function NumerologyPage() {
                           if (!heading || !content) return null;
                           
                           return (
-                            <div key={idx} className="border-l-4 border-purple-400 pl-4 py-2">
-                              <h4 className="font-bold text-purple-700 text-sm mb-1">{heading}</h4>
-                              <p className="text-purple-600 text-xs leading-relaxed">{content.substring(0, 200)}</p>
+                            <div key={idx} className="pb-4 border-b border-purple-100 last:border-b-0">
+                              <h4 className="font-bold text-purple-900 text-sm mb-2 uppercase tracking-wide">{heading}</h4>
+                              <p className="text-gray-700 text-sm leading-relaxed">{content}</p>
                             </div>
                           );
                         })}
