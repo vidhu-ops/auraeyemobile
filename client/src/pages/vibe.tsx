@@ -283,31 +283,47 @@ export default function VibePage() {
             <div className="flex justify-center items-start">
               {imagePreview && vibeResult && (
                 <div className="relative inline-block">
+                  {/* Large radial glow background */}
+                  <div 
+                    className="absolute -inset-12 rounded-full opacity-80 blur-3xl pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle, ${getColorHex(vibeResult.dominantColor)}80 0%, ${getColorHex(vibeResult.dominantColor)}40 40%, transparent 70%)`
+                    }}
+                  />
+                  
+                  {/* Secondary glow layer for depth */}
+                  <div 
+                    className="absolute -inset-8 rounded-full opacity-60 blur-2xl pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle, ${getColorHex(vibeResult.dominantColor)}60 0%, transparent 60%)`
+                    }}
+                  />
+                  
                   <div className="relative max-w-sm">
                     <img 
                       src={imagePreview} 
                       alt="Your vibe" 
-                      className="rounded-lg shadow-lg block w-full"
+                      className="rounded-lg shadow-2xl block w-full relative z-10"
                     />
-                    {/* Colored overlay based on vibe */}
+                    {/* Subtle overlay to enhance vibe color */}
                     <div 
-                      className="absolute inset-0 rounded-lg opacity-40 pointer-events-none"
+                      className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
                       style={{
                         backgroundColor: getColorHex(vibeResult.dominantColor),
-                        mixBlendMode: 'screen'
+                        mixBlendMode: 'overlay'
                       }}
                     />
-                    {/* Glowing border effect */}
+                    {/* Enhanced glowing border effect */}
                     <div 
                       className="absolute inset-0 rounded-lg pointer-events-none"
                       style={{
-                        boxShadow: `0 0 40px ${getColorHex(vibeResult.dominantColor)}, inset 0 0 20px ${getColorHex(vibeResult.dominantColor)}40`,
-                        border: `2px solid ${getColorHex(vibeResult.dominantColor)}80`
+                        boxShadow: `0 0 60px ${getColorHex(vibeResult.dominantColor)}, 0 0 30px ${getColorHex(vibeResult.dominantColor)}, inset 0 0 30px ${getColorHex(vibeResult.dominantColor)}30`,
+                        border: `3px solid ${getColorHex(vibeResult.dominantColor)}60`
                       }}
                     />
                   </div>
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded font-semibold text-sm tracking-wider">
-                    AuraEye
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full font-semibold text-sm tracking-wider shadow-lg">
+                    AuraEye™
                   </div>
                 </div>
               )}
