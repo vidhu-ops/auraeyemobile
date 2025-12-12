@@ -400,7 +400,7 @@ export default function AuthPage() {
             </CardTitle>
           </div>
           
-          <CardDescription className="text-base text-white">Access your personal energy</CardDescription>
+          <CardDescription className="text-base text-white">Your Energy Made Visible</CardDescription>
         </CardHeader>
           
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")} className="w-full">
@@ -458,7 +458,7 @@ export default function AuthPage() {
                   </Button>
                   
                   <p className="text-center text-sm text-white-600 dark:text-slate-400">
-                    Enter your credentials to continue your spiritual journey
+                    Enter your credentials to continue your journey
                   </p>
                 </CardFooter>
               </form>
