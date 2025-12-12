@@ -299,7 +299,7 @@ export default function Mascot() {
       // Show color-based message if available
       if (scanColor) {
         return {
-          text: `${username}, your lovely ${scanColor} aura holds ${energy} soul energy! You're doing great! 💖`,
+          text: `${username}, your lovely aura holds ${energy} soul energy! You're doing great! 💖`,
           color: getColorHex(scanColor),
           emotion: 'happy'
         };
@@ -316,7 +316,7 @@ export default function Mascot() {
     if (path.includes("aura") || path.includes("vibe")) {
       if (userType === 'healer') {
         const healerMessage = scanColor 
-          ? `${username}, you revealed such a gorgeous ${scanColor} energy${aura ? ` at ${aura.dominantColorPercentage}% intensity` : ''}! Your chakra resonates powerfully as a healer! 💚✨`
+          ? `${username}, you revealed such a gorgeous energy${aura ? ` at ${aura.dominantColorPercentage}% intensity` : ''}! Your chakra resonates powerfully as a healer! 💚✨`
           : `${username}, your healing gift is so special! Your chakras are aligned for divine service! 💚`;
         return {
           text: healerMessage,
@@ -380,7 +380,7 @@ export default function Mascot() {
       }
       if (scanColor) {
         return {
-          text: `${username}, learn what your ${scanColor} aura truly means! This color reflects your unique chakra expression! 🌈`,
+          text: `${username}, learn what your aura truly means! Colours reflect your unique chakra expression! 🌈`,
           color: getColorHex(scanColor),
           emotion: 'excited'
         };
@@ -425,7 +425,7 @@ export default function Mascot() {
     // Default message with color memory
     if (scanColor) {
       return {
-        text: `Hi ${username}! 💕 Your ${scanColor} aura is so special! With ${energy} soul energy, what adventure today?`,
+        text: `Hi ${username}! 💕 Your aura is so special! With ${energy} soul energy, what adventure today?`,
         color: getColorHex(scanColor),
         emotion: 'happy'
       };

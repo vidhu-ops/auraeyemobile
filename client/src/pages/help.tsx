@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Wind, 
   Palette, 
@@ -12,11 +14,47 @@ import {
   Play,
   Users,
   Mail,
-  Phone
+  Phone,
+  ChevronDown
 } from "lucide-react";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import BreathingGuide from "@/components/breathing-guide";
+
+const faqs = [
+  {
+    question: "What is AuraEye?",
+    answer: "AuraEye is a spiritual wellness platform that offers aura readings, numerology analysis, chakra assessments, color meanings, and personalized healing resources. Our technology combines ancient spiritual wisdom with modern analysis to help you understand your energy field."
+  },
+  {
+    question: "How do aura readings work?",
+    answer: "Our aura analysis uses advanced technology to interpret the colors and energy patterns in your photograph. These colors correspond to different aspects of your physical, emotional, and spiritual well-being."
+  },
+  {
+    question: "What is numerology?",
+    answer: "Numerology is an ancient practice that interprets the spiritual significance of numbers. Based on your birth date and name, we calculate your Life Path Number, Destiny Number, and other spiritual numbers that reveal insights about your personality and life purpose."
+  },
+  {
+    question: "What are chakras?",
+    answer: "Chakras are energy centers in the body according to Eastern spiritual traditions. There are 7 main chakras, each associated with different physical, emotional, and spiritual aspects of your being. Our chakra assessments help identify imbalances and suggest healing practices."
+  },
+  {
+    question: "How often should I get readings?",
+    answer: "You can get readings as frequently as you'd like. Many users do daily vibe checks for quick insights, weekly aura readings to track changes, and monthly comprehensive analyses. The frequency depends on your spiritual journey and goals."
+  },
+  {
+    question: "Can healers use AuraEye?",
+    answer: "Yes! AuraEye is designed for both individual users and professional healers. Healers can analyze their clients' auras, create personalized reports, and track progress over time. It's a powerful tool for deepening your healing practice."
+  },
+  {
+    question: "What is the 'Turn On the Lights' page?",
+    answer: "When you log in, you'll see the 'Turn On the Lights' activation page. This is a spiritual initiation that activates your energy profile in our system, preparing you to begin your wellness journey on AuraEye."
+  },
+  {
+    question: "How do credits work?",
+    answer: "Credits are used to access premium features like detailed aura analysis and healer consultations. You receive free credits upon registration and can earn more by completing spiritual practices or purchase them for enhanced features."
+  }
+];
 
 const helpSections = [
   {
@@ -70,8 +108,7 @@ const helpSections = [
     items: [
       { name: "FAQ", type: "Help", description: "Common questions answered" },
       { name: "Contact Support", type: "Email", description: "support@auraeye.com" },
-      { name: "Community", type: "Connect", description: "Join our healing community" },
-      { name: "Live Chat", type: "Help", description: "Real-time assistance" }
+      { name: "Community", type: "Connect", description: "Join our healing community" }
     ]
   }
 ];
@@ -80,6 +117,8 @@ export default function HelpPage() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [breathingOpen, setBreathingOpen] = useState(false);
   const [selectedBreathingExercise, setSelectedBreathingExercise] = useState<{ name: string; duration: string } | null>(null);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 pb-20">
@@ -220,11 +259,17 @@ export default function HelpPage() {
                             {section.id === "support" && (
                               <Button 
                                 size="sm" 
-                                variant="outline"
-                                className="ml-4 rounded-lg"
+                                className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
                                 data-testid={`contact-${index}`}
+                                onClick={() => {
+                                  if ((item as any).name === "FAQ") {
+                                    setFaqOpen(true);
+                                  }
+                                }}
                               >
+                                {(item as any).name === "FAQ" && <HelpCircle className="h-4 w-4 mr-1" />}
                                 {(item as any).type === "Email" ? <Mail className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                                {(item as any).name === "FAQ" && "View"}
                               </Button>
                             )}
                           </div>
@@ -271,6 +316,51 @@ export default function HelpPage() {
           duration={selectedBreathingExercise.duration}
         />
       )}
+
+      {/* FAQ Modal */}
+      <Dialog open={faqOpen} onOpenChange={setFaqOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] bg-slate-900 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-white flex items-center gap-2">
+              <HelpCircle className="h-6 w-6 text-emerald-400" />
+              Frequently Asked Questions
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Find answers to common questions about AuraEye
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="h-[60vh] w-full pr-4">
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div 
+                  key={index}
+                  className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden"
+                >
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-700/30 transition-colors text-left"
+                    data-testid={`faq-question-${index}`}
+                  >
+                    <span className="font-medium text-white pr-4">{faq.question}</span>
+                    <ChevronDown 
+                      className={`h-5 w-5 text-gray-400 flex-shrink-0 transition-transform ${
+                        expandedFaq === index ? 'rotate-180' : ''
+                      }`} 
+                    />
+                  </button>
+                  
+                  {expandedFaq === index && (
+                    <div className="px-4 py-3 bg-slate-800/20 border-t border-slate-700/30">
+                      <p className="text-gray-300 text-sm leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       <MobileNavigation />
     </div>
