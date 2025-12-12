@@ -3444,7 +3444,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Quick vibe check - simplified aura analysis for home page
-  app.post("/api/quick-vibe", isAuthenticated, checkCredits('vibe_check'), upload.single('image'), async (req, res) => {
+  app.post("/api/quick-vibe", checkCredits('vibe_check'), upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No image file provided" });
