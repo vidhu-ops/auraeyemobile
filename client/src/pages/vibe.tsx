@@ -116,6 +116,7 @@ export default function VibePage() {
       queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });
       
       // Show badges if they came in the response, otherwise check for new badges
       if (data.newBadges && data.newBadges.length > 0) {

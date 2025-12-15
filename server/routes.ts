@@ -3647,8 +3647,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
         
         // Check and award achievements for vibe scans
+        let newBadges: any[] = [];
         try {
-          await storage.checkAndAwardAchievements(req.user.id);
+          newBadges = await storage.checkAndAwardAchievements(req.user.id);
+          console.log(`✅ Badge check result:`, newBadges.length > 0 ? newBadges : "no new badges");
         } catch (badgeError) {
           console.error("Error checking achievements:", badgeError);
         }
@@ -3658,7 +3660,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
           colorMeaning: meaning,
           energyLevel: fastAnalysis.energyLevel,
           message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
-          readingId: savedVibeReading?.id || null
+          readingId: savedVibeReading?.id || null,
+          newBadges: newBadges,
+          hasNewBadges: newBadges.length > 0
         });
       } else {
         res.json({
@@ -3666,7 +3670,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
           colorMeaning: meaning,
           energyLevel: fastAnalysis.energyLevel,
           message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
-          readingId: null
+          readingId: null,
+          newBadges: [],
+          hasNewBadges: false
         });
       }
 
