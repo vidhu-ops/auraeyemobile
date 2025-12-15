@@ -174,7 +174,7 @@ function NumerologyInputForm() {
   const [birthDate, setBirthDate] = useState("");
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!fullName.trim() || !birthDate) {
@@ -193,7 +193,10 @@ function NumerologyInputForm() {
       fromHealer: 'true'
     });
     
-    window.location.href = `/numerology?${params.toString()}`;
+    // Use setTimeout to ensure form validation completes
+    setTimeout(() => {
+      window.location.href = `/numerology?${params.toString()}`;
+    }, 100);
   };
 
   return (
@@ -244,6 +247,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { checkBadges, showBadges } = useBadgeContext();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
