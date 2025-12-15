@@ -283,33 +283,33 @@ export default function VibePage() {
             <div className="flex justify-center items-start">
               {imagePreview && vibeResult && (
                 <div className="relative inline-block">
-                  {/* Outermost misty cloud layer */}
+                  {/* Dense cloud layer 1 - Outermost soft glow */}
                   <div 
-                    className="absolute -inset-16 pointer-events-none"
+                    className="absolute -inset-10 pointer-events-none"
                     style={{
-                      background: `radial-gradient(ellipse 150% 130% at 50% 45%, ${getColorHex(vibeResult.dominantColor)}20 0%, ${getColorHex(vibeResult.dominantColor)}10 30%, transparent 70%)`,
-                      filter: 'blur(40px)',
-                      opacity: 0.7
+                      background: `radial-gradient(ellipse 100% 90% at 50% 40%, ${getColorHex(vibeResult.dominantColor)}50 0%, ${getColorHex(vibeResult.dominantColor)}25 20%, ${getColorHex(vibeResult.dominantColor)}10 35%, transparent 60%)`,
+                      filter: 'blur(35px)',
+                      opacity: 0.9
                     }}
                   />
                   
-                  {/* Large radial glow background */}
+                  {/* Dense cloud layer 2 - Mid glow */}
                   <div 
-                    className="absolute -inset-12 pointer-events-none"
+                    className="absolute -inset-6 pointer-events-none"
                     style={{
-                      background: `radial-gradient(ellipse 120% 120% at 50% 45%, ${getColorHex(vibeResult.dominantColor)}60 0%, ${getColorHex(vibeResult.dominantColor)}30 35%, transparent 65%)`,
-                      filter: 'blur(30px)',
-                      opacity: 0.8
+                      background: `radial-gradient(ellipse 90% 85% at 50% 42%, ${getColorHex(vibeResult.dominantColor)}70 0%, ${getColorHex(vibeResult.dominantColor)}45 15%, ${getColorHex(vibeResult.dominantColor)}20 30%, transparent 55%)`,
+                      filter: 'blur(25px)',
+                      opacity: 0.95
                     }}
                   />
                   
-                  {/* Secondary glow layer for depth and cloudiness */}
+                  {/* Dense cloud layer 3 - Core bright glow */}
                   <div 
-                    className="absolute -inset-8 pointer-events-none"
+                    className="absolute -inset-3 rounded-lg pointer-events-none"
                     style={{
-                      background: `radial-gradient(ellipse 110% 110% at 50% 48%, ${getColorHex(vibeResult.dominantColor)}40 0%, ${getColorHex(vibeResult.dominantColor)}15 40%, transparent 70%)`,
-                      filter: 'blur(20px)',
-                      opacity: 0.7
+                      background: `radial-gradient(ellipse 85% 80% at 50% 43%, ${getColorHex(vibeResult.dominantColor)}80 0%, ${getColorHex(vibeResult.dominantColor)}60 10%, ${getColorHex(vibeResult.dominantColor)}30 25%, transparent 50%)`,
+                      filter: 'blur(15px)',
+                      opacity: 1
                     }}
                   />
                   
@@ -319,20 +319,20 @@ export default function VibePage() {
                       alt="Your vibe" 
                       className="rounded-lg shadow-2xl block w-full relative z-10"
                     />
-                    {/* Subtle overlay to enhance vibe color */}
+                    {/* Color tint overlay */}
                     <div 
-                      className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
+                      className="absolute inset-0 rounded-lg opacity-15 pointer-events-none"
                       style={{
                         backgroundColor: getColorHex(vibeResult.dominantColor),
-                        mixBlendMode: 'overlay'
+                        mixBlendMode: 'multiply'
                       }}
                     />
-                    {/* Enhanced glowing border effect */}
+                    {/* Glowing border effect */}
                     <div 
                       className="absolute inset-0 rounded-lg pointer-events-none"
                       style={{
-                        boxShadow: `0 0 60px ${getColorHex(vibeResult.dominantColor)}, 0 0 30px ${getColorHex(vibeResult.dominantColor)}, inset 0 0 30px ${getColorHex(vibeResult.dominantColor)}30`,
-                        border: `3px solid ${getColorHex(vibeResult.dominantColor)}60`
+                        boxShadow: `0 0 40px ${getColorHex(vibeResult.dominantColor)}, inset 0 0 20px ${getColorHex(vibeResult.dominantColor)}20`,
+                        border: `2px solid ${getColorHex(vibeResult.dominantColor)}80`
                       }}
                     />
                   </div>
