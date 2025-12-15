@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, Heart, User, TrendingUp, Mountain, Zap, Bell, Wifi, Camera, Star, Book, Calculator, Users, Home, Eye, Scan, Sunrise, BookOpen, Brain, Palette, HelpCircle, Flame, X, Smile } from "lucide-react";
 import logoImage from "@assets/new-logo.jpeg";
+import soulTreeVideo from "@assets/WhatsApp_Video_2025-12-01_at_1.17.49_AM_1765795130329.mp4";
 import { MoodBanner } from "@/components/psychology/mood-banner";
 import { MoodCheckIn, MoodCheckInData } from "@/components/psychology/mood-checkin";
 import { useToast } from "@/hooks/use-toast";
@@ -393,6 +394,18 @@ export default function HomePage() {
                 <span>Your soul tree grows with each spiritual practice!</span>
               </div>
             </div>
+            
+            {/* Soul Tree Guidance Video - Only for vidhu.gupta and nishant.sharma2 */}
+            {user && ['vidhu.gupta', 'nishant.sharma2'].includes(user.username || '') && (
+              <div className="mt-6 rounded-lg overflow-hidden border border-green-500/30 bg-green-900/20">
+                <video 
+                  src={soulTreeVideo}
+                  controls
+                  className="w-full"
+                  style={{ maxHeight: '300px', objectFit: 'cover' }}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 
