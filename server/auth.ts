@@ -206,7 +206,7 @@ export function setupAuth(app: Express) {
         ...req.body,
         password: await hashPassword(req.body.password),
         userType: "client", // All registrations default to client type
-        credits: 0, // New clients start with 0 credits (will get 5 from onboarding)
+        credits: 5, // New clients start with 5 welcome credits
         soulEnergy: 0 // Start at 0% tree growth
       });
 
