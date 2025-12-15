@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useBadgeContext } from "@/hooks/use-badge-context";
@@ -642,13 +643,8 @@ export default function NumerologyPage() {
         description: "Your numerology analysis has been updated.",
       });
       
-      // Show badges if returned from server
-      if (result && result.newBadges && result.newBadges.length > 0) {
-        showBadges(result.newBadges);
-      } else {
-        // Check for new badges as fallback
-        await checkBadges();
-      }
+      // Check for new badges as fallback
+      await checkBadges();
     } catch (error) {
       toast({
         title: "Analysis Failed",
@@ -1099,7 +1095,7 @@ export default function NumerologyPage() {
                 >
                   View Basic
                 </Button>
-                <Link href="/pricing" className="flex-1">
+                <Link to="/pricing" className="flex-1">
                   <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade Now

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star, MessageSquare, Calendar, Loader2, ChevronDown, Award } from "lucide-react";
+import { Star, MessageSquare, Calendar, Loader2, ChevronDown, Award, Calculator } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -383,76 +383,93 @@ export default function HealersPage() {
                   </div>
                   
                   {user && (
-                    <Dialog open={ratingHealerId === healer.id} onOpenChange={(open) => {
-                      if (!open) {
-                        setRatingHealerId(null);
-                        setRatingValue(0);
-                      }
-                    }}>
-                      <DialogTrigger asChild>
-                        <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`} onClick={() => {
-                          setRatingHealerId(healer.id);
+                    <>
+                      <Dialog open={ratingHealerId === healer.id} onOpenChange={(open) => {
+                        if (!open) {
+                          setRatingHealerId(null);
                           setRatingValue(0);
-                          setSelectedHealer(healer);
-                        }}>
-                          <Star className="h-4 w-4 mr-2" />
-                          Rate Healer
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Rate {healer.name}</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="flex justify-center gap-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <button
-                                key={star}
-                                onClick={() => setRatingValue(star)}
-                                className="focus:outline-none transition-transform hover:scale-110"
-                                data-testid={`button-star-${star}`}
+                        }
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`} onClick={() => {
+                            setRatingHealerId(healer.id);
+                            setRatingValue(0);
+                            setSelectedHealer(healer);
+                          }}>
+                            <Star className="h-4 w-4 mr-2" />
+                            Rate Healer
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Rate {healer.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="flex justify-center gap-2">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  onClick={() => setRatingValue(star)}
+                                  className="focus:outline-none transition-transform hover:scale-110"
+                                  data-testid={`button-star-${star}`}
+                                >
+                                  <Star
+                                    className={`h-8 w-8 ${
+                                      star <= ratingValue
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                            <div className="flex space-x-2">
+                              <Button
+                                onClick={() => {
+                                  if (ratingValue > 0 && user?.username) {
+                                    ratingMutation.mutate({
+                                      healerId: healer.id,
+                                      rating: ratingValue,
+                                      raterUsername: user.username
+                                    });
+                                  }
+                                }}
+                                disabled={ratingMutation.isPending || ratingValue === 0}
+                                className="flex-1"
+                                data-testid="button-submit-rating"
                               >
-                                <Star
-                                  className={`h-8 w-8 ${
-                                    star <= ratingValue
-                                      ? 'fill-yellow-400 text-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              </button>
-                            ))}
+                                {ratingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                                Submit Rating
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setRatingHealerId(null);
+                                  setRatingValue(0);
+                                }}
+                                variant="outline"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex space-x-2">
-                            <Button
-                              onClick={() => {
-                                if (ratingValue > 0 && user?.username) {
-                                  ratingMutation.mutate({
-                                    healerId: healer.id,
-                                    rating: ratingValue,
-                                    raterUsername: user.username
-                                  });
-                                }
-                              }}
-                              disabled={ratingMutation.isPending || ratingValue === 0}
-                              className="flex-1"
-                              data-testid="button-submit-rating"
-                            >
-                              {ratingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                              Submit Rating
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                setRatingHealerId(null);
-                                setRatingValue(0);
-                              }}
-                              variant="outline"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                        </DialogContent>
+                      </Dialog>
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        onClick={() => {
+                          const params = new URLSearchParams({
+                            healerName: healer.name,
+                            fromHealer: 'true'
+                          });
+                          window.location.href = `/numerology?${params.toString()}`;
+                        }}
+                        data-testid={`button-numerology-${healer.id}`}
+                      >
+                        <Calculator className="h-4 w-4 mr-2" />
+                        View Numerology Analysis
+                      </Button>
+                    </>
                   )}
                 </CardFooter>
               </Card>
