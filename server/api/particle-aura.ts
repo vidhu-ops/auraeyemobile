@@ -45,23 +45,39 @@ export async function generateParticleAuraEffect(
     const colorHex = colorToHex[dominantColor] || '#4A90E2';
     const color = hexToRgb(colorHex);
     
-    // Create SVG with particle effects around face
-    const particleCount = 120;
+    // Create SVG with dense particle effects covering whole image except face
+    const particleCount = 600; // Much denser
     const faceX = width / 2;
     const faceY = height * 0.35;
-    const faceRadius = Math.min(width, height) * 0.18;
+    const faceRadius = Math.min(width, height) * 0.18; // Exclude face area
     
-    // Generate particle positions
+    // Generate particle positions covering entire image except face
     let particleSvg = '';
-    for (let i = 0; i < particleCount; i++) {
-      const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
-      const distance = faceRadius + Math.random() * (faceRadius * 0.6);
-      const x = faceX + Math.cos(angle) * distance;
-      const y = faceY + Math.sin(angle) * distance;
-      const size = Math.random() * 30 + 10;
-      const opacity = Math.random() * 0.6 + 0.2;
+    let placedParticles = 0;
+    const maxAttempts = particleCount * 3;
+    let attempts = 0;
+    
+    while (placedParticles < particleCount && attempts < maxAttempts) {
+      // Random position across entire image
+      const x = Math.random() * width;
+      const y = Math.random() * height;
       
-      particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#blur)" />`;
+      // Calculate distance from face center
+      const distanceFromFace = Math.sqrt(
+        Math.pow(x - faceX, 2) + Math.pow(y - faceY, 2)
+      );
+      
+      // Only place particle if far enough from face (face exclusion zone)
+      if (distanceFromFace > faceRadius * 1.2) {
+        // Much larger particles with higher density
+        const size = Math.random() * 80 + 40; // 40-120px radius
+        const opacity = Math.random() * 0.7 + 0.3; // 0.3-1.0 opacity
+        
+        particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#blur)" />`;
+        placedParticles++;
+      }
+      
+      attempts++;
     }
     
     // Create SVG overlay with glow and particles
