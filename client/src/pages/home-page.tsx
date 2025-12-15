@@ -397,12 +397,12 @@ export default function HomePage() {
             
             {/* Soul Tree Guidance Video - Only for vidhu.gupta and nishant.sharma2 */}
             {user && ['vidhu.gupta', 'nishant.sharma2'].includes(user.username || '') && (
-              <div className="mt-6 rounded-lg overflow-hidden border border-green-500/30 bg-green-900/20">
+              <div className="mt-9 rounded-lg border border-green-500/30 bg-green-900/20">
                 <video 
                   src={soulTreeVideo}
                   controls
-                  className="w-full"
-                  style={{ maxHeight: '300px', objectFit: 'cover' }}
+                  className="w-full h-full"
+                  style={{ maxHeight: '500px', objectFit: 'cover' }}
                 />
               </div>
             )}
