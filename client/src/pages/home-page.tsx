@@ -30,6 +30,10 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [isMoodCheckInOpen, setIsMoodCheckInOpen] = useState(false);
   
+  // Check if user is one of the allowed healer accounts for Grow/Reset buttons
+  const allowedHealers = ['vidhu.gupta', 'nishant.sharma2', 'rupa.gupta'];
+  const isAllowedHealer = user && allowedHealers.includes(user.username || '');
+  
   // Calculate tree growth and milestone
   const milestone = getSoulEnergyMilestone(soulEnergy);
   const treeGrowth = calculateTreeGrowth(soulEnergy);
@@ -350,22 +354,26 @@ export default function HomePage() {
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
                   <div className="text-2xl font-bold text-purple-200 self-center">{soulEnergy}</div>
-                  <Button
-                    onClick={() => growSoulEnergyMutation.mutate()}
-                    disabled={growSoulEnergyMutation.isPending || !user}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-3 text-xs sm:text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:flex-none min-w-fit"
-                    data-testid="button-grow-soul-energy"
-                  >
-                    {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
-                  </Button>
-                  <Button
-                    onClick={() => resetSoulEnergyMutation.mutate()}
-                    disabled={resetSoulEnergyMutation.isPending || !user}
-                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-3 text-xs sm:text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:flex-none min-w-fit"
-                    data-testid="button-reset-soul-energy"
-                  >
-                    {resetSoulEnergyMutation.isPending ? "Resetting..." : "Reset"}
-                  </Button>
+                  {isAllowedHealer && (
+                    <>
+                      <Button
+                        onClick={() => growSoulEnergyMutation.mutate()}
+                        disabled={growSoulEnergyMutation.isPending || !user}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-3 text-xs sm:text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:flex-none min-w-fit"
+                        data-testid="button-grow-soul-energy"
+                      >
+                        {growSoulEnergyMutation.isPending ? "Growing..." : "Grow"}
+                      </Button>
+                      <Button
+                        onClick={() => resetSoulEnergyMutation.mutate()}
+                        disabled={resetSoulEnergyMutation.isPending || !user}
+                        className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-3 text-xs sm:text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:flex-none min-w-fit"
+                        data-testid="button-reset-soul-energy"
+                      >
+                        {resetSoulEnergyMutation.isPending ? "Resetting..." : "Reset"}
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="text-xs text-gray-200 mb-2">
