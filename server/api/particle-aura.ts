@@ -1,4 +1,4 @@
-import { Canvas, Image } from 'canvas';
+import sharp from 'sharp';
 
 interface RGBColor {
   r: number;
@@ -36,85 +36,63 @@ export async function generateParticleAuraEffect(
   dominantColor: string
 ): Promise<Buffer> {
   try {
-    const img = new Image();
-    img.src = imageBuffer;
-    
-    // Create canvas with same dimensions as image
-    const canvas = new Canvas(img.width, img.height);
-    const ctx = canvas.getContext('2d');
-    
-    // Draw original image
-    ctx.drawImage(img, 0, 0);
+    // Get image metadata
+    const metadata = await sharp(imageBuffer).metadata();
+    const width = metadata.width || 700;
+    const height = metadata.height || 500;
     
     // Get color hex and convert to RGB
     const colorHex = colorToHex[dominantColor] || '#4A90E2';
     const color = hexToRgb(colorHex);
     
-    // Face detection heuristic - assume face is in upper-middle area
-    const faceX = img.width / 2;
-    const faceY = img.height * 0.35;
-    const faceRadius = Math.min(img.width, img.height) * 0.2;
+    // Create SVG with particle effects around face
+    const particleCount = 120;
+    const faceX = width / 2;
+    const faceY = height * 0.35;
+    const faceRadius = Math.min(width, height) * 0.18;
     
-    // Generate particles around face
-    const particleCount = 200;
-    const particles: Array<{ x: number; y: number; size: number; opacity: number; offset: number }> = [];
-    
+    // Generate particle positions
+    let particleSvg = '';
     for (let i = 0; i < particleCount; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const distance = faceRadius + Math.random() * (faceRadius * 0.8);
+      const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
+      const distance = faceRadius + Math.random() * (faceRadius * 0.6);
       const x = faceX + Math.cos(angle) * distance;
       const y = faceY + Math.sin(angle) * distance;
-      const size = Math.random() * 40 + 10;
+      const size = Math.random() * 30 + 10;
       const opacity = Math.random() * 0.6 + 0.2;
       
-      particles.push({ x, y, size, opacity, offset: Math.random() });
+      particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#blur)" />`;
     }
     
-    // Draw particles with cloud/smoke effect
-    particles.forEach((particle) => {
-      // Create gradient for smoky effect
-      const gradient = ctx.createRadialGradient(
-        particle.x,
-        particle.y,
-        0,
-        particle.x,
-        particle.y,
-        particle.size
-      );
-      
-      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity})`);
-      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity * 0.5})`);
-      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-      
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-      ctx.fill();
-    });
+    // Create SVG overlay with glow and particles
+    const svgContent = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+        <radialGradient id="glow" cx="50%" cy="35%">
+          <stop offset="0%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0.25" />
+          <stop offset="100%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0" />
+        </radialGradient>
+      </defs>
+      <circle cx="${faceX}" cy="${faceY}" r="${faceRadius * 1.6}" fill="url(#glow)" />
+      ${particleSvg}
+    </svg>`;
     
-    // Add glow effect around face
-    const glowGradient = ctx.createRadialGradient(
-      faceX,
-      faceY,
-      faceRadius,
-      faceX,
-      faceY,
-      faceRadius * 1.5
-    );
+    // Composite SVG overlay with image using screen blend mode
+    const result = await sharp(imageBuffer)
+      .composite([
+        {
+          input: Buffer.from(svgContent),
+          blend: 'screen'
+        }
+      ])
+      .png()
+      .toBuffer();
     
-    glowGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
-    glowGradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-    
-    ctx.fillStyle = glowGradient;
-    ctx.beginPath();
-    ctx.arc(faceX, faceY, faceRadius * 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Return canvas as PNG buffer
-    return canvas.toBuffer('image/png');
+    return result;
   } catch (error) {
     console.error('Error generating particle aura effect:', error);
-    // Return original buffer if effect generation fails
     return imageBuffer;
   }
 }
