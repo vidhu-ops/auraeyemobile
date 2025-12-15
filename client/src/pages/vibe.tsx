@@ -25,6 +25,7 @@ interface VibeResult {
   energyLevel: number;
   message: string;
   readingId: number | null;
+  visualizedImage?: string | null;
 }
 
 // Color to Hex mapping
@@ -101,7 +102,8 @@ export default function VibePage() {
         colorMeaning: data.colorMeaning,
         energyLevel: data.energyLevel,
         message: data.message,
-        readingId: data.readingId
+        readingId: data.readingId,
+        visualizedImage: data.visualizedImage || null
       });
       
       // Save last scan color for mascot
@@ -282,46 +284,31 @@ export default function VibePage() {
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Image */}
             <div className="flex justify-center items-start">
-              {imagePreview && vibeResult && (
+              {vibeResult && (
                 <div 
                   className="relative rounded-3xl overflow-hidden"
                   style={{
                     aspectRatio: '1 / 1.25',
-                    background: `linear-gradient(135deg, ${getColorHex(vibeResult.dominantColor)}, ${getColorHex(vibeResult.dominantColor)}dd)`,
                     boxShadow: `0 0 80px ${getColorHex(vibeResult.dominantColor)}, 0 0 120px ${getColorHex(vibeResult.dominantColor)}88`,
                     maxWidth: '400px'
                   }}
                 >
-                  {/* Cloudy blur overlay for dense effect */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: `radial-gradient(circle at 50% 35%, ${getColorHex(vibeResult.dominantColor)}ff 0%, ${getColorHex(vibeResult.dominantColor)}dd 30%, ${getColorHex(vibeResult.dominantColor)}99 60%, transparent 100%)`,
-                      filter: 'blur(50px)',
-                      opacity: 0.6
-                    }}
-                  />
-                  
-                  {/* Image container */}
-                  <div className="relative w-full h-full flex items-center justify-center p-4">
-                    <img 
-                      src={imagePreview} 
-                      alt="Your vibe" 
-                      className="w-full h-full object-cover rounded-2xl shadow-2xl"
-                      style={{
-                        mixBlendMode: 'screen'
-                      }}
-                    />
+                  {/* Display visualized image with particle effect if available */}
+                  <div className="relative w-full h-full flex items-center justify-center bg-black rounded-3xl">
+                    {vibeResult.visualizedImage ? (
+                      <img 
+                        src={vibeResult.visualizedImage} 
+                        alt="Your vibe with particle aura" 
+                        className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                      />
+                    ) : imagePreview ? (
+                      <img 
+                        src={imagePreview} 
+                        alt="Your vibe" 
+                        className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                      />
+                    ) : null}
                   </div>
-                  
-                  {/* Vignette fade effect for edges */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none rounded-3xl"
-                    style={{
-                      background: `radial-gradient(ellipse at center, transparent 40%, ${getColorHex(vibeResult.dominantColor)}40 100%)`,
-                      zIndex: 5
-                    }}
-                  />
                   
                   {/* AuraEye label */}
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full font-semibold text-sm tracking-wider shadow-lg z-10">

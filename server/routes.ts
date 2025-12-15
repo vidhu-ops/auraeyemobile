@@ -10,6 +10,7 @@ import { storage } from "./storage";
 import { analyzeAuraImage, generateNumerologyReading, AuraAnalysisResult } from "./api/openai-minimal";
 import { analyzeImageWithGemini, generateAuraVisualization } from "./api/gemini";
 import { enhancedAuraAnalysis } from "./api/enhanced-aura";
+import { generateParticleAuraEffect } from "./api/particle-aura";
 import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
@@ -3621,12 +3622,22 @@ function calculateDominantSoulChakra(birthDate: string): number {
             sessionId
           };
 
+          // Generate particle aura effect visualization
+          let visualizedImageBase64 = null;
+          try {
+            const visualizedImageBuffer = await generateParticleAuraEffect(imageBuffer, personalityColor);
+            visualizedImageBase64 = `data:image/png;base64,${visualizedImageBuffer.toString('base64')}`;
+          } catch (vizError) {
+            console.error('Failed to generate particle effect:', vizError);
+            // Continue without visualization if it fails
+          }
+          
           savedVibeReading = await storage.saveVibeReading({
             userId: req.user.id,
             personalityColor: personalityColor,
             colorMeaning: JSON.stringify(meaning),
             uploadedImage: uploadedImageBase64,
-            visualizedImage: null, // No color visualization for quick vibe
+            visualizedImage: visualizedImageBase64, // Particle aura effect visualization
             sessionId: sessionId,
             clientName: req.body.clientName || null,
             fullAnalysis: JSON.stringify(fullAnalysisData)
@@ -3655,6 +3666,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
           console.error("Error checking achievements:", badgeError);
         }
 
+        // Generate particle effect for response
+        let visualizedImage = null;
+        try {
+          const visualizedImageBuffer = await generateParticleAuraEffect(imageBuffer, personalityColor);
+          visualizedImage = `data:image/png;base64,${visualizedImageBuffer.toString('base64')}`;
+        } catch (vizError) {
+          console.error('Failed to generate particle effect:', vizError);
+        }
+        
         res.json({
           dominantColor: personalityColor,
           colorMeaning: meaning,
@@ -3662,9 +3682,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
           message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
           readingId: savedVibeReading?.id || null,
           newBadges: newBadges,
-          hasNewBadges: newBadges.length > 0
+          hasNewBadges: newBadges.length > 0,
+          visualizedImage: visualizedImage
         });
       } else {
+        // Generate particle effect for non-authenticated users
+        let visualizedImage = null;
+        try {
+          const visualizedImageBuffer = await generateParticleAuraEffect(imageBuffer, personalityColor);
+          visualizedImage = `data:image/png;base64,${visualizedImageBuffer.toString('base64')}`;
+        } catch (vizError) {
+          console.error('Failed to generate particle effect:', vizError);
+        }
+        
         res.json({
           dominantColor: personalityColor,
           colorMeaning: meaning,
@@ -3672,7 +3702,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
           message: `Your vibe is radiating ${personalityColor.toLowerCase()} energy!`,
           readingId: null,
           newBadges: [],
-          hasNewBadges: false
+          hasNewBadges: false,
+          visualizedImage: visualizedImage
         });
       }
 
