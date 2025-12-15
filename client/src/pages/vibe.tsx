@@ -120,13 +120,8 @@ export default function VibePage() {
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });
       
-      // Show badges if they came in the response, otherwise check for new badges
-      if (data.newBadges && data.newBadges.length > 0) {
-        showBadges(data.newBadges);
-      } else {
-        // Check for new badges as fallback
-        await checkBadges();
-      }
+      // Check for new badges after vibe scan
+      await checkBadges();
     } catch (error: any) {
       // Reset image preview on error so user can try again
       setImagePreview(null);
