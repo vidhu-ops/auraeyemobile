@@ -1,4 +1,4 @@
-export const SOUL_ENERGY_PER_SCAN = 100; // For aura, vibe, numerology, and object scans
+export const SOUL_ENERGY_PER_SCAN = 100; // Multiplier: credits * 100 = soul energy (e.g., 5 credits = 500 soul energy)
 
 export interface EnergyMilestone {
   level: string;

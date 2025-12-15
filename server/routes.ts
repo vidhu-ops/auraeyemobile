@@ -1328,10 +1328,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const creditDeducted = await storage.deductCredits(req.user.id, req.creditCost, 'object_analysis', `Object analysis for ${analysisName}`);
           console.log('Object analysis credit deduction result:', creditDeducted);
           
-          // Add soul energy +100 for completing object analysis
+          // Add soul energy (credits * 100) for completing object analysis
           try {
-            await storage.addSoulEnergy(req.user.id, 100, 'object_analysis', 'Object analysis scan completed');
-            console.log(`⚡ Added +100 soul energy to user ${req.user.id} for object analysis completion`);
+            const soulEnergyAmount = (req.creditCost || 1) * 100;
+            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'object_analysis', 'Object analysis scan completed');
+            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for object analysis completion`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
           }
@@ -1831,13 +1832,12 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.log(`Credit deduction skipped: unauthenticated user or no credit cost`);
       }
 
-      // Add soul energy for completing aura analysis (5 credits for healers = 500, 15 credits for others = 1500)
+      // Add soul energy (credits * 100) for completing aura analysis
       if (req.isAuthenticated() && req.user) {
         try {
-          const userType = req.user.userType || 'user';
-          const soulEnergyAmount = userType === 'healer' ? 500 : 1500;
+          const soulEnergyAmount = (req.creditCost || 5) * 100;
           await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'aura_analysis', 'Aura analysis scan completed');
-          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for aura analysis completion`);
+          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for aura analysis completion (${req.creditCost} credits × 100)`);
         } catch (soulEnergyError) {
           console.error("Error adding soul energy:", soulEnergyError);
         }
@@ -2273,10 +2273,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             interpretation: numerologyProfile.interpretation
           });
           
-          // Add soul energy +300 for completing numerology analysis (3 credits * 100)
+          // Add soul energy (credits * 100) for completing numerology analysis
           try {
-            await storage.addSoulEnergy(req.user.id, 300, 'numerology_analysis', 'Numerology analysis completed');
-            console.log(`⚡ Added +300 soul energy to user ${req.user.id} for numerology analysis completion`);
+            const soulEnergyAmount = (req.creditCost || 3) * 100;
+            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
           }
@@ -2325,10 +2326,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             interpretation: numerologyProfile.interpretation
           });
           
-          // Add soul energy +300 for completing numerology analysis (3 credits * 100) (fallback path)
+          // Add soul energy (credits * 100) for completing numerology analysis (fallback path)
           try {
-            await storage.addSoulEnergy(req.user.id, 300, 'numerology_analysis', 'Numerology analysis completed');
-            console.log(`⚡ Added +300 soul energy to user ${req.user.id} for numerology analysis completion (fallback)`);
+            const soulEnergyAmount = (req.creditCost || 3) * 100;
+            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (fallback: ${req.creditCost || 3} credits × 100)`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
           }
@@ -2817,19 +2819,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
           `Credit from booking by ${user.username}`
         );
         
-        // Add soul energy +100 for healer connection (1 credit * 100)
+        // Add soul energy (credits * 100) for healer connection
         try {
-          await storage.addSoulEnergy(healerUser.id, 100, 'healer_booking', 'Healer booking connection');
-          console.log(`⚡ Added +100 soul energy to healer ${healerUser.id} for booking connection`);
+          const healerSoulEnergyAmount = 1 * 100; // 1 credit = 100 soul energy
+          await storage.addSoulEnergy(healerUser.id, healerSoulEnergyAmount, 'healer_booking', 'Healer booking connection');
+          console.log(`⚡ Added +${healerSoulEnergyAmount} soul energy to healer ${healerUser.id} for booking connection`);
         } catch (soulEnergyError) {
           console.error("Error adding soul energy to healer:", soulEnergyError);
         }
       }
 
-      // Add soul energy +100 to client for booking a healer (1 credit * 100)
+      // Add soul energy (credits * 100) to client for booking a healer
       try {
-        await storage.addSoulEnergy(user.id, 100, 'healer_booking', 'Booked healer session');
-        console.log(`⚡ Added +100 soul energy to user ${user.id} for healer booking`);
+        const clientSoulEnergyAmount = 3 * 100; // 3 credits = 300 soul energy
+        await storage.addSoulEnergy(user.id, clientSoulEnergyAmount, 'healer_booking', 'Booked healer session');
+        console.log(`⚡ Added +${clientSoulEnergyAmount} soul energy to user ${user.id} for healer booking`);
       } catch (soulEnergyError) {
         console.error("Error adding soul energy:", soulEnergyError);
       }
@@ -3653,9 +3657,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Deduct credits for successful analysis
         await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
         
-        // Add soul energy +100 for completing vibe scan
-        await storage.addSoulEnergy(req.user.id, 100, 'vibe_scan', 'What\'s My Vibe scan completed');
-        console.log(`⚡ Added +100 soul energy to user ${req.user.id} for vibe scan completion`);
+        // Add soul energy (credits * 100) for completing vibe scan
+        const vibeSoulEnergyAmount = (req.creditCost || 1) * 100;
+        await storage.addSoulEnergy(req.user.id, vibeSoulEnergyAmount, 'vibe_scan', 'What\'s My Vibe scan completed');
+        console.log(`⚡ Added +${vibeSoulEnergyAmount} soul energy to user ${req.user.id} for vibe scan completion (${req.creditCost || 1} credits × 100)`);
         
         // Check and award achievements for vibe scans
         try {

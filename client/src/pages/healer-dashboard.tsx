@@ -3070,7 +3070,7 @@ export default function HealerDashboard() {
                 <Zap className="h-5 w-5 text-purple-600" />
                 Energy Sources
               </CardTitle>
-              <CardDescription>Gain soul energy through spiritual services and client interactions</CardDescription>
+              <CardDescription>Soul Energy = Credits × 100 (e.g., 5 credits = 500 soul energy)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3081,7 +3081,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Aura Analysis</h3>
-                      <p className="text-slate-600 text-xs">+{SOUL_ENERGY_PER_SCAN} energy per reading</p>
+                      <p className="text-slate-600 text-xs">5 credits = +500 soul energy</p>
                     </div>
                   </div>
                 </div>
@@ -3093,7 +3093,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Vibe Check</h3>
-                      <p className="text-slate-600 text-xs">+{SOUL_ENERGY_PER_SCAN} energy per scan</p>
+                      <p className="text-slate-600 text-xs">1 credit = +100 soul energy</p>
                     </div>
                   </div>
                 </div>
@@ -3105,7 +3105,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Numerology</h3>
-                      <p className="text-slate-600 text-xs">+{SOUL_ENERGY_PER_SCAN} energy per reading</p>
+                      <p className="text-slate-600 text-xs">3 credits = +300 soul energy</p>
                     </div>
                   </div>
                 </div>
@@ -3117,7 +3117,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Client Sessions</h3>
-                      <p className="text-slate-600 text-xs">+10 energy per booking</p>
+                      <p className="text-slate-600 text-xs">3 credits = +300 soul energy</p>
                     </div>
                   </div>
                 </div>

@@ -413,7 +413,7 @@ export default function HomePage() {
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-5">
             <Zap className="h-5 w-5 text-purple-400" />
-            <h2 className="text-white font-semibold">Energy Sources</h2>
+            <h2 className="text-white font-semibold">Energy Sources (Credits × 100 = Soul Energy)</h2>
           </div>
 
           {/* Meditation Sessions Card */}
