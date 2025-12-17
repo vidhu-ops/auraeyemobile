@@ -527,7 +527,8 @@ export default function HomePage() {
                     <Camera className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Aura Analysis</h3>
-                  <p className="text-xs text-gray-300 mt-1">5 credits</p>
+                  <p className="text-xs text-gray-300 mt-1">15 credits-user</p>
+                  <p className="text-xs text-gray-300 mt-1">5 credits-healer</p>
                 </CardContent>
               </Card>
             </Link>
@@ -551,7 +552,7 @@ export default function HomePage() {
                     <Calculator className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Numerology</h3>
-                  <p className="text-xs text-gray-300 mt-1">5 credits</p>
+                  <p className="text-xs text-gray-300 mt-1">3 credits</p>
                 </CardContent>
               </Card>
             </Link>
@@ -563,7 +564,7 @@ export default function HomePage() {
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Find Healers</h3>
-                  <p className="text-xs text-gray-300 mt-1">3 credits</p>
+                  <p className="text-xs text-gray-300 mt-1">1 credit</p>
                 </CardContent>
               </Card>
             </Link>

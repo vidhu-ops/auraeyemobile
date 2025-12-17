@@ -1039,7 +1039,7 @@ export class DatabaseStorage implements IStorage {
         'vibe_check': 1,
         'object_analysis': 1,
         'aura_analysis': 15,
-        'healer_booking': 3,
+        'healer_booking': 1,
         'numerology': -1, // -1 indicates service not available for clients
       },
       // Healer costs

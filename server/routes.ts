@@ -2878,7 +2878,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         message: "Booking request sent successfully",
         booking: booking,
         emailSent: emailSent,
-        creditsDeducted: 3,
+        creditsDeducted: 1,
         remainingCredits: await storage.getUserCredits(user.id)
       });
     } catch (error) {
