@@ -7,10 +7,10 @@ export type UserProfileType = "client" | "healer" | "semi-healer";
 
 /**
  * Check if user can access aura analysis
- * Only full healers can access aura analysis
+ * All users (clients and healers) can access aura analysis
  */
 export function canAccessAuraAnalysis(userType: string | undefined): boolean {
-  return userType === "healer";
+  return userType === "client" || userType === "healer" || userType === "semi-healer";
 }
 
 /**
