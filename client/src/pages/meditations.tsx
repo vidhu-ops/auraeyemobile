@@ -65,6 +65,45 @@ const meditations = [
     category: "breathe",
     color: "from-orange-500 to-red-500",
     tag: "Energy"
+  },
+  {
+    id: 6,
+    title: "Cosmic Peace Journey",
+    author: "YouTube Guide",
+    duration: 25,
+    difficulty: "Beginner",
+    description: "Journey through the cosmos to find inner peace...",
+    category: "calm",
+    color: "from-blue-600 to-purple-600",
+    tag: "Relaxation",
+    mediaUrl: "https://youtu.be/hvDvJW42Yd0",
+    mediaType: "youtube"
+  },
+  {
+    id: 7,
+    title: "Healing Meditation",
+    author: "Wellness Expert",
+    duration: 20,
+    difficulty: "Intermediate",
+    description: "Guided meditation for healing and restoration...",
+    category: "calm",
+    color: "from-emerald-400 to-teal-500",
+    tag: "Healing",
+    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.47_PM_1765966899854.mp4",
+    mediaType: "video"
+  },
+  {
+    id: 8,
+    title: "Energy Flow Meditation",
+    author: "Energy Guide",
+    duration: 22,
+    difficulty: "Intermediate",
+    description: "Balance your energy centers with guided visualization...",
+    category: "focus",
+    color: "from-yellow-400 to-orange-500",
+    tag: "Energy",
+    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4",
+    mediaType: "video"
   }
 ];
 
