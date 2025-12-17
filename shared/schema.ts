@@ -133,6 +133,7 @@ export const insertNumerologyReadingSchema = createInsertSchema(numerologyReadin
 export const objectAnalyses = pgTable("object_analyses", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  performedBy: integer("performed_by").references(() => users.id), // Which healer account performed this analysis
   name: text("name").notNull(), // Name entered for this object analysis
   imageUrl: text("image_url").notNull(),
   objectName: text("object_name").notNull(),

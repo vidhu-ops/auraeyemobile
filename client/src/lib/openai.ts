@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from "./queryClient";
 const GPT_MODEL = "gpt-4o";
 
 export interface AuraAnalysisResult {
+  [x: string]: BadgeReward[];
   zones: any;
   id?: number; // Added for review system functionality
   name?: string; // Added for PDF generation

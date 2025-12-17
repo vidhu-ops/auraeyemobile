@@ -7838,7 +7838,22 @@ Team AuraEye™
 
                           <TabsContent value="spectrum" data-tab="spectrum">
                             {/* Screenshot Button */}
-                            
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('spectrum')}
+                                disabled={isCapturingScreenshot === 'spectrum'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'spectrum' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'spectrum' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
@@ -8164,7 +8179,22 @@ Team AuraEye™
                           
                           <TabsContent value="energy-map" data-tab="energy-map">
                             {/* Screenshot Button */}
-                            
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('energy-map')}
+                                disabled={isCapturingScreenshot === 'energy-map'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'energy-map' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'energy-map' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
                                 <h3 className="font-medium text-xl mb-2">Energy Map & Color Analysis</h3>
@@ -8512,7 +8542,22 @@ Team AuraEye™
                           
                           <TabsContent value="combined" data-tab="combined">
                             {/* Screenshot Button */}
-                            
+                            <div className="flex justify-end mb-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => captureTabScreenshot('combined')}
+                                disabled={isCapturingScreenshot === 'combined'}
+                                className="flex items-center gap-2"
+                              >
+                                {isCapturingScreenshot === 'combined' ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Camera className="h-4 w-4" />
+                                )}
+                                {isCapturingScreenshot === 'combined' ? 'Capturing...' : 'Capture Screenshot'}
+                              </Button>
+                            </div>
                             <div className="space-y-6">
                               {!numerologyResult ? (
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
