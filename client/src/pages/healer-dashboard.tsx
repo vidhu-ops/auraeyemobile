@@ -1827,47 +1827,77 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
   };
 
   const downloadPDF = () => {
+    // Chakra-planet map matching numerology data
+    const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string } } = {
+      1: { chakra: "Solar Plexus Chakra", planet: "Sun", description: "Leadership and Independence. Personal power, confidence, and willpower." },
+      2: { chakra: "Heart Chakra", planet: "Moon", description: "Relationships and Sensitivity. Emotional balance and self-love." },
+      3: { chakra: "Crown Chakra", planet: "Jupiter", description: "Creativity and Communication. Spiritual connection and enlightenment." },
+      4: { chakra: "Earth Star Chakra", planet: "Rahu", description: "Stability and Discipline. Deep grounding, responsibility, and trust in life." },
+      5: { chakra: "Throat Chakra", planet: "Mercury", description: "Freedom and Adaptability. Authentic communication and adaptability." },
+      6: { chakra: "Sacral Chakra", planet: "Venus", description: "Love and Responsibility. Emotional stability and creative expression." },
+      7: { chakra: "Soul Star Chakra", planet: "Ketu", description: "Spirituality and Analysis. Transcendence and karmic healing." },
+      8: { chakra: "Third Eye Chakra", planet: "Saturn", description: "Material Success and Power. Clarity, vision, and decisive action." },
+      9: { chakra: "Root Chakra", planet: "Mars", description: "Humanitarian Service. Action, grounding, and completion." }
+    };
+    
+    const getChakraInfo = (num: number) => chakraPlanetMap[num] || { chakra: "Universal", planet: "Cosmic", description: "Unique spiritual path" };
+    
     const pdf = new jsPDF();
+    let currentY = 20;
+    const pageWidth = 210;
+    const margin = 15;
     
-    // Title
-    pdf.setFontSize(20);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text("Numerology Reading Report", 105, 20, { align: "center" });
+    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
+      pdf.setFontSize(fontSize);
+      pdf.setFont("helvetica", isBold ? "bold" : "normal");
+      if (currentY > 270) { pdf.addPage(); currentY = margin; }
+      const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+      lines.forEach((line: string) => { pdf.text(line, margin, currentY); currentY += 5; });
+      currentY += 2;
+    };
     
-    // Client information
-    pdf.setFontSize(12);
-    pdf.text(`Client: ${reading.name}`, 20, 40);
-    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 20, 50);
-    pdf.text(`Healer: ${user?.username || 'Unknown'}`, 20, 60);
+    // Title and client info
+    addText("NUMEROLOGY ANALYSIS REPORT", 16, true);
+    addText(`Client: ${reading.name}`, 11);
+    addText(`Healer: ${user?.username || 'Unknown'}`, 11);
+    addText(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 11);
+    currentY += 3;
     
-    // Core numbers
-    pdf.setFontSize(14);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text("Core Numbers", 20, 80);
+    // Core numbers with chakra-planet analysis
+    addText("CORE NUMBERS WITH CHAKRA-PLANET ANALYSIS", 12, true);
     
-    pdf.setFontSize(11);
-    pdf.text(`Life Path Number: ${reading.lifePathNumber}`, 20, 95);
-    pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
-    pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
-    pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
+    const numbers = [
+      { label: "Life Path", number: reading.lifePathNumber },
+      { label: "Destiny", number: reading.destinyNumber },
+      { label: "Soul Urge", number: reading.soulUrgeNumber },
+      { label: "Personality", number: reading.personalityNumber }
+    ];
+    
+    numbers.forEach(({ label, number }) => {
+      const info = getChakraInfo(number);
+      addText(`${label} Number: ${number}`, 10, true);
+      addText(`Chakra: ${info.chakra} | Planet: ${info.planet}`, 9);
+      addText(`${info.description}`, 8);
+      currentY += 1;
+    });
+    
+    addText(`Personal Year: ${reading.personalYearNumber}`, 10, true);
+    currentY += 3;
     
     // Interpretation
-    pdf.setFontSize(14);
-    pdf.text("Complete Interpretation", 20, 145);
-    
-    pdf.setFontSize(10);
-    const splitText = pdf.splitTextToSize(reading.interpretation, 170);
-    pdf.text(splitText, 20, 155);
+    addText("COMPLETE INTERPRETATION", 12, true);
+    const splitText = pdf.splitTextToSize(reading.interpretation, pageWidth - 2 * margin);
+    if (currentY + splitText.length * 4 > 270) { pdf.addPage(); currentY = margin; }
+    pdf.setFontSize(9);
+    splitText.forEach((line: string) => { if (currentY > 270) { pdf.addPage(); currentY = margin; } pdf.text(line, margin, currentY); currentY += 4; });
     
     // Healer notes if available
     if (reading.healerNotes) {
-      const notesY = 155 + (splitText.length * 4) + 10;
-      pdf.setFontSize(14);
-      pdf.text("Healer Notes", 20, notesY);
-      
-      pdf.setFontSize(10);
-      const splitNotes = pdf.splitTextToSize(reading.healerNotes, 170);
-      pdf.text(splitNotes, 20, notesY + 10);
+      currentY += 5;
+      if (currentY > 270) { pdf.addPage(); currentY = margin; }
+      addText("HEALER NOTES", 12, true);
+      const splitNotes = pdf.splitTextToSize(reading.healerNotes, pageWidth - 2 * margin);
+      splitNotes.forEach((line: string) => { if (currentY > 270) { pdf.addPage(); currentY = margin; } pdf.text(line, margin, currentY); currentY += 4; });
     }
     
     // Save the PDF
@@ -3434,53 +3464,75 @@ export default function HealerDashboard() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => {
-                                    // Create a simplified PDF download function
+                                    // Create comprehensive PDF with chakra-planet analysis
+                                    const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string; remedies: string[] } } = {
+                                      1: { chakra: "Solar Plexus Chakra", planet: "Sun", description: "Leadership and Independence. Personal power, confidence, and willpower.", remedies: ["Yellow color therapy", "RAM mantra 45 times/day", "Citrine crystal", "Lemon aromatherapy", "Sacred code 451"] },
+                                      2: { chakra: "Heart Chakra", planet: "Moon", description: "Relationships and Sensitivity. Emotional balance and self-love.", remedies: ["Green/pink color therapy", "YAM mantra 45 times/day", "Rose Quartz crystal", "Rose aromatherapy", "Sacred code 741"] },
+                                      3: { chakra: "Crown Chakra", planet: "Jupiter", description: "Creativity and Communication. Spiritual connection and enlightenment.", remedies: ["Violet/white color therapy", "AUM mantra 45 times/day", "Clear Quartz crystal", "Lavender aromatherapy", "Sacred code 204"] },
+                                      4: { chakra: "Earth Star Chakra", planet: "Rahu", description: "Stability and Discipline. Deep grounding, responsibility, and trust in life.", remedies: ["Brown/black color therapy", "LAM mantra 45 times/day", "Smoky Quartz crystal", "Cedarwood aromatherapy", "Sacred code 264"] },
+                                      5: { chakra: "Throat Chakra", planet: "Mercury", description: "Freedom and Adaptability. Authentic communication and adaptability.", remedies: ["Blue color therapy", "HAM mantra 45 times/day", "Blue Lace Agate crystal", "Peppermint aromatherapy", "Sacred code 986"] },
+                                      6: { chakra: "Sacral Chakra", planet: "Venus", description: "Love and Responsibility. Emotional stability and creative expression.", remedies: ["Orange color therapy", "VAM mantra 45 times/day", "Carnelian crystal", "Ylang-ylang aromatherapy", "Sacred code 760"] },
+                                      7: { chakra: "Soul Star Chakra", planet: "Ketu", description: "Spirituality and Analysis. Transcendence and karmic healing.", remedies: ["Gold/white color therapy", "OM SO HUM mantra 45 times/day", "Selenite crystal", "Lotus aromatherapy", "Sacred code 56"] },
+                                      8: { chakra: "Third Eye Chakra", planet: "Saturn", description: "Material Success and Power. Clarity, vision, and decisive action.", remedies: ["Indigo color therapy", "OM mantra 45 times/day", "Amethyst crystal", "Frankincense aromatherapy", "Sacred code 852"] },
+                                      9: { chakra: "Root Chakra", planet: "Mars", description: "Humanitarian Service. Action, grounding, and completion.", remedies: ["Red color therapy", "LAM mantra 45 times/day", "Red Jasper crystal", "Cedarwood aromatherapy", "Sacred code 396"] }
+                                    };
+                                    
+                                    const getChakraInfo = (num: number) => chakraPlanetMap[num] || { chakra: "Universal Energy", planet: "Cosmic", description: "Unique spiritual path", remedies: [] };
+                                    
                                     const pdf = new jsPDF();
+                                    let currentY = 20;
+                                    const pageWidth = 210;
+                                    const margin = 15;
+                                    
+                                    // Helper functions
+                                    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
+                                      pdf.setFontSize(fontSize);
+                                      pdf.setFont("helvetica", isBold ? "bold" : "normal");
+                                      if (currentY > 270) { pdf.addPage(); currentY = margin; }
+                                      const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+                                      lines.forEach((line: string) => { pdf.text(line, margin, currentY); currentY += 5; });
+                                      currentY += 2;
+                                    };
                                     
                                     // Title
-                                    pdf.setFontSize(20);
-                                    pdf.setTextColor(0, 0, 0);
-                                    pdf.text("Numerology Reading Report", 105, 20, { align: "center" });
+                                    addText("NUMEROLOGY ANALYSIS REPORT", 16, true);
+                                    addText(`Client: ${reading.name}`, 11);
+                                    addText(`Healer: ${user?.username || 'Unknown'}`, 11);
+                                    addText(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 11);
+                                    currentY += 3;
                                     
-                                    // Client information
-                                    pdf.setFontSize(12);
-                                    pdf.text(`Client: ${reading.name}`, 20, 40);
-                                    pdf.text(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 20, 50);
-                                    pdf.text(`Healer: ${user?.username || 'Unknown'}`, 20, 60);
+                                    // Core Numbers with Chakra-Planet Info
+                                    addText("CORE NUMBERS WITH CHAKRA-PLANET ANALYSIS", 12, true);
                                     
-                                    // Core numbers
-                                    pdf.setFontSize(14);
-                                    pdf.setTextColor(0, 0, 0);
-                                    pdf.text("Core Numbers", 20, 80);
+                                    const numbers = [
+                                      { label: "Life Path", number: reading.lifePathNumber },
+                                      { label: "Destiny", number: reading.destinyNumber },
+                                      { label: "Soul Urge", number: reading.soulUrgeNumber },
+                                      { label: "Personality", number: reading.personalityNumber }
+                                    ];
                                     
-                                    pdf.setFontSize(11);
-                                    pdf.text(`Life Path Number: ${reading.lifePathNumber}`, 20, 95);
-                                    pdf.text(`Destiny Number: ${reading.destinyNumber}`, 20, 105);
-                                    pdf.text(`Soul Urge Number: ${reading.soulUrgeNumber}`, 20, 115);
-                                    pdf.text(`Personality Number: ${reading.personalityNumber}`, 20, 125);
-                                    pdf.text(`Personal Year 2026: ${reading.personalYearNumber}`, 20, 135);
-                                    
-                                    // Interpretation
-                                    pdf.setFontSize(14);
-                                    pdf.text("Complete Interpretation", 20, 155);
-                                    
-                                    pdf.setFontSize(10);
-                                    const splitText = pdf.splitTextToSize(reading.interpretation, 170);
-                                    let currentY = 165;
-                                    
-                                    splitText.forEach((line: string) => {
-                                      if (currentY > 280) {
-                                        pdf.addPage();
-                                        currentY = 20;
-                                      }
-                                      pdf.text(line, 20, currentY);
-                                      currentY += 6;
+                                    numbers.forEach(({ label, number }) => {
+                                      const info = getChakraInfo(number);
+                                      addText(`${label} Number: ${number}`, 10, true);
+                                      addText(`Chakra: ${info.chakra} | Planet: ${info.planet}`, 9);
+                                      addText(`${info.description}`, 8);
+                                      currentY += 1;
                                     });
+                                    
+                                    addText(`Personal Year: ${reading.personalYearNumber}`, 10, true);
+                                    currentY += 3;
+                                    
+                                    // Full Interpretation
+                                    addText("COMPLETE INTERPRETATION", 12, true);
+                                    const splitText = pdf.splitTextToSize(reading.interpretation, pageWidth - 2 * margin);
+                                    if (currentY + splitText.length * 4 > 270) { pdf.addPage(); currentY = margin; }
+                                    pdf.setFontSize(9);
+                                    splitText.forEach((line: string) => { if (currentY > 270) { pdf.addPage(); currentY = margin; } pdf.text(line, margin, currentY); currentY += 4; });
                                     
                                     // Save the PDF
                                     pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
                                   }}
-                                  title="Download PDF"
+                                  title="Download PDF Report"
                                 >
                                   <Download className="h-4 w-4" />
                                 </Button>
