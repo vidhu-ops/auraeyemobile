@@ -87,7 +87,7 @@ export async function generateParticleAuraEffect(
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
         </filter>
         <filter id="particleBlur">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
         </filter>
         <filter id="shadow">
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
