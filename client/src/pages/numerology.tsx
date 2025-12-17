@@ -1222,36 +1222,77 @@ export default function NumerologyPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="w-full">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="flex-shrink-0 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
-                        <span className="text-2xl font-bold text-white">{numerology.lifePathNumber}</span>
+                  {/* Life Path Number - Featured Card */}
+                  <div className="w-full bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                    <div className="flex items-center gap-6 mb-6">
+                      <div className="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-3xl font-bold text-white">{numerology.lifePathNumber}</span>
                       </div>
                       <div className="flex-grow">
-                        <h3 className="font-semibold text-purple-800 text-lg">Life Path Number</h3>
-                        <p className="text-white">Your life's journey and core purpose</p>
+                        <h3 className="font-bold text-purple-900 text-xl mb-1">Life Path Number {numerology.lifePathNumber}</h3>
+                        <p className="text-purple-600 font-medium">Your life's journey and core purpose</p>
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-lg p-6 border-2 border-purple-100 shadow-sm">
-                      <div className="max-h-96 overflow-y-auto space-y-5">
-                        {getLifePathMeaning(numerology.lifePathNumber).split(/(?=(?:Colour|Color|COLOUR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example|Angel|Karmic|Healing|Remedies|Color Therapy|Mantra|Crystal|Aroma|Affirmations|Sacred|Bach|Prayer|Deity|Self-Healing|Rudraksha):)/i).map((section, idx) => {
-                          const colonIndex = section.indexOf(':');
-                          if (colonIndex === -1) return null;
-                          
-                          const heading = section.substring(0, colonIndex).trim();
-                          const content = section.substring(colonIndex + 1).trim();
-                          
-                          if (!heading || !content) return null;
-                          
-                          return (
-                            <div key={idx} className="pb-4 border-b border-purple-100 last:border-b-0">
-                              <h4 className="font-bold text-purple-900 text-sm mb-2 uppercase tracking-wide">{heading}</h4>
-                              <p className="text-gray-700 text-sm leading-relaxed">{content}</p>
+                    {/* Quick Summary Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                      {(() => {
+                        const text = getLifePathMeaning(numerology.lifePathNumber);
+                        const colorMatch = text.match(/Colour?:\s*([^,]+)/i);
+                        const chakraMatch = text.match(/Chakra:\s*([^.]+)/i);
+                        const planetMatch = text.match(/Planet:\s*(\w+)/i);
+                        const mantraMatch = text.match(/Mantra[^:]*:\s*([^\d]+\d+\s*times\/day)/i);
+                        return (
+                          <>
+                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                              <div className="text-xs text-gray-500 uppercase mb-1">Color</div>
+                              <div className="font-semibold text-purple-800">{colorMatch?.[1]?.trim() || 'N/A'}</div>
                             </div>
-                          );
-                        })}
-                      </div>
+                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                              <div className="text-xs text-gray-500 uppercase mb-1">Chakra</div>
+                              <div className="font-semibold text-purple-800">{chakraMatch?.[1]?.trim().split('.')[0] || 'N/A'}</div>
+                            </div>
+                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                              <div className="text-xs text-gray-500 uppercase mb-1">Planet</div>
+                              <div className="font-semibold text-purple-800">{planetMatch?.[1]?.trim() || 'N/A'}</div>
+                            </div>
+                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                              <div className="text-xs text-gray-500 uppercase mb-1">Mantra</div>
+                              <div className="font-semibold text-purple-800 text-xs">{mantraMatch?.[1]?.trim().split(' ')[0] || 'N/A'}</div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                    
+                    {/* Detailed Info Accordion */}
+                    <div className="bg-white rounded-lg border border-purple-100 overflow-hidden">
+                      <details className="group">
+                        <summary className="px-4 py-3 bg-purple-100 cursor-pointer font-semibold text-purple-800 flex justify-between items-center">
+                          View Full Life Path Details
+                          <span className="group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div className="p-4 max-h-80 overflow-y-auto">
+                          <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+                            {getLifePathMeaning(numerology.lifePathNumber).split(/(?=(?:Planet|Angel|Karmic|Healing Method|Remedies|Prayer|Deity|Self-Healing):)/i).map((section, idx) => {
+                              const colonIndex = section.indexOf(':');
+                              if (colonIndex === -1 || colonIndex > 30) return <p key={idx}>{section.trim()}</p>;
+                              
+                              const heading = section.substring(0, colonIndex).trim();
+                              const content = section.substring(colonIndex + 1).trim();
+                              
+                              if (!heading || !content) return null;
+                              
+                              return (
+                                <div key={idx} className="pb-3 border-b border-gray-100 last:border-b-0">
+                                  <h5 className="font-bold text-purple-800 text-xs uppercase mb-1">{heading}</h5>
+                                  <p className="text-gray-600">{content.substring(0, 300)}{content.length > 300 ? '...' : ''}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </details>
                     </div>
                   </div>
                   
