@@ -317,17 +317,17 @@ export default function NumerologyPage() {
       currentY += 3;
       
       // Destiny Number
-      addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true, [59, 130, 246]);
+      addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true, [147, 51, 234]);
       addText(getDestinyMeaning(numerology.destinyNumber), 9);
       currentY += 3;
       
       // Soul Urge Number
-      addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true, [34, 197, 94]);
+      addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true, [147, 51, 234]);
       addText(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description, 9);
       currentY += 3;
       
       // Personality Number (Decision-Making Chakra)
-      addText(`Personality Number (Decision-Making Chakra): ${numerology.personalityNumber}`, 12, true, [249, 115, 22]);
+      addText(`Personality Number (Decision-Making Chakra): ${numerology.personalityNumber}`, 12, true, [147, 51, 234]);
       addText("Most of your decisions will be based on the qualities of this chakra", 9);
       currentY += 3;
       
