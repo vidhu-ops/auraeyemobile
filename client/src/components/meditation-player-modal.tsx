@@ -48,12 +48,22 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
       });
     } else if (meditation.mediaType === 'video' && videoRef.current) {
       if (isPlaying) {
-        videoRef.current.play();
+        videoRef.current.play().catch((err) => {
+          console.error("Video play error:", err);
+          toast({ title: "Playback issue", description: "Please use the video controls to play", variant: "default" });
+        });
       } else {
         videoRef.current.pause();
       }
     }
   }, [isPlaying, meditation]);
+
+  // Apply volume control to video
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume / 100;
+    }
+  }, [volume]);
 
   useEffect(() => {
     if (!meditation) return;
@@ -200,6 +210,13 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                 ref={videoRef}
                 className="w-full max-w-md rounded-2xl bg-black"
                 controls
+                playsInline
+                preload="auto"
+                onLoadedData={() => {
+                  if (videoRef.current) {
+                    videoRef.current.volume = volume / 100;
+                  }
+                }}
               >
                 <source src={meditation.mediaUrl} type="video/mp4" />
                 Your browser does not support the video tag.
