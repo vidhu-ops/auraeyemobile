@@ -527,7 +527,7 @@ export default function HomePage() {
                     <Camera className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Aura Analysis</h3>
-                  <p className="text-xs text-gray-300 mt-1">15 credits</p>
+                  <p className="text-xs text-gray-300 mt-1">5 credits</p>
                 </CardContent>
               </Card>
             </Link>
