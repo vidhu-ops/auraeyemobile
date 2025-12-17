@@ -2894,7 +2894,7 @@ export default function HealerDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <Link href="/vibe">
+                <Link to="/vibe">
                   <Card className="bg-gradient-to-br from-violet-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Circle className="h-8 w-8 text-white mx-auto mb-2" />
@@ -2904,7 +2904,7 @@ export default function HealerDashboard() {
                   </Card>
                 </Link>
 
-                <Link href="/aura-analysis">
+                <Link to="/aura-analysis">
                   <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Camera className="h-8 w-8 text-white mx-auto mb-2" />
@@ -2914,7 +2914,7 @@ export default function HealerDashboard() {
                   </Card>
                 </Link>
 
-                <Link href="/numerology">
+                <Link to="/numerology">
                   <Card className="bg-gradient-to-br from-cyan-500 to-blue-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Calculator className="h-8 w-8 text-white mx-auto mb-2" />
@@ -2924,7 +2924,7 @@ export default function HealerDashboard() {
                   </Card>
                 </Link>
 
-                <Link href="/object-analysis">
+                <Link to="/object-analysis">
                   <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Eye className="h-8 w-8 text-white mx-auto mb-2" />
@@ -2934,7 +2934,7 @@ export default function HealerDashboard() {
                   </Card>
                 </Link>
 
-                <Link href="/daily-horoscope">
+                <Link to="/daily-horoscope">
                   <Card className="bg-gradient-to-br from-pink-500 to-purple-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Sparkles className="h-8 w-8 text-white mx-auto mb-2" />
@@ -2944,7 +2944,7 @@ export default function HealerDashboard() {
                   </Card>
                 </Link>
 
-                <Link href="/healers">
+                <Link to="/healers">
                   <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-0 shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
                     <CardContent className="p-4 text-center">
                       <Users className="h-8 w-8 text-white mx-auto mb-2" />
