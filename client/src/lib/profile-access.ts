@@ -15,10 +15,10 @@ export function canAccessAuraAnalysis(userType: string | undefined): boolean {
 
 /**
  * Check if user can access object scanning
- * Only full healers can access object scanning
+ * All users (clients and healers) can access object scanning
  */
 export function canAccessObjectScanning(userType: string | undefined): boolean {
-  return userType === "healer";
+  return userType === "client" || userType === "healer" || userType === "semi-healer";
 }
 
 /**
