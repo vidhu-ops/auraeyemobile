@@ -70,10 +70,10 @@ export async function generateParticleAuraEffect(
       // Bias particles toward the face area with reduced exclusion
       if (distanceFromFace > faceRadius * 0.8) {
         // Larger particles with higher opacity for denser appearance
-        const size = Math.random() * 20 + 8; // 8-28px radius (larger)
+        const size = Math.random() * 30 + 15; // 15-45px radius (increased from 8-28)
         const opacity = Math.random() * 0.35 + 0.65; // 0.65-1.0 opacity
         
-        particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#blur)" />`;
+        particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#shadow)" />`;
         placedParticles++;
       }
       
@@ -85,6 +85,17 @@ export async function generateParticleAuraEffect(
       <defs>
         <filter id="blur">
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+        <filter id="shadow">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+          <feOffset dx="2" dy="2" result="offsetblur" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.3" />
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
         <radialGradient id="glow" cx="50%" cy="35%">
           <stop offset="0%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0.25" />
