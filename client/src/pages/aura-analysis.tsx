@@ -2152,15 +2152,27 @@ Team AuraEye™
       pdf.setTextColor(60, 60, 60);
       
       // Detected Aura Colors section
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Detected Aura Colors:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText('The colored energy field visible around you in your specialized aura photograph reveals your spiritual signature:', 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
       // Dominant Aura Color with complete info
       const dominantColorInfo = getColorCompleteInfo(thinkingColorName);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Dominant Aura (Thinking Colour): ${thinkingColorName}`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(`POSITIVE ${dominantColorInfo.chakra} | Meaning: ${dominantColorInfo.number}`, 25, yPosition, pageWidth - 50, 5);
       yPosition += 5;
       yPosition = addWrappedText(dominantColorInfo.shadowMeaning, 25, yPosition, pageWidth - 50, 5);
@@ -2168,68 +2180,130 @@ Team AuraEye™
       
       // Personality Color with complete info
       const personalityColorInfo = getColorCompleteInfo(personalityColorName);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Personality Color: ${personalityColorName}`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(`POSITIVE ${personalityColorInfo.chakra} | Meaning: ${personalityColorInfo.number}`, 25, yPosition, pageWidth - 50, 5);
       yPosition += 5;
       yPosition = addWrappedText(personalityColorInfo.shadowMeaning, 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
       // Aura Size
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Aura Size:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(`Energy Level: ${result.energyLevel}/10 - ${getEnergyLevelDescription(result.energyLevel)}`, 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
       // Personality Traits
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Personality Traits:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(result.personalityTraits.join(', '), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
       // Personality Integration
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Personality Integration:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText('Your aura field reveals these dominant traits that combine to form your unique spiritual signature. These characteristics are energetically embedded in your personal vibration and influence how you interact with the world.', 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`${thinkingColorName} Energy Influence:`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(`Your dominant ${thinkingColorName.toLowerCase()} aura creates a personality foundation of ${getColorPersonalityInfluence(thinkingColorName)}`, 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
       
       // Core Personality Traits with explanations
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Core Personality Traits:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       result.personalityTraits.forEach((trait) => {
+        pdf.setFont('helvetica', 'bold');
         yPosition = addWrappedText(`• ${trait}`, 30, yPosition, pageWidth - 55);
         yPosition += 5;
+        pdf.setFont('helvetica', 'normal');
         yPosition = addWrappedText(getTraitExplanation({ trait, color: thinkingColorName }), 35, yPosition, pageWidth - 60, 5);
         yPosition += 6;
       });
       yPosition += 8;
       
       // Natural Strengths
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(22, 101, 52);
       yPosition = addWrappedText('Natural Strengths:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getPersonalityStrengths(thinkingColorName, result.personalityTraits), 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
       
       // Growth Opportunities
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(180, 83, 9);
       yPosition = addWrappedText('Growth Opportunities:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getPersonalityGrowthAreas({ color: thinkingColorName, traits: result.personalityTraits }), 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
       
       // Relationship Dynamics
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(159, 18, 57);
       yPosition = addWrappedText('Relationship Dynamics:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getRelationshipDynamics(thinkingColorName, result.secondaryColor), 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
       
       // Career & Life Path Alignment
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 64, 175);
       yPosition = addWrappedText('Career & Life Path Alignment:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getCareerAlignment(thinkingColorName, result.personalityTraits), 30, yPosition, pageWidth - 55, 5);
       yPosition += 10;
 
@@ -2247,23 +2321,47 @@ Team AuraEye™
       pdf.setFontSize(10);
       pdf.setTextColor(60, 60, 60);
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Thinking Energy (Crown Zone) - ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getThinkingEnergyMeaning(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Receiving Energy (Left Zone) - ${receivingColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getReceivingEnergyMeaning(receivingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Giving Energy (Right Zone) - ${givingColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getGivingEnergyMeaning(givingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Personality Energy (Heart Zone) - ${personalityColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getPersonalityEnergyMeaning(personalityColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
@@ -2273,24 +2371,45 @@ Team AuraEye™
         yPosition = 20;
       }
       
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Spiritual & Emotional Insights:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Current Life Phase:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getCurrentLifePhase(thinkingColorName, result.secondaryColor), 30, yPosition, pageWidth - 55, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Spiritual Strengths:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       result.personalityTraits.slice(0, 3).forEach((trait) => {
         yPosition = addWrappedText(`• ${trait} nature`, 30, yPosition, pageWidth - 55);
         yPosition += 5;
       });
       yPosition += 5;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Recommended Focus Areas:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       getRecommendedFocusAreas(result).forEach((area) => {
         yPosition = addWrappedText(`• ${area}`, 30, yPosition, pageWidth - 55, 5);
         yPosition += 5;
@@ -2311,23 +2430,47 @@ Team AuraEye™
       pdf.setFontSize(10);
       pdf.setTextColor(60, 60, 60);
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Spiritual Guidance:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(result.spiritualGuidance || `Your ${result.dominantColor} aura carries deep spiritual significance.`, 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Meditation Focus for ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getColorMeditationFocus(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Energy Work for ${thinkingColorName}:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getColorEnergyWork(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`Chakra Alignment Guidance:`, 20, yPosition, pageWidth - 40);
       yPosition += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(getColorChakraGuidance(thinkingColorName), 25, yPosition, pageWidth - 50, 5);
       yPosition += 10;
       
@@ -2337,12 +2480,21 @@ Team AuraEye™
         yPosition = 20;
       }
       
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Traditional Color Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText(`${thinkingColorName} - Primary Crown Energy:`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
       
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText(`Positive: ${getPositiveTraits(thinkingColorName)}`, 30, yPosition, pageWidth - 55);
       yPosition += 5;
       yPosition = addWrappedText(getPositiveDescription(thinkingColorName), 35, yPosition, pageWidth - 60, 5);
@@ -2358,7 +2510,13 @@ Team AuraEye™
       yPosition = addWrappedText(getDetailedPlacement(thinkingColorName), 35, yPosition, pageWidth - 60, 5);
       yPosition += 10;
       
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(75, 85, 99);
       yPosition = addWrappedText('Secondary & Supporting Colors:', 25, yPosition, pageWidth - 50);
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
       yPosition += 5;
       yPosition = addWrappedText(`${result.secondaryColor} - Location: near lower abdomen`, 30, yPosition, pageWidth - 55);
       yPosition += 5;
