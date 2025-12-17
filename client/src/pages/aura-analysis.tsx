@@ -6580,8 +6580,13 @@ Team AuraEye™
             // Generate aura visualization using canvas overlay
             if (base64String) {
               setAnalysisStage("Creating your aura visualization...");
-              generateAuraVisualization(base64String, analysisResult);
-              setAnalysisStage("Aura visualization complete!");
+              try {
+                generateAuraVisualization(base64String, analysisResult);
+                setAnalysisStage("Aura visualization complete!");
+              } catch (vizError) {
+                console.error("Visualization error (non-fatal):", vizError);
+                setAnalysisStage("Analysis complete!");
+              }
             } else {
               setProcessedAuraImage(base64String || '');
               setAnalysisStage("Analysis complete!");
