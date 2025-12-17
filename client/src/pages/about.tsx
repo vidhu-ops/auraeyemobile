@@ -39,7 +39,7 @@ export default function About() {
         </section>
         
         {/* Our story section */}
-        <section className="py-16 bg-gradient-ethereal">
+        <section className="py-16 bg-gradient-cosmic">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
@@ -75,7 +75,7 @@ export default function About() {
         </section>
         
         {/* Mission and values */}
-        <section className="py-16 bg-gradient-mystical relative overflow-hidden">
+        <section className="py-16 bg-gradient-cosmic relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-mystical font-bold text-3xl mb-4 text-white">Our Mission & Values</h2>
