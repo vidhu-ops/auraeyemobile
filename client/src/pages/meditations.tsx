@@ -21,6 +21,11 @@ const meditationCategories = [
   { id: "calm", name: "Calm", icon: Flame, color: "from-amber-500 to-orange-500" }
 ];
 
+import meditationImage1 from "@assets/image_1747689434719.png";
+import meditationImage2 from "@assets/image_1748525842988.png";
+import meditationImage3 from "@assets/image_1747742524489.png";
+import meditationImage4 from "@assets/image_1749077929275.png";
+
 const meditations = [
   {
     id: 1,
@@ -31,7 +36,8 @@ const meditations = [
     description: "Begin your day with a journey with luminous breathing that awakens yo...",
     category: "breathe",
     color: "from-cyan-400 to-blue-500",
-    tag: "Breathing"
+    tag: "Breathing",
+    image: meditationImage1
   },
   {
     id: 2,
@@ -42,7 +48,8 @@ const meditations = [
     description: "Channel the energy of distant stars to enhance your mental clarity an...",
     category: "focus",
     color: "from-purple-500 to-violet-600",
-    tag: "Mindfulness"
+    tag: "Mindfulness",
+    image: meditationImage2
   },
   {
     id: 3,
@@ -53,7 +60,8 @@ const meditations = [
     description: "Flow with the gentle waves of tranquility and inner peace...",
     category: "calm",
     color: "from-blue-400 to-cyan-500",
-    tag: "Relaxation"
+    tag: "Relaxation",
+    image: meditationImage3
   },
   {
     id: 4,
@@ -64,7 +72,8 @@ const meditations = [
     description: "Transform your energy through the power of inner fire...",
     category: "breathe",
     color: "from-orange-500 to-red-500",
-    tag: "Energy"
+    tag: "Energy",
+    image: meditationImage4
   },
   {
     id: 6,
@@ -76,6 +85,7 @@ const meditations = [
     category: "calm",
     color: "from-blue-600 to-purple-600",
     tag: "Relaxation",
+    image: meditationImage1,
     mediaUrl: "https://youtu.be/hvDvJW42Yd0",
     mediaType: "youtube"
   },
@@ -89,7 +99,8 @@ const meditations = [
     category: "calm",
     color: "from-emerald-400 to-teal-500",
     tag: "Healing",
-    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.47_PM_1765966899854.mp4",
+    image: meditationImage3,
+    mediaUrl: "/attached_assets/WhatsApp_Video_2025-12-17_at_3.50.47_PM_1765966899854.mp4",
     mediaType: "video"
   },
   {
@@ -102,7 +113,8 @@ const meditations = [
     category: "focus",
     color: "from-yellow-400 to-orange-500",
     tag: "Energy",
-    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4",
+    image: meditationImage2,
+    mediaUrl: "/attached_assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4",
     mediaType: "video"
   }
 ];

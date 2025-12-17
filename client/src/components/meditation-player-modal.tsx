@@ -173,7 +173,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
             <button
               onClick={onClose}
               className="rounded-full bg-white/20 hover:bg-white/30 p-1"
-              data-testid="button-close-player"
+              data-testid="button-close-meditation"
             >
               <X className="h-4 w-4 text-white" />
             </button>
