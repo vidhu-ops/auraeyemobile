@@ -9516,8 +9516,7 @@ Team AuraEye™
                                     })()}
                                     <div className="flex justify-between text-sm mb-1">
                                       <span className="font-medium">Soul Star Chakra</span>
-                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%) - 
-                                        {getChakraStatus(result.chakraActivity?.soulstar || 5)})</span>
+                                      <span className="text-gray-700">{Math.round(calculateSoulStarChakra(result)/10)}/10 ({calculateSoulStarChakra(result)}%) - {getChakraStatus(Math.round(calculateSoulStarChakra(result)/10))}</span>
                                     </div>
                                   </div>
                                   <Progress value={calculateSoulStarChakra(result)} className="h-3 bg-gray-100" />
