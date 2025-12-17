@@ -7839,20 +7839,7 @@ Team AuraEye™
                           <TabsContent value="spectrum" data-tab="spectrum">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('spectrum')}
-                                disabled={isCapturingScreenshot === 'spectrum'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'spectrum' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'spectrum' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                              
                             </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">

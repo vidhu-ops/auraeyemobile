@@ -49,6 +49,48 @@ const getColorHex = (colorName: string): string => {
   return colorToHex[colorName] || '#4A90E2';
 };
 
+// Helper function to get color RGB values for aura visualization
+const getColorRGB = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    'Red': '255, 0, 0',
+    'Orange': '255, 165, 0',
+    'Yellow': '255, 255, 0',
+    'Green': '0, 255, 0',
+    'Blue': '0, 0, 255',
+    'Violet': '138, 43, 226',
+    'Indigo': '75, 0, 130',
+    'White': '255, 255, 255',
+    'Brown': '165, 42, 42',
+    'Gold': '255, 215, 0',
+    'Silver': '192, 192, 192',
+    'Black': '0, 0, 0',
+    'Pink': '255, 105, 180',
+  };
+  return colorMap[color] || '138, 43, 226';
+};
+
+// Add watermark to image
+const addWatermark = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
+  const centerX = canvasWidth / 2;
+  const centerY = canvasHeight / 2;
+  
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = 'white';
+  ctx.font = '100px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  
+  ctx.fillText('AuraEye™', centerX, centerY);
+  
+  ctx.restore();
+};
+
 export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -57,6 +99,7 @@ export default function VibePage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<'positive' | 'negative' | null>(null);
   const [showPremiumVideo, setShowPremiumVideo] = useState(false);
   const [showMeditationVideo, setShowMeditationVideo] = useState(false);
@@ -64,6 +107,170 @@ export default function VibePage() {
   const [showPostMeditationOptions, setShowPostMeditationOptions] = useState(false);
   const [showPremiumPdf, setShowPremiumPdf] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Process image with aura visualization and watermark (from home-page.tsx)
+  const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
+    const img = new Image();
+    img.src = imageBase64;
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      
+      const colorRGB = getColorRGB(dominantColor);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const personRadius = Math.min(canvas.width, canvas.height) * 0.25;
+      
+      const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
+      
+      let seed = dominantColor.charCodeAt(0) + canvas.width + canvas.height;
+      const seededRandom = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
+      
+      // LAYER 1: Ultra-dense background smoke
+      ctx.save();
+      ctx.filter = 'blur(40px)';
+      ctx.globalCompositeOperation = 'multiply';
+      for (let i = 0; i < 300; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.5) continue;
+        
+        const radius = 30 + seededRandom() * 150;
+        const opacity = 0.35 + seededRandom() * 0.45;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 2: Dense medium smoke particles
+      ctx.save();
+      ctx.filter = 'blur(25px)';
+      ctx.globalCompositeOperation = 'soft-light';
+      for (let i = 0; i < 400; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.4) continue;
+        
+        const radius = 20 + seededRandom() * 80;
+        const opacity = 0.25 + seededRandom() * 0.35;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 3: Super dense small particles
+      ctx.save();
+      ctx.filter = 'blur(18px)';
+      ctx.globalCompositeOperation = 'overlay';
+      for (let i = 0; i < 500; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.3) continue;
+        
+        const radius = 8 + seededRandom() * 40;
+        const opacity = 0.2 + seededRandom() * 0.3;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 4: Fine smoke wisps
+      ctx.save();
+      ctx.filter = 'blur(12px)';
+      ctx.globalCompositeOperation = 'color-dodge';
+      for (let i = 0; i < 600; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.3) continue;
+        
+        const radius = 4 + seededRandom() * 20;
+        const opacity = 0.15 + seededRandom() * 0.25;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 5: Perimeter concentrated smoke
+      ctx.save();
+      ctx.filter = 'blur(20px)';
+      ctx.globalCompositeOperation = 'multiply';
+      for (let i = 0; i < 400; i++) {
+        const angle = seededRandom() * Math.PI * 2;
+        const distance = personRadius * 1.6 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
+        
+        const radius = 15 + seededRandom() * 60;
+        const opacity = 0.2 + seededRandom() * 0.35;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      // LAYER 6: Ultra-fine atmospheric mist
+      ctx.save();
+      ctx.filter = 'blur(35px)';
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 200; i++) {
+        const x = seededRandom() * canvas.width;
+        const y = seededRandom() * canvas.height;
+        
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        if (distanceFromCenter < personRadius * 1.2) continue;
+        
+        const radius = 60 + seededRandom() * 120;
+        const opacity = 0.08 + seededRandom() * 0.12;
+        
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      
+      ctx.globalCompositeOperation = 'source-over';
+      addWatermark(ctx, canvas.width, canvas.height);
+      
+      const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
+      setProcessedImage(processedImageBase64);
+    };
+  };
 
   const handleImageSelect = async (file: File) => {
     if (!user) {
@@ -106,6 +313,14 @@ export default function VibePage() {
         visualizedImage: data.visualizedImage || null
       });
       
+      // Process image with client-side aura visualization
+      const reader2 = new FileReader();
+      reader2.onloadend = () => {
+        const imageBase64 = reader2.result as string;
+        processImageWithVibeAura(imageBase64, data.dominantColor);
+      };
+      reader2.readAsDataURL(file);
+      
       // Save last scan color for mascot
       localStorage.setItem("lastAuraColor", data.dominantColor);
       
@@ -139,6 +354,7 @@ export default function VibePage() {
   const resetAnalysis = () => {
     setVibeResult(null);
     setImagePreview(null);
+    setProcessedImage(null);
     setUserFeedback(null);
   };
 
@@ -288,12 +504,12 @@ export default function VibePage() {
                     maxWidth: '400px'
                   }}
                 >
-                  {/* Display visualized image with particle effect if available */}
+                  {/* Display visualized image with aura effect */}
                   <div className="relative w-full h-full flex items-center justify-center bg-black rounded-3xl">
-                    {vibeResult.visualizedImage ? (
+                    {processedImage ? (
                       <img 
-                        src={vibeResult.visualizedImage} 
-                        alt="Your vibe with particle aura" 
+                        src={processedImage} 
+                        alt="Your vibe with aura" 
                         className="w-full h-full object-cover rounded-3xl shadow-2xl"
                       />
                     ) : imagePreview ? (
