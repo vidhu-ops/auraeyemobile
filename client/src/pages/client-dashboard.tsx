@@ -63,6 +63,12 @@ export default function ClientDashboard() {
     enabled: !!user && user.userType === "client",
   });
   
+  // Fetch credit transactions for activity log
+  const { data: creditTransactions = [] } = useQuery({
+    queryKey: ["/api/credit-transactions"],
+    enabled: !!user,
+  });
+  
   // Get tab from URL query parameter, default to "overview"
   const getInitialTab = () => {
     const params = new URLSearchParams(location.split('?')[1] || '');
@@ -298,17 +304,17 @@ export default function ClientDashboard() {
               </Card>
             </div>
 
-            {/* Basic Numerology Info - Client View */}
+            {/* Extended Numerology Info - Client View */}
             {user?.birthDate && (
               <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Calculator className="h-5 w-5 text-purple-400" />
-                    <h3 className="text-white font-semibold">Your Numerology Preview</h3>
+                    <h3 className="text-white font-semibold">Your Numerology Profile</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-purple-900/30 rounded-lg p-3 text-center border border-purple-400/30">
-                      <div className="text-2xl font-bold text-purple-300 mb-1">
+                    <div className="bg-purple-900/30 rounded-lg p-3 border border-purple-400/30">
+                      <div className="text-2xl font-bold text-purple-300 mb-1 text-center">
                         {(() => {
                           const dateStr = user.birthDate.replace(/\D/g, '');
                           let sum = 0;
@@ -317,10 +323,31 @@ export default function ClientDashboard() {
                           return sum;
                         })()}
                       </div>
-                      <div className="text-xs text-purple-200">Life Path</div>
+                      <div className="text-xs text-purple-200 text-center mb-2">Life Path</div>
+                      <p className="text-purple-100 text-xs">{(() => {
+                        const n = (() => {
+                          const dateStr = user.birthDate.replace(/\D/g, '');
+                          let sum = 0;
+                          for (const digit of dateStr) sum += parseInt(digit);
+                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })();
+                        const meanings: Record<number, string> = {
+                          1: 'Leader, ambitious, pioneering, independent',
+                          2: 'Mediator, cooperative, sensitive, intuitive',
+                          3: 'Creator, expressive, social, optimistic',
+                          4: 'Builder, practical, organized, responsible',
+                          5: 'Adventurer, dynamic, curious, freedom-loving',
+                          6: 'Nurturer, compassionate, caring, harmonious',
+                          7: 'Seeker, spiritual, analytical, mysterious',
+                          8: 'Achiever, powerful, ambitious, material-focused',
+                          9: 'Humanitarian, universal, compassionate, completion'
+                        };
+                        return meanings[n] || 'Unique spiritual path';
+                      })()}</p>
                     </div>
-                    <div className="bg-indigo-900/30 rounded-lg p-3 text-center border border-indigo-400/30">
-                      <div className="text-2xl font-bold text-indigo-300 mb-1">
+                    <div className="bg-indigo-900/30 rounded-lg p-3 border border-indigo-400/30">
+                      <div className="text-2xl font-bold text-indigo-300 mb-1 text-center">
                         {(() => {
                           let sum = 0;
                           for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
@@ -340,7 +367,39 @@ export default function ClientDashboard() {
                           return sum;
                         })()}
                       </div>
-                      <div className="text-xs text-indigo-200">Destiny</div>
+                      <div className="text-xs text-indigo-200 text-center mb-2">Destiny Number</div>
+                      <p className="text-indigo-100 text-xs">{(() => {
+                        const n = (() => {
+                          let sum = 0;
+                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
+                            const letterMap: Record<string, number> = {
+                              'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+                              'B': 2, 'K': 2, 'R': 2,
+                              'C': 3, 'G': 3, 'L': 3, 'S': 3,
+                              'D': 4, 'M': 4, 'T': 4,
+                              'E': 5, 'H': 5, 'N': 5, 'X': 5,
+                              'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+                              'Z': 7,
+                              'P': 8
+                            };
+                            sum += letterMap[char.toUpperCase()] || 0;
+                          }
+                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })();
+                        const meanings: Record<number, string> = {
+                          1: 'Your life purpose: lead and innovate',
+                          2: 'Your life purpose: create harmony and peace',
+                          3: 'Your life purpose: express and inspire',
+                          4: 'Your life purpose: build and stabilize',
+                          5: 'Your life purpose: explore and adapt',
+                          6: 'Your life purpose: heal and nurture',
+                          7: 'Your life purpose: discover truth and wisdom',
+                          8: 'Your life purpose: manifest abundance',
+                          9: 'Your life purpose: serve humanity'
+                        };
+                        return meanings[n] || 'Discover your unique purpose';
+                      })()}</p>
                     </div>
                   </div>
                   
@@ -348,7 +407,7 @@ export default function ClientDashboard() {
                   {Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
                     <div className="mt-3 bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-3">
                       <p className="text-yellow-200 text-xs mb-2 text-center">
-                        🔒 Upgrade to access your complete numerology analysis
+                        🔒 Unlock full numerology chart, personal year, & guidance
                       </p>
                       <Link href="/pricing" className="block">
                         <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm">
@@ -358,7 +417,7 @@ export default function ClientDashboard() {
                       </Link>
                     </div>
                   ) : (
-                    <Link href="/pricing" className="block mt-3">
+                    <Link href="/numerology" className="block mt-3">
                       <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm">
                         <Sparkles className="h-4 w-4 mr-2" />
                         View Full Analysis
@@ -866,10 +925,35 @@ export default function ClientDashboard() {
         {/* Activity Tab */}
         {activeTab === "activity" && (
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <Activity className="w-16 h-16 mx-auto mb-4 text-purple-400" />
-              <h3 className="text-white font-bold text-xl mb-2">Recent Activity</h3>
-              <p className="text-cyan-300">Your spiritual journey activities and history will appear here</p>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Activity className="w-5 h-5 text-purple-400" />
+                <h3 className="text-white font-bold text-lg">Your Activity Log</h3>
+              </div>
+              {creditTransactions && creditTransactions.length > 0 ? (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {creditTransactions.map((tx: any, idx: number) => (
+                    <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-colors">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-white font-medium text-sm">{tx.description || tx.transactionType}</span>
+                        <span className={`text-sm font-bold ${tx.amount > 0 ? 'text-green-400' : 'text-orange-400'}`}>
+                          {tx.amount > 0 ? '+' : ''}{tx.amount} credits
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-cyan-300 text-xs capitalize">{tx.transactionType}</span>
+                        <span className="text-gray-400 text-xs">{new Date(tx.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="text-purple-300 text-xs mt-1">Balance: {tx.balanceAfter}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Activity className="w-12 h-12 mx-auto mb-3 text-purple-400/50" />
+                  <p className="text-cyan-300 text-sm">No activity yet. Start exploring!</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
