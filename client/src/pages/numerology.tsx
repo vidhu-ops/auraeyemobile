@@ -876,48 +876,48 @@ export default function NumerologyPage() {
   const getPersonalMonthMeaning = (month: number): { title: string; description: string; theme: string } => {
     const meanings: { [key: number]: { title: string; description: string; theme: string } } = {
       1: {
-        title: "New Beginnings",
-        description: "A month for fresh starts, new projects, and taking initiative. Focus on independence and leadership.",
+        title: "New Beginnings-Solar Plexus Chakra",
+        description: "This month brings the energy of leadership, independence, and self-empowerment. The Solar Plexus Chakra, your center of confidence and personal power, is highly activated this month. Tap into this reservoir of energy to take full charge of your life and emerge as a leader in your chosen field. This is your time to lead others by example, take bold steps, and claim your position of influence. However, remember to temper this enthusiasm with realistic planning. Avoid overestimating your capabilities or taking on more responsibilities than you can manage, as this can lead to frustration and feelings of being overwhelmed.",
         theme: "Initiative and Fresh Energy"
       },
       2: {
-        title: "Cooperation and Balance",
-        description: "A month for partnerships, collaboration, and building relationships. Focus on patience and diplomacy.",
+        title: "Cooperation and Balance-Heart Chakra",
+        description: "This month is about emotional balance, relationships, and introspection. The Heart Chakra is at the forefront, guiding you to reassess your boundaries in personal and professional relationships. Are you giving more than you’re receiving? Are you feeling drained emotionally? This is the time to ask yourself these questions and restore harmony in your connections. Practice forgiveness and compassion, but also learn to say no when necessary to protect your energy",
         theme: "Harmony and Partnerships"
       },
       3: {
-        title: "Creative Expression",
-        description: "A month for artistic pursuits, communication, and social activities. Express your creativity freely.",
+        title: "Creative Expression- Crown Chakra",
+        description: "This month brings the energy of creativity, learning, and spiritual growth. The Crown Chakra, your connection to divine wisdom, is activated, inspiring you to acquire new knowledge and express yourself authentically. This is a month to focus on personal and professional growth. However, ensure that your learning is thorough—half knowledge can lead to misunderstandings or lack of confidence. Speak only from a place of truth and clarity to build trust and respect.",
         theme: "Creativity and Communication"
       },
       4: {
-        title: "Hard Work and Organization",
-        description: "A month for building foundations, being practical, and focusing on details. Discipline brings rewards.",
+        title: "Hard Work and Organization-Earth Star Chakra",
+        description: "This month is about grounding, stability, and putting your knowledge into practice. The Earth Star Chakra anchors you in reality, urging you to stabilize your energy and translate your ideas into action. This is not a month for immediate results but rather for disciplined experimentation and long-term planning. Trust the process and remain committed to your efforts.",
         theme: "Structure and Foundation"
       },
       5: {
-        title: "Freedom and Change",
-        description: "A month for adventure, travel, and embracing change. Seek new experiences and variety.",
+        title: "Freedom and Change- Throat Chakra",
+        description: "This month is dynamic, filled with opportunities for communication, adaptability, and growth. The Throat Chakra encourages you to speak your truth, explore new ideas, and upgrade your mindset. It’s a great time to network and share your knowledge with others. Apply what you’ve learned in practical ways to move your life forward. Engage in meaningful conversations about how you can help others or contribute to their growth.",
         theme: "Adventure and Flexibility"
       },
       6: {
-        title: "Responsibility and Nurturing",
-        description: "A month for family, home, and caring for others. Focus on service and creating harmony.",
+        title: "Responsibility and Nurturing-Sacral Chakra",
+        description: "This month brings creativity, emotional flow, and healing. The Sacral Chakra governs this month, encouraging you to embrace your creative potential and release emotional burdens like guilt or shame. This is the time to channel your energy into creating the life you desire. If you feel stuck, tap into your intuitive energy to identify blockages and take intentional steps toward healing and growth.",
         theme: "Service and Family"
       },
       7: {
-        title: "Spiritual Reflection",
-        description: "A month for introspection, research, and spiritual growth. Take time for inner development.",
+        title: "Spiritual Reflection-Soul Star Chakra",
+        description: "This is a month of introspection, spiritual alignment, and reflection. The Soul Star Chakra activates, urging you to step back, meditate, and evaluate your progress. If things aren’t going as planned, use this time to assess feedback and identify lessons. This is not a time for rushing forward but for aligning your inner vision with your outer actions.",
         theme: "Wisdom and Introspection"
       },
       8: {
-        title: "Material Achievement",
-        description: "A month for business success, financial gains, and material accomplishments. Focus on practical results.",
+        title: "Material Achievement-ThirdEye Chakra",
+        description: "This month is about clarity, vision, and decisive action. The Third Eye Chakra empowers you to trust your intuition and take the next steps with complete confidence. This is the time to act on what you’ve learned, using your inner wisdom to guide you toward your goals. Be mindful to maintain focus and avoid second-guessing your instincts.",
         theme: "Success and Recognition"
       },
       9: {
-        title: "Completion and Service",
-        description: "A month for finishing projects, letting go, and humanitarian service. Prepare for new cycles.",
+        title: "Completion and Service-Root Chakra",
+        description: "This month brings the energy of completion, grounding, and action. The Root Chakra activates, urging you to take charge of your life and focus on what’s working. Let go of what isn’t serving you, and channel your energy into areas where progress is evident. This is the time to consolidate your efforts and prepare for the next cycle.",
         theme: "Completion and Giving"
       }
     };
