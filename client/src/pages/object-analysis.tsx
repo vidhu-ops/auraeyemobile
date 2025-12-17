@@ -20,6 +20,7 @@ import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface ObjectAnalysisResult {
+  newBadges: boolean;
   id?: number;
   objectName: string;
   objectDescription: string;
