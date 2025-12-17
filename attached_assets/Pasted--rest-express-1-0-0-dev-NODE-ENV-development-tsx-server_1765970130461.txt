@@ -1,0 +1,74 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+✅ Web Push configured with VAPID keys
+
+=== TWILIO WHATSAPP SANDBOX SETUP ===
+Important: For users to receive WhatsApp messages via Twilio sandbox:
+1. Users must first send "join palace-stuck" to +1 415 523 8886 on WhatsApp
+2. They will receive a confirmation message
+3. Then they can receive OTP messages
+4. If users are not getting messages, they need to complete step 1 first
+========================================
+
+Initializing WhatsApp service...
+WhatsApp service initialized with Twilio
+11:13:32 AM [express] serving on host 0.0.0.0 port 5000
+🔮 Starting daily horoscope cron job...
+✅ Daily horoscope cron job initialized
+🔔 Starting bi-hourly notification scheduler...
+📅 Notifications will be sent every 2 hours to healers and clients
+✅ Bi-hourly notification scheduler initialized
+Healers already seeded
+Healer data seeded successfully
+🚀 Pre-populating horoscope cache on startup...
+Fetching fresh horoscope for aries...
+Fetching fresh horoscope for taurus...
+Fetching fresh horoscope for gemini...
+✓ Horoscope cached for taurus
+✓ Horoscope cached for aries
+✓ Horoscope cached for gemini
+✅ Startup horoscope cache population completed
+Healer login attempt for: vidhu.gupta
+Stored healer password starts with: 6ea858c0c2...
+Password comparison result: true
+11:13:47 AM [express] POST /api/login 200 in 1465ms :: {"id":39,"username":"vidhu.gupta","userType":"…
+Browserslist: browsers data (caniuse-lite) is 14 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[BABEL] Note: The code generator has deoptimised the styling of /home/runner/workspace/client/src/pages/aura-analysis.tsx as it exceeds the max of 500KB.
+Processing image for aura analysis (human detection relaxed for reliability)
+Original image size: 43.1KB
+Compressed to 29.9KB with quality 80 (target: 20KB)
+Compressed to 25.0KB with quality 75 (target: 20KB)
+Compressed to 21.8KB with quality 70 (target: 20KB)
+Compressed to 19.8KB with quality 65 (target: 20KB)
+✅ Final standardized image: 19.8KB, dimensions: 700x500px
+📐 Verified dimensions: 700x500px
+Image compression successful for analysis
+Preparing image for aura visualization display...
+Aura display image: 61.4KB with quality 90
+Aura display image: 47.6KB with quality 85
+✅ Aura display image ready: 47.6KB, dimensions: 600x900px
+Found existing analysis for this image content, using consistent results
+Aura reading saved successfully with ID: 2216
+Analysis result now includes ID: 2216
+Credit deduction check: user=true, userId=39, creditCost=5
+Credit deduction result: true, deducted 5 credits for aura analysis
+⚡ Added +500 soul energy to user 39 for aura analysis completion (5 credits × 100)
+Aura analysis completed successfully
+Final response includes ID: 2216
+Error analyzing aura: TypeError: Cannot read properties of undefined (reading 'length')
+    at <anonymous> (/home/runner/workspace/server/routes.ts:1871:52)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+/home/runner/workspace/server/routes.ts:1903
+        name: analysisName
+              ^
+
+
+ReferenceError: analysisName is not defined
+    at <anonymous> (/home/runner/workspace/server/routes.ts:1903:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+Node.js v20.19.3
