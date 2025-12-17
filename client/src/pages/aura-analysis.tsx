@@ -7619,7 +7619,7 @@ Team AuraEye™
                                 </div>
                               </div>
 
-                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              <h3 className="font-bold text-2xl text-purple-900 mb-4">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
@@ -7843,7 +7843,7 @@ Team AuraEye™
                             </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
-                                <h3 className="font-medium text-xl mb-2">Complete Aura Color Spectrum Analysis</h3>
+                                <h3 className="font-bold text-2xl text-purple-900 mb-3">Complete Aura Color Spectrum Analysis</h3>
                                 <p className="text-sm text-gray-600">
                                   Detailed breakdown of all colors detected in your aura field with accurate color representations
                                 </p>
@@ -7851,7 +7851,7 @@ Team AuraEye™
 
                               {/* Complete Spectrum Visualization - Moved to Top */}
                               <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Your Complete Aura Spectrum</h4>
+                                <h4 className="font-bold text-xl text-purple-800">Your Complete Aura Spectrum</h4>
                                 <div className="bg-black rounded-lg p-6 relative overflow-hidden">
                                   <div className="flex justify-center items-center space-x-4">
                                     <div className="relative">
@@ -7871,7 +7871,7 @@ Team AuraEye™
 
                               {/* Life Score Analysis Based on Chakra Activity */}
                               <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg p-6 border border-rose-200">
-                                <h4 className="font-medium text-xl mb-4 text-rose-800">Life Score Analysis</h4>
+                                <h4 className="font-bold text-2xl mb-4 text-rose-800">Life Score Analysis</h4>
                                 <p className="text-sm text-gray-600 mb-6">
                                   Your chakra activity levels create specific life patterns. These scores reveal your current strengths and areas for growth.
                                 </p>
@@ -8139,7 +8139,7 @@ Team AuraEye™
                              
                               {/* Color Harmony Analysis */}
                               <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Color Harmony & Energy Flow</h4>
+                                <h4 className="font-bold text-xl">Color Harmony & Energy Flow</h4>
                                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
                                   <div className="space-y-3">
                                     <div>
@@ -8184,7 +8184,7 @@ Team AuraEye™
                             </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
-                                <h3 className="font-medium text-xl mb-2">Energy Map & Color Analysis</h3>
+                                <h3 className="font-bold text-2xl text-purple-900 mb-3">Energy Map & Color Analysis</h3>
                                 <p className="text-sm text-gray-600">
                                   Complete breakdown of your dominant energy and supporting color influences
                                 </p>
@@ -8237,7 +8237,7 @@ Team AuraEye™
                               <div className="space-y-6">
                                 {/* 4-Zone Energy Visualization */}
                                 <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
-                                  <h4 className="font-semibold text-lg mb-4 text-center">Your 4-Zone Energy Map</h4>
+                                  <h4 className="font-bold text-xl mb-4 text-center text-purple-800">Your 4-Zone Energy Map</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {/* Receiving Energy */}
                                     <div className="bg-white border rounded-lg p-4 shadow-sm">
@@ -9543,7 +9543,7 @@ Team AuraEye™
                                 </div>
                               </div>
 
-                              <h3 className="font-medium text-lg">9-Chakra Energy System Analysis</h3>
+                              <h3 className="font-bold text-2xl text-purple-900 mb-4">9-Chakra Energy System Analysis</h3>
                               
                               <div className="space-y-4">
 
@@ -10044,7 +10044,7 @@ Team AuraEye™
                                   <div className="bg-white rounded-lg p-5 border border-gray-400">
                                     <div className="flex items-center mb-4">
                                       <div className="w-6 h-6 rounded-full bg-yellow-600 mr-3"></div>
-                                      <h5 className="font-semibold text-lg text-yellow-800">Earth Star Chakra (Prithvi) Healing</h5>
+                                      <h5 className="font-bold text-xl text-yellow-800">Earth Star Chakra (Prithvi) Healing</h5>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
@@ -10074,7 +10074,7 @@ Team AuraEye™
                                   <div className="bg-white rounded-lg p-5 border border-pink-200">
                                     <div className="flex items-center mb-4">
                                       <div className="w-6 h-6 rounded-full bg-pink-300 mr-3"></div>
-                                      <h5 className="font-semibold text-lg text-pink-800">Soul Star Chakra (Antahkarana) Healing</h5>
+                                      <h5 className="font-bold text-xl text-pink-800">Soul Star Chakra (Antahkarana) Healing</h5>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
@@ -10104,7 +10104,7 @@ Team AuraEye™
 
                                 {/* General Healing Instructions */}
                                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-200 mt-6">
-                                  <h5 className="font-semibold text-lg text-blue-800 mb-3">Universal Healing Guidelines</h5>
+                                  <h5 className="font-bold text-xl text-blue-800 mb-3">Universal Healing Guidelines</h5>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                       <h6 className="font-medium text-sm text-gray-800 mb-2">Affirmation Practice</h6>
@@ -10135,7 +10135,7 @@ Team AuraEye™
 
                               {/* Chakra Summary */}
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
-                                <h4 className="font-medium text-lg mb-3">Your Chakra Profile</h4>
+                                <h4 className="font-bold text-xl mb-3 text-purple-800">Your Chakra Profile</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   {(() => {
                                     // Calculate raw averages for each chakra group (9 chakras total)
@@ -10223,7 +10223,7 @@ Team AuraEye™
 
                                 {/* Enhanced guidance based on colors */}
                                 <div className="bg-white rounded-lg p-4 border border-purple-200 mb-4">
-                                  <h4 className="font-medium text-purple-800 mb-3">Aura Color Meanings</h4>
+                                  <h4 className="font-bold text-xl text-purple-800 mb-3">Aura Color Meanings</h4>
                                   
                                   <div className="space-y-3">
                                     <div className="flex items-start gap-3">
@@ -10289,7 +10289,7 @@ Team AuraEye™
 
                                 {/* Spiritual practices and recommendations */}
                                 <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
-                                  <h4 className="font-medium text-amber-800 mb-3">Recommended Spiritual Practices</h4>
+                                  <h4 className="font-bold text-xl text-amber-800 mb-3">Recommended Spiritual Practices</h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                       <p className="text-xs font-medium text-amber-700 mb-1">Meditation Focus</p>
@@ -10391,7 +10391,7 @@ Team AuraEye™
 
                               {/* Traditional Color Analysis - Copied from Energy Map Tab */}
                               <div className="space-y-6 mt-8">
-                                <h3 className="font-semibold text-lg text-gray-800 mb-6">Traditional Color Analysis</h3>
+                                <h3 className="font-bold text-2xl text-gray-800 mb-6">Traditional Color Analysis</h3>
                                 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                   {/* Primary Color Details */}
@@ -10518,7 +10518,7 @@ Team AuraEye™
                             <div>
                               <div className="mb-6 relative">
                               
-                                <h3 className="font-medium text-lg mb-5 text-primary">Advanced Aura Field Analysis</h3>
+                                <h3 className="font-bold text-2xl mb-5 text-primary">Advanced Aura Field Analysis</h3>
                                 
                                 {/* Premium Aura Visualization */}
                                 <div className="relative h-56 mb-6 overflow-hidden rounded-lg">
@@ -10603,7 +10603,7 @@ Team AuraEye™
                                 </div>
                                 
                                 <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/10">
-                                  <h4 className="font-medium text-base mb-3">Specialized Aura Interpretation</h4>
+                                  <h4 className="font-bold text-lg mb-3">Specialized Aura Interpretation</h4>
                                   <div className="text-gray-700 mb-5 space-y-3">
                                     {(() => {
                                       // Parse the detailed analysis to separate different aspects
@@ -10860,7 +10860,7 @@ Team AuraEye™
                         {isHealer && result && (
                           <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
                             <div className="flex items-center justify-between mb-3">
-                              <h3 className="font-medium text-lg text-purple-800">Professional Healer Notes</h3>
+                              <h3 className="font-bold text-xl text-purple-800">Professional Healer Notes</h3>
                               <Badge variant="secondary" className="bg-purple-100 text-purple-800">
                                 Healer Only
                               </Badge>
