@@ -36,6 +36,15 @@ function checkCredits(serviceType: string) {
     const userCredits = await storage.getUserCredits(userId);
     const requiredCredits = await storage.getCreditCost(userId, serviceType);
     
+    // Check if service is unavailable for this user type (-1 indicates unavailable)
+    if (requiredCredits === -1) {
+      return res.status(403).json({ 
+        error: "Service not available",
+        message: `This service is not available for your account type.`,
+        service: serviceType
+      });
+    }
+    
     if (userCredits < requiredCredits) {
       return res.status(402).json({ 
         error: "Insufficient credits",
@@ -63,6 +72,15 @@ function optionalCheckCredits(serviceType: string) {
     const userId = req.user.id;
     const userCredits = await storage.getUserCredits(userId);
     const requiredCredits = await storage.getCreditCost(userId, serviceType);
+    
+    // Check if service is unavailable for this user type (-1 indicates unavailable)
+    if (requiredCredits === -1) {
+      return res.status(403).json({ 
+        error: "Service not available",
+        message: `This service is not available for your account type.`,
+        service: serviceType
+      });
+    }
     
     if (userCredits < requiredCredits) {
       return res.status(402).json({ 
@@ -2240,8 +2258,13 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
     }
   });
 
-  app.post("/api/numerology", async (req, res) => {
+  app.post("/api/numerology", isAuthenticated, checkCredits('numerology'), async (req, res) => {
     try {
+      // Check if client - numerology not available for clients
+      if (req.user.userType === 'client') {
+        return res.status(403).json({ message: "Numerology readings are not available for client accounts. Please upgrade to a healer account." });
+      }
+
       const { name, birthDate } = req.body;
       
       console.log('Received numerology request:', { name, birthDate });
@@ -2258,29 +2281,30 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         console.log('Returning numerology profile:', numerologyProfile);
         
-        // Save the numerology reading if user is authenticated
-        if (req.isAuthenticated() && req.user) {
-          await storage.saveNumerologyReading({
-            userId: req.user.id,
-            performedBy: req.user.userType === 'healer' ? req.user.id : null,
-            name,
-            birthDate,
-            lifePathNumber: numerologyProfile.lifePathNumber,
-            destinyNumber: numerologyProfile.destinyNumber,
-            soulUrgeNumber: numerologyProfile.soulUrgeNumber,
-            personalityNumber: numerologyProfile.personalityNumber,
-            personalYearNumber: numerologyProfile.personalYearNumber || 5,
-            interpretation: numerologyProfile.interpretation
-          });
-          
-          // Add soul energy (credits * 100) for completing numerology analysis
-          try {
-            const soulEnergyAmount = (req.creditCost || 3) * 100;
-            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
-            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
-          } catch (soulEnergyError) {
-            console.error("Error adding soul energy:", soulEnergyError);
-          }
+        // Save the numerology reading
+        await storage.saveNumerologyReading({
+          userId: req.user.id,
+          performedBy: req.user.userType === 'healer' || req.user.userType === 'semi-healer' ? req.user.id : null,
+          name,
+          birthDate,
+          lifePathNumber: numerologyProfile.lifePathNumber,
+          destinyNumber: numerologyProfile.destinyNumber,
+          soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+          personalityNumber: numerologyProfile.personalityNumber,
+          personalYearNumber: numerologyProfile.personalYearNumber || 5,
+          interpretation: numerologyProfile.interpretation
+        });
+        
+        // Deduct credits
+        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        
+        // Add soul energy (credits * 100) for completing numerology analysis
+        try {
+          const soulEnergyAmount = (req.creditCost || 3) * 100;
+          await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
+          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
+        } catch (soulEnergyError) {
+          console.error("Error adding soul energy:", soulEnergyError);
         }
       } catch (apiError) {
         console.error("Numerology API error, using fallback:", apiError);
@@ -4704,7 +4728,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Live numerology calculation endpoint (no saving to database) - for healers only
   app.post("/api/numerology-live", isAuthenticated, checkCredits('numerology'), async (req, res) => {
     try {
-      if (req.user.userType !== 'healer') {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
         return res.status(403).json({ message: "Access denied: Not a healer" });
       }
 
@@ -4869,209 +4893,6 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // API endpoint for calculating numerology based on name and birth date
-  app.post("/api/numerology", async (req, res) => {
-    try {
-      console.log("Received numerology request:", req.body);
-      const { name, birthDate } = req.body;
-      
-      if (!name || !birthDate) {
-        return res.status(400).json({ message: "Name and birth date are required" });
-      }
-
-      // Helper functions for numerology calculations
-      const reduceNumber = (num: number): number => {
-        // Reduce ALL numbers to single digit (1-9) - no master numbers
-        while (num > 9) {
-          num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-        }
-        return num;
-      };
-
-      const letterToNumber = (letter: string): number => {
-        // Based on the numerology chart provided
-        const letterMap: Record<string, number> = {
-          'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
-          'B': 2, 'K': 2, 'R': 2,
-          'C': 3, 'G': 3, 'L': 3, 'S': 3,
-          'D': 4, 'M': 4, 'T': 4,
-          'E': 5, 'H': 5, 'N': 5, 'X': 5,
-          'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
-          'Z': 7,
-          'P': 8
-        };
-        
-        return letterMap[letter.toUpperCase()] || 0;
-      };
-
-      // Calculate Life Path Number
-      const calculateLifePath = (date: string): number => {
-        // Sum all digits from the birth date (e.g., 1996-08-23 = 1+9+9+6+0+8+2+3 = 38 = 3+8 = 11)
-        const digits = date.replace(/\D/g, '');
-        let sum = 0;
-        for (const digit of digits) {
-          sum += parseInt(digit);
-        }
-        return reduceNumber(sum);
-      };
-
-      // Calculate Destiny Number
-      const calculateDestiny = (fullName: string): number => {
-        // Sum all letters in the full name using the numerology chart
-        let sum = 0;
-        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
-          sum += letterToNumber(char);
-        }
-        return reduceNumber(sum);
-      };
-
-      // Calculate Soul Urge Number
-      const calculateSoulUrge = (fullName: string): number => {
-        // Sum only vowels (A, E, I, O, U, Y) using the numerology chart
-        let sum = 0;
-        const vowels = 'AEIOUY';
-        for (const char of fullName.replace(/[^a-zA-Z]/g, '')) {
-          if (vowels.includes(char.toUpperCase())) {
-            sum += letterToNumber(char);
-          }
-        }
-        return reduceNumber(sum);
-      };
-
-      // Calculate Personality Number - based on day digits only
-      const calculatePersonality = (date: string): number => {
-        const dateParts = date.split('-');
-        if (dateParts.length !== 3) return 5;
-        
-        const day = dateParts[2]; // DD - only use day digits
-        
-        // Get all digits from day only
-        const digits = day.split('').map(Number);
-        let sum = digits.reduce((a, b) => a + b, 0);
-        
-        // Keep reducing until we get a single digit (1-9)
-        while (sum > 9) {
-          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
-        }
-        
-        return sum;
-      };
-
-      // Calculate Soul Chakra Number - based on all birth date digits
-      const calculateSoulChakra = (date: string): number => {
-        // Remove hyphens and get all digits from the date
-        const digits = date.replace(/-/g, '').split('').map(Number);
-        let sum = digits.reduce((a, b) => a + b, 0);
-        
-        // Keep reducing until we get a single digit (1-9)
-        while (sum > 9) {
-          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
-        }
-        
-        return sum;
-      };
-
-      // Calculate Dominant Soul Chakra Number - sum of all birth date digits
-      const calculateDominantSoulChakra = (date: string): number => {
-        // Remove hyphens and get all digits from the date (YYYY-MM-DD)
-        const digits = date.replace(/-/g, '').split('').map(Number);
-        let sum = digits.reduce((a, b) => a + b, 0);
-        
-        // Keep reducing until we get a single digit (1-9)
-        while (sum > 9) {
-          sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
-        }
-        
-        return sum;
-      };
-
-      // Calculate all numbers
-      const lifePathNumber = calculateLifePath(birthDate);
-      const destinyNumber = calculateDestiny(name);
-      const soulUrgeNumber = calculateSoulUrge(name);
-      const personalityNumber = calculatePersonality(birthDate);
-      const soulChakraNumber = calculateDominantSoulChakra(birthDate);
-
-      // Map a number to its color name - standardized with remedies data
-      const getColorName = (num: number): string => {
-        const colorMap: Record<number, string> = {
-          1: "Yellow",   // Solar Plexus Chakra - Sun
-          2: "Green",    // Heart Chakra - Moon
-          3: "Violet",   // Crown Chakra - Jupiter
-          4: "Brown",    // Earth Star Chakra - Rahu
-          5: "Blue",     // Throat Chakra - Mercury
-          6: "Orange",   // Sacral Chakra - Venus
-          7: "White",    // Soul Star Chakra - Ketu
-          8: "Indigo",   // Third Eye Chakra - Saturn
-          9: "Red",      // Root Chakra - Mars
-          11: "Silver",  // Master Number - Soul Star
-          22: "Gold",    // Master Number - Solar Plexus
-          33: "Platinum" // Master Number - Crown
-        };
-        return colorMap[num] || "White";
-      };
-
-      // Create the return object with calculated values
-      const numerologyProfile = {
-        lifePathNumber,
-        destinyNumber,
-        soulUrgeNumber,
-        personalityNumber,
-        soulChakraNumber,
-        interpretation: `Your Life Path Number ${lifePathNumber} indicates your life's journey. Your Destiny Number ${destinyNumber} reveals your goals and abilities. Your Soul Urge Number ${soulUrgeNumber} shows your inner desires, while your Personality Number ${personalityNumber} represents how others see you. Your Soul Chakra Number ${soulChakraNumber} reveals your spiritual energy center.`,
-        // Add enhanced properties
-        colorAssociations: {
-          lifePathColor: getColorName(lifePathNumber),
-          destinyColor: getColorName(destinyNumber),
-          soulUrgeColor: getColorName(soulUrgeNumber),
-          personalityColor: getColorName(personalityNumber),
-          soulChakraColor: getColorName(soulChakraNumber)
-        },
-        // Add additional property examples for the enhanced UI
-        strengths: [
-          "Natural " + getColorName(lifePathNumber) + " energy enhances your leadership abilities",
-          "Your " + getColorName(destinyNumber) + " vibration amplifies your communication skills",
-          "The " + getColorName(soulUrgeNumber) + " influence strengthens your intuitive abilities"
-        ],
-        challenges: [
-          "Balancing " + getColorName(lifePathNumber) + " intensity in daily interactions", 
-          "Integrating " + getColorName(destinyNumber) + " energy with practical matters",
-          "Managing the sensitivity that comes with " + getColorName(soulUrgeNumber) + " vibrations"
-        ],
-        guidance: "Focus on harmonizing the " + getColorName(lifePathNumber) + " and " + 
-                 getColorName(destinyNumber) + " energies in your numerological blueprint for optimal growth and spiritual development."
-      };
-      
-      // If user is authenticated, save the reading to their profile
-      if (req.isAuthenticated()) {
-        try {
-          const readingToSave = {
-            userId: req.user.id,
-            performedBy: req.user.userType === 'healer' ? req.user.id : null,
-            name,
-            birthDate,
-            lifePathNumber,
-            destinyNumber,
-            soulUrgeNumber,
-            personalityNumber,
-            interpretation: numerologyProfile.interpretation
-          };
-          
-          await storage.saveNumerologyReading(readingToSave);
-        } catch (saveError) {
-          console.error("Error saving numerology reading:", saveError);
-          // Continue even if saving fails
-        }
-      }
-      
-      // Return the enhanced numerology profile
-      console.log("Returning numerology profile:", numerologyProfile);
-      res.json(numerologyProfile);
-    } catch (error) {
-      console.error("Error calculating numerology:", error);
-      res.status(500).json({ message: "Failed to calculate numerology" });
-    }
-  });
 
   // Get user's object analyses
   app.get("/api/object-analyses", async (req, res) => {
