@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -18,6 +18,8 @@ interface Meditation {
   color: string;
   tag: string;
   image?: string;
+  mediaUrl?: string;
+  mediaType?: 'youtube' | 'video' | 'audio';
 }
 
 interface MeditationPlayerModalProps {
@@ -34,8 +36,49 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
   const [progress, setProgress] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [volume, setVolume] = useState(100);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
+    if (!meditation) return;
+
+    // Handle media playback for YouTube and video
+    if (meditation.mediaType === 'youtube' && isPlaying && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        toast({ title: "Cannot autoplay", description: "Click play to start the YouTube video", variant: "default" });
+      });
+    } else if (meditation.mediaType === 'video' && videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isPlaying, meditation]);
+
+  useEffect(() => {
+    if (!meditation) return;
+
+    // Handle video duration sync
+    if (videoRef.current && (meditation.mediaType === 'video' || meditation.mediaType === 'youtube')) {
+      const handleTimeUpdate = () => {
+        if (videoRef.current) {
+          const progressPercent = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+          setProgress(progressPercent);
+          setElapsedTime(Math.floor(videoRef.current.currentTime));
+
+          if (videoRef.current.currentTime >= videoRef.current.duration - 1) {
+            setIsPlaying(false);
+            completeMeditationMutation.mutate(meditation);
+          }
+        }
+      };
+
+      const video = videoRef.current;
+      video?.addEventListener('timeupdate', handleTimeUpdate);
+      return () => video?.removeEventListener('timeupdate', handleTimeUpdate);
+    }
+
+    // Fallback timer for non-media meditations
     if (!isPlaying || !meditation) return;
 
     const interval = setInterval(() => {
@@ -44,7 +87,6 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
         const progressPercent = (newTime / (meditation.duration * 60)) * 100;
         setProgress(progressPercent);
 
-        // Auto-complete when meditation ends
         if (newTime >= meditation.duration * 60) {
           setIsPlaying(false);
           completeMeditationMutation.mutate(meditation);
@@ -139,14 +181,37 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Album Art */}
+          {/* Media Player or Album Art */}
           <div className="flex justify-center">
-            <div className="w-56 h-56 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
-              <div className="text-center">
-                <div className="text-6xl mb-3">🧘</div>
-                <p className="text-white/80 text-sm font-semibold">{meditation.title}</p>
+            {meditation.mediaType === 'youtube' ? (
+              <div className="w-full max-w-md rounded-2xl overflow-hidden">
+                <iframe
+                  width="100%"
+                  height="300"
+                  src={`https://www.youtube.com/embed/${meditation.mediaUrl?.split('/').pop()}`}
+                  title={meditation.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-2xl"
+                />
               </div>
-            </div>
+            ) : meditation.mediaType === 'video' ? (
+              <video
+                ref={videoRef}
+                className="w-full max-w-md rounded-2xl bg-black"
+                controls
+              >
+                <source src={meditation.mediaUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div className="w-56 h-56 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                <div className="text-center">
+                  <div className="text-6xl mb-3">🧘</div>
+                  <p className="text-white/80 text-sm font-semibold">{meditation.title}</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Info */}
