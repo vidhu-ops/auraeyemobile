@@ -7,6 +7,8 @@ import cosmicFocusImg from "@assets/generated_images/cosmic_focus_meditation_vis
 import sereneWatersImg from "@assets/generated_images/serene_waters_meditation_visualization.png";
 import sacredFlameImg from "@assets/generated_images/sacred_flame_meditation_visualization.png";
 import starlightImg from "@assets/generated_images/starlight_meditation_visualization.png";
+import healingMeditationVideo from "@assets/WhatsApp_Video_2025-12-17_at_3.50.47_PM_1765966899854.mp4";
+import energyFlowVideo from "@assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4";
 
 interface Meditation {
   id: number;
@@ -109,7 +111,7 @@ const meditations: Meditation[] = [
     color: "from-emerald-400 to-teal-500",
     tag: "Healing",
     image: starlightImg,
-    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.47_PM_1765966899854.mp4",
+    mediaUrl: healingMeditationVideo,
     mediaType: "video",
   },
   {
@@ -123,7 +125,7 @@ const meditations: Meditation[] = [
     color: "from-yellow-400 to-orange-500",
     tag: "Energy",
     image: starlightImg,
-    mediaUrl: "@assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4",
+    mediaUrl: energyFlowVideo,
     mediaType: "video",
   },
 ];
