@@ -20,7 +20,8 @@ const createSessionStore = () => {
       checkPeriod: 86400000, // prune expired entries every 24h
     });
   }
-};
+});
+        newAchievements.push(achievement);
 
 export interface IStorage {
   // User management
@@ -103,7 +104,7 @@ export interface IStorage {
   // User achievements
   createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
   getUserAchievements(userId: number): Promise<UserAchievement[]>;
-  checkAndAwardAchievements(userId: number): Promise<void>;
+  checkAndAwardAchievements(userId: number): Promise<UserAchievement[]>;
   
   // Healer analytics
   getHealerClientStats(healerId: number): Promise<any>;
@@ -575,7 +576,8 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId));
   }
 
-  async checkAndAwardAchievements(userId: number): Promise<void> {
+  async checkAndAwardAchievements(userId: number): Promise<UserAchievement[]> {
+    const newAchievements: UserAchievement[] = [];
     try {
       // Check if user has earned achievements
       const journalEntries = await db.select().from(journals).where(eq(journals.userId, userId));
@@ -589,7 +591,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Thoughts Flow (1 journal entry)
       if (journalEntries.length >= 1 && !achievedTypes.includes("thoughts_flow")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "thoughts_flow",
           achievementTitle: "Thoughts Flow",
@@ -597,11 +599,12 @@ export class DatabaseStorage implements IStorage {
           achievementDescription: "Wrote your first journal entry",
           tier: "BRONZE"
         });
+        newAchievements.push(achievement);
       }
 
       // Award Journal Keeper (5 journal entries)
       if (journalEntries.length >= 5 && !achievedTypes.includes("journal_keeper")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "journal_keeper",
           achievementTitle: "Journal Keeper",
@@ -609,11 +612,12 @@ export class DatabaseStorage implements IStorage {
           achievementDescription: "Wrote 5 journal entries",
           tier: "SILVER"
         });
+        newAchievements.push(achievement);
       }
 
       // Award Journal Master (20 journal entries)
       if (journalEntries.length >= 20 && !achievedTypes.includes("journal_master")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "journal_master",
           achievementTitle: "Journal Master",
@@ -621,11 +625,12 @@ export class DatabaseStorage implements IStorage {
           achievementDescription: "Wrote 20 journal entries",
           tier: "GOLD"
         });
+        newAchievements.push(achievement);
       }
 
       // Award Journal Legend (50 journal entries)
       if (journalEntries.length >= 50 && !achievedTypes.includes("journal_legend")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "journal_legend",
           achievementTitle: "Journal Legend",
@@ -633,11 +638,12 @@ export class DatabaseStorage implements IStorage {
           achievementDescription: "Wrote 50 journal entries",
           tier: "PLATINUM"
         });
+        newAchievements.push(achievement);
       }
 
       // Award Number Seeker (1 numerology reading)
       if (numerologyReadingsList.length >= 1 && !achievedTypes.includes("number_seeker")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "number_seeker",
           achievementTitle: "Number Seeker",
@@ -649,7 +655,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Numerology Explorer (5 numerology readings)
       if (numerologyReadingsList.length >= 5 && !achievedTypes.includes("numerology_explorer")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "numerology_explorer",
           achievementTitle: "Numerology Explorer",
@@ -661,7 +667,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Numerology Master (15 numerology readings)
       if (numerologyReadingsList.length >= 15 && !achievedTypes.includes("numerology_master")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "numerology_master",
           achievementTitle: "Numerology Master",
@@ -673,7 +679,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Numerology Legend (30+ numerology readings)
       if (numerologyReadingsList.length >= 30 && !achievedTypes.includes("numerology_legend")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "numerology_legend",
           achievementTitle: "Numerology Legend",
@@ -685,7 +691,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Week Warrior (7-day streak)
       if (streakData.currentStreak >= 7 && !achievedTypes.includes("week_warrior")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "week_warrior",
           achievementTitle: "Week Warrior",
@@ -697,7 +703,7 @@ export class DatabaseStorage implements IStorage {
 
       // Award Vibe Check badges (1, 5, 15, 30 vibe readings)
       if (vibeReadingsList.length >= 1 && !achievedTypes.includes("vibe_check")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "vibe_check",
           achievementTitle: "Vibe Check",
@@ -708,7 +714,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       if (vibeReadingsList.length >= 5 && !achievedTypes.includes("vibe_enthusiast")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "vibe_enthusiast",
           achievementTitle: "Vibe Enthusiast",
@@ -719,7 +725,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       if (vibeReadingsList.length >= 15 && !achievedTypes.includes("vibe_master")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "vibe_master",
           achievementTitle: "Vibe Master",
@@ -730,7 +736,7 @@ export class DatabaseStorage implements IStorage {
       }
 
       if (vibeReadingsList.length >= 30 && !achievedTypes.includes("vibe_legend")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "vibe_legend",
           achievementTitle: "Vibe Legend",
@@ -746,7 +752,7 @@ export class DatabaseStorage implements IStorage {
       // Healing Heart (5 healer replies/bookings)
       const healerBookingsCount = await db.select().from(healerBookings).where(eq(healerBookings.userId, userId));
       if (healerBookingsCount.length >= 5 && !achievedTypes.includes("healing_heart")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "healing_heart",
           achievementTitle: "Healing Heart",
@@ -759,7 +765,7 @@ export class DatabaseStorage implements IStorage {
       // Spiritual Guardian (50 total services)
       const totalServices = journalEntries.length + numerologyReadingsList.length + vibeReadingsList.length;
       if (totalServices >= 50 && !achievedTypes.includes("spiritual_guardian")) {
-        await this.createUserAchievement({
+        const achievement = await this.createUserAchievement({
           userId,
           achievementType: "spiritual_guardian",
           achievementTitle: "Spiritual Guardian",
@@ -771,6 +777,7 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error checking and awarding achievements:", error);
     }
+    return newAchievements;
   }
 
   async getHealerClientStats(healerId: number): Promise<any> {
@@ -804,7 +811,8 @@ export class DatabaseStorage implements IStorage {
       acceptanceRate: bookings.length > 0 ? (acceptedBookings.length / bookings.length) * 100 : 0,
       totalCreditsGenerated,
       recentCreditsGenerated
-    };
+    });
+        newAchievements.push(achievement);
   }
 
   async getHealerBookingTrends(healerId: number): Promise<any> {
@@ -1062,7 +1070,8 @@ export class DatabaseStorage implements IStorage {
         'healer_booking': 1,
         'numerology': 3,
       }
-    };
+    });
+        newAchievements.push(achievement);
     
     const userTypeCosts = creditCosts[userType as keyof typeof creditCosts] || creditCosts.client;
     return userTypeCosts[serviceType as keyof typeof userTypeCosts] || 1;
@@ -1320,7 +1329,8 @@ export class DatabaseStorage implements IStorage {
       objectScans,
       totalSessions,
       journalEntries,
-    };
+    });
+        newAchievements.push(achievement);
 
     // Add healer-specific stats if user is a healer
     if (user.userType === 'healer') {
@@ -1489,7 +1499,8 @@ export class DatabaseStorage implements IStorage {
       currentStreak,
       longestStreak: maxStreak,
       weeklyActiveDates: weeklyDates
-    };
+    });
+        newAchievements.push(achievement);
   }
 
   async updateUserCredits(userId: number, newCredits: number): Promise<User | undefined> {
