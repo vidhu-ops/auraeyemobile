@@ -69,9 +69,9 @@ export async function generateParticleAuraEffect(
       
       // Bias particles toward the face area with reduced exclusion
       if (distanceFromFace > faceRadius * 0.8) {
-        // Larger particles with higher opacity for denser appearance
-        const size = Math.random() * 30 + 15; // 15-45px radius (increased from 8-28)
-        const opacity = Math.random() * 0.35 + 0.65; // 0.65-1.0 opacity
+        // Smaller particles with higher opacity for more visible effect
+        const size = Math.random() * 18 + 8; // 8-26px radius (reduced from 15-45)
+        const opacity = Math.random() * 0.2 + 0.8; // 0.8-1.0 opacity (more opaque)
         
         particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#shadow)" />`;
         placedParticles++;
@@ -87,10 +87,10 @@ export async function generateParticleAuraEffect(
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
         </filter>
         <filter id="shadow">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
           <feOffset dx="2" dy="2" result="offsetblur" />
           <feComponentTransfer>
-            <feFuncA type="linear" slope="0.3" />
+            <feFuncA type="linear" slope="0.5" />
           </feComponentTransfer>
           <feMerge>
             <feMergeNode />
