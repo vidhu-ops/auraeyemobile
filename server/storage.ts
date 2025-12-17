@@ -20,8 +20,7 @@ const createSessionStore = () => {
       checkPeriod: 86400000, // prune expired entries every 24h
     });
   }
-});
-        newAchievements.push(achievement);
+};
 
 export interface IStorage {
   // User management
@@ -811,8 +810,7 @@ export class DatabaseStorage implements IStorage {
       acceptanceRate: bookings.length > 0 ? (acceptedBookings.length / bookings.length) * 100 : 0,
       totalCreditsGenerated,
       recentCreditsGenerated
-    });
-        newAchievements.push(achievement);
+    };
   }
 
   async getHealerBookingTrends(healerId: number): Promise<any> {
@@ -1070,8 +1068,7 @@ export class DatabaseStorage implements IStorage {
         'healer_booking': 1,
         'numerology': 3,
       }
-    });
-        newAchievements.push(achievement);
+    };
     
     const userTypeCosts = creditCosts[userType as keyof typeof creditCosts] || creditCosts.client;
     return userTypeCosts[serviceType as keyof typeof userTypeCosts] || 1;
@@ -1329,8 +1326,7 @@ export class DatabaseStorage implements IStorage {
       objectScans,
       totalSessions,
       journalEntries,
-    });
-        newAchievements.push(achievement);
+    };
 
     // Add healer-specific stats if user is a healer
     if (user.userType === 'healer') {
@@ -1499,8 +1495,7 @@ export class DatabaseStorage implements IStorage {
       currentStreak,
       longestStreak: maxStreak,
       weeklyActiveDates: weeklyDates
-    });
-        newAchievements.push(achievement);
+    };
   }
 
   async updateUserCredits(userId: number, newCredits: number): Promise<User | undefined> {
