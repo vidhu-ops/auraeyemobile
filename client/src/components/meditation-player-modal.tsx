@@ -29,6 +29,19 @@ interface MeditationPlayerModalProps {
   onComplete?: () => void;
 }
 
+function extractYouTubeId(url: string): string | null {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
 export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete }: MeditationPlayerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -193,12 +206,12 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
         <div className="space-y-6 py-4">
           {/* Media Player or Album Art */}
           <div className="flex justify-center">
-            {meditation.mediaType === 'youtube' ? (
+            {meditation.mediaType === 'youtube' && meditation.mediaUrl ? (
               <div className="w-full max-w-md rounded-2xl overflow-hidden">
                 <iframe
                   width="100%"
                   height="300"
-                  src={`https://www.youtube.com/embed/${meditation.mediaUrl?.split('/').pop()}`}
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(meditation.mediaUrl)}?autoplay=0&rel=0`}
                   title={meditation.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
