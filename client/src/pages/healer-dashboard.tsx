@@ -56,7 +56,7 @@ import { CHAKRA_KEYS, CHAKRA_DISPLAY_NAMES, getChakraStatus, calculateChakraGrou
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState, useEffect, memo, useMemo, lazy, Suspense } from "react";
 import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import NotificationSettings from "@/components/notification-settings";
@@ -173,6 +173,7 @@ function NumerologyInputForm() {
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -186,17 +187,16 @@ function NumerologyInputForm() {
       return;
     }
 
-    // Navigate to numerology page with URL parameters
+    // Navigate to numerology page with URL parameters using wouter
     const params = new URLSearchParams({
       healerName: fullName.trim(),
       healerBirthDate: birthDate,
       fromHealer: 'true'
     });
     
-    // Use setTimeout to ensure form validation completes
-    setTimeout(() => {
-      window.location.href = `/numerology?${params.toString()}`;
-    }, 100);
+    const url = `/numerology?${params.toString()}`;
+    console.log("Navigating to numerology page:", url);
+    setLocation(url);
   };
 
   return (
