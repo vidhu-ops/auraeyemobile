@@ -1145,18 +1145,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "User not found" });
       }
       
-      // Award 5 bonus credits for completing onboarding
-      await storage.addCredits(
-        userId, 
-        5, 
-        "onboarding_bonus", 
-        "Onboarding completion bonus - 5 free credits"
-      );
-      
       res.json({ 
         success: true,
-        user: updatedUser,
-        creditsAwarded: 5
+        user: updatedUser
       });
       
     } catch (error) {

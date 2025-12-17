@@ -99,8 +99,8 @@ export default function AuthPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
       
       toast({
-        title: "Welcome Bonus! 🎉",
-        description: `You've received ${data.creditsAwarded || 5} free credits!`,
+        title: "Preferences Saved! 🎉",
+        description: "Your spiritual preferences have been personalized for you.",
       });
       
       // Mark onboarding as seen and redirect new clients to client dashboard
