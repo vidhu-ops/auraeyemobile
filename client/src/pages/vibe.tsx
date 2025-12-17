@@ -49,7 +49,7 @@ const getColorHex = (colorName: string): string => {
   return colorToHex[colorName] || '#4A90E2';
 };
 
-// Helper function to get color RGB values for aura visualization
+// Helper function to get color RGB values
 const getColorRGB = (color: string) => {
   const colorMap: { [key: string]: string } = {
     'Red': '255, 0, 0',
@@ -91,6 +91,174 @@ const addWatermark = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvas
   ctx.restore();
 };
 
+// Process image with aura visualization and watermark - EXACT copy from home-page.tsx
+const processImageWithVibeAuraEffect = (
+  imageBase64: string, 
+  dominantColor: string, 
+  setProcessedImage: (img: string) => void
+) => {
+  const img = new Image();
+  img.src = imageBase64;
+  
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    
+    const colorRGB = getColorRGB(dominantColor);
+    
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const personRadius = Math.min(canvas.width, canvas.height) * 0.25;
+    
+    const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
+    
+    let seed = dominantColor.charCodeAt(0) + canvas.width + canvas.height;
+    const seededRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+    
+    // LAYER 1: Ultra-dense background smoke
+    ctx.save();
+    ctx.filter = 'blur(40px)';
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < 300; i++) {
+      const x = seededRandom() * canvas.width;
+      const y = seededRandom() * canvas.height;
+      
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.5) continue;
+      
+      const radius = 30 + seededRandom() * 150;
+      const opacity = 0.35 + seededRandom() * 0.45;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // LAYER 2: Dense medium smoke particles
+    ctx.save();
+    ctx.filter = 'blur(25px)';
+    ctx.globalCompositeOperation = 'soft-light';
+    for (let i = 0; i < 400; i++) {
+      const x = seededRandom() * canvas.width;
+      const y = seededRandom() * canvas.height;
+      
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.4) continue;
+      
+      const radius = 20 + seededRandom() * 80;
+      const opacity = 0.25 + seededRandom() * 0.35;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // LAYER 3: Super dense small particles
+    ctx.save();
+    ctx.filter = 'blur(18px)';
+    ctx.globalCompositeOperation = 'overlay';
+    for (let i = 0; i < 500; i++) {
+      const x = seededRandom() * canvas.width;
+      const y = seededRandom() * canvas.height;
+      
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.3) continue;
+      
+      const radius = 8 + seededRandom() * 40;
+      const opacity = 0.2 + seededRandom() * 0.3;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // LAYER 4: Fine smoke wisps
+    ctx.save();
+    ctx.filter = 'blur(12px)';
+    ctx.globalCompositeOperation = 'color-dodge';
+    for (let i = 0; i < 600; i++) {
+      const x = seededRandom() * canvas.width;
+      const y = seededRandom() * canvas.height;
+      
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.3) continue;
+      
+      const radius = 4 + seededRandom() * 20;
+      const opacity = 0.15 + seededRandom() * 0.25;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // LAYER 5: Perimeter concentrated smoke
+    ctx.save();
+    ctx.filter = 'blur(20px)';
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < 400; i++) {
+      const angle = seededRandom() * Math.PI * 2;
+      const distance = personRadius * 1.6 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
+      
+      if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
+      
+      const radius = 15 + seededRandom() * 60;
+      const opacity = 0.2 + seededRandom() * 0.35;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // LAYER 6: Ultra-fine atmospheric mist
+    ctx.save();
+    ctx.filter = 'blur(35px)';
+    ctx.globalCompositeOperation = 'screen';
+    for (let i = 0; i < 200; i++) {
+      const x = seededRandom() * canvas.width;
+      const y = seededRandom() * canvas.height;
+      
+      const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      if (distanceFromCenter < personRadius * 1.2) continue;
+      
+      const radius = 60 + seededRandom() * 120;
+      const opacity = 0.08 + seededRandom() * 0.12;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    ctx.globalCompositeOperation = 'source-over';
+    addWatermark(ctx, canvas.width, canvas.height);
+    
+    const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
+    setProcessedImage(processedImageBase64);
+  };
+};
+
 export default function VibePage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -108,85 +276,9 @@ export default function VibePage() {
   const [showPremiumPdf, setShowPremiumPdf] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Generate pure aura color gradient visualization (no person photo - just solid color)
+  // Process image with smokey aura clouds around person (face visible in center)
   const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
-    const img = new Image();
-    img.src = imageBase64;
-    
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Use fixed dimensions for consistent output
-      const width = 700;
-      const height = 500;
-      canvas.width = width;
-      canvas.height = height;
-      
-      const colorRGB = getColorRGB(dominantColor);
-      const [r, g, b] = colorRGB.split(',').map(num => parseInt(num.trim()));
-      
-      // Create lighter and darker variations
-      const lighterR = Math.min(255, r + 60);
-      const lighterG = Math.min(255, g + 60);
-      const lighterB = Math.min(255, b + 60);
-      
-      const darkerR = Math.max(0, r - 40);
-      const darkerG = Math.max(0, g - 40);
-      const darkerB = Math.max(0, b - 40);
-      
-      // Fill with base gradient (diagonal)
-      const diagonalGradient = ctx.createLinearGradient(0, 0, width, height);
-      diagonalGradient.addColorStop(0, `rgb(${lighterR}, ${lighterG}, ${lighterB})`);
-      diagonalGradient.addColorStop(0.5, `rgb(${r}, ${g}, ${b})`);
-      diagonalGradient.addColorStop(1, `rgb(${darkerR}, ${darkerG}, ${darkerB})`);
-      ctx.fillStyle = diagonalGradient;
-      ctx.fillRect(0, 0, width, height);
-      
-      // Add radial glow in center (lighter)
-      const radialGradient = ctx.createRadialGradient(
-        width * 0.5, height * 0.4, 0,
-        width * 0.5, height * 0.5, Math.max(width, height) * 0.6
-      );
-      radialGradient.addColorStop(0, `rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.7)`);
-      radialGradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.5)`);
-      radialGradient.addColorStop(1, `rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.3)`);
-      ctx.fillStyle = radialGradient;
-      ctx.fillRect(0, 0, width, height);
-      
-      // Add soft blurred ellipses for depth
-      ctx.save();
-      ctx.filter = 'blur(50px)';
-      ctx.globalCompositeOperation = 'soft-light';
-      
-      // Top-left glow
-      ctx.fillStyle = `rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.5)`;
-      ctx.beginPath();
-      ctx.ellipse(width * 0.2, height * 0.3, width * 0.4, height * 0.4, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Bottom-right darker area
-      ctx.fillStyle = `rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.6)`;
-      ctx.beginPath();
-      ctx.ellipse(width * 0.8, height * 0.7, width * 0.35, height * 0.35, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Center glow
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.4)`;
-      ctx.beginPath();
-      ctx.ellipse(width * 0.5, height * 0.5, width * 0.5, height * 0.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      ctx.restore();
-      
-      // Add watermark
-      ctx.globalCompositeOperation = 'source-over';
-      addWatermark(ctx, canvas.width, canvas.height);
-      
-      const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
-      setProcessedImage(processedImageBase64);
-    };
+    processImageWithVibeAuraEffect(imageBase64, dominantColor, setProcessedImage);
   };
 
   const handleImageSelect = async (file: File) => {
