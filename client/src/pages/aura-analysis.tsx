@@ -9318,8 +9318,8 @@ Team AuraEye™
                                   {/* Personality Strengths & Growth Areas */}
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                                      <h5 className="font-medium text-sm mb-2 text-green-800 flex items-center">
-                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                      <h5 className="font-bold text-lg mb-2 text-green-800 flex items-center">
+                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Natural Strengths
@@ -9329,8 +9329,8 @@ Team AuraEye™
                                       </p>
                                     </div>
                                     <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                                      <h5 className="font-medium text-sm mb-2 text-amber-800 flex items-center">
-                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                      <h5 className="font-bold text-lg mb-2 text-amber-800 flex items-center">
+                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                         </svg>
                                         Growth Opportunities
@@ -9343,8 +9343,8 @@ Team AuraEye™
 
                                   {/* Relationship Dynamics */}
                                   <div className="p-4 bg-rose-50 rounded-lg border border-rose-200 mb-6">
-                                    <h5 className="font-medium text-sm mb-2 text-rose-800 flex items-center">
-                                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <h5 className="font-bold text-lg mb-2 text-rose-800 flex items-center">
+                                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                                       </svg>
                                       Relationship Dynamics
@@ -9356,8 +9356,8 @@ Team AuraEye™
 
                                   {/* Career & Life Path Alignment */}
                                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                    <h5 className="font-medium text-sm mb-2 text-blue-800 flex items-center">
-                                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <h5 className="font-bold text-lg mb-2 text-blue-800 flex items-center">
+                                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                       </svg>
                                       Career & Life Path Alignment

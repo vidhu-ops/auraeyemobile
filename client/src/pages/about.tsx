@@ -43,16 +43,16 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
-                <h2 className="font-mystical font-bold text-3xl mb-6 text-black">Our Story</h2>
-                <p className="text-gray-600 mb-4">
+                <h2 className="font-mystical font-bold text-3xl mb-6 text-white">Our Story</h2>
+                <p className="text-white mb-4">
                   Our platform connects you with certified energy healers who can provide remote healing sessions. All our practitioners have undergone rigorous training and certification in modalities like Aurascope reading, Reiki, Quantum Healing, Chakra Balancing, and other energy medicine techniques.
 
                   
                 </p>
-                <p className="text-gray-600 mb-4">
+                <p className="text-white mb-4">
                   Research has shown that energy healing can be effective at a distance, as energy is not bound by physical proximity. Our virtual sessions create a sacred space for healing to occur, regardless of where you're located.
                 </p>
-                <p className="text-gray-600">
+                <p className="text-white">
                   Our name, AuraEye™, represents the fusion of "Aura" (the energy field that surrounds all living beings) and "Eye" (To see), embodying our mission to strengthen your spiritual well-being through deeper understanding of your energetic nature.
                 </p>
               </div>
@@ -79,7 +79,7 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-mystical font-bold text-3xl mb-4 text-white">Our Mission & Values</h2>
-              <p className="text-purple-100 font-cosmic">
+              <p className="text-white font-cosmic">
                 At the heart of everything we do is a commitment to spiritual authenticity, personal transformation, and making metaphysical wellness accessible to all.
               </p>
             </div>
@@ -90,8 +90,8 @@ export default function About() {
                   <div className="glass-mystical w-12 h-12 rounded-full flex items-center justify-center mb-4 glow-ethereal">
                     <Heart className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h3 className="font-mystical font-semibold text-xl mb-3 text-purple-700">Authenticity</h3>
-                  <p className="text-purple-600 font-cosmic">
+                  <h3 className="font-mystical font-semibold text-xl mb-3 text-white">Authenticity</h3>
+                  <p className="text-white font-cosmic">
                     We honor the ancient wisdom traditions while embracing modern technology, creating a spiritual practice that is both authentic and relevant for today's world.
                   </p>
                 </CardContent>
@@ -102,8 +102,8 @@ export default function About() {
                   <div className="glass-mystical w-12 h-12 rounded-full flex items-center justify-center mb-4 glow-ethereal">
                     <Users className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h3 className="font-mystical font-semibold text-xl mb-3 text-purple-700">Accessibility</h3>
-                  <p className="text-purple-600 font-cosmic">
+                  <h3 className="font-mystical font-semibold text-xl mb-3 text-white">Accessibility</h3>
+                  <p className="text-white font-cosmic">
                     We believe spiritual wellness should be available to all, regardless of location or experience level. Our platform makes metaphysical tools accessible to everyone.
                   </p>
                 </CardContent>
@@ -114,8 +114,8 @@ export default function About() {
                   <div className="glass-mystical w-12 h-12 rounded-full flex items-center justify-center mb-4 glow-ethereal">
                     <Sparkles className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h3 className="font-mystical font-semibold text-xl mb-3 text-purple-700">Transformation</h3>
-                  <p className="text-purple-600 font-cosmic">
+                  <h3 className="font-mystical font-semibold text-xl mb-3 text-white">Transformation</h3>
+                  <p className="text-white font-cosmic">
                     We're committed to facilitating real transformation in our users' lives, providing tools that catalyze personal growth and spiritual evolution.
                   </p>
                 </CardContent>

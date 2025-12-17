@@ -307,6 +307,23 @@ export default function NumerologyPage() {
       }
       currentY += 8;
 
+      // Personalized Introduction Note
+      addText(`Dear ${targetName},`, 11, false);
+      currentY += 2;
+      addText(`This personalized AuraEye™ report has been thoughtfully prepared for you by your Licensed Healer. Anytime you wish to connect with them you can reach out on their contact information provided separately.`, 10);
+      currentY += 2;
+      addText(`This report reflects the current state of your energetic field — a living snapshot of your emotions, thoughts, and vibrational balance in this moment.`, 10);
+      currentY += 2;
+      addText(`Please remember: this report is not a medical or psychological diagnosis. Instead, it is a tool for self-awareness, empowerment, and energetic guidance — designed to help you understand where your energy flows freely and where it seeks harmony.`, 10);
+      currentY += 2;
+      addText(`Your aura changes—just like your ECG, EEG, or pulse rate—because it reflects your living energy in real time. That's precisely what makes it reliable and empowering: it shows your current state and reminds you that your energy, like your health, can be improved and transformed with awareness.`, 10);
+      currentY += 2;
+      addText(`Use these insights & the guidance of your healer to support your healing journey, strengthen your intuition, and make conscious choices that align your body, mind, and soul.`, 10);
+      currentY += 4;
+      addText(`With light and awareness,`, 10);
+      addText(`Team AuraEye™ "Your Energy, Made Visible."`, 10, true);
+      currentY += 8;
+
       // Core Numbers Section
       addSection("YOUR CORE NUMBERS");
       
