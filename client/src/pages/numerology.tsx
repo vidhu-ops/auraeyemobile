@@ -96,6 +96,24 @@ const getMonthlyRemedy = (number: number) => {
   return remedies[number as keyof typeof remedies] || remedies[1];
 };
 
+// Parse URL params synchronously to avoid race condition
+const getInitialHealerData = () => {
+  if (typeof window === 'undefined') return null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const healerName = urlParams.get('healerName');
+  const healerBirthDate = urlParams.get('healerBirthDate');
+  const fromHealer = urlParams.get('fromHealer');
+  
+  if (healerName && healerBirthDate && fromHealer === 'true') {
+    return {
+      name: healerName,
+      birthDate: healerBirthDate,
+      fromHealer: true
+    };
+  }
+  return null;
+};
+
 export default function NumerologyPage() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
@@ -106,23 +124,8 @@ export default function NumerologyPage() {
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
-  // Check for healer-provided numerology data from URL parameters
-  const [healerData, setHealerData] = useState<any>(null);
-  
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const healerName = urlParams.get('healerName');
-    const healerBirthDate = urlParams.get('healerBirthDate');
-    const fromHealer = urlParams.get('fromHealer');
-    
-    if (healerName && healerBirthDate && fromHealer === 'true') {
-      setHealerData({
-        name: healerName,
-        birthDate: healerBirthDate,
-        fromHealer: true
-      });
-    }
-  }, []);
+  // Initialize healer data synchronously from URL params (no race condition)
+  const [healerData, setHealerData] = useState<any>(getInitialHealerData);
 
   // Use healer data if available, otherwise use user data
   const targetName = healerData?.name || user?.username || "";
