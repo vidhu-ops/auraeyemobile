@@ -45,13 +45,13 @@ export async function generateParticleAuraEffect(
     const colorHex = colorToHex[dominantColor] || '#4A90E2';
     const color = hexToRgb(colorHex);
     
-    // Create SVG with dense particle effects covering whole image except face
-    const particleCount = 1200; // Ultra dense
+    // Create SVG with dense particle effects concentrated around face
+    const particleCount = 2200; // Increased density
     const faceX = width / 2;
     const faceY = height * 0.35;
-    const faceRadius = Math.min(width, height) * 0.18; // Exclude face area
+    const faceRadius = Math.min(width, height) * 0.18;
     
-    // Generate particle positions covering entire image except face
+    // Generate particle positions with higher concentration around face
     let particleSvg = '';
     let placedParticles = 0;
     const maxAttempts = particleCount * 3;
@@ -67,11 +67,11 @@ export async function generateParticleAuraEffect(
         Math.pow(x - faceX, 2) + Math.pow(y - faceY, 2)
       );
       
-      // Only place particle if far enough from face (face exclusion zone)
-      if (distanceFromFace > faceRadius * 1.2) {
-        // Smaller, more opaque particles with ultra high density
-        const size = Math.random() * 15 + 5; // 5-20px radius
-        const opacity = Math.random() * 0.4 + 0.6; // 0.6-1.0 opacity
+      // Bias particles toward the face area with reduced exclusion
+      if (distanceFromFace > faceRadius * 0.8) {
+        // Larger particles with higher opacity for denser appearance
+        const size = Math.random() * 20 + 8; // 8-28px radius (larger)
+        const opacity = Math.random() * 0.35 + 0.65; // 0.65-1.0 opacity
         
         particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#blur)" />`;
         placedParticles++;
