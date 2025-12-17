@@ -1575,6 +1575,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
 
   // Aura Analysis API endpoint - now open to all users but deducts credits for authenticated users
   app.post("/api/analyze-aura", optionalCheckCredits('aura_analysis'), upload.single("image"), async (req, res) => {
+    // Get the analysis name early so it's available in catch block
+    const analysisName = req.body?.name || 'Unnamed';
+    
     try {
       // Get image data either from file or base64 string
       let imageData: string;
@@ -1615,9 +1618,6 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         console.error("Display image preparation failed:", displayError);
         displayBuffer = compressedBuffer;
       }
-
-      // Get the name from request body
-      const analysisName = req.body.name || 'Unnamed';
 
       // Generate image hash for consistency checking
       const imageHash = crypto.createHash('md5').update(compressedBuffer).digest('hex');
@@ -1868,11 +1868,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       // Return guaranteed successful response with badges
       console.log("Aura analysis completed successfully");
       console.log("Final response includes ID:", auraAnalysis.id);
-      console.log("New badges awarded:", newBadges.length > 0 ? newBadges : "none");
+      console.log("New badges awarded:", (newBadges && newBadges.length > 0) ? newBadges : "none");
       res.json({
         ...auraAnalysis,
-        newBadges: newBadges,
-        hasNewBadges: newBadges.length > 0
+        newBadges: newBadges || [],
+        hasNewBadges: (newBadges && newBadges.length > 0) || false
       });
     } catch (error) {
       console.error("Error analyzing aura:", error);
