@@ -429,6 +429,10 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, userId));
   }
 
+  async getObjectAnalysesByPerformedBy(performedBy: number): Promise<ObjectAnalysis[]> {
+    return await db.select().from(objectAnalyses).where(eq(objectAnalyses.performedBy, performedBy)).orderBy(desc(objectAnalyses.createdAt));
+  }
+
   async getObjectAnalysis(id: number): Promise<ObjectAnalysis | undefined> {
     const [analysis] = await db.select().from(objectAnalyses).where(eq(objectAnalyses.id, id));
     return analysis || undefined;

@@ -1317,8 +1317,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Create a compressed image URL for storage (already resized by resizeImageToStandard)
           const imageUrl = `data:image/jpeg;base64,${imgBuffer.toString('base64')}`;
           
+          const userType = req.user.userType || 'client';
           savedAnalysis = await storage.saveObjectAnalysis({
             userId: req.user.id,
+            performedBy: userType === 'healer' || userType === 'semi-healer' ? req.user.id : undefined,
             name: analysisName,
             imageUrl,
             objectName: deterministicResult.objectName,
@@ -4888,8 +4890,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Get user's object analyses
   app.get("/api/object-analyses", isAuthenticated, async (req: any, res) => {
     try {
-      const objectAnalyses = await storage.getObjectAnalysesByUser(req.user.id);
-      console.log(`Retrieved ${objectAnalyses.length} object analyses for user ${req.user.id}`);
+      // For healers, show analyses they performed; for regular users, show their own
+      const userType = req.user.userType || 'client';
+      let objectAnalyses;
+      if (userType === 'healer' || userType === 'semi-healer') {
+        objectAnalyses = await storage.getObjectAnalysesByPerformedBy(req.user.id);
+      } else {
+        objectAnalyses = await storage.getObjectAnalysesByUser(req.user.id);
+      }
+      console.log(`Retrieved ${objectAnalyses.length} object analyses for user ${req.user.id} (type: ${userType})`);
       res.json(objectAnalyses);
     } catch (error) {
       console.error("Error retrieving object analyses:", error);
