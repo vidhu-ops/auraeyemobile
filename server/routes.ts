@@ -1314,7 +1314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let savedAnalysis = null;
       if (req.isAuthenticated() && req.user) {
         try {
-          // Create a temporary image URL (in production, you'd upload to cloud storage)
+          // Create a compressed image URL for storage (already resized by resizeImageToStandard)
           const imageUrl = `data:image/jpeg;base64,${imgBuffer.toString('base64')}`;
           
           savedAnalysis = await storage.saveObjectAnalysis({
@@ -4886,13 +4886,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
 
   // Get user's object analyses
-  app.get("/api/object-analyses", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
+  app.get("/api/object-analyses", isAuthenticated, async (req: any, res) => {
     try {
       const objectAnalyses = await storage.getObjectAnalysesByUser(req.user.id);
+      console.log(`Retrieved ${objectAnalyses.length} object analyses for user ${req.user.id}`);
       res.json(objectAnalyses);
     } catch (error) {
       console.error("Error retrieving object analyses:", error);
