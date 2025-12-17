@@ -333,7 +333,7 @@ export default function NumerologyPage() {
       
       // Dominant Soul Chakra
       const dominantSoulNumber = calculateDominantSoulChakra(targetBirthDate);
-      addText(`Dominant Soul Chakra: ${dominantSoulNumber}`, 12, true, [239, 68, 68]);
+      addText(`Dominant Soul Chakra: ${dominantSoulNumber}`, 12, true, [147, 51, 234]);
       addText("Your soul wants you to operate from the positive and balanced qualities of this chakra. This is your greatest challenge area.", 9);
       currentY += 5;
 
@@ -343,7 +343,7 @@ export default function NumerologyPage() {
       // Decision-Making Chakra Analysis
       const personalityInfo = getChakraPlanetInfo(numerology.personalityNumber);
       addText("Decision-Making Chakra:", 11, true);
-      addText(`Number ${numerology.personalityNumber}: ${personalityInfo.chakra} • ${personalityInfo.planet}`, 10, false, [34, 197, 94]);
+      addText(`Number ${numerology.personalityNumber}: ${personalityInfo.chakra} • ${personalityInfo.planet}`, 10, false, [147, 51, 234]);
       addText(personalityInfo.description, 9);
       addText("Recommended Remedies:", 10, true);
       personalityInfo.remedies.forEach(remedy => {
@@ -354,7 +354,7 @@ export default function NumerologyPage() {
       // Dominant Soul Chakra Analysis
       const soulInfo = getChakraPlanetInfo(dominantSoulNumber);
       addText("Dominant Soul Chakra:", 11, true);
-      addText(`Number ${dominantSoulNumber}: ${soulInfo.chakra} • ${soulInfo.planet}`, 10, false, [239, 68, 68]);
+      addText(`Number ${dominantSoulNumber}: ${soulInfo.chakra} • ${soulInfo.planet}`, 10, false, [147, 51, 234]);
       addText(soulInfo.description, 9);
       addText("Healing Remedies:", 10, true);
       soulInfo.remedies.forEach(remedy => {
@@ -404,29 +404,7 @@ export default function NumerologyPage() {
       currentY += 3;
       
       // Personal Year Calculation Explanation
-      addText("How Your Personal Year is Calculated:", 10, true, [99, 102, 241]);
-      const birthDateObj = new Date(targetBirthDate);
-      const day = birthDateObj.getDate();
-      const month = birthDateObj.getMonth() + 1;
-      const currentYear = 2026;
       
-      const dayDigits = day.toString().split('').map(d => parseInt(d));
-      const monthDigits = month.toString().split('').map(d => parseInt(d));
-      const yearDigits = currentYear.toString().split('').map(d => parseInt(d));
-      
-      const daySum = dayDigits.reduce((a, b) => a + b, 0);
-      const monthSum = monthDigits.reduce((a, b) => a + b, 0);
-      const yearSum = yearDigits.reduce((a, b) => a + b, 0);
-      const totalSum = daySum + monthSum + yearSum;
-      
-      addText(`Birth Day digits: ${dayDigits.join(' + ')} = ${daySum}`, 9);
-      addText(`Birth Month digits: ${monthDigits.join(' + ')} = ${monthSum}`, 9);
-      addText(`Current Year digits: ${yearDigits.join(' + ')} = ${yearSum}`, 9);
-      addText(`Total: ${daySum} + ${monthSum} + ${yearSum} = ${totalSum}`, 9);
-      if (totalSum > 9) {
-        addText(`Reduced to single digit: ${totalSum.toString().split('').join(' + ')} = ${personalYear}`, 9, false, [99, 102, 241]);
-      }
-      currentY += 5;
 
       // Personal Month Forecast
       addSection("PERSONAL MONTH FORECAST 2026");
@@ -458,67 +436,18 @@ export default function NumerologyPage() {
       currentY += 5;
 
       // Tab-Based Profile Information
-      addSection("COMPLETE NUMEROLOGY PROFILE");
+      
       
       // Life Path Detailed Section
-      addText("LIFE PATH NUMBER ANALYSIS", 12, true, [147, 51, 234]);
-      currentY += 2;
-      const lifePathInfo = getNumberMeaning(numerology.lifePathNumber, 'lifePath');
-      addText(`Number: ${numerology.lifePathNumber}`, 11, true);
-      addText(`Color: ${getNumberColorAssociation(numerology.lifePathNumber)}`, 10);
-      addText(lifePathInfo.title, 10, true);
-      addText(lifePathInfo.description, 9);
-      currentY += 2;
-      addText("Vibration Qualities:", 10, true);
-      getVibrationQualities(numerology.lifePathNumber).forEach(quality => {
-        addBulletPoint(quality, 9);
-      });
-      currentY += 3;
+      
       
       // Destiny Detailed Section
-      addText("DESTINY NUMBER ANALYSIS", 12, true, [59, 130, 246]);
-      currentY += 2;
-      const destinyInfo = getNumberMeaning(numerology.destinyNumber, 'destiny');
-      addText(`Number: ${numerology.destinyNumber}`, 11, true);
-      addText(`Color: ${getNumberColorAssociation(numerology.destinyNumber)}`, 10);
-      addText(destinyInfo.title, 10, true);
-      addText(destinyInfo.description, 9);
-      currentY += 2;
-      addText("Vibration Qualities:", 10, true);
-      getVibrationQualities(numerology.destinyNumber).forEach(quality => {
-        addBulletPoint(quality, 9);
-      });
-      currentY += 3;
       
       // Soul Urge Detailed Section
-      addText("SOUL URGE NUMBER ANALYSIS", 12, true, [139, 92, 246]);
-      currentY += 2;
-      const soulUrgeInfo = getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge');
-      addText(`Number: ${numerology.soulUrgeNumber}`, 11, true);
-      addText(`Color: ${getNumberColorAssociation(numerology.soulUrgeNumber)}`, 10);
-      addText(soulUrgeInfo.title, 10, true);
-      addText(soulUrgeInfo.description, 9);
-      currentY += 2;
-      addText("Soul Qualities:", 10, true);
-      getVibrationQualities(numerology.soulUrgeNumber).forEach(quality => {
-        addBulletPoint(quality, 9);
-      });
-      currentY += 3;
+      
       
       // Personality Detailed Section
-      addText("PERSONALITY NUMBER ANALYSIS", 12, true, [236, 72, 153]);
-      currentY += 2;
-      const personalityDetailInfo = getNumberMeaning(numerology.personalityNumber, 'personality');
-      addText(`Number: ${numerology.personalityNumber}`, 11, true);
-      addText(`Color: ${getNumberColorAssociation(numerology.personalityNumber)}`, 10);
-      addText(personalityDetailInfo.title, 10, true);
-      addText(personalityDetailInfo.description, 9);
-      currentY += 2;
-      addText("Vibration Qualities:", 10, true);
-      getVibrationQualities(numerology.personalityNumber).forEach(quality => {
-        addBulletPoint(quality, 9);
-      });
-      currentY += 5;
+      
 
       // Spiritual Guidance
       addSection("SPIRITUAL GUIDANCE");
@@ -1238,7 +1167,7 @@ export default function NumerologyPage() {
                     </div>
                     
                     {/* Quick Summary Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div className="grid grid-rows-1 md:grid-rows-1">
                       {(() => {
                         const text = getLifePathMeaning(numerology.lifePathNumber);
                         const colorMatch = text.match(/Colour?:\s*([^,]+)/i);
