@@ -9080,7 +9080,7 @@ Team AuraEye™
                                   
                                   <div className="flex-1 space-y-4">
                                     <div>
-                                      <h4 className="font-medium mb-2">Detected Aura Colors</h4>
+                                      <h4 className="font-bold text-xl mb-2">Detected Aura Colors</h4>
                                       <p className="text-sm text-gray-600 mb-3">
                                         The colored energy field visible around you in your specialized aura photograph reveals your spiritual signature:
                                       </p>
@@ -9097,7 +9097,7 @@ Team AuraEye™
                                           ></div>
                                           <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
-                                              <div className="text-xs text-gray-500">Dominant Aura (Thinking Colour)</div>
+                                              <div className="text-sm font-bold text-gray-700">Dominant Aura (Thinking Colour):</div>
                                               <div className="text-base font-bold">{result.dominantColor}</div>
                                             </div>
                                             {(() => {
@@ -9133,7 +9133,7 @@ Team AuraEye™
                                               ></div>
                                               <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                  <div className="text-xs text-gray-500">Personality Color</div>
+                                                  <div className="text-sm font-bold text-gray-700">Personality Color:</div>
                                                   <div className="text-base font-bold">{personalityColor}</div>
                                                 </div>
                                                 {(() => {
@@ -9161,7 +9161,7 @@ Team AuraEye™
                               </div>
                               
                               <div>
-                                <h4 className="text-lg text-gray-500 mb-1">Aura Size</h4>
+                                <h4 className="text-xl font-bold text-gray-700 mb-1">Aura Size</h4>
                                 <Progress value={result.energyLevel * 10} className="h-2" />
                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                                   <span>Low</span>
@@ -9174,7 +9174,7 @@ Team AuraEye™
                               </div>
                               
                               <div>
-                                <h4 className="text-sm text-gray-500 mb-2">Personality Traits</h4>
+                                <h4 className="text-xl font-bold text-gray-700 mb-2">Personality Traits</h4>
                                 <div className="flex flex-wrap gap-2">
                                   {result.personalityTraits.map((trait, index) => (
                                     <Badge key={index} variant="outline" className="rounded-full">
@@ -9186,7 +9186,7 @@ Team AuraEye™
                               
                               {/* Energy Aspects Section */}
                               <div>
-                                <h4 className="text-sm text-gray-500 mb-4">Energy Aspects</h4>
+                                <h4 className="text-xl font-bold text-gray-700 mb-4">Energy Aspects</h4>
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                   <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-3 text-center border border-amber-200">
                                     <div className="text-amber-600 mb-1">
@@ -9272,7 +9272,7 @@ Team AuraEye™
 
                               {/* Enhanced Personality Integration */}
                               <div className="space-y-4">
-                                <h4 className="font-semibold text-lg">Personality Integration</h4>
+                                <h4 className="font-bold text-xl">Personality Integration</h4>
                                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
                                   <div className="mb-6">
                                     <p className="text-sm text-gray-700 mb-4">
