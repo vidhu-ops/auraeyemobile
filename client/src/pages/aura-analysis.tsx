@@ -6430,22 +6430,8 @@ Team AuraEye™
     setCurrentAnalysisId(null);
 
     try {
-      // Check for human presence (face or full body)
-      setAnalysisProgress(10);
-      setAnalysisStage("Scanning for human presence...");
-      
-      const hasHuman = await detectHumanFace(selectedImageFile);
-      
-      if (!hasHuman) {
-        setIsAnalyzing(false);
-        toast({
-          title: "No Human Detected",
-          description: "Aura analysis requires an image with a human being. Please upload a photo of yourself or another person (face or full body).",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      // Skip client-side human detection - accept all images for analysis
+      // Backend handles validation and provides fallback results if needed
       setAnalysisProgress(20);
       setAnalysisStage("Initializing aura scanning...");
 

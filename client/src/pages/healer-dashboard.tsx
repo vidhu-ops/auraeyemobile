@@ -3151,7 +3151,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Client Sessions</h3>
-                      <p className="text-slate-600 text-xs">3 credits = +300 soul energy</p>
+                      <p className="text-slate-600 text-xs">1 credits = +100 soul energy</p>
                     </div>
                   </div>
                 </div>
