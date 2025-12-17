@@ -8158,20 +8158,7 @@ Team AuraEye™
                           <TabsContent value="energy-map" data-tab="energy-map">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('energy-map')}
-                                disabled={isCapturingScreenshot === 'energy-map'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'energy-map' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'energy-map' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                             
                             </div>
                             <div className="space-y-6">
                               <div className="text-center mb-6">
@@ -8521,20 +8508,7 @@ Team AuraEye™
                           <TabsContent value="combined" data-tab="combined">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('combined')}
-                                disabled={isCapturingScreenshot === 'combined'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'combined' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'combined' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                              
                             </div>
                             <div className="space-y-6">
                               {!numerologyResult ? (
@@ -8993,20 +8967,7 @@ Team AuraEye™
                           <TabsContent value="analysis" data-tab="analysis">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('analysis')}
-                                disabled={isCapturingScreenshot === 'analysis'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'analysis' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'analysis' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                              
                             </div>
                             <div className="space-y-10">
 
@@ -10183,20 +10144,7 @@ Team AuraEye™
                           <TabsContent value="guidance" data-tab="guidance">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('guidance')}
-                                disabled={isCapturingScreenshot === 'guidance'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'guidance' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'guidance' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                             
                             </div>
                             <div className="space-y-6">
                               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100">
@@ -10491,20 +10439,7 @@ Team AuraEye™
                           <TabsContent value="detailed" data-tab="detailed">
                             {/* Screenshot Button */}
                             <div className="flex justify-end mb-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => captureTabScreenshot('detailed')}
-                                disabled={isCapturingScreenshot === 'detailed'}
-                                className="flex items-center gap-2"
-                              >
-                                {isCapturingScreenshot === 'detailed' ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Camera className="h-4 w-4" />
-                                )}
-                                {isCapturingScreenshot === 'detailed' ? 'Capturing...' : 'Capture Screenshot'}
-                              </Button>
+                              
                             </div>
                             <div>
                               <div className="mb-6 relative">
