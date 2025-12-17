@@ -76,7 +76,7 @@ export default function HealersPage() {
     onSuccess: () => {
       toast({
         title: "Booking Request Sent",
-        description: "The healer will review your request and contact you soon. 3 credits have been deducted.",
+        description: "The healer will review your request and contact you soon. 1 credit has been deducted.",
       });
       setIsDialogOpen(false);
       setBookingMessage("");
