@@ -68,10 +68,10 @@ export async function generateParticleAuraEffect(
       );
       
       // Bias particles toward the face area with reduced exclusion
-      if (distanceFromFace > faceRadius * 0.8) {
+      if (distanceFromFace > faceRadius * 0.9) {
         // Larger particles with blur for softer effect
-        const size = Math.random() * 35 + 20; // 20-55px radius (increased from 8-26)
-        const opacity = Math.random() * 0.2 + 0.8; // 0.8-1.0 opacity (more opaque)
+        const size = Math.random() * 40 + 25; // 25-65px radius for larger, more visible particles
+        const opacity = Math.random() * 0.05 + 0.95; // 0.95-1.0 opacity (nearly fully opaque)
         
         particleSvg += `<circle cx="${x}" cy="${y}" r="${size / 2}" fill="rgb(${color.r}, ${color.g}, ${color.b})" opacity="${opacity}" filter="url(#particleBlur)" />`;
         placedParticles++;
@@ -87,7 +87,7 @@ export async function generateParticleAuraEffect(
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
         </filter>
         <filter id="particleBlur">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="18" />
         </filter>
         <filter id="shadow">
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
@@ -101,20 +101,20 @@ export async function generateParticleAuraEffect(
           </feMerge>
         </filter>
         <radialGradient id="glow" cx="50%" cy="35%">
-          <stop offset="0%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0.25" />
+          <stop offset="0%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0.65" />
           <stop offset="100%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0" />
         </radialGradient>
       </defs>
-      <circle cx="${faceX}" cy="${faceY}" r="${faceRadius * 1.6}" fill="url(#glow)" />
+      <circle cx="${faceX}" cy="${faceY}" r="${faceRadius * 1.8}" fill="url(#glow)" />
       ${particleSvg}
     </svg>`;
     
-    // Composite SVG overlay with image using screen blend mode
+    // Composite SVG overlay with image using lighten blend mode for better particle visibility
     const result = await sharp(imageBuffer)
       .composite([
         {
           input: Buffer.from(svgContent),
-          blend: 'screen'
+          blend: 'lighten'
         }
       ])
       .png()

@@ -241,7 +241,7 @@ export default function VibePage() {
 
                     <div className="mt-6 bg-yellow-400/20 border border-yellow-400/30 rounded-lg p-4">
                       <p className="text-sm text-yellow-100">
-                        <strong>Quick Check:</strong> 1 credit • For comprehensive analysis with detailed chakra insights, try Human Aura Analysis (15 credits)
+                        <strong>Quick Check:</strong> 1 credit • For comprehensive analysis with detailed chakra insights, try Human Aura Analysis
                       </p>
                     </div>
                   </CardContent>
