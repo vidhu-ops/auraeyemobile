@@ -1030,20 +1030,28 @@ export class DatabaseStorage implements IStorage {
       throw new Error('User not found for credit cost calculation');
     }
     
-    const isHealer = user.userType === 'healer';
+    const userType = user.userType || 'client';
     
     // Define credit costs for different service types
     const creditCosts = {
-      // Client costs
+      // Client costs (free account made on registration)
       client: {
         'vibe_check': 1,
         'object_analysis': 1,
         'aura_analysis': 15,
         'healer_booking': 3,
-        'numerology': 5,
+        'numerology': -1, // -1 indicates service not available for clients
       },
-      // Healer costs (subscription-based lower rates)
+      // Healer costs
       healer: {
+        'vibe_check': 1,
+        'object_analysis': 1,
+        'aura_analysis': 5,
+        'healer_booking': 1,
+        'numerology': 3,
+      },
+      // Semi-healer costs
+      'semi-healer': {
         'vibe_check': 1,
         'object_analysis': 1,
         'aura_analysis': 5,
@@ -1052,7 +1060,7 @@ export class DatabaseStorage implements IStorage {
       }
     };
     
-    const userTypeCosts = isHealer ? creditCosts.healer : creditCosts.client;
+    const userTypeCosts = creditCosts[userType as keyof typeof creditCosts] || creditCosts.client;
     return userTypeCosts[serviceType as keyof typeof userTypeCosts] || 1;
   }
 
