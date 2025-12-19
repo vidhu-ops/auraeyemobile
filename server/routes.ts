@@ -2274,8 +2274,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         console.log('Returning numerology profile:', numerologyProfile);
         
-        // Save the numerology reading
-        await storage.saveNumerologyReading({
+        // Save the numerology reading and capture the ID
+        const savedReading = await storage.saveNumerologyReading({
           userId: req.user.id,
           performedBy: req.user.userType === 'healer' || req.user.userType === 'semi-healer' ? req.user.id : null,
           name,
@@ -2287,6 +2287,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           personalYearNumber: numerologyProfile.personalYearNumber || 5,
           interpretation: numerologyProfile.interpretation
         });
+        
+        // Include the reading ID in the response for PDF saving
+        numerologyProfile.readingId = savedReading.id;
         
         // Deduct credits
         await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
@@ -2331,7 +2334,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         };
         
         if (req.isAuthenticated() && req.user) {
-          await storage.saveNumerologyReading({
+          const savedReading = await storage.saveNumerologyReading({
             userId: req.user.id,
             performedBy: req.user.userType === 'healer' ? req.user.id : null,
             name,
@@ -2342,6 +2345,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             personalityNumber: numerologyProfile.personalityNumber,
             interpretation: numerologyProfile.interpretation
           });
+          
+          // Include the reading ID in the response for PDF saving
+          numerologyProfile.readingId = savedReading.id;
           
           // Add soul energy (credits * 100) for completing numerology analysis (fallback path)
           try {
