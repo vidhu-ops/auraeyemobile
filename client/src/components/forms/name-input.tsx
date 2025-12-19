@@ -44,7 +44,7 @@ export default function NameInput({
         <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
           <User className="w-8 h-8 text-primary" />
         </div>
-        <CardTitle className="text-xl text-black bg-white">{title}</CardTitle>
+        <CardTitle className="text-xl text-black">{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{description}</p>
       </CardHeader>
       <CardContent>
