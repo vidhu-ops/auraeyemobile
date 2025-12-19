@@ -3038,6 +3038,45 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get all healer ratings in bulk (for efficiency)
+  app.get("/api/bulk-healer-ratings", async (req, res) => {
+    try {
+      // Fetch all ratings in a single query
+      const allRatings = await db.select().from(healerRatings);
+      
+      // Group ratings by healer ID
+      const ratingsMap: Record<number, { ratings: any[], averageRating: number, totalRatings: number }> = {};
+      
+      for (const rating of allRatings) {
+        if (!ratingsMap[rating.healerId]) {
+          ratingsMap[rating.healerId] = {
+            ratings: [],
+            averageRating: 0,
+            totalRatings: 0
+          };
+        }
+        ratingsMap[rating.healerId].ratings.push(rating);
+      }
+      
+      // Calculate averages
+      for (const healerId in ratingsMap) {
+        const data = ratingsMap[healerId];
+        data.totalRatings = data.ratings.length;
+        if (data.totalRatings > 0) {
+          const sum = data.ratings.reduce((acc: number, r: any) => acc + r.rating, 0);
+          data.averageRating = Math.round((sum / data.totalRatings) * 10) / 10;
+        } else {
+          data.averageRating = 5;
+        }
+      }
+      
+      res.json(ratingsMap);
+    } catch (error) {
+      console.error("Error fetching bulk ratings:", error);
+      res.status(500).json({ message: "Failed to fetch ratings" });
+    }
+  });
+
   // Award healer badges endpoint
   app.post("/api/award-badges", async (req, res) => {
     try {

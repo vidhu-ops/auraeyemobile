@@ -1402,7 +1402,7 @@ export default function NumerologyPage() {
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Life Path Number: {numerology.lifePathNumber}</h3>
                       <p className="text-black-600 mb-2">Associated Color: <span className="font-medium text-black">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
-                      <div className="text-sm text-gray-500 italic mb-4">
+                      <div className="text-sm text-black italic mb-4">
                         {getNumberColorAssociation(numerology.lifePathNumber) === 'Green' && 
                           "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
                         }
@@ -1410,7 +1410,7 @@ export default function NumerologyPage() {
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').title}</h4>
+                      <h4 className="font-semibold text-black mb-2">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').title}</h4>
                       <p className="text-sm text-gray-700">{getNumberMeaning(numerology.lifePathNumber, 'lifePath').description}</p>
                     </div>
 
@@ -1460,7 +1460,7 @@ export default function NumerologyPage() {
                         {numerology.destinyNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Destiny Number: {numerology.destinyNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
+                      <p className="text-black mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
                       <div className="text-sm text-gray-500 italic mb-4">
                         {getNumberColorAssociation(numerology.destinyNumber) === 'Yellow' && 
                           "Bright and uplifting, yellow represents optimism, mental clarity, and self-expression. It encourages intellectual growth, communication skills, and the ability to share ideas with confidence."
@@ -1507,7 +1507,7 @@ export default function NumerologyPage() {
                         {numerology.soulUrgeNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Soul Urge Number: {numerology.soulUrgeNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
+                      <p className="text-black mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
                       <div className="text-sm text-gray-500 italic mb-4">
                         {getNumberColorAssociation(numerology.soulUrgeNumber) === 'Violet' && 
                           "Mystical and transformative, violet represents spiritual wisdom, introspection, and higher consciousness. It encourages deep analysis, inner knowing, and connection to universal truths."
@@ -1561,7 +1561,7 @@ export default function NumerologyPage() {
                         {numerology.personalityNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Personality Number: {numerology.personalityNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
+                      <p className="text-black mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4">
@@ -1978,11 +1978,11 @@ export default function NumerologyPage() {
             {numerology && user?.userType === "healer" && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <CardTitle className="flex items-center gap-2 text-black-800">
                     <FileText className="h-5 w-5" />
                     Professional Healer Notes
                   </CardTitle>
-                  <CardDescription className="text-orange-600">
+                  <CardDescription className="text-black-600">
                     Add your professional insights and recommendations for this numerology analysis
                   </CardDescription>
                 </CardHeader>
