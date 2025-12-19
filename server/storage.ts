@@ -68,6 +68,7 @@ export interface IStorage {
   getNumerologyReadingsCountByPerformedBy(performedBy: number): Promise<number>;
   getNumerologyReading(id: number): Promise<NumerologyReading | undefined>;
   updateNumerologyReadingNotes(id: number, healerNotes: string): Promise<NumerologyReading | undefined>;
+  updateNumerologyReadingPdf(id: number, pdfData: string): Promise<NumerologyReading | undefined>;
   
   // Object analyses
   saveObjectAnalysis(analysis: InsertObjectAnalysis): Promise<ObjectAnalysis>;
@@ -411,6 +412,15 @@ export class DatabaseStorage implements IStorage {
     const [updatedReading] = await db
       .update(numerologyReadings)
       .set({ healerNotes })
+      .where(eq(numerologyReadings.id, id))
+      .returning();
+    return updatedReading || undefined;
+  }
+
+  async updateNumerologyReadingPdf(id: number, pdfData: string): Promise<NumerologyReading | undefined> {
+    const [updatedReading] = await db
+      .update(numerologyReadings)
+      .set({ pdfData })
       .where(eq(numerologyReadings.id, id))
       .returning();
     return updatedReading || undefined;

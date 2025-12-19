@@ -4980,6 +4980,52 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Save numerology reading PDF data
+  app.patch('/api/numerology-readings/:id/pdf', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { pdfData } = req.body;
+
+      if (!pdfData) {
+        return res.status(400).json({ message: "PDF data is required" });
+      }
+
+      const reading = await storage.getNumerologyReading(parseInt(id));
+      if (!reading) {
+        return res.status(404).json({ message: "Numerology reading not found" });
+      }
+
+      // Update the reading with PDF data
+      const updatedReading = await storage.updateNumerologyReadingPdf(parseInt(id), pdfData);
+      
+      res.json(updatedReading);
+    } catch (error) {
+      console.error("Error saving numerology reading PDF:", error);
+      res.status(500).json({ message: "Failed to save PDF" });
+    }
+  });
+
+  // Get numerology reading PDF data
+  app.get('/api/numerology-readings/:id/pdf', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+
+      const reading = await storage.getNumerologyReading(parseInt(id));
+      if (!reading) {
+        return res.status(404).json({ message: "Numerology reading not found" });
+      }
+
+      if (!reading.pdfData) {
+        return res.status(404).json({ message: "PDF not available for this reading" });
+      }
+
+      res.json({ pdfData: reading.pdfData, name: reading.name, birthDate: reading.birthDate });
+    } catch (error) {
+      console.error("Error fetching numerology reading PDF:", error);
+      res.status(500).json({ message: "Failed to fetch PDF" });
+    }
+  });
+
   // Forgot Password Routes
   
   // Request password reset
