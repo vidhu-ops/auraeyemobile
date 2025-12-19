@@ -122,6 +122,8 @@ interface NumerologyReading {
   personalYearNumber: number;
   interpretation: string;
   createdAt: string;
+  pdfData?: string;
+  healerNotes?: string;
 }
 
 interface VibeReading {
@@ -1826,7 +1828,20 @@ function DetailedNumerologyReadingCard({ reading }: { reading: any }) {
     updateReadingMutation.mutate(editedNotes);
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    // Check if stored PDF exists in database
+    if (reading.pdfData) {
+      // Download the stored PDF directly
+      const link = document.createElement('a');
+      link.href = reading.pdfData;
+      link.download = `numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
+    // Otherwise, generate a new PDF (fallback for older readings without stored PDF)
     // Chakra-planet map matching numerology data
     const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string } } = {
       1: { chakra: "Solar Plexus Chakra", planet: "Sun", description: "Leadership and Independence. Personal power, confidence, and willpower." },
@@ -3463,7 +3478,19 @@ export default function HealerDashboard() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => {
-                                    // Create comprehensive PDF with chakra-planet analysis
+                                    // Check if stored PDF exists in database
+                                    if (reading.pdfData) {
+                                      // Download the stored PDF directly
+                                      const link = document.createElement('a');
+                                      link.href = reading.pdfData;
+                                      link.download = `numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`;
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      document.body.removeChild(link);
+                                      return;
+                                    }
+
+                                    // Fallback: Generate PDF for older readings without stored PDF
                                     const chakraPlanetMap: { [key: number]: { chakra: string; planet: string; description: string; remedies: string[] } } = {
                                       1: { chakra: "Solar Plexus Chakra", planet: "Sun", description: "Leadership and Independence. Personal power, confidence, and willpower.", remedies: ["Yellow color therapy", "RAM mantra 45 times/day", "Citrine crystal", "Lemon aromatherapy", "Sacred code 451"] },
                                       2: { chakra: "Heart Chakra", planet: "Moon", description: "Relationships and Sensitivity. Emotional balance and self-love.", remedies: ["Green/pink color therapy", "YAM mantra 45 times/day", "Rose Quartz crystal", "Rose aromatherapy", "Sacred code 741"] },
@@ -3483,7 +3510,6 @@ export default function HealerDashboard() {
                                     const pageWidth = 210;
                                     const margin = 15;
                                     
-                                    // Helper functions
                                     const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
                                       pdf.setFontSize(fontSize);
                                       pdf.setFont("helvetica", isBold ? "bold" : "normal");
@@ -3493,14 +3519,12 @@ export default function HealerDashboard() {
                                       currentY += 2;
                                     };
                                     
-                                    // Title
                                     addText("NUMEROLOGY ANALYSIS REPORT", 16, true);
                                     addText(`Client: ${reading.name}`, 11);
                                     addText(`Healer: ${user?.username || 'Unknown'}`, 11);
                                     addText(`Date: ${format(new Date(reading.createdAt), "MMMM d, yyyy")}`, 11);
                                     currentY += 3;
                                     
-                                    // Core Numbers with Chakra-Planet Info
                                     addText("CORE NUMBERS WITH CHAKRA-PLANET ANALYSIS", 12, true);
                                     
                                     const numbers = [
@@ -3521,14 +3545,12 @@ export default function HealerDashboard() {
                                     addText(`Personal Year: ${reading.personalYearNumber}`, 10, true);
                                     currentY += 3;
                                     
-                                    // Full Interpretation
                                     addText("COMPLETE INTERPRETATION", 12, true);
                                     const splitText = pdf.splitTextToSize(reading.interpretation, pageWidth - 2 * margin);
                                     if (currentY + splitText.length * 4 > 270) { pdf.addPage(); currentY = margin; }
                                     pdf.setFontSize(9);
                                     splitText.forEach((line: string) => { if (currentY > 270) { pdf.addPage(); currentY = margin; } pdf.text(line, margin, currentY); currentY += 4; });
                                     
-                                    // Save the PDF
                                     pdf.save(`numerology-reading-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`);
                                   }}
                                   title="Download PDF Report"
