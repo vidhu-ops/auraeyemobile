@@ -122,6 +122,7 @@ export const numerologyReadings = pgTable("numerology_readings", {
   personalYearNumber: integer("personal_year_number").notNull(),
   interpretation: text("interpretation").notNull(),
   healerNotes: text("healer_notes"), // Professional healer notes
+  pdfData: text("pdf_data"), // Base64-encoded PDF data for download from history
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

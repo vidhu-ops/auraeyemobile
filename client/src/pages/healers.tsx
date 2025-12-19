@@ -454,21 +454,7 @@ export default function HealersPage() {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        onClick={() => {
-                          const params = new URLSearchParams({
-                            healerName: healer.name,
-                            fromHealer: 'true'
-                          });
-                          window.location.href = `/numerology?${params.toString()}`;
-                        }}
-                        data-testid={`button-numerology-${healer.id}`}
-                      >
-                        <Calculator className="h-4 w-4 mr-2" />
-                        View Numerology Analysis
-                      </Button>
+                      
                     </>
                   )}
                 </CardFooter>

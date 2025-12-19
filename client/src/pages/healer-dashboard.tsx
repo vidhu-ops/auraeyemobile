@@ -3302,21 +3302,10 @@ export default function HealerDashboard() {
           </div>
 
           {/* Earned Achievements */}
-          <AchievementsBadges />
+          
 
           {/* Physical Badges Showcase */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                Physical Badges
-              </CardTitle>
-              <CardDescription>Spiritual achievement badges showcase</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BadgeShowcase />
-            </CardContent>
-          </Card>
+         
 
           {/* Achievement Targets - Badge Progress */}
           <Card>
@@ -3909,21 +3898,13 @@ export default function HealerDashboard() {
         <TabsContent value="badges" className="space-y-6">
           {/* Healer Performance Badges */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-yellow-600" />
-                Healer Performance Badges
-              </CardTitle>
-              <CardDescription>Recognition badges awarded based on your performance and client interactions</CardDescription>
-            </CardHeader>
+            
             <CardContent>
               {healerBadges.length === 0 ? (
                 <div className="text-center py-12">
                   <Award className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <p className="text-gray-500 mb-4 text-lg">No badges earned yet</p>
-                  <p className="text-gray-400 text-sm max-w-md mx-auto">
-                    Earn badges by receiving many client bookings, getting highly rated, and providing excellent service. Keep growing your practice!
-                  </p>
+                  
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
