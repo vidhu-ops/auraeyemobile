@@ -2200,7 +2200,7 @@ export default function HealerDashboard() {
   });
 
   // Fetch healer's own numerology readings with real-time updates
-  const { data: healerNumerologyReadings = [] } = useQuery<NumerologyReading[]>({
+  const { data: healerNumerologyReadings = [], isLoading: isLoadingNumerologyReadings, refetch: refetchNumerologyReadings } = useQuery<NumerologyReading[]>({
     queryKey: ["/api/healer-numerology-readings"],
     enabled: !!user,
     staleTime: 0, // Always refetch to get latest data
@@ -3439,6 +3439,68 @@ export default function HealerDashboard() {
                           }}
                           className="ml-2 flex-shrink-0"
                           data-testid="button-download-pdf"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Numerology PDF Reports */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Download className="h-5 w-5 text-blue-500" />
+                    Numerology PDF Reports
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => refetchNumerologyReadings()}
+                    disabled={isLoadingNumerologyReadings}
+                    className="text-xs"
+                  >
+                    {isLoadingNumerologyReadings ? 'Loading...' : 'Refresh'}
+                  </Button>
+                </CardTitle>
+                <CardDescription>Client numerology analysis reports</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingNumerologyReadings ? (
+                  <div className="text-center py-4 text-gray-500">Loading PDFs...</div>
+                ) : healerNumerologyReadings.filter(r => r.pdfData).length === 0 ? (
+                  <div className="text-center py-8">
+                    <Download className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-500">No PDF reports yet</p>
+                    <p className="text-xs text-gray-400 mt-2">Generate numerology readings to create downloadable PDFs</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {healerNumerologyReadings.filter(r => r.pdfData).map((reading) => (
+                      <div key={reading.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate text-blue-800">{reading.name}</p>
+                          <p className="text-xs text-gray-500">{format(new Date(reading.createdAt), "PP")}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (reading.pdfData) {
+                              const link = document.createElement('a');
+                              link.href = reading.pdfData;
+                              link.download = `numerology-${reading.name}-${format(new Date(reading.createdAt), "yyyy-MM-dd")}.pdf`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }
+                          }}
+                          className="ml-2 flex-shrink-0 text-blue-600 hover:text-blue-800"
+                          data-testid="button-download-numerology-pdf"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
