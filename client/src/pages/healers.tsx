@@ -391,14 +391,7 @@ export default function HealersPage() {
                         }
                       }}>
                         <DialogTrigger asChild>
-                          <Button variant="secondary" className="w-full" data-testid={`button-rate-${healer.id}`} onClick={() => {
-                            setRatingHealerId(healer.id);
-                            setRatingValue(0);
-                            setSelectedHealer(healer);
-                          }}>
-                            <Star className="h-4 w-4 mr-2" />
-                            Rate Healer
-                          </Button>
+                          
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
