@@ -232,7 +232,7 @@ export default function NumerologyPage() {
   });
 
   // Generate PDF with numerology results and healer notes
-  const generatePDF = () => {
+  const generatePDF = async () => {
     if (!numerology) return;
     
     setIsGeneratingPDF(true);
@@ -530,7 +530,25 @@ export default function NumerologyPage() {
         addText(healerNotes, 9);
       }
 
+      // Get base64 data for storage before saving locally
+      const pdfBase64 = pdf.output('datauristring');
+      
       pdf.save(`numerology-analysis-${targetName.replace(/\s+/g, '-')}-${new Date().getTime()}.pdf`);
+      
+      // Save PDF data to database if we have a reading ID
+      if (currentReadingId) {
+        try {
+          await fetch(`/api/numerology-readings/${currentReadingId}/pdf`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pdfData: pdfBase64 }),
+          });
+        } catch (saveError) {
+          console.error("Error saving PDF to database:", saveError);
+        }
+      }
       
       toast({
         title: "PDF Downloaded",
