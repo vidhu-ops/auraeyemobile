@@ -175,6 +175,13 @@ export default function NumerologyPage() {
   // Store reading ID when numerology is calculated
   const [currentReadingId, setCurrentReadingId] = useState<number | null>(null);
 
+  // Capture reading ID from numerology result when available
+  useEffect(() => {
+    if (numerology?.readingId) {
+      setCurrentReadingId(numerology.readingId);
+    }
+  }, [numerology?.readingId]);
+
   // Save healer notes mutation
   const saveNotesMutation = useMutation({
     mutationFn: async (notes: string) => {
@@ -545,6 +552,9 @@ export default function NumerologyPage() {
             },
             body: JSON.stringify({ pdfData: pdfBase64 }),
           });
+          
+          // Invalidate healer numerology readings query so dashboard updates immediately
+          queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
         } catch (saveError) {
           console.error("Error saving PDF to database:", saveError);
         }
@@ -552,7 +562,7 @@ export default function NumerologyPage() {
       
       toast({
         title: "PDF Downloaded",
-        description: "Your comprehensive numerology analysis PDF has been downloaded successfully.",
+        description: "Your comprehensive numerology analysis PDF has been downloaded and saved to your dashboard.",
       });
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -595,6 +605,12 @@ export default function NumerologyPage() {
     
     try {
       const result = await calculateNumerology(data.name, data.birthDate);
+      
+      // Capture the reading ID from the result for PDF saving
+      if (result.readingId) {
+        setCurrentReadingId(result.readingId);
+      }
+      
       // Trigger a refetch with the new data
       refetchNumerology();
       setShowForm(false);

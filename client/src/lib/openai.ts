@@ -144,6 +144,7 @@ export interface NumerologyResult {
   soulChakraNumber: number;
   personalYearNumber: number;
   interpretation: string;
+  readingId?: number; // Database ID for PDF saving
   // Enhanced properties from AI analysis
   colorAssociations?: {
     lifePathColor?: string;
