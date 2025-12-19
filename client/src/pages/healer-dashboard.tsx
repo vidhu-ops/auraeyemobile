@@ -2264,14 +2264,24 @@ export default function HealerDashboard() {
 
   const achievements = achievementsData?.achievements || [];
 
-  // Helper function to check if a badge is earned
+  // Helper function to check if a badge is earned (checks both healer badges and user achievements)
   const isBadgeEarned = (badgeTitle: string): boolean => {
-    return healerBadges.some(badge => {
-      // Remove emoji from badge title for comparison
-      const cleanBadgeTitle = badgeTitle.replace(/\s*[^\w\s]/g, '').trim();
-      const cleanEarned = badge.badgeTitle.replace(/\s*[^\w\s]/g, '').trim();
+    // Remove emoji from badge title for comparison
+    const cleanBadgeTitle = badgeTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+    
+    // Check healer badges
+    const inHealerBadges = healerBadges.some(badge => {
+      const cleanEarned = badge.badgeTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return cleanEarned.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanEarned);
     });
+    
+    // Check user achievements (for journal, numerology, vibe badges)
+    const inAchievements = achievements.some((achievement: any) => {
+      const cleanAchievementTitle = (achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+      return cleanAchievementTitle.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanAchievementTitle);
+    });
+    
+    return inHealerBadges || inAchievements;
   };
 
   // State for live numerology calculator
