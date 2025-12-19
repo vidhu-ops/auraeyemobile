@@ -3954,13 +3954,13 @@ export default function HealerDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {/* Week Warrior */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Week Warrior") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Week Warrior") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🔥</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Week Warrior 🔥</h3>
-                        {isBadgeEarned("Week Warrior") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Week Warrior") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-yellow-100 mb-2">Maintained a 7-day login streak</p>
                       <div className="flex items-center gap-2">
@@ -3972,13 +3972,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Spiritual Guardian */}
-                <div className={`p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Spiritual Guardian") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Spiritual Guardian") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🙏</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Spiritual Guardian 🙏</h3>
-                        {isBadgeEarned("Spiritual Guardian") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Spiritual Guardian") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-blue-100 mb-2">Completed 50 total spiritual services</p>
                       <div className="flex items-center gap-2">
@@ -3990,13 +3990,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Healing Heart */}
-                <div className={`p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg ${isBadgeEarned("Healing Heart") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg ${isBadgeEarned("Healing Heart") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">💚</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Healing Heart 💚</h3>
-                        {isBadgeEarned("Healing Heart") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Healing Heart") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-green-100 mb-2">Provided 5 healing replies as a healer</p>
                       <div className="flex items-center gap-2">
@@ -4008,13 +4008,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Most Trusted Healer */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Most Trusted Healer") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Most Trusted Healer") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">👑</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Most Trusted Healer 👑</h3>
-                        {isBadgeEarned("Most Trusted Healer") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Most Trusted Healer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-yellow-100 mb-2">Become the top healer with most replies</p>
                       <div className="flex items-center gap-2">
@@ -4026,13 +4026,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Best Healer */}
-                <div className={`p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Best Healer") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Best Healer") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">⭐</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Best Healer ⭐</h3>
-                        {isBadgeEarned("Best Healer") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Best Healer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-pink-100 mb-2">Achieved the highest healer rating</p>
                       <div className="flex items-center gap-2">
@@ -4056,13 +4056,13 @@ export default function HealerDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {/* Number Seeker */}
-                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Number Seeker") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Number Seeker") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🔢</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Number Seeker 🔢</h3>
-                        {isBadgeEarned("Number Seeker") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Number Seeker") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-purple-100 mb-2">Completed your first numerology reading</p>
                       <div className="flex items-center gap-2">
@@ -4074,13 +4074,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Numerology Explorer */}
-                <div className={`p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg ${isBadgeEarned("Numerology Explorer") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg ${isBadgeEarned("Numerology Explorer") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">📚</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Numerology Explorer 📚</h3>
-                        {isBadgeEarned("Numerology Explorer") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Numerology Explorer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-slate-100 mb-2">Completed 5 numerology readings</p>
                       <div className="flex items-center gap-2">
@@ -4092,13 +4092,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Numerology Master */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Numerology Master") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Numerology Master") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🎲</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Numerology Master 🎲</h3>
-                        {isBadgeEarned("Numerology Master") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Numerology Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-yellow-100 mb-2">Completed 15 numerology readings</p>
                       <div className="flex items-center gap-2">
@@ -4110,13 +4110,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Numerology Legend */}
-                <div className={`p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Numerology Legend") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Numerology Legend") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🔮</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Numerology Legend 🔮</h3>
-                        {isBadgeEarned("Numerology Legend") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Numerology Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-blue-100 mb-2">Completed 30+ numerology readings</p>
                       <div className="flex items-center gap-2">
@@ -4140,13 +4140,13 @@ export default function HealerDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {/* Vibe Check */}
-                <div className={`p-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Vibe Check") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Vibe Check") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">✨</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Vibe Check ✨</h3>
-                        {isBadgeEarned("Vibe Check") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Vibe Check") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-pink-100 mb-2">Completed your first vibe scan</p>
                       <div className="flex items-center gap-2">
@@ -4158,13 +4158,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Vibe Enthusiast */}
-                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Vibe Enthusiast") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Vibe Enthusiast") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🌙</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Vibe Enthusiast 🌙</h3>
-                        {isBadgeEarned("Vibe Enthusiast") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Vibe Enthusiast") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-purple-100 mb-2">Completed 5 vibe checks</p>
                       <div className="flex items-center gap-2">
@@ -4176,13 +4176,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Vibe Master */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Vibe Master") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Vibe Master") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🎯</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Vibe Master 🎯</h3>
-                        {isBadgeEarned("Vibe Master") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Vibe Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-yellow-100 mb-2">Completed 15 vibe checks</p>
                       <div className="flex items-center gap-2">
@@ -4194,13 +4194,13 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Vibe Legend */}
-                <div className={`p-4 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg border-2 border-cyan-300 shadow-lg ${isBadgeEarned("Vibe Legend") ? "ring-2 ring-green-400" : ""}`}>
+                <div className={`p-4 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg border-2 border-cyan-300 shadow-lg ${isBadgeEarned("Vibe Legend") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">🌈</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white mb-1">Vibe Legend 🌈</h3>
-                        {isBadgeEarned("Vibe Legend") && <CheckCircle className="w-6 h-6 text-green-300" />}
+                        {isBadgeEarned("Vibe Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
                       </div>
                       <p className="text-sm text-cyan-100 mb-2">Completed 30 vibe checks</p>
                       <div className="flex items-center gap-2">
@@ -4224,11 +4224,14 @@ export default function HealerDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {/* Thoughts Flow */}
-                <div className="p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg">
+                <div className={`p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg ${isBadgeEarned("Thoughts Flow") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">📝</div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-1">Thoughts Flow 📝</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-white mb-1">Thoughts Flow 📝</h3>
+                        {isBadgeEarned("Thoughts Flow") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
+                      </div>
                       <p className="text-sm text-orange-100 mb-2">Wrote your first journal entry</p>
                       <div className="flex items-center gap-2">
                         <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">Write 1 entry</span>
@@ -4239,11 +4242,14 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Journal Keeper */}
-                <div className="p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg">
+                <div className={`p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg ${isBadgeEarned("Journal Keeper") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">📚</div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-1">Journal Keeper 📚</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-white mb-1">Journal Keeper 📚</h3>
+                        {isBadgeEarned("Journal Keeper") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
+                      </div>
                       <p className="text-sm text-slate-100 mb-2">Wrote 5 journal entries</p>
                       <div className="flex items-center gap-2">
                         <span className="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded">Write 5 entries</span>
@@ -4254,11 +4260,14 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Journal Master */}
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg">
+                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Journal Master") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">✒️</div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-1">Journal Master ✒️</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-white mb-1">Journal Master ✒️</h3>
+                        {isBadgeEarned("Journal Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
+                      </div>
                       <p className="text-sm text-yellow-100 mb-2">Wrote 20 journal entries</p>
                       <div className="flex items-center gap-2">
                         <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Write 20 entries</span>
@@ -4269,11 +4278,14 @@ export default function HealerDashboard() {
                 </div>
 
                 {/* Journal Legend */}
-                <div className="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg">
+                <div className={`p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Journal Legend") ? "ring-4 ring-green-500" : ""}`}>
                   <div className="flex items-start gap-3">
                     <div className="text-4xl">📖</div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-1">Journal Legend 📖</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-white mb-1">Journal Legend 📖</h3>
+                        {isBadgeEarned("Journal Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
+                      </div>
                       <p className="text-sm text-blue-100 mb-2">Wrote 50 journal entries</p>
                       <div className="flex items-center gap-2">
                         <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Write 50 entries</span>
