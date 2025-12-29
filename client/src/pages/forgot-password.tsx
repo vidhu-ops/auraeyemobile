@@ -221,9 +221,17 @@ export default function ForgotPassword() {
                       <FormControl>
                         <Input
                           type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="Enter 6-digit reset code"
                           maxLength={6}
-                          {...field}
+                          autoComplete="one-time-code"
+                          className="text-center text-lg tracking-widest"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           disabled={isLoading}
                           data-testid="input-reset-token"
                         />
