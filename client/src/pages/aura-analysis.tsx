@@ -207,34 +207,12 @@ export default function AuraAnalysis() {
   const isSemiHealer = user?.userType === 'semi-healer';
   const isClient = user?.userType === 'client';
   
-  // Healers and semi-healers always have access to aura analysis
-  const isHealerOrSemiHealer = isHealer || isSemiHealer;
-  
-  // Credit cost for aura analysis (only applies to clients)
-  const AURA_SCAN_COST = 15;
-  
-  // Check if new client has completed onboarding
-  const isNewClient = isClient && !user.manifestIntention;
-  
-  // Check if client has enough credits (healers/semi-healers bypass this check)
-  const clientHasEnoughCredits = isClient && (user.credits ?? 0) >= AURA_SCAN_COST;
-  
-  // If user is a new client who hasn't completed onboarding, show upgrade page
-  if (isNewClient) {
+  // Clients cannot access aura analysis - show upgrade page
+  if (isClient) {
     return <ServiceUpgrade 
       serviceName="Aura Analysis"
       serviceDescription="Deep spiritual energy reading and chakra analysis"
-      upgradeMessage="Complete your spiritual preferences first! Answer a few quick questions about your energy and intentions to unlock aura analysis and personalized guidance."
-      icon="🔮"
-    />;
-  }
-  
-  // Clients need enough credits - healers and semi-healers bypass this check
-  if (isClient && !clientHasEnoughCredits) {
-    return <ServiceUpgrade 
-      serviceName="Aura Analysis"
-      serviceDescription="Deep spiritual energy reading and chakra analysis"
-      upgradeMessage={`You need ${AURA_SCAN_COST} credits to perform an aura analysis. Your current balance is ${user?.credits ?? 0} credits. Upgrade now to unlock this powerful spiritual service!`}
+      upgradeMessage="Aura analysis is an exclusive feature for healers. Upgrade your account to access this powerful spiritual service and unlock deep energy readings!"
       icon="🔮"
     />;
   }
