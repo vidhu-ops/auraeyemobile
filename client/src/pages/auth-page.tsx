@@ -350,6 +350,16 @@ export default function AuthPage() {
                     ) : "Login"}
                   </Button>
                   
+                  <div className="flex justify-center w-full">
+                    <a 
+                      href="/forgot-password" 
+                      className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                      data-testid="link-forgot-password"
+                    >
+                      Forgot Password?
+                    </a>
+                  </div>
+                  
                   <p className="text-center text-sm text-white-600 dark:text-slate-400">
                     Enter your credentials to continue your journey
                   </p>
