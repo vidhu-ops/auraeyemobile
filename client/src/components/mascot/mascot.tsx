@@ -398,7 +398,7 @@ export default function Mascot() {
         text: userType === 'healer'
           ? `${username}, your healing chakras resonate with your fellow healers! You're part of this sacred mission! 🤝💚`
           : `${username}, these gifted healers' chakras align with YOUR spiritual path! Find your perfect guide! 🌟`,
-        color: "#14b8a6",
+        color: "#ffffff",
         emotion: 'happy'
       };
     }
@@ -407,7 +407,7 @@ export default function Mascot() {
     if (path.includes("help")) {
       return {
         text: `${username}, I'm here to guide your spiritual journey! My Crown Chakra connects with yours. What wisdom do you seek? 💡✨`,
-        color: "#06b6d4",
+        color: "#ffffff",
         emotion: 'happy'
       };
     }
@@ -417,7 +417,7 @@ export default function Mascot() {
       const chakra = getChakraColor();
       return {
         text: `${username}, the ${chakra?.color} Chakra (${chakra?.meaning}) resonates with your numerological destiny! This number unlocks your deepest truth! 🔢✨`,
-        color: chakra?.hex || "#a855f7",
+        color: chakra?.hex || "#ffffff",
         emotion: 'excited'
       };
     }
@@ -433,7 +433,7 @@ export default function Mascot() {
     
     return {
       text: `Hello ${username}! 🌟 You have ${energy} soul energy! I'm here to help you shine brighter!`,
-      color: "#06b6d4",
+      color: "#ffffff",
       emotion: 'happy'
     };
   };

@@ -10,12 +10,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 const forgotPasswordSchema = z.object({
-  whatsappNumber: z.string().min(10, "Please enter a valid WhatsApp number").regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid WhatsApp number with country code"),
+  email: z.string().email("Please enter a valid email address"),
 });
 
 const resetPasswordSchema = z.object({
@@ -32,7 +33,7 @@ type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"request" | "reset" | "success">("request");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { toast } = useToast();
@@ -40,7 +41,7 @@ export default function ForgotPassword() {
   const forgotForm = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      whatsappNumber: "",
+      email: "",
     },
   });
 
@@ -58,15 +59,15 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      const response = await apiRequest("POST", "/api/forgot-password", data);
+      const response = await apiRequest("POST", "/api/forgot-password-email", data);
       const result = await response.json();
       
       if (response.ok) {
-        setWhatsappNumber(data.whatsappNumber);
+        setEmail(data.email);
         setStep("reset");
         toast({
           title: "Reset Code Sent",
-          description: "Please check WhatsApp for the reset code",
+          description: "Please check your email for the reset code",
         });
       } else {
         setError(result.message || "Failed to send reset code");
@@ -83,8 +84,8 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      const response = await apiRequest("POST", "/api/reset-password", {
-        whatsappNumber,
+      const response = await apiRequest("POST", "/api/reset-password-email", {
+        email,
         token: data.token,
         newPassword: data.newPassword,
       });
@@ -129,7 +130,7 @@ export default function ForgotPassword() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Link href="/login">
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" data-testid="button-go-to-login">
                   Go to Login
                 </Button>
               </Link>
@@ -156,8 +157,8 @@ export default function ForgotPassword() {
           </CardTitle>
           <CardDescription>
             {step === "request" 
-              ? "Enter your WhatsApp number and we'll send you a reset code" 
-              : "Enter the reset code sent to your WhatsApp and your new password"
+              ? "Enter your email address and we'll send you a reset code" 
+              : "Enter the reset code sent to your email and your new password"
             }
           </CardDescription>
         </CardHeader>
@@ -173,16 +174,17 @@ export default function ForgotPassword() {
               <form onSubmit={forgotForm.handleSubmit(handleForgotPassword)} className="space-y-4">
                 <FormField
                   control={forgotForm.control}
-                  name="whatsappNumber"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>WhatsApp Number</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
                         <Input
-                          type="tel"
-                          placeholder="Enter your WhatsApp number (e.g., +1234567890)"
+                          type="email"
+                          placeholder="Enter your email address"
                           {...field}
                           disabled={isLoading}
+                          data-testid="input-forgot-email"
                         />
                       </FormControl>
                       <FormMessage />
@@ -194,8 +196,16 @@ export default function ForgotPassword() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   disabled={isLoading}
+                  data-testid="button-send-reset-code"
                 >
-                  {isLoading ? "Sending to WhatsApp..." : "Send Reset Code to WhatsApp"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Reset Code"
+                  )}
                 </Button>
               </form>
             </Form>
@@ -215,10 +225,11 @@ export default function ForgotPassword() {
                           maxLength={6}
                           {...field}
                           disabled={isLoading}
+                          data-testid="input-reset-token"
                         />
                       </FormControl>
                       <FormDescription>
-                        Check WhatsApp for the reset code
+                        Check your email for the reset code
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -237,6 +248,7 @@ export default function ForgotPassword() {
                           placeholder="Enter new password"
                           {...field}
                           disabled={isLoading}
+                          data-testid="input-new-password"
                         />
                       </FormControl>
                       <FormMessage />
@@ -256,6 +268,7 @@ export default function ForgotPassword() {
                           placeholder="Confirm new password"
                           {...field}
                           disabled={isLoading}
+                          data-testid="input-confirm-password"
                         />
                       </FormControl>
                       <FormMessage />
@@ -267,8 +280,16 @@ export default function ForgotPassword() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   disabled={isLoading}
+                  data-testid="button-reset-password"
                 >
-                  {isLoading ? "Resetting..." : "Reset Password"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Resetting...
+                    </>
+                  ) : (
+                    "Reset Password"
+                  )}
                 </Button>
 
                 <Button
@@ -277,6 +298,7 @@ export default function ForgotPassword() {
                   className="w-full"
                   onClick={handleBackToRequest}
                   disabled={isLoading}
+                  data-testid="button-back-to-email"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Email Entry

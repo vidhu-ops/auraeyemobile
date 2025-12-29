@@ -128,6 +128,69 @@ export default function Contact() {
                   While AuraEye provides valuable insights and tools for spiritual growth, we always recommend consulting with qualified professionals for serious health, financial, or legal matters. Our services are meant to complement, not replace, professional advice.
                 </p>
               </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How do I get started with AuraEye?</h3>
+                <p className="text-gray-600">
+                  Simply create an account by clicking "Register" on the login page. You'll answer a few questions about your spiritual intentions and energy levels, then you'll have access to all our features including aura readings, daily horoscopes, numerology insights, and more.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">What are credits and how do I use them?</h3>
+                <p className="text-gray-600">
+                  Credits are our in-app currency used to access premium features like aura readings, personalized horoscopes, and healer sessions. You receive free credits when you sign up, and can purchase more credits through our pricing page. Each service shows the credit cost before you use it.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How do I upload a photo for aura analysis?</h3>
+                <p className="text-gray-600">
+                  Go to the "Aura Analysis" section from your dashboard. Click the upload button to select a clear photo of yourself. For best results, use a well-lit photo with a neutral background. The analysis will begin automatically once the photo is uploaded.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How often should I check my daily horoscope?</h3>
+                <p className="text-gray-600">
+                  Your daily horoscope is updated every day based on current planetary positions. We recommend checking it each morning to set your intentions for the day. You can also enable notifications to receive your horoscope directly to your device.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">What is the Soul Energy feature?</h3>
+                <p className="text-gray-600">
+                  Soul Energy is your spiritual progress score that increases as you engage with the platform. Complete aura readings, journal entries, meditations, and other activities to boost your Soul Energy. Higher Soul Energy unlocks achievements and special badges.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How do I book a session with a healer?</h3>
+                <p className="text-gray-600">
+                  Browse our certified healers from the "Healers" section. View their profiles, specialties, and reviews. Click "Book Session" on any healer's profile to schedule a session. You'll receive confirmation and can communicate with your healer through the platform.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">Can I reset my password if I forget it?</h3>
+                <p className="text-gray-600">
+                  Yes! Click "Forgot Password" on the login page and enter the email address associated with your account. You'll receive an email with a reset code that allows you to create a new password. The code expires in 15 minutes for security.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">What is the Spiritual Journal for?</h3>
+                <p className="text-gray-600">
+                  The Spiritual Journal is your personal space to document your spiritual journey. Record your thoughts, insights from readings, meditation experiences, and manifestation goals. Journaling regularly helps track your growth and earns Soul Energy points.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 className="font-heading font-semibold text-lg mb-2 text-black">How do guided meditations work?</h3>
+                <p className="text-gray-600">
+                  Access our meditation library from the "Meditations" section. Choose from various themes like relaxation, chakra healing, or manifestation. Each meditation tracks your session time and awards Soul Energy upon completion. You can favorite meditations to easily find them again.
+                </p>
+              </div>
             </div>
           </div>
         </section>
