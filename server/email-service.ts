@@ -1,11 +1,47 @@
 import sgMail, { type MailDataRequired, type AttachmentData } from '@sendgrid/mail';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
-}
+// Replit SendGrid Connector Integration
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com';
+  if (!xReplitToken || !hostname) {
+    // Fallback to environment variable if Replit connector not available
+    if (process.env.SENDGRID_API_KEY) {
+      return {
+        apiKey: process.env.SENDGRID_API_KEY,
+        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
+      };
+    }
+    throw new Error('SendGrid credentials not found');
+  }
+
+  const connectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=sendgrid',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  if (!connectionSettings || (!connectionSettings.settings.api_key || !connectionSettings.settings.from_email)) {
+    // Fallback to environment variable
+    if (process.env.SENDGRID_API_KEY) {
+      return {
+        apiKey: process.env.SENDGRID_API_KEY,
+        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
+      };
+    }
+    throw new Error('SendGrid not connected');
+  }
+  return { apiKey: connectionSettings.settings.api_key, email: connectionSettings.settings.from_email };
+}
 
 interface EmailParams {
   to: string;
@@ -18,15 +54,19 @@ interface EmailParams {
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
+    // Get fresh credentials each time (tokens can expire)
+    const { apiKey, email: fromEmail } = await getCredentials();
+    sgMail.setApiKey(apiKey);
+    
     console.log("\n=== SENDING EMAIL ===");
     console.log("To:", params.to);
-    console.log("From:", params.from || FROM_EMAIL);
+    console.log("From:", params.from || fromEmail);
     console.log("Subject:", params.subject);
     console.log("Time:", new Date().toLocaleString());
     
     const msg: MailDataRequired = {
       to: params.to,
-      from: params.from || FROM_EMAIL,
+      from: params.from || fromEmail,
       subject: params.subject,
       text: params.text,
       html: params.html,
