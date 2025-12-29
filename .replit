@@ -38,3 +38,8 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_sendgrid:1.0.0", "javascript_sendgrid:1.0.0", "javascript_websocket:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+SENDGRID_FROM_EMAIL = "vidhugupta1996@gmail.com"
