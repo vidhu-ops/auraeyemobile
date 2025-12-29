@@ -205,8 +205,14 @@ export default function AuraAnalysis() {
   // Check if user can access aura analysis
   const hasAccess = canAccessAuraAnalysis(user?.userType);
   
+  // Credit cost for aura analysis
+  const AURA_SCAN_COST = user?.userType === 'healer' ? 5 : 15;
+  
   // Check if new user has completed onboarding (completed onboarding should have manifestIntention set)
   const isNewUser = user && user.userType === 'client' && !user.manifestIntention;
+  
+  // Check if user has enough credits for aura analysis
+  const hasEnoughCredits = user && (user.credits ?? 0) >= AURA_SCAN_COST;
   
   // If user is a new client who hasn't completed onboarding, show upgrade page
   if (isNewUser) {
@@ -214,6 +220,16 @@ export default function AuraAnalysis() {
       serviceName="Aura Analysis"
       serviceDescription="Deep spiritual energy reading and chakra analysis"
       upgradeMessage="Complete your spiritual preferences first! Answer a few quick questions about your energy and intentions to unlock aura analysis and personalized guidance."
+      icon="🔮"
+    />;
+  }
+  
+  // If user doesn't have enough credits, show upgrade page
+  if (user && !hasEnoughCredits) {
+    return <ServiceUpgrade 
+      serviceName="Aura Analysis"
+      serviceDescription="Deep spiritual energy reading and chakra analysis"
+      upgradeMessage={`You need ${AURA_SCAN_COST} credits to perform an aura analysis. Your current balance is ${user.credits ?? 0} credits. Upgrade now to unlock this powerful spiritual service!`}
       icon="🔮"
     />;
   }
