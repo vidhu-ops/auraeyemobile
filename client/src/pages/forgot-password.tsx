@@ -211,7 +211,11 @@ export default function ForgotPassword() {
             </Form>
           ) : (
             <Form {...resetForm}>
-              <form onSubmit={resetForm.handleSubmit(handleResetPassword)} className="space-y-4">
+              <form onSubmit={resetForm.handleSubmit(handleResetPassword)} className="space-y-4" autoComplete="off">
+                {/* Hidden decoy fields to prevent browser autofill */}
+                <input type="text" name="fake-email-field" style={{ display: 'none' }} tabIndex={-1} autoComplete="email" />
+                <input type="password" name="fake-password-field" style={{ display: 'none' }} tabIndex={-1} autoComplete="current-password" />
+                
                 <FormField
                   control={resetForm.control}
                   name="token"
@@ -219,24 +223,20 @@ export default function ForgotPassword() {
                     <FormItem>
                       <FormLabel>Reset Code</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
+                        <input
+                          type="tel"
                           inputMode="numeric"
-                          pattern="[0-9]*"
                           placeholder="Enter 6-digit reset code"
                           maxLength={6}
                           autoComplete="off"
-                          autoCorrect="off"
-                          autoCapitalize="off"
-                          spellCheck={false}
-                          className="text-center text-lg tracking-widest"
+                          id="verification-code-field"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-center text-lg tracking-widest ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                           value={field.value}
                           onChange={(e) => {
                             const numericValue = e.target.value.replace(/[^0-9]/g, '');
                             field.onChange(numericValue);
                           }}
                           onBlur={field.onBlur}
-                          name="reset-code-input"
                           ref={field.ref}
                           disabled={isLoading}
                           data-testid="input-reset-token"
