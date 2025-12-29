@@ -954,10 +954,10 @@ export default function ObjectAnalysis() {
   return (
     <div className="min-h-screen flex flex-col pb-20">
       <Navbar />
-      <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8">
+      <div className="bg-gradient-to-r from-primary-dark to-dark text-white py-8 align-center">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-heading font-bold"></h1>
-          <p className="opacity-80">Discover the energy and spiritual significance of objects</p>
+          <p className="opacity-80 text-center">Discover the energy and spiritual significance of objects</p>
         </div>
       </div>
       <main className="flex-grow">
@@ -966,7 +966,7 @@ export default function ObjectAnalysis() {
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <h1 className="font-heading font-bold text-3xl md:text-4xl mb-4">Object Energy Analysis</h1>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-secondary max-w-2xl mx-auto">
                   Upload a photo of any object to discover its aura, energy patterns, and spiritual significance.
                 </p>
               </div>
@@ -976,7 +976,7 @@ export default function ObjectAnalysis() {
                   <div className="h-2 bg-gradient-to-r from-primary to-primary-dark"></div>
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-4">
-                      <p className="text-center text-black">
+                      <p className="text-center text-white">
                         Every object carries its own unique energy signature. Upload a photo of an object 
                         to discover its aura color, energy qualities, and spiritual significance.
                       </p>
@@ -1014,7 +1014,7 @@ export default function ObjectAnalysis() {
                   <Card>
                     <CardContent className="p-6">
                       <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-semibold">Complete Analysis</h2>
+                        <h2 className="text-xl font-semibold text-white">Complete Analysis</h2>
                         <Button
                           onClick={resetForNewAnalysis}
                           variant="outline"
@@ -1034,15 +1034,15 @@ export default function ObjectAnalysis() {
                             {/* Image Comparison Section */}
                             {originalImage && (
                               <div className="space-y-4">
-                                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                                  <ImageIcon className="h-5 w-5 text-purple-600" />
+                                <h4 className="font-semibold text-white flex items-center gap-2">
+                                  <ImageIcon className="h-5 w-5 text-purple-200" />
                                   Aura Visualization
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                   {/* Original Image */}
                                   <div className="space-y-3">
                                     <div className="text-center">
-                                      <h5 className="text-sm font-medium text-gray-700 mb-2">Original Image</h5>
+                                      <h5 className="text-sm font-medium text-white mb-2">Original Image</h5>
                                       <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
                                         <img 
                                           src={originalImage} 
@@ -1056,8 +1056,8 @@ export default function ObjectAnalysis() {
                                   {/* Processed Image with Smokey Aura Effect */}
                                   <div className="space-y-3">
                                     <div className="text-center">
-                                      <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center justify-center gap-2">
-                                        <Sparkles className="h-4 w-4 text-purple-600" />
+                                      <h5 className="text-sm font-medium text-white mb-2 flex items-center justify-center gap-2">
+                                        <Sparkles className="h-4 w-4 text-purple-200" />
                                         With Aura Visualisation
                                       </h5>
                                       <div className="relative bg-gray-100 rounded-lg overflow-hidden border-2 border-purple-200">
@@ -1096,7 +1096,7 @@ export default function ObjectAnalysis() {
                                         )}
                                       </div>
                                       {enhancedAuraImage && (
-                                        <p className="text-xs text-gray-600 mt-2">
+                                        <p className="text-xs text-white mt-2">
                                           Aura color: {result.auraColor}
                                         </p>
                                       )}
@@ -1121,15 +1121,15 @@ export default function ObjectAnalysis() {
 
                             
                             <div>
-                              <h4 className="text-sm text-gray-500 mb-1">Aura Color</h4>
+                              <h4 className="text-sm text-white mb-1">Aura Color</h4>
                               <div className="flex items-center">
                                 <span 
                                   className="inline-block w-4 h-4 rounded-full mr-2"
                                   style={{ backgroundColor: getAccurateColorCode(result.auraColor) }}
                                 ></span>
-                                <span className="font-medium">{result.auraColor}</span>
+                                <span className="font-medium text-white">{result.auraColor}</span>
                               </div>
-                              <p className="text-sm mt-2">{result.auraDescription}</p>
+                              <p className="text-sm mt-2 text-white">{result.auraDescription}</p>
 
                               
                              
@@ -1152,9 +1152,9 @@ export default function ObjectAnalysis() {
                             </div>
                             
                             <div>
-                              <h4 className="text-sm text-gray-500 mb-1">Energy Level</h4>
+                              <h4 className="text-sm text-white mb-1">Energy Level</h4>
                               <Progress value={result.energyLevel * 10} className="h-2" />
-                              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                              <div className="flex justify-between text-xs text-white mt-1">
                                 <span>Low</span>
                                 <span>Medium</span>
                                 <span>High</span>
@@ -1163,10 +1163,10 @@ export default function ObjectAnalysis() {
                             
                             {/* Energy Qualities Section */}
                             <div>
-                              <h4 className="text-sm text-gray-500 mb-2">Energy Qualities</h4>
-                              <div className="flex flex-wrap gap-2">
+                              <h4 className="text-sm text-white mb-2">Energy Qualities</h4>
+                              <div className="flex flex-wrap gap-2 text-white">
                                 {result.energyQualities.map((quality, index) => (
-                                  <Badge key={index} variant="outline" className="rounded-full">
+                                  <Badge key={index} variant="secondary" className="rounded-full">
                                     {quality}
                                   </Badge>
                                 ))}
@@ -1248,8 +1248,8 @@ export default function ObjectAnalysis() {
                       </div>
                     ) : (
                       <>
-                        <h4 className="font-semibold text-lg mb-4 flex items-center">
-                          <Star className="w-5 h-5 mr-2 text-amber-500" />
+                        <h4 className="font-semibold text-lg mb-4 flex items-center text-black">
+                          <Star className="w-5 h-5 mr-2 text-black" />
                           Rate Your Object Analysis Experience
                         </h4>
                         
@@ -1274,7 +1274,7 @@ export default function ObjectAnalysis() {
                           </div>
                           
                           <div>
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
+                            <label className="text-sm font-medium text-black mb-2 block">
                               Share your thoughts (optional)
                             </label>
                             <Textarea
@@ -1311,13 +1311,13 @@ export default function ObjectAnalysis() {
                   </div>
                   
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 text-center">
-                    <h3 className="font-medium text-lg mb-2">Discover More Object Secrets</h3>
+                    <h3 className="font-medium text-lg mb-2 text-black">Discover More Object Secrets</h3>
                     <p className="text-sm text-gray-600 mb-4">
                       Upload another photo to explore different objects and their sacred chakra frequencies. 
                       Each object channels divine consciousness through specific color vibrations and spiritual activation.
                     </p>
                     <div className="flex justify-center">
-                      <Button variant="outline" onClick={() => setResult(null)}>
+                      <Button variant="secondary" onClick={() => setResult(null)}>
                         Analyze Another Object
                       </Button>
                     </div>

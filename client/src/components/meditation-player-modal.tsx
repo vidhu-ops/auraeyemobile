@@ -49,7 +49,18 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
   const [progress, setProgress] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [volume, setVolume] = useState(100);
+  const [actualDuration, setActualDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsPlaying(false);
+      setProgress(0);
+      setElapsedTime(0);
+      setActualDuration(0);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!meditation) return;
@@ -78,13 +89,34 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
     }
   }, [volume]);
 
+  // Handle video duration when loaded
+  useEffect(() => {
+    if (!meditation || !videoRef.current) return;
+
+    const handleLoadedMetadata = () => {
+      if (videoRef.current && videoRef.current.duration) {
+        setActualDuration(Math.floor(videoRef.current.duration));
+      }
+    };
+
+    const video = videoRef.current;
+    if (meditation.mediaType === 'video') {
+      video?.addEventListener('loadedmetadata', handleLoadedMetadata);
+      // Also check if duration is already available
+      if (video?.duration && !isNaN(video.duration)) {
+        setActualDuration(Math.floor(video.duration));
+      }
+      return () => video?.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    }
+  }, [meditation?.mediaType]);
+
   useEffect(() => {
     if (!meditation) return;
 
     // Handle video duration sync
     if (videoRef.current && (meditation.mediaType === 'video' || meditation.mediaType === 'youtube')) {
       const handleTimeUpdate = () => {
-        if (videoRef.current) {
+        if (videoRef.current && videoRef.current.duration && !isNaN(videoRef.current.duration)) {
           const progressPercent = (videoRef.current.currentTime / videoRef.current.duration) * 100;
           setProgress(progressPercent);
           setElapsedTime(Math.floor(videoRef.current.currentTime));
@@ -104,13 +136,14 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
     // Fallback timer for non-media meditations
     if (!isPlaying || !meditation) return;
 
+    const durationSeconds = actualDuration || meditation.duration * 60;
     const interval = setInterval(() => {
       setElapsedTime(prev => {
         const newTime = prev + 1;
-        const progressPercent = (newTime / (meditation.duration * 60)) * 100;
+        const progressPercent = (newTime / durationSeconds) * 100;
         setProgress(progressPercent);
 
-        if (newTime >= meditation.duration * 60) {
+        if (newTime >= durationSeconds) {
           setIsPlaying(false);
           completeMeditationMutation.mutate(meditation);
           return 0;
@@ -121,7 +154,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isPlaying, meditation]);
+  }, [isPlaying, meditation, actualDuration]);
 
   const completeMeditationMutation = useMutation({
     mutationFn: async (med: Meditation) => {
@@ -163,11 +196,18 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
   };
 
   const handleSkipForward = () => {
-    setElapsedTime(prev => Math.min(prev + 30, (meditation?.duration || 0) * 60 - 1));
+    const maxTime = actualDuration || (meditation?.duration || 0) * 60;
+    setElapsedTime(prev => Math.min(prev + 30, maxTime - 1));
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.min(elapsedTime + 30, maxTime - 1);
+    }
   };
 
   const handleSkipBack = () => {
     setElapsedTime(prev => Math.max(prev - 30, 0));
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.max(elapsedTime - 30, 0);
+    }
   };
 
   const handleComplete = () => {
@@ -255,7 +295,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
             <Progress value={progress} className="h-2" data-testid="meditation-progress" />
             <div className="flex justify-between text-xs text-white/70">
               <span>{formatTime(elapsedTime)}</span>
-              <span>{meditation.duration}:00</span>
+              <span>{formatTime(actualDuration || meditation.duration * 60)}</span>
             </div>
           </div>
 
