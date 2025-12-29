@@ -1,52 +1,4 @@
-import sgMail, { type MailDataRequired, type AttachmentData } from '@sendgrid/mail';
-
-// Replit SendGrid Connector Integration
-async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  // Try Replit connector first
-  if (xReplitToken && hostname) {
-    try {
-      const response = await fetch(
-        'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=sendgrid',
-        {
-          headers: {
-            'Accept': 'application/json',
-            'X_REPLIT_TOKEN': xReplitToken
-          }
-        }
-      );
-      const data = await response.json();
-      const connectionSettings = data.items?.[0];
-      
-      if (connectionSettings?.settings?.api_key && connectionSettings?.settings?.from_email) {
-        console.log("Using Replit SendGrid connector credentials");
-        return { 
-          apiKey: connectionSettings.settings.api_key, 
-          email: connectionSettings.settings.from_email 
-        };
-      }
-    } catch (err) {
-      console.log("Replit connector fetch failed, falling back to env vars:", err);
-    }
-  }
-
-  // Fallback to environment variable
-  if (process.env.SENDGRID_API_KEY) {
-    console.log("Using SENDGRID_API_KEY from environment variables");
-    return {
-      apiKey: process.env.SENDGRID_API_KEY,
-      email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
-    };
-  }
-  
-  throw new Error('SendGrid credentials not found - please configure the SendGrid connection or set SENDGRID_API_KEY');
-}
+import { Resend } from 'resend';
 
 interface EmailParams {
   to: string;
@@ -54,38 +6,93 @@ interface EmailParams {
   subject: string;
   text?: string;
   html?: string;
-  attachments?: AttachmentData[];
+  attachments?: Array<{
+    content: string;
+    filename: string;
+    type?: string;
+    disposition?: string;
+  }>;
+}
+
+async function getResendCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
+
+  if (!xReplitToken || !hostname) {
+    throw new Error('Resend connector not available - missing Replit tokens');
+  }
+
+  const response = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  );
+  
+  const data = await response.json();
+  const connectionSettings = data.items?.[0];
+
+  if (!connectionSettings?.settings?.api_key) {
+    throw new Error('Resend not connected - please configure the Resend connection');
+  }
+  
+  return { 
+    apiKey: connectionSettings.settings.api_key, 
+    fromEmail: connectionSettings.settings.from_email || 'onboarding@resend.dev'
+  };
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
-    // Get fresh credentials each time (tokens can expire)
-    const { apiKey, email: fromEmail } = await getCredentials();
-    sgMail.setApiKey(apiKey);
+    const { apiKey, fromEmail } = await getResendCredentials();
+    const resend = new Resend(apiKey);
     
-    console.log("\n=== SENDING EMAIL ===");
+    console.log("\n=== SENDING EMAIL VIA RESEND ===");
     console.log("To:", params.to);
     console.log("From:", params.from || fromEmail);
     console.log("Subject:", params.subject);
     console.log("Time:", new Date().toLocaleString());
     
-    const msg: MailDataRequired = {
-      to: params.to,
+    const emailData: any = {
       from: params.from || fromEmail,
+      to: params.to,
       subject: params.subject,
-      text: params.text,
-      html: params.html,
-      attachments: params.attachments
     };
     
-    await sgMail.send(msg);
+    if (params.html) {
+      emailData.html = params.html;
+    }
+    if (params.text) {
+      emailData.text = params.text;
+    }
     
-    console.log("Email sent successfully!");
-    console.log("====================\n");
+    if (params.attachments && params.attachments.length > 0) {
+      emailData.attachments = params.attachments.map(att => ({
+        filename: att.filename,
+        content: Buffer.from(att.content, 'base64')
+      }));
+    }
+    
+    const result = await resend.emails.send(emailData);
+    
+    if (result.error) {
+      console.error("Resend error:", result.error);
+      return false;
+    }
+    
+    console.log("Email sent successfully! ID:", result.data?.id);
+    console.log("================================\n");
     return true;
   } catch (error) {
     console.error('\n=== EMAIL ERROR ===');
-    console.error('SendGrid email error:', error);
+    console.error('Resend email error:', error);
     console.error('===================\n');
     return false;
   }
@@ -138,24 +145,40 @@ export async function sendPasswordResetEmail(
   email: string,
   resetToken: string
 ): Promise<boolean> {
-  const subject = "Password Reset Request - Aurfy";
+  const subject = "Password Reset Request - AuraEye";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #6366f1;">Password Reset Request</h2>
       <p>Hello,</p>
-      <p>You have requested to reset your password for your Aurfy account.</p>
+      <p>You have requested to reset your password for your AuraEye account.</p>
       <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #374151; margin-top: 0;">Your Reset Code:</h3>
-        <p style="font-size: 24px; font-weight: bold; color: #6366f1; margin-bottom: 0; letter-spacing: 2px;">${resetToken}</p>
+        <p style="font-size: 32px; font-weight: bold; color: #6366f1; margin-bottom: 0; letter-spacing: 4px; text-align: center;">${resetToken}</p>
       </div>
       <p>This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email.</p>
-      <p>Best regards,<br>The Aurfy Team</p>
+      <p>Best regards,<br>The AuraEye Team</p>
     </div>
+  `;
+
+  const text = `
+Password Reset Request - AuraEye
+
+Hello,
+
+You have requested to reset your password for your AuraEye account.
+
+Your Reset Code: ${resetToken}
+
+This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email.
+
+Best regards,
+The AuraEye Team
   `;
 
   return await sendEmail({
     to: email,
     subject,
+    text,
     html
   });
 }
@@ -167,7 +190,7 @@ export async function sendPaymentConfirmationEmail(
   credits: number,
   price: number
 ): Promise<boolean> {
-  const subject = "Payment Confirmation - Aurfy Credits";
+  const subject = "Payment Confirmation - AuraEye Credits";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #10b981;">Payment Confirmed ✨</h2>
@@ -199,11 +222,11 @@ export async function sendPaymentConfirmationEmail(
       <p>Your new credits are immediately available in your account. You can use them to access all premium spiritual services.</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://aurfy.com/dashboard" style="background-color: #6366f1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
+        <a href="https://auraeye.com/dashboard" style="background-color: #6366f1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
       </div>
 
       <p style="color: #6b7280; font-size: 14px;">If you have any questions about your purchase, please contact our support team.</p>
-      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The Aurfy Team</p>
+      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The AuraEye Team</p>
     </div>
   `;
 
@@ -218,7 +241,7 @@ export async function sendEmailConfirmationEmail(
   email: string,
   username: string
 ): Promise<boolean> {
-  const subject = "Email Address Updated - Aurfy";
+  const subject = "Email Address Updated - AuraEye";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #7c3aed;">Email Address Updated ✨</h2>
@@ -233,7 +256,7 @@ export async function sendEmailConfirmationEmail(
       <p>This address will be used for all future communications, payment confirmations, and account notifications.</p>
       
       <p style="color: #6b7280; font-size: 14px;">If you did not make this change or believe your account has been compromised, please contact our support team immediately.</p>
-      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The Aurfy Team</p>
+      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The AuraEye Team</p>
     </div>
   `;
 
@@ -244,7 +267,6 @@ export async function sendEmailConfirmationEmail(
   });
 }
 
-// Helper function to strip data URL prefix
 function stripDataUrlPrefix(dataUrl: string): string {
   const base64Index = dataUrl.indexOf(',');
   return base64Index > -1 ? dataUrl.substring(base64Index + 1) : dataUrl;
@@ -316,8 +338,7 @@ export async function sendPDFReport(
     Thank you for using AuraEye - Your Spiritual Wellness Platform.
   `;
 
-  // Prepare attachments
-  const attachments: AttachmentData[] = [
+  const attachments: Array<{ content: string; filename: string; type?: string; disposition?: string }> = [
     {
       content: stripDataUrlPrefix(pdfBase64),
       filename: fileName,
@@ -326,7 +347,6 @@ export async function sendPDFReport(
     }
   ];
 
-  // Add screenshots if provided
   if (screenshots && screenshots.length > 0) {
     for (const screenshot of screenshots) {
       attachments.push({
