@@ -225,12 +225,18 @@ export default function ForgotPassword() {
                           pattern="[0-9]*"
                           placeholder="Enter 6-digit reset code"
                           maxLength={6}
-                          autoComplete="one-time-code"
+                          autoComplete="off"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck={false}
                           className="text-center text-lg tracking-widest"
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(e) => {
+                            const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                            field.onChange(numericValue);
+                          }}
                           onBlur={field.onBlur}
-                          name={field.name}
+                          name="reset-code-input"
                           ref={field.ref}
                           disabled={isLoading}
                           data-testid="input-reset-token"
