@@ -1320,8 +1320,8 @@ export default function NumerologyPage() {
             {/* Chakra-Planet Analysis */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Sparkles className="h-5 w-5 text-white" />
                   Chakra-Planet Analysis
                 </CardTitle>
                 <CardDescription>Detailed spiritual insights based on your numerological profile</CardDescription>
@@ -1330,7 +1330,7 @@ export default function NumerologyPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Decision-Making Chakra */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Decision-Making Chakra</h3>
+                    <h3 className="text-lg font-semibold text-white">Decision-Making Chakra</h3>
                     {(() => {
                       const info = getChakraPlanetInfo(numerology.personalityNumber);
                       return (
@@ -1355,7 +1355,7 @@ export default function NumerologyPage() {
 
                   {/* Dominant Soul Chakra */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Dominant Soul Chakra</h3>
+                    <h3 className="text-lg font-semibold text-white">Dominant Soul Chakra</h3>
                     {(() => {
                       const dominantSoulNumber = calculateDominantSoulChakra(user?.birthDate || "1990-01-01");
                       const info = getChakraPlanetInfo(dominantSoulNumber);
@@ -1419,8 +1419,8 @@ export default function NumerologyPage() {
                         {numerology.lifePathNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Life Path Number: {numerology.lifePathNumber}</h3>
-                      <p className="text-black-600 mb-2">Associated Color: <span className="font-medium text-black">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
-                      <div className="text-sm text-gray-500 italic mb-4">
+                      <p className="text-white mb-2">Associated Color: <span className="font-medium text-white">{getNumberColorAssociation(numerology.lifePathNumber)}</span></p>
+                      <div className="text-sm text-white italic mb-4">
                         {getNumberColorAssociation(numerology.lifePathNumber) === 'Green' && 
                           "Balanced and nurturing, green represents growth, harmony, and practical manifestation. It encourages stability, healing, and the ability to build enduring foundations in life."
                         }
@@ -1434,7 +1434,7 @@ export default function NumerologyPage() {
 
                     {/* Vibration Qualities */}
                     <div>
-                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <h4 className="font-semibold text-white mb-3">Vibration Qualities</h4>
                       <div className="flex flex-wrap gap-2">
                         {getVibrationQualities(numerology.lifePathNumber).map((quality, index) => (
                           <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 border-green-200">
@@ -1478,7 +1478,7 @@ export default function NumerologyPage() {
                         {numerology.destinyNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Destiny Number: {numerology.destinyNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
+                      <p className="text-white mb-2">Associated Color: <span className="font-medium text-white">{getNumberColorAssociation(numerology.destinyNumber)}</span></p>
                       <div className="text-sm text-gray-500 italic mb-4">
                         {getNumberColorAssociation(numerology.destinyNumber) === 'Yellow' && 
                           "Bright and uplifting, yellow represents optimism, mental clarity, and self-expression. It encourages intellectual growth, communication skills, and the ability to share ideas with confidence."
@@ -1492,7 +1492,7 @@ export default function NumerologyPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <h4 className="font-semibold text-white mb-3">Vibration Qualities</h4>
                       <div className="flex flex-wrap gap-2">
                         {getVibrationQualities(numerology.destinyNumber).map((quality, index) => (
                           <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
@@ -1505,8 +1505,8 @@ export default function NumerologyPage() {
                     {/* Dominant Soul Chakra Section */}
                     <div className="bg-red-50 rounded-lg p-4 border border-red-100">
                       <h5 className="font-medium text-red-800 mb-2">Dominant Soul Chakra</h5>
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg">
+                      <div className="flex items-center gap-3 text-white">
+                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg text-white">
                           {calculateDominantSoulChakra(user?.birthDate || "1990-01-01")}
                         </div>
                         <div>
@@ -1525,7 +1525,7 @@ export default function NumerologyPage() {
                         {numerology.soulUrgeNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Soul Urge Number: {numerology.soulUrgeNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
+                      <p className="text-white mb-2">Associated Color: <span className="font-medium text-white">{getNumberColorAssociation(numerology.soulUrgeNumber)}</span></p>
                       <div className="text-sm text-gray-500 italic mb-4">
                         {getNumberColorAssociation(numerology.soulUrgeNumber) === 'Violet' && 
                           "Mystical and transformative, violet represents spiritual wisdom, introspection, and higher consciousness. It encourages deep analysis, inner knowing, and connection to universal truths."
@@ -1539,7 +1539,7 @@ export default function NumerologyPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-purple-800 mb-3">Soul Qualities</h4>
+                      <h4 className="font-semibold text-white mb-3">Soul Qualities</h4>
                       <div className="flex flex-wrap gap-2">
                         {getVibrationQualities(numerology.soulUrgeNumber).map((quality, index) => (
                           <Badge key={index} variant="secondary" className="bg-violet-100 text-violet-800 border-violet-200">
@@ -1579,16 +1579,16 @@ export default function NumerologyPage() {
                         {numerology.personalityNumber}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Personality Number: {numerology.personalityNumber}</h3>
-                      <p className="text-gray-600 mb-2">Associated Color: <span className="font-medium">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
+                      <p className="text-white mb-2">Associated Color: <span className="font-medium text-white">{getNumberColorAssociation(numerology.personalityNumber)}</span></p>
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">{getNumberMeaning(numerology.personalityNumber, 'personality').title}</h4>
+                      <h4 className="font-semibold text-black mb-2">{getNumberMeaning(numerology.personalityNumber, 'personality').title}</h4>
                       <p className="text-sm text-gray-700">{getNumberMeaning(numerology.personalityNumber, 'personality').description}</p>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-purple-800 mb-3">Vibration Qualities</h4>
+                      <h4 className="font-semibold text-white mb-3">Vibration Qualities</h4>
                       <div className="flex flex-wrap gap-2">
                         {getVibrationQualities(numerology.personalityNumber).map((quality, index) => (
                           <Badge key={index} variant="secondary" className="bg-pink-100 text-pink-800 border-pink-200">
@@ -1836,7 +1836,7 @@ export default function NumerologyPage() {
                 <div className="space-y-6">
                   {/* Color Vibrations */}
                   <div>
-                    <h4 className="font-semibold text-black-800 mb-3">Color Vibrations</h4>
+                    <h4 className="font-semibold text-white mb-3">Color Vibrations</h4>
                     <div className="flex flex-wrap gap-3">
                       <Badge className="bg-green-100 text-green-800">Life Path: {getNumberColorAssociation(numerology.lifePathNumber)}</Badge>
                       <Badge className="bg-yellow-100 text-yellow-800">Destiny: {getNumberColorAssociation(numerology.destinyNumber)}</Badge>
@@ -1849,8 +1849,8 @@ export default function NumerologyPage() {
                   {/* Key Strengths and Challenges */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-black-800 mb-3">Key Strengths</h4>
-                      <ul className="space-y-2 text-sm text-black-700">
+                      <h4 className="font-semibold text-white mb-3">Key Strengths</h4>
+                      <ul className="space-y-2 text-sm text-white">
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Natural {getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities</li>
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>Your {getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills</li>
                         <li className="flex items-start"><span className="text-green-500 mr-2">•</span>The {getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities</li>
@@ -1858,11 +1858,11 @@ export default function NumerologyPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-black mb-3">Potential Challenges</h4>
-                      <ul className="space-y-2 text-sm text-black-700">
-                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
-                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
-                        <li className="flex items-start text-black"><span className="text-black-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
+                      <h4 className="font-semibold text-white mb-3">Potential Challenges</h4>
+                      <ul className="space-y-2 text-sm text-white">
+                        <li className="flex items-start text-white"><span className="text-black-500 mr-2">•</span>Balancing {getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions</li>
+                        <li className="flex items-start text-white"><span className="text-black-500 mr-2">•</span>Integrating {getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters</li>
+                        <li className="flex items-start text-white"><span className="text-black-500 mr-2">•</span>Managing the sensitivity that comes with {getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations</li>
                       </ul>
                     </div>
                   </div>
@@ -1996,12 +1996,15 @@ export default function NumerologyPage() {
             {numerology && user?.userType === "healer" && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <FileText className="h-5 w-5" />
                     Professional Healer Notes
                   </CardTitle>
-                  <CardDescription className="text-orange-600">
+                  <CardDescription className="text-white">
                     Add your professional insights and recommendations for this numerology analysis
+                  </CardDescription>
+                  <CardDescription className="text-white">
+                   Download the PDF from the top of the page
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -2027,19 +2030,7 @@ export default function NumerologyPage() {
                       Save Notes
                     </Button>
                     
-                    <Button
-                      onClick={generatePDF}
-                      disabled={isGeneratingPDF}
-                      variant="outline"
-                      className="border-orange-300 text-orange-700 hover:bg-orange-100"
-                    >
-                      {isGeneratingPDF ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Download className="h-4 w-4 mr-2" />
-                      )}
-                      Download PDF
-                    </Button>
+                    
                   </div>
                   
                   {healerNotes.trim() && (

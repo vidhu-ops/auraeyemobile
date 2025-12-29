@@ -103,9 +103,9 @@ export default function AuthPage() {
         description: "Your spiritual preferences have been personalized for you.",
       });
       
-      // Mark onboarding as seen and redirect new clients to client dashboard
+      // Mark onboarding as seen and redirect to home page
       localStorage.setItem("hasSeenOnboarding", "true");
-      setLocation("/client-dashboard");
+      setLocation("/");
     },
     onError: () => {
       toast({
