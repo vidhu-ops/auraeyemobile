@@ -205,6 +205,19 @@ export default function AuraAnalysis() {
   // Check if user can access aura analysis
   const hasAccess = canAccessAuraAnalysis(user?.userType);
   
+  // Check if new user has completed onboarding (completed onboarding should have manifestIntention set)
+  const isNewUser = user && user.userType === 'client' && !user.manifestIntention;
+  
+  // If user is a new client who hasn't completed onboarding, show upgrade page
+  if (isNewUser) {
+    return <ServiceUpgrade 
+      serviceName="Aura Analysis"
+      serviceDescription="Deep spiritual energy reading and chakra analysis"
+      upgradeMessage="Complete your spiritual preferences first! Answer a few quick questions about your energy and intentions to unlock aura analysis and personalized guidance."
+      icon="🔮"
+    />;
+  }
+  
   // If user doesn't have access (e.g., semi-healer or client), show upgrade page
   if (user && !hasAccess) {
     return <ServiceUpgrade 
