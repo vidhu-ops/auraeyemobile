@@ -2164,7 +2164,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           personalityNumber: calculatePersonality(birthDate),
           personalYearNumber: calculatePersonalYearFallback(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
-          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center`,
           colorAssociations: {
             lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
             destinyColor: getColorForNumber(calculateDestiny(name)),
@@ -2230,7 +2230,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         soulUrgeNumber: numerologyProfile.soulUrgeNumber,
         personalityNumber: numerologyProfile.personalityNumber,
         personalYearNumber: numerologyProfile.personalYearNumber,
-        interpretation: numerologyProfile.interpretation || `Your numerology profile reveals unique insights about your spiritual path and personal development.`,
+        interpretation: numerologyProfile.interpretation || `Your numerology profile reveals unique insights about your spiritual path and personal development`,
         // Enhanced properties from original profile
         colorAssociations: numerologyProfile.colorAssociations,
         strengths: numerologyProfile.strengths,
@@ -2312,7 +2312,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           soulUrgeNumber: calculateSoulUrge(name),
           personalityNumber: calculatePersonality(birthDate),
           soulChakraNumber: calculateDominantSoulChakra(birthDate),
-          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey. Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities. Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra. Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
           colorAssociations: {
             lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
             destinyColor: getColorForNumber(calculateDestiny(name)),
@@ -2541,7 +2541,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         destinyNumber: 4,
         soulUrgeNumber: 3,
         personalityNumber: 5,
-        interpretation: "Your numerology reading indicates a balanced combination of analytical thinking (7), practical stability (4), creative expression (3), and adaptability (5). This blend of energies supports both spiritual growth and material achievement."
+        interpretation: "Your numerology reading indicates a balanced combination of analytical thinking (7), practical stability (4), creative expression (3), and adaptability (5) This blend of energies supports both spiritual growth and material achievement."
       };
       
       res.json(emergencyFallback);

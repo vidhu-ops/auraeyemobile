@@ -1256,7 +1256,7 @@ export default function NumerologyPage() {
                         <summary className="px-4 py-3 bg-purple-100 cursor-pointer font-semibold text-purple-800 flex justify-between items-center">
                           View Full Life Path Details
                           <span className="group-open:rotate-180 transition-transform">▼</span>
-                          <span className="group-open:rotate-180 transition-transform">PPI=</span>
+                          <span className="">PPI=Positive Psychology Intervention</span>
                         </summary>
                         <div className="p-4 max-h-80 overflow-y-auto">
                           <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
