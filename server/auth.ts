@@ -207,7 +207,12 @@ export function setupAuth(app: Express) {
         password: await hashPassword(req.body.password),
         userType: "client", // All registrations default to client type
         credits: 5, // New clients start with 5 welcome credits
-        soulEnergy: 0 // Start at 0% tree growth
+        soulEnergy: 0, // Start at 0% tree growth
+        // Store onboarding preferences if provided during registration
+        manifestIntention: req.body.manifestIntention || null,
+        energyLevel: req.body.energyLevel || null,
+        biggestBlock: req.body.biggestBlock || null,
+        onboardingCompleted: req.body.manifestIntention ? true : false
       });
 
       // Remove password from response

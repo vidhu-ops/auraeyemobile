@@ -51,7 +51,7 @@ export default function AuthPage() {
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
   const [showTCDialog, setShowTCDialog] = useState(false);
-  const [justRegistered, setJustRegistered] = useState(false);
+  const [pendingRegistration, setPendingRegistration] = useState<RegisterData | null>(null);
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -72,52 +72,40 @@ export default function AuthPage() {
     },
   });
 
-  const saveOnboardingMutation = useMutation({
-    mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
-      const response = await apiRequest("PATCH", "/api/users/me/onboarding", data);
-      return await response.json();
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
-      
-      toast({
-        title: "Preferences Saved! 🎉",
-        description: "Your spiritual preferences have been personalized for you.",
-      });
-      
-      // Mark onboarding as seen and redirect to home page
-      localStorage.setItem("hasSeenOnboarding", "true");
-      setLocation("/");
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to save your preferences. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
     // Component will automatically redirect after user state updates
   };
 
   const onRegisterSubmit = (data: RegisterData) => {
-    registerMutation.mutate(data, {
-      onSuccess: () => {
-        // Mark as just registered to prevent auto-redirect
-        setJustRegistered(true);
-        // Go directly to onboarding questions after successful registration
-        setOnboardingStep("question1");
-      }
-    });
+    // Don't register yet - save the form data and show onboarding questions first
+    setPendingRegistration(data);
+    setOnboardingStep("question1");
   };
   
   const handleFinalSubmit = (block: Block) => {
-    if (manifestIntention && energyLevel && block) {
-      saveOnboardingMutation.mutate({ manifestIntention, energyLevel, biggestBlock: block });
+    // Now register with all onboarding data included
+    if (pendingRegistration && manifestIntention && energyLevel && block) {
+      registerMutation.mutate({
+        ...pendingRegistration,
+        manifestIntention,
+        energyLevel,
+        biggestBlock: block,
+      } as any, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+          
+          toast({
+            title: "Account Created! 🎉",
+            description: "Your spiritual journey begins now.",
+          });
+          
+          // Mark onboarding as seen and redirect to home page
+          localStorage.setItem("hasSeenOnboarding", "true");
+          setLocation("/");
+        }
+      });
     }
   };
   
@@ -243,7 +231,7 @@ export default function AuthPage() {
                   }}
                   className="p-4 rounded-xl border-2 bg-white/5 border-white/10 hover:bg-white/10 transition-all transform hover:scale-105"
                   data-testid={`button-block-${block.toLowerCase().replace(/\s+/g, '-')}`}
-                  disabled={saveOnboardingMutation.isPending}
+                  disabled={registerMutation.isPending}
                 >
                   <h3 className="text-lg font-bold text-white">{block}</h3>
                 </button>
@@ -255,12 +243,12 @@ export default function AuthPage() {
               variant="outline"
               className="w-full text-white border-white/20"
               data-testid="button-back"
-              disabled={saveOnboardingMutation.isPending}
+              disabled={registerMutation.isPending}
             >
-              {saveOnboardingMutation.isPending ? (
+              {registerMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Saving...
+                  Creating Account...
                 </>
               ) : "Back"}
             </Button>
@@ -272,8 +260,8 @@ export default function AuthPage() {
 
   // Redirect if already logged in - go to home page which will show lights activation if needed
   // Wait for auth loading to complete before redirecting
-  // Don't redirect if user just registered and needs to complete onboarding questions
-  if (!isLoading && user && onboardingStep === "auth" && !justRegistered) {
+  // Don't redirect if user is in the middle of onboarding questions
+  if (!isLoading && user && onboardingStep === "auth") {
     // Always redirect to home page after login - lights activation will be shown if needed
     return <Redirect to="/" />;
   }
