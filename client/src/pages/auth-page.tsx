@@ -51,6 +51,7 @@ export default function AuthPage() {
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
   const [showTCDialog, setShowTCDialog] = useState(false);
+  const [justRegistered, setJustRegistered] = useState(false);
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -106,6 +107,8 @@ export default function AuthPage() {
   const onRegisterSubmit = (data: RegisterData) => {
     registerMutation.mutate(data, {
       onSuccess: () => {
+        // Mark as just registered to prevent auto-redirect
+        setJustRegistered(true);
         // Go directly to onboarding questions after successful registration
         setOnboardingStep("question1");
       }
@@ -269,7 +272,8 @@ export default function AuthPage() {
 
   // Redirect if already logged in - go to home page which will show lights activation if needed
   // Wait for auth loading to complete before redirecting
-  if (!isLoading && user && onboardingStep === "auth") {
+  // Don't redirect if user just registered and needs to complete onboarding questions
+  if (!isLoading && user && onboardingStep === "auth" && !justRegistered) {
     // Always redirect to home page after login - lights activation will be shown if needed
     return <Redirect to="/" />;
   }

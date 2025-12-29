@@ -151,7 +151,7 @@ export default function Mascot() {
     if (!user) {
       setMessage({
         text: "Hi! I'm AURI, your spiritual companion! ✨ Sign in to start your journey!",
-        color: "#06b6d4",
+        color: "#ffffff",
         emotion: 'happy'
       });
       return;
@@ -556,7 +556,7 @@ export default function Mascot() {
             <X className="h-3 w-3" />
           </button>
 
-          <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+          <p className="text-sm text-white dark:text-white leading-relaxed">
             {message.text}
           </p>
 
