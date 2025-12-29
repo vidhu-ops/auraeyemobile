@@ -15,38 +15,15 @@ interface EmailParams {
 }
 
 async function getResendCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken || !hostname) {
-    throw new Error('Resend connector not available - missing Replit tokens');
-  }
-
-  const response = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  );
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
   
-  const data = await response.json();
-  const connectionSettings = data.items?.[0];
-
-  if (!connectionSettings?.settings?.api_key) {
-    throw new Error('Resend not connected - please configure the Resend connection');
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY environment variable not set');
   }
   
-  return { 
-    apiKey: connectionSettings.settings.api_key, 
-    fromEmail: connectionSettings.settings.from_email || 'onboarding@resend.dev'
-  };
+  console.log("Using Resend with API key from environment");
+  return { apiKey, fromEmail };
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
