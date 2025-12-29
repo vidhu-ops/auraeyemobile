@@ -320,7 +320,7 @@ export default function Mascot() {
           : `${username}, your healing gift is so special! Your chakras are aligned for divine service! 💚`;
         return {
           text: healerMessage,
-          color: scanColor ? getColorHex(scanColor) : "#10b981",
+          color: scanColor ? getColorHex(scanColor) : "#800080",
           emotion: 'excited'
         };
       }
@@ -556,7 +556,7 @@ export default function Mascot() {
             <X className="h-3 w-3" />
           </button>
 
-          <p className="text-sm text-white dark:text-white leading-relaxed">
+          <p className="text-sm text-purple dark:text-pink leading-relaxed">
             {message.text}
           </p>
 
