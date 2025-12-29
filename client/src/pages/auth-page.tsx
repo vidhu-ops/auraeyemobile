@@ -67,9 +67,40 @@ export default function AuthPage() {
   const [registeredUsername, setRegisteredUsername] = useState("");
   const [registeredBirthDate, setRegisteredBirthDate] = useState("");
   
-  // No auto-trigger for onboarding questions
-  // Questions will only show after registration via onRegisterSubmit
+  const calculateNumerology = async (name: string, birthDate: string) => {
+    setIsLoadingNumerology(true);
+    try {
+      const response = await fetch("/api/numerology", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, birthDate }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setNumerology(data);
+      }
+    } catch (error) {
+      console.error("Error calculating numerology:", error);
+      toast({
+        title: "Error",
+        description: "Failed to calculate numerology. Proceeding to next step.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingNumerology(false);
+    }
+  };
   
+  // Check if user is new (just registered) and force onboarding if needed
+  useEffect(() => {
+    // If user is logged in but hasn't completed onboarding yet (no manifestIntention), show numerology
+    if (user && !user.manifestIntention && onboardingStep === "auth" && registeredBirthDate) {
+      setOnboardingStep("numerology");
+      // Recalculate numerology if we have the birth date
+      calculateNumerology(registeredUsername, registeredBirthDate);
+    }
+  }, [user, registeredBirthDate]);
+
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -135,30 +166,6 @@ export default function AuthPage() {
     });
   };
 
-  const calculateNumerology = async (name: string, birthDate: string) => {
-    setIsLoadingNumerology(true);
-    try {
-      const response = await fetch("/api/numerology", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, birthDate }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setNumerology(data);
-      }
-    } catch (error) {
-      console.error("Error calculating numerology:", error);
-      toast({
-        title: "Error",
-        description: "Failed to calculate numerology. Proceeding to next step.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingNumerology(false);
-    }
-  };
-  
   const handleNumerologyComplete = () => {
     setOnboardingStep("question1");
   };
