@@ -9,38 +9,43 @@ async function getCredentials() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL 
     : null;
 
-  if (!xReplitToken || !hostname) {
-    // Fallback to environment variable if Replit connector not available
-    if (process.env.SENDGRID_API_KEY) {
-      return {
-        apiKey: process.env.SENDGRID_API_KEY,
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
-      };
-    }
-    throw new Error('SendGrid credentials not found');
-  }
-
-  const connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=sendgrid',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
+  // Try Replit connector first
+  if (xReplitToken && hostname) {
+    try {
+      const response = await fetch(
+        'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=sendgrid',
+        {
+          headers: {
+            'Accept': 'application/json',
+            'X_REPLIT_TOKEN': xReplitToken
+          }
+        }
+      );
+      const data = await response.json();
+      const connectionSettings = data.items?.[0];
+      
+      if (connectionSettings?.settings?.api_key && connectionSettings?.settings?.from_email) {
+        console.log("Using Replit SendGrid connector credentials");
+        return { 
+          apiKey: connectionSettings.settings.api_key, 
+          email: connectionSettings.settings.from_email 
+        };
       }
+    } catch (err) {
+      console.log("Replit connector fetch failed, falling back to env vars:", err);
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  if (!connectionSettings || (!connectionSettings.settings.api_key || !connectionSettings.settings.from_email)) {
-    // Fallback to environment variable
-    if (process.env.SENDGRID_API_KEY) {
-      return {
-        apiKey: process.env.SENDGRID_API_KEY,
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
-      };
-    }
-    throw new Error('SendGrid not connected');
   }
-  return { apiKey: connectionSettings.settings.api_key, email: connectionSettings.settings.from_email };
+
+  // Fallback to environment variable
+  if (process.env.SENDGRID_API_KEY) {
+    console.log("Using SENDGRID_API_KEY from environment variables");
+    return {
+      apiKey: process.env.SENDGRID_API_KEY,
+      email: process.env.SENDGRID_FROM_EMAIL || 'noreply@auraeye.com'
+    };
+  }
+  
+  throw new Error('SendGrid credentials not found - please configure the SendGrid connection or set SENDGRID_API_KEY');
 }
 
 interface EmailParams {
