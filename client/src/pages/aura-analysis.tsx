@@ -1559,7 +1559,7 @@ export default function AuraAnalysis() {
       
       // Draw subtle border
       pdf.setDrawColor(200, 150, 220);
-      pdf.setLineWidth(0.3);
+      pdf.setLineWidth(0.0);
       pdf.rect(containerPaddingX, yPos - 2, containerWidth, (chakras.length * rowHeight) + 28);
       
       // Add decorative title
@@ -1614,7 +1614,7 @@ export default function AuraAnalysis() {
         const percentage = Math.round((chakra.score / 10) * 100);
         
         // Score display on the right
-        pdf.setFontSize(8);
+        pdf.setFontSize(5);
         pdf.setTextColor(60, 60, 60);
         const scoreDisplay = `${percentage}% • ${chakra.score}/10`;
         pdf.text(scoreDisplay, pageWidth - containerPaddingX - 2, yPos + 4.5, { align: 'right' });
@@ -1627,8 +1627,8 @@ export default function AuraAnalysis() {
       // Add scale legend at bottom
       pdf.setFontSize(8);
       pdf.setTextColor(120, 120, 120);
-      pdf.text('Energy Scale: ■ = 1 point  (10 points = full energy)', containerPaddingX + 5, yPos);
-      pdf.text('◄ Low Energy  |  High Energy ►', containerPaddingX + 5, yPos + 3);
+      pdf.text('Energy Scale: 10 percent = 1 point', containerPaddingX + 5, yPos);
+      pdf.text('(1 point = least energy) Low Energy  | (10 points = full energy) that is High Energy', containerPaddingX + 5, yPos + 3);
       
       return yPos + 8;
     } catch (error) {
