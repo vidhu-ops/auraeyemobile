@@ -202,20 +202,25 @@ export default function AuraAnalysis() {
   const [isHealerNotesExpanded, setIsHealerNotesExpanded] = useState(false);
   const [isSavingHealerNotes, setIsSavingHealerNotes] = useState(false);
   
-  // Check if user can access aura analysis
-  const hasAccess = canAccessAuraAnalysis(user?.userType);
+  // Check user types
+  const isHealer = user?.userType === 'healer';
+  const isSemiHealer = user?.userType === 'semi-healer';
+  const isClient = user?.userType === 'client';
   
-  // Credit cost for aura analysis
-  const AURA_SCAN_COST = user?.userType === 'healer' ? 5 : 15;
+  // Healers and semi-healers always have access to aura analysis
+  const isHealerOrSemiHealer = isHealer || isSemiHealer;
   
-  // Check if new user has completed onboarding (completed onboarding should have manifestIntention set)
-  const isNewUser = user && user.userType === 'client' && !user.manifestIntention;
+  // Credit cost for aura analysis (only applies to clients)
+  const AURA_SCAN_COST = 15;
   
-  // Check if user has enough credits for aura analysis
-  const hasEnoughCredits = user && (user.credits ?? 0) >= AURA_SCAN_COST;
+  // Check if new client has completed onboarding
+  const isNewClient = isClient && !user.manifestIntention;
+  
+  // Check if client has enough credits (healers/semi-healers bypass this check)
+  const clientHasEnoughCredits = isClient && (user.credits ?? 0) >= AURA_SCAN_COST;
   
   // If user is a new client who hasn't completed onboarding, show upgrade page
-  if (isNewUser) {
+  if (isNewClient) {
     return <ServiceUpgrade 
       serviceName="Aura Analysis"
       serviceDescription="Deep spiritual energy reading and chakra analysis"
@@ -224,28 +229,17 @@ export default function AuraAnalysis() {
     />;
   }
   
-  // If user doesn't have enough credits, show upgrade page
-  if (user && !hasEnoughCredits) {
+  // Clients need enough credits - healers and semi-healers bypass this check
+  if (isClient && !clientHasEnoughCredits) {
     return <ServiceUpgrade 
       serviceName="Aura Analysis"
       serviceDescription="Deep spiritual energy reading and chakra analysis"
-      upgradeMessage={`You need ${AURA_SCAN_COST} credits to perform an aura analysis. Your current balance is ${user.credits ?? 0} credits. Upgrade now to unlock this powerful spiritual service!`}
-      icon="🔮"
-    />;
-  }
-  
-  // If user doesn't have access (e.g., semi-healer or client), show upgrade page
-  if (user && !hasAccess) {
-    return <ServiceUpgrade 
-      serviceName="Aura Analysis"
-      serviceDescription="Deep spiritual energy reading and chakra analysis"
-      upgradeMessage="Aura analysis is an exclusive feature for premium healers. Upgrade your account to access this powerful spiritual service."
+      upgradeMessage={`You need ${AURA_SCAN_COST} credits to perform an aura analysis. Your current balance is ${user?.credits ?? 0} credits. Upgrade now to unlock this powerful spiritual service!`}
       icon="🔮"
     />;
   }
 
-  // Check if user is a healer (password healer123)
-  const isHealer = user?.userType === 'healer' || false;
+  // isHealer already defined above
 
   // Screenshot functionality
   const [capturedScreenshots, setCapturedScreenshots] = useState<Map<string, string>>(new Map());
