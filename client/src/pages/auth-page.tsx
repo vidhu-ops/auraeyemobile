@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Redirect, useLocation } from "wouter";
+import { Redirect, useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -339,13 +339,13 @@ export default function AuthPage() {
                   </Button>
                   
                   <div className="flex justify-center w-full">
-                    <a 
+                    <Link 
                       href="/forgot-password" 
                       className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
                       data-testid="link-forgot-password"
                     >
                       Forgot Password?
-                    </a>
+                    </Link>
                   </div>
                   
                   <p className="text-center text-sm text-white-600 dark:text-slate-400">
